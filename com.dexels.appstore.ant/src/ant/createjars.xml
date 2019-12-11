@@ -1,0 +1,10 @@
+<project default="createjars">
+        <target name="createjars">
+        	<jar destfile="${destination}/tipi.jar">
+        		<fileset dir="${source}/tipi"></fileset>
+        	</jar>
+        	<jar destfile="${destination}/resource.jar">
+        		<fileset dir="${source}/resource"></fileset>
+        	</jar>
+        </target>
+</project>

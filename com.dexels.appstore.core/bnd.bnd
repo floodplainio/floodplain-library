@@ -1,0 +1,13 @@
+-buildpath: \
+	slf4j.api;version=1.7,\
+	org.osgi.service.component.annotations
+Bundle-Version: 7.0.0
+Export-Package: \
+	com.dexels.navajo.tipi.dev.core.extensionmanager,\
+	com.dexels.navajo.tipi.dev.core.sign,\
+	com.dexels.navajo.tipi.dev.core.util.zip,\
+	com.dexels.navajo.tipi.dev.core.projectbuilder,\
+	com.dexels.navajo.tipi.dev.core.util,\
+	com.dexels.navajo.tipi.dev.core.digest
+Private-Package:  \
+	com.dexels.navajo.tipi.dev.core.projectbuilder.impl

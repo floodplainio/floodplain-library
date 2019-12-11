@@ -1,0 +1,12 @@
+-buildpath: \
+	osgi.core,\
+	osgi.cmpn,\
+	org.osgi.service.component.annotations,\
+	com.dexels.oauth.api;version=latest,\
+	slf4j.api;version=1.7
+Bundle-Version: 2.1.5
+Private-Package: \
+	com.dexels.oauth.impl
+-dsannotations:  \
+	*
+Import-Package: *

@@ -1,0 +1,16 @@
+-buildpath: \
+	osgi.core;version=5.0,\
+	slf4j.api;version=1.7,\
+	org.osgi.service.component.annotations,\
+	osgi.cmpn;version=5.0,\
+	${junit},\
+	com.fasterxml.jackson.core.jackson-databind;version=2.6,\
+	com.fasterxml.jackson.core.jackson-core;version=2.6,\
+	log4j;version=1.2
+Bundle-Version: 1.0.36
+Bundle-ClassPath: .
+Include-Resource: src/log4j.xml 
+Private-Package:  \
+	com.dexels.log4j.httpappender
+-dsannotations:  \
+	*

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE project>
+<project default="unsignedresources">
+	<target name="unsignedresources">
+		<echo message="File ${dir} profile: ${profile} target: ${targetname}" />
+
+		<mkdir dir="tmp" />
+		<mkdir dir="tmp/${targetname}" />
+		
+		<!-- We copy the files from source to target, only if the source file are older than 7 days -->
+		<copy todir="tmp/${targetname}" granularity="604800000">
+			<fileset dir="${dir}" />
+		</copy>
+
+
+		<!-- Check if the target jarfile is up to date compared to the tmp/<dir>
+			If so, no build is needed -->
+		<uptodate property="build.notRequired" targetfile="${targetname}.jar">
+			<srcfiles dir="tmp/${targetname}" />
+		</uptodate>
+		<antcall target="build" />
+
+	</target>
+
+	<target name="build" unless="build.notRequired">
+		<jar destfile="${targetname}.jar">
+			<zipfileset dir="${dir}" prefix="${targetname}" />
+		</jar>
+	</target>
+
+</project>

@@ -1,0 +1,17 @@
+<joins tenants="testcase">
+    <mongodb.sink>
+        <sink collection="TestStreamJoin1" topic="@PURCHASE">
+            <sink.index definition="purchaseid:1"/>
+        </sink>
+    </mongodb.sink>
+    <direct>
+    	<store topic="TestStreamJoin-PERSON">
+        </store>
+        <store topic="TestStreamJoin-PURCHASE">
+        </store>
+        
+        <groupedStore name="purchasebyperson" from="TestStreamJoin-PURCHASE" key="personid"/>
+        <joinGrouped name="purchasewithperson" from="purchasebyperson" with="TestStreamJoin-PERSON" into="Person" optional="false" to="@PURCHASE"/>
+    </direct>
+  
+</joins>

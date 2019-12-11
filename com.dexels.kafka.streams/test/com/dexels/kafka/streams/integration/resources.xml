@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <deployment name="develop" kafka="10.0.0.7:9092,10.0.0.7:9093,10.0.0.7:9094" zookeeper="10.0.0.7:2181">
+        <mongodb.sink name="replication" host="10.0.0.1" port="27017" database="@total:replication"/>
+    </deployment>
+</resources>
+    

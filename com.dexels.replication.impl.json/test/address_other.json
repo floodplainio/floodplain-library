@@ -1,0 +1,70 @@
+{
+  "Version" : 2,
+  "TransactionId" : "4.26.223502",
+  "Table" : "ADDRESS",
+  "DataSource" : "sportlinkkernel",
+  "Tenant" : "KNVB",
+  "Entity" : "address",
+  "EntityKey" : "addressid",
+  "Timestamp" : 1469261983000,
+  "Operation" : "update",
+  "Status" : "PENDING",
+  "PrimaryKeys" : [ "addressid" ],
+  "Columns" : {
+    "zipcode" : {
+      "Name" : "zipcode",
+      "Type" : "string",
+      "Value" : "1000AA"
+    },
+    "streetname" : {
+      "Name" : "streetname",
+      "Type" : "string",
+      "Value" : "Benenlaan"
+    },
+    "housenumber" : {
+      "Name" : "housenumber",
+      "Type" : "string",
+      "Value" : "40"
+    },
+    "city" : {
+      "Name" : "city",
+      "Type" : "string",
+      "Value" : "HOENDERLOO"
+    },
+    "updateby" : {
+      "Name" : "updateby",
+      "Type" : "string",
+      "Value" : "mehmet"
+    },
+    "lastupdate" : {
+      "Name" : "lastupdate",
+      "Type" : "date",
+      "Value" : "2013-06-25 13:41:46.00"
+    },
+    "numberappendix" : {
+      "Name" : "numberappendix",
+      "Type" : "string",
+      "Value" : null
+    },
+    "countryid" : {
+      "Name" : "countryid",
+      "Type" : "string",
+      "Value" : "NL "
+    },
+    "remarks" : {
+      "Name" : "remarks",
+      "Type" : "string",
+      "Value" : null
+    },
+    "referencetype" : {
+      "Name" : "referencetype",
+      "Type" : "string",
+      "Value" : "0"
+    },
+    "addressid" : {
+      "Name" : "addressid",
+      "Type" : "integer",
+      "Value" : "765443221"
+    }
+  }
+}

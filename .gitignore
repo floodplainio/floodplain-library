@@ -1,0 +1,10 @@
+.DS_Store
+.gradle/
+generated/
+bin/
+bin_test/
+.metadata
+/reports/
+cnf/storage_kafka/
+.idea
+assembly

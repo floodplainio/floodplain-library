@@ -1,0 +1,17 @@
+<joins tenants="testcase">
+    <mongodb.sink>
+        <sink collection="TestStreamJoin1" topic="@PERSON">
+        </sink>
+    </mongodb.sink>
+    <direct>
+    	
+        <join name="personwithpurchases" 
+            from="TestStreamJoin-PERSON" 
+            with="TestStreamJoin-PERSONLOCATIONSUB" 
+            remoteKey="personid"
+            columns="Location.Address.addressname" 
+            optional="false" 
+            to="@PERSON"/>
+    </direct>
+  
+</joins>

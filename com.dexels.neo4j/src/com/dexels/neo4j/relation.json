@@ -1,0 +1,25 @@
+{
+  "Timestamp": 1492164473655,
+  "Operation": "MERGE",
+  "PrimaryKeys": [
+    "organizationpersonid"
+  ],
+  "Columns": {
+    "organizationpersonid": {
+      "Type": "string",
+      "Value": "1234567"
+    },
+    "fromid": {
+      "Type": "string",
+      "Value": "DH6H60Z"
+    },
+    "toid": {
+      "Type": "string",
+      "Value": "DH6G41F"
+    },
+    "relationattribute": {
+      "Type": "string",
+      "Value": "yah"
+    }
+  }
+}

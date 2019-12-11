@@ -1,0 +1,24 @@
+{
+  "Timestamp" : 1528711668076,
+  "Operation" : "UPDATE",
+  "PrimaryKeys" : [ "actor_id", "film_id" ],
+  "Columns" : {
+    "actor_id" : {
+      "Type" : "integer",
+      "Value" : 198
+    },
+    "film_id" : {
+      "Type" : "integer",
+      "Value" : 628
+    },
+    "table" : {
+      "Type" : "string",
+      "Value" : "film_actor"
+    },
+    "last_update" : {
+      "Type" : "long",
+      "Value" : 1139997903000000000
+    }
+  },
+  "SubMessage" : { }
+}

@@ -1,0 +1,50 @@
+{
+  "Version" : 2,
+  "TransactionId" : "1.27.222512",
+  "Table" : "ORGANIZATIONCOMMUNICATION",
+  "DataSource" : "sportlinkkernel",
+  "Tenant" : "KNVB",
+  "Entity" : "organization",
+  "EntityKey" : "organizationid",
+  "Timestamp" : 1469262088000,
+  "Operation" : "update",
+  "Status" : "PENDING",
+  "PrimaryKeys" : [ "communicationid" ],
+  "Columns" : {
+    "organizationid" : {
+      "Name" : "organizationid",
+      "Type" : "string",
+      "Value" : "AAAAAA"
+    },
+    "communicationdata" : {
+      "Name" : "communicationdata",
+      "Type" : "string",
+      "Value" : "ccc@gmail.com"
+    },
+    "updateby" : {
+      "Name" : "updateby",
+      "Type" : "string",
+      "Value" : "#AAAAAA"
+    },
+    "communicationid" : {
+      "Name" : "communicationid",
+      "Type" : "integer",
+      "Value" : "11135172"
+    },
+    "typeofcommunication" : {
+      "Name" : "typeofcommunication",
+      "Type" : "string",
+      "Value" : "FORWARD_EMAIL"
+    },
+    "lastupdate" : {
+      "Name" : "lastupdate",
+      "Type" : "date",
+      "Value" : "2013-11-17 19:35:31.00"
+    },
+    "preferred" : {
+      "Name" : "preferred",
+      "Type" : "integer",
+      "Value" : "0"
+    }
+  }
+}

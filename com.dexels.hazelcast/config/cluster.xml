@@ -1,0 +1,13 @@
+ <clusters>
+  <cluster name="cluster-a">
+    <member servername="host1" containername="test-cluster-a-1" ip="10.0.1.1" port="2005"/>
+    <member servername="host1" containername="test-cluster-a-2" ip="10.0.1.1" port="2006"/>
+    <member servername="host2" containername="test-cluster-a-1" ip="10.0.1.2" port="2005"/>
+    <member servername="host2" containername="test-cluster-a-2" ip="10.0.1.2" port="2006"/>
+  </cluster>
+  <cluster name="cluster-b">
+    <member servername="host1" containername="test-cluster-b-1" ip="10.0.1.1" port="2001"/>
+    <member servername="host1" containername="test-cluster-b-2" ip="10.0.1.1" port="2002"/>
+    <member servername="host2" containername="test-cluster-b-1" ip="10.0.1.2" port="2001"/>
+  </cluster>
+</clusters>

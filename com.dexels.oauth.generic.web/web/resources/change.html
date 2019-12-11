@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+	<meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Wachtwoord Wijzigen</title>
+   
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" ></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css">
+    <link rel="stylesheet" type="text/css" href="css/oauth.css">
+
+	<link rel="stylesheet" href="css/ladda-themeless.min.css">
+	<script src="js/spin.min.js"></script>
+	<script src="js/util.js"></script>
+	<script src="js/main.js"></script>
+	<script src="js/change.js"></script>
+
+</head>
+
+<body>
+    <div class="content-background content"></div>
+    
+    <div class="container">
+        <div class="row" id="union-logo"></div>
+
+        <div class="row">
+            <div id="popup" class="alert col" style="display:none" role="alert">
+                <strong id="title"></strong><span>&nbsp;<span></span></span><span id="message"></span>
+            </div>
+        </div>
+        
+        <div class="row no-gutters content">
+            <div class="col">
+                <h5>Wijzig wachtwoord</h5>
+                
+                <form id="change-form">
+                    <input type="hidden" name="continue" value="/restlet/authorize">
+                    <div class="form-group">
+                        <input type="password" id="change-password" name="change-password" value="" class="form-control input-style" placeholder="Nieuw wachtwoord">
+                    </div>
+                    <div class="form-group">
+                        <input type="password" id="change-password-repeat" name="change-password-repeat" value="" class="form-control input-style" placeholder="Herhaal nieuw wachtwoord">
+                    </div>
+                    <div class="form-group">
+                        <button id="change-button" type="submit" class="btn btn-primary btn-block clearfix login-button clickable">
+                            Verstuur <i class="fas fa-chevron-right right-icon float-right"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+	<footer class="footer content">
+        <div class="container">
+            <div class="row no-gutters" id="union-footer-apps"></div>
+            <div class="row no-gutters" id="union-footer-links"></div>
+            <div class="row no-gutters" id="union-footer-copyright"></div>
+        </div>
+    </footer>
+</body>
+</html>

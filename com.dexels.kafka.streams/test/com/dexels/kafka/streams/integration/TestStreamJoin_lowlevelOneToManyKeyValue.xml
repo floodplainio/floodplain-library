@@ -1,0 +1,12 @@
+<joins tenants="testcase">
+    <mongodb.sink>
+        <sink collection="TestStreamJoin1" topic="@PERSON">
+        </sink>
+    </mongodb.sink>
+    <direct>
+    	
+        <groupedStore name="personattributesbyperson" from="TestStreamJoin-PERSONATTRIBUTE" key="personid"/>
+        <join name="personwithattributes" from="TestStreamJoin-PERSON" withList="personattributesbyperson"  keyField="attribname" valueField="attribvalue" to="@PERSON"/>
+    </direct>
+  
+</joins>

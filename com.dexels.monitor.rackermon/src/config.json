@@ -1,0 +1,15 @@
+{
+	"group" : [{"name": "production",
+		"priority" : 1,
+		"clusters": [
+			{
+				"name" : "production-knvb",
+				 "type" : "navajo",
+				"servers" : [{
+					"name": "production-knvb-1",
+					"hostname": "hera1",
+					"params": [{"address": "127.0.0.1:9090"}]
+				} ]
+			}]
+		}]
+}

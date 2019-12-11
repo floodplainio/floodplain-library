@@ -1,0 +1,6 @@
+Bundle-Version: 1.0.0
+Bundle-ClassPath: .
+-dsannotations:  \
+	*
+
+Export-Package: com.dexels.server.mgmt.api

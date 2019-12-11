@@ -1,0 +1,36 @@
+-runfw: org.apache.felix.framework;version='[5.4.0,5.4.0]'
+-runee: JavaSE-1.7
+-runsystemcapabilities: ${native_capability}
+-runsystempackages: sun.misc
+
+-resolve.effective: active;skip:="osgi.service"
+
+-runbundles: \
+	org.apache.felix.gogo.runtime,\
+	org.apache.felix.gogo.shell,\
+	org.apache.felix.gogo.command,\
+	com.dexels.mqtt.impl;version=latest,\
+	org.apache.felix.webconsole;version=4.2.8,\
+	org.apache.felix.webconsole.plugins.ds;version=2.0.2,\
+	org.apache.xbean.bundleutils,\
+	org.apache.xbean.finder,\
+	org.objectweb.asm.all;version=5.0.3,\
+	org.ops4j.pax.web.pax-web-api,\
+	org.ops4j.pax.web.pax-web-jetty-bundle,\
+	org.ops4j.pax.web.pax-web-runtime,\
+	org.ops4j.pax.web.pax-web-spi,\
+	org.eclipse.paho.client.mqttv3,\
+	org.apache.felix.configadmin,\
+	org.apache.felix.eventadmin,\
+	slf4j.api,\
+	slf4j.simple,\
+	org.apache.felix.webconsole.plugins.ds,\
+	org.apache.felix.scr,\
+	org.apache.felix.metatype,\
+	org.apache.felix.fileinstall;version=3.5.0,\
+	com.dexels.pubsub.api;version=latest,\
+	io.reactivex.rxjava
+
+-runrequires:  \
+	osgi.identity;filter:='(osgi.identity=org.apache.felix.gogo.shell)',\
+	osgi.identity;filter:='(osgi.identity=org.apache.felix.gogo.command)'

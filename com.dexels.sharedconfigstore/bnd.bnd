@@ -1,0 +1,16 @@
+-buildpath: \
+	osgi.cmpn;version=5.0,\
+	slf4j.api;version=1.7,\
+	org.osgi.service.component.annotations,\
+	org.apache.httpcomponents.httpclient,\
+	org.apache.httpcomponents.httpcore,\
+	com.fasterxml.jackson.core.jackson-core;version=2.6,\
+	com.fasterxml.jackson.core.jackson-databind;version=2.6
+Bundle-Version: 0.9.8
+-dsannotations:  \
+	*
+-sources: src
+Private-Package:  \
+	com.dexels.sharedconfigstore,\
+	com.dexels.sharedconfigstore.consul
+Export-Package: com.dexels.sharedconfigstore.api

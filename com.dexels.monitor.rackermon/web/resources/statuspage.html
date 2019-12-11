@@ -1,0 +1,76 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+
+<title>Sportlink Status Dashboard</title>
+
+<link href="css/status.css" rel="stylesheet" />
+
+<!-- js -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js" type="text/javascript" ></script>
+<script src="js/dexels/status.js" type="text/javascript"></script>
+<script src="js/handlebars-v3.0.3.js" type="text/javascript"></script>
+
+<link id="x-font-custom-css" media="all" type="text/css"
+    href="http://fonts.googleapis.com/css?family=Exo+2:400,400italic,700,700italic|Exo+2:400|Exo+2:400|Exo+2:400&subset=latin,latin-ext"
+    rel="stylesheet" />
+
+
+    <script id="content-template" type="text/x-handlebars-template">
+<table class="statustable">
+    <tr>
+    
+    <th>Huidige status</th>
+    <th> {{dayshistory 0}} </th>
+    <th> {{dayshistory 1}} </th>
+    <th> {{dayshistory 2}} </th>
+    <th> {{dayshistory 3}} </th>
+    <th> {{dayshistory 4}} </th>
+    <th> {{dayshistory 5}} </th>
+    <th> {{dayshistory 6}} </th>
+    <th> {{dayshistory 7}} </th>
+	<th class="uptimeheader"> Uptime (1m/6m/1y) </th>
+
+    </tr>
+
+    {{#each status}} 
+        <tr>
+            <td> {{{formatFailure current cluster}}} </td>
+            <td> {{{getHistoricFailures history 0}}} </td>
+            <td> {{{getHistoricFailures history 1}}} </td>
+            <td> {{{getHistoricFailures history 2}}} </td>
+            <td> {{{getHistoricFailures history 3}}} </td>
+            <td> {{{getHistoricFailures history 4}}} </td>
+            <td> {{{getHistoricFailures history 5}}} </td>  
+            <td> {{{getHistoricFailures history 6}}} </td>  
+            <td> {{{getHistoricFailures history 7}}} </td>  
+            <td> {{{getUptime uptime}}} </td>  
+        </tr>
+    {{/each}}
+ </table>
+    </script>
+    
+    
+</head>
+
+
+
+
+<body>
+    <img class="bg" src="http://www.sportlinkclub.nl/wp-content/uploads/2014/06/bg-algemeen.jpg" />
+
+    <div id="topBar">
+        <div class="x-logobar" style="margin-left: 45px;">
+            <img alt="Meer tijd voor sport."
+                src="http://www.sportlinkclub.nl/wp-content/uploads/2014/07/Sportlink_logo.png" />
+        </div>
+    </div>
+
+    <div id="content">
+        <h3 id="header">Sportlink Status</h3>
+     <div id="status"></div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,313 @@
+:root {
+    --width: 480px;
+
+    --backgroundColor: #F7F7F7;
+    --contentBackgroundColor: white;
+    
+    --primaryColor: #F46C21;
+
+    --s: 8px;
+    --s1: 16px;
+
+    --heightFooterImage: 147px;
+    --heightFooterLinks: 40px;
+    --heightFooterCopyright: 40px;
+    --heightFooter: 227px;
+}
+
+@font-face {
+    font-weight: normal;
+}
+
+@font-face {
+    font-weight: bold
+}
+
+html {
+    min-height: 100%;
+    position: relative;
+}
+
+body {
+    background-color: var(--backgroundColor);
+    margin-bottom: var(--heightFooter); /* Same height as footer */
+    font-family: "Helvetica Neue";
+    color: #333;
+}
+
+.content-background {
+    background-color: var(--contentBackgroundColor);
+    height: 100%;
+    left: 0;
+    margin: 0 auto;
+    position: absolute;
+    right: 0;
+    max-width: var(--width);
+    z-index: -10000;
+}
+
+.container {
+  background-color: var(--contentBackgroundColor);
+  max-width: var(--width);
+}
+
+.header {
+    background-color: var(--backgroundColor);
+    padding: var(--s1);
+}
+
+.alert {
+    border-radius: 0px;
+    border: 0px;
+    text-align: center;
+    color: white;
+    font-weight: 100
+}
+
+.alert-danger {
+    background-color: #e64229;
+}
+
+.alert-success {
+    background-color: #9acc14;
+}
+
+.footer {
+    background-color: transparent;
+    bottom: 0;
+    height: var(--heightFooter); /* Set the fixed height of the footer here */
+    position: absolute;
+    width: 100%;
+    color: #c6c6c6;
+}
+
+.footer .container {
+    padding: 0;
+}
+
+.footer img {
+    height: var(--heightFooterImage);
+    background-color: #ebebeb;
+    object-fit: contain;
+}
+
+#union-footer-links {
+	background-color: #e2e0e0;
+	margin: 0;
+}
+
+.union-footer-link {
+    padding: var(--s) 0 var(--s) 0;
+    overflow: hidden;
+}
+
+.union-footer-link a {
+    color: #8e8e8e;
+    font-weight: 100;
+    font-size: 10pt;	
+}
+
+#union-footer-copyright {
+	margin: 0;
+}
+
+.copyright {
+    padding: var(--s);
+    background-color: #333333;
+    font-weight: 100;
+}
+
+h5 {
+	padding-top: var(--s);
+    font-family: Baron;
+    font-weight: bold;
+}
+
+.input-style {
+    font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif;
+    font-size: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 0;
+    outline: 0;
+    background-color: #f8f8f8;
+    box-shadow: none;
+    text-shadow: none;
+    transition: padding 180ms ease-out,background-color 180ms ease-out,line-height 180ms ease-out;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+ }
+
+.clickable {
+    cursor: pointer;
+}
+
+.custom-checkbox .custom-control-input ~.custom-control-label {
+	color: #9A9A9A;
+	font-weight: normal;
+}
+
+.custom-checkbox .custom-control-input ~.custom-control-label::before {
+	background-color: #f9f9f9;
+	border-radius: 1px;
+	border: 1px solid #DEDEDE;
+}
+
+.custom-checkbox .custom-control-input:checked ~.custom-control-label::before {
+	background-color: var(--primaryColor);
+}
+
+.btn-primary {
+    background-color: var(--primaryColor);
+    border-radius: 1px;
+    font-family: "Helvetica Neue";
+    font-weight: bold;
+    padding: 16px;
+    border: 0px;
+ }
+
+.right-icon {
+    line-height: 1.5 !important;
+}
+
+
+
+
+
+
+
+.just {
+    margin: 0 auto;
+    max-width: 450px;
+    padding-bottom: 10px;
+ }
+ 
+ .card {
+    border: none !important;
+	background-color: inherit;
+ 	height: 96px;
+ 	padding: 20px;
+ 	align-items: center;
+ }
+ 
+.card:hover { 
+  background-color: white;
+}
+
+ 
+ .card:hover {
+  	background-color: #F1F1F1;
+ }
+ 
+ .card-inverse {
+ 	background-color: white;
+ 	border: 1px solid #f36b23;
+ }
+
+.logincontainer {
+    height: 100%;
+    overflow:auto;
+    display: table;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+ 
+
+
+ label {
+ 	font-weight: bold;
+ 	display: block;
+ }
+
+.logincontainer {
+    margin: 0px auto;
+}
+
+.login {
+	border-top: 1px solid white;
+    border-radius: 1px;
+    background-color: white;
+    padding: 20px;
+    height: 100%;
+    
+}
+
+h1.title {
+	margin: 0.6em 0 1.4em;
+}
+
+.clientdescription {
+	display: inline;
+	font-weight: bold;
+}
+
+#clientdescription {
+	color: #002552;
+	font-weight: bold;
+}
+
+.scopes {
+	margin-bottom: 40px;
+}
+
+.scope-div{
+	margin-bottom: 1em;
+}
+
+.bottom {
+	margin-right: 20px;
+	margin-bottom: 20px;
+}
+
+.persons {
+	margin-bottom:25px;
+	padding: 0;
+}
+
+.personphoto {
+	border-radius: 50% !important;
+	border: 1px solid #E5E5E5;
+	object-fit: cover;
+	width: 56px;
+    height: 56px;
+    min-width: 56px;
+    min-height: 56px;
+    max-width: 56px;
+    max-height: 56px;
+}
+
+.row.just{
+    padding-bottom: 0;
+	
+}
+
+.scope-header{
+	font-weight: bold;
+}
+
+.scope-text{
+   margin-bottom: 0.5em;
+	
+}
+
+.knvb-union-card {
+	border: 1px solid #f36b23;
+}
+
+.generic-union-card {
+	border: 1px solid #0275d8;
+}
+
+.white-background {
+	background-color: white !important;
+	color: black !important;
+}
+
+.card-name {
+	color: black !important;
+    margin-left: 16px;
+        overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis
+ 
+}

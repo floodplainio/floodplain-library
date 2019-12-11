@@ -1,0 +1,1123 @@
+{
+  "Timestamp": 1492164473655,
+  "Operation": "MERGE",
+  "PrimaryKeys": [
+    "organizationid"
+  ],
+  "Columns": {
+    "organizationid": {
+      "Type": "string",
+      "Value": "DH6H60Z"
+    },
+    "youth_training_level": {
+      "Type": "string",
+      "Value": "0"
+    },
+    "name": {
+      "Type": "string",
+      "Value": "Braves"
+    },
+    "publish_fields": {
+      "Type": "string",
+      "Value": "1"
+    },
+    "dissolved": {
+      "Type": "string",
+      "Value": "9999-12-31"
+    },
+    "shortscolors": {
+      "Type": "string",
+      "Value": "-"
+    },
+    "shortname": {
+      "Type": "string",
+      "Value": "Braves"
+    },
+    "typeoforganization": {
+      "Type": "string",
+      "Value": "CLUB"
+    },
+    "activeentity": {
+      "Type": "string",
+      "Value": "1"
+    }
+  },
+  "SubMessage": {
+    "DataDetails": {
+      "Timestamp": 1492000389922,
+      "Operation": "NONE",
+      "PrimaryKeys": [
+        "ClubId"
+      ],
+      "Columns": {
+        "MemberChangeAllowed": {
+          "Type": "boolean",
+          "Value": true
+        },
+        "ClubId": {
+          "Type": "string",
+          "Value": "DH6H60Z"
+        }
+      },
+      "SubMessage": {}
+    },
+    "Communication": {
+      "Timestamp": 1492164473655,
+      "Operation": "NONE",
+      "PrimaryKeys": [
+        ""
+      ],
+      "Columns": {},
+      "SubMessage": {}
+    },
+    "Twitter": [],
+    "Logo": [
+      {
+        "Timestamp": 1492164430055,
+        "Operation": "MERGE",
+        "PrimaryKeys": [
+          "ObjectId",
+          "Width",
+          "Height"
+        ],
+        "Columns": {
+          "ObjectId": {
+            "Type": "string",
+            "Value": "DH6H60Z"
+          },
+          "Height": {
+            "Type": "integer",
+            "Value": 100
+          },
+          "ClubId": {
+            "Type": "string",
+            "Value": ""
+          },
+          "Hash": {
+            "Type": "string",
+            "Value": "7bbbfc75c1e86a71f1f3bc57cbcb3446"
+          },
+          "Width": {
+            "Type": "integer",
+            "Value": 100
+          }
+        },
+        "SubMessage": {}
+      },
+      {
+        "Timestamp": 1492164430055,
+        "Operation": "MERGE",
+        "PrimaryKeys": [
+          "ObjectId",
+          "Width",
+          "Height"
+        ],
+        "Columns": {
+          "ObjectId": {
+            "Type": "string",
+            "Value": "DH6H60Z"
+          },
+          "Height": {
+            "Type": "integer",
+            "Value": 200
+          },
+          "ClubId": {
+            "Type": "string",
+            "Value": ""
+          },
+          "Hash": {
+            "Type": "string",
+            "Value": "61fea58c15d7339ae15d44ab8cd9db28"
+          },
+          "Width": {
+            "Type": "integer",
+            "Value": 200
+          }
+        },
+        "SubMessage": {}
+      },
+      {
+        "Timestamp": 1492164430055,
+        "Operation": "MERGE",
+        "PrimaryKeys": [
+          "ObjectId",
+          "Width",
+          "Height"
+        ],
+        "Columns": {
+          "ObjectId": {
+            "Type": "string",
+            "Value": "DH6H60Z"
+          },
+          "Height": {
+            "Type": "integer",
+            "Value": 200
+          },
+          "ClubId": {
+            "Type": "string",
+            "Value": ""
+          },
+          "Hash": {
+            "Type": "string",
+            "Value": "2df8a1171973dea7f15448a5b57f93d1"
+          },
+          "Width": {
+            "Type": "integer",
+            "Value": 550
+          }
+        },
+        "SubMessage": {}
+      },
+      {
+        "Timestamp": 1492164430055,
+        "Operation": "MERGE",
+        "PrimaryKeys": [
+          "ObjectId",
+          "Width",
+          "Height"
+        ],
+        "Columns": {
+          "ObjectId": {
+            "Type": "string",
+            "Value": "DH6H60Z"
+          },
+          "Height": {
+            "Type": "integer",
+            "Value": 400
+          },
+          "ClubId": {
+            "Type": "string",
+            "Value": ""
+          },
+          "Hash": {
+            "Type": "string",
+            "Value": "2df8a1171973dea7f15448a5b57f93d1"
+          },
+          "Width": {
+            "Type": "integer",
+            "Value": 300
+          }
+        },
+        "SubMessage": {}
+      },
+      {
+        "Timestamp": 1492164430055,
+        "Operation": "MERGE",
+        "PrimaryKeys": [
+          "ObjectId",
+          "Width",
+          "Height"
+        ],
+        "Columns": {
+          "ObjectId": {
+            "Type": "string",
+            "Value": "DH6H60Z"
+          },
+          "Height": {
+            "Type": "integer",
+            "Value": 240
+          },
+          "ClubId": {
+            "Type": "string",
+            "Value": ""
+          },
+          "Hash": {
+            "Type": "string",
+            "Value": "2df8a1171973dea7f15448a5b57f93d1"
+          },
+          "Width": {
+            "Type": "integer",
+            "Value": 320
+          }
+        },
+        "SubMessage": {}
+      }
+    ],
+    "Dispensation": [
+      {
+        "Timestamp": 1492164473655,
+        "Operation": "MERGE",
+        "PrimaryKeys": [
+          "dispensationid"
+        ],
+        "Columns": {
+          "sourcepersonid": {
+            "Type": "string",
+            "Value": "DJ6F43Y"
+          },
+          "targetageclasscode": {
+            "Type": "string",
+            "Value": "004"
+          },
+          "dispensationid": {
+            "Type": "integer",
+            "Value": 334
+          },
+          "targetsportid": {
+            "Type": "string",
+            "Value": "BASEBALL-SOFTBALL-WK"
+          },
+          "sourceageclasscode": {
+            "Type": "string",
+            "Value": "002"
+          },
+          "relationstart": {
+            "Type": "date",
+            "Value": "2015-04-10 00:00:00.00"
+          },
+          "active": {
+            "Type": "string",
+            "Value": "0"
+          },
+          "typeofdispensation": {
+            "Type": "string",
+            "Value": "LOWERTEAM"
+          },
+          "targetpersonid": {
+            "Type": "string",
+            "Value": "DJ6F43Y"
+          },
+          "relationend": {
+            "Type": "date",
+            "Value": "2015-12-31 00:00:00.00"
+          },
+          "sourcesportid": {
+            "Type": "string",
+            "Value": "BASEBALL-SOFTBALL-WK"
+          },
+          "sourceorganizationid": {
+            "Type": "string",
+            "Value": "DH6H60Z"
+          },
+          "targetorganizationid": {
+            "Type": "string",
+            "Value": "DH6H60Z"
+          },
+          "targetteamid": {
+            "Type": "integer",
+            "Value": 184
+          }
+        },
+        "SubMessage": {}
+      },
+      {
+        "Timestamp": 1492164473655,
+        "Operation": "MERGE",
+        "PrimaryKeys": [
+          "dispensationid"
+        ],
+        "Columns": {
+          "sourcepersonid": {
+            "Type": "string",
+            "Value": "DJ8K413"
+          },
+          "targetageclasscode": {
+            "Type": "string",
+            "Value": "004"
+          },
+          "dispensationid": {
+            "Type": "integer",
+            "Value": 335
+          },
+          "targetsportid": {
+            "Type": "string",
+            "Value": "BASEBALL-SOFTBALL-WK"
+          },
+          "sourceageclasscode": {
+            "Type": "string",
+            "Value": "002"
+          },
+          "relationstart": {
+            "Type": "date",
+            "Value": "2015-04-10 00:00:00.00"
+          },
+          "active": {
+            "Type": "string",
+            "Value": "0"
+          },
+          "typeofdispensation": {
+            "Type": "string",
+            "Value": "LOWERTEAM"
+          },
+          "targetpersonid": {
+            "Type": "string",
+            "Value": "DJ8K413"
+          },
+          "relationend": {
+            "Type": "date",
+            "Value": "2015-12-31 00:00:00.00"
+          },
+          "sourcesportid": {
+            "Type": "string",
+            "Value": "BASEBALL-SOFTBALL-WK"
+          },
+          "sourceorganizationid": {
+            "Type": "string",
+            "Value": "DH6H60Z"
+          },
+          "targetorganizationid": {
+            "Type": "string",
+            "Value": "DH6H60Z"
+          },
+          "targetteamid": {
+            "Type": "integer",
+            "Value": 184
+          }
+        },
+        "SubMessage": {}
+      },
+      {
+        "Timestamp": 1492164473655,
+        "Operation": "MERGE",
+        "PrimaryKeys": [
+          "dispensationid"
+        ],
+        "Columns": {
+          "sourcepersonid": {
+            "Type": "string",
+            "Value": "DK0F76H"
+          },
+          "targetageclasscode": {
+            "Type": "string",
+            "Value": "006"
+          },
+          "dispensationid": {
+            "Type": "integer",
+            "Value": 121
+          },
+          "targetsportid": {
+            "Type": "string",
+            "Value": "BASEBALL-SOFTBALL-WK"
+          },
+          "sourceageclasscode": {
+            "Type": "string",
+            "Value": "004"
+          },
+          "relationstart": {
+            "Type": "date",
+            "Value": "2015-03-05 00:00:00.00"
+          },
+          "active": {
+            "Type": "string",
+            "Value": "0"
+          },
+          "typeofdispensation": {
+            "Type": "string",
+            "Value": "LOWERTEAM"
+          },
+          "targetpersonid": {
+            "Type": "string",
+            "Value": "DK0F76H"
+          },
+          "relationend": {
+            "Type": "date",
+            "Value": "2015-12-31 00:00:00.00"
+          },
+          "sourcesportid": {
+            "Type": "string",
+            "Value": "BASEBALL-SOFTBALL-WK"
+          },
+          "sourceorganizationid": {
+            "Type": "string",
+            "Value": "DH6H60Z"
+          },
+          "targetorganizationid": {
+            "Type": "string",
+            "Value": "DH6H60Z"
+          },
+          "targetteamid": {
+            "Type": "integer",
+            "Value": 1942
+          }
+        },
+        "SubMessage": {}
+      },
+      {
+        "Timestamp": 1492164473655,
+        "Operation": "MERGE",
+        "PrimaryKeys": [
+          "dispensationid"
+        ],
+        "Columns": {
+          "sourcepersonid": {
+            "Type": "string",
+            "Value": "DJ5S64V"
+          },
+          "targetageclasscode": {
+            "Type": "string",
+            "Value": "006"
+          },
+          "dispensationid": {
+            "Type": "integer",
+            "Value": 122
+          },
+          "targetsportid": {
+            "Type": "string",
+            "Value": "BASEBALL-SOFTBALL-WK"
+          },
+          "sourceageclasscode": {
+            "Type": "string",
+            "Value": "004"
+          },
+          "relationstart": {
+            "Type": "date",
+            "Value": "2015-03-05 00:00:00.00"
+          },
+          "active": {
+            "Type": "string",
+            "Value": "1"
+          },
+          "typeofdispensation": {
+            "Type": "string",
+            "Value": "LOWERTEAM"
+          },
+          "targetpersonid": {
+            "Type": "string",
+            "Value": "DJ5S64V"
+          },
+          "relationend": {
+            "Type": "date",
+            "Value": "2015-12-31 00:00:00.00"
+          },
+          "sourcesportid": {
+            "Type": "string",
+            "Value": "BASEBALL-SOFTBALL-WK"
+          },
+          "sourceorganizationid": {
+            "Type": "string",
+            "Value": "DH6H60Z"
+          },
+          "targetorganizationid": {
+            "Type": "string",
+            "Value": "DH6H60Z"
+          },
+          "targetteamid": {
+            "Type": "integer",
+            "Value": 1942
+          }
+        },
+        "SubMessage": {}
+      },
+      {
+        "Timestamp": 1492164473655,
+        "Operation": "MERGE",
+        "PrimaryKeys": [
+          "dispensationid"
+        ],
+        "Columns": {
+          "sourcepersonid": {
+            "Type": "string",
+            "Value": "DJ4X357"
+          },
+          "targetageclasscode": {
+            "Type": "string",
+            "Value": "007"
+          },
+          "dispensationid": {
+            "Type": "integer",
+            "Value": 328
+          },
+          "targetsportid": {
+            "Type": "string",
+            "Value": "BASEBALL-BASEBALL-WK"
+          },
+          "sourceageclasscode": {
+            "Type": "string",
+            "Value": "005"
+          },
+          "relationstart": {
+            "Type": "date",
+            "Value": "2015-04-10 00:00:00.00"
+          },
+          "active": {
+            "Type": "string",
+            "Value": "1"
+          },
+          "typeofdispensation": {
+            "Type": "string",
+            "Value": "LOWERTEAM"
+          },
+          "targetpersonid": {
+            "Type": "string",
+            "Value": "DJ4X357"
+          },
+          "relationend": {
+            "Type": "date",
+            "Value": "2015-12-31 00:00:00.00"
+          },
+          "sourcesportid": {
+            "Type": "string",
+            "Value": "BASEBALL-BASEBALL-WK"
+          },
+          "sourceorganizationid": {
+            "Type": "string",
+            "Value": "DH6H60Z"
+          },
+          "targetorganizationid": {
+            "Type": "string",
+            "Value": "DH6H60Z"
+          },
+          "targetteamid": {
+            "Type": "integer",
+            "Value": 185
+          }
+        },
+        "SubMessage": {}
+      },
+      {
+        "Timestamp": 1492164473655,
+        "Operation": "MERGE",
+        "PrimaryKeys": [
+          "dispensationid"
+        ],
+        "Columns": {
+          "sourcepersonid": {
+            "Type": "string",
+            "Value": "DJ8X97L"
+          },
+          "targetageclasscode": {
+            "Type": "string",
+            "Value": "004"
+          },
+          "dispensationid": {
+            "Type": "integer",
+            "Value": 333
+          },
+          "targetsportid": {
+            "Type": "string",
+            "Value": "BASEBALL-SOFTBALL-WK"
+          },
+          "sourceageclasscode": {
+            "Type": "string",
+            "Value": "002"
+          },
+          "relationstart": {
+            "Type": "date",
+            "Value": "2015-04-10 00:00:00.00"
+          },
+          "active": {
+            "Type": "string",
+            "Value": "0"
+          },
+          "typeofdispensation": {
+            "Type": "string",
+            "Value": "LOWERTEAM"
+          },
+          "targetpersonid": {
+            "Type": "string",
+            "Value": "DJ8X97L"
+          },
+          "relationend": {
+            "Type": "date",
+            "Value": "2015-12-31 00:00:00.00"
+          },
+          "sourcesportid": {
+            "Type": "string",
+            "Value": "BASEBALL-SOFTBALL-WK"
+          },
+          "sourceorganizationid": {
+            "Type": "string",
+            "Value": "DH6H60Z"
+          },
+          "targetorganizationid": {
+            "Type": "string",
+            "Value": "DH6H60Z"
+          },
+          "targetteamid": {
+            "Type": "integer",
+            "Value": 184
+          }
+        },
+        "SubMessage": {}
+      },
+      {
+        "Timestamp": 1492164473655,
+        "Operation": "MERGE",
+        "PrimaryKeys": [
+          "dispensationid"
+        ],
+        "Columns": {
+          "sourcesportid": {
+            "Type": "string",
+            "Value": "BASEBALL-SOFTBALL-WK"
+          },
+          "targetageclasscode": {
+            "Type": "string",
+            "Value": "004"
+          },
+          "sourceorganizationid": {
+            "Type": "string",
+            "Value": "DH6H56S"
+          },
+          "targetorganizationid": {
+            "Type": "string",
+            "Value": "DH6H60Z"
+          },
+          "targetteamid": {
+            "Type": "integer",
+            "Value": 2588
+          },
+          "dispensationid": {
+            "Type": "integer",
+            "Value": 1129
+          },
+          "targetsportid": {
+            "Type": "string",
+            "Value": "BASEBALL-SOFTBALL-WK"
+          },
+          "sourceageclasscode": {
+            "Type": "string",
+            "Value": "004"
+          },
+          "relationstart": {
+            "Type": "date",
+            "Value": "2016-02-25 00:00:00.00"
+          },
+          "active": {
+            "Type": "string",
+            "Value": "1"
+          },
+          "typeofdispensation": {
+            "Type": "string",
+            "Value": "COOPERATIVE"
+          },
+          "relationend": {
+            "Type": "date",
+            "Value": "2018-02-25 00:00:00.00"
+          }
+        },
+        "SubMessage": {}
+      },
+      {
+        "Timestamp": 1492164473655,
+        "Operation": "MERGE",
+        "PrimaryKeys": [
+          "dispensationid"
+        ],
+        "Columns": {
+          "sourcesportid": {
+            "Type": "string",
+            "Value": "BASEBALL-SOFTBALL-WK"
+          },
+          "targetageclasscode": {
+            "Type": "string",
+            "Value": "004"
+          },
+          "sourceorganizationid": {
+            "Type": "string",
+            "Value": "DH6H56S"
+          },
+          "targetorganizationid": {
+            "Type": "string",
+            "Value": "DH6H60Z"
+          },
+          "targetteamid": {
+            "Type": "integer",
+            "Value": 2588
+          },
+          "dispensationid": {
+            "Type": "integer",
+            "Value": 1130
+          },
+          "targetsportid": {
+            "Type": "string",
+            "Value": "BASEBALL-SOFTBALL-WK"
+          },
+          "sourceageclasscode": {
+            "Type": "string",
+            "Value": "006"
+          },
+          "relationstart": {
+            "Type": "date",
+            "Value": "2016-02-25 00:00:00.00"
+          },
+          "active": {
+            "Type": "string",
+            "Value": "1"
+          },
+          "typeofdispensation": {
+            "Type": "string",
+            "Value": "COOPERATIVE"
+          },
+          "relationend": {
+            "Type": "date",
+            "Value": "2018-02-25 00:00:00.00"
+          }
+        },
+        "SubMessage": {}
+      },
+      {
+        "Timestamp": 1492164473655,
+        "Operation": "MERGE",
+        "PrimaryKeys": [
+          "dispensationid"
+        ],
+        "Columns": {
+          "sourcesportid": {
+            "Type": "string",
+            "Value": "BASEBALL-SOFTBALL-WK"
+          },
+          "targetageclasscode": {
+            "Type": "string",
+            "Value": "002"
+          },
+          "sourceorganizationid": {
+            "Type": "string",
+            "Value": "DH6H56S"
+          },
+          "targetorganizationid": {
+            "Type": "string",
+            "Value": "DH6H60Z"
+          },
+          "targetteamid": {
+            "Type": "integer",
+            "Value": 190
+          },
+          "dispensationid": {
+            "Type": "integer",
+            "Value": 1128
+          },
+          "targetsportid": {
+            "Type": "string",
+            "Value": "BASEBALL-SOFTBALL-WK"
+          },
+          "sourceageclasscode": {
+            "Type": "string",
+            "Value": "002"
+          },
+          "relationstart": {
+            "Type": "date",
+            "Value": "2016-02-25 00:00:00.00"
+          },
+          "active": {
+            "Type": "string",
+            "Value": "1"
+          },
+          "typeofdispensation": {
+            "Type": "string",
+            "Value": "COOPERATIVE"
+          },
+          "relationend": {
+            "Type": "date",
+            "Value": "2018-02-25 00:00:00.00"
+          }
+        },
+        "SubMessage": {}
+      },
+      {
+        "Timestamp": 1492164473655,
+        "Operation": "MERGE",
+        "PrimaryKeys": [
+          "dispensationid"
+        ],
+        "Columns": {
+          "sourcepersonid": {
+            "Type": "string",
+            "Value": "DJ5W73J"
+          },
+          "targetageclasscode": {
+            "Type": "string",
+            "Value": "002"
+          },
+          "dispensationid": {
+            "Type": "integer",
+            "Value": 1504
+          },
+          "targetsportid": {
+            "Type": "string",
+            "Value": "BASEBALL-SOFTBALL-WK"
+          },
+          "sourceageclasscode": {
+            "Type": "string",
+            "Value": "006"
+          },
+          "relationstart": {
+            "Type": "date",
+            "Value": "2016-04-13 00:00:00.00"
+          },
+          "active": {
+            "Type": "string",
+            "Value": "0"
+          },
+          "typeofdispensation": {
+            "Type": "string",
+            "Value": "HIGHERTEAM"
+          },
+          "targetpersonid": {
+            "Type": "string",
+            "Value": "DJ5W73J"
+          },
+          "relationend": {
+            "Type": "date",
+            "Value": "2016-12-31 00:00:00.00"
+          },
+          "sourcesportid": {
+            "Type": "string",
+            "Value": "BASEBALL-SOFTBALL-WK"
+          },
+          "sourceorganizationid": {
+            "Type": "string",
+            "Value": "DH6H60Z"
+          },
+          "targetorganizationid": {
+            "Type": "string",
+            "Value": "DH6H60Z"
+          },
+          "targetteamid": {
+            "Type": "integer",
+            "Value": 190
+          }
+        },
+        "SubMessage": {}
+      },
+      {
+        "Timestamp": 1492164473655,
+        "Operation": "MERGE",
+        "PrimaryKeys": [
+          "dispensationid"
+        ],
+        "Columns": {
+          "sourcepersonid": {
+            "Type": "string",
+            "Value": "DJ6J39N"
+          },
+          "targetageclasscode": {
+            "Type": "string",
+            "Value": "002"
+          },
+          "dispensationid": {
+            "Type": "integer",
+            "Value": 1505
+          },
+          "targetsportid": {
+            "Type": "string",
+            "Value": "BASEBALL-SOFTBALL-WK"
+          },
+          "sourceageclasscode": {
+            "Type": "string",
+            "Value": "006"
+          },
+          "relationstart": {
+            "Type": "date",
+            "Value": "2016-04-13 00:00:00.00"
+          },
+          "active": {
+            "Type": "string",
+            "Value": "1"
+          },
+          "typeofdispensation": {
+            "Type": "string",
+            "Value": "HIGHERTEAM"
+          },
+          "targetpersonid": {
+            "Type": "string",
+            "Value": "DJ6J39N"
+          },
+          "relationend": {
+            "Type": "date",
+            "Value": "2016-12-31 00:00:00.00"
+          },
+          "sourcesportid": {
+            "Type": "string",
+            "Value": "BASEBALL-SOFTBALL-WK"
+          },
+          "sourceorganizationid": {
+            "Type": "string",
+            "Value": "DH6H60Z"
+          },
+          "targetorganizationid": {
+            "Type": "string",
+            "Value": "DH6H60Z"
+          },
+          "targetteamid": {
+            "Type": "integer",
+            "Value": 190
+          }
+        },
+        "SubMessage": {}
+      },
+      {
+        "Timestamp": 1492164473655,
+        "Operation": "MERGE",
+        "PrimaryKeys": [
+          "dispensationid"
+        ],
+        "Columns": {
+          "sourcesportid": {
+            "Type": "string",
+            "Value": "BASEBALL-SOFTBALL-WK"
+          },
+          "targetageclasscode": {
+            "Type": "string",
+            "Value": "002"
+          },
+          "sourceorganizationid": {
+            "Type": "string",
+            "Value": "DH6G69T"
+          },
+          "targetorganizationid": {
+            "Type": "string",
+            "Value": "DH6H60Z"
+          },
+          "targetteamid": {
+            "Type": "integer",
+            "Value": 190
+          },
+          "dispensationid": {
+            "Type": "integer",
+            "Value": 1865
+          },
+          "targetsportid": {
+            "Type": "string",
+            "Value": "BASEBALL-SOFTBALL-WK"
+          },
+          "sourceageclasscode": {
+            "Type": "string",
+            "Value": "004"
+          },
+          "relationstart": {
+            "Type": "date",
+            "Value": "2017-01-06 00:00:00.00"
+          },
+          "active": {
+            "Type": "string",
+            "Value": "1"
+          },
+          "typeofdispensation": {
+            "Type": "string",
+            "Value": "COOPERATIVE"
+          },
+          "relationend": {
+            "Type": "date",
+            "Value": "2019-01-06 00:00:00.00"
+          }
+        },
+        "SubMessage": {}
+      },
+      {
+        "Timestamp": 1492164473655,
+        "Operation": "MERGE",
+        "PrimaryKeys": [
+          "dispensationid"
+        ],
+        "Columns": {
+          "sourcesportid": {
+            "Type": "string",
+            "Value": "BASEBALL-SOFTBALL-WK"
+          },
+          "targetageclasscode": {
+            "Type": "string",
+            "Value": "002"
+          },
+          "sourceorganizationid": {
+            "Type": "string",
+            "Value": "DH6G69T"
+          },
+          "targetorganizationid": {
+            "Type": "string",
+            "Value": "DH6H60Z"
+          },
+          "targetteamid": {
+            "Type": "integer",
+            "Value": 190
+          },
+          "dispensationid": {
+            "Type": "integer",
+            "Value": 1864
+          },
+          "targetsportid": {
+            "Type": "string",
+            "Value": "BASEBALL-SOFTBALL-WK"
+          },
+          "sourceageclasscode": {
+            "Type": "string",
+            "Value": "002"
+          },
+          "relationstart": {
+            "Type": "date",
+            "Value": "2017-01-06 00:00:00.00"
+          },
+          "active": {
+            "Type": "string",
+            "Value": "1"
+          },
+          "typeofdispensation": {
+            "Type": "string",
+            "Value": "COOPERATIVE"
+          },
+          "relationend": {
+            "Type": "date",
+            "Value": "2019-01-06 00:00:00.00"
+          }
+        },
+        "SubMessage": {}
+      },
+      {
+        "Timestamp": 1492164473655,
+        "Operation": "MERGE",
+        "PrimaryKeys": [
+          "dispensationid"
+        ],
+        "Columns": {
+          "sourcepersonid": {
+            "Type": "string",
+            "Value": "DJ3W43U"
+          },
+          "targetageclasscode": {
+            "Type": "string",
+            "Value": "001"
+          },
+          "dispensationid": {
+            "Type": "integer",
+            "Value": 2018
+          },
+          "targetsportid": {
+            "Type": "string",
+            "Value": "BASEBALL-BASEBALL-WK"
+          },
+          "sourceageclasscode": {
+            "Type": "string",
+            "Value": "005"
+          },
+          "relationstart": {
+            "Type": "date",
+            "Value": "2017-02-28 00:00:00.00"
+          },
+          "active": {
+            "Type": "string",
+            "Value": "1"
+          },
+          "typeofdispensation": {
+            "Type": "string",
+            "Value": "HIGHERTEAM"
+          },
+          "targetpersonid": {
+            "Type": "string",
+            "Value": "DJ3W43U"
+          },
+          "relationend": {
+            "Type": "date",
+            "Value": "2017-12-31 00:00:00.00"
+          },
+          "sourcesportid": {
+            "Type": "string",
+            "Value": "BASEBALL-BASEBALL-WK"
+          },
+          "sourceorganizationid": {
+            "Type": "string",
+            "Value": "DH6H60Z"
+          },
+          "targetorganizationid": {
+            "Type": "string",
+            "Value": "DH6H60Z"
+          },
+          "targetteamid": {
+            "Type": "integer",
+            "Value": 186
+          }
+        },
+        "SubMessage": {}
+      }
+    ]
+  }
+}

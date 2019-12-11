@@ -1,0 +1,17 @@
+<joins tenants="testcase">
+    
+    <mongodb.sink>
+        <sink collection="TestStreamJoin1" topic="@TEAM">
+            <sink.index definition="teamid:1"/>
+        </sink>
+    </mongodb.sink>
+    <direct>
+        
+        <groupedStore name="teamsgroupedbyorgid" from="TestStreamJoin-TEAM" key="organizationid"/>
+        <groupedStore name="logogroupedbyorgid" from="TestStreamJoin-LOGO" key="organizationid"/>
+        
+        <joinGrouped name="teamwithlogojoin" from="teamsgroupedbyorgid" 
+            withList="logogroupedbyorgid" into="Logo" optional="true"  to="@TEAM"/>
+    </direct>
+  
+</joins>

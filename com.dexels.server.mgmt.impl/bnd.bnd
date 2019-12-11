@@ -1,0 +1,21 @@
+-buildpath: \
+	osgi.core;version=6.0,\
+	osgi.cmpn;version=6.0,\
+	slf4j.api;version=1.7,\
+	org.osgi.service.component.annotations,\
+	com.dexels.server.mgmt.api;version=latest,\
+	javax.servlet-api,\
+	io.reactivex.rxjava2.rxjava,\
+	org.reactivestreams.reactive-streams
+Bundle-Version: 1.0.11
+Bundle-ClassPath: .
+-dsannotations:  \
+	*
+Import-Package: \
+	javax.servlet.http;version='[3.0, 3.2)',\
+	javax.servlet;version='[3.0, 3.2)',\
+	*
+Private-Package: \
+	com.dexels.server.mgmt.servlet,\
+	com.dexels.server.mgmt.shutdown,\
+	com.dexels.server.mgmt.status

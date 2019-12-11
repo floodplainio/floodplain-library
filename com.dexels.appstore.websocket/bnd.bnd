@@ -1,0 +1,31 @@
+-buildpath: \
+	osgi.cmpn,\
+	org.osgi.service.component.annotations,\
+	org.eclipse.jetty.servlets;version=9.2,\
+	org.eclipse.jetty.proxy;version=9.2,\
+	slf4j.api;version=1.7,\
+	osgi.core;version=5.0,\
+	com.dexels.appstore.core;version=latest,\
+	javax.websocket-api;version=1.1,\
+	javax.json-api;version=1.0,\
+	com.dexels.repository.api;version=latest,\
+	com.dexels.appstore.server;version=latest,\
+	javax.servlet-api,\
+	org.eclipse.jetty.websocket.servlet;version=9.4,\
+	org.eclipse.jetty.websocket.api;version=9.4,\
+	org.eclipse.jetty.client;version=9.4
+Bundle-Version: 0.1.8
+-dsannotations:  \
+	*
+	
+-testpath: \
+	${junit}
+	
+Import-Package:  \
+	javax.servlet.http;version='[3,4)',\
+	javax.servlet;version='[2.5,4)',\
+	org.eclipse.jetty.proxy;version='[8,10)',\
+	org.eclipse.jetty.servlets;version='[8,10)',\
+	*
+Export-Package: com.dexels.appstore.filter
+Private-Package: com.dexels.navajo.tipi.dev.server.websocket.impl

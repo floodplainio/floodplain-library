@@ -1,0 +1,19 @@
+-buildpath: \
+	osgi.annotation;version=6.0.1,\
+	com.dexels.replication.api;version=latest,\
+	slf4j.api;version=1.7,\
+	com.dexels.repository.api;version=latest,\
+	com.dexels.immutable.api;version=latest,\
+	com.dexels.immutable.impl;version=latest,\
+	osgi.cmpn;version=6.0
+
+-testpath: \
+	${junit}
+
+javac.source: 1.8
+javac.target: 1.8
+
+Bundle-Version: 8.0.2
+Export-Package: \
+	com.dexels.replication.factory,\
+	com.dexels.replication.impl

@@ -1,0 +1,7 @@
+-baseline: *
+-buildpath: \
+	com.dexels.repository.api;version=latest
+Bundle-Version: 1.2.10
+Export-Package: \
+	com.dexels.repository.github,\
+	com.dexels.repository.git

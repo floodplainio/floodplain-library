@@ -1,0 +1,40 @@
+{
+	"Status" : "PENDING",
+	"Table" : "ZIPCODEPOSITION",
+	"Tenant" : "KNVB",
+	"Version" : 2,
+	"Columns" : {
+		"zipcode" : {
+			"Type" : "string",
+			"Value" : "8332JD"
+		},
+		"streetname" : {
+			"Type" : "string",
+			"Value" : null
+		},
+		"updateby" : {
+			"Type" : "string",
+			"Value" : "ROOT"
+		},
+		"latitude" : {
+			"Type" : "float",
+			"Value" : 50.7588258560481
+		},
+		"lastupdate" : {
+			"Type" : "date",
+		    "Value" : "2015-06-25 13:41:46.00"
+		},
+		"longitude" : {
+			"Type" : "float",
+			"Value" : 5.85158468069399
+		}
+	},
+	"PrimaryKeys" : [
+		"zipcode"
+	],
+	"Operation" : "UPDATE",
+	"Timestamp" : 1469261983000,
+	"TransactionId" : "null",
+	"DataSource" : "sportlinkkernel",
+	"zipcode" : "8332JD"
+}

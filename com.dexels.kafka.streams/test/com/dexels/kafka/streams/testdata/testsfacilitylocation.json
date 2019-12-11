@@ -1,0 +1,21 @@
+{  
+   "Timestamp":1478177651654,
+   "Operation":"NONE",
+   "PrimaryKeys":[  
+      "facilityid,subfacilityid"
+   ],
+   "Columns":{  
+   	  "facilityid":{
+   	  	"Type":"string",
+   	  	"Value":"123456"
+   	  },
+      "longitude":{  
+         "Type":"double",
+         "Value":"-50"
+      },
+      "latitude":{  
+         "Type":"double",
+         "Value":"13"
+      }
+  }
+}

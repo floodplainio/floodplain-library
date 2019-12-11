@@ -1,0 +1,12 @@
+-buildpath: \
+	osgi.core,\
+	osgi.cmpn,\
+	org.osgi.service.component.annotations
+Bundle-Version: 1.0.3
+Private-Package: \
+	com.dexels.oauth.web.generic
+-dsannotations:  \
+	*
+Include-Resource: web
+-sources: web,\
+ src

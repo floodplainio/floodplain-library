@@ -1,0 +1,15 @@
+-buildpath: \
+	osgi.core;version=5.0,\
+	slf4j.api;version=1.7,\
+	org.osgi.service.component.annotations,\
+	osgi.cmpn;version=5.0,\
+	com.dexels.server.mgmt.api;version=latest
+Bundle-Version: 10.0.3
+Export-Package:  \
+	com.dexels.navajo.repository.core.impl,\
+	com.dexels.navajo.repository.api.diff,\
+	com.dexels.navajo.repository.api,\
+	com.dexels.navajo.repository.api.util,\
+	com.dexels.navajo.repository.core.impl
+-dsannotations:  \
+	*

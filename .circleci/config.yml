@@ -1,0 +1,67 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/openjdk:11-jdk
+    working_directory: ~/repo
+    environment:
+      JVM_OPTS: -Xmx2000m
+      TERM: dumb
+      GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=2"
+    steps:
+      - checkout
+      - run: |
+          mkdir -p ~/.m2/repository
+          mkdir -p ~/test-results/junit/
+          echo "Listing home:"
+          cp ~/repo/.circleci/conf/settings.xml ~/.m2
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "build.gradle" }}
+
+      - run: gradle dependencies --stacktrace --debug
+
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: v1-dependencies-{{ checksum "build.gradle" }}
+
+      # run tests!
+      - run: |
+          gradle build --debug --scan --stacktrace
+          if [[ "${CIRCLE_BRANCH}" == "release" ]] ; then 
+            gradle release --debug --stacktrace
+          fi
+      - run:
+          name: Save Test Results
+          command: |
+            find . -type f -regex ".*/generated/test-results/.*xml" -exec cp {} ~/test-results/junit/ \;
+            find . -type f -regex ".*/generated/test-reports/.*xml" -exec cp {} ~/test-results/junit/ \;
+          when: always
+      - store_test_results:
+          path: ~/test-results
+      - store_artifacts:
+          path: ~/test-results/junit
+      - run: |
+          ./create_assembly.sh
+      - store_artifacts:
+          path: assembly/core.tgz
+          destination: core.tgz
+      - store_artifacts:
+          path: assembly/appstore.tgz
+          destination: appstore.tgz
+      - store_artifacts:
+          path: assembly/oauth.tgz
+          destination: oauth.tgz
+      - store_artifacts:
+          path: assembly/pubsub.tgz
+          destination: pubsub.tgz
+      - store_artifacts:
+          path: assembly/rackermon.tgz
+          destination: rackermon.tgz
+      - store_artifacts:
+          path: assembly/streams.tgz
+          destination: streams.tgz
+      - store_artifacts:
+          path: assembly/experimental.tgz
+          destination: assembly/experimental.tgz

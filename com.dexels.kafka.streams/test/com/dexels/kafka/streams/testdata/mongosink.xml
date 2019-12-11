@@ -1,0 +1,9 @@
+<mongodb.sink>
+
+    <sink collection="MatchTeamMember" topic="@MATCHTEAMPERSON">
+        <sink.index definition="personid:1" unique="false"/>
+        <sink.index definition="teamid:1,personid:1" unique="false"/>
+        <sink.index definition="teamid:1,internalmatchid:1" unique="false"/>
+    </sink>
+ </mongodb.sink>
+ 

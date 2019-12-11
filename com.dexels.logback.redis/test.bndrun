@@ -1,0 +1,55 @@
+-runfw: org.apache.felix.framework;version='[4,5)'
+-runee: JavaSE-1.7
+-runsystemcapabilities: ${native_capability}
+
+-resolve.effective: active;skip:="osgi.service"
+
+-runbundles: \
+	com.dexels.repository.api;version=latest,\
+	com.jcraft.jsch;version='[0.1.50,0.1.51)',\
+	javaewah;version='[0.7.9,0.7.10)',\
+	org.apache.felix.configadmin;version='[1.8.0,1.8.1)',\
+	org.apache.felix.log;version='[1.0.1,1.0.2)',\
+	org.apache.felix.metatype;version='[1.0.10,1.0.11)',\
+	org.apache.felix.scr;version='[1.8.2,1.8.3)',\
+	slf4j.api;version='[1.7.7,1.7.8)',\
+	org.apache.commons.io,\
+	org.ops4j.pax.web.pax-web-jetty-bundle,\
+	org.apache.felix.eventadmin;version=1.4.2,\
+	org.apache.felix.fileinstall;version=3.4.0,\
+	com.dexels.logback.redis;version=latest,\
+	org.apache.felix.gogo.command;version=0.12.0,\
+	org.apache.felix.gogo.runtime;version=0.10.0,\
+	org.apache.felix.gogo.shell;version=0.10.0,\
+	org.apache.commons.pool;version=1.5.5,\
+	org.ops4j.pax.logging.pax-logging-api;version=1.7.4,\
+	org.ops4j.pax.logging.pax-logging-service;version=1.7.4,\
+	org.apache.felix.webconsole;version=4.2.4,\
+	org.apache.commons.pool2;version=2.4.2,\
+	redis.clients.jedis;version=2.9.0,\
+	slf4j.simple;version=1.7.7,\
+	com.dexels.index.api;version=latest,\
+	org.apache.xbean.bundleutils;version=4.3.0,\
+	org.apache.xbean.finder;version=4.3.0,\
+	org.objectweb.asm.all;version=5.0.3,\
+	org.ops4j.pax.web.pax-web-api;version=4.2.4,\
+	org.ops4j.pax.web.pax-web-runtime;version=4.2.4,\
+	org.ops4j.pax.web.pax-web-spi;version=4.2.4,\
+	javax.annotation-api
+
+-runrequires:  \
+	osgi.identity;filter:='(osgi.identity=org.apache.felix.gogo.shell)',\
+	osgi.identity;filter:='(osgi.identity=org.apache.felix.gogo.command)',\
+	osgi.identity;filter:='(osgi.identity=org.apache.felix.webconsole)',\
+	osgi.identity;filter:='(osgi.identity=org.apache.felix.configadmin)',\
+	osgi.identity;filter:='(osgi.identity=org.apache.felix.metatype)',\
+	osgi.identity;filter:='(osgi.identity=org.apache.felix.log)',\
+	osgi.identity;filter:='(&(osgi.identity=org.apache.felix.scr)(version>=1.6.0))',\
+	osgi.identity;filter:='(&(osgi.identity=com.dexels.githubosgi)(version>=1.0.0.201411251034))',\
+	osgi.identity;filter:='(&(osgi.identity=javaewah)(version>=0.7.9))',\
+	osgi.identity;filter:='(&(osgi.identity=slf4j.simple)(version>=1.7.7))'
+
+## Uncomment if you need to change the HTTP port
+#-runproperties: org.osgi.service.http.port=8080
+-runvm: -Dfelix.fileinstall.dir=/Users/frank/git/dexels.repository/com.dexels.logback.redis/config \
+	-DREDIS_LOG_HOST=localhost

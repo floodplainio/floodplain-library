@@ -1,0 +1,39 @@
+#-runfw: org.apache.felix.framework;version=5
+#-runee: JavaSE-1.7
+
+-runprovidedcapabilities: ${native_capability}
+-runsystempackages: sun.misc
+
+-resolve.effective: active;skip:="osgi.service"
+
+-runbundles: \
+	org.apache.felix.gogo.runtime,\
+	org.apache.felix.gogo.shell,\
+	org.apache.felix.gogo.command,\
+	com.dexels.neo4j;version=latest,\
+	org.neo4j.driver.neo4j-java-driver,\
+	org.apache.felix.scr;version=2.0.2,\
+	org.apache.felix.configadmin;version=1.8.8,\
+	org.apache.felix.metatype,\
+	com.fasterxml.jackson.core.jackson-annotations,\
+	com.fasterxml.jackson.core.jackson-core,\
+	com.fasterxml.jackson.core.jackson-databind,\
+	com.dexels.replication.api;version=latest,\
+	com.dexels.replication.impl;version=latest,\
+	com.dexels.repository.api;version=latest,\
+	org.apache.felix.eventadmin;version=1.4.2,\
+	slf4j.api;version=1.7.7,\
+	slf4j.simple;version=1.7.7,\
+	lz4-java,\
+	org.apache.felix.fileinstall;version=3.5.0,\
+	com.dexels.immutable.api;version=latest,\
+	com.dexels.immutable.impl;version=latest,\
+	com.dexels.pubsub.rx2.api;version=latest,\
+	io.reactivex.rxjava2.rxjava,\
+	org.reactivestreams.reactive-streams,\
+	com.dexels.kafka.impl.rx2;version=latest
+
+-runrequires:\
+	osgi.identity;filter:='(osgi.identity=org.apache.felix.gogo.shell)',\
+	osgi.identity;filter:='(osgi.identity=org.apache.felix.gogo.command)'
+-runfw: org.apache.felix.framework;version='[5.6.10,5.6.10]'

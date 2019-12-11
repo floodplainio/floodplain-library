@@ -1,0 +1,70 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<repository xmlns="http://www.osgi.org/xmlns/repository/v1.0.0" name="Local" increment="1527522590000">
+  <resource>
+    <capability namespace="osgi.identity">
+      <attribute name="license" value="http://www.apache.org/licenses/LICENSE-2.0"/>
+      <attribute name="osgi.identity" value="org.neo4j.driver.neo4j-java-driver"/>
+      <attribute name="type" value="osgi.bundle"/>
+      <attribute name="version" value="1.6.1.v20180507-1802" type="Version"/>
+    </capability>
+    <capability namespace="osgi.wiring.bundle">
+      <attribute name="bundle-version" value="1.6.1.v20180507-1802" type="Version"/>
+      <attribute name="osgi.wiring.bundle" value="org.neo4j.driver.neo4j-java-driver"/>
+    </capability>
+    <capability namespace="osgi.wiring.host">
+      <attribute name="bundle-version" value="1.6.1.v20180507-1802" type="Version"/>
+      <attribute name="osgi.wiring.host" value="org.neo4j.driver.neo4j-java-driver"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="version" value="1.6.1" type="Version"/>
+      <attribute name="osgi.wiring.package" value="org.neo4j.driver.v1"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="version" value="1.6.1" type="Version"/>
+      <attribute name="osgi.wiring.package" value="org.neo4j.driver.v1.exceptions"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="version" value="1.6.1" type="Version"/>
+      <attribute name="osgi.wiring.package" value="org.neo4j.driver.v1.exceptions.value"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="version" value="1.6.1" type="Version"/>
+      <attribute name="osgi.wiring.package" value="org.neo4j.driver.v1.summary"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="version" value="1.6.1" type="Version"/>
+      <attribute name="osgi.wiring.package" value="org.neo4j.driver.v1.types"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="version" value="1.6.1" type="Version"/>
+      <attribute name="osgi.wiring.package" value="org.neo4j.driver.v1.util"/>
+    </capability>
+    <capability namespace="osgi.content">
+      <attribute name="size" value="2730967" type="Long"/>
+      <attribute name="url" value="neo4j-java-driver-1.6.2.jar"/>
+      <attribute name="mime" value="application/vnd.osgi.bundle"/>
+      <attribute name="osgi.content" value="F2C0FDE1C15411E06A60D44E5CEDF8B875E01DC34942073ECDFBBF9AC039DA52"/>
+    </capability>
+    <requirement namespace="osgi.wiring.package">
+      <directive name="filter" value="(&amp;(osgi.wiring.package=javax.net.ssl))"/>
+    </requirement>
+    <requirement namespace="osgi.wiring.package">
+      <directive name="filter" value="(&amp;(osgi.wiring.package=org.neo4j.driver.v1.exceptions)(&amp;(version&gt;=1.6.0)(!(version&gt;=2.0.0))))"/>
+    </requirement>
+    <requirement namespace="osgi.wiring.package">
+      <directive name="filter" value="(&amp;(osgi.wiring.package=org.neo4j.driver.v1.exceptions.value)(&amp;(version&gt;=1.6.0)(!(version&gt;=2.0.0))))"/>
+    </requirement>
+    <requirement namespace="osgi.wiring.package">
+      <directive name="filter" value="(&amp;(osgi.wiring.package=org.neo4j.driver.v1.summary)(&amp;(version&gt;=1.6.0)(!(version&gt;=2.0.0))))"/>
+    </requirement>
+    <requirement namespace="osgi.wiring.package">
+      <directive name="filter" value="(&amp;(osgi.wiring.package=org.neo4j.driver.v1.types)(&amp;(version&gt;=1.6.0)(!(version&gt;=2.0.0))))"/>
+    </requirement>
+    <requirement namespace="osgi.wiring.package">
+      <directive name="filter" value="(&amp;(osgi.wiring.package=org.neo4j.driver.v1.util)(&amp;(version&gt;=1.6.0)(!(version&gt;=2.0.0))))"/>
+    </requirement>
+    <requirement namespace="osgi.ee">
+      <directive name="filter" value="(&amp;(osgi.ee=JavaSE)(version=1.8))"/>
+    </requirement>
+  </resource>
+</repository>

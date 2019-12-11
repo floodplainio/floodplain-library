@@ -1,0 +1,37 @@
+-buildpath: \
+	osgi.annotation;version=6.0.1,\
+	org.osgi.service.component.annotations,\
+	osgi.core;version=6.0,\
+	osgi.cmpn;version=6.0,\
+	io.reactivex.rxjava2.rxjava,\
+	org.reactivestreams.reactive-streams,\
+	com.fasterxml.jackson.core.jackson-annotations,\
+	com.dexels.pubsub.rx2.api;version=latest,\
+	com.dexels.immutable.api;version=latest,\
+	com.dexels.immutable.impl;version=latest,\
+	com.dexels.replication.impl.protobuf;version=latest,\
+	com.google.protobuf,\
+	com.dexels.kafka.impl.rx2;version=latest,\
+	com.fasterxml.jackson.core.jackson-core,\
+	com.fasterxml.jackson.core.jackson-databind,\
+	com.dexels.replication.impl.json;version=latest,\
+	com.dexels.replication.api;version=latest,\
+	javax.servlet-api,\
+	slf4j.api;version=1.7,\
+	com.dexels.replication.impl;version=latest,\
+	com.dexels.kafka.streams.sink.mongo;version=latest,\
+	com.dexels.kafka.streams.api;version=latest,\
+	org.mongodb.mongo-java-driver,\
+	com.dexels.repository.api;version=latest,\
+	com.dexels.server.mgmt.api;version=latest
+
+-testpath: \
+	${junit}
+
+Bundle-Version: 1.0.8
+Private-Package: \
+	com.dexels.kafka.webapi,\
+	org.reactivestreams.servlet
+Import-Package: \
+	!org.junit,\
+	*

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<joins>
+    <mongodb.sink>
+        <sink collection="testFacilityLocation" topic="sportlinkkernel-FACILITYLOCATION">
+            <sink.index definition="faciltyid:1,subfacilityid:1" unique="false"/>
+            <remove name="updateby"/>
+            <remove name="lastupdate"/>
+            <transform>
+                <createcoordinatedoc from="longitude,latitude" to="locationCoordinates"/>
+            </transform>
+=        </sink>
+    </mongodb.sink>
+
+</joins>

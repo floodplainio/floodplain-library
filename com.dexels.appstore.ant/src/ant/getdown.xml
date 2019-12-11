@@ -1,0 +1,6 @@
+<project default="createdigest">
+        <target name="createdigest">
+        	<echo message="bla: ${dir}"/>
+            <digest appdir="${dir}"/>
+        </target>
+</project>

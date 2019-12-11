@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+package com.dexels.replication.impl.protobuf.generated;
+
+message ValueProtobuf {
+  string value = 1;
+  enum ValueType {
+    STRING = 0;
+    INTEGER = 1;
+    LONG = 2;
+    DOUBLE = 3;
+    FLOAT = 4;
+    BOOLEAN = 5;
+    BINARY_DIGEST = 6;
+    DATE = 7;
+    CLOCKTIME = 8;
+    LIST = 9;
+    BINARY = 10;
+    COORDINATE = 11;
+  }
+  ValueType type = 2;
+  bool isNull = 3;
+  bytes byteData = 4;
+}
+
+message ReplicationMessageProtobuf {
+  int32 magic = 1;
+  enum Operation {
+    NONE = 0;
+    INSERT = 1;
+    UPDATE = 2;
+    DELETE = 3;
+    COMMIT = 4;
+    MERGE = 5;
+    INITIAL = 6;
+  }
+  Operation operation = 2;
+  int64 timestamp = 3;
+  string transaction_id = 4;
+  repeated string primarykeys = 5;
+  map<string,ValueProtobuf> values = 6;
+  map<string,ReplicationMessageListProtobuf> submessage_list = 7;
+  map<string,ReplicationMessageProtobuf> submessage = 8;
+  ReplicationMessageProtobuf paramMessage = 9;
+}
+
+message ReplicationMessageListProtobuf {
+  int32 magic = 1;
+  repeated ReplicationMessageProtobuf elements = 2;
+}

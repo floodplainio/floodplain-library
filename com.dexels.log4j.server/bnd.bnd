@@ -1,0 +1,17 @@
+-buildpath: \
+	osgi.core;version=5.0,\
+	slf4j.api;version=1.7,\
+	org.osgi.service.component.annotations,\
+	osgi.cmpn;version=5.0,\
+	javax.servlet-api
+Bundle-Version: 1.0.13
+Bundle-ClassPath: .
+Private-Package:  \
+	com.dexels.log4j.logserver,\
+	com.dexels.log4j.logserver.listener
+-dsannotations:  \
+	*
+Import-Package:  \
+	javax.servlet.http;version='[3.0, 3.2)',\
+	javax.servlet;version='[3.0, 3.2)',\
+	*

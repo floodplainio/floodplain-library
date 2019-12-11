@@ -1,0 +1,25 @@
+-noee=true
+-buildpath: \
+	slf4j.api;version=1.7,\
+	com.dexels.appstore.core;version=latest,\
+	org.osgi.service.component.annotations,\
+	org.apache.felix.fileinstall,\
+	osgi.core;version=4.3,\
+	org.apache.servicemix.bundles.ant;version=1.9.6.1,\
+	lib/getdown-ant-1.8.2.jar;version=file,\
+	lib/getdown-core-1.8.2.jar;version=file,\
+	com.dexels.keystoreprovider;version=latest
+Bundle-Version: 1.0.44
+Include-Resource: lib
+Bundle-ClassPath: .,getdown-ant-1.8.2.jar,getdown-core-1.8.2.jar
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+-dsannotations:  \
+	*
+Private-Package:  \
+	com.dexels.navajo.tipi.dev.ant.extensionbuilder,\
+	com.dexels.navajo.tipi.dev.ant.impl,\
+	com.dexels.navajo.tipi.dev.ant.projectbuilder,\
+	com.sun.tools.apache.ant.pack200,\
+	de.matthiasmann.p200ant,\
+	ant,\
+	com.dexels.navajo.tipi.dev.ant

@@ -1,0 +1,12 @@
+<joins tenants="tenant">
+    <mongodb.sink>
+        <sink collection="TestStreamJoin1" topic="@PERSON">
+        </sink>
+    </mongodb.sink>
+    <join primary="TestStreamJoin-PERSON" to="@PERSON" id="person"  >
+        <multiDirect from="TestStreamJoin-PURCHASE" groupBy="personid" id="purchases" into="Purchase">
+            <remove name="updateby" />
+            <remove name="lastupdate" />
+        </multiDirect>
+    </join>
+</joins>
