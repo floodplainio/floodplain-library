@@ -96,6 +96,7 @@ dexels.repository:com.dexels.kafka.impl.rx2:6.1.5
 dexels.repository:com.dexels.kafka.impl.rx2:6.1.6
 dexels.repository:com.dexels.kafka.impl.rx2:6.1.7
 dexels.repository:com.dexels.kafka.impl.rx2:6.1.8
+dexels.repository:com.dexels.kafka.impl.rx2:6.1.9
 dexels.repository:com.dexels.kafka.streams:0.4.22.201805242119
 dexels.repository:com.dexels.kafka.streams:0.4.22.201805242123
 dexels.repository:com.dexels.kafka.streams:1.0.0
@@ -125,6 +126,9 @@ dexels.repository:com.dexels.kafka.streams:1.0.26
 dexels.repository:com.dexels.kafka.streams:1.0.27
 dexels.repository:com.dexels.kafka.streams:1.1.0
 dexels.repository:com.dexels.kafka.streams:2.0.0
+dexels.repository:com.dexels.kafka.streams:2.1.0
+dexels.repository:com.dexels.kafka.streams:2.1.1
+dexels.repository:com.dexels.kafka.streams:2.1.2
 dexels.repository:com.dexels.kafka.streams.api:1.0.0.201810110757
 dexels.repository:com.dexels.kafka.streams.api:2.0.0
 dexels.repository:com.dexels.kafka.streams.api:2.1.1
@@ -155,6 +159,8 @@ dexels.repository:com.dexels.kafka.webapi:1.0.5
 dexels.repository:com.dexels.kafka.webapi:1.0.6
 dexels.repository:com.dexels.kafka.webapi:1.0.7
 dexels.repository:com.dexels.kafka.webapi:1.0.8
+dexels.repository:com.dexels.kafka.webapi:1.0.9
+dexels.repository:com.dexels.kafka.webapi:1.0.10
 dexels.repository:com.dexels.keystoreprovider:1.0.0.201805242117
 dexels.repository:com.dexels.keystoreprovider:1.0.1
 dexels.repository:com.dexels.log4j.httpappender:1.0.34.201805242120
@@ -286,6 +292,7 @@ dexels.repository:com.dexels.replication.api:12.2.2
 dexels.repository:com.dexels.replication.api:12.2.3
 dexels.repository:com.dexels.replication.api:12.2.4
 dexels.repository:com.dexels.replication.api:12.3.4
+dexels.repository:com.dexels.replication.api:12.3.5
 dexels.repository:com.dexels.replication.elasticsearch:1.0.0.201805242121
 dexels.repository:com.dexels.replication.http:1.0.0
 dexels.repository:com.dexels.replication.impl:5.0.3.201805242119
@@ -310,6 +317,10 @@ dexels.repository:com.dexels.replication.impl.json:5.1.1
 dexels.repository:com.dexels.replication.impl.json:5.2.0
 dexels.repository:com.dexels.replication.impl.json:5.2.1
 dexels.repository:com.dexels.replication.impl.json:5.2.2
+dexels.repository:com.dexels.replication.impl.json:5.2.3
+dexels.repository:com.dexels.replication.impl.json:5.2.4
+dexels.repository:com.dexels.replication.impl.json:5.2.5
+dexels.repository:com.dexels.replication.impl.json:5.2.6
 dexels.repository:com.dexels.replication.impl.protobuf:3.1.6.201805242119
 dexels.repository:com.dexels.replication.impl.protobuf:3.1.6.201805242123
 dexels.repository:com.dexels.replication.impl.protobuf:3.1.7
@@ -325,6 +336,8 @@ dexels.repository:com.dexels.replication.impl.protobuf:4.2.1
 dexels.repository:com.dexels.replication.impl.protobuf:4.2.2
 dexels.repository:com.dexels.replication.impl.protobuf:4.2.3
 dexels.repository:com.dexels.replication.impl.protobuf:4.2.4
+dexels.repository:com.dexels.replication.impl.protobuf:5.0.0
+dexels.repository:com.dexels.replication.impl.protobuf:5.0.1
 dexels.repository:com.dexels.repository.api:10.0.2.201805242117
 dexels.repository:com.dexels.repository.api:10.0.3
 dexels.repository:com.dexels.repository.file:1.0.37.201805242121
@@ -364,3 +377,19 @@ dexels.repository:com.sendrato.packagestream:1.0.0.201809061515
 dexels.repository:com.sendrato.packagestream:1.0.0.201908190931
 dexels.repository:com.sendrato.packagestream:1.0.0.201909041319
 dexels.repository:com.sendrato.packagestream:1.0.0.201909171658
+dexels.repository:com.dexels.replication.impl:8.0.3
+dexels.repository:com.dexels.replication.impl.json:5.2.7
+dexels.repository:com.dexels.replication.impl.protobuf:5.0.2
+dexels.repository:com.dexels.kafka.streams.api:3.0.2
+dexels.repository:com.dexels.kafka.streams:2.1.3
+dexels.repository:com.dexels.kafka.webapi:1.0.11
+dexels.repository:com.dexels.kafka.impl.rx2:6.1.10
+dexels.repository:com.dexels.replication.impl.protobuf:5.0.3
+dexels.repository:com.dexels.replication.impl.json:5.2.8
+dexels.repository:com.dexels.replication.impl.protobuf:5.0.4
+dexels.repository:com.dexels.kafka.streams:2.1.4
+dexels.repository:com.dexels.kafka.impl.rx2:6.1.11
+dexels.repository:com.dexels.kafka.impl.rx2:6.1.12
+dexels.repository:com.dexels.kafka.impl.rx2:6.1.13
+dexels.repository:com.dexels.kafka.streams:2.1.5
+dexels.repository:com.dexels.kafka.streams:2.1.6

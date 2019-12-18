@@ -229,7 +229,7 @@ public class ReplicationTopologyParser {
 				);
 	}
 
-    private static void addSourceStore(final Topology currentBuilder, TopologyContext context, TopologyConstructor topologyConstructor, ProcessorSupplier<String, ReplicationMessage> processorFromChildren, 
+    public static void addSourceStore(final Topology currentBuilder, TopologyContext context, TopologyConstructor topologyConstructor, ProcessorSupplier<String, ReplicationMessage> processorFromChildren, 
             String sourceTopicName,
             Optional<String> destination) {
         String storeTopic = topicName(sourceTopicName, context);
@@ -540,7 +540,7 @@ public class ReplicationTopologyParser {
 
       List<XMLElement> children = xe.getChildren();
       if(children !=null && !children.isEmpty()) {
-    	  throw new UnsupportedOperationException("Sorry, removed sub-transformers from joins. Please transform the relevant source");
+    	  throw new UnsupportedOperationException("Sorry, removed sub-transformers from joins. Please transform the relevant source. Offending xml: "+xe);
       }
         String from = xe.getStringAttribute("from");
         String withSingle = xe.getStringAttribute("with");

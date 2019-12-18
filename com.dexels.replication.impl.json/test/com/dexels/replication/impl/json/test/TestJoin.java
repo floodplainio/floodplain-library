@@ -1,4 +1,4 @@
-package com.dexels.replication.impl.json;
+package com.dexels.replication.impl.json.test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -26,6 +26,7 @@ import com.dexels.replication.api.ReplicationMessage;
 import com.dexels.replication.api.ReplicationMessageParser;
 import com.dexels.replication.api.ReplicationMessage.Operation;
 import com.dexels.replication.factory.ReplicationFactory;
+import com.dexels.replication.impl.json.JSONReplicationMessageParserImpl;
 
 public class TestJoin {
 

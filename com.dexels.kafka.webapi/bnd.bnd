@@ -28,7 +28,7 @@
 -testpath: \
 	${junit}
 
-Bundle-Version: 1.0.8
+Bundle-Version: 1.0.11
 Private-Package: \
 	com.dexels.kafka.webapi,\
 	org.reactivestreams.servlet

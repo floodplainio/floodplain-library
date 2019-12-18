@@ -5,7 +5,7 @@
 	slf4j.api;version=1.7,\
 	com.dexels.repository.api;version=latest,\
 	com.dexels.replication.impl;version=latest,\
-	com.dexels.replication.impl.json;version=5.2.2,\
+	com.dexels.replication.impl.json;version=latest,\
 	com.google.protobuf;version=3.3,\
 	com.dexels.immutable.api;version=latest,\
 	com.dexels.immutable.impl;version=latest,\
@@ -22,7 +22,7 @@
 javac.source: 1.8
 javac.target: 1.8
 
-Bundle-Version: 4.2.4
+Bundle-Version: 5.0.4
 
 Private-Package: \
 	com.dexels.replication.impl.protobuf.generated,\

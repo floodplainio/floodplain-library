@@ -1,4 +1,4 @@
-package com.dexels.replication.impl.protobuf;
+package com.dexels.replication.impl.protobuf.test;
 
 import java.util.Optional;
 
@@ -10,6 +10,7 @@ import com.dexels.replication.api.ReplicationMessage;
 import com.dexels.replication.api.ReplicationMessageParser;
 import com.dexels.replication.factory.ReplicationFactory;
 import com.dexels.replication.impl.json.JSONReplicationMessageParserImpl;
+import com.dexels.replication.impl.protobuf.FallbackReplicationMessageParser;
 
 public class TestSer {
 // /TODO protobuf binaries

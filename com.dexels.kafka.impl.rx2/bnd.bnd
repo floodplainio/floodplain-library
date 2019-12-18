@@ -22,7 +22,7 @@
 	com.fasterxml.jackson.core.jackson-databind,\
 	com.google.protobuf
 
-Bundle-Version: 6.1.8
+Bundle-Version: 6.1.13
 Private-Package: \
 	com.dexels.kafka.impl,\
 	org.apache.kafka.clients,\
@@ -62,15 +62,46 @@ Import-Package: \
 	!org.jboss.netty.bootstrap,\
 	!org.jboss.netty.buffer,\
 	!org.jboss.netty.channel,\
+	!com.ibm.security.krb5.internal,\
+	!sun.security.krb5,\
 	!org.jboss.netty.channel.group,\
+	sun.misc;resolution:=optional,\
 	!org.jboss.netty.channel.socket.nio,\
 	!org.junit,\
 	*
 javac.source: 1.8
 javac.target: 1.8
 -dsannotations: *
-Include-Resource: lib
-Bundle-ClassPath: .,kafka-clients-2.2.0-SNAPSHOT.jar
 Export-Package: \
 	com.dexels.kafka.factory,\
 	com.dexels.kafka.api
+-privatepackage: \
+	org.apache.kafka,\
+	org.apache.kafka.clients.admin,\
+	org.apache.kafka.clients.admin.internals,\
+	org.apache.kafka.common.acl,\
+	org.apache.kafka.common.config.internals,\
+	org.apache.kafka.common.config.provider,\
+	org.apache.kafka.common.header,\
+	org.apache.kafka.common.header.internals,\
+	org.apache.kafka.common.memory,\
+	org.apache.kafka.common.resource,\
+	org.apache.kafka.common.security.oauthbearer,\
+	org.apache.kafka.common.security.oauthbearer.internal,\
+	org.apache.kafka.common.security.oauthbearer.internal.expiring,\
+	org.apache.kafka.common.security.oauthbearer.internal.unsecured,\
+	org.apache.kafka.common.security.oauthbearer.internals,\
+	org.apache.kafka.common.security.oauthbearer.internals.expiring,\
+	org.apache.kafka.common.security.oauthbearer.internals.unsecured,\
+	org.apache.kafka.common.security.plain.internal,\
+	org.apache.kafka.common.security.plain.internals,\
+	org.apache.kafka.common.security.scram,\
+	org.apache.kafka.common.security.scram.internal,\
+	org.apache.kafka.common.security.scram.internals,\
+	org.apache.kafka.common.security.token,\
+	org.apache.kafka.common.security.token.delegation,\
+	org.apache.kafka.common.security.token.delegation.internal,\
+	org.apache.kafka.common.security.token.delegation.internals,\
+	org.apache.kafka.server,\
+	org.apache.kafka.server.policy,\
+	org.apache.kafka.server.quota

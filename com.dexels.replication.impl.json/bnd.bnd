@@ -7,7 +7,7 @@
 	slf4j.api;version=1.7,\
 	com.fasterxml.jackson.core.jackson-annotations;version=2.6,\
 	com.dexels.repository.api;version=latest,\
-	com.dexels.replication.impl;version=8.0.2,\
+	com.dexels.replication.impl;version=latest,\
 	com.dexels.immutable.api;version=latest,\
 	com.dexels.immutable.impl;version=latest,\
 	com.dexels.pubsub.rx2.api;version=latest
@@ -18,7 +18,7 @@
 javac.source: 1.8
 javac.target: 1.8
 
-Bundle-Version: 5.2.3
+Bundle-Version: 5.2.8
 
 Export-Package: com.dexels.replication.impl.json
 Import-Package: \

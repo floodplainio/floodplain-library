@@ -1,4 +1,4 @@
-package com.dexels.replication.impl.protobuf;
+package com.dexels.replication.impl.protobuf.test;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

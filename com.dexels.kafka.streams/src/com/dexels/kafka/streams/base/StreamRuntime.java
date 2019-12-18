@@ -9,6 +9,7 @@ import java.io.Reader;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Dictionary;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -75,7 +76,7 @@ public class StreamRuntime {
 	private final Set<StreamInstance> startedInstances = new HashSet<>();
 	Subject<Runnable> updateQueue = PublishSubject.<Runnable>create().toSerialized();
 	private Disposable updateQueueSubscription;
-	private final Map<SinkType,Sink> sinkRegistry = new HashMap<>();
+	private final Map<SinkType,Sink> sinkRegistry = new EnumMap<>(SinkType.class);
 
 	private final Map<String,MessageTransformer> transformerRegistry = new HashMap<>();
 	private final Map<String,GenericProcessorBuilder> genericProcessorRegistry = new HashMap<>();
@@ -117,22 +118,18 @@ public class StreamRuntime {
 
 	@Activate
 	public void activate() throws IOException, InterruptedException, ExecutionException {
-		try {
-			File resources = new File(this.repositoryInstance.getRepositoryFolder(),"config/resources.xml");
-			try (Reader r = new FileReader(resources)){
-				this.configuration = parseConfig(this.repositoryInstance.getDeployment(),r,configAdmin);
-			} catch (XMLParseException | IOException e) {
-				logger.error("Error starting streaminstance", e);
-				return;
-			}
-
-			
-			parseFromRepository();
-			logger.info("Streams: {}",streams.keySet());
-			startInstances();
-		} catch (StreamTopologyException e) {
-			logger.error("Error: ", e);
+		File resources = new File(this.repositoryInstance.getRepositoryFolder(),"config/resources.xml");
+		try (Reader r = new FileReader(resources)){
+			this.configuration = parseConfig(this.repositoryInstance.getDeployment(),r,configAdmin);
+		} catch (XMLParseException | IOException e) {
+			logger.error("Error starting streaminstance", e);
+			return;
 		}
+
+		
+		parseFromRepository();
+		logger.info("Streams: {}",streams.keySet());
+		startInstances();
 	}
 	
 	private synchronized void startInstances() {
