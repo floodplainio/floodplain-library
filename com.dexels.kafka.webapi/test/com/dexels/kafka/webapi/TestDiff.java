@@ -35,7 +35,7 @@ public class TestDiff {
 //		diffDatabasesForCollection("TeamPerson", old, newD);
 	}
 
-	@Test
+	@Test @Ignore
 	public void performDiffSingle() {
 		MongoClient mongoClient = new MongoClient("mongo-test-0.mongo-test.test.svc.cluster.local", 27017);
 		diffSingle(mongoClient, "KNBSB", "test", "20191026", "20191119","Facility");
