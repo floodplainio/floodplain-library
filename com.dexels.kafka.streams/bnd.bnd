@@ -61,7 +61,7 @@
 -diffpackages
 javac.source: 1.8
 javac.target: 1.8
-Bundle-Version: 2.1.6
+Bundle-Version: 2.1.10
 Include-Resource: lib
 Bundle-ClassPath: .,kafka-streams-2.2.0-SNAPSHOT.jar,\
 	kafka-clients-2.2.0-SNAPSHOT.jar,\
@@ -120,6 +120,7 @@ Import-Package: \
 	!org.xerial.snappy,\
 	!joptsimple,\
 	!com.fasterxml.jackson.jaxrs.json,\
+	!org.slf4j.impl,\
 	!sun.security.krb5,\
 	!org.apache.log4j.jmx,\
 	!org.apache.maven.artifact.versioning,\

@@ -270,7 +270,9 @@ public class StreamRuntime {
 	private void parseFromRepository() throws IOException, InterruptedException, ExecutionException {
 		File repo = this.repositoryInstance.getRepositoryFolder();
 		File output = getOutputFolder();
+		logger.info("Using output folder: {}",output.getAbsolutePath());
 		if(!output.exists()) {
+			logger.info("Creating output folder: {}",output.getAbsolutePath());
 			output.mkdirs();
 		}
 		File streamFolder = new File(repo,"streams");

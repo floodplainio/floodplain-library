@@ -393,3 +393,6 @@ dexels.repository:com.dexels.kafka.impl.rx2:6.1.12
 dexels.repository:com.dexels.kafka.impl.rx2:6.1.13
 dexels.repository:com.dexels.kafka.streams:2.1.5
 dexels.repository:com.dexels.kafka.streams:2.1.6
+dexels.repository:com.dexels.kafka.streams:2.1.7
+dexels.repository:com.dexels.kafka.streams:2.1.8
+dexels.repository:com.dexels.kafka.streams:2.1.10
