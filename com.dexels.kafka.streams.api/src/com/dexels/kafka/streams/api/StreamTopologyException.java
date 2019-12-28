@@ -2,6 +2,8 @@ package com.dexels.kafka.streams.api;
 
 public class StreamTopologyException extends RuntimeException {
 
+	private static final long serialVersionUID = -6299940440297210129L;
+
 	public StreamTopologyException() {
 		super();
 	}

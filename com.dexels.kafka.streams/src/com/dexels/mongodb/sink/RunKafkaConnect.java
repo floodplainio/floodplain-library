@@ -17,6 +17,8 @@ import java.util.stream.Collectors;
 
 import org.apache.kafka.common.utils.Time;
 import org.apache.kafka.common.utils.Utils;
+import org.apache.kafka.connect.connector.policy.ConnectorClientConfigOverridePolicy;
+import org.apache.kafka.connect.connector.policy.NoneConnectorClientConfigOverridePolicy;
 import org.apache.kafka.connect.runtime.ConnectorConfig;
 import org.apache.kafka.connect.runtime.Herder;
 import org.apache.kafka.connect.runtime.Worker;
@@ -134,7 +136,7 @@ public class RunKafkaConnect implements ConnectSink {
 	    Properties[] connectorConfigs = new Properties[] { this.sinkProperties };
 		Time time = Time.SYSTEM;
         logger.info("Kafka Connect standalone worker initializing ...");
-        long initStart = time.hiResClockMs();
+//        long initStart = time.hiResClockMs();
         WorkerInfo initInfo = new WorkerInfo();
         initInfo.logAll();
 		ClassLoader original = Thread.currentThread().getContextClassLoader();
@@ -154,8 +156,8 @@ public class RunKafkaConnect implements ConnectSink {
 	        Plugins plugins = new Plugins(propsToStringMap);
 	        plugins.compareAndSwapWithDelegatingLoader();
 				
-			worker = new Worker(clusterId, time, plugins, config, offsetBackingStore);
-			herder = new StandaloneHerder(worker,clusterId);
+			worker = new Worker(clusterId, time, plugins, config, offsetBackingStore, new NoneConnectorClientConfigOverridePolicy());
+			herder = new StandaloneHerder(worker,clusterId, new NoneConnectorClientConfigOverridePolicy());
 			this.connectorConfigs = connectorConfigs; 
 		} finally {
 			Thread.currentThread().setContextClassLoader(original);

@@ -31,20 +31,17 @@ import com.mongodb.client.MongoDatabase;
 
 @SuppressWarnings("restriction")
 public class BaseTestStream {
-    protected Optional<StreamConfiguration> parseConfig;
+    protected StreamConfiguration parseConfig;
 
     KafkaTopicPublisher publisher;
 
     private synchronized KafkaTopicPublisher getPublisher() {
-        if (!parseConfig.isPresent()) {
-            throw new NullPointerException("Failed: No config present");
-        }
         if (publisher != null) {
             return publisher;
         }
         publisher = new KafkaTopicPublisher();
         Map<String, Object> settings = new HashMap<>();
-        settings.put("hosts", parseConfig.get().kafkaHosts());
+        settings.put("hosts", parseConfig.kafkaHosts());
         settings.put("retries", "20");
         publisher.activate(settings);
         return publisher;
@@ -303,7 +300,7 @@ public class BaseTestStream {
     }
     protected void resetAll(String generation) {
         Map<String,Object> config = new HashMap<>();
-        config.put("bootstrap.servers", parseConfig.get().kafkaHosts());
+        config.put("bootstrap.servers", parseConfig.kafkaHosts());
         Set<String> topics;
         
         try(AdminClient ac = AdminClient.create(config)) {
@@ -321,7 +318,7 @@ public class BaseTestStream {
 
     private void deleteTopic(String topic) {
         Map<String,Object> config = new HashMap<>();
-        config.put("bootstrap.servers", parseConfig.get().kafkaHosts());
+        config.put("bootstrap.servers", parseConfig.kafkaHosts());
         try(AdminClient ac = AdminClient.create(config)) {
             ac.deleteTopics(Collections.singletonList(topic));
 
@@ -337,10 +334,7 @@ public class BaseTestStream {
     }
     
     protected MongoDatabase getMongoDatabase(String generation) {
-        if (!parseConfig.isPresent()) {
-            return null;
-        }
-        StreamConfiguration streamConfiguration = parseConfig.get();
+        StreamConfiguration streamConfiguration = parseConfig;
         Map<String, String> map = streamConfiguration.sinks()
                 .get("replication")
                 .settings();

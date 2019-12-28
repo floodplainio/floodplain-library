@@ -25,6 +25,9 @@ import org.slf4j.LoggerFactory;
 
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.immutable.factory.ImmutableFactory;
+import com.dexels.kafka.streams.api.CoreOperators;
+import com.dexels.kafka.streams.api.TopologyContext;
+import com.dexels.kafka.streams.base.StreamOperators;
 import com.dexels.pubsub.rx2.api.PubSubMessage;
 import com.dexels.pubsub.rx2.factory.PubSubTools;
 import com.dexels.replication.api.ReplicationMessage;
@@ -52,7 +55,7 @@ public class JSONToReplicationMessage {
 		return !node.get("schema").isNull();
 	}
 
-	public static PubSubMessage parse(PubSubMessage msg, boolean appendTenant, boolean appendSchema) {
+	public static PubSubMessage parse(TopologyContext context, PubSubMessage msg, boolean appendTenant, boolean appendSchema) {
 		try {
 			ObjectNode keynode = (ObjectNode) objectMapper.readTree(msg.key());
 			ObjectNode valuenode = (ObjectNode) objectMapper.readTree(msg.value());
@@ -66,10 +69,12 @@ public class JSONToReplicationMessage {
 			final ReplicationMessage convOptional = convertToReplication(false,valuenode,key.table);
 			ReplicationMessage conv = convOptional;
 			conv = conv.with("table", key.table, "string")
-					.withPrimaryKeys(key.fields);
+				.withPrimaryKeys(key.fields);
 			final ReplicationMessage converted = appendTenant ? conv.with("tenant", key.tenant, "string") : conv;
 			byte[] serialized = ReplicationFactory.getInstance().serialize(converted);
-			return PubSubTools.create(key.combinedKey, serialized, msg.timestamp(), Optional.of(key.table));
+			
+//			logger.info("Forwarding to: {}",context.topicName(key.table));
+			return PubSubTools.create(key.combinedKey, serialized, msg.timestamp(), Optional.of(CoreOperators.topicName(key.table, context)),msg.partition(),msg.offset());
 		} catch (JsonProcessingException e) {
 			logger.error("Error: ", e);
 		} catch (IOException e) {
@@ -170,6 +175,8 @@ public class JSONToReplicationMessage {
 				return "long";
 			case "org.apache.kafka.connect.data.Decimal":
 				return "long";
+			case "io.debezium.data.Enum":
+				return "enum";
 			default:
 				logger.warn("Unknown type with name, this will probably fail: {}",namedType.get());
 				return resolveSimpleType(type);
@@ -214,6 +221,8 @@ public class JSONToReplicationMessage {
 			byte[] da = Base64.getDecoder().decode(decval);
 			
 			return bytesToLong(da);
+		case "io.debezium.data.Enum":
+			return value.asText();
 		default:
 			return resolveSimple(type,value);
 		}

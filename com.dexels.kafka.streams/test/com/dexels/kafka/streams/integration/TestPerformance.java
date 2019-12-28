@@ -43,11 +43,7 @@ public class TestPerformance extends BaseTestStream {
         ReplicationFactory.setInstance(new FallbackReplicationMessageParser());
 
         Reader r = new InputStreamReader(TestPerformance.class.getResourceAsStream("resources.xml"));
-		parseConfig = Optional.of(StreamRuntime.parseConfig("develop", r,null));
-        if (!parseConfig.isPresent()) {
-            throw new RuntimeException("Missing confg??");
-        }
-//        
+		parseConfig = StreamRuntime.parseConfig("develop", r,null);
         this.dropMongo(GENERATION);
         System.out.println("Resetting streams application");
         this.reset(GENERATION);

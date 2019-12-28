@@ -15,7 +15,7 @@
 	com.fasterxml.jackson.core.jackson-databind,\
 	org.osgi.service.component.annotations
 -baseline: *
-Bundle-Version: 3.0.2
+Bundle-Version: 3.1.0
 Export-Package: \
 	com.dexels.kafka.streams.api,\
 	com.dexels.kafka.streams.api.sink,\

@@ -9,7 +9,6 @@ import java.util.Optional;
 
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.common.TopicPartition;
-import org.apache.kafka.connect.errors.ConnectException;
 import org.apache.kafka.connect.sink.SinkRecord;
 import org.apache.kafka.connect.sink.SinkTask;
 import org.eclipse.jetty.http.HttpMethod;
@@ -33,31 +32,16 @@ import io.reactivex.Flowable;
  * @author Andrea Patelli
  */
 public class ElasticSinkTask extends SinkTask {
-//    private final static Logger log = LoggerFactory.getLogger(MongodbSinkTask.class);
 
-	private String generation;
-	private String instanceName;
-	private String sinkName;
-	private Optional<String> tenant;
-	private String deployment;
-//	private String group;
+
 	
-	private final static Logger logger = LoggerFactory.getLogger(ElasticSinkTask.class);
+	private static final Logger logger = LoggerFactory.getLogger(ElasticSinkTask.class);
 
-	private Map<String, String> settings;
 	private String url;
-//	private String index;
-	private int bulkSize;
-	private String indexes;
-	private String topics;
-//	private String indexName;
 
-//	private final Map<String,String> topicMapper = new HashMap<>();
 	private final Map<String,String> typeMapper = new HashMap<>();
 	private final Map<String,String> indexMapper = new HashMap<>();
 
-	private String types;
-	private TopologyContext topologyContext;
 
     @Override
     public String version() {
@@ -71,27 +55,19 @@ public class ElasticSinkTask extends SinkTask {
      */
     @Override
     public void start(Map<String, String> map) {
-    	this.settings = map;
-    	this.url = settings.get("url");
-//    	this.index = settings.get("index");
-        try {
-            this.bulkSize = Integer.parseInt(map.get(ElasticSinkConnector.BULK_SIZE));
-        } catch (Exception e) {
-            throw new ConnectException("Setting " + ElasticSinkConnector.BULK_SIZE + " should be an integer");
-        }
+    	this.url = map.get("url");
         logger.info("Sink task settings: {}",map);
-        this.indexes = map.get(ElasticSinkConnector.INDEXES);
-        this.topics = map.get(ElasticSinkConnector.TOPICS);
-        this.types = map.get(ElasticSinkConnector.TYPES);
+
+    	String indexes = map.get(ElasticSinkConnector.INDEXES);
+    	String topics = map.get(ElasticSinkConnector.TOPICS);
+    	String types = map.get(ElasticSinkConnector.TYPES);
         
-        this.generation = map.get(ElasticSinkConnector.GENERATION);
-        this.instanceName = map.get(ElasticSinkConnector.INSTANCENAME);
-        this.sinkName = map.get(ElasticSinkConnector.SINKNAME);
-        this.tenant = Optional.ofNullable(map.get(ElasticSinkConnector.TENANT));
-        this.deployment = map.get(ElasticSinkConnector.DEPLOYMENT);
-//        this.group = map.get(MongodbSinkConnector.GROUP);
+        String generation = map.get(ElasticSinkConnector.GENERATION);
+        String instanceName = map.get(ElasticSinkConnector.INSTANCENAME);
+        Optional<String> tenant = Optional.ofNullable(map.get(ElasticSinkConnector.TENANT));
+        String deployment = map.get(ElasticSinkConnector.DEPLOYMENT);
         
-        this.topologyContext = new TopologyContext(tenant, deployment, instanceName, generation);
+        TopologyContext topologyContext = new TopologyContext(tenant, deployment, instanceName, generation);
 
         List<String> topicsList = Arrays.asList(topics.split(","));
         int count = 0;
@@ -99,11 +75,9 @@ public class ElasticSinkTask extends SinkTask {
         System.err.println(" topics: "+topics);
         System.err.println(" indexes: "+indexes);
         
-//        count=0;
         String[] typeArray = types.split(",");
         for (String type : typeArray) {
         	String topic = topicsList.get(count);
-//            String resolvedTopic = StreamOperators.topicName(instanceName, topic, tenant, deployment, generation);
         	System.err.println(" -> Putting topic: "+topic+" to type: "+type);
         	typeMapper.put(topic, type);
 			count++;
@@ -113,7 +87,6 @@ public class ElasticSinkTask extends SinkTask {
         String[] indexesArray = indexes.split(",");
         for (String index : indexesArray) {
         	String topic = topicsList.get(count);
-//            String resolvedTopic = StreamOperators.topicName(instanceName, topic, tenant, deployment, generation);
             String resolvedIndex = CoreOperators.generationalGroup(index,topologyContext);
         	System.err.println(" -> Putting topic: "+topic+" to index: "+resolvedIndex);
         	indexMapper.put(topic, resolvedIndex);
@@ -134,9 +107,8 @@ public class ElasticSinkTask extends SinkTask {
         	.map(record->((ReplicationMessage)record.value()).withSource(Optional.of(record.topic())))
         	.doOnNext(record->System.err.println(""+record.source()))
         	.compose(ElasticInsertTransformer.elasticSearchInserter(
-        			(msg)->msg.source().orElse("NOTOPIC").toLowerCase(),
-        			(msg)->typeMapper.get(msg.source().orElse("NOTOPIC")).toLowerCase(),
-        			100,
+        			msg->msg.source().orElse("NOTOPIC").toLowerCase(),
+        			msg->typeMapper.get(msg.source().orElse("NOTOPIC")).toLowerCase(),
         			100))
         	.compose(HttpInsertTransformer.httpInsert(url,req->req.method(HttpMethod.POST),  "application/x-ndjson",1,1,true))
         	.map(rep->JettyClient.ignoreReply(rep));
@@ -146,12 +118,12 @@ public class ElasticSinkTask extends SinkTask {
 
 	@Override
     public void flush(Map<TopicPartition, OffsetAndMetadata> map) {
-
+		// noop
     }
 
     @Override
     public void stop() {
-
+    	// noop
     }
     
 

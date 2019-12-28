@@ -339,7 +339,7 @@ public class StreamRuntime {
 		ClassLoader original = Thread.currentThread().getContextClassLoader();
 		try(InputStream definitionStream = new FileInputStream(file)) {
 			Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
-			StreamInstance si = new StreamInstance(friendlyName(name), Optional.of(this.configuration),this.transformerRegistry,this.genericProcessorRegistry,this.sinkRegistry);
+			StreamInstance si = new StreamInstance(friendlyName(name), this.configuration,this.transformerRegistry,this.genericProcessorRegistry,this.sinkRegistry);
 			Topology topology = new Topology();
 			si.parseStreamMap(topology,definitionStream,outputStorage,this.repositoryInstance.getDeployment(),generation,Optional.of(file));
 			streams.put(friendlyName(name),si);

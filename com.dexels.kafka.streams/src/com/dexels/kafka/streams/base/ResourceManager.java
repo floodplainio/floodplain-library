@@ -17,7 +17,6 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dexels.kafka.streams.xml.parser.XMLParseException;
 import com.dexels.navajo.repository.api.RepositoryInstance;
 
 

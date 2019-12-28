@@ -10,13 +10,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import org.apache.kafka.common.utils.Time;
 import org.apache.kafka.common.utils.Utils;
+import org.apache.kafka.connect.connector.policy.NoneConnectorClientConfigOverridePolicy;
 import org.apache.kafka.connect.runtime.ConnectorConfig;
 import org.apache.kafka.connect.runtime.Herder;
 import org.apache.kafka.connect.runtime.Worker;
@@ -28,7 +27,6 @@ import org.apache.kafka.connect.runtime.standalone.StandaloneConfig;
 import org.apache.kafka.connect.runtime.standalone.StandaloneHerder;
 import org.apache.kafka.connect.storage.FileOffsetBackingStore;
 import org.apache.kafka.connect.storage.OffsetBackingStore;
-import org.apache.kafka.connect.util.Callback;
 import org.apache.kafka.connect.util.ConnectUtils;
 import org.apache.kafka.connect.util.FutureCallback;
 import org.slf4j.Logger;
@@ -55,17 +53,17 @@ public class RunKafkaSinkElastic implements ConnectSink {
 	private Properties workerProperties;
 	private Properties sinkProperties;
 	
-	public RunKafkaSinkElastic(Optional<XMLElement> x, StreamConfiguration config, TopologyContext topologyContext,String sinkName, File storageFolder) throws IOException, InterruptedException, ExecutionException  {
+	public RunKafkaSinkElastic(XMLElement x, StreamConfiguration config, TopologyContext topologyContext,String sinkName, File storageFolder) throws IOException  {
 		Optional<SinkConfiguration> sinkConfig = config.sink(sinkName);
 		if(!sinkConfig.isPresent()) {
 			throw new IllegalArgumentException("No sink found: "+sinkName);
 		}
 
 		String generationalGroup = CoreOperators.generationalGroup("elasticconnect-"+sinkName, topologyContext);
-        final Map<String, Map<String, String>> sinkSettings = sinkTopic(x.get().getChildren(),topologyContext);
+        final Map<String, Map<String, String>> sinkSettings = sinkTopic(x.getChildren(),topologyContext);
 
-		Map<String,String> topicMapping = sinkSettings.entrySet().stream().collect(Collectors.toMap(e->e.getKey(), e->Optional.ofNullable(e.getValue().get("index")).orElse(""))); //  x.isPresent()? sinkSettings : Collections.emptyMap();
-		Map<String,String> typeMapping = sinkSettings.entrySet().stream().collect(Collectors.toMap(e->e.getKey(), e->Optional.ofNullable(e.getValue().get("type")).orElse(""))); //  x.isPresent()? sinkSettings : Collections.emptyMap();
+		Map<String,String> topicMapping = sinkSettings.entrySet().stream().collect(Collectors.toMap(e->e.getKey(), e->Optional.ofNullable(e.getValue().get("index")).orElse(""))); 
+		Map<String,String> typeMapping = sinkSettings.entrySet().stream().collect(Collectors.toMap(e->e.getKey(), e->Optional.ofNullable(e.getValue().get("type")).orElse(""))); 
 		Map<String,String> settings = sinkConfig.get().settings();
 		workerProperties = new Properties();
 		sinkProperties = new Properties();
@@ -126,10 +124,9 @@ public class RunKafkaSinkElastic implements ConnectSink {
 	
 	
 	private void setupConfig()  {
-	    Properties[] connectorConfigs = new Properties[] { this.sinkProperties };
+	    Properties[] connectorConfigProperties = new Properties[] { this.sinkProperties };
 		Time time = Time.SYSTEM;
         logger.info("Kafka Connect standalone worker initializing ...");
-        long initStart = time.hiResClockMs();
         WorkerInfo initInfo = new WorkerInfo();
         initInfo.logAll();
 		ClassLoader original = Thread.currentThread().getContextClassLoader();
@@ -148,9 +145,9 @@ public class RunKafkaSinkElastic implements ConnectSink {
 	        Plugins plugins = new Plugins(propsToStringMap);
 	        plugins.compareAndSwapWithDelegatingLoader();
 				
-			worker = new Worker(clusterId, time, plugins, config, offsetBackingStore);
-			herder = new StandaloneHerder(worker,clusterId);
-			this.connectorConfigs = connectorConfigs; 
+			worker = new Worker(clusterId, time, plugins, config, offsetBackingStore, null);
+			herder = new StandaloneHerder(worker,clusterId, new NoneConnectorClientConfigOverridePolicy());
+			this.connectorConfigs = connectorConfigProperties; 
 		} finally {
 			Thread.currentThread().setContextClassLoader(original);
 		}
@@ -162,17 +159,14 @@ public class RunKafkaSinkElastic implements ConnectSink {
 			offsetBackingStore.start();
 			worker.start();
 			for (Properties connectorConfig : connectorConfigs) {
-                FutureCallback<Herder.Created<ConnectorInfo>> cb = new FutureCallback<>(new Callback<Herder.Created<ConnectorInfo>>() {
-                    @Override
-                    public void onCompletion(Throwable error, Herder.Created<ConnectorInfo> info) {
-                        if (error != null) {
-                            logger.error("Failed to create job for {}", connectorConfig);
-                            logger.error("Error: ",error);
-                        } else {
-                            logger.info("Created connector {}", info.result().name());
-                        }
-                    }
-                });
+                FutureCallback<Herder.Created<ConnectorInfo>> cb = new FutureCallback<>((error, info) -> {
+				    if (error != null) {
+				        logger.error("Failed to create job for {}", connectorConfig);
+				        logger.error("Error: ",error);
+				    } else {
+				        logger.info("Created connector {}", info.result().name());
+				    }
+				});
 				
 				String name = connectorConfig.getProperty(ConnectorConfig.NAME_CONFIG);
                 final Map<String, String> propsToStringMap = Utils.propsToStringMap(connectorConfig);

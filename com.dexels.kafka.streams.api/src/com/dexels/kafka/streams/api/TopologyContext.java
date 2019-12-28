@@ -8,6 +8,7 @@ public class TopologyContext {
 	public final String instance;
 	public final String generation;
 	
+	
 	public TopologyContext(Optional<String> tenant, String deployment, String instance, String generation) {
 		this.tenant = tenant;
 		this.deployment = deployment;
@@ -18,4 +19,5 @@ public class TopologyContext {
 	public TopologyContext withInstance(String newInstance) {
 		return new TopologyContext(tenant, deployment, newInstance, generation);
 	}
+
 }

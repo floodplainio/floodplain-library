@@ -34,11 +34,7 @@ public class TestStreamJoins extends BaseTestStream {
         System.out.println("Starting new run");
 
         Reader r = new InputStreamReader(TestStreamJoins.class.getResourceAsStream("resources.xml"));
-        parseConfig = Optional.of(StreamRuntime.parseConfig("develop", r,null));
-        if (!parseConfig.isPresent()) {
-            throw new RuntimeException("Missing confg??");
-        }
-        
+        parseConfig = StreamRuntime.parseConfig("develop", r,null);
         this.dropMongo(GENERATION);
         System.out.println("Resetting streams application");
         this.reset(GENERATION);

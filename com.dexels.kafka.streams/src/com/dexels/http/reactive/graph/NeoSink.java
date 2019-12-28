@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.dexels.http.reactive.http.JettyClient;
+import com.dexels.kafka.streams.api.StreamTopologyException;
 import com.dexels.kafka.streams.api.sink.Sink;
 import com.dexels.kafka.streams.api.sink.SinkConfiguration;
 import com.dexels.replication.api.ReplicationMessage;
@@ -21,15 +22,13 @@ public class NeoSink implements Sink {
 			String deployment, String generation) {
 
 		if(!streamConfiguration.isPresent()) {
-			throw new RuntimeException("Failed configuration: NeoSink needs config");
+			throw new StreamTopologyException("Failed configuration: NeoSink needs config");
 		}
 		Map<String,String> settings = streamConfiguration.get().settings();
 		String url = settings.get("url");
 		String username = settings.get("username");
 		String password = settings.get("password");
 		String labels = attributes.get("labels");
-		String type = attributes.get("type");
-		String database = attributes.get("labels");
 
 		return in->{
 			Single<String> cc = in.buffer(2)

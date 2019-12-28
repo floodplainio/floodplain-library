@@ -4,7 +4,6 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import org.apache.commons.text.StringSubstitutor;
-import org.apache.commons.text.lookup.StringLookup;
 
 import com.dexels.kafka.streams.api.CoreOperators;
 import com.dexels.kafka.streams.api.TopologyContext;
@@ -16,16 +15,14 @@ import com.dexels.replication.factory.ReplicationFactory;
 
 public class TransformPubSub implements Function<PubSubMessage, PubSubMessage> {
 	private final String destinationTemplate;
-	private final Optional<StreamInstance> instance;
 	private final StreamConfiguration config;
-	private final Optional<String> tenant;
+	private final TopologyContext context;
 	
 	
-	public TransformPubSub(String destinationTemplate,Optional<StreamInstance> instance, Optional<String> tenant) {
+	public TransformPubSub(String destinationTemplate,StreamConfiguration config, TopologyContext context) {
 		this.destinationTemplate = destinationTemplate;
-		this.instance = instance;
-		this.tenant = tenant;
-		this.config = instance.map(i->i.getConfig()).orElseThrow(()->new RuntimeException("No instance present")).orElseThrow(()->new RuntimeException("No config present"));
+		this.config = config; //instance.map(i->i.getConfig()).orElseThrow(()->new RuntimeException("No instance present")).orElseThrow(()->new RuntimeException("No config present"));
+		this.context = context;
 	}
 	@Override
 	public PubSubMessage apply(PubSubMessage in) {
@@ -36,23 +33,21 @@ public class TransformPubSub implements Function<PubSubMessage, PubSubMessage> {
 	
 	String parseTemplateMessage(Optional<ReplicationMessage> msg, String templateString) {
 		
-		StringSubstitutor sub = new StringSubstitutor(new StringLookup() {
-			@Override
-			public String lookup(String key) {
-				switch (key) {
-					case "#deployment":
-						return config.deployment();
-					case "#instance":
-						return instance.map(c->c.instanceName()).orElseThrow(()->new RuntimeException("Error parsing template string: "+templateString+" and key: "+key+" : No #instance present.")); 
-					case "#generation":
-						return instance.map(c->c.generation()).orElseThrow(()->new RuntimeException("Error parsing template string: "+templateString+" and key: "+key+" : No #generation present."));
-					default:
-						return ""+msg.orElseThrow(()->new RuntimeException("Error parsing template string: "+templateString+" and key: "+key+" : No message references allowed here."))
-								.columnValue(key);
-				}
+		StringSubstitutor sub = new StringSubstitutor(key -> {
+			switch (key) {
+				case "#deployment":
+					return config.deployment();
+				case "#instance":
+					return context.instance;
+//					instance.map(c1->c1.instanceName()).orElseThrow(()->new RuntimeException("Error parsing template string: "+templateString+" and key: "+key+" : No #instance present.")); 
+				case "#generation":
+					return  context.generation;
+				default:
+					return ""+msg.orElseThrow(()->new RuntimeException("Error parsing template string: "+templateString+" and key: "+key+" : No message references allowed here."))
+							.columnValue(key);
 			}
 		});		
 		final String replace = sub.replace(templateString);
-		return CoreOperators.topicName(replace,new TopologyContext(tenant, config.deployment(), instance.map(i->i.instanceName()).orElse(""), instance.map(e->e.generation()).orElse("nodeploy")));
+		return CoreOperators.topicName(replace,context);
 	}
 }

@@ -1,8 +1,6 @@
 package com.dexels.http.reactive.elasticsearch;
 
 import org.reactivestreams.Publisher;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.replication.api.ReplicationMessage;
@@ -15,35 +13,27 @@ import io.reactivex.functions.Function;
 
 public class ElasticInsertTransformer implements FlowableTransformer<ReplicationMessage,Flowable<byte[]>> {
 
-//	private static final JettyClient client = new JettyClient();
-//	private final String url;
-//	private final String index;
 	private final ObjectMapper objectMapper;
 	private Function<ReplicationMessage, String> indexExtractor;
 	private Function<ReplicationMessage, String> typeExtractor;
-	private final long bufferTime;
 	private final int bufferSize;
 	
 	
-	private final static Logger logger = LoggerFactory.getLogger(ElasticInsertTransformer.class);
-
 	
 //	application/x-ndjson
 	
-	private ElasticInsertTransformer(Function<ReplicationMessage, String> indexExtractor, Function<ReplicationMessage, String> typeExtractor, long bufferTime, int bufferSize)  {
+	private ElasticInsertTransformer(Function<ReplicationMessage, String> indexExtractor, Function<ReplicationMessage, String> typeExtractor, int bufferSize)  {
 		this.objectMapper = new ObjectMapper();
 		this.indexExtractor = indexExtractor;
 		this.typeExtractor = typeExtractor;
-		this.bufferTime = bufferTime;
 		this.bufferSize = bufferSize;
 	}
 
-	public static FlowableTransformer<ReplicationMessage,Flowable<byte[]>> elasticSearchInserter(Function<ReplicationMessage, String> indexExtractor, Function<ReplicationMessage, String> typeExtractor, long bufferTime, int bufferSize) {
-		return new ElasticInsertTransformer(indexExtractor,typeExtractor,bufferTime, bufferSize);
+	public static FlowableTransformer<ReplicationMessage,Flowable<byte[]>> elasticSearchInserter(Function<ReplicationMessage, String> indexExtractor, Function<ReplicationMessage, String> typeExtractor, int bufferSize) {
+		return new ElasticInsertTransformer(indexExtractor,typeExtractor, bufferSize);
 	}
 
 	private byte[] ndJsonLines(ReplicationMessage msg) throws Exception {
-//		logger.info("Indexing message from source: {}",msg.source().orElse("<unknown source>"));
 		String key = msg.combinedKey();
 		ObjectNode root = objectMapper.createObjectNode();
 		ObjectNode node = objectMapper.createObjectNode(); //

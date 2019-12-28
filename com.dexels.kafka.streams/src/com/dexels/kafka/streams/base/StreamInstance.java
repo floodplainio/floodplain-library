@@ -69,15 +69,16 @@ public class StreamInstance {
 
 	private static final Logger logger = LoggerFactory.getLogger(StreamInstance.class);
 
-	private final Optional<StreamConfiguration> configuration;
+	private final StreamConfiguration configuration;
 	private final Map<String,MessageTransformer> transformerRegistry;
 	private final Map<SinkType,Sink> sinkRegistry;
 	private final String instanceName;
 	private static final int kafkaThreadCount;
 	private static final int commitInterval;
 	private static final long maxBytesBuffering;
-	private final Optional<AdminClient> adminClient;
+	private final AdminClient adminClient;
 	private String generation = null;
+	private final Map<String, GenericProcessorBuilder> genericProcessorRegistry;
 	
 	public enum SinkType {
 			MONGODB,
@@ -109,12 +110,13 @@ public class StreamInstance {
 		}
 		
 	}
-	public StreamInstance(String instanceName, Optional<StreamConfiguration> configuration, Map<String,MessageTransformer> transformerRegistry, Map<String, GenericProcessorBuilder> genericProcessorRegistry, Map<SinkType,Sink> sinkRegistry) {
+	public StreamInstance(String instanceName, StreamConfiguration configuration, Map<String,MessageTransformer> transformerRegistry, Map<String, GenericProcessorBuilder> genericProcessorRegistry, Map<SinkType,Sink> sinkRegistry) {
 		this.instanceName = instanceName;
 		this.configuration = configuration;
 		this.transformerRegistry = Collections.unmodifiableMap(transformerRegistry);
 		this.sinkRegistry = sinkRegistry;
-		this.adminClient = configuration.isPresent() ? Optional.of(configuration.get().adminClient()) : Optional.empty();
+		this.genericProcessorRegistry = Collections.unmodifiableMap(genericProcessorRegistry);
+		this.adminClient = configuration.adminClient();
 		Filters.registerPredicate("clublogo", (id, params,message)->"CLUBLOGO".equals(message.columnValue("objecttype")) && message.columnValue("data")!=null);
 		Filters.registerPredicate("photo", (id,params, message)->"PHOTO".equals(message.columnValue("objecttype")) && message.columnValue("data")!=null);
 		Filters.registerPredicate("facility", (id,params, message)->"FACILITY".equals(message.columnValue("facilitytype")));
@@ -213,10 +215,7 @@ public class StreamInstance {
 
 	private void parseForTenant(Topology topology, String repositoryDeployment, XMLElement xe, String generation, String storagePath,
 			File storageFolder, Optional<String> tenant) throws IOException, InterruptedException, ExecutionException {
-		if(!this.configuration.isPresent()) {
-			throw new StreamTopologyException("Can't parse element, there is no configuration present");
-		}
-		String brokers = this.configuration.get().kafkaHosts();
+		String brokers = this.configuration.kafkaHosts();
 		String deployment = repositoryDeployment!=null?repositoryDeployment:xe.getStringAttribute("deployment");
 		List<XMLElement> elts = xe.getChildren();
 		int i=0;
@@ -233,7 +232,7 @@ public class StreamInstance {
 			if(!lowLevelAPIElements.isEmpty()) {
 				final String parsedTenant = tenant.isPresent()?tenant.get():"";
 				TopologyContext context = new TopologyContext(tenant, deployment, this.instanceName, generation);
-				ReplicationTopologyParser.topologyFromXML(topology,lowLevelAPIElements, context, transformerRegistry,adminClient.get());
+				ReplicationTopologyParser.topologyFromXML(topology,lowLevelAPIElements, context, transformerRegistry,adminClient,genericProcessorRegistry,this.configuration);
 				String name = parsedTenant+"-"+deployment+"-"+generation;
 				String applicationId = name+"-"+instanceName;
 				Properties streamsConfiguration = createProperties(applicationId,brokers,storagePath);
@@ -285,20 +284,14 @@ public class StreamInstance {
 	}
 	
 	public TopicPublisher createPublisher() {
-		if(!this.configuration.isPresent()) {
-			throw new StreamTopologyException("Can not create TopicPublisher: No configuration is present");
-		}
-		return KafkaClientFactory.createPublisher(this.configuration.get().kafkaHosts(),1,this.configuration.get().kafkaReplicationFactor());
+		return KafkaClientFactory.createPublisher(this.configuration.kafkaHosts(),1,this.configuration.kafkaReplicationFactor());
 	}
 
 	public TopicSubscriber createSubscriber() {
-		if(!this.configuration.isPresent()) {
-			throw new StreamTopologyException("Can not create TopicSubscriber: No configuration is present");
-		}
 		Map<String,String> conf = new HashMap<>();
-		conf.put("wait", ""+this.configuration.get().kafkaSubscribeMaxWait());
-		conf.put("max", ""+this.configuration.get().kafkaSubscribeMaxSize());
-		return KafkaClientFactory.createSubscriber(this.configuration.get().kafkaHosts(), conf);
+		conf.put("wait", ""+this.configuration.kafkaSubscribeMaxWait());
+		conf.put("max", ""+this.configuration.kafkaSubscribeMaxSize());
+		return KafkaClientFactory.createSubscriber(this.configuration.kafkaHosts(), conf);
 	}
 	
 	private void addSinks(String sinkType, XMLElement x, String generation, String brokers, Optional<String> tenant, String deployment, File storageFolder, int index) throws IOException, InterruptedException, ExecutionException {
@@ -321,19 +314,15 @@ public class StreamInstance {
 
 	private void createSink(SinkType type, XMLElement x, String generation, Optional<String> tenant, String deployment, File storageFolder) throws IOException, InterruptedException, ExecutionException {
 		TopologyContext topologyContext = new TopologyContext(tenant, deployment, this.instanceName, generation);
-		if(!this.configuration.isPresent()) {
-			throw new RuntimeException("Can not create sink of type: "+type.name()+" No configuration is present");
-		}
-
 		String name = x.getStringAttribute("name");
 	    if (name == null) {
 	    	logger.warn("Sink without name found: {}",x.toString());
-	        Map<String, SinkConfiguration> sinkconfigs = configuration.get().sinks();
+	        Map<String, SinkConfiguration> sinkconfigs = configuration.sinks();
 	        for (String key  : sinkconfigs.keySet()) {
 	            addSinkConfig(type,x, topologyContext, key, sinkconfigs.get(key), storageFolder);
 	        }
 	    } else {
-	        Optional<SinkConfiguration> sinkConfig = configuration.get().sink(name);
+	        Optional<SinkConfiguration> sinkConfig = configuration.sink(name);
 	        if(sinkConfig.isPresent()) {
 	            addSinkConfig(type,x,topologyContext, name, sinkConfig.get(), storageFolder);
 	        } else {
@@ -343,9 +332,6 @@ public class StreamInstance {
 	}
 
     private void addSinkConfig(SinkType type, XMLElement x, TopologyContext topologyContext, String name, SinkConfiguration sinkConfig, File storageFolder) throws IOException, InterruptedException, ExecutionException {
-		if(!this.configuration.isPresent()) {
-			throw new StreamTopologyException("Can not add MongoSinkConfig: No configuration is present");
-		}
     	final String sinkTenant = sinkConfig.settings().get("tenant");
 		if (sinkTenant != null && topologyContext.tenant.isPresent()) {
             if (!sinkTenant.equalsIgnoreCase(topologyContext.tenant.get())) {
@@ -360,16 +346,16 @@ public class StreamInstance {
         	// TODO Neo disabled
         }
         if(type==SinkType.ELASTICSEARCHDIRECT || type==SinkType.MONGODBDIRECT| type==SinkType.NEO4J) {
-        	createDirectSink(type,x,configuration.get(),topologyContext, name);
+        	createDirectSink(type,x,configuration,topologyContext, name);
         	return;
         }
         final ConnectSink connect;
         switch(type) {
         	case MONGODB:
-        		connect =  new RunKafkaConnect(Optional.of(x),configuration.get(),topologyContext, name, storageFolder);
+        		connect =  new RunKafkaConnect(Optional.of(x),configuration,topologyContext, name, storageFolder);
         		break;
         	case ELASTICSEARCH:
-        		connect =  new RunKafkaSinkElastic(Optional.of(x),configuration.get(),topologyContext, name, storageFolder);
+        		connect =  new RunKafkaSinkElastic(x,configuration,topologyContext, name, storageFolder);
         		break;
         	default:
         		throw new StreamTopologyException("Unsupported sink type: "+type.toString());
@@ -420,7 +406,7 @@ public class StreamInstance {
 	}
 	
 	
-	public Optional<StreamConfiguration> getConfig() {
+	public StreamConfiguration getConfig() {
 		return configuration;
 	}
 	
@@ -448,7 +434,6 @@ public class StreamInstance {
 	    streamsConfiguration.put(StreamsConfig.NUM_STANDBY_REPLICAS_CONFIG, 0);
 	    streamsConfiguration.put(StreamsConfig.RETRIES_CONFIG, 50);
 	    streamsConfiguration.put(StreamsConfig.REPLICATION_FACTOR_CONFIG, CoreOperators.topicReplicationCount());
-//	    streamsConfiguration.put(StreamsConfig.TIMESTAMP_EXTRACTOR_CLASS_CONFIG,ReplicationMessageTimestampExtractor.class);
 	    streamsConfiguration.put(StreamsConfig.DEFAULT_TIMESTAMP_EXTRACTOR_CLASS_CONFIG,WallclockTimestampExtractor.class);
 
 	    // 24h for now
@@ -478,21 +463,20 @@ public class StreamInstance {
 		try {
 			Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
 			for(ConnectSink sink : sinks) {
-                logger.info("Closing sink instance: "+sink);
+                logger.info("Closing sink instance: {}", sink);
                 try {
                     sink.shutdown();
                 } catch (Throwable e) {
                     logger.error("Error: ", e);
                 }
-                logger.info("Done closing sink instance: "+sink);
+                logger.info("Done closing sink instance: {}", sink);
             }
 			
 			for (KafkaStreams kafkaStream : streams.values()) {
-				logger.info("Closing stream instance: "+kafkaStream);
+				logger.info("Closing stream instance: {}", kafkaStream);
 				kafkaStream.close();
-				logger.info("Done closing stream instance: "+kafkaStream);
+				logger.info("Done closing stream instance: {}",kafkaStream);
 				startedStreams.remove(kafkaStream);
-//				streams = null;
 			}
 			for (GenericProcessor processor : startedProcessors) {
 				processor.stop();

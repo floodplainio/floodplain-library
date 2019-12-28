@@ -21,6 +21,9 @@ import io.reactivex.Flowable;
 
 public class TestPut {
 	
+	private static final String ELASTIC_URL = "http://elasticsearch:9200/_bulk";
+
+
 	@Before
 	public void setup() {
 		ReplicationFactory.setInstance(new JSONReplicationMessageParserImpl());
@@ -35,14 +38,14 @@ public class TestPut {
 	}
 	@Test @Ignore
 	public void putSingleToElastic() throws Exception {
-		String url = "http://elasticsearch:9200/_bulk";
+		String url = ELASTIC_URL;
 
 		ReplicationMessage r = ReplicationFactory.getInstance().parseStream(getClass().getClassLoader().getResourceAsStream("customer.json"));
 		String id = r.combinedKey();
 
 		JettyClient myClient = new JettyClient();
 		
-		String result = myClient.callWithBody(url+"/doc/"+id, req->req.method(HttpMethod.POST).timeout(5, TimeUnit.SECONDS), Flowable.just(ImmutableFactory.ndJson(r.message()).getBytes()).doOnNext(e->System.err.println(">>> "+new String(e))), "application/x-ndjson")
+		myClient.callWithBody(url+"/doc/"+id, req->req.method(HttpMethod.POST).timeout(5, TimeUnit.SECONDS), Flowable.just(ImmutableFactory.ndJson(r.message()).getBytes()).doOnNext(e->System.err.println(">>> "+new String(e))), "application/x-ndjson")
 				.doOnSuccess(e->System.err.println("Reply: "+e.status()))
 				.toFlowable()
 				.flatMap(e->e.content)
@@ -60,7 +63,7 @@ public class TestPut {
 		System.err.println("start1");
 		Flowable.just(r)
 				.doOnNext(e->System.err.println("First"))
-			.compose(ElasticInsertTransformer.elasticSearchInserter((message)->message.source().orElse("ble"), (topic)->"sometype",100,100))
+			.compose(ElasticInsertTransformer.elasticSearchInserter((message)->message.source().orElse("ble"), (topic)->"sometype",100))
 			.concatMap(e->e)
 			.doOnNext(e->System.err.println("Data found"))
 			.blockingForEach(e->System.err.println(new String(e)));
@@ -77,7 +80,7 @@ public class TestPut {
 		
 		Flowable<byte[]> in = Flowable.just((line1+"\n"+line2+"\n").getBytes());
 		Flowable.range(0, 5000)
-				.flatMapSingle(e->cjc.call("http://elasticsearch:9200/_bulk",req->req.method(HttpMethod.POST)
+				.flatMapSingle(e->cjc.call(ELASTIC_URL,req->req.method(HttpMethod.POST)
 					.timeout(5, TimeUnit.SECONDS),Optional.of(in), Optional.of("application/x-ndjson"),true),false,10)
 //				.flatMapSingle(e->e)
 				.doOnNext(e->System.err.println("Reply received"))
@@ -107,11 +110,11 @@ public class TestPut {
 		
 		String ress = Flowable.just(r)
 				.doOnNext(e->System.err.println("First"))
-			.compose(ElasticInsertTransformer.elasticSearchInserter((message)->message.source().orElse("ble"), (topic)->"sometype",100,100))
+			.compose(ElasticInsertTransformer.elasticSearchInserter((message)->message.source().orElse("ble"), (topic)->"sometype",100))
 			.doOnNext(e->System.err.println("Data found"))
-			.compose(cjc.call("http://elasticsearch:9200/_bulk", req->req.method(HttpMethod.POST),  Optional.of("application/x-ndjson"),1,1,true))
+			.compose(cjc.call(ELASTIC_URL, req->req.method(HttpMethod.POST),  Optional.of("application/x-ndjson"),1,1,true))
 			.compose(JettyClient.responseStream())
-			.reduce(new StringBuilder(),(a,c)->a.append(new String(c)))
+			.reduce(new StringBuilder(),(a,c)->a.append( new String(c)))
 			.map(sb->sb.toString())
 			.blockingGet();
 		System.err.println("Ress: "+ress);
@@ -121,13 +124,12 @@ public class TestPut {
 	@Test @Ignore
 	public void putBulkToElastic() {
 		ReplicationMessage r = ReplicationFactory.getInstance().parseStream(getClass().getClassLoader().getResourceAsStream("customer.json")).withSource(Optional.of("customertopic"));
-//		ReplicationMessage r2 = new TopicElement("", "key2", ReplicationFactory.getInstance().parseStream(getClass().getClassLoader().getResourceAsStream("customer.json")));
 		System.err.println("start1");
 		String ress = Flowable.just(r)
 				.doOnNext(e->System.err.println("First"))
-			.compose(ElasticInsertTransformer.elasticSearchInserter((message)->message.source().orElse("ble"), (topic)->"sometype",100,100))
+			.compose(ElasticInsertTransformer.elasticSearchInserter((message)->message.source().orElse("ble"), (topic)->"sometype",100))
 			.doOnNext(e->System.err.println("Data found"))
-			.compose(HttpInsertTransformer.httpInsert("http://elasticsearch:9200/_bulk",req->req.method(HttpMethod.POST).timeout(2,TimeUnit.SECONDS), "application/x-ndjson",1,1,true))
+			.compose(HttpInsertTransformer.httpInsert(ELASTIC_URL,req->req.method(HttpMethod.POST).timeout(2,TimeUnit.SECONDS), "application/x-ndjson",1,1,true))
 			.compose(JettyClient.responseStream())
 			.reduce(new StringBuilder(),(a,c)->a.append(new String(c)))
 			.map(sb->sb.toString())

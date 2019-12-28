@@ -33,6 +33,9 @@ import org.slf4j.LoggerFactory;
 
 import com.dexels.kafka.streams.api.TopologyContext;
 import com.dexels.kafka.streams.base.Filters;
+import com.dexels.kafka.streams.base.StreamConfiguration;
+import com.dexels.kafka.streams.processor.generic.GenericProcessor;
+import com.dexels.kafka.streams.processor.generic.GenericProcessorBuilder;
 import com.dexels.kafka.streams.remotejoin.ranged.GroupedUpdateProcessor;
 import com.dexels.kafka.streams.remotejoin.ranged.ManyToManyGroupedProcessor;
 import com.dexels.kafka.streams.remotejoin.ranged.ManyToOneGroupedProcessor;
@@ -74,7 +77,7 @@ public class ReplicationTopologyParser {
 		parts.add(processor);
 	}
 	
-	public static void topologyFromXML(Topology current,List<XMLElement> xmlList,TopologyContext context, final Map<String,MessageTransformer> initialTransformerRegistry, AdminClient externalAdminClient) throws InterruptedException, ExecutionException {
+	public static void topologyFromXML(Topology current,List<XMLElement> xmlList,TopologyContext context, final Map<String,MessageTransformer> initialTransformerRegistry, AdminClient externalAdminClient, Map<String, GenericProcessorBuilder> genericProcessorRegistry, StreamConfiguration streamConfig) throws InterruptedException, ExecutionException {
 
 	    TopologyConstructor topologyConstructor = new TopologyConstructor(initialTransformerRegistry, externalAdminClient);
 	    
@@ -85,12 +88,19 @@ public class ReplicationTopologyParser {
 
 				String sourceTopicName = xe.getStringAttribute("topic");
 				switch (xe.getName()) {
+				case "processor": {
+					String name = xe.getStringAttribute("name");
+					GenericProcessorBuilder genericBuilder = genericProcessorRegistry.get(name);
+					addGenericProcessor(current,context,topologyConstructor,genericBuilder,xe.attributes(),streamConfig);
+//					GenericProcessor processor = genericBuilder.build(xe,Optional.of(this),context.tenant);
+//					startedProcessors.add(processor);
+					break;
+				}
 				case STORE:
 				{
 				  
 					final Optional<String> to = Optional.ofNullable(xe.getStringAttribute("to"));
 		        	final ProcessorSupplier<String, ReplicationMessage> processorFromChildren = processorFromChildren(Optional.of(xe), topicName(sourceTopicName, context), topologyConstructor);
-					
 					addSourceStore(current, context, topologyConstructor,processorFromChildren, sourceTopicName, to);
 				}
 				break;
@@ -177,7 +187,15 @@ public class ReplicationTopologyParser {
 	}
 
 
-	private static void materializeStateStores(TopologyConstructor topologyConstructor, Topology current) {
+	private static void addGenericProcessor(Topology current, TopologyContext context,
+			TopologyConstructor topologyConstructor,GenericProcessorBuilder genericBuilder, Map<String,String> settings, StreamConfiguration config) {
+
+		genericBuilder.build(current,settings, context,config);
+		
+	}
+
+
+	public static void materializeStateStores(TopologyConstructor topologyConstructor, Topology current) {
 		for (Entry<String,List<String>> element : topologyConstructor.processorStateStoreMapper.entrySet()) {
 			final String key = element.getKey();
 			final StoreBuilder<KeyValueStore<String, ReplicationMessage>> supplier = topologyConstructor.stateStoreSupplier.get(key);
@@ -249,6 +267,11 @@ public class ReplicationTopologyParser {
 		addStateStoreMapping(topologyConstructor.processorStateStoreMapper,sourceProcessorName, sourceProcessorName);
         logger.info("Granting access for processor: {} to store: {}",sourceProcessorName, storeTopic);
         topologyConstructor.stateStoreSupplier.put(sourceProcessorName,createMessageStoreSupplier(sourceProcessorName));
+
+//        addStateStoreMapping(topologyConstructor.processorStateStoreMapper,sourceProcessorName, sourceProcessorName);
+//        logger.info("Granting access for processor: {} to store: {}",sourceProcessorName, storeTopic);
+//        topologyConstructor.stateStoreSupplier.put(sourceProcessorName,createMessageStoreSupplier(sourceProcessorName));
+    
     }
 
 	private static String processorName(String sourceTopicName) {

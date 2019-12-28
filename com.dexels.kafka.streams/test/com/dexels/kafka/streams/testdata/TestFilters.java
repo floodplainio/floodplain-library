@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.dexels.kafka.streams.base.Filters;
+import com.dexels.kafka.streams.base.StreamConfiguration;
 import com.dexels.kafka.streams.base.StreamInstance;
 import com.dexels.replication.api.ReplicationMessage;
 import com.dexels.replication.factory.ReplicationFactory;
@@ -26,8 +27,8 @@ public class TestFilters {
 
 	@Before
 	public void setup() throws IOException {
-//		StreamConfiguration config = new StreamConfiguration(kafkaHosts, sinks, deployment, maxWait, maxSize, replicationFactor)
-		new StreamInstance("test", Optional.empty(), Collections.emptyMap(),Collections.emptyMap(),Collections.emptyMap());
+		StreamConfiguration config = new StreamConfiguration("kafka:9092", Collections.emptyMap(), "", 100, 100, 1);
+		new StreamInstance("test", config, Collections.emptyMap(),Collections.emptyMap(),Collections.emptyMap());
         ReplicationFactory.setInstance(new FallbackReplicationMessageParser());
 
 		try(InputStream resourceAsStream = TestTransformations.class.getResourceAsStream("address1.json")) {
