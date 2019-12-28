@@ -166,6 +166,9 @@ public class ReplicationJSON {
 			case "coordinate":
 			    m.put("Value", ((CoordinateType)value).toString());
 			    break;
+			case "enum":
+			    m.put("Value", (String)value);
+			    break;
 			default:
 				logger.warn("Unknown type: {} while serializing replication message to JSON. ",type);
 				break;
@@ -237,7 +240,9 @@ public class ReplicationJSON {
 
                 return null;
             }
-			default:
+        case "enum":
+        	return jsonNode.asText();
+        default:
 			    logger.warn("Unsupported type {}", type);
 				break;
 		}

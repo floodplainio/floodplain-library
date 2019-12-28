@@ -7,7 +7,7 @@
 javac.source: 1.8
 javac.target: 1.8
 
-Bundle-Version: 4.6.5
+Bundle-Version: 4.7.0
 Export-Package: \
 	com.dexels.pubsub.rx2.api;version=4.6.0,\
 	com.dexels.pubsub.rx2.factory,\

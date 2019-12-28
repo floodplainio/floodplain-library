@@ -29,6 +29,10 @@ public class PubSubTools {
 		return new BasePubSubMessage(key, value, topic, timestamp);
 	}
 
+	public static PubSubMessage create(String key, byte[] value, long timestamp, Optional<String> topic, Optional<Integer> partition, Optional<Long> offset) {
+		return new BasePubSubMessage(key, value, topic, timestamp,partition,offset,Optional.empty());
+	}
+	
 	public static TopicSubscriber createMockSubscriber(Reader reader) {
 		return new KafkaDumpSubscriber(reader);
 	}

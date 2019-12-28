@@ -37,11 +37,11 @@ import com.google.protobuf.InvalidProtocolBufferException;
 public class ProtobufReplicationMessageParser implements ReplicationMessageParser {
 
 	
-	private final static Logger logger = LoggerFactory.getLogger(ProtobufReplicationMessageParser.class);
+	private static final Logger logger = LoggerFactory.getLogger(ProtobufReplicationMessageParser.class);
 
-	public final static int MAGIC = 12779;
-	public final static byte MAGIC_BYTE_1 = 8;
-	public final static byte MAGIC_BYTE_2 = -21;
+	public static final int MAGIC = 12779;
+	public static final byte MAGIC_BYTE_1 = 8;
+	public static final byte MAGIC_BYTE_2 = -21;
 
 	static class ValueTuple {
 		public final String key;
@@ -53,32 +53,20 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
 		}
 	}
 	
-	private final static ThreadLocal<SimpleDateFormat> dateFormat = new ThreadLocal<SimpleDateFormat>() {
+	private static final ThreadLocal<SimpleDateFormat> dateFormat = new ThreadLocal<SimpleDateFormat>() {
 		 @Override
 	        protected SimpleDateFormat initialValue()
 	        {
 	            return new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss.SS");
 	        }
 	}; 
-	private final static ThreadLocal<SimpleDateFormat> clocktimeFormat = new ThreadLocal<SimpleDateFormat>() {
+	private static final ThreadLocal<SimpleDateFormat> clocktimeFormat = new ThreadLocal<SimpleDateFormat>() {
 		 @Override
 	        protected SimpleDateFormat initialValue()
 	        {
 	            return new SimpleDateFormat("HH:mm:ss");
 	        }
 	}; 
-	
-//	@Override
-//	public ReplicationMessage parseReplicationMessage(PubSubMessage message) {
-//		ReplicationMessageProtobuf parsed;
-//		try {
-//			parsed = ReplicationMessageProtobuf.parseFrom(message.value());
-//			return parse(parsed,Optional.of(()->message.commit()));
-//		} catch (InvalidProtocolBufferException e) {
-//			logger.error("Error: ", e);
-//			return ReplicationFactory.createErrorReplicationMessage(e);
-//		}
-//	}
 
 	private static String serializeValue(String type, Object val) {
 		if(val==null) {
@@ -107,7 +95,6 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
 			case "binary":
 
 				System.err.println("Binary type: "+val.getClass());
-//				throw new UnsupportedOperationException("Unknown type: "+type);
 				return  (String)val;
 			case "date":
 				if(val instanceof String) {
@@ -123,7 +110,9 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
 				List<String> v = (List<String>)val;
 				return v.stream().collect(Collectors.joining(","));
 			case "coordinate":
-            return val.toString();
+				return val.toString();
+			case "enum":
+				return val.toString();
 			default:
 				throw new UnsupportedOperationException("Unknown type: "+type);
 		}	
@@ -174,6 +163,8 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
                 logger.warn("Error parsing coordinate: " + value, e);
                 return null;
             }
+		case ENUM:
+			return value;
 		default:
 			return null;
 		}	
@@ -227,11 +218,6 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
 		}
 		Optional<ImmutableMessage> paramMsg =  Optional.ofNullable(source.getParamMessage()).map(msg->parseImmutableMessage(msg,false));
 		return ReplicationFactory.createReplicationMessage(topicSrc,Optional.empty(),Optional.empty(), source.getTransactionId(), source.getTimestamp(), Operation.valueOf(source.getOperation().name()), source.getPrimarykeysList().stream().collect(Collectors.toList()), types, values, submessage, submessagelist, commitAction,paramMsg);
-//		public static ReplicationMessage createReplicationMessage(Optional<String> source, Optional<Integer> partition, Optional<Long> offset, final String transactionId, final long timestamp,
-//				final Operation operation, final List<String> primaryKeys, Map<String, String> types,
-//				Map<String, Object> values, Map<String, ImmutableMessage> subMessageMap,
-//				Map<String, List<ImmutableMessage>> subMessageListMap,Optional<Runnable> commitAction, Optional<ImmutableMessage> paramMessage) {
-
 	}
 	
 	@Override
@@ -243,8 +229,6 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
 		if((short)byteArray[1] != ProtobufReplicationMessageParser.MAGIC_BYTE_2) {
 			throw new IllegalArgumentException("Bad magic byte"+(short)byteArray[1]);
 		}
-//		System.err.println("First: "+(short)byteArray[0]);
-//		System.err.println("Secon: "+(short)byteArray[1]);
 		return byteArray;
 	}
 	
@@ -279,6 +263,8 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
 			return ValueProtobuf.ValueType.LIST;
         case "coordinate":
             return ValueProtobuf.ValueType.COORDINATE;
+        case "enum":
+            return ValueProtobuf.ValueType.ENUM;
 		default: 
 		    return ValueType.UNRECOGNIZED;
 			
@@ -306,7 +292,7 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
 				}
 				if(parseType.equals(ValueType.BINARY)) {
 					if(value!=null) {
-						ByteString bs = ByteString.copyFrom((byte[])value); //parseFrom((byte[])value);
+						ByteString bs = ByteString.copyFrom((byte[])value);
 						return new ValueTuple(e.getKey(),ValueProtobuf
 									.newBuilder()
 									.setType(parseType)
@@ -392,7 +378,7 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
 			parsed = ReplicationMessageProtobuf.parseFrom(data);
 			return parse(source, parsed,Optional.empty());
 		} catch (InvalidProtocolBufferException e) {
-			logger.error("Error: ", e);
+			logger.error("InvalidProtocolBufferException: ", e);
 			return ReplicationFactory.createErrorReplicationMessage(e);
 		}
 
@@ -406,8 +392,8 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
 		try {
 			return ReplicationMessageListProtobuf.parseFrom(data).getElementsList().stream().map(e->parse(source, e,Optional.empty())).collect(Collectors.toList());
 		} catch (InvalidProtocolBufferException e) {
-			logger.error("Error: ", e);
-			return Arrays.asList(new ReplicationMessage[]{ReplicationFactory.createErrorReplicationMessage(e)});
+			logger.error("Error invalid: ", e);
+			return Arrays.asList(ReplicationFactory.createErrorReplicationMessage(e));
 		}
 	}
 
@@ -425,12 +411,6 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
 	public byte[] serializeMessageList(List<ReplicationMessage> msgs) {
 		return ReplicationMessageListProtobuf.newBuilder().setMagic(ProtobufReplicationMessageParser.MAGIC).addAllElements(msgs.stream().map(msg->toProto(msg)).collect(Collectors.toList())).build().toByteArray();
 	}
-	
-//	@Override
-//	public List<ReplicationMessage> parseMessageList(InputStream data) {
-//		return parseMessageList(Optional.empty(), data);
-//	}
-
 
 	@Override
 	public List<ReplicationMessage> parseMessageList(Optional<String> source, InputStream data) {
@@ -448,12 +428,9 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
 			}			
 			pis.unread(pre);
 			return ReplicationMessageListProtobuf.parseFrom(pis).getElementsList().stream().map(e->parse(Optional.empty(),e,Optional.empty())).collect(Collectors.toList());
-		} catch (InvalidProtocolBufferException e) {
-			logger.error("Error: ", e);
-			return Arrays.asList(new ReplicationMessage[]{ReplicationFactory.createErrorReplicationMessage(e)});
 		} catch (IOException e) {
 			logger.error("Error: ", e);
-			return Arrays.asList(new ReplicationMessage[]{ReplicationFactory.createErrorReplicationMessage(e)});
+			return Arrays.asList(ReplicationFactory.createErrorReplicationMessage(e));
 		}
 	}
 	@Override

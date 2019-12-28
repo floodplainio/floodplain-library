@@ -18,6 +18,7 @@ public interface TopicPublisher {
 	
 	public void publish(String topic, String key, byte[] value) throws IOException;
 	public void publish(String topic, String key, byte[] value,Consumer<Object> onSuccess, Consumer<Throwable> onFail);
+	// should be backpressureSubscriber, right?
 	public Subscriber<PubSubMessage> backpressurePublisher(Optional<String> defaultTopic, int maxInFlight);
 	public void create(String topic,Optional<Integer> replicationFactor, Optional<Integer> partitionCount);
 	public void create(String topic);

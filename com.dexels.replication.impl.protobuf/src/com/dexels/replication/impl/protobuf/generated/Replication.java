@@ -188,6 +188,10 @@ public final class Replication {
        * <code>COORDINATE = 11;</code>
        */
       COORDINATE(11),
+      /**
+       * <code>ENUM = 12;</code>
+       */
+      ENUM(12),
       UNRECOGNIZED(-1),
       ;
 
@@ -239,6 +243,10 @@ public final class Replication {
        * <code>COORDINATE = 11;</code>
        */
       public static final int COORDINATE_VALUE = 11;
+      /**
+       * <code>ENUM = 12;</code>
+       */
+      public static final int ENUM_VALUE = 12;
 
 
       public final int getNumber() {
@@ -271,6 +279,7 @@ public final class Replication {
           case 9: return LIST;
           case 10: return BINARY;
           case 11: return COORDINATE;
+          case 12: return ENUM;
           default: return null;
         }
       }
@@ -3918,47 +3927,47 @@ public final class Replication {
   static {
     java.lang.String[] descriptorData = {
       "\n\021replication.proto\022.com.dexels.replicat" +
-      "ion.impl.protobuf.generated\"\276\002\n\rValuePro" +
+      "ion.impl.protobuf.generated\"\310\002\n\rValuePro" +
       "tobuf\022\r\n\005value\030\001 \001(\t\022U\n\004type\030\002 \001(\0162G.com" +
       ".dexels.replication.impl.protobuf.genera" +
       "ted.ValueProtobuf.ValueType\022\016\n\006isNull\030\003 " +
-      "\001(\010\022\020\n\010byteData\030\004 \001(\014\"\244\001\n\tValueType\022\n\n\006S" +
+      "\001(\010\022\020\n\010byteData\030\004 \001(\014\"\256\001\n\tValueType\022\n\n\006S" +
       "TRING\020\000\022\013\n\007INTEGER\020\001\022\010\n\004LONG\020\002\022\n\n\006DOUBLE" +
       "\020\003\022\t\n\005FLOAT\020\004\022\013\n\007BOOLEAN\020\005\022\021\n\rBINARY_DIG" +
       "EST\020\006\022\010\n\004DATE\020\007\022\r\n\tCLOCKTIME\020\010\022\010\n\004LIST\020\t" +
-      "\022\n\n\006BINARY\020\n\022\016\n\nCOORDINATE\020\013\"\333\010\n\032Replica",
-      "tionMessageProtobuf\022\r\n\005magic\030\001 \001(\005\022g\n\top" +
-      "eration\030\002 \001(\0162T.com.dexels.replication.i" +
-      "mpl.protobuf.generated.ReplicationMessag" +
-      "eProtobuf.Operation\022\021\n\ttimestamp\030\003 \001(\003\022\026" +
-      "\n\016transaction_id\030\004 \001(\t\022\023\n\013primarykeys\030\005 " +
-      "\003(\t\022f\n\006values\030\006 \003(\0132V.com.dexels.replica" +
-      "tion.impl.protobuf.generated.Replication" +
-      "MessageProtobuf.ValuesEntry\022w\n\017submessag" +
-      "e_list\030\007 \003(\0132^.com.dexels.replication.im" +
-      "pl.protobuf.generated.ReplicationMessage",
-      "Protobuf.SubmessageListEntry\022n\n\nsubmessa" +
-      "ge\030\010 \003(\0132Z.com.dexels.replication.impl.p" +
-      "rotobuf.generated.ReplicationMessageProt" +
-      "obuf.SubmessageEntry\022`\n\014paramMessage\030\t \001" +
-      "(\0132J.com.dexels.replication.impl.protobu" +
-      "f.generated.ReplicationMessageProtobuf\032l" +
-      "\n\013ValuesEntry\022\013\n\003key\030\001 \001(\t\022L\n\005value\030\002 \001(" +
-      "\0132=.com.dexels.replication.impl.protobuf" +
-      ".generated.ValueProtobuf:\0028\001\032\205\001\n\023Submess" +
-      "ageListEntry\022\013\n\003key\030\001 \001(\t\022]\n\005value\030\002 \001(\013",
-      "2N.com.dexels.replication.impl.protobuf." +
-      "generated.ReplicationMessageListProtobuf" +
-      ":\0028\001\032}\n\017SubmessageEntry\022\013\n\003key\030\001 \001(\t\022Y\n\005" +
-      "value\030\002 \001(\0132J.com.dexels.replication.imp" +
-      "l.protobuf.generated.ReplicationMessageP" +
-      "rotobuf:\0028\001\"]\n\tOperation\022\010\n\004NONE\020\000\022\n\n\006IN" +
-      "SERT\020\001\022\n\n\006UPDATE\020\002\022\n\n\006DELETE\020\003\022\n\n\006COMMIT" +
-      "\020\004\022\t\n\005MERGE\020\005\022\013\n\007INITIAL\020\006\"\215\001\n\036Replicati" +
-      "onMessageListProtobuf\022\r\n\005magic\030\001 \001(\005\022\\\n\010" +
-      "elements\030\002 \003(\0132J.com.dexels.replication.",
-      "impl.protobuf.generated.ReplicationMessa" +
-      "geProtobufb\006proto3"
+      "\022\n\n\006BINARY\020\n\022\016\n\nCOORDINATE\020\013\022\010\n\004ENUM\020\014\"\333",
+      "\010\n\032ReplicationMessageProtobuf\022\r\n\005magic\030\001" +
+      " \001(\005\022g\n\toperation\030\002 \001(\0162T.com.dexels.rep" +
+      "lication.impl.protobuf.generated.Replica" +
+      "tionMessageProtobuf.Operation\022\021\n\ttimesta" +
+      "mp\030\003 \001(\003\022\026\n\016transaction_id\030\004 \001(\t\022\023\n\013prim" +
+      "arykeys\030\005 \003(\t\022f\n\006values\030\006 \003(\0132V.com.dexe" +
+      "ls.replication.impl.protobuf.generated.R" +
+      "eplicationMessageProtobuf.ValuesEntry\022w\n" +
+      "\017submessage_list\030\007 \003(\0132^.com.dexels.repl" +
+      "ication.impl.protobuf.generated.Replicat",
+      "ionMessageProtobuf.SubmessageListEntry\022n" +
+      "\n\nsubmessage\030\010 \003(\0132Z.com.dexels.replicat" +
+      "ion.impl.protobuf.generated.ReplicationM" +
+      "essageProtobuf.SubmessageEntry\022`\n\014paramM" +
+      "essage\030\t \001(\0132J.com.dexels.replication.im" +
+      "pl.protobuf.generated.ReplicationMessage" +
+      "Protobuf\032l\n\013ValuesEntry\022\013\n\003key\030\001 \001(\t\022L\n\005" +
+      "value\030\002 \001(\0132=.com.dexels.replication.imp" +
+      "l.protobuf.generated.ValueProtobuf:\0028\001\032\205" +
+      "\001\n\023SubmessageListEntry\022\013\n\003key\030\001 \001(\t\022]\n\005v",
+      "alue\030\002 \001(\0132N.com.dexels.replication.impl" +
+      ".protobuf.generated.ReplicationMessageLi" +
+      "stProtobuf:\0028\001\032}\n\017SubmessageEntry\022\013\n\003key" +
+      "\030\001 \001(\t\022Y\n\005value\030\002 \001(\0132J.com.dexels.repli" +
+      "cation.impl.protobuf.generated.Replicati" +
+      "onMessageProtobuf:\0028\001\"]\n\tOperation\022\010\n\004NO" +
+      "NE\020\000\022\n\n\006INSERT\020\001\022\n\n\006UPDATE\020\002\022\n\n\006DELETE\020\003" +
+      "\022\n\n\006COMMIT\020\004\022\t\n\005MERGE\020\005\022\013\n\007INITIAL\020\006\"\215\001\n" +
+      "\036ReplicationMessageListProtobuf\022\r\n\005magic" +
+      "\030\001 \001(\005\022\\\n\010elements\030\002 \003(\0132J.com.dexels.re",
+      "plication.impl.protobuf.generated.Replic" +
+      "ationMessageProtobufb\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
