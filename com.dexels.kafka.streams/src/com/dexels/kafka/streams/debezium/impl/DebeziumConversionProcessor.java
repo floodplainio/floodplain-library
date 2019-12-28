@@ -41,7 +41,8 @@ public class DebeziumConversionProcessor implements Processor<String, byte[]> {
 
 		PubSubMessage psm = PubSubTools.create(key, value, this.processorContext.timestamp(), Optional.of(topic),Optional.of(this.processorContext.partition()),Optional.of(this.processorContext.offset()));
 		final PubSubMessage parse = JSONToReplicationMessage.parse(this.context,psm,appendTenant,appendSchema);
-		processorContext.forward(key, parse);
+//		System.err.println("Parsed key: "+parse.key());
+		processorContext.forward(parse.key(), parse);
 //		processorContext.commit();
 				
 	}

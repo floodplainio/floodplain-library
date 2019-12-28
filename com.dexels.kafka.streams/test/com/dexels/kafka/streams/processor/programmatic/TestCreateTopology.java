@@ -25,10 +25,10 @@ import com.dexels.replication.transformer.api.MessageTransformer;
 
 public class TestCreateTopology {
 
-	private static final String BROKERS = "kafka-test-bootstrap.test.svc.cluster.local:9092";
+	private static final String BROKERS = "kafka:9092";
 
 	
-	private final static Logger logger = LoggerFactory.getLogger(TestCreateTopology.class);
+	private static final Logger logger = LoggerFactory.getLogger(TestCreateTopology.class);
 
 	@Test
 	public void testTopology() throws InterruptedException {
