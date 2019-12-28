@@ -1,14 +1,14 @@
 -buildpath: \
 	slf4j.api;version=1.7,\
 	org.osgi.service.component.annotations,\
-	lib/kafka-streams-2.2.0-SNAPSHOT.jar;version=file,\
-	lib/kafka-clients-2.2.0-SNAPSHOT.jar;version=file,\
-	lib/kafka-tools-2.2.0-SNAPSHOT.jar;version=file,\
-	lib/connect-api-2.2.0-SNAPSHOT.jar;version=file,\
-	lib/connect-json-2.2.0-SNAPSHOT.jar;version=file,\
-	lib/connect-file-2.2.0-SNAPSHOT.jar;version=file,\
-	lib/connect-runtime-2.2.0-SNAPSHOT.jar;version=file,\
-	lib/connect-transforms-2.2.0-SNAPSHOT.jar;version=file,\
+	lib/kafka-streams-2.4.0.jar;version=file,\
+	lib/kafka-clients-2.4.0.jar;version=file,\
+	lib/kafka-tools-2.4.0.jar;version=file,\
+	lib/connect-api-2.4.0.jar;version=file,\
+	lib/connect-json-2.4.0.jar;version=file,\
+	lib/connect-file-2.4.0.jar;version=file,\
+	lib/connect-runtime-2.4.0.jar;version=file,\
+	lib/connect-transforms-2.4.0.jar;version=file,\
 	lib/rocksdbjni-5.14.2.jar;version=file,\
 	lib/reflections-0.9.11.jar;version=file,\
 	lib/javassist-3.22.0-CR2.jar;version=file,\
@@ -63,15 +63,15 @@ javac.source: 1.8
 javac.target: 1.8
 Bundle-Version: 2.1.10
 Include-Resource: lib
-Bundle-ClassPath: .,kafka-streams-2.2.0-SNAPSHOT.jar,\
-	kafka-clients-2.2.0-SNAPSHOT.jar,\
-	connect-api-2.2.0-SNAPSHOT.jar,\
+Bundle-ClassPath: .,kafka-streams-2.4.0.jar,\
+	kafka-clients-2.4.0.jar,\
+	connect-api-2.4.0.jar,\
 	reflections-0.9.11.jar,\
 	javassist-3.22.0-CR2.jar,\
-	connect-json-2.2.0-SNAPSHOT.jar,\
-	connect-runtime-2.2.0-SNAPSHOT.jar,\
-	connect-transforms-2.2.0-SNAPSHOT.jar,\
-	rocksdbjni-5.14.2.jar,\
+	connect-json-2.4.0.jar,\
+	connect-runtime-2.4.0.jar,\
+	connect-transforms-2.4.0.jar,\
+	rocksdbjni-5.18.3.jar,\
 	maven-artifact-3.5.4.jar
 Private-Package: \
 	com.dexels.kafka.streams.serializer,\
