@@ -77,7 +77,7 @@ public class TestFilters {
 		Assert.assertFalse(testFilter("greaterthan:somenumber:60|lessthan:somenumber:10","somekey", test));		
 	}
 
-	@Test
+	@Test 
 	public void testValidZip() {
 		Assert.assertTrue(testFilter("validZip:zipcode","somekey", addressMessage));
 		Assert.assertTrue(testFilter("validZip:alsozipcode","somekey", addressMessage));

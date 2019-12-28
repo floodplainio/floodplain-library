@@ -76,7 +76,7 @@ public class StreamInstance {
 	private static final int kafkaThreadCount;
 	private static final int commitInterval;
 	private static final long maxBytesBuffering;
-	private final AdminClient adminClient;
+//	private final AdminClient adminClient;
 	private String generation = null;
 	private final Map<String, GenericProcessorBuilder> genericProcessorRegistry;
 	
@@ -116,7 +116,7 @@ public class StreamInstance {
 		this.transformerRegistry = Collections.unmodifiableMap(transformerRegistry);
 		this.sinkRegistry = sinkRegistry;
 		this.genericProcessorRegistry = Collections.unmodifiableMap(genericProcessorRegistry);
-		this.adminClient = configuration.adminClient();
+//		this.adminClient = configuration.adminClient();
 		Filters.registerPredicate("clublogo", (id, params,message)->"CLUBLOGO".equals(message.columnValue("objecttype")) && message.columnValue("data")!=null);
 		Filters.registerPredicate("photo", (id,params, message)->"PHOTO".equals(message.columnValue("objecttype")) && message.columnValue("data")!=null);
 		Filters.registerPredicate("facility", (id,params, message)->"FACILITY".equals(message.columnValue("facilitytype")));
@@ -232,7 +232,7 @@ public class StreamInstance {
 			if(!lowLevelAPIElements.isEmpty()) {
 				final String parsedTenant = tenant.isPresent()?tenant.get():"";
 				TopologyContext context = new TopologyContext(tenant, deployment, this.instanceName, generation);
-				ReplicationTopologyParser.topologyFromXML(topology,lowLevelAPIElements, context, transformerRegistry,adminClient,genericProcessorRegistry,this.configuration);
+				ReplicationTopologyParser.topologyFromXML(topology,lowLevelAPIElements, context, transformerRegistry,this.configuration.adminClient(),genericProcessorRegistry,this.configuration);
 				String name = parsedTenant+"-"+deployment+"-"+generation;
 				String applicationId = name+"-"+instanceName;
 				Properties streamsConfiguration = createProperties(applicationId,brokers,storagePath);
