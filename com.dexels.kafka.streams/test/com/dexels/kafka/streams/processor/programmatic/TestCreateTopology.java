@@ -50,10 +50,10 @@ public class TestCreateTopology {
 		ReplicationTopologyParser.addSourceStore(topology, context, topologyConstructor, supplier, "PHOTO", Optional.empty());
 		ReplicationTopologyParser.materializeStateStores(topologyConstructor, topology);
 		System.err.println(topology.describe().toString());
-		KafkaStreams stream = new KafkaStreams(topology, properties);
-		stream.setUncaughtExceptionHandler((thread,exception)->logger.error("Uncaught exception from stream instance: ",exception));
-		stream.start();
-		Thread.sleep(300000);
+//		KafkaStreams stream = new KafkaStreams(topology, properties);
+//		stream.setUncaughtExceptionHandler((thread,exception)->logger.error("Uncaught exception from stream instance: ",exception));
+//		stream.start();
+//		Thread.sleep(300000);
 		
 	}
 }
