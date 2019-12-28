@@ -12,6 +12,7 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.processor.ProcessorSupplier;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,8 +31,8 @@ public class TestCreateTopology {
 	
 	private static final Logger logger = LoggerFactory.getLogger(TestCreateTopology.class);
 
-	@Test
-	public void testTopology() throws InterruptedException {
+	@Test @Ignore
+	public void testTopology() {
 		Map<String,Object> config = new HashMap<>();
 
 		config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,BROKERS);
