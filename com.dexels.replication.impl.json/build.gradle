@@ -1,0 +1,55 @@
+
+plugins {
+    id 'java-library'
+}
+
+
+repositories {
+    mavenCentral()
+}
+
+def globalConf = rootProject.ext
+
+
+task copyTestResources(type: Copy) {
+    from "${projectDir}/test"
+    into "${buildDir}/classes/test"
+}
+processTestResources.dependsOn copyTestResources
+dependencies {
+    Map<String, String> dependencies = globalConf.commonDependencies
+    implementation project(':com.dexels.immutable.api')
+    implementation project(':com.dexels.immutable.impl')
+    implementation project(':com.dexels.replication.api')
+    implementation project(':com.dexels.replication.impl')
+    implementation project(':com.dexels.pubsub.rx2.api')
+    compile dependencies.osgiAnnotations
+    compile dependencies.osgiComponentAnnotations
+    testCompile dependencies.jUnit
+    testRuntime dependencies.slf4jSimple
+}
+
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+sourceSets.test {
+    resources.srcDirs = ["src/test"]
+}
+
+sourceSets {
+    main {
+         java {
+            srcDirs = ['src']
+         }
+    }
+
+    test {
+        java {
+            srcDirs = ['test']
+        }
+    }
+}
+

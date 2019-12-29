@@ -1,0 +1,38 @@
+apply from: ‘gradle/dependencies.gradle’
+
+plugins {
+    id 'java-library'
+}
+
+
+repositories {
+    mavenCentral()
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+
+dependencies {
+    Map<String, String> dependencies = globalConf.commonDependencies
+    compile dependencies.osgiAnnotations 
+    compile dependencies.slf4j
+}
+
+sourceSets {
+    main {
+         java {
+            srcDirs = ['src']
+         }
+    }
+
+    test {
+        java {
+            srcDirs = ['test']
+        }
+    }
+}
+
+

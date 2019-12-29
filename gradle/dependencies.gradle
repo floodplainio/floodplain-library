@@ -1,0 +1,16 @@
+ext {
+    jackson_version = "2.10.1"
+
+    commonDependencies = [
+            jUnit             : "junit:junit:4.12",
+            rxJava            : "io.reactivex.rxjava2:rxjava:2.2.16",
+            reactiveStreams   : "org.reactivestreams:reactive-streams:1.0.3",
+            slf4j             : "org.slf4j:slf4j-api:1.7.30",
+            slf4jSimple       : "org.slf4j:slf4j-simple:1.7.30",
+            jacksonCore       : "com.fasterxml.jackson.core:jackson-core:$jackson_version",
+            jacksonDatabind   : "com.fasterxml.jackson.core:jackson-databind:$jackson_version",
+            osgiAnnotations   : "org.osgi:osgi.annotation:7.0.0",
+            osgiComponentAnnotations: 'org.osgi:org.osgi.service.component.annotations:1.4.0'
+        
+    ]
+}

@@ -1,5 +1,9 @@
 # Ignore Gradle project-specific cache directory
 .gradle
+.DS_Store
+bin/
+buildOutputCleanup
+.vscode
 
 # Ignore Gradle build output directory
 build
