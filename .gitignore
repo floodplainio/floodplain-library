@@ -1,10 +1,5 @@
-.DS_Store
-.gradle/
-generated/
-bin/
-bin_test/
-.metadata
-/reports/
-cnf/storage_kafka/
-.idea
-assembly
+# Ignore Gradle project-specific cache directory
+.gradle
+
+# Ignore Gradle build output directory
+build

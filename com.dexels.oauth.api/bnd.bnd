@@ -1,4 +1,0 @@
-Bundle-Version: 27.0.0
-Export-Package: \
-	com.dexels.oauth.api,\
-	com.dexels.oauth.api.exception

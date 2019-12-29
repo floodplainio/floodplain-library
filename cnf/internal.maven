@@ -1,7 +1,0 @@
-com.dexels.navajo:com.sportlink.teamorder:1.0.23
-com.dexels.repository:jetty-reactive-httpclient:1.0.4
-com.dexels.thirdparty:kubernetes-client-util-beta:2.0.2
-com.dexels.thirdparty:kubernetes-client-proto-beta:2.0.2
-com.dexels.thirdparty:kubernetes-java-api:2.0.3
-com.dexels.thirdparty:reactor-core:3.2.4
-com.dexels.thirdparty:org.apache.felix.scr:jar:2.1.18

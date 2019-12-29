@@ -1,5 +1,15 @@
-// Available to customize the build
-// force cache update.. again
-task wrapper2(type: Wrapper) {
-  jarFile = rootProject.file('.gradle-wrapper/gradle-wrapper.jar')
+apply from: 'gradle/dependencies.gradle'
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
 }
+allprojects {
+    repositories {
+        jcenter()
+    }
+}
+
+
