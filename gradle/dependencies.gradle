@@ -22,6 +22,11 @@ ext {
             mongoBson         : "org.mongodb:bson:$mongodb_version",
             mongoDriver       : "org.mongodb:mongodb-driver:$mongodb_version",
             mongoAsync        : "org.mongodb:mongodb-driver-async:$mongodb_version",
-            mongoReactive     : "org.mongodb:mongodb-driver-reactivestreams:1.13.0"
+            mongoReactive     : "org.mongodb:mongodb-driver-reactivestreams:1.13.0",
+            kafkaConnectApi   : "org.apache.kafka:connect-api:$kafka_version",
+            kafkaConnectRuntime : "org.apache.kafka:connect-runtime:$kafka_version",
+            kafkaConnectJson  : "org.apache.kafka:connect-json:$kafka_version",
+            kafkaConnectFile  : "org.apache.kafka:connect-file:$kafka_version",
+            kafkaStreams      : "org.apache.kafka:kafka-streams:$kafka_version"
     ]
 }
