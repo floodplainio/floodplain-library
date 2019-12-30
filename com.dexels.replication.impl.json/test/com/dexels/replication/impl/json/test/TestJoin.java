@@ -41,7 +41,7 @@ public class TestJoin {
 		System.err.println("BLAP! " + TestJoin.class.getResource("organizationaddress.json"));
 		System.err.println("BLOP: " + System.getProperty("user.dir"));
 		System.err.println("BLOEPTestJoin.class.getClassLoader(): " + TestJoin.class.getClassLoader() == null);
-		organizationaddress = parser.parseStream(TestJoin.class.getResourceAsStream("organizationaddress.json"));
+		organizationaddress = parser.parseStream(getClass().getResourceAsStream("organizationaddress.json"));
 		organization = parser.parseStream(TestJoin.class.getClassLoader().getResourceAsStream("organization.json"));
 	}
 

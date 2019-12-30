@@ -13,7 +13,7 @@ def globalConf = rootProject.ext
 
 task copyTestResources(type: Copy) {
     from "${projectDir}/test"
-    into "${buildDir}/classes/test"
+    into "${buildDir}/classes/java/test"
 }
 processTestResources.dependsOn copyTestResources
 dependencies {
@@ -33,10 +33,6 @@ dependencies {
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
-}
-
-sourceSets.test {
-    resources.srcDirs = ["src/test"]
 }
 
 sourceSets {

@@ -77,7 +77,7 @@ public class ReplicationProtobufTest {
 	
 	@Test
 	public void testDate() throws IOException {
-		try(InputStream is = ReplicationProtobufTest.class.getResourceAsStream("submessage.json")) {
+		try(InputStream is = getClass().getResourceAsStream("submessage.json")) {
 			ReplicationMessage rm = jsonParser.parseStream(is);
 			Date dd = (Date)rm.columnValue("formdate");
 			System.err.println(">> "+dd);
@@ -86,7 +86,7 @@ public class ReplicationProtobufTest {
 	
 	@Test
 	public void testConversion() {
-		try(InputStream is = ReplicationProtobufTest.class.getResourceAsStream("submessage.json")) {
+		try(InputStream is = getClass().getResourceAsStream("submessage.json")) {
 			ReplicationMessage rm = jsonParser.parseStream(is);
 			Assert.assertEquals(25, rm.values().size());
 			byte[] bb = protoBufParser.serialize(rm);
@@ -127,7 +127,7 @@ public class ReplicationProtobufTest {
 	
 	@Test
     public void testCoordinate() {
-        try (InputStream is = ReplicationProtobufTest.class.getResourceAsStream("addresslist.json")) {
+        try (InputStream is = getClass().getResourceAsStream("addresslist.json")) {
             ReplicationMessage rm = jsonParser.parseStream(is);
 
             byte[] bb = protoBufParser.serialize(rm);
@@ -163,7 +163,7 @@ public class ReplicationProtobufTest {
 	public void testMessageStreamListParser() {
 		ReplicationMessageParser jsonparser = new JSONReplicationMessageParserImpl();
 		ReplicationMessageParser parser = new ProtobufReplicationMessageParser();
-		InputStream stream = ReplicationProtobufTest.class.getResourceAsStream("addresslist.json");
+		InputStream stream = getClass().getResourceAsStream("addresslist.json");
 		List<ReplicationMessage> list = jsonparser.parseMessageList(Optional.of("addresstopic"), stream);
 		Assert.assertEquals(1, list.size());
 		byte[] data = parser.serializeMessageList(list);

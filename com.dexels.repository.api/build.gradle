@@ -1,0 +1,49 @@
+plugins {
+    id 'java-library'
+}
+
+
+repositories {
+    mavenCentral()
+}
+
+def globalConf = rootProject.ext
+
+dependencies {
+    Map<String, String> dependencies = globalConf.commonDependencies
+    compile dependencies.osgiAnnotations
+    compile dependencies.osgiCompendium
+    compile dependencies.osgiCore
+    compile dependencies.reactiveStreams
+    compile dependencies.rxJava
+    compile dependencies.slf4j
+    testCompile dependencies.jUnit
+}
+
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+
+
+sourceSets {
+    main {
+         java {
+            srcDirs = ['src']
+         }
+    }
+
+    // test {
+    //     compileClasspath = files(main.output.resourcesDir, main.output.classesDir, configurations.testCompile)
+    //     runtimeClasspath = files(test.output.resourcesDir, test.output.classesDir, main.output.resourcesDir, main.output.classesDir, configurations.testRuntime)
+    //    java {
+    //         srcDirs = ['test']
+    //     }
+	//  output {
+    //         resourcesDirs = ['test']
+	//  }
+    // }
+}
+
