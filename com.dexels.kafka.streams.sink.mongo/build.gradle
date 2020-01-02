@@ -1,13 +1,4 @@
 
-plugins {
-    id 'java-library'
-}
-
-
-repositories {
-    mavenCentral()
-}
-
 def globalConf = rootProject.ext
 
 
@@ -33,28 +24,3 @@ dependencies {
     testRuntime dependencies.slf4jSimple
     compile dependencies.kafkaClient
 }
-
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
-}
-
-sourceSets.test {
-    resources.srcDirs = ["src/test"]
-}
-
-sourceSets {
-    main {
-         java {
-            srcDirs = ['src']
-         }
-    }
-
-    test {
-        java {
-            srcDirs = ['test']
-        }
-    }
-}
-
