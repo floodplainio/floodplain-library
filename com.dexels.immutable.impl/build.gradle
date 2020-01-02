@@ -6,9 +6,9 @@
  */
 
 plugins {
-    id 'java-library'
+    id 'java'
 }
-
+	
 repositories {
     mavenCentral()
 }
@@ -24,9 +24,15 @@ dependencies {
     compile dependencies.jacksonDatabind
     compile dependencies.osgiAnnotations
     compile dependencies.osgiComponentAnnotations
-    testCompile dependencies.jUnit
-}
+    compile dependencies.cdiApi
+ }
 
+dependencies {
+    testCompile("junit:junit:4.12")
+    testRuntime("org.junit.vintage:junit-vintage-engine:5.2.0")
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.2.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.2.0'
+}
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
@@ -34,19 +40,21 @@ java {
 }
 
 
-
 sourceSets {
     main {
          java {
             srcDirs = ['src']
          }
+         resources {
+            srcDirs = ['resource']
+         }
     }
-
     test {
-        java {
-            srcDirs = ['test']
-        }
+    	java {
+			srcDirs = ['test']
+    	}
     }
 }
+
 
 

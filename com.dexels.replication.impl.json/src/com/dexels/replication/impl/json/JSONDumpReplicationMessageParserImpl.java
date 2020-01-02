@@ -7,6 +7,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Named;
+
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +27,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 //@Component(name="dexels.replication.parser.json", enabled=false)
 @Component(name="dexels.replication.parser.ndjson", property={"name=ndjson"})
-
+@Named("ndjson") @ApplicationScoped
 public class JSONDumpReplicationMessageParserImpl implements ReplicationMessageParser {
 	
 	private final static Logger logger = LoggerFactory.getLogger(JSONDumpReplicationMessageParserImpl.class);

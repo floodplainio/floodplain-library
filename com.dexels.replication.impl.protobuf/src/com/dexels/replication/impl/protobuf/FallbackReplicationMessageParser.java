@@ -7,6 +7,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Default;
+import javax.inject.Named;
+
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +25,7 @@ import com.dexels.replication.impl.protobuf.impl.ProtobufReplicationMessageParse
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 @Component(name="dexels.replication.parser.universal", property={"name=universal","version=1"})
+@Named("protobuffallback") @ApplicationScoped @Default
 
 public class FallbackReplicationMessageParser implements ReplicationMessageParser {
 

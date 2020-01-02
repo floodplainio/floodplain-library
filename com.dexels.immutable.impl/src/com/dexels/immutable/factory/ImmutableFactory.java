@@ -5,12 +5,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Default;
+
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.immutable.api.ImmutableMessageParser;
 import com.dexels.immutable.impl.ImmutableMessageImpl;
 import com.dexels.immutable.impl.JSONImmutableMessageParserImpl;
 import com.dexels.immutable.json.ImmutableJSON;
-
+@ApplicationScoped
 public class ImmutableFactory {
 
 	private static ImmutableMessageParser instance;

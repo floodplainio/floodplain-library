@@ -15,6 +15,9 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Named;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,6 +37,7 @@ import com.dexels.replication.impl.protobuf.generated.Replication.ValueProtobuf.
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 
+@Named("protobuf") @ApplicationScoped
 public class ProtobufReplicationMessageParser implements ReplicationMessageParser {
 
 	

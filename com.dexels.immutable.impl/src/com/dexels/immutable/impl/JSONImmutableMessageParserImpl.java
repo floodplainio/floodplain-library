@@ -1,5 +1,9 @@
 package com.dexels.immutable.impl;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Default;
+import javax.inject.Named;
+
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -11,7 +15,7 @@ import com.dexels.immutable.json.ImmutableJSON;
 
 //@Component(name="dexels.replication.parser.json", enabled=false)
 @Component(name="dexels.immutable.parser.json", property={"name=json"})
-
+@Named("json") @ApplicationScoped
 public class JSONImmutableMessageParserImpl implements ImmutableMessageParser {
 
 	private static final boolean INCLUDENULLVALUES = true;

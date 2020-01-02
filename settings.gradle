@@ -6,6 +6,17 @@
  * Detailed information about configuring a multi-project build in Gradle can be found
  * in the user manual at https://docs.gradle.org/5.6.2/userguide/multi_project_builds.html
  */
+pluginManagement {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+    plugins {
+      id 'io.quarkus' version "${quarkusPluginVersion}"
+    }
+}
 
 rootProject.name = 'floodplain.repository'
-include 'com.dexels.immutable.api','com.dexels.immutable.impl','com.dexels.replication.api','com.dexels.pubsub.rx2.api','com.dexels.replication.impl','com.dexels.replication.impl.json','com.dexels.replication.impl.protobuf','com.dexels.kafka.impl.rx2','com.dexels.kafka.streams.api','com.dexels.repository.api','com.dexels.repository.file','com.dexels.kafka.webapi','com.dexels.kafka.streams.sink.mongo','com.dexels.kafka.streams','com.dexels.replication.http'
+include 'com.dexels.immutable.api','com.dexels.immutable.impl','com.dexels.replication.api','com.dexels.pubsub.rx2.api','com.dexels.replication.impl','com.dexels.replication.impl.json','com.dexels.replication.impl.protobuf','com.dexels.kafka.impl.rx2','com.dexels.kafka.streams.api','com.dexels.repository.api','com.dexels.repository.file','com.dexels.kafka.webapi','com.dexels.kafka.streams.sink.mongo','com.dexels.kafka.streams','com.dexels.replication.http','quarkusexample'
+
