@@ -1,13 +1,3 @@
-
-plugins {
-    id 'java-library'
-}
-
-
-repositories {
-    mavenCentral()
-}
-
 def globalConf = rootProject.ext
 
 dependencies {
@@ -23,23 +13,4 @@ dependencies {
     testRuntime dependencies.slf4jSimple
 }
 
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
-}
-
-sourceSets {
-    main {
-         java {
-            srcDirs = ['src']
-         }
-    }
-
-    test {
-        java {
-            srcDirs = ['test']
-        }
-    }
-}
 
