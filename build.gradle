@@ -12,4 +12,8 @@ allprojects {
     }
 }
 
+subprojects {
+	apply plugin: "java"
+	apply from: "$rootProject.projectDir/gradle/common.gradle"
+}
 

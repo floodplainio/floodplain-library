@@ -1,26 +1,12 @@
-apply from: ‘gradle/dependencies.gradle’
-
-plugins {
-    id 'java-library'
-    id 'eclipse'
-}
-
+apply from: 'gradle/dependencies.gradle'
 
 repositories {
     mavenCentral()
 }
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_13
-    targetCompatibility = JavaVersion.VERSION_13
-}
+def globalConf = rootProject.ext
 
 
-dependencies {
-    Map<String, String> dependencies = globalConf.commonDependencies
-    compile dependencies.osgiAnnotations 
-    compile dependencies.slf4j
-}
 
 sourceSets {
     main {
