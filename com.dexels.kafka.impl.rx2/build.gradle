@@ -11,11 +11,6 @@ repositories {
 def globalConf = rootProject.ext
 
 
-task copyTestResources(type: Copy) {
-    from "${projectDir}/test"
-    into "${buildDir}/classes/test"
-}
-processTestResources.dependsOn copyTestResources
 dependencies {
     Map<String, String> dependencies = globalConf.commonDependencies
     implementation project(':com.dexels.immutable.api')
@@ -27,16 +22,13 @@ dependencies {
     implementation project(':com.dexels.pubsub.rx2.api')
     compile dependencies.osgiAnnotations
     compile dependencies.osgiComponentAnnotations
+    compile dependencies.reactiveStreams
+    compile dependencies.rxJava
     testCompile dependencies.jUnit
     testRuntime dependencies.slf4jSimple
     compile dependencies.kafkaClient
 }
 
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
-}
 
 sourceSets.test {
     resources.srcDirs = ["src/test"]

@@ -17,7 +17,7 @@ import io.reactivex.Flowable;
 
 public class TestMock {
 
-	@Test @Ignore
+	@Test 
 	public void testSimpleMock() {
         ReplicationFactory.setInstance(new FallbackReplicationMessageParser());
 
@@ -32,7 +32,7 @@ public class TestMock {
 			Assert.assertEquals(5, lines);
 	}
 
-	@Test @Ignore
+	@Test 
 	public void testBufferMock() {
         ReplicationFactory.setInstance(new FallbackReplicationMessageParser());
 

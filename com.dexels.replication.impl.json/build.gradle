@@ -10,12 +10,6 @@ repositories {
 
 def globalConf = rootProject.ext
 
-
-task copyTestResources(type: Copy) {
-    from "${projectDir}/test"
-    into "${buildDir}/classes/java/test"
-}
-processTestResources.dependsOn copyTestResources
 dependencies {
     Map<String, String> dependencies = globalConf.commonDependencies
     implementation project(':com.dexels.immutable.api')

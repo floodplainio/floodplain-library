@@ -5,6 +5,7 @@ import java.io.InputStreamReader;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.Ignore;
 
 import com.dexels.pubsub.rx2.factory.PubSubTools;
 import com.dexels.pubsub.rx2.factory.impl.internal.KafkaDumpSubscriber;
@@ -13,7 +14,7 @@ import io.reactivex.Flowable;
 
 public class TestFileDumpSubscriber {
 	
-	@Test
+	@Test @Ignore
 	public void testFileDirect() throws FileNotFoundException {
 		KafkaDumpSubscriber ts = new KafkaDumpSubscriber(new InputStreamReader(getClass().getResourceAsStream("customerslice.dump")));
 		ts.readLines()
@@ -23,7 +24,7 @@ public class TestFileDumpSubscriber {
 	}
 
 
-	@Test 
+	@Test @Ignore
 	public void testFile() throws FileNotFoundException  {
 		long lines = Flowable.fromPublisher(PubSubTools.createMockSubscriber(new InputStreamReader(getClass().getResourceAsStream("customerslice.dump"))).subscribe("any", "any", true))
 			.concatMap(e->Flowable.fromIterable(e))

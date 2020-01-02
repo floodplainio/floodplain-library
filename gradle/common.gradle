@@ -12,7 +12,11 @@ java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
 }
-
+task copyTestResources(type: Copy) {
+    from "${projectDir}/test"
+    into "${buildDir}/classes/test"
+}
+processTestResources.dependsOn copyTestResources
 
 
 sourceSets {
@@ -26,6 +30,9 @@ sourceSets {
     }
     test {
     	java {
+			srcDirs = ['test']
+    	}
+    	resources {
 			srcDirs = ['test']
     	}
     }
