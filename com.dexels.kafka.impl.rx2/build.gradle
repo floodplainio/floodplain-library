@@ -1,13 +1,3 @@
-
-plugins {
-    id 'java-library'
-}
-
-
-repositories {
-    mavenCentral()
-}
-
 def globalConf = rootProject.ext
 
 
@@ -22,29 +12,10 @@ dependencies {
     implementation project(':com.dexels.pubsub.rx2.api')
     compile dependencies.osgiAnnotations
     compile dependencies.osgiComponentAnnotations
-    compile dependencies.reactiveStreams
-    compile dependencies.rxJava
+    implementation dependencies.reactiveStreams
+    implementation dependencies.rxJava
     testCompile dependencies.jUnit
-    testRuntime dependencies.slf4jSimple
-    compile dependencies.kafkaClient
+    implementation dependencies.kafkaClient
+    compile dependencies.cdiApi
+    compile dependencies.microProfileConfig
 }
-
-
-sourceSets.test {
-    resources.srcDirs = ["src/test"]
-}
-
-sourceSets {
-    main {
-         java {
-            srcDirs = ['src']
-         }
-    }
-
-    test {
-        java {
-            srcDirs = ['test']
-        }
-    }
-}
-

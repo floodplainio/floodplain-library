@@ -16,6 +16,9 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
 import org.apache.kafka.clients.KafkaClient;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.ConsumerGroupDescription;
@@ -41,6 +44,7 @@ import org.reactivestreams.Subscriber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.dexels.kafka.api.KafkaTopicPublisherConfiguration;
 import com.dexels.pubsub.rx2.api.MessagePublisher;
 import com.dexels.pubsub.rx2.api.PersistentPublisher;
 import com.dexels.pubsub.rx2.api.PubSubMessage;
@@ -54,6 +58,7 @@ import io.reactivex.subscribers.DisposableSubscriber;
 
 
 @Component(name="navajo.resource.kafkatopicpublisher", configurationPolicy=ConfigurationPolicy.REQUIRE, immediate=true)
+@ApplicationScoped
 public class KafkaTopicPublisher implements PersistentPublisher,TopicPublisher {
 
 	private static final Logger logger = LoggerFactory.getLogger(KafkaTopicPublisher.class);
@@ -65,30 +70,40 @@ public class KafkaTopicPublisher implements PersistentPublisher,TopicPublisher {
 	
 	@Activate
 	public void activate(Map<String,Object> settings) {
+		String bootstrapHosts = (String) settings.get("hosts");
+		Optional<Integer> retries = Optional.ofNullable(((String)settings.get("retries"))).map(Integer::parseInt);
+		int partitions = Optional.ofNullable(((String)settings.get("partitions"))).map(Integer::parseInt).orElseThrow(()->new RuntimeException("Missing 'partitions' setting for kafka topic publisher"));
+		short replicationFactor = Optional.ofNullable(((String)settings.get("replicationFactor"))).map(Short::parseShort).orElseThrow(()->new RuntimeException("Missing 'replicationFactor' setting for kafka topic publisher"));
+		Optional<String> compression = Optional.ofNullable((String) settings.get("compression"));
+
+		KafkaTopicPublisherConfiguration publisherConfig = new KafkaTopicPublisherConfiguration(bootstrapHosts, retries, replicationFactor, partitions,compression);
+		
+		activate(publisherConfig);
+		
+	}
+
+	@Inject
+	public void activate(KafkaTopicPublisherConfiguration publisherConfig) {
 		Properties props = new Properties();
-		props.put("bootstrap.servers", settings.get("hosts"));
+		props.put("bootstrap.servers", publisherConfig.bootstrapServers);
 		props.put("acks", "all");
 		props.put("batch.size", 16384);
 		props.put("request.timeout.ms", 90000);
-		String compression = (String) settings.get("compression");
-		if(compression!=null && !"".equals(compression)) {
-			props.put("compression.type", compression);
+		if(publisherConfig.compression.isPresent()) {
+			props.put("compression.type", publisherConfig.compression);
 		}
 		props.put("linger.ms", 50);
 		props.put("buffer.memory", 33554432);
 		props.put("key.serializer", StringSerializer.class.getCanonicalName());
 		props.put("value.serializer", ByteArraySerializer.class.getCanonicalName());
 		props.put("retries", 100);
-		String retries = (String) settings.get("retries");
-		if(retries!=null) {
-			props.put("retries", Integer.parseInt(retries));
+		if(publisherConfig.retries.isPresent()) {
+			props.put("retries", publisherConfig.retries.get());
 		}
 
-		String partitionsString = (String) settings.get("partitions");
-		this.partitions = partitionsString == null? -1 : Integer.parseInt(partitionsString);
+		this.partitions = publisherConfig.partitions;
 
-		String replicationFactorString = (String) settings.get("replicationFactor");
-		this.replicationFactor = replicationFactorString == null? -1 : Short.parseShort(replicationFactorString);
+		this.replicationFactor = publisherConfig.replicationFactor;
 
 		
 		String clientId = UUID.randomUUID().toString();
@@ -102,9 +117,8 @@ public class KafkaTopicPublisher implements PersistentPublisher,TopicPublisher {
 		} finally {
 			Thread.currentThread().setContextClassLoader(original);
 		}
-		this.adminClient = createAdminClient(settings);
+		this.adminClient = createAdminClient(publisherConfig);
 		detectedTopics.addAll(listTopics());
-		
 	}
 	
 	private Set<String> listTopics() {
@@ -128,9 +142,9 @@ public class KafkaTopicPublisher implements PersistentPublisher,TopicPublisher {
 			return Single.fromFuture(detected).toFlowable().flatMap(e->Flowable.fromIterable(e));
 	}
 
-	private AdminClient createAdminClient(Map<String,Object> settings) {
+	private AdminClient createAdminClient(KafkaTopicPublisherConfiguration publisherConfiguration) {
 		Map<String,Object> adminSettings = new HashMap<>();
-		adminSettings.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, settings.get("hosts"));
+		adminSettings.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, publisherConfiguration.bootstrapServers);
 		return AdminClient.create(adminSettings);
 	}
 	

@@ -15,7 +15,7 @@ import com.dexels.immutable.json.ImmutableJSON;
 
 //@Component(name="dexels.replication.parser.json", enabled=false)
 @Component(name="dexels.immutable.parser.json", property={"name=json"})
-@Named("json") @ApplicationScoped
+@ApplicationScoped
 public class JSONImmutableMessageParserImpl implements ImmutableMessageParser {
 
 	private static final boolean INCLUDENULLVALUES = true;

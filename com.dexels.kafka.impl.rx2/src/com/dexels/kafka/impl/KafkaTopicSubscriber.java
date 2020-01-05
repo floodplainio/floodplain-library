@@ -21,6 +21,10 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
+
 import org.apache.kafka.clients.consumer.CommitFailedException;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRebalanceListener;
@@ -44,13 +48,15 @@ import org.reactivestreams.Subscription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.dexels.kafka.api.KafkaTopicSubscriberConfiguration;
 import com.dexels.kafka.api.OffsetQuery;
 import com.dexels.pubsub.rx2.api.PersistentSubscriber;
 import com.dexels.pubsub.rx2.api.PubSubMessage;
 import com.dexels.pubsub.rx2.api.TopicSubscriber;
 
 @Component(name = "navajo.resource.kafkatopicsubscriber", configurationPolicy = ConfigurationPolicy.REQUIRE, immediate = true, property={"event.topics=navajo/shutdown"})
-public class KafkaTopicSubscriber implements TopicSubscriber,PersistentSubscriber, OffsetQuery {
+@ApplicationScoped
+public class KafkaTopicSubscriber implements PersistentSubscriber,TopicSubscriber, OffsetQuery {
     private final AtomicBoolean doCommit = new AtomicBoolean(false);
     private final AtomicBoolean deactived = new AtomicBoolean(false);
     private Properties defaultProperties;
@@ -61,12 +67,22 @@ public class KafkaTopicSubscriber implements TopicSubscriber,PersistentSubscribe
 	private final static Logger logger = LoggerFactory.getLogger(KafkaTopicSubscriber.class);
 	private final Map<KafkaConsumer<String, byte[]>,Long> lastPoll = new HashMap<>();
 	private final Map<String,Map<Integer,Long>> offsets = new HashMap<>();
+
 	
 	@Activate
 	public void activate(Map<String, Object> settings) {
-		String hosts = (String) settings.get("hosts");
+//		this.pollTimeout = Integer.parseInt((String) settings.get("wait"));;
+//		configurationProperties.put("max.poll.records", settings.get("max"));
+
+		String bootstrapHosts = (String) settings.get("hosts");
+		int maxWaitMillis = Integer.parseInt((String) settings.get("wait"));
+		int maxRecordCount = Integer.parseInt((String)settings.get("max"));
+		activateConfig(new KafkaTopicSubscriberConfiguration(bootstrapHosts, maxWaitMillis, maxRecordCount));
+	}	
+
+	public void activateConfig(KafkaTopicSubscriberConfiguration config) {
 		defaultProperties = new Properties();
-		defaultProperties.put("bootstrap.servers", hosts);
+		defaultProperties.put("bootstrap.servers", config.bootstrapHosts);
 		defaultProperties.put("enable.auto.commit", false);
 		defaultProperties.put("max.poll.records", "1");
 		defaultProperties.put("max.poll.interval.ms", "300000");
@@ -76,10 +92,10 @@ public class KafkaTopicSubscriber implements TopicSubscriber,PersistentSubscribe
 		defaultProperties.put("fetch.max.wait.ms", "20000");		
 		defaultProperties.put("key.deserializer", StringDeserializer.class.getCanonicalName());
 		defaultProperties.put("value.deserializer", ByteArrayDeserializer.class.getName());
-		this.pollTimeout = Integer.parseInt((String) settings.get("wait"));;
+		this.pollTimeout = config.maxWaitMillis;
 		configurationProperties = new Properties();
 		configurationProperties.putAll(defaultProperties);
-		configurationProperties.put("max.poll.records", settings.get("max"));
+		configurationProperties.put("max.poll.records", config.maxRecordCount);
 	}
 
 
