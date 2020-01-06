@@ -9,6 +9,7 @@ dependencies {
     implementation project(':com.dexels.replication.impl')
     implementation project(':com.dexels.replication.impl.json')
     implementation project(':com.dexels.pubsub.rx2.api')
+    implementation project(':com.dexels.kafka.streams.api')
     compile dependencies.osgiAnnotations
     compile dependencies.protobuf
     compile dependencies.osgiComponentAnnotations

@@ -19,21 +19,3 @@ task copyTestResources(type: Copy) {
 processTestResources.dependsOn copyTestResources
 
 
-sourceSets {
-    main {
-         java {
-            srcDirs = ['src']
-         }
-         resources {
-            srcDirs = ['main/resources']
-         }
-    }
-    test {
-    	java {
-			srcDirs = ['test']
-    	}
-    	resources {
-			srcDirs = ['test/resources','test']
-    	}
-    }
-}

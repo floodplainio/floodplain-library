@@ -4,3 +4,21 @@ dependencies {
     Map<String, String> dependencies = globalConf.commonDependencies
     compile dependencies.osgiAnnotations
 }
+sourceSets {
+    main {
+         java {
+            srcDirs = ['src/main/java']
+         }
+         resources {
+            srcDirs = ['src/main/resources']
+         }
+    }
+    test {
+    	java {
+			srcDirs = ['src/test/java']
+    	}
+    	resources {
+			srcDirs = ['src/test/resources']
+    	}
+    }
+}

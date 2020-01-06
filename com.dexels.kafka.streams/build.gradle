@@ -25,6 +25,7 @@ dependencies {
     compile dependencies.mongoBson
     compile dependencies.mongoDriver
     compile dependencies.mongoReactive
+    compile dependencies.kafkaClient
     compile dependencies.kafkaStreams
     compile dependencies.kafkaConnectApi
     compile dependencies.kafkaConnectJson

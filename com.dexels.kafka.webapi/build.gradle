@@ -22,4 +22,6 @@ dependencies {
     compile dependencies.mongoBson
     compile dependencies.mongoDriver
     compile dependencies.mongoReactive
+    compile dependencies.reactiveStreams
+    compile dependencies.rxJava
 }

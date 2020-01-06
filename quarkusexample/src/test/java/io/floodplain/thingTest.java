@@ -1,17 +1,16 @@
 package io.floodplain;
 
-import io.quarkus.test.junit.QuarkusTest;
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.CoreMatchers.containsString;
 
-import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
 
-import static io.restassured.RestAssured.given;
-import static org.hamcrest.CoreMatchers.*;
+import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
 public class thingTest {
 
-    @Test @Ignore
+    @Test
     public void testHelloEndpoint() {
         given()
           .when().get("/hello")
