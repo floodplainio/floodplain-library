@@ -18,6 +18,12 @@ dependencies {
     implementation project(':com.dexels.replication.impl.protobuf')
     implementation project(':com.dexels.pubsub.rx2.api')
     implementation project(':com.dexels.kafka.impl.rx2')
+    implementation project(':com.dexels.kafka.webapi')
+    implementation project(':com.dexels.repository.api')
+    implementation project(':com.dexels.repository.file')
+    implementation project(':com.dexels.kafka.streams.api')
+    implementation project(':com.dexels.kafka.streams')
+    implementation project(':com.dexels.kafka.streams.sink.mongo')
     testImplementation 'io.quarkus:quarkus-junit5'
     testImplementation 'io.rest-assured:rest-assured'
     testCompile("junit:junit:4.12")
