@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-import org.apache.kafka.clients.KafkaClient;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.ConsumerGroupDescription;
 import org.apache.kafka.clients.admin.ConsumerGroupListing;
@@ -84,14 +83,13 @@ public class KafkaTopicPublisher implements PersistentPublisher,TopicPublisher {
 
 	@Inject
 	public void activate(KafkaTopicPublisherConfiguration publisherConfig) {
+		logger.info("Constructing Kafka Publisher: "+publisherConfig.compression());
 		Properties props = new Properties();
 		props.put("bootstrap.servers", publisherConfig.bootstrapServers());
 		props.put("acks", "all");
 		props.put("batch.size", 16384);
 		props.put("request.timeout.ms", 90000);
-		if(publisherConfig.compression().isPresent()) {
-			props.put("compression.type", publisherConfig.compression());
-		}
+		publisherConfig.compression().ifPresent(comp->props.put("compression.type", comp));
 		props.put("linger.ms", 50);
 		props.put("buffer.memory", 33554432);
 		props.put("key.serializer", StringSerializer.class.getCanonicalName());
@@ -110,13 +108,7 @@ public class KafkaTopicPublisher implements PersistentPublisher,TopicPublisher {
 		if(clientId!=null) {
 			props.put("client.id", clientId);
 		}
-		final ClassLoader original = Thread.currentThread().getContextClassLoader();
-		Thread.currentThread().setContextClassLoader(KafkaClient.class.getClassLoader());
-		try {
-			producer = new KafkaProducer<>(props);
-		} finally {
-			Thread.currentThread().setContextClassLoader(original);
-		}
+		producer = new KafkaProducer<>(props);
 		this.adminClient = createAdminClient(publisherConfig);
 		detectedTopics.addAll(listTopics());
 	}

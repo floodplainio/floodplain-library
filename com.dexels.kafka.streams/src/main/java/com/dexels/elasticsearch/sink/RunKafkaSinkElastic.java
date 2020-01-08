@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
 
 import org.apache.kafka.common.utils.Time;
 import org.apache.kafka.common.utils.Utils;
-import org.apache.kafka.connect.connector.policy.NoneConnectorClientConfigOverridePolicy;
 import org.apache.kafka.connect.runtime.ConnectorConfig;
 import org.apache.kafka.connect.runtime.Herder;
 import org.apache.kafka.connect.runtime.Worker;
@@ -129,28 +128,21 @@ public class RunKafkaSinkElastic implements ConnectSink {
         logger.info("Kafka Connect standalone worker initializing ...");
         WorkerInfo initInfo = new WorkerInfo();
         initInfo.logAll();
-		ClassLoader original = Thread.currentThread().getContextClassLoader();
-		try {
-			ClassLoader loader = this.getClass().getClassLoader();
-			Thread.currentThread().setContextClassLoader(loader);
+		Map<String, String> propsToStringMap = Utils.propsToStringMap(workerProperties);
+		System.err.println("worker: "+workerProperties);
+		WorkerConfig config = new StandaloneConfig(propsToStringMap);
+		String clusterId = ConnectUtils.lookupKafkaClusterId(config);
+		logger.info("Using clusterid: {}",clusterId);
+		offsetBackingStore = new FileOffsetBackingStore();
+		offsetBackingStore.configure(config);
 
-			Map<String, String> propsToStringMap = Utils.propsToStringMap(workerProperties);
-			System.err.println("worker: "+workerProperties);
-			WorkerConfig config = new StandaloneConfig(propsToStringMap);
-			String clusterId = ConnectUtils.lookupKafkaClusterId(config);
-			logger.info("Using clusterid: {}",clusterId);
-			offsetBackingStore = new FileOffsetBackingStore();
-			offsetBackingStore.configure(config);
+        Plugins plugins = new Plugins(propsToStringMap);
+        plugins.compareAndSwapWithDelegatingLoader();
+			
+		worker = new Worker(clusterId, time, plugins, config, offsetBackingStore);
+		herder = new StandaloneHerder(worker,clusterId);
+		this.connectorConfigs = connectorConfigProperties; 
 
-	        Plugins plugins = new Plugins(propsToStringMap);
-	        plugins.compareAndSwapWithDelegatingLoader();
-				
-			worker = new Worker(clusterId, time, plugins, config, offsetBackingStore, null);
-			herder = new StandaloneHerder(worker,clusterId, new NoneConnectorClientConfigOverridePolicy());
-			this.connectorConfigs = connectorConfigProperties; 
-		} finally {
-			Thread.currentThread().setContextClassLoader(original);
-		}
 	}
 
 	public void start() {

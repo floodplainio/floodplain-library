@@ -9,4 +9,6 @@ dependencies {
     compile dependencies.slf4j
     implementation project(':com.dexels.repository.api')
     testCompile dependencies.jUnit
+    compile dependencies.cdiApi
+    compile dependencies.microProfileConfig
 }

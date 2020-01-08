@@ -1,6 +1,6 @@
 ext {
     jackson_version = "2.10.1"
-    kafka_version = "2.4.0"
+    kafka_version = "2.2.2"
     osgi_version = "7.0.0"
     mongodb_version = "3.12.0"
     slf4j_version = "1.7.30"
@@ -26,11 +26,12 @@ ext {
             mongoAsync        : "org.mongodb:mongodb-driver-async:$mongodb_version",
             mongoReactive     : "org.mongodb:mongodb-driver-reactivestreams:1.13.0",
             kafkaClient       : "org.apache.kafka:kafka-clients:$kafka_version",
-            kafkaConnectApi   : "org.apache.kafka:connect-api:$kafka_version",
-            kafkaConnectRuntime : "org.apache.kafka:connect-runtime:$kafka_version",
-            kafkaConnectJson  : "org.apache.kafka:connect-json:$kafka_version",
-            kafkaConnectFile  : "org.apache.kafka:connect-file:$kafka_version",
-            kafkaStreams      : "org.apache.kafka:kafka-streams:$kafka_version"
+            kafkaConnectApi        : "org.apache.kafka:connect-api:$kafka_version",
+            kafkaConnectRuntime    : "org.apache.kafka:connect-runtime:$kafka_version",
+            kafkaConnectJson       : "org.apache.kafka:connect-json:$kafka_version",
+            kafkaConnectFile       : "org.apache.kafka:connect-file:$kafka_version",
+            kafkaConnectTransform  : "org.apache.kafka:connect-transform:$kafka_version",
+            kafkaStreams           : "org.apache.kafka:kafka-streams:$kafka_version"
             
     ]
 }

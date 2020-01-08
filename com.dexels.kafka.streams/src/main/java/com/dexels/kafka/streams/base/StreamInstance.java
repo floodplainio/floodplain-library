@@ -17,9 +17,7 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 
-import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.errors.InvalidTopicException;
@@ -34,7 +32,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.dexels.elasticsearch.sink.RunKafkaSinkElastic;
-import com.dexels.kafka.factory.KafkaClientFactory;
 import com.dexels.kafka.streams.api.CoreOperators;
 import com.dexels.kafka.streams.api.StreamTopologyException;
 import com.dexels.kafka.streams.api.TopologyContext;
@@ -47,16 +44,8 @@ import com.dexels.kafka.streams.xml.parser.CaseSensitiveXMLElement;
 import com.dexels.kafka.streams.xml.parser.XMLElement;
 import com.dexels.mongodb.sink.RunKafkaConnect;
 import com.dexels.mongodb.sink.SinkTransformerRegistry;
-import com.dexels.pubsub.rx2.api.TopicPublisher;
-import com.dexels.pubsub.rx2.api.TopicSubscriber;
 import com.dexels.replication.api.ReplicationMessage;
-import com.dexels.replication.factory.ReplicationFactory;
 import com.dexels.replication.transformer.api.MessageTransformer;
-
-import io.reactivex.Completable;
-import io.reactivex.Flowable;
-import io.reactivex.FlowableTransformer;
-import io.reactivex.schedulers.Schedulers;
 
 public class StreamInstance {
 	private final Map<String,KafkaStreams> streams = new HashMap<>();
@@ -206,7 +195,7 @@ public class StreamInstance {
 			}
 			
 		} else {
-			String[] tenants = tenantDefinition.split(",");
+			String[] tenants = tenantDefinition == null ? new String[] {"DEFAULT"}  : tenantDefinition.split(",");
 			for (String tenant : tenants) {
 				parseForTenant(topologyBuilder, repositoryDeployment, xe, generation, storagePath, storageFolder, Optional.of(tenant));
 			}
@@ -282,18 +271,18 @@ public class StreamInstance {
 			}
 		}
 	}
-	
-	public TopicPublisher createPublisher() {
-		return KafkaClientFactory.createPublisher(this.configuration.kafkaHosts(),1,this.configuration.kafkaReplicationFactor());
-	}
-
-	public TopicSubscriber createSubscriber() {
-		Map<String,String> conf = new HashMap<>();
-		conf.put("wait", ""+this.configuration.kafkaSubscribeMaxWait());
-		conf.put("max", ""+this.configuration.kafkaSubscribeMaxSize());
-		return KafkaClientFactory.createSubscriber(this.configuration.kafkaHosts(), conf);
-	}
-	
+//	
+//	public TopicPublisher createPublisher() {
+//		return KafkaClientFactory.createPublisher(this.configuration.kafkaHosts(),1,this.configuration.kafkaReplicationFactor());
+//	}
+//
+//	public TopicSubscriber createSubscriber() {
+//		Map<String,String> conf = new HashMap<>();
+//		conf.put("wait", ""+this.configuration.kafkaSubscribeMaxWait());
+//		conf.put("max", ""+this.configuration.kafkaSubscribeMaxSize());
+//		return KafkaClientFactory.createSubscriber(this.configuration.kafkaHosts(), conf);
+//	}
+//	
 	private void addSinks(String sinkType, XMLElement x, String generation, String brokers, Optional<String> tenant, String deployment, File storageFolder, int index) throws IOException, InterruptedException, ExecutionException {
 		boolean useDirectSinks = System.getenv("DIRECT_SINK")!=null && "true".equals(System.getenv("DIRECT_SINK"));
 	   createSink(determineSinkType(sinkType,useDirectSinks),x, generation, tenant, deployment, storageFolder);
@@ -346,7 +335,7 @@ public class StreamInstance {
         	// TODO Neo disabled
         }
         if(type==SinkType.ELASTICSEARCHDIRECT || type==SinkType.MONGODBDIRECT| type==SinkType.NEO4J) {
-        	createDirectSink(type,x,configuration,topologyContext, name);
+//        	createDirectSink(type,x,configuration,topologyContext, name);
         	return;
         }
         final ConnectSink connect;
@@ -364,46 +353,46 @@ public class StreamInstance {
         connect.start();
     }
 
-	private void createDirectSink(SinkType type, XMLElement x, StreamConfiguration streamConfiguration, TopologyContext context, String name) {
-		System.err.println("Sink: "+x);
-		System.err.println("name: "+name+" type: "+type);
-		List<String> topics = x.getChildrenByTagName("sink")
-				.stream()
-				.map(e->e.getStringAttribute("topic"))
-				.map(topic->CoreOperators.topicName(topic,context))
-				.collect(Collectors.toList());
-		logger.info("Registering topics: {}",topics);
-		Map<String,FlowableTransformer<ReplicationMessage, Completable>> sinks = new HashMap<>();
-		x.getChildrenByTagName("sink").forEach(xe->{
-			final String tpc = xe.getStringAttribute("topic");
-			String resolvedTopic = CoreOperators.topicName(tpc, context);
-			sinks.put(resolvedTopic, sinkRegistry.get(type).createTransformer(xe.attributes(),streamConfiguration.sink(name), context.instance, context.tenant,context.deployment,context.generation));
-			System.err.println("Compiled transformer for topic: "+resolvedTopic);
-		});
-		String genGroup = CoreOperators.generationalGroup(name,context.withInstance("directsink-"+context.instance));
-		TopicSubscriber ts = createSubscriber(streamConfiguration, genGroup, context.instance);
-		logger.info("Regst. sink: {} with group: {}",name,genGroup);
-		Flowable.fromPublisher(ts.subscribe(topics, genGroup, Optional.empty(), true, ()->{}))
-			.concatMap(e->Flowable.fromIterable(e))
-			.map(p->ReplicationFactory.getInstance().parseBytes(p))
-			.groupBy(msg->msg.source())
-			.subscribeOn(Schedulers.io())
-			.observeOn(Schedulers.io())
-			.flatMap(e-> {
-				if(!e.getKey().isPresent()) {
-					System.err.println("e:"+e);
-				}
-				System.err.println("Retrieving sinkss: "+e.getKey().get());
-				FlowableTransformer<ReplicationMessage, Completable> flowableTransformer = sinks.get(e.getKey().get());
-				return e.doOnNext(res->System.err.println(ReplicationFactory.getInstance().describe(res)))
-						.compose(flowableTransformer); 
-			})
-			.subscribe();
-	}
-	
-	private static TopicSubscriber createSubscriber(StreamConfiguration streamConfiguration, String name, String instanceName) {
-		return KafkaClientFactory.createSubscriber(streamConfiguration.kafkaHosts(), Collections.emptyMap());
-	}
+//	private void createDirectSink(SinkType type, XMLElement x, StreamConfiguration streamConfiguration, TopologyContext context, String name) {
+//		System.err.println("Sink: "+x);
+//		System.err.println("name: "+name+" type: "+type);
+//		List<String> topics = x.getChildrenByTagName("sink")
+//				.stream()
+//				.map(e->e.getStringAttribute("topic"))
+//				.map(topic->CoreOperators.topicName(topic,context))
+//				.collect(Collectors.toList());
+//		logger.info("Registering topics: {}",topics);
+//		Map<String,FlowableTransformer<ReplicationMessage, Completable>> sinks = new HashMap<>();
+//		x.getChildrenByTagName("sink").forEach(xe->{
+//			final String tpc = xe.getStringAttribute("topic");
+//			String resolvedTopic = CoreOperators.topicName(tpc, context);
+//			sinks.put(resolvedTopic, sinkRegistry.get(type).createTransformer(xe.attributes(),streamConfiguration.sink(name), context.instance, context.tenant,context.deployment,context.generation));
+//			System.err.println("Compiled transformer for topic: "+resolvedTopic);
+//		});
+//		String genGroup = CoreOperators.generationalGroup(name,context.withInstance("directsink-"+context.instance));
+//		TopicSubscriber ts = createSubscriber(streamConfiguration, genGroup, context.instance);
+//		logger.info("Regst. sink: {} with group: {}",name,genGroup);
+//		Flowable.fromPublisher(ts.subscribe(topics, genGroup, Optional.empty(), true, ()->{}))
+//			.concatMap(e->Flowable.fromIterable(e))
+//			.map(p->ReplicationFactory.getInstance().parseBytes(p))
+//			.groupBy(msg->msg.source())
+//			.subscribeOn(Schedulers.io())
+//			.observeOn(Schedulers.io())
+//			.flatMap(e-> {
+//				if(!e.getKey().isPresent()) {
+//					System.err.println("e:"+e);
+//				}
+//				System.err.println("Retrieving sinkss: "+e.getKey().get());
+//				FlowableTransformer<ReplicationMessage, Completable> flowableTransformer = sinks.get(e.getKey().get());
+//				return e.doOnNext(res->System.err.println(ReplicationFactory.getInstance().describe(res)))
+//						.compose(flowableTransformer); 
+//			})
+//			.subscribe();
+//	}
+//	
+//	private static TopicSubscriber createSubscriber(StreamConfiguration streamConfiguration, String name, String instanceName) {
+//		return KafkaClientFactory.createSubscriber(streamConfiguration.kafkaHosts(), Collections.emptyMap());
+//	}
 	
 	
 	public StreamConfiguration getConfig() {
@@ -459,35 +448,29 @@ public class StreamInstance {
     }
     
     public void shutdown() {
-		final ClassLoader original = Thread.currentThread().getContextClassLoader();
-		try {
-			Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
-			for(ConnectSink sink : sinks) {
-                logger.info("Closing sink instance: {}", sink);
-                try {
-                    sink.shutdown();
-                } catch (Throwable e) {
-                    logger.error("Error: ", e);
-                }
-                logger.info("Done closing sink instance: {}", sink);
+		for(ConnectSink sink : sinks) {
+            logger.info("Closing sink instance: {}", sink);
+            try {
+                sink.shutdown();
+            } catch (Throwable e) {
+                logger.error("Error: ", e);
             }
-			
-			for (KafkaStreams kafkaStream : streams.values()) {
-				logger.info("Closing stream instance: {}", kafkaStream);
-				kafkaStream.close();
-				logger.info("Done closing stream instance: {}",kafkaStream);
-				startedStreams.remove(kafkaStream);
-			}
-			for (GenericProcessor processor : startedProcessors) {
-				processor.stop();
-			}
-			sinks.clear();
-			streams.clear();
-			topologyDescriptions.clear();
-			logger.info("Steams shutdown complete");
-		} finally {
-			Thread.currentThread().setContextClassLoader(original);
+            logger.info("Done closing sink instance: {}", sink);
+        }
+		
+		for (KafkaStreams kafkaStream : streams.values()) {
+			logger.info("Closing stream instance: {}", kafkaStream);
+			kafkaStream.close();
+			logger.info("Done closing stream instance: {}",kafkaStream);
+			startedStreams.remove(kafkaStream);
 		}
+		for (GenericProcessor processor : startedProcessors) {
+			processor.stop();
+		}
+		sinks.clear();
+		streams.clear();
+		topologyDescriptions.clear();
+		logger.info("Steams shutdown complete");
     }
 
 }

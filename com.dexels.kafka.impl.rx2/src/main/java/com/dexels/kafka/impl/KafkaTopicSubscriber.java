@@ -22,7 +22,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import org.apache.kafka.clients.consumer.CommitFailedException;
@@ -80,7 +79,9 @@ public class KafkaTopicSubscriber implements PersistentSubscriber,TopicSubscribe
 		activateConfig(new KafkaTopicSubscriberConfiguration(bootstrapHosts, maxWaitMillis, maxRecordCount));
 	}	
 
+	@Inject
 	public void activateConfig(KafkaTopicSubscriberConfiguration config) {
+		logger.info("Activating kafka subscription");
 		defaultProperties = new Properties();
 		defaultProperties.put("bootstrap.servers", config.bootstrapHosts());
 		defaultProperties.put("enable.auto.commit", false);
@@ -350,26 +351,19 @@ public class KafkaTopicSubscriber implements PersistentSubscriber,TopicSubscribe
 	private synchronized KafkaConsumer<String, byte[]> createConsumer(String groupId, Optional<String> clientId, boolean withHistory, Runnable onPartitionsAssigned) {
 		KafkaConsumer<String, byte[]> consumer;
 		logger.info("Creating a consumer groupid: {} clientid: {} with history: {}",groupId,clientId,withHistory);
-		final ClassLoader original = Thread.currentThread().getContextClassLoader();
-		try {
-			Properties copy = new Properties();
-			copy.putAll(configurationProperties);
-			copy.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
-			if(clientId.isPresent()) {
-				copy.put(ConsumerConfig.CLIENT_ID_CONFIG, clientId.get());
-			}
-			if(withHistory) {
-				copy.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-			} else {
-				copy.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
-			}
-			Thread.currentThread().setContextClassLoader(KafkaConsumer.class.getClassLoader());
-			consumer = new KafkaConsumer<>(copy);
-			consumers.add(consumer);
-			
-		} finally {
-			Thread.currentThread().setContextClassLoader(original);
+		Properties copy = new Properties();
+		copy.putAll(configurationProperties);
+		copy.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
+		if(clientId.isPresent()) {
+			copy.put(ConsumerConfig.CLIENT_ID_CONFIG, clientId.get());
 		}
+		if(withHistory) {
+			copy.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+		} else {
+			copy.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
+		}
+		consumer = new KafkaConsumer<>(copy);
+		consumers.add(consumer);
 		return consumer;
 	}
 	

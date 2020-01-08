@@ -21,7 +21,15 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Default;
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.apache.kafka.streams.Topology;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
@@ -35,6 +43,7 @@ import org.slf4j.LoggerFactory;
 
 import com.dexels.http.reactive.elasticsearch.ElasticSink;
 import com.dexels.http.reactive.graph.NeoSink;
+import com.dexels.kafka.factory.KafkaClientFactory;
 import com.dexels.kafka.streams.api.StreamTopologyException;
 import com.dexels.kafka.streams.api.sink.Sink;
 import com.dexels.kafka.streams.api.sink.SinkConfiguration;
@@ -56,6 +65,7 @@ import com.dexels.kafka.streams.xml.parser.CaseSensitiveXMLElement;
 import com.dexels.kafka.streams.xml.parser.XMLElement;
 import com.dexels.kafka.streams.xml.parser.XMLParseException;
 import com.dexels.navajo.repository.api.RepositoryInstance;
+import com.dexels.pubsub.rx2.api.TopicPublisher;
 import com.dexels.replication.transformer.api.MessageTransformer;
 
 import io.reactivex.Observable;
@@ -65,8 +75,12 @@ import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
 
 @Component(name="kafka.stream.runtime", service = {StreamRuntime.class}, immediate=true)
+@ApplicationScoped @Default
 public class StreamRuntime {
 
+	@ConfigProperty(name="stream.generation")
+	Optional<String> configuredGeneration;
+	
 	private static final Logger logger = LoggerFactory.getLogger(StreamRuntime.class);
 	private final Map<String,StreamInstance> streams = new HashMap<>();
 	
@@ -80,7 +94,6 @@ public class StreamRuntime {
 
 	private final Map<String,MessageTransformer> transformerRegistry = new HashMap<>();
 	private final Map<String,GenericProcessorBuilder> genericProcessorRegistry = new HashMap<>();
-	private ConfigurationAdmin configAdmin;
 	
 	public StreamRuntime() {
 		String filter = System.getenv("FILTER_INSTANCES");
@@ -117,10 +130,12 @@ public class StreamRuntime {
 	}
 
 	@Activate
+	@PostConstruct
 	public void activate() throws IOException, InterruptedException, ExecutionException {
+		System.err.println("Starting runtime");
 		File resources = new File(this.repositoryInstance.getRepositoryFolder(),"config/resources.xml");
 		try (Reader r = new FileReader(resources)){
-			this.configuration = parseConfig(this.repositoryInstance.getDeployment(),r,configAdmin);
+			this.configuration = parseConfig(this.repositoryInstance.getDeployment(),r);
 		} catch (XMLParseException | IOException e) {
 			logger.error("Error starting streaminstance", e);
 			return;
@@ -130,6 +145,10 @@ public class StreamRuntime {
 		parseFromRepository();
 		logger.info("Streams: {}",streams.keySet());
 		startInstances();
+	}
+	
+	public Optional<String> configuredGeneration() {
+		return configuredGeneration;
 	}
 	
 	private synchronized void startInstances() {
@@ -151,36 +170,14 @@ public class StreamRuntime {
 		
 	}
 
-	@Reference(target="(name=teamorder)")
-	public void setTeamOrder(MessageTransformer teamOrder) {
-		this.transformerRegistry.put("teamorder", teamOrder);
-	}
-
-	@Reference(target="(name=normalizeteamname)")
-	public void setNormalizer(MessageTransformer normalizeTeam) {
-		this.transformerRegistry.put("normalizeteamname", normalizeTeam);
-	}
 
 	@Reference(target="(name=dexels.debezium.processor)")
+	@Inject @Named(value = "debezium")
 	public void setDebeziumProcessor(GenericProcessorBuilder processor) {
 		this.genericProcessorRegistry.put("debezium", processor);
 	}
 
-	@Reference(unbind="clearConfigAdmin",policy=ReferencePolicy.DYNAMIC)
-	public void setConfigAdmin(ConfigurationAdmin configAdmin) {
-		this.configAdmin = configAdmin;
-	}
-
-	/**
-	 * @param configAdmin the configAdmin to remove 
-	 */
-	public void clearConfigAdmin(ConfigurationAdmin configAdmin) {
-		this.configAdmin = null;
-	}
-
-
-	
-	public static StreamConfiguration parseConfig(String deployment,Reader r, ConfigurationAdmin configAdmin) {
+	public static StreamConfiguration parseConfig(String deployment,Reader r) {
 		try {
 			XMLElement xe = new CaseSensitiveXMLElement();
 			xe.parseFromReader(r);
@@ -188,7 +185,7 @@ public class StreamRuntime {
 				.stream()
 				.filter(elt->"deployment".equals( elt.getName()))
 				.filter(elt->deployment.equals(elt.getStringAttribute("name")))
-				.map(elt->toStreamConfig(deployment,elt,configAdmin))
+				.map(elt->toStreamConfig(deployment,elt))
 				.findFirst();
 			if(!found.isPresent()) {
 				throw new StreamTopologyException("No configuration found for deployment: "+deployment);
@@ -201,7 +198,7 @@ public class StreamRuntime {
 		
 	}
 
-	private static StreamConfiguration toStreamConfig(String deployment,XMLElement deploymentXML, ConfigurationAdmin configAdmin) {
+	private static StreamConfiguration toStreamConfig(String deployment,XMLElement deploymentXML) {
 		String kafka = deploymentXML.getStringAttribute("kafka");
 		int maxWait = deploymentXML.getIntAttribute("maxWait", 5000);
 		int maxSize = deploymentXML.getIntAttribute("maxSize", 100);
@@ -211,9 +208,9 @@ public class StreamRuntime {
 			.map(elt->new SinkConfiguration(elt.getName(),elt.getStringAttribute("name"), elt.attributes()))
 			.collect(Collectors.toMap(e->e.name(), e->e));
 		final StreamConfiguration streamConfiguration = new StreamConfiguration(kafka, sinks,deployment,maxWait,maxSize,replicationFactor);
-		if(configAdmin!=null) {
-			registerSinks(streamConfiguration,configAdmin);
-		}
+//		if(configAdmin!=null) {
+//			registerSinks(streamConfiguration,configAdmin);
+//		}
 		return streamConfiguration;
 	}
 
@@ -277,7 +274,7 @@ public class StreamRuntime {
 		}
 		File streamFolder = new File(repo,"streams");
 		File[] folders =  streamFolder.listFiles(file->file.isDirectory());
-		String generationEnv = System.getenv("GENERATION");
+		String generationEnv = configuredGeneration().orElseGet(()->System.getenv("GENERATION")); // System.getenv("GENERATION");
 		
 		if(generationEnv==null || "".equals(generationEnv)) {
 			throw new IllegalArgumentException("Can not load stream instance: no generation");
@@ -336,15 +333,11 @@ public class StreamRuntime {
 			logger.warn("Ignoring empty file: {}",file.getAbsolutePath());
 			return;
 		}
-		ClassLoader original = Thread.currentThread().getContextClassLoader();
 		try(InputStream definitionStream = new FileInputStream(file)) {
-			Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
 			StreamInstance si = new StreamInstance(friendlyName(name), this.configuration,this.transformerRegistry,this.genericProcessorRegistry,this.sinkRegistry);
 			Topology topology = new Topology();
 			si.parseStreamMap(topology,definitionStream,outputStorage,this.repositoryInstance.getDeployment(),generation,Optional.of(file));
 			streams.put(friendlyName(name),si);
-		} finally {
-			Thread.currentThread().setContextClassLoader(original);
 		}
 	}
 	
@@ -355,6 +348,7 @@ public class StreamRuntime {
 		return name.replaceAll("/", "-");
 	}
 
+	@Inject
 	@Reference(policy=ReferencePolicy.DYNAMIC,unbind="clearRepositoryInstance")
 	public void setRepositoryInstance(RepositoryInstance instance) {
 		this.repositoryInstance = instance;
@@ -364,34 +358,30 @@ public class StreamRuntime {
 		this.repositoryInstance = null;
 	}
 
+	@PreDestroy
     @Deactivate
     public void deactivate() {
     	logger.info("Starting deactivate of Kafka Streams");
     	if(this.updateQueueSubscription!=null) {
     		this.updateQueueSubscription.dispose();
     	}
-		final ClassLoader original = Thread.currentThread().getContextClassLoader();
-		try {
-			Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
 			
-			Observable.fromIterable(streams.entrySet())
-			.observeOn(Schedulers.newThread())
-			.subscribe(si -> {
-			    try {
-                    si.getValue().shutdown();
-                } catch (Throwable e) {
-                    logger.error("Error shutting down instance: "+si.getValue(),e );
-                }
-			    
-			});
-			
-			
+		Observable.fromIterable(streams.entrySet())
+		.observeOn(Schedulers.newThread())
+		.subscribe(si -> {
+		    try {
+                si.getValue().shutdown();
+            } catch (Throwable e) {
+                logger.error("Error shutting down instance: "+si.getValue(),e );
+            }
+		    
+		});
+		
+		
 
-			streams.clear();
-			this.startedInstances.clear();
-		} finally {
-			Thread.currentThread().setContextClassLoader(original);
-		}
+		streams.clear();
+		this.startedInstances.clear();
+
 		try {
 			Thread.sleep(5000);
 		} catch (InterruptedException e) {
