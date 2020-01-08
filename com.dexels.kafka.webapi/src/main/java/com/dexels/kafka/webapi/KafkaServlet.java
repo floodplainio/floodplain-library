@@ -3,28 +3,25 @@ package com.dexels.kafka.webapi;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import javax.servlet.Servlet;
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.dexels.navajo.repository.api.RepositoryInstance;
 import com.dexels.pubsub.rx2.api.PersistentPublisher;
 import com.dexels.pubsub.rx2.api.PersistentSubscriber;
-import com.dexels.pubsub.rx2.api.TopicPublisher;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -35,17 +32,20 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
 
-@Component(configurationPolicy=ConfigurationPolicy.IGNORE,  name="dexels.kafka.servlet",property={"servlet-name=dexels.kafka.servlet","alias=/kafka","asyncSupported.Boolean=true"},immediate=true,service = { Servlet.class})
-public class KafkaServlet extends HttpServlet {
+@Path("/blini")
+public class KafkaServlet {
 
 	private static final long serialVersionUID = 8563181635935834994L;
 
-	private PersistentSubscriber persistentSubscriber;
-	private PersistentPublisher publisher;
+	@Inject
+	PersistentSubscriber persistentSubscriber;
 
-	private RepositoryInstance repositoryInstance;
+	@Inject
+	PersistentPublisher publisher;
 
-	private Map<String, Object> repositorySettings;
+	@Inject
+	RepositoryInstance repositoryInstance;
+
 	
 	private static final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -53,38 +53,12 @@ public class KafkaServlet extends HttpServlet {
 	private final static Logger logger = LoggerFactory.getLogger(KafkaServlet.class);
 
 	
-	@Reference(policy=ReferencePolicy.DYNAMIC, unbind="clearPersistentSubscriber")
-	public void setPersistentSubscriber(PersistentSubscriber persistenSubscriber) {
-		this.persistentSubscriber = persistenSubscriber;
-	}
-	
-	public void clearPersistentSubscriber(PersistentSubscriber persistenSubscriber) {
-		this.persistentSubscriber = null;
-	}
-
-	@Reference(policy=ReferencePolicy.DYNAMIC, unbind="clearTopicPublisher")
-	public void setTopicPublisher(PersistentPublisher publisher) {
-		this.publisher = publisher;
-	}
-	
-	
-	public void clearTopicPublisher(TopicPublisher publisher) {
-		this.publisher = null;
-	}
-	
-	@Reference(policy=ReferencePolicy.DYNAMIC,unbind="clearRepositoryInstance",cardinality=ReferenceCardinality.OPTIONAL)
-	public void setRepositoryInstance(RepositoryInstance repository, Map<String,Object> repoSettings) {
-		this.repositoryInstance = repository;
-		this.repositorySettings = repoSettings;
-	}
-
-	public void clearRepositoryInstance(RepositoryInstance repository) {
-		this.repositoryInstance = null;
-		this.repositorySettings = null;
+	@PostConstruct
+	public void activate() {
+		System.err.println("Blini online");
 	}
 
 	
-	@Override
 	protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		resp.addHeader("Access-Control-Allow-Origin", "*");
 		try(final PrintWriter writer = resp.getWriter()) {
@@ -154,7 +128,13 @@ public class KafkaServlet extends HttpServlet {
 		
 	}
 	
-	@Override
+
+	@GET
+	@Produces(MediaType.TEXT_PLAIN)
+	protected String something() {
+		return "boob";
+	}
+	
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		resp.addHeader("Access-Control-Allow-Origin", "*");
 		resp.setContentType("application/json");

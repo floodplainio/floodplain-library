@@ -38,7 +38,7 @@ public class ResourceManager {
 	public void activate() throws IOException {
 		File resources = new File(this.repositoryInstance.getRepositoryFolder(),"config/resources.xml");
 		try (Reader r = new FileReader(resources)){
-			this.configuration = StreamRuntime.parseConfig(this.repositoryInstance.getDeployment(),r,configAdmin);
+			this.configuration = StreamRuntime.parseConfig(this.repositoryInstance.getDeployment(),r);
 			createPublisherConfig(createOrReuse(KAFKA_PUBLISHER_PID, "(source=kafkastreams)"));
 			createSubscriberConfig(createOrReuse(KAFKA_SUBSCRIBER_PID, "(source=kafkastreams)"));
 		}

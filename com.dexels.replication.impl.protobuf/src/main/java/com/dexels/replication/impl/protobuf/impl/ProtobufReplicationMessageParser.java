@@ -57,22 +57,16 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
 		}
 	}
 	
-	private static final ThreadLocal<SimpleDateFormat> dateFormat = new ThreadLocal<SimpleDateFormat>() {
-		 @Override
-	        protected SimpleDateFormat initialValue()
-	        {
-	            return new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss.SS");
-	        }
-	}; 
-	private static final ThreadLocal<SimpleDateFormat> clocktimeFormat = new ThreadLocal<SimpleDateFormat>() {
-		 @Override
-	        protected SimpleDateFormat initialValue()
-	        {
-	            return new SimpleDateFormat("HH:mm:ss");
-	        }
-	}; 
+	private static final SimpleDateFormat dateFormat() {
+        return new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss.SS");
+	}
 
-	private static String serializeValue(String type, Object val) {
+	private static final SimpleDateFormat clocktimeFormat() {
+        return new SimpleDateFormat("HH:mm:ss");
+	}
+
+
+	private static String serializeValue(String type, Object val, SimpleDateFormat dateFormat, SimpleDateFormat clocktimeFormat) {
 		if(val==null) {
 			return null;
 		}
@@ -104,12 +98,12 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
 				if(val instanceof String) {
 					return (String) val;
 				}
-				return dateFormat.get().format((Date)val);
+				return dateFormat.format((Date)val);
 			case "clocktime":
 				if(val instanceof String) {
 					return (String) val;
 				}
-				return clocktimeFormat.get().format((Date)val);
+				return clocktimeFormat.format((Date)val);
 			case "list":
 				List<String> v = (List<String>)val;
 				return v.stream().collect(Collectors.joining(","));
@@ -122,7 +116,7 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
 		}	
 	}
 //	"2017-03-31 11:28:46.00"
-	private static Object protobufValue(ValueProtobuf val) {
+	private static Object protobufValue(ValueProtobuf val, SimpleDateFormat dataFormat, SimpleDateFormat clockTimeFormat) {
 		if(val.getIsNull()) {
 			return null;
 		}
@@ -146,14 +140,14 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
 			return value;
 		case DATE:
 			try {
-				return dateFormat.get().parse(value);
+				return dataFormat.parse(value);
 			} catch (ParseException e) {
 				logger.warn("Error parsing date: "+value+" with type: "+val.getType().name(),e);
 				return null;
 			}
 		case CLOCKTIME:
 			try {
-				return clocktimeFormat.get().parse(value);
+				return clockTimeFormat.parse(value);
 			} catch (ParseException e) {
 				logger.warn("Error parsing date: "+value+" with type: "+val.getType().name(),e);
 				return null;
@@ -173,10 +167,10 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
 			return null;
 		}	
 	}
-	public static ImmutableMessage parseImmutableMessage(ReplicationMessageProtobuf source) {
-		return parseImmutableMessage(source,true);
+	public static ImmutableMessage parseImmutableMessage(ReplicationMessageProtobuf source, SimpleDateFormat dataFormat, SimpleDateFormat clockTimeFormat) {
+		return parseImmutableMessage(source,true,dataFormat,clockTimeFormat);
 	}
-	public static ImmutableMessage parseImmutableMessage(ReplicationMessageProtobuf source,boolean checkMagic) {
+	public static ImmutableMessage parseImmutableMessage(ReplicationMessageProtobuf source,boolean checkMagic, SimpleDateFormat dateFormat, SimpleDateFormat clockTimeFormat ) {
 		Map<String,Object> values = new HashMap<>();
 		Map<String,String> types = new HashMap<>();
 
@@ -186,21 +180,21 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
 		
 		for (Entry<String, ValueProtobuf> b :  source.getValuesMap().entrySet()) {
 			types.put(b.getKey(), b.getValue().getType().name().toLowerCase());
-			values.put(b.getKey(), protobufValue( b.getValue()));
+			values.put(b.getKey(), protobufValue( b.getValue(),dateFormat,clockTimeFormat));
 		}
 		Map<String,ImmutableMessage> submessage = new HashMap<>();
 		for (Entry<String,ReplicationMessageProtobuf> elt : source.getSubmessageMap().entrySet()) {
-			submessage.put(elt.getKey(), parseImmutableMessage(elt.getValue()));
+			submessage.put(elt.getKey(), parseImmutableMessage(elt.getValue(),dateFormat,clockTimeFormat));
 		}
 		Map<String,List<ImmutableMessage>> submessagelist = new HashMap<>();
 		for (Entry<String, ReplicationMessageListProtobuf> elt : source.getSubmessageListMap().entrySet()) {
-			List<ImmutableMessage> rm = elt.getValue().getElementsList().stream().map(r->parseImmutableMessage(r)).collect(Collectors.toList());
+			List<ImmutableMessage> rm = elt.getValue().getElementsList().stream().map(r->parseImmutableMessage(r,dateFormat,clockTimeFormat)).collect(Collectors.toList());
 			submessagelist.put(elt.getKey(), rm);
 		}
 		return ImmutableFactory.create(values, types, submessage, submessagelist);
 		
 	}
-	public static ReplicationMessage parse(Optional<String> topicSrc, ReplicationMessageProtobuf source, Optional<Runnable> commitAction) {
+	public static ReplicationMessage parse(Optional<String> topicSrc, ReplicationMessageProtobuf source, Optional<Runnable> commitAction, SimpleDateFormat dateFormat, SimpleDateFormat clockTimeFormat) {
 		Map<String,Object> values = new HashMap<>();
 		Map<String,String> types = new HashMap<>();
 
@@ -209,18 +203,18 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
 		}
 		for (Entry<String, ValueProtobuf> b :  source.getValuesMap().entrySet()) {
 			types.put(b.getKey(), b.getValue().getType().name().toLowerCase());
-			values.put(b.getKey(), protobufValue( b.getValue()));
+			values.put(b.getKey(), protobufValue( b.getValue(),dateFormat,clockTimeFormat));
 		}
 		Map<String,ImmutableMessage> submessage = new HashMap<>();
 		for (Entry<String,ReplicationMessageProtobuf> elt : source.getSubmessageMap().entrySet()) {
-			submessage.put(elt.getKey(), parseImmutableMessage(elt.getValue()));
+			submessage.put(elt.getKey(), parseImmutableMessage(elt.getValue(),dateFormat,clockTimeFormat));
 		}
 		Map<String,List<ImmutableMessage>> submessagelist = new HashMap<>();
 		for (Entry<String, ReplicationMessageListProtobuf> elt : source.getSubmessageListMap().entrySet()) {
-			List<ImmutableMessage> rm = elt.getValue().getElementsList().stream().map(r->parseImmutableMessage(r)).collect(Collectors.toList());
+			List<ImmutableMessage> rm = elt.getValue().getElementsList().stream().map(r->parseImmutableMessage(r,dateFormat,clockTimeFormat)).collect(Collectors.toList());
 			submessagelist.put(elt.getKey(), rm);
 		}
-		Optional<ImmutableMessage> paramMsg =  Optional.ofNullable(source.getParamMessage()).map(msg->parseImmutableMessage(msg,false));
+		Optional<ImmutableMessage> paramMsg =  Optional.ofNullable(source.getParamMessage()).map(msg->parseImmutableMessage(msg,false,dateFormat,clockTimeFormat));
 		return ReplicationFactory.createReplicationMessage(topicSrc,Optional.empty(),Optional.empty(), source.getTransactionId(), source.getTimestamp(), Operation.valueOf(source.getOperation().name()), source.getPrimarykeysList().stream().collect(Collectors.toList()), types, values, submessage, submessagelist, commitAction,paramMsg);
 	}
 	
@@ -281,6 +275,9 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
 		return toProto(msg,null,Operation.NONE,-1,Collections.emptyList(),Optional.empty());
 	}
 	private static ReplicationMessageProtobuf toProto(ImmutableMessage msg, String transactionId, Operation operation,  long timestamp, List<String> primaryKeys, Optional<ImmutableMessage> paramMessage) {
+		SimpleDateFormat dataFormat = dateFormat();
+		SimpleDateFormat clockTimeFormat = clocktimeFormat();
+
 		Map<String,ValueProtobuf> val = msg.values().entrySet()
 			.stream()
 			.map(e->{
@@ -313,7 +310,7 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
 						
 					}
 				} else {
-					final String serializeValue = serializeValue(type,value);
+					final String serializeValue = serializeValue(type,value,dataFormat,clockTimeFormat);
 					if (serializeValue==null) {
 						return new ValueTuple(e.getKey(),ValueProtobuf.newBuilder()
 								.setType(parseType)
@@ -380,7 +377,7 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
 		ReplicationMessageProtobuf parsed;
 		try {
 			parsed = ReplicationMessageProtobuf.parseFrom(data);
-			return parse(source, parsed,Optional.empty());
+			return parse(source, parsed,Optional.empty(),dateFormat(),clocktimeFormat());
 		} catch (InvalidProtocolBufferException e) {
 			logger.error("InvalidProtocolBufferException: ", e);
 			return ReplicationFactory.createErrorReplicationMessage(e);
@@ -390,11 +387,14 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
 
 	@Override
 	public List<ReplicationMessage> parseMessageList(Optional<String> source, byte[] data) {
+		SimpleDateFormat dataFormat = dateFormat();
+		SimpleDateFormat clockTimeFormat = clocktimeFormat();
+
 		if(data==null) {
 			return Collections.emptyList();
 		}
 		try {
-			return ReplicationMessageListProtobuf.parseFrom(data).getElementsList().stream().map(e->parse(source, e,Optional.empty())).collect(Collectors.toList());
+			return ReplicationMessageListProtobuf.parseFrom(data).getElementsList().stream().map(e->parse(source, e,Optional.empty(),dataFormat,clockTimeFormat)).collect(Collectors.toList());
 		} catch (InvalidProtocolBufferException e) {
 			logger.error("Error invalid: ", e);
 			return Arrays.asList(ReplicationFactory.createErrorReplicationMessage(e));
@@ -403,8 +403,10 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
 
 	@Override
 	public ReplicationMessage parseStream(Optional<String> source, InputStream data) {
+		SimpleDateFormat dataFormat = dateFormat();
+		SimpleDateFormat clockTimeFormat = clocktimeFormat();
 		try {
-			return parse(Optional.empty(), ReplicationMessageProtobuf.parseFrom(data),Optional.empty());
+			return parse(Optional.empty(), ReplicationMessageProtobuf.parseFrom(data),Optional.empty(),dataFormat,clockTimeFormat);
 		} catch (IOException e) {
 			logger.error("Error: ", e);
 			return ReplicationFactory.createErrorReplicationMessage(e);
@@ -418,6 +420,8 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
 
 	@Override
 	public List<ReplicationMessage> parseMessageList(Optional<String> source, InputStream data) {
+		SimpleDateFormat dataFormat = dateFormat();
+		SimpleDateFormat clockTimeFormat = clocktimeFormat();
 		try {
 			// make small pushback
 			PushbackInputStream pis = new PushbackInputStream(data, 2);
@@ -431,7 +435,7 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
 				throw new IllegalArgumentException("Bad magic byte"+(short)pre[1]);
 			}			
 			pis.unread(pre);
-			return ReplicationMessageListProtobuf.parseFrom(pis).getElementsList().stream().map(e->parse(Optional.empty(),e,Optional.empty())).collect(Collectors.toList());
+			return ReplicationMessageListProtobuf.parseFrom(pis).getElementsList().stream().map(e->parse(Optional.empty(),e,Optional.empty(),dataFormat,clockTimeFormat)).collect(Collectors.toList());
 		} catch (IOException e) {
 			logger.error("Error: ", e);
 			return Arrays.asList(ReplicationFactory.createErrorReplicationMessage(e));

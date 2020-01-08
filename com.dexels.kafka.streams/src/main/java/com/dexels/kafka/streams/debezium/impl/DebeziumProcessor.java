@@ -4,6 +4,9 @@ import static com.dexels.kafka.streams.api.CoreOperators.topicName;
 
 import java.util.Map;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Named;
+
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.serialization.Serializer;
 import org.apache.kafka.streams.Topology;
@@ -15,6 +18,7 @@ import com.dexels.kafka.streams.processor.generic.GenericProcessorBuilder;
 import com.dexels.pubsub.rx2.api.PubSubMessage;
 
 @Component(name="dexels.debezium.processor",property={"name=dexels.debezium.processor"})
+@ApplicationScoped @Named("debezium")
 public class DebeziumProcessor implements GenericProcessorBuilder {
 
 	
