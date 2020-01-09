@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
-public class thingTest {
+public class ApiTest {
 
     @Test @Ignore
     public void testHelloEndpoint() {
@@ -17,7 +17,7 @@ public class thingTest {
           .when().get("/hello")
           .then()
              .statusCode(200)
-             .body(containsString("aap.type"));
+             .body(containsString("hello"));
     }
 
 }

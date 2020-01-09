@@ -16,7 +16,7 @@ import com.dexels.replication.api.ReplicationMessageParser;
 
 
 @Path("/hello")
-public class thing {
+public class Stream {
 
 //	@Inject @Default PersistentSubscriber subscriber;
 //	@Inject ReplicationMessageParser parser;
