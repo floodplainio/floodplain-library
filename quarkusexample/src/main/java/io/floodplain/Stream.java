@@ -15,7 +15,7 @@ import com.dexels.navajo.repository.api.RepositoryInstance;
 import com.dexels.replication.api.ReplicationMessageParser;
 
 
-@Path("/hello")
+@Path("/streamTest")
 public class Stream {
 
 //	@Inject @Default PersistentSubscriber subscriber;

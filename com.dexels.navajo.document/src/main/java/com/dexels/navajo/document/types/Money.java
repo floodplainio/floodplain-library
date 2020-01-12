@@ -1,0 +1,329 @@
+package com.dexels.navajo.document.types;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.dexels.navajo.document.Property;
+
+/**
+ * <p>Title: Money objects</p>
+ * <p>Description: A class for representing money typed objects</p>
+ * <p>Copyright: Copyright (c) 2003-2004</p>
+ * <p>Company: Dexels BV</p>
+ * @author $Author$
+ * @version $Id$
+ */
+
+public final class Money
+    extends NavajoType
+    implements Comparable<Money> {
+
+	private static final long serialVersionUID = -6669128119091978210L;
+private static final int INTERNAL_DECIMAL_PLACES = 4;
+
+private static final Logger logger = LoggerFactory.getLogger(Money.class);
+private Double value = null;
+  private static DecimalFormat nf = new DecimalFormat("\u00A4 #,##0.00;\u00A4 -#,##0.00");
+//  private static DecimalFormat nf_euro = new DecimalFormat("\u20AC #,##0.00;\u20AC -#,##0.00"); //in case of the NOKBUG
+  private static DecimalFormat internalTmlFormat = new DecimalFormat("0.00");
+  private static NumberFormat editingFormat = NumberFormat.getInstance();
+
+  private DecimalFormat customFormat = null;
+
+  static {
+	  internalTmlFormat = (DecimalFormat) NumberFormat.getInstance(Locale.US);
+	  internalTmlFormat.setGroupingUsed(false);
+	  internalTmlFormat.setMaximumFractionDigits(2);
+	  internalTmlFormat.setMinimumFractionDigits(2);
+  }
+
+  /**
+   * Create a new Money object from a given Double
+   * @param d Double
+   */
+  public Money(Double d) {
+    super(Property.MONEY_PROPERTY);
+    setupSubtypes();
+    setValue(d);
+
+  }
+
+private void setValue(Double d) {
+	value = d;
+    roundValue();
+}
+
+  /**
+   * Create a new Money object from a given Double and with a given subtype
+   * @param d Double
+   * @param subtype String
+   */
+  public Money(Double d, String subtype) {
+    super(Property.MONEY_PROPERTY, subtype);
+    setupSubtypes();
+    setValue(d);
+}
+
+  /**
+   * Create a new Money object
+   */
+  public Money() {
+    super(Property.MONEY_PROPERTY);
+    setupSubtypes();
+    value = null;
+  
+  }
+
+  /**
+   * Create a new Money object from an arbitrary Object
+   * @param o Object
+   * 
+   * Dit ding is verschrikkelijk, 
+   * 
+   */
+  public Money(Object o) {
+    super(Property.MONEY_PROPERTY);
+    setupSubtypes();
+    if (o instanceof Money) {
+      value = ( (Money) o).value;
+    }
+    else if (o instanceof Double) {
+      setValue((Double) o);
+    }
+    else if (o instanceof Integer) {
+      setValue(Double.valueOf( (Integer) o));
+    }
+    else if (o instanceof String && ! ( (String) o).trim().equals("")) {
+      Pattern p = Pattern.compile("-?[0-9]+[.,]?[0-9]{0,2}");
+      Matcher m = p.matcher((String) o);
+      boolean isMoneyFormat = m.find();
+
+      if (isMoneyFormat) {
+        setValue(Double.valueOf(((String) o).substring(m.start(), m.end()) + ""));
+      } else {
+        setValue(Double.valueOf(o + ""));
+      }
+    }
+    else {
+      value = null;
+    }
+ }
+
+  /**
+   * Create a new MOney object from an Integer
+   * @param d Integer
+   */
+  public Money(Integer d) {
+    super(Property.MONEY_PROPERTY);
+    setupSubtypes();
+    if (d != null) {
+    	setValue( Double.valueOf(d));
+    }
+  
+  }
+
+  /**
+   * Create a new Money object from an int
+   * @param d int
+   */
+  public Money(int d) {
+    super(Property.MONEY_PROPERTY);
+    setupSubtypes();
+    setValue(Double.valueOf(d));
+ }
+
+  /**
+   * Create a new Money object from a double
+   * @param d double
+   */
+  public Money(double d) {
+    super(Property.MONEY_PROPERTY);
+    setupSubtypes();
+    setValue(d);
+
+  }
+
+  /**
+   * Create a new Money object from a double and with a given subtype
+   * @param d double
+   * @param subtype String
+   */
+  public Money(double d, String subtype) {
+    super(Property.MONEY_PROPERTY, subtype);
+    setupSubtypes();
+    setValue(d);
+  }
+
+  /**
+   * Create e new Money object from a String
+   * @param d String
+   */
+  public Money(String d) {
+    super(Property.MONEY_PROPERTY);
+    setupSubtypes();
+ 	d = d.replaceAll("\\.", "");
+ 	   if (d.indexOf(',') != -1) {
+     	d = d.replace(',', '.');
+    }
+    try {
+      if (d != null && !d.trim().equals("")) {
+        setValue(Double.valueOf(d));
+      }
+    }
+    catch (Throwable t) {
+      value = null;
+    }
+  }
+
+  private void roundValue(){
+	  if(value==null) {
+		  return;
+	  }
+	  value = round(value, INTERNAL_DECIMAL_PLACES);
+  }
+  
+  private double round(double d, int decimalPlace){
+	    // see the Javadoc about why we use a String in the constructor
+	    // http://java.sun.com/j2se/1.5.0/docs/api/java/math/BigDecimal.html#BigDecimal(double)
+	    BigDecimal bd = new BigDecimal(Double.toString(d));
+	    bd = bd.setScale(decimalPlace,RoundingMode.HALF_UP);
+	    return bd.doubleValue();
+	  }
+  
+  
+  private void setupSubtypes() {
+    String format = getSubType("format");
+    if (format != null) {
+      customFormat = new DecimalFormat(format);
+    }
+  }
+
+  /**
+   * Return formatted representation of this Money object (incl. the currency character)
+   * @return String
+   */
+  public String formattedString() {
+    if (value == null) {
+      return "-";
+    }
+    if (customFormat != null) {
+      logger.info("FOrmatting money with customformat: " +
+                         customFormat.toPattern());
+      return customFormat.format(value);
+
+    }
+    return nf.format(value);
+  }
+
+public String editingString() {
+	    if (value == null) {
+	      return "-";
+	    }
+	    return editingFormat.format(value);
+	}
+
+  
+	@Override
+	public String toTmlString() {
+		if (value == null) {
+			return "";
+		} else {
+			return internalTmlFormat.format(value);
+		}
+	}
+
+  /**
+   * Get the String representation of this Money object
+   * @return String
+   */
+  @Override
+public String toString() {
+    if (value == null) {
+      return "";
+    }
+    else {
+      return internalTmlFormat.format(value).replace(',', '.');
+    }
+  }
+
+  /**
+   * Get this Money object's value as a double
+   * @return double
+   */
+  public final double doubleValue() {
+    if (value == null) {
+      return 0;
+    }
+    return value.doubleValue();
+  }
+
+  @Override
+public final int compareTo(Money o) {
+    if (o==null) {
+      return 0;
+    }
+    Money other = o;
+    if (other.doubleValue() == this.doubleValue()) {
+      return 0;
+    }
+    if (this.doubleValue() > other.doubleValue()) {
+      return 1;
+    }
+    return -1;
+  }
+
+  /**
+   * TODO WTF?
+   */
+  @Override
+public int hashCode() {
+	  if (value == null) {
+		  return 312321;
+	  }
+	  return value.hashCode();
+  }
+  
+
+  
+  @Override
+public boolean equals(Object obj) {
+
+    if (value == null && obj == null) {
+      return true;
+    }
+    if(obj==null) {
+    	return false;
+    }
+
+    if (obj instanceof Money) {
+      Money m = (Money) obj;
+      if (m.value == null) {
+          return value == null;
+      } else {
+      	if(value==null) {
+    		return false;
+    	} else {
+    	      return compareTo(m) == 0;
+    	}
+      }
+
+    }
+    else {
+      return false;
+    }
+  }
+
+@Override
+public boolean isEmpty() {
+    return value==null;
+}
+
+}
