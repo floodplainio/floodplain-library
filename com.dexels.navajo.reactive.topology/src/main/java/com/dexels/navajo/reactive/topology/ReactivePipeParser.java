@@ -5,11 +5,25 @@ import java.util.Stack;
 import org.apache.kafka.streams.Topology;
 
 import com.dexels.kafka.streams.api.TopologyContext;
+import com.dexels.kafka.streams.remotejoin.ReplicationTopologyParser;
 import com.dexels.kafka.streams.remotejoin.TopologyConstructor;
+import com.dexels.navajo.reactive.api.CompiledReactiveScript;
 import com.dexels.navajo.reactive.api.ReactivePipe;
 import com.dexels.navajo.reactive.source.topology.api.TopologyPipeComponent;
 
 public class ReactivePipeParser {
+	
+	
+	public static Topology parseReactiveStreamDefinition(CompiledReactiveScript crs, TopologyContext topologyContext, TopologyConstructor topologyConstructor) {
+		Topology topology = new Topology();
+		int pipeNr = 0;
+		for (ReactivePipe pipe : crs.pipes) {
+			ReactivePipeParser.processPipe(topologyContext, topologyConstructor, topology, pipeNr,new Stack<String>(), pipe);
+		}
+		ReplicationTopologyParser.materializeStateStores(topologyConstructor, topology);
+		return topology;
+	}
+	
 	public static int processPipe(TopologyContext topologyContext, TopologyConstructor topologyConstructor, Topology topology,
 			int pipeNr, Stack<String> pipeStack, ReactivePipe pipe) {
 //		String pipeId = "pipe_"+pipeNr++;

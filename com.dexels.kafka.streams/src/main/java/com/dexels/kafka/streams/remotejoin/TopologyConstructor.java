@@ -21,6 +21,7 @@ public class TopologyConstructor {
     public final Map<String,MessageTransformer> transformerRegistry;
     public final Optional<AdminClient> adminClient;
     public final Set<String> stores = new HashSet<>();
+    public final Map<String,String> sources = new HashMap<>();
     
     public TopologyConstructor( Map<String,MessageTransformer> transformerRegistry,
     		Optional<AdminClient> adminClient) {
