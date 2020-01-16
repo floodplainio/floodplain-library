@@ -56,6 +56,8 @@ public class ReplicationTopologyParser {
 	private static final String JOINGROUPED = "joinGrouped";
 	private static final String SPLIT = "split";
 	
+	private static final String STORE_PREFIX = "STORE_";
+	
 	private static final Serde<ReplicationMessage> messageSerde = new ReplicationMessageSerde();
 	public enum Flatten { FIRST,LAST,NONE};
 	
@@ -248,12 +250,13 @@ public class ReplicationTopologyParser {
 				);
 	}
 	
+	// unused?
    public static String addProcessorStore(final Topology currentBuilder, TopologyContext context, TopologyConstructor topologyConstructor,String processorName) {
 	   final String sourceProcessorName = processorName(processorName);
-		addStateStoreMapping(topologyConstructor.processorStateStoreMapper,sourceProcessorName, sourceProcessorName);
-		topologyConstructor.stores.add(sourceProcessorName);
-		logger.info("Granting access for processor: {} to store: {}",sourceProcessorName, sourceProcessorName);
-       topologyConstructor.stateStoreSupplier.put(sourceProcessorName,createMessageStoreSupplier(sourceProcessorName));
+		addStateStoreMapping(topologyConstructor.processorStateStoreMapper,sourceProcessorName, STORE_PREFIX+sourceProcessorName);
+		topologyConstructor.stores.add(STORE_PREFIX+sourceProcessorName);
+		logger.info("Granting access for processor: {} to store: {}",sourceProcessorName, STORE_PREFIX+sourceProcessorName);
+       topologyConstructor.stateStoreSupplier.put(STORE_PREFIX+sourceProcessorName,createMessageStoreSupplier(STORE_PREFIX+sourceProcessorName));
        return sourceProcessorName;
    }
 
@@ -279,12 +282,12 @@ public class ReplicationTopologyParser {
 			addTopicDestination(currentBuilder, context,topologyConstructor, sourceProcessorName, destination.get(),sourceProcessorName,partitionsFromDestination(destination));
 		}
         
-		addStateStoreMapping(topologyConstructor.processorStateStoreMapper,sourceProcessorName, sourceProcessorName);
-		topologyConstructor.stores.add(sourceProcessorName);
+		addStateStoreMapping(topologyConstructor.processorStateStoreMapper,sourceProcessorName, STORE_PREFIX+sourceProcessorName);
+		topologyConstructor.stores.add(STORE_PREFIX+sourceProcessorName);
 
 		System.err.println("Adding source: "+sourceProcessorName);
-		logger.info("Granting access for processor: {} to store: {}",sourceProcessorName, storeTopic);
-        topologyConstructor.stateStoreSupplier.put(sourceProcessorName,createMessageStoreSupplier(sourceProcessorName));
+		logger.info("Granting access for processor: {} to store: {}",sourceProcessorName, STORE_PREFIX+storeTopic);
+        topologyConstructor.stateStoreSupplier.put(STORE_PREFIX+sourceProcessorName,createMessageStoreSupplier(STORE_PREFIX+sourceProcessorName));
         return sourceProcessorName;
     }
 
@@ -437,7 +440,7 @@ public class ReplicationTopologyParser {
             KafkaUtils.ensureExistsSync(topologyConstructor.adminClient, fromTopic,Optional.empty());
 		}
 		final String fromProcessor  = processorName(from);
-		if (!topologyConstructor.stores.contains(fromProcessor)) {
+		if (!topologyConstructor.stores.contains(STORE_PREFIX+fromProcessor)) {
 	    	final Optional<ProcessorSupplier<String, ReplicationMessage>> fromProcessorFromChildren = processorFromChildren(Optional.empty(), topicName(from, topologyContext), topologyConstructor);
 			addSourceStore(current, topologyContext, topologyConstructor, fromProcessorFromChildren,
                     from, Optional.empty());
@@ -445,7 +448,7 @@ public class ReplicationTopologyParser {
 		final String withProcessor  = processorName(with);
     	final Optional<ProcessorSupplier<String, ReplicationMessage>> withProcessorFromChildren = processorFromChildren(Optional.empty(), topicName(with, topologyContext), topologyConstructor);
 
-        if (!topologyConstructor.stores.contains(withProcessor) ) {
+        if (!topologyConstructor.stores.contains(STORE_PREFIX+withProcessor) ) {
         	addSourceStore(current, topologyContext, topologyConstructor, withProcessorFromChildren,
         			with, Optional.empty());
         }
@@ -486,15 +489,15 @@ public class ReplicationTopologyParser {
 				            )
                 ,firstNamePre, secondNamePre
             );
-		addStateStoreMapping(topologyConstructor.processorStateStoreMapper, finalJoin, withProcessor);
-		addStateStoreMapping(topologyConstructor.processorStateStoreMapper, finalJoin, fromProcessor);
-        addStateStoreMapping(topologyConstructor.processorStateStoreMapper, name, name);
-        topologyConstructor.stores.add(withProcessor);
-        topologyConstructor.stores.add(fromProcessor);
-        topologyConstructor.stores.add(name);
+		addStateStoreMapping(topologyConstructor.processorStateStoreMapper, finalJoin, STORE_PREFIX+withProcessor);
+		addStateStoreMapping(topologyConstructor.processorStateStoreMapper, finalJoin, STORE_PREFIX+fromProcessor);
+        addStateStoreMapping(topologyConstructor.processorStateStoreMapper, name, STORE_PREFIX+name);
+        topologyConstructor.stores.add(STORE_PREFIX+withProcessor);
+        topologyConstructor.stores.add(STORE_PREFIX+fromProcessor);
+        topologyConstructor.stores.add(STORE_PREFIX+name);
         
-        topologyConstructor.stateStoreSupplier.put(name, createMessageStoreSupplier(name));
-	    current.addProcessor(name,()->new StoreProcessor(name),finalJoin);
+        topologyConstructor.stateStoreSupplier.put(STORE_PREFIX+name, createMessageStoreSupplier(STORE_PREFIX+name));
+	    current.addProcessor(name,()->new StoreProcessor(STORE_PREFIX+name),finalJoin);
 		return finalJoin;
 	}
 	
@@ -506,7 +509,7 @@ public class ReplicationTopologyParser {
 		String mappingStoreName;
 		if(from.isPresent()) {
 		    sourceProcessorName = processorName(from.get());
-		    if(!topologyConstructor.stores.contains(sourceProcessorName)) {
+		    if(!topologyConstructor.stores.contains(STORE_PREFIX+sourceProcessorName)) {
 // 			if (topologyConstructor.stateStoreSupplier.get(sourceProcessorName) == null) {
 		    	// TODO test this path
 		    	System.err.println("Adding grouped with from, no source processor present for: "+sourceProcessorName+" created: "+topologyConstructor.stateStoreSupplier.keySet()+" and from: "+from);
@@ -523,16 +526,16 @@ public class ReplicationTopologyParser {
 		current.addProcessor(transformProcessor,transformerSupplier.orElse(()->new IdentityProcessor()),sourceProcessorName);
 
 		// allow override to avoid clashes
-		addStateStoreMapping(topologyConstructor.processorStateStoreMapper, name, name);
-		topologyConstructor.stores.add(name);
+		addStateStoreMapping(topologyConstructor.processorStateStoreMapper, name, STORE_PREFIX+name);
+		topologyConstructor.stores.add(STORE_PREFIX+name);
 //		addStateStoreMapping(topologyConstructor.processorStateStoreMapper, name, sourceProcessorName);
-		addStateStoreMapping(topologyConstructor.processorStateStoreMapper, name, mappingStoreName);
-		topologyConstructor.stores.add(mappingStoreName);
+		addStateStoreMapping(topologyConstructor.processorStateStoreMapper, name, STORE_PREFIX+mappingStoreName);
+		topologyConstructor.stores.add(STORE_PREFIX+mappingStoreName);
 		
-		topologyConstructor.stateStoreSupplier.put(name, createMessageStoreSupplier(name));
-		topologyConstructor.stateStoreSupplier.put(mappingStoreName, createMessageStoreSupplier(mappingStoreName));
+		topologyConstructor.stateStoreSupplier.put(STORE_PREFIX+name, createMessageStoreSupplier(STORE_PREFIX+name));
+		topologyConstructor.stateStoreSupplier.put(STORE_PREFIX+mappingStoreName, createMessageStoreSupplier(STORE_PREFIX+mappingStoreName));
 
-		current.addProcessor(name,()->new GroupedUpdateProcessor(name,key,mappingStoreName,ignoreOriginalKey),transformProcessor);
+		current.addProcessor(name,()->new GroupedUpdateProcessor(STORE_PREFIX+name,key,STORE_PREFIX+mappingStoreName,ignoreOriginalKey),transformProcessor);
 		return name;
 	}	
 	
@@ -641,12 +644,12 @@ public class ReplicationTopologyParser {
 		String secondNamePre =  name+"-reversepre";
 		String finalJoin = name+"-joined";
 
-		if (!topologyConstructor.stores.contains(fromProcessorName)) {
+		if (!topologyConstructor.stores.contains(STORE_PREFIX+fromProcessorName)) {
 	    	final Optional<ProcessorSupplier<String, ReplicationMessage>> processorFromChildren = processorFromChildren(Optional.empty(), topicName(from, topologyContext),topologyConstructor);
 			addSourceStore(current, topologyContext, topologyConstructor,  processorFromChildren,from, Optional.empty());
 		}
 //		addProcessorStore(current, topologyContext, topologyConstructor, with);
-		if (!topologyConstructor.stores.contains(withProcessorName)) {
+		if (!topologyConstructor.stores.contains(STORE_PREFIX+withProcessorName)) {
 //        if (topologyConstructor.stateStoreSupplier.get(withProcessorName) == null) {
 	    	final Optional<ProcessorSupplier<String, ReplicationMessage>> processorFromChildren = processorFromChildren(Optional.empty(), topicName(with, topologyContext), topologyConstructor);
         	addSourceStore(current, topologyContext, topologyConstructor,processorFromChildren,
@@ -702,12 +705,12 @@ public class ReplicationTopologyParser {
         String lastJoinId = finalJoin;
         
         // TODO fix stores if needed
-        addStateStoreMapping(topologyConstructor.processorStateStoreMapper, name, name);
-		addStateStoreMapping(topologyConstructor.processorStateStoreMapper, finalJoin, withProcessorName);
-		addStateStoreMapping(topologyConstructor.processorStateStoreMapper, finalJoin, fromProcessorName);
+        addStateStoreMapping(topologyConstructor.processorStateStoreMapper, name, STORE_PREFIX+name);
+		addStateStoreMapping(topologyConstructor.processorStateStoreMapper, finalJoin, STORE_PREFIX+withProcessorName);
+		addStateStoreMapping(topologyConstructor.processorStateStoreMapper, finalJoin, STORE_PREFIX+fromProcessorName);
 
-		topologyConstructor.stateStoreSupplier.put(name,createMessageStoreSupplier(name));
-        current.addProcessor(name,()->new StoreProcessor(name),lastJoinId);
+		topologyConstructor.stateStoreSupplier.put(STORE_PREFIX+name,createMessageStoreSupplier(STORE_PREFIX+name));
+        current.addProcessor(name,()->new StoreProcessor(STORE_PREFIX+name),lastJoinId);
 		return current;
 	}
 

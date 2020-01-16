@@ -31,6 +31,7 @@ public class SinkTransformer implements ReactiveTransformer, TopologyPipeCompone
 	private TransformerMetadata metadata;
 	private ReactiveParameters parameters;
 
+	public static final String SINK_PREFIX = "SINK_";
 	public SinkTransformer(TransformerMetadata metadata, ReactiveParameters params) {
 		this.metadata = metadata;
 		this.parameters = params;
@@ -61,7 +62,7 @@ public class SinkTransformer implements ReactiveTransformer, TopologyPipeCompone
 			String sinkName = operand.stringValue();
 			System.err.println("Stack top for transformer: "+transformerNames.peek());
 	        String sinkTopic = topicName(sinkName, topologyContext);
-			topology.addSink(sinkTopic, sinkTopic, transformerNames.peek());
+			topology.addSink(SINK_PREFIX+sinkTopic, sinkTopic, transformerNames.peek());
 			System.err.println("Sink source >>> "+sinkTopic+" >>> name: "+sinkName);
 		}
 		return pipeId;
