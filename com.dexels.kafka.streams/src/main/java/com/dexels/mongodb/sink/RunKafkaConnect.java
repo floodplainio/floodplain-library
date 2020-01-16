@@ -17,7 +17,6 @@ import java.util.stream.Collectors;
 
 import org.apache.kafka.common.utils.Time;
 import org.apache.kafka.common.utils.Utils;
-import org.apache.kafka.connect.runtime.ConnectMetrics;
 import org.apache.kafka.connect.runtime.ConnectorConfig;
 import org.apache.kafka.connect.runtime.Herder;
 import org.apache.kafka.connect.runtime.Worker;
@@ -89,7 +88,7 @@ public class RunKafkaConnect implements ConnectSink {
 		logger.info("Resolved mongo sink definition to {} with generational group {}",resolvedDatabase,generationalGroup);
 		sinkProperties.put(MongodbSinkConnector.DATABASE, resolvedDatabase);
 		topicMapping.entrySet().stream().forEach(e->{
-			KafkaUtils.ensureExistsSync(config.adminClient(),e.getKey(),CoreOperators.topicPartitionCount(),CoreOperators.topicReplicationCount());
+			KafkaUtils.ensureExistsSync(Optional.of(config.adminClient()),e.getKey(),CoreOperators.topicPartitionCount(),CoreOperators.topicReplicationCount());
 		});
 		sinkProperties.put(MongodbSinkConnector.TOPICS,String.join(",",topicMapping.entrySet().stream().map(e->e.getKey()).collect(Collectors.toList())));
 		sinkProperties.put(MongodbSinkConnector.COLLECTIONS,String.join(",",topicMapping.entrySet().stream().map(e->e.getValue()).collect(Collectors.toList())));

@@ -65,5 +65,9 @@ public class TmlInputSource implements ReactiveSource {
 		return params;
 	}
 
+	@Override
+	public SourceMetadata metadata() {
+		return metadata;
+	}
 
 }

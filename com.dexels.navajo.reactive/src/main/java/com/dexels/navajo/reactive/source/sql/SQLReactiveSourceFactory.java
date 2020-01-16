@@ -50,4 +50,9 @@ public class SQLReactiveSourceFactory implements ReactiveSourceFactory {
 		return Optional.of(Collections.unmodifiableMap(r));
 	}
 
+	@Override
+	public String sourceName() {
+		return "sql";
+	}
+
 }

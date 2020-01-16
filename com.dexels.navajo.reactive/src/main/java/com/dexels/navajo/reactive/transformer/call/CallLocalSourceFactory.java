@@ -46,4 +46,9 @@ public class CallLocalSourceFactory implements ReactiveSourceFactory {
 		return new CallLocalSource(this, parameters);
 	}
 
+	@Override
+	public String sourceName() {
+		return "callSource";
+	}
+
 }

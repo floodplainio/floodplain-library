@@ -42,5 +42,10 @@ public class InputSourceFactory implements ReactiveSourceFactory, SourceMetadata
 	public Type sourceType() {
 		return Type.MESSAGE;
 	}
+
+	@Override
+	public String sourceName() {
+		return "input";
+	}
 }
 

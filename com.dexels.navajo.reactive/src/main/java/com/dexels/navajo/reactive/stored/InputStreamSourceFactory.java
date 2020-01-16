@@ -48,6 +48,11 @@ public class InputStreamSourceFactory implements ReactiveSourceFactory, SourceMe
 		return Optional.of(Collections.unmodifiableMap(types));
 	}
 
+	@Override
+	public String sourceName() {
+		return "input";
+	}
+
 
 
 }

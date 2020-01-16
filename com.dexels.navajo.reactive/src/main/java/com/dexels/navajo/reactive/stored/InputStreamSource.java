@@ -66,4 +66,9 @@ public class InputStreamSource implements ReactiveSource {
 	}
 
 
+	@Override
+	public SourceMetadata metadata() {
+		return metadata;
+	}
+
 }

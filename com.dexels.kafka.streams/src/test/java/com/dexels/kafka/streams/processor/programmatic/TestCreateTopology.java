@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import com.dexels.kafka.streams.api.TopologyContext;
 import com.dexels.kafka.streams.base.StreamInstance;
+import com.dexels.kafka.streams.remotejoin.IdentityProcessor;
 import com.dexels.kafka.streams.remotejoin.ReplicationTopologyParser;
 import com.dexels.kafka.streams.remotejoin.TopologyConstructor;
 import com.dexels.replication.api.ReplicationMessage;
@@ -37,18 +38,17 @@ public class TestCreateTopology {
 
 		config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,BROKERS);
 		config.put(AdminClientConfig.CLIENT_ID_CONFIG ,UUID.randomUUID().toString());
-		AdminClient adminClient = AdminClient.create(config);
+		Optional<AdminClient> adminClient = Optional.of(AdminClient.create(config));
 		
 		final String applicationId = "shazam-"+UUID.randomUUID().toString();
 		Properties properties = StreamInstance.createProperties( applicationId,BROKERS, "tempdump");
 		System.err.println("ApplicationId: "+applicationId);
-		ProcessorSupplier<String, ReplicationMessage> supplier =()->new IdentityProcessor();
 		Topology topology = new Topology();
 		TopologyContext context = new TopologyContext(Optional.of("Generic"), "test", "my_instance", "20191214");
 		Map<String,MessageTransformer> transformerRegistry = new HashMap<>();
 		TopologyConstructor topologyConstructor = new TopologyConstructor(transformerRegistry, adminClient);
 //		ReplicationTopologyParser.addGroupedProcessor(topology, context, topologyConstructor, name, from, ignoreOriginalKey, key, transformerSupplier);
-		ReplicationTopologyParser.addSourceStore(topology, context, topologyConstructor, supplier, "PHOTO", Optional.empty());
+		ReplicationTopologyParser.addSourceStore(topology, context, topologyConstructor, Optional.empty(), "PHOTO", Optional.empty());
 		ReplicationTopologyParser.materializeStateStores(topologyConstructor, topology);
 		System.err.println(topology.describe().toString());
 //		KafkaStreams stream = new KafkaStreams(topology, properties);

@@ -58,4 +58,9 @@ public class SingleSourceFactory implements ReactiveSourceFactory, SourceMetadat
 		return Optional.of(Collections.unmodifiableMap(r));
 	}
 
+	@Override
+	public String sourceName() {
+		return "single";
+	}
+
 }

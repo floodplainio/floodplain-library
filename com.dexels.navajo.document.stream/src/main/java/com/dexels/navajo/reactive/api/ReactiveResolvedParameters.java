@@ -118,7 +118,6 @@ public class ReactiveResolvedParameters {
 			return Optional.empty(); 
 		}
 		return Optional.of(res.stringValue());
-//		return typeCheckedOperand(paramValue(key), key, Optional.of(Property.STRING_PROPERTY)).map(e->(String)e);
 
 	}
 	public String paramString(String key,Callable<String> defaultValue) {

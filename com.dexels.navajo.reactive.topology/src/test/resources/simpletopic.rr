@@ -1,0 +1,5 @@
+|>topic(name='database-ACTIVITYATTRIBUTE')
+    ->filter([activityid] > 20)
+    ->group(key='activityid')
+    ->filter([activityid] > 21)
+    ->sink('SINK1','SINK2')

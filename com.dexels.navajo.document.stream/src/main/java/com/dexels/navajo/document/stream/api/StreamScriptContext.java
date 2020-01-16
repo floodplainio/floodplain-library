@@ -64,6 +64,7 @@ public class StreamScriptContext {
 		this(UUID.randomUUID().toString(),System.currentTimeMillis(),tenant,service,Optional.empty(),NavajoFactory.getInstance().createNavajo(),Collections.emptyMap(),Optional.empty(),Optional.empty(),Collections.emptyList(),Optional.empty(),Optional.empty(),Optional.empty());
 		this.deployment = Optional.ofNullable(deployment);
 	}
+	
 
 	public StreamScriptContext(String tenant, String service, Optional<String> username, Optional<String> password,Navajo inputNavajo, Map<String,Object> attributes,Optional<Flowable<DataItem>> input, Optional<ReactiveScriptRunner> runner, List<String> addedMethods, Optional<Runnable> onDispose, Optional<RunningReactiveScripts> running) {
        this(UUID.randomUUID().toString(),System.currentTimeMillis(), tenant,service,username,inputNavajo,attributes,input, runner,addedMethods,onDispose,running, Optional.empty());	

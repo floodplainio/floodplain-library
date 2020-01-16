@@ -42,5 +42,10 @@ public class TmlInputSourceFactory implements ReactiveSourceFactory, SourceMetad
 	public Type sourceType() {
 		return Type.EVENTSTREAM;
 	}
+
+	@Override
+	public String sourceName() {
+		return "tmlinput";
+	}
 }
 

@@ -39,20 +39,26 @@ public class KafkaUtils {
 			}
 			return KafkaFuture.completedFuture(null);
     }
-    public static void ensureExistsSync(AdminClient adminClient,String topicName, Optional<Integer> partitionCount) {
+    public static void ensureExistsSync(Optional<AdminClient> adminClient,String topicName, Optional<Integer> partitionCount) {
     	ensureExistsSync(adminClient, topicName, partitionCount.orElse(CoreOperators.topicPartitionCount()), CoreOperators.topicReplicationCount());
     }
     
-    public static void ensureExistSync(AdminClient adminClient,Collection<String> topics, int topicPartitionCount, int topicReplicationCount) {
-    	Future<Void> ensured = ensureExist(adminClient, topics, topicPartitionCount, topicReplicationCount);
+    public static void ensureExistSync(Optional<AdminClient> adminClient,Collection<String> topics, int topicPartitionCount, int topicReplicationCount) {
+    	if(!adminClient.isPresent()) {
+    		return;
+    	}
+    	Future<Void> ensured = ensureExist(adminClient.get(), topics, topicPartitionCount, topicReplicationCount);
     	try {
 			ensured.get();
 		} catch (InterruptedException | ExecutionException | TopicExistsException e) {
 			logger.warn("Issue creating topics: {}. Ignoring and continuing",topics,e);
 		}
     }
-    public static void ensureExistsSync(AdminClient adminClient,String topicName, int topicPartitionCount, int topicReplicationCount) {
-    	Future<Void> ensured = ensureExists(adminClient, topicName, topicPartitionCount, topicReplicationCount);
+    public static void ensureExistsSync(Optional<AdminClient> adminClient,String topicName, int topicPartitionCount, int topicReplicationCount) {
+    	if(!adminClient.isPresent()) {
+    		return;
+    	}
+    	Future<Void> ensured = ensureExists(adminClient.get(), topicName, topicPartitionCount, topicReplicationCount);
     	try {
 			ensured.get();
 		} catch ( ExecutionException e) {

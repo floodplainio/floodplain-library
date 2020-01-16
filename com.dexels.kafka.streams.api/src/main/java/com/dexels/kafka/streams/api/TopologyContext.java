@@ -3,6 +3,8 @@ package com.dexels.kafka.streams.api;
 import java.util.Optional;
 
 public class TopologyContext {
+	
+	public static final String DEFAULT_TENANT = "DEFAULT";
 	public final Optional<String> tenant;
 	public final String deployment;
 	public final String instance;

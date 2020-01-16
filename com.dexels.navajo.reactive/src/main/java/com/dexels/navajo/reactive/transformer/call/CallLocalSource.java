@@ -83,4 +83,9 @@ public class CallLocalSource implements ReactiveSource {
 		return params;
 	}
 
+	@Override
+	public SourceMetadata metadata() {
+		return metadata;
+	}
+
 }

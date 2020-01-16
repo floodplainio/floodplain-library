@@ -113,4 +113,10 @@ public class ReactivePipe implements ReactiveSource {
 	public ReactiveParameters parameters() {
 	   return source.parameters();
 	}
+
+	@Override
+	public SourceMetadata metadata() {
+		return source.metadata();
+	}
+
 }

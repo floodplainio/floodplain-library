@@ -7,6 +7,7 @@ import org.apache.kafka.streams.Topology;
 
 import com.dexels.kafka.streams.api.TopologyContext;
 import com.dexels.kafka.streams.processor.api.TopologyTransformer;
+import com.dexels.kafka.streams.remotejoin.IdentityProcessor;
 import com.dexels.kafka.streams.remotejoin.ReplicationTopologyParser;
 import com.dexels.kafka.streams.remotejoin.TopologyConstructor;
 
@@ -26,7 +27,7 @@ public class GroupByTransformer implements TopologyTransformer {
 	@Override
 	public void addTransformerToTopology(Topology topology,TopologyContext topologyContext, String instanceName,
 			TopologyConstructor topologyConstructor, int pipeNumber, int transformerNumber) {
-		ReplicationTopologyParser.addGroupedProcessor(topology, topologyContext, topologyConstructor, name, from, ignoreOriginalKey, key, ()->null);
+		ReplicationTopologyParser.addGroupedProcessor(topology, topologyContext, topologyConstructor, name, from, ignoreOriginalKey, key,Optional.empty());
 	}
 
 }

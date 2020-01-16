@@ -45,4 +45,9 @@ public class EventStreamSourceFactory implements ReactiveSourceFactory {
 		return new EventStreamSource(this,parameters);
 	}
 
+	@Override
+	public String sourceName() {
+		return "eventsource";
+	}
+
 }

@@ -9,6 +9,7 @@ import com.dexels.navajo.reactive.api.ReactiveParameters;
 import com.dexels.navajo.reactive.api.ReactiveSource;
 import com.dexels.navajo.reactive.api.ReactiveSourceFactory;
 
+// TODO Implement? Delete?
 public class NDJsonSourceFactory implements ReactiveSourceFactory {
 
 	@Override
@@ -39,6 +40,11 @@ public class NDJsonSourceFactory implements ReactiveSourceFactory {
 	public ReactiveSource build(ReactiveParameters parameters) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public String sourceName() {
+		return "ndjson";
 	}
 
 }

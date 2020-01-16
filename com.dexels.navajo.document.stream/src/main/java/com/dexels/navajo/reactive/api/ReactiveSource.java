@@ -11,6 +11,7 @@ import com.dexels.navajo.document.stream.api.StreamScriptContext;
 import io.reactivex.Flowable;
 
 public interface ReactiveSource {
+	public SourceMetadata metadata();
 	public Flowable<DataItem> execute(StreamScriptContext context,Optional<ImmutableMessage> current, ImmutableMessage paramMessage);
 //	public DataItem.Type finalType();
 	public boolean streamInput();

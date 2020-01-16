@@ -79,4 +79,11 @@ public class SQLReactiveSource implements ReactiveSource {
 	public ReactiveParameters parameters() {
 		return parameters;
 	}
+	
+
+	@Override
+	public SourceMetadata metadata() {
+		return metadata;
+	}
+
 }

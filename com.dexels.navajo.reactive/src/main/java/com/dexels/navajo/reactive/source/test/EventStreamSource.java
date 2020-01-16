@@ -61,5 +61,10 @@ public class EventStreamSource implements ReactiveSource {
 		return parameters;
 	}
 
+	@Override
+	public SourceMetadata metadata() {
+		return metadata;
+	}
+
 
 }

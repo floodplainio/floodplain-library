@@ -70,7 +70,7 @@ public class RunKafkaSinkElastic implements ConnectSink {
 		workerProperties.load(RunKafkaSinkElastic.class.getResourceAsStream("worker.properties"));
 		sinkProperties.put("name", generationalGroup);
 		sinkProperties.putAll(settings);
-		KafkaUtils.ensureExistSync(config.adminClient(), topicMapping.keySet(),CoreOperators.topicPartitionCount(),CoreOperators.topicReplicationCount());
+		KafkaUtils.ensureExistSync(Optional.of(config.adminClient()), topicMapping.keySet(),CoreOperators.topicPartitionCount(),CoreOperators.topicReplicationCount());
 		final String joinedTopics = String.join(",",topicMapping.entrySet().stream().map(e->e.getKey()).collect(Collectors.toList()));
 		sinkProperties.put(ElasticSinkConnector.TOPICS,joinedTopics);
 		final String joinedIndexes = String.join(",",topicMapping.entrySet().stream().map(e->e.getValue()).collect(Collectors.toList()));
