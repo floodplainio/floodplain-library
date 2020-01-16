@@ -8,6 +8,8 @@ dependencies {
     Map<String, String> dependencies = globalConf.commonDependencies
     implementation dependencies.kafkaClient
     implementation 'io.quarkus:quarkus-resteasy-jsonb'
+    implementation 'io.quarkus:quarkus-undertow'
+    implementation 'io.quarkus:quarkus-vertx'
     implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
     implementation 'io.quarkus:quarkus-resteasy'
     implementation project(':com.dexels.immutable.api')
@@ -24,6 +26,12 @@ dependencies {
     implementation project(':com.dexels.kafka.streams.api')
     implementation project(':com.dexels.kafka.streams')
     implementation project(':com.dexels.kafka.streams.sink.mongo')
+    implementation project(':com.dexels.navajo.version')
+    implementation project(':com.dexels.navajo.document')
+    implementation project(':com.dexels.navajo.api')
+    implementation project(':com.dexels.navajo.core')
+ // implementation 'io.smallrye.reactive:smallrye-reactive-converter-rxjava2'
+    implementation 'org.jboss.resteasy:resteasy-rxjava2'
     testImplementation 'io.quarkus:quarkus-junit5'
     testImplementation 'io.rest-assured:rest-assured'
     testCompile("junit:junit:4.12")
