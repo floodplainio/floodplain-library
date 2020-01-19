@@ -15,6 +15,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
+import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.common.utils.Time;
 import org.apache.kafka.common.utils.Utils;
 import org.apache.kafka.connect.runtime.ConnectorConfig;
@@ -35,10 +36,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.dexels.kafka.streams.api.CoreOperators;
+import com.dexels.kafka.streams.api.StreamConfiguration;
 import com.dexels.kafka.streams.api.TopologyContext;
 import com.dexels.kafka.streams.api.sink.SinkConfiguration;
 import com.dexels.kafka.streams.base.ConnectSink;
-import com.dexels.kafka.streams.base.StreamConfiguration;
 import com.dexels.kafka.streams.tools.KafkaUtils;
 import com.dexels.kafka.streams.xml.parser.XMLElement;
 import com.mongodb.MongoClient;
@@ -60,7 +61,7 @@ public class RunKafkaConnect implements ConnectSink {
 	private Properties workerProperties;
 	private Properties sinkProperties;
 	
-	public RunKafkaConnect(Optional<XMLElement> x, StreamConfiguration config, TopologyContext topologyContext,String sinkName, File storageFolder) throws IOException  {
+	public RunKafkaConnect(Optional<XMLElement> x, StreamConfiguration config, TopologyContext topologyContext, AdminClient adminClient, String sinkName, File storageFolder) throws IOException  {
 		
 		Optional<SinkConfiguration> sinkConfig = config.sink(sinkName);
 		if(!sinkConfig.isPresent()) {
@@ -87,8 +88,9 @@ public class RunKafkaConnect implements ConnectSink {
 		String resolvedDatabase = CoreOperators.generationalGroup(settings.get("database"), topologyContext);
 		logger.info("Resolved mongo sink definition to {} with generational group {}",resolvedDatabase,generationalGroup);
 		sinkProperties.put(MongodbSinkConnector.DATABASE, resolvedDatabase);
+		
 		topicMapping.entrySet().stream().forEach(e->{
-			KafkaUtils.ensureExistsSync(Optional.of(config.adminClient()),e.getKey(),CoreOperators.topicPartitionCount(),CoreOperators.topicReplicationCount());
+			KafkaUtils.ensureExistsSync(Optional.of(adminClient),e.getKey(),CoreOperators.topicPartitionCount(),CoreOperators.topicReplicationCount());
 		});
 		sinkProperties.put(MongodbSinkConnector.TOPICS,String.join(",",topicMapping.entrySet().stream().map(e->e.getKey()).collect(Collectors.toList())));
 		sinkProperties.put(MongodbSinkConnector.COLLECTIONS,String.join(",",topicMapping.entrySet().stream().map(e->e.getValue()).collect(Collectors.toList())));

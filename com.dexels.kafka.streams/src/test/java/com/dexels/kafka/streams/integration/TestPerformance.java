@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
+import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.streams.Topology;
 import org.bson.Document;
 import org.junit.After;
@@ -49,7 +50,8 @@ public class TestPerformance extends BaseTestStream {
         this.reset(GENERATION);
         this.resetAll(GENERATION);
         Thread.sleep(5000);
-        instance = new StreamInstance(this.getClass() .getSimpleName(), parseConfig, Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap());
+		AdminClient adminClient = AdminClient.create(parseConfig.config());
+        instance = new StreamInstance(this.getClass() .getSimpleName(), parseConfig, adminClient, Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap());
 
     }
 

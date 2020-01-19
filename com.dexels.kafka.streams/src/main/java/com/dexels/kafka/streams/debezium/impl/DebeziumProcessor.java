@@ -12,8 +12,8 @@ import org.apache.kafka.common.serialization.Serializer;
 import org.apache.kafka.streams.Topology;
 import org.osgi.service.component.annotations.Component;
 
+import com.dexels.kafka.streams.api.StreamConfiguration;
 import com.dexels.kafka.streams.api.TopologyContext;
-import com.dexels.kafka.streams.base.StreamConfiguration;
 import com.dexels.kafka.streams.processor.generic.GenericProcessorBuilder;
 import com.dexels.pubsub.rx2.api.PubSubMessage;
 
@@ -34,8 +34,6 @@ public class DebeziumProcessor implements GenericProcessorBuilder {
 	@Override
 	public void build(Topology topology, Map<String,String> config, TopologyContext context, StreamConfiguration streamConfig) {
 		String source = config.get("source");
-		String group = config.get("group");
-		String destination = config.get("destination");
 		boolean appendTenant = false;
 		boolean appendSchema = false;
 		
@@ -48,9 +46,7 @@ public class DebeziumProcessor implements GenericProcessorBuilder {
 //		Serd
 		topology.addSource(sourceProcessorName,Serdes.String().deserializer(),Serdes.ByteArray().deserializer(), sourceTopic);
 		topology.addProcessor(convertProcessorName, ()->new DebeziumConversionProcessor(sourceTopic,context, appendTenant, appendSchema), sourceProcessorName);
-		topology.addSink(sinkProcessorName, new PubSubTopicNameExtractor(),Serdes.String().serializer(), ser, convertProcessorName);
-//		DebeziumComponent component = new DebeziumComponent(group,source,destination,streamConfig,context,appendTenant,appendSchema);
-//		return ()->component.disposable().dispose();
+//		topology.addSink(sinkProcessorName, new PubSubTopicNameExtractor(),Serdes.String().serializer(), ser, convertProcessorName);
 	}
 
 }

@@ -9,6 +9,7 @@ public class TopologyContext {
 	public final String deployment;
 	public final String instance;
 	public final String generation;
+//	public final String brokers;
 	
 	
 	public TopologyContext(Optional<String> tenant, String deployment, String instance, String generation) {
@@ -16,10 +17,15 @@ public class TopologyContext {
 		this.deployment = deployment;
 		this.instance = instance;
 		this.generation = generation;
+//		this.brokers = brokers;
 	}
 
 	public TopologyContext withInstance(String newInstance) {
 		return new TopologyContext(tenant, deployment, newInstance, generation);
 	}
-
+	
+	public String applicationId() {
+		return tenant.orElse(DEFAULT_TENANT)+"-"+deployment+"-"+generation+"-"+instance;
+	}
+	
 }

@@ -28,6 +28,7 @@ import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.streams.Topology;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.osgi.framework.InvalidSyntaxException;
@@ -43,7 +44,7 @@ import org.slf4j.LoggerFactory;
 
 import com.dexels.http.reactive.elasticsearch.ElasticSink;
 import com.dexels.http.reactive.graph.NeoSink;
-import com.dexels.kafka.factory.KafkaClientFactory;
+import com.dexels.kafka.streams.api.StreamConfiguration;
 import com.dexels.kafka.streams.api.StreamTopologyException;
 import com.dexels.kafka.streams.api.sink.Sink;
 import com.dexels.kafka.streams.api.sink.SinkConfiguration;
@@ -65,7 +66,6 @@ import com.dexels.kafka.streams.xml.parser.CaseSensitiveXMLElement;
 import com.dexels.kafka.streams.xml.parser.XMLElement;
 import com.dexels.kafka.streams.xml.parser.XMLParseException;
 import com.dexels.navajo.repository.api.RepositoryInstance;
-import com.dexels.pubsub.rx2.api.TopicPublisher;
 import com.dexels.replication.transformer.api.MessageTransformer;
 
 import io.reactivex.Observable;
@@ -94,6 +94,8 @@ public class StreamRuntime {
 
 	private final Map<String,MessageTransformer> transformerRegistry = new HashMap<>();
 	private final Map<String,GenericProcessorBuilder> genericProcessorRegistry = new HashMap<>();
+
+	private AdminClient adminClient;
 	
 	public StreamRuntime() {
 		String filter = System.getenv("FILTER_INSTANCES");
@@ -136,6 +138,7 @@ public class StreamRuntime {
 		File resources = new File(this.repositoryInstance.getRepositoryFolder(),"config/resources.xml");
 		try (Reader r = new FileReader(resources)){
 			this.configuration = parseConfig(this.repositoryInstance.getDeployment(),r);
+			this.adminClient = AdminClient.create(this.configuration.config());
 		} catch (XMLParseException | IOException e) {
 			logger.error("Error starting streaminstance", e);
 			return;
@@ -279,7 +282,6 @@ public class StreamRuntime {
 		if(generationEnv==null || "".equals(generationEnv)) {
 			throw new IllegalArgumentException("Can not load stream instance: no generation");
 		}
-		Topology topology = new Topology();
 		for (File folder : folders) {
 			if(folder.getName().startsWith(".") || folder.getName().startsWith("_")) {
 				// ignore "_"
@@ -288,7 +290,7 @@ public class StreamRuntime {
 			File[] f =  folder.listFiles((file,name)->name.endsWith(".xml"));
 			for (File file : f) {
 			    try {
-			        parseFile(topology,output, streamFolder, file, generationEnv);
+			        parseFile(output, streamFolder, file, generationEnv);
 			    } catch (Throwable t) {
 			        logger.error("Error in parsing. Ignoring path: "+ file.getAbsolutePath(),t);
 					if(System.getenv("DRAMA_MODE")!=null) {
@@ -301,11 +303,11 @@ public class StreamRuntime {
 		}
 		File[] f =  streamFolder.listFiles((file,name)->name.endsWith(".xml"));
 		for (File file : f) {
-			parseFile(topology,output, streamFolder, file,generationEnv);
+			parseFile(output, streamFolder, file,generationEnv);
 		}
 	}
 
-	private void parseFile(Topology unusedTopology, File outputFolder, File streamFolder, File file, String generation) throws IOException, InterruptedException, ExecutionException {
+	private void parseFile(File outputFolder, File streamFolder, File file, String generation) throws IOException, InterruptedException, ExecutionException {
 		String pathInStreamsFolder = streamFolder.toPath().relativize(file.toPath()).toString();
 		logger.info("Parsing replication file at path: {}",pathInStreamsFolder);
 	
@@ -315,7 +317,7 @@ public class StreamRuntime {
 			logger.info(" -> Skipping non-matching instance: {}", name);
 			return;
 		}
-		addStreamInstance(unusedTopology,file, streamFolder,outputFolder,generation);
+		addStreamInstance(file, streamFolder,outputFolder,generation);
 	}
 
 	public static String nameFromFileName(String fullpath) {
@@ -325,7 +327,7 @@ public class StreamRuntime {
 		return pathparts.length > 1 ? pathparts[0] :pathelements[pathelements.length-1];
 	}
 
-	private void addStreamInstance(Topology unusedGlobaltopology, File file, File streamFolder, File outputStorage, String generation) throws IOException, InterruptedException, ExecutionException {
+	private void addStreamInstance(File file, File streamFolder, File outputStorage, String generation) throws IOException, InterruptedException, ExecutionException {
 		String pathInStreamsFolder = streamFolder.toPath().relativize(file.toPath()).toString();
 		logger.info("Parsing replication file at path: {}",pathInStreamsFolder);
 		String name = nameFromFileName(pathInStreamsFolder);
@@ -334,7 +336,7 @@ public class StreamRuntime {
 			return;
 		}
 		try(InputStream definitionStream = new FileInputStream(file)) {
-			StreamInstance si = new StreamInstance(friendlyName(name), this.configuration,this.transformerRegistry,this.genericProcessorRegistry,this.sinkRegistry);
+			StreamInstance si = new StreamInstance(friendlyName(name), this.configuration,this.adminClient, this.transformerRegistry,this.genericProcessorRegistry,this.sinkRegistry);
 			Topology topology = new Topology();
 			si.parseStreamMap(topology,definitionStream,outputStorage,this.repositoryInstance.getDeployment(),generation,Optional.of(file));
 			streams.put(friendlyName(name),si);

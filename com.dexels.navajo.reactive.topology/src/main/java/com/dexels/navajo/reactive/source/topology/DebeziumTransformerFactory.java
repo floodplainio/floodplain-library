@@ -10,12 +10,13 @@ import java.util.Optional;
 import java.util.Set;
 
 import com.dexels.navajo.document.stream.DataItem.Type;
+import com.dexels.navajo.document.Property;
 import com.dexels.navajo.document.stream.ReactiveParseProblem;
 import com.dexels.navajo.reactive.api.ReactiveParameters;
 import com.dexels.navajo.reactive.api.ReactiveTransformer;
 import com.dexels.navajo.reactive.api.ReactiveTransformerFactory;
 
-public class JoinWithTransformerFactory implements ReactiveTransformerFactory {
+public class DebeziumTransformerFactory implements ReactiveTransformerFactory {
 
 	@Override
 	public Set<Type> inType() {
@@ -24,7 +25,6 @@ public class JoinWithTransformerFactory implements ReactiveTransformerFactory {
 		return Collections.unmodifiableSet(types);
 	}
 
-	// TODO perhaps introduce type 'NONE'? or 'TERMINAL'?
 	@Override
 	public Type outType() {
 		return Type.MESSAGE;
@@ -32,28 +32,31 @@ public class JoinWithTransformerFactory implements ReactiveTransformerFactory {
 
 	@Override
 	public String name() {
-		return "joinWith";
+		return "debezium";
 	}
 
 	@Override
 	public Optional<List<String>> allowedParameters() {
-		return Optional.of(Arrays.asList(new String[] {"into"}));
+		return Optional.of(Arrays.asList("topic","appendTenant","appendSchema"));
 	}
 
 	@Override
 	public Optional<List<String>> requiredParameters() {
-		return Optional.of(Arrays.asList(new String[] {}));
-}
+		return Optional.of(Arrays.asList("topic"));
+	}
 
 	@Override
 	public Optional<Map<String, String>> parameterTypes() {
-		Map<String,String> types = new HashMap<>();
-		return Optional.of(Collections.unmodifiableMap(types));
+		Map<String, String> r = new HashMap<>();
+		r.put("topic", Property.STRING_PROPERTY);
+		r.put("appendTenant", Property.BOOLEAN_PROPERTY);
+		r.put("appendSchema", Property.BOOLEAN_PROPERTY);
+		return Optional.of(Collections.unmodifiableMap(r));
 	}
 
 	@Override
 	public ReactiveTransformer build(List<ReactiveParseProblem> problems, ReactiveParameters parameters) {
-		return new JoinWithTransformer(this, parameters);
+		return new DebeziumTransformer(this, parameters);
 	}
 
 }

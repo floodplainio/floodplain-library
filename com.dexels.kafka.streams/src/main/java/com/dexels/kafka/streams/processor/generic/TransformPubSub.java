@@ -6,9 +6,8 @@ import java.util.function.Function;
 import org.apache.commons.text.StringSubstitutor;
 
 import com.dexels.kafka.streams.api.CoreOperators;
+import com.dexels.kafka.streams.api.StreamConfiguration;
 import com.dexels.kafka.streams.api.TopologyContext;
-import com.dexels.kafka.streams.base.StreamConfiguration;
-import com.dexels.kafka.streams.base.StreamInstance;
 import com.dexels.pubsub.rx2.api.PubSubMessage;
 import com.dexels.replication.api.ReplicationMessage;
 import com.dexels.replication.factory.ReplicationFactory;

@@ -13,6 +13,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
+import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.common.utils.Time;
 import org.apache.kafka.common.utils.Utils;
 import org.apache.kafka.connect.runtime.ConnectorConfig;
@@ -32,10 +33,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.dexels.kafka.streams.api.CoreOperators;
+import com.dexels.kafka.streams.api.StreamConfiguration;
 import com.dexels.kafka.streams.api.TopologyContext;
 import com.dexels.kafka.streams.api.sink.SinkConfiguration;
 import com.dexels.kafka.streams.base.ConnectSink;
-import com.dexels.kafka.streams.base.StreamConfiguration;
 import com.dexels.kafka.streams.tools.KafkaUtils;
 import com.dexels.kafka.streams.xml.parser.XMLElement;
 
@@ -52,7 +53,7 @@ public class RunKafkaSinkElastic implements ConnectSink {
 	private Properties workerProperties;
 	private Properties sinkProperties;
 	
-	public RunKafkaSinkElastic(XMLElement x, StreamConfiguration config, TopologyContext topologyContext,String sinkName, File storageFolder) throws IOException  {
+	public RunKafkaSinkElastic(XMLElement x, StreamConfiguration config, TopologyContext topologyContext, AdminClient adminClient, String sinkName, File storageFolder) throws IOException  {
 		Optional<SinkConfiguration> sinkConfig = config.sink(sinkName);
 		if(!sinkConfig.isPresent()) {
 			throw new IllegalArgumentException("No sink found: "+sinkName);
@@ -70,7 +71,7 @@ public class RunKafkaSinkElastic implements ConnectSink {
 		workerProperties.load(RunKafkaSinkElastic.class.getResourceAsStream("worker.properties"));
 		sinkProperties.put("name", generationalGroup);
 		sinkProperties.putAll(settings);
-		KafkaUtils.ensureExistSync(Optional.of(config.adminClient()), topicMapping.keySet(),CoreOperators.topicPartitionCount(),CoreOperators.topicReplicationCount());
+		KafkaUtils.ensureExistSync(Optional.of(adminClient), topicMapping.keySet(),CoreOperators.topicPartitionCount(),CoreOperators.topicReplicationCount());
 		final String joinedTopics = String.join(",",topicMapping.entrySet().stream().map(e->e.getKey()).collect(Collectors.toList()));
 		sinkProperties.put(ElasticSinkConnector.TOPICS,joinedTopics);
 		final String joinedIndexes = String.join(",",topicMapping.entrySet().stream().map(e->e.getValue()).collect(Collectors.toList()));

@@ -2,12 +2,14 @@ package com.dexels.navajo.reactive.source.topology;
 
 import java.util.Optional;
 import java.util.Stack;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.kafka.streams.Topology;
 
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.kafka.streams.api.TopologyContext;
+import com.dexels.kafka.streams.debezium.impl.DebeziumConversionProcessor;
 import com.dexels.kafka.streams.remotejoin.ReplicationTopologyParser;
 import com.dexels.kafka.streams.remotejoin.TopologyConstructor;
 import com.dexels.navajo.document.stream.DataItem;
@@ -22,12 +24,12 @@ import com.dexels.navajo.reactive.source.topology.api.TopologyPipeComponent;
 import io.reactivex.Flowable;
 import io.reactivex.FlowableTransformer;
 
-public class GroupTransformer implements ReactiveTransformer,TopologyPipeComponent {
+public class DebeziumTransformer implements ReactiveTransformer,TopologyPipeComponent {
 
 	private TransformerMetadata metadata;
 	private ReactiveParameters parameters;
 
-	public GroupTransformer(TransformerMetadata metadata, ReactiveParameters params) {
+	public DebeziumTransformer(TransformerMetadata metadata, ReactiveParameters params) {
 		this.metadata = metadata;
 		this.parameters = params;
 	}
@@ -50,13 +52,20 @@ public class GroupTransformer implements ReactiveTransformer,TopologyPipeCompone
 	public int addToTopology(Stack<String> transformerNames, int pipeId, Topology topology,
 			TopologyContext topologyContext, TopologyConstructor topologyConstructor) {
 		StreamScriptContext context =new StreamScriptContext(topologyContext.tenant.orElse(TopologyContext.DEFAULT_TENANT), topologyContext.instance, topologyContext.deployment);
+
+		
 		ReactiveResolvedParameters resolved = parameters.resolve(context, Optional.empty(), ImmutableFactory.empty(), metadata);
-		Optional<String> from = Optional.of(transformerNames.peek());
+		String topic = resolved.paramString("topic");
+		boolean appendTenant = resolved.optionalBoolean("appendTenant").orElse(false);
+		boolean appendSchema = resolved.optionalBoolean("appendSchema").orElse(false);
+		DebeziumConversionProcessor processor = new DebeziumConversionProcessor(topic, topologyContext, appendTenant, appendSchema);
+		String from = transformerNames.peek();
 		String name = createName(transformerNames.size(),pipeId);
-		String key = resolved.paramString("key");
-		boolean ignoreOriginalKey = false;
-		String grouped = ReplicationTopologyParser.addGroupedProcessor(topology, topologyContext, topologyConstructor, name, from, ignoreOriginalKey, key, Optional.empty());
-		transformerNames.push(grouped);
+		topology.addProcessor(name, ()->processor, from);
+//		String sourc2 = ReplicationTopologyParser.addSourceStore(topology, topologyContext, topologyConstructor, Optional.empty(), name, Optional.empty());
+//		topology.addProcessor(filterName, filterProcessor, transformerNames.peek());
+		System.err.println(">>> "+name);
+		transformerNames.push(name);
 		return pipeId;
 
 	}

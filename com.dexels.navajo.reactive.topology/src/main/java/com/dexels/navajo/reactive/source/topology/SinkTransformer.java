@@ -55,14 +55,15 @@ public class SinkTransformer implements ReactiveTransformer, TopologyPipeCompone
 //		        String sinkTopic = topicName(sinkName, topologyContext);
 //				topology.addSink(sinkTopic, sinkTopic, transformerNames.peek());
 //				System.err.println("Sink source >>> "+sinkTopic+" >>> name: "+sinkName);
-//			});
+//			});§
 
 		List<Operand> operands = resolved.unnamedParameters();
 		for (Operand operand : operands) {
-			String sinkName = operand.stringValue();
+	        String sinkTopic = topicName( operand.stringValue(), topologyContext);
+			String sinkName = sinkTopic;
 			System.err.println("Stack top for transformer: "+transformerNames.peek());
-	        String sinkTopic = topicName(sinkName, topologyContext);
 			topology.addSink(SINK_PREFIX+sinkTopic, sinkTopic, transformerNames.peek());
+//			topology addSink(SINK_PREFIX+sinkTopic, sinkTopic, transformerNames.peek());
 			System.err.println("Sink source >>> "+sinkTopic+" >>> name: "+sinkName);
 		}
 		return pipeId;

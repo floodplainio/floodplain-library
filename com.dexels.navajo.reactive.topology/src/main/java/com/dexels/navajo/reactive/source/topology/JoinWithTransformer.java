@@ -63,40 +63,30 @@ public class JoinWithTransformer implements ReactiveTransformer ,TopologyPipeCom
 		ReactiveResolvedParameters resolved = parameters.resolve(context, Optional.empty(), ImmutableFactory.empty(), metadata);
 		Optional<String> from = Optional.of(transformerNames.peek());
 		Operand o = resolved.unnamedParameters().stream().findFirst().orElseThrow(()->new TopologyDefinitionException("Missing parameters for joinWith, should have one sub stream"));
-		System.err.println("O: "+o.type);
-		System.err.println("P: "+o.value);
 		ReactivePipe rp = (ReactivePipe)o.value;
 		Stack<String> pipeStack = new Stack<>();
 		pipeId = ReactivePipeParser.processPipe(topologyContext, topologyConstructor, topology, pipeId,pipeStack, rp);
 		boolean isList = true;
 		String with = pipeStack.peek();
-		String into = "aap";
+		String into = resolved.paramString("into");
 		String name = pipeId+"_"+metadata.name()+"_"+transformerNames.size();
 		Optional<String> filter = Optional.empty();
 		boolean isOptional = true;
-        BiFunction<ReplicationMessage, List<ReplicationMessage>, ReplicationMessage> listJoinFunction = ReplicationTopologyParser.createListJoinFunction(into, from.get(), Optional.empty());
-//        ReplicationTopologyParser.createJoinFunction(isList, into, name, columns, keyField, valueField);
+//        BiFunction<ReplicationMessage, List<ReplicationMessage>, ReplicationMessage> listJoinFunction = ReplicationTopologyParser.createListJoinFunction(into, from.get(), Optional.empty());
+        BiFunction<ReplicationMessage, List<ReplicationMessage>, ReplicationMessage> listJoinFunction = ReplicationTopologyParser.createParamListJoinFunction(into);
+
+        
+        //        ReplicationTopologyParser.createJoinFunction(isList, into, name, columns, keyField, valueField);
         final BiFunction<ReplicationMessage, ReplicationMessage, ReplicationMessage> joinFunction = CoreOperators.getJoinFunction(Optional.of(into),Optional.<String>empty());
 
         Optional<Predicate<String, ReplicationMessage>> filterPredicate = Filters.getFilter(filter);
 
 		ReplicationTopologyParser.addJoin(topology, topologyContext, topologyConstructor, from.get(), isList, with, name, isOptional, listJoinFunction, joinFunction, filterPredicate);
+		
 		transformerNames.push(name);
 		return pipeId;
-//		System.err.println("> "+rp);
-//		rp.
-//		String name = createName(transformerNames.size(),pipeId);
-//		String key = resolved.paramString("key");
-//		boolean ignoreOriginalKey = false;
-//		String grouped = ReplicationTopologyParser.addGroupedProcessor(topology, topologyContext, topologyConstructor, name, from, ignoreOriginalKey, key, Optional.empty());
-//		String sourc2 = ReplicationTopologyParser.addSourceStore(topology, topologyContext, topologyConstructor, Optional.empty(), name, Optional.empty());
-//		topology.addProcessor(filterName, filterProcessor, transformerNames.peek());
-
-//		System.err.println(">>> "+grouped);
-//		transformerNames.push(grouped);
-//		
 	}
-	// TODO address multiple pipes
+
 	private  String createName(int transformerNumber, String pipeId) {
 		return pipeId+"_"+metadata.name()+"_"+transformerNumber;
 	}

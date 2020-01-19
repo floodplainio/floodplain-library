@@ -19,8 +19,8 @@ import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.kafka.impl.KafkaTopicPublisher;
 import com.dexels.kafka.streams.api.CoreOperators;
+import com.dexels.kafka.streams.api.StreamConfiguration;
 import com.dexels.kafka.streams.api.TopologyContext;
-import com.dexels.kafka.streams.base.StreamConfiguration;
 import com.dexels.mongodb.sink.MongodbSinkConnector;
 import com.dexels.mongodb.sink.MongodbSinkTask;
 import com.dexels.pubsub.rx2.api.MessagePublisher;
@@ -29,7 +29,6 @@ import com.dexels.replication.factory.ReplicationFactory;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoDatabase;
 
-@SuppressWarnings("restriction")
 public class BaseTestStream {
     protected StreamConfiguration parseConfig;
 

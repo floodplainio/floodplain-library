@@ -22,9 +22,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.dexels.kafka.streams.api.CoreOperators;
+import com.dexels.kafka.streams.api.StreamConfiguration;
 import com.dexels.kafka.streams.api.TopologyContext;
 import com.dexels.kafka.streams.base.ConnectSink;
-import com.dexels.kafka.streams.base.StreamConfiguration;
 import com.dexels.kafka.streams.xml.parser.XMLElement;
 
 public class ElasticSink implements ConnectSink {

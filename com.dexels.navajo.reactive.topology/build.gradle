@@ -40,7 +40,7 @@ dependencies {
     compile dependencies.reactiveStreams
     compile dependencies.rxJava
     testCompile dependencies.jUnit
-
+	testImplementation dependencies.slf4jLog4j
  }
 
 

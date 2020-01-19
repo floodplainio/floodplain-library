@@ -55,7 +55,6 @@ public class FilterTransformer implements ReactiveTransformer,TopologyPipeCompon
 //		return sourceName+"_"+transformerNumber;
 //	}
 //	
-	// TODO address multiple pipes
 	private  String createName(int transformerNumber, int pipeId) {
 		return pipeId+"_"+metadata.name()+"_"+transformerNumber;
 	}

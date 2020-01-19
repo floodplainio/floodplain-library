@@ -18,6 +18,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
+import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.errors.InvalidTopicException;
@@ -33,6 +34,7 @@ import org.slf4j.LoggerFactory;
 
 import com.dexels.elasticsearch.sink.RunKafkaSinkElastic;
 import com.dexels.kafka.streams.api.CoreOperators;
+import com.dexels.kafka.streams.api.StreamConfiguration;
 import com.dexels.kafka.streams.api.StreamTopologyException;
 import com.dexels.kafka.streams.api.TopologyContext;
 import com.dexels.kafka.streams.api.sink.Sink;
@@ -65,7 +67,7 @@ public class StreamInstance {
 	private static final int kafkaThreadCount;
 	private static final int commitInterval;
 	private static final long maxBytesBuffering;
-//	private final AdminClient adminClient;
+	private final AdminClient adminClient;
 	private String generation = null;
 	private final Map<String, GenericProcessorBuilder> genericProcessorRegistry;
 	
@@ -99,13 +101,13 @@ public class StreamInstance {
 		}
 		
 	}
-	public StreamInstance(String instanceName, StreamConfiguration configuration, Map<String,MessageTransformer> transformerRegistry, Map<String, GenericProcessorBuilder> genericProcessorRegistry, Map<SinkType,Sink> sinkRegistry) {
+	public StreamInstance(String instanceName, StreamConfiguration configuration, AdminClient adminClient, Map<String,MessageTransformer> transformerRegistry, Map<String, GenericProcessorBuilder> genericProcessorRegistry, Map<SinkType,Sink> sinkRegistry) {
 		this.instanceName = instanceName;
 		this.configuration = configuration;
 		this.transformerRegistry = Collections.unmodifiableMap(transformerRegistry);
 		this.sinkRegistry = sinkRegistry;
 		this.genericProcessorRegistry = Collections.unmodifiableMap(genericProcessorRegistry);
-//		this.adminClient = configuration.adminClient();
+		this.adminClient = adminClient;
 		Filters.registerPredicate("clublogo", (id, params,message)->"CLUBLOGO".equals(message.columnValue("objecttype")) && message.columnValue("data")!=null);
 		Filters.registerPredicate("photo", (id,params, message)->"PHOTO".equals(message.columnValue("objecttype")) && message.columnValue("data")!=null);
 		Filters.registerPredicate("facility", (id,params, message)->"FACILITY".equals(message.columnValue("facilitytype")));
@@ -202,7 +204,7 @@ public class StreamInstance {
 		}
 	}
 
-	private void parseForTenant(Topology topology, String repositoryDeployment, XMLElement xe, String generation, String storagePath,
+	private void parseForTenant(Topology topology,  String repositoryDeployment, XMLElement xe, String generation, String storagePath,
 			File storageFolder, Optional<String> tenant) throws IOException, InterruptedException, ExecutionException {
 		String brokers = this.configuration.kafkaHosts();
 		String deployment = repositoryDeployment!=null?repositoryDeployment:xe.getStringAttribute("deployment");
@@ -219,16 +221,13 @@ public class StreamInstance {
 				i++;
 			}
 			if(!lowLevelAPIElements.isEmpty()) {
-				final String parsedTenant = tenant.isPresent()?tenant.get():"";
 				TopologyContext context = new TopologyContext(tenant, deployment, this.instanceName, generation);
-				ReplicationTopologyParser.topologyFromXML(topology,lowLevelAPIElements, context, transformerRegistry,this.configuration.adminClient(),genericProcessorRegistry,this.configuration);
-				String name = parsedTenant+"-"+deployment+"-"+generation;
-				String applicationId = name+"-"+instanceName;
-				Properties streamsConfiguration = createProperties(applicationId,brokers,storagePath);
+				ReplicationTopologyParser.topologyFromXML(topology,lowLevelAPIElements, context, transformerRegistry,this.adminClient,genericProcessorRegistry,this.configuration);
+				Properties streamsConfiguration = createProperties(context.applicationId(),brokers,storagePath);
 				System.err.println("Topology:\n"+topology.describe().toString());
 				KafkaStreams stream = new KafkaStreams(topology, streamsConfiguration);
-				topologyDescriptions.put(applicationId, topology.describe());
-				streams.put(applicationId,stream);
+				topologyDescriptions.put(context.applicationId(), topology.describe());
+				streams.put(context.applicationId(),stream);
 			}
 		} catch (InvalidTopicException e) {
 			logger.error("Failed to build topology while building instance: "+this.instanceName+" for generation: "+generation+" processing join #"+i,e);
@@ -285,7 +284,7 @@ public class StreamInstance {
 //	
 	private void addSinks(String sinkType, XMLElement x, String generation, String brokers, Optional<String> tenant, String deployment, File storageFolder, int index) throws IOException, InterruptedException, ExecutionException {
 		boolean useDirectSinks = System.getenv("DIRECT_SINK")!=null && "true".equals(System.getenv("DIRECT_SINK"));
-	   createSink(determineSinkType(sinkType,useDirectSinks),x, generation, tenant, deployment, storageFolder);
+	   createSink(determineSinkType(sinkType,useDirectSinks),x, adminClient, generation, tenant, deployment, storageFolder);
     }
 	
 	private SinkType determineSinkType(String sinkTypeName, boolean useDirectSinks) {
@@ -301,26 +300,26 @@ public class StreamInstance {
 		}
 	}
 
-	private void createSink(SinkType type, XMLElement x, String generation, Optional<String> tenant, String deployment, File storageFolder) throws IOException, InterruptedException, ExecutionException {
+	private void createSink(SinkType type, XMLElement x, AdminClient adminClient, String generation, Optional<String> tenant, String deployment, File storageFolder) throws IOException, InterruptedException, ExecutionException {
 		TopologyContext topologyContext = new TopologyContext(tenant, deployment, this.instanceName, generation);
 		String name = x.getStringAttribute("name");
 	    if (name == null) {
 	    	logger.warn("Sink without name found: {}",x.toString());
 	        Map<String, SinkConfiguration> sinkconfigs = configuration.sinks();
 	        for (String key  : sinkconfigs.keySet()) {
-	            addSinkConfig(type,x, topologyContext, key, sinkconfigs.get(key), storageFolder);
+	            addSinkConfig(type,x, topologyContext, key, sinkconfigs.get(key),adminClient, storageFolder);
 	        }
 	    } else {
 	        Optional<SinkConfiguration> sinkConfig = configuration.sink(name);
 	        if(sinkConfig.isPresent()) {
-	            addSinkConfig(type,x,topologyContext, name, sinkConfig.get(), storageFolder);
+	            addSinkConfig(type,x,topologyContext, name, sinkConfig.get(),adminClient, storageFolder);
 	        } else {
 	            logger.warn("Unable to find {} sink {}!",type, name);
 	        }
 	    }
 	}
 
-    private void addSinkConfig(SinkType type, XMLElement x, TopologyContext topologyContext, String name, SinkConfiguration sinkConfig, File storageFolder) throws IOException, InterruptedException, ExecutionException {
+    private void addSinkConfig(SinkType type, XMLElement x, TopologyContext topologyContext, String name, SinkConfiguration sinkConfig, AdminClient adminClient, File storageFolder) throws IOException, InterruptedException, ExecutionException {
     	final String sinkTenant = sinkConfig.settings().get("tenant");
 		if (sinkTenant != null && topologyContext.tenant.isPresent()) {
             if (!sinkTenant.equalsIgnoreCase(topologyContext.tenant.get())) {
@@ -341,10 +340,10 @@ public class StreamInstance {
         final ConnectSink connect;
         switch(type) {
         	case MONGODB:
-        		connect =  new RunKafkaConnect(Optional.of(x),configuration,topologyContext, name, storageFolder);
+        		connect =  new RunKafkaConnect(Optional.of(x),configuration,topologyContext,adminClient, name, storageFolder);
         		break;
         	case ELASTICSEARCH:
-        		connect =  new RunKafkaSinkElastic(x,configuration,topologyContext, name, storageFolder);
+        		connect =  new RunKafkaSinkElastic(x,configuration,topologyContext, adminClient, name, storageFolder);
         		break;
         	default:
         		throw new StreamTopologyException("Unsupported sink type: "+type.toString());

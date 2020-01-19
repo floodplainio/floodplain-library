@@ -486,6 +486,16 @@ public class ReplicationImmutableMessageImpl implements ReplicationMessage {
 		return this.paramMessage;
 	}
 
+	@Override
+	public ReplicationMessage withParamMessage(ImmutableMessage msg) {
+		return new ReplicationImmutableMessageImpl(this.source,this.partition,offset, this.transactionId, this.operation, timestamp, message() , this.primaryKeys,this.commitAction,Optional.of(msg));
+	}
+
+	@Override
+	public ReplicationMessage withoutParamMessage() {
+		return new ReplicationImmutableMessageImpl(this.source,this.partition,offset, this.transactionId, this.operation, timestamp, message() , this.primaryKeys,this.commitAction,Optional.empty());
+	}
+
 
 
 

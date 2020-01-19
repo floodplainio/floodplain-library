@@ -19,9 +19,9 @@ public class PreJoinProcessor extends AbstractProcessor<String, ReplicationMessa
         if (isReverseJoin) {
             String newKey = key;
             newKey += REVERSE_IDENTIFIER;
-            context().forward(newKey, msg);
+            context().forward(newKey, msg.withoutParamMessage());
         } else {
-            context().forward(key, msg);
+            context().forward(key, msg.withoutParamMessage());
         }
         
     }

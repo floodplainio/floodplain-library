@@ -1,0 +1,8 @@
+|>topic(name='country')
+	->joinWith(into='monkey',
+			|>topic(name='city')
+			    ->group(key='country_id')
+		)
+		->set('bliep',[@monkey/])
+	->sink('@CountryExample')
+	

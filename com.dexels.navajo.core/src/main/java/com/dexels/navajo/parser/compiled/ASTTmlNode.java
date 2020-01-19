@@ -364,12 +364,16 @@ final class ASTTmlNode extends SimpleNode {
 				}
 				String first = path.get(0);
 				Optional<ImmutableMessage> sub = rm.subMessage(first);
-				if(!sub.isPresent()) {
-					throw new TMLExpressionException("Missing submessage: "+first);
+				if(sub.isPresent()) {
+					List<String> copy = new ArrayList<>(path);
+					copy.remove(0);
+					return parseImmutableMessagePath(copy, sub.get());
 				}
-				List<String> copy = new ArrayList<>(path);
-				copy.remove(0);
-				return parseImmutableMessagePath(copy, sub.get());
+				Optional<List<ImmutableMessage>> subList = rm.subMessages(first);
+				if(subList.isPresent()) {
+					return Operand.ofImmutableList(subList.get());
+				}
+				throw new TMLExpressionException("Missing submessage: "+first);
 			}
 
 			private Operand parseImmutablePath(List<String> path, ImmutableMessage rm) {

@@ -10,6 +10,7 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.dexels.kafka.streams.api.TopologyContext;
 import com.dexels.navajo.document.Message;
 import com.dexels.navajo.document.Navajo;
 import com.dexels.navajo.document.NavajoFactory;
@@ -40,7 +41,6 @@ public class StreamScriptContext {
     private final String service;
     private final long started;
 	private Optional<String> username;
-	
 	
 	private final static Logger logger = LoggerFactory.getLogger(StreamScriptContext.class);
 
@@ -226,5 +226,9 @@ public class StreamScriptContext {
 		return null;
 	}
 
+	public static StreamScriptContext fromTopologyContext(TopologyContext context) {
+		return new StreamScriptContext(context.tenant.orElse(TopologyContext.DEFAULT_TENANT), context.instance, context.deployment);
+
+	}
 
 }

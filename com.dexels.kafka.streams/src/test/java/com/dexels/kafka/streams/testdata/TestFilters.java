@@ -5,12 +5,13 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.Optional;
 
+import org.apache.kafka.clients.admin.AdminClient;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.dexels.kafka.streams.api.StreamConfiguration;
 import com.dexels.kafka.streams.base.Filters;
-import com.dexels.kafka.streams.base.StreamConfiguration;
 import com.dexels.kafka.streams.base.StreamInstance;
 import com.dexels.replication.api.ReplicationMessage;
 import com.dexels.replication.factory.ReplicationFactory;
@@ -28,7 +29,8 @@ public class TestFilters {
 	@Before
 	public void setup() throws IOException {
 		StreamConfiguration config = new StreamConfiguration("kafka:9092", Collections.emptyMap(), "", 100, 100, 1);
-		new StreamInstance("test", config, Collections.emptyMap(),Collections.emptyMap(),Collections.emptyMap());
+		AdminClient adminClient = AdminClient.create(config.config());
+		new StreamInstance("test", config, adminClient, Collections.emptyMap(),Collections.emptyMap(),Collections.emptyMap());
         ReplicationFactory.setInstance(new FallbackReplicationMessageParser());
 
 		try(InputStream resourceAsStream = TestTransformations.class.getClassLoader().getResourceAsStream("address1.json")) {

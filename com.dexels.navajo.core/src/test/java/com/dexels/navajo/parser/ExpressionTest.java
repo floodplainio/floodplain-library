@@ -3,6 +3,7 @@ package com.dexels.navajo.parser;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -328,6 +329,23 @@ public class ExpressionTest {
 		assertEquals(3, s.value("innerint").get());
 	}
 
+	@Test
+	public void testTrailingTMLPathParamList() throws Exception {
+		Expression.compileExpressions = true;
+		ImmutableMessage outer = ImmutableFactory.empty().with("outerint", 1, "integer");
+		ImmutableMessage inner1 = ImmutableFactory.empty().with("innerint", 1, "integer");
+		ImmutableMessage inner2 = ImmutableFactory.empty().with("innerint", 2, "integer");
+		ImmutableMessage inner3 = ImmutableFactory.empty().with("innerint", 3, "integer");
+		
+		List<ImmutableMessage> subList = Arrays.asList(inner1,inner2,inner3);
+		ImmutableMessage combined = outer.withSubMessages("sub", subList);
+		ImmutableMessage incoming = ImmutableFactory.empty();
+		Operand o = Expression.evaluateImmutable("[@sub/]", null, Optional.of(incoming), Optional.of(combined));
+		List<ImmutableMessage> s = o.immutableMessageList();
+		assertEquals(3, s.size());
+	}
+
+	
 	@Test
 	public void testEmptyTML() throws Exception {
 		Expression.compileExpressions = true;

@@ -143,6 +143,14 @@ public ImmutableMessage immutableMessageValue() {
 	throw new ClassCastException("Operand does not have the required immutablemessage type but: "+type);
 }
 
+@SuppressWarnings("unchecked")
+public List<ImmutableMessage> immutableMessageList() {
+	if(value instanceof List) {
+		return (List<ImmutableMessage>) value;
+	}
+	throw new ClassCastException("Operand does not have the required immutablemessage type but: "+type);
+}
+
 
 public static Operand ofBinary(Binary o) {
 	return new Operand(o,Property.BINARY_PROPERTY);
@@ -174,6 +182,10 @@ public static Operand ofProperty(Property property) {
 
 public static Operand ofImmutable(ImmutableMessage rm) {
 	return new Operand(rm,"immutable");
+}
+
+public static Operand ofImmutableList(List<ImmutableMessage> rm) {
+	return new Operand(rm,"immutableList");
 }
 
 

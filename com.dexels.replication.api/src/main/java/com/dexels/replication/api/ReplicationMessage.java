@@ -87,7 +87,8 @@ public interface ReplicationMessage {
 	public ReplicationMessage withCommitAction(Runnable commitAction);
 	public ImmutableMessage message();
 	public Optional<ImmutableMessage> paramMessage();
-	
+	public ReplicationMessage withParamMessage(ImmutableMessage msg);
+	public ReplicationMessage withoutParamMessage();
 	default public String combinedKey() {
 		return primaryKeys().stream().map(k->columnValue(k).toString()).collect(Collectors.joining(KEYSEPARATOR));
 	}

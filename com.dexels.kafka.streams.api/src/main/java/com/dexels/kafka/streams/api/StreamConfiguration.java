@@ -1,4 +1,4 @@
-package com.dexels.kafka.streams.base;
+package com.dexels.kafka.streams.api;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -8,10 +8,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.apache.kafka.clients.admin.AdminClient;
-import org.apache.kafka.clients.admin.AdminClientConfig;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
-
 import com.dexels.kafka.streams.api.sink.SinkConfiguration;
 
 
@@ -20,7 +16,6 @@ public class StreamConfiguration {
 	private final String kafkaHosts;
 	private final String deployment;
 	private final Map<String,SinkConfiguration> sinks;
-	private AdminClient adminClient;
 	private final int maxWait;
 	private final int maxSize;
 	private final int replicationFactor;
@@ -31,19 +26,23 @@ public class StreamConfiguration {
 		this.sinks = Collections.unmodifiableMap(new HashMap<>(sinks));
 		this.deployment = deployment;
 		this.config = new HashMap<>();
-		this.config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,kafkaHosts);
-		this.config.put(AdminClientConfig.CLIENT_ID_CONFIG ,UUID.randomUUID().toString());
+		this.config.put("bootstrap.servers",kafkaHosts);
+		this.config.put("client.id" ,UUID.randomUUID().toString());
 		
 		this.maxWait = maxWait;
 		this.maxSize = maxSize;
 		this.replicationFactor = replicationFactor;
 	}
 	
-	public AdminClient adminClient() {
-		if(this.adminClient==null) {
-			this.adminClient = AdminClient.create(config);
-		}
-		return this.adminClient;
+//	public AdminClient adminClient() {
+//		if(this.adminClient==null) {
+//			this.adminClient = AdminClient.create(config);
+//		}
+//		return this.adminClient;
+//	}
+//	
+	public Map<String,Object> config() {
+		return config;
 	}
 
 	public String kafkaHosts() {
