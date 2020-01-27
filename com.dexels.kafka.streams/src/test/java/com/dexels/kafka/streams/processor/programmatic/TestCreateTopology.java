@@ -32,7 +32,7 @@ public class TestCreateTopology {
 	
 	private static final Logger logger = LoggerFactory.getLogger(TestCreateTopology.class);
 
-	@Test @Ignore
+	@Test
 	public void testTopology() {
 		Map<String,Object> config = new HashMap<>();
 
@@ -48,7 +48,7 @@ public class TestCreateTopology {
 		Map<String,MessageTransformer> transformerRegistry = new HashMap<>();
 		TopologyConstructor topologyConstructor = new TopologyConstructor(transformerRegistry, adminClient);
 //		ReplicationTopologyParser.addGroupedProcessor(topology, context, topologyConstructor, name, from, ignoreOriginalKey, key, transformerSupplier);
-		ReplicationTopologyParser.addSourceStore(topology, context, topologyConstructor, Optional.empty(), "PHOTO", Optional.empty());
+		ReplicationTopologyParser.addSourceStore(topology, context, topologyConstructor, Optional.empty(), "PHOTO", Optional.empty(),false);
 		ReplicationTopologyParser.materializeStateStores(topologyConstructor, topology);
 		System.err.println(topology.describe().toString());
 //		KafkaStreams stream = new KafkaStreams(topology, properties);

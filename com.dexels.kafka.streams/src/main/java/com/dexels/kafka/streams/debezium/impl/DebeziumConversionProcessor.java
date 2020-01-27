@@ -9,6 +9,9 @@ import com.dexels.kafka.streams.api.TopologyContext;
 import com.dexels.kafka.streams.debezium.JSONToReplicationMessage;
 import com.dexels.pubsub.rx2.api.PubSubMessage;
 import com.dexels.pubsub.rx2.factory.PubSubTools;
+import com.dexels.replication.api.ReplicationMessage;
+import com.dexels.replication.factory.ReplicationFactory;
+import com.dexels.replication.impl.protobuf.FallbackReplicationMessageParser;
 
 public class DebeziumConversionProcessor implements Processor<String, byte[]> {
 
@@ -41,8 +44,12 @@ public class DebeziumConversionProcessor implements Processor<String, byte[]> {
 
 		PubSubMessage psm = PubSubTools.create(key, value, this.processorContext.timestamp(), Optional.of(topic),Optional.of(this.processorContext.partition()),Optional.of(this.processorContext.offset()));
 		final PubSubMessage parse = JSONToReplicationMessage.parse(this.context,psm,appendTenant,appendSchema);
-//		System.err.println("Parsed key: "+parse.key());
-		processorContext.forward(parse.key(), parse);
+		FallbackReplicationMessageParser ftm = new FallbackReplicationMessageParser(true);
+		ReplicationMessage msg = ftm.parseBytes(parse);
+		
+//		ReplicationFactory.
+		//		System.err.println("Parsed key: "+parse.key());
+		processorContext.forward(parse.key(), msg);
 //		processorContext.commit();
 				
 	}

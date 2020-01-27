@@ -45,6 +45,7 @@ public class DebeziumProcessor implements GenericProcessorBuilder {
         
 //		Serd
 		topology.addSource(sourceProcessorName,Serdes.String().deserializer(),Serdes.ByteArray().deserializer(), sourceTopic);
+		// TODO should add to TopologyConstructor processors, but not available? Same for source / sink?
 		topology.addProcessor(convertProcessorName, ()->new DebeziumConversionProcessor(sourceTopic,context, appendTenant, appendSchema), sourceProcessorName);
 //		topology.addSink(sinkProcessorName, new PubSubTopicNameExtractor(),Serdes.String().serializer(), ser, convertProcessorName);
 	}

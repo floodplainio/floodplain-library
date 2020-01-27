@@ -1,5 +1,3 @@
-
-
 activityAttributes = |>topic('sportlinkkernel-ACTIVITYATTRIBUTE')
     ->delete('lastupdate,updateby')
     ->$attributeGroup
@@ -10,14 +8,13 @@ attributeGroup = ->group('activityid')
 calendarDays = |>topic('sportlinkkernel-CALENDARDAY')
     ->filter([activityid] > 20)
     ->delete('lastupdate','updateby')
-    ->group('activityid')
-    ->scanToList('CalendarDay')
+    ->group(key='activityid')
 
 |>topic('sportlinkkernel-ACTIVITY')
     ->filter([subtype]!='SUBFACILITY_AVAILABILITY')
     ->delete('lastupdate','updateby')
     ->set('publicactivityid',ToUpper('publicid'))
-    ->join($activityAttributes)
+    ->joinWith($activityAttributes)
     ->set([],[@])
     ->join($calendarDays,toSubMessage('CalendarDay'),false)
 

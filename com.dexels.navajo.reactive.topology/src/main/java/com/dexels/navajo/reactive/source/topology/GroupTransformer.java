@@ -26,6 +26,7 @@ public class GroupTransformer implements ReactiveTransformer,TopologyPipeCompone
 
 	private TransformerMetadata metadata;
 	private ReactiveParameters parameters;
+	private boolean materialize;
 
 	public GroupTransformer(TransformerMetadata metadata, ReactiveParameters params) {
 		this.metadata = metadata;
@@ -51,7 +52,7 @@ public class GroupTransformer implements ReactiveTransformer,TopologyPipeCompone
 			TopologyContext topologyContext, TopologyConstructor topologyConstructor) {
 		StreamScriptContext context =new StreamScriptContext(topologyContext.tenant.orElse(TopologyContext.DEFAULT_TENANT), topologyContext.instance, topologyContext.deployment);
 		ReactiveResolvedParameters resolved = parameters.resolve(context, Optional.empty(), ImmutableFactory.empty(), metadata);
-		Optional<String> from = Optional.of(transformerNames.peek());
+		String from = transformerNames.peek();
 		String name = createName(transformerNames.size(),pipeId);
 		String key = resolved.paramString("key");
 		boolean ignoreOriginalKey = false;
@@ -64,6 +65,20 @@ public class GroupTransformer implements ReactiveTransformer,TopologyPipeCompone
 	// TODO address multiple pipes
 	private  String createName(int transformerNumber, int pipeId) {
 		return pipeId+"_"+metadata.name()+"_"+transformerNumber;
+	}
+	@Override
+	public boolean materializeParent() {
+		return false;
+	}
+	@Override
+	public void setMaterialize() {
+		this.materialize = true;
+	}
+
+
+	@Override
+	public boolean materialize() {
+		return this.materialize;
 	}
 
 

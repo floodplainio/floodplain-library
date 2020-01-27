@@ -25,6 +25,7 @@ public class TopicSource implements ReactiveSource,TopologyPipeComponent {
 
 	private final SourceMetadata metadata;
 	private final ReactiveParameters parameters;
+	private boolean materialize = false;
 
 	public TopicSource(SourceMetadata metadata, ReactiveParameters params) {
 		this.metadata = metadata;
@@ -40,9 +41,8 @@ public class TopicSource implements ReactiveSource,TopologyPipeComponent {
 		StreamScriptContext context =new StreamScriptContext(topologyContext.tenant.orElse(TopologyContext.DEFAULT_TENANT), topologyContext.instance, topologyContext.deployment);
 		ReactiveResolvedParameters resolved = parameters.resolve(context, Optional.empty(), ImmutableFactory.empty(), metadata);
 		String name = resolved.paramString("name");
-		String source = ReplicationTopologyParser.addLazySourceStore(topology, topologyContext, topologyConstructor, name);
-//		topology.addProcessor(filterName, filterProcessor, transformerNames.peek());
-		System.err.println(">>> "+source);
+		System.err.println("thingy: "+this.materialize());
+		String source = ReplicationTopologyParser.addSourceStore(topology, topologyContext, topologyConstructor, Optional.empty(), resolved.paramString("name"), Optional.empty(),this.materialize());
 		transformerNames.push(source);
 		return pipeId;
 	}
@@ -64,6 +64,20 @@ public class TopicSource implements ReactiveSource,TopologyPipeComponent {
 	@Override
 	public SourceMetadata metadata() {
 		return metadata;
+	}
+	
+	@Override
+	public boolean materializeParent() {
+		return false;
+	}
+	@Override
+	public void setMaterialize() {
+		this.materialize   = true;
+	}
+	
+	@Override
+	public boolean materialize() {
+		return this.materialize;
 	}
 
 }

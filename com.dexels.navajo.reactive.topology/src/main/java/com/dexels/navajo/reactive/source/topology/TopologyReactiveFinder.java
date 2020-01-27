@@ -6,13 +6,13 @@ public class TopologyReactiveFinder extends CoreReactiveFinder {
 
 	public TopologyReactiveFinder() {
 		addReactiveSourceFactory(new TopicSourceFactory(),"topic");
-		addReactiveSourceFactory(new DebeziumSourceFactory(),"debezium");
+//		addReactiveSourceFactory(new DebeziumSourceFactory(),"debezium");
+		addReactiveSourceFactory(new DebeziumTopicFactory(),"database");
 		addReactiveTransformerFactory(new GroupTransformerFactory(),"group");
 		addReactiveTransformerFactory(new SinkTransformerFactory(),"sink");
 		addReactiveTransformerFactory(new FilterTransformerFactory(),"filter");
 		addReactiveTransformerFactory(new JoinWithTransformerFactory(),"joinWith");
 		addReactiveTransformerFactory(new ScanToListTransformerFactory(),"scanToList");
-		reactiveReducer.put("set", new Set());
+		addReactiveTransformerFactory(new SetFactory(),"set");
 	}
-
 }

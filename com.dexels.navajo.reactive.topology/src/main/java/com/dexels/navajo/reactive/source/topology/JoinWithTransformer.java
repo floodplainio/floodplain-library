@@ -36,6 +36,7 @@ public class JoinWithTransformer implements ReactiveTransformer ,TopologyPipeCom
 
 	private TransformerMetadata metadata;
 	private ReactiveParameters parameters;
+	private boolean materialize = false;
 
 	public JoinWithTransformer(TransformerMetadata metadata, ReactiveParameters params) {
 		this.metadata = metadata;
@@ -44,7 +45,7 @@ public class JoinWithTransformer implements ReactiveTransformer ,TopologyPipeCom
 	@Override
 	public FlowableTransformer<DataItem, DataItem> execute(StreamScriptContext context,
 			Optional<ImmutableMessage> current, ImmutableMessage param) {
-		return item->Flowable.error(()->new ReactiveParseException("Sink transformer shouldn't be executed"));
+		return item->Flowable.error(()->new ReactiveParseException("Topology transformer shouldn't be executed"));
 	}
 
 	@Override
@@ -82,7 +83,7 @@ public class JoinWithTransformer implements ReactiveTransformer ,TopologyPipeCom
         Optional<Predicate<String, ReplicationMessage>> filterPredicate = Filters.getFilter(filter);
 
 		ReplicationTopologyParser.addJoin(topology, topologyContext, topologyConstructor, from.get(), isList, with, name, isOptional, listJoinFunction, joinFunction, filterPredicate);
-		
+		System.err.println("Pushinh: "+name);
 		transformerNames.push(name);
 		return pipeId;
 	}
@@ -90,6 +91,19 @@ public class JoinWithTransformer implements ReactiveTransformer ,TopologyPipeCom
 	private  String createName(int transformerNumber, String pipeId) {
 		return pipeId+"_"+metadata.name()+"_"+transformerNumber;
 	}
+	@Override
+	public boolean materializeParent() {
+		return true;
+	}
+	@Override
+	public void setMaterialize() {
+		this.materialize = true;
+	}
 
+
+	@Override
+	public boolean materialize() {
+		return this.materialize;
+	}
 
 }

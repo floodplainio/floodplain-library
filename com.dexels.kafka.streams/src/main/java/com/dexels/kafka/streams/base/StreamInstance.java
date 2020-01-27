@@ -37,8 +37,7 @@ import com.dexels.kafka.streams.api.CoreOperators;
 import com.dexels.kafka.streams.api.StreamConfiguration;
 import com.dexels.kafka.streams.api.StreamTopologyException;
 import com.dexels.kafka.streams.api.TopologyContext;
-import com.dexels.kafka.streams.api.sink.Sink;
-import com.dexels.kafka.streams.api.sink.SinkConfiguration;
+import com.dexels.kafka.streams.api.sink.ConnectConfiguration;
 import com.dexels.kafka.streams.processor.generic.GenericProcessor;
 import com.dexels.kafka.streams.processor.generic.GenericProcessorBuilder;
 import com.dexels.kafka.streams.remotejoin.ReplicationTopologyParser;
@@ -62,7 +61,6 @@ public class StreamInstance {
 
 	private final StreamConfiguration configuration;
 	private final Map<String,MessageTransformer> transformerRegistry;
-	private final Map<SinkType,Sink> sinkRegistry;
 	private final String instanceName;
 	private static final int kafkaThreadCount;
 	private static final int commitInterval;
@@ -101,11 +99,10 @@ public class StreamInstance {
 		}
 		
 	}
-	public StreamInstance(String instanceName, StreamConfiguration configuration, AdminClient adminClient, Map<String,MessageTransformer> transformerRegistry, Map<String, GenericProcessorBuilder> genericProcessorRegistry, Map<SinkType,Sink> sinkRegistry) {
+	public StreamInstance(String instanceName, StreamConfiguration configuration, AdminClient adminClient, Map<String,MessageTransformer> transformerRegistry, Map<String, GenericProcessorBuilder> genericProcessorRegistry) {
 		this.instanceName = instanceName;
 		this.configuration = configuration;
 		this.transformerRegistry = Collections.unmodifiableMap(transformerRegistry);
-		this.sinkRegistry = sinkRegistry;
 		this.genericProcessorRegistry = Collections.unmodifiableMap(genericProcessorRegistry);
 		this.adminClient = adminClient;
 		Filters.registerPredicate("clublogo", (id, params,message)->"CLUBLOGO".equals(message.columnValue("objecttype")) && message.columnValue("data")!=null);
@@ -303,14 +300,15 @@ public class StreamInstance {
 	private void createSink(SinkType type, XMLElement x, AdminClient adminClient, String generation, Optional<String> tenant, String deployment, File storageFolder) throws IOException, InterruptedException, ExecutionException {
 		TopologyContext topologyContext = new TopologyContext(tenant, deployment, this.instanceName, generation);
 		String name = x.getStringAttribute("name");
-	    if (name == null) {
+		// TODO deprecate this?
+		if (name == null) {
 	    	logger.warn("Sink without name found: {}",x.toString());
-	        Map<String, SinkConfiguration> sinkconfigs = configuration.sinks();
+	        Map<String, ConnectConfiguration> sinkconfigs = configuration.sinks();
 	        for (String key  : sinkconfigs.keySet()) {
 	            addSinkConfig(type,x, topologyContext, key, sinkconfigs.get(key),adminClient, storageFolder);
 	        }
 	    } else {
-	        Optional<SinkConfiguration> sinkConfig = configuration.sink(name);
+	        Optional<ConnectConfiguration> sinkConfig = configuration.sink(name);
 	        if(sinkConfig.isPresent()) {
 	            addSinkConfig(type,x,topologyContext, name, sinkConfig.get(),adminClient, storageFolder);
 	        } else {
@@ -319,7 +317,7 @@ public class StreamInstance {
 	    }
 	}
 
-    private void addSinkConfig(SinkType type, XMLElement x, TopologyContext topologyContext, String name, SinkConfiguration sinkConfig, AdminClient adminClient, File storageFolder) throws IOException, InterruptedException, ExecutionException {
+    private void addSinkConfig(SinkType type, XMLElement x, TopologyContext topologyContext, String name, ConnectConfiguration sinkConfig, AdminClient adminClient, File storageFolder) throws IOException, InterruptedException, ExecutionException {
     	final String sinkTenant = sinkConfig.settings().get("tenant");
 		if (sinkTenant != null && topologyContext.tenant.isPresent()) {
             if (!sinkTenant.equalsIgnoreCase(topologyContext.tenant.get())) {
@@ -327,7 +325,6 @@ public class StreamInstance {
                 return;
             }
         }
-        // TODO Move index creating code elsewhere, it shouldn't be here
         registerSinkTransformer(x,topologyContext,name);
         if(type==SinkType.NEO4J) {
         	return;

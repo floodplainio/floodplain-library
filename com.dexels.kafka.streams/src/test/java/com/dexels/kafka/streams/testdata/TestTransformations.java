@@ -112,9 +112,6 @@ public class TestTransformations {
 		result = CoreOperators.topicName("@otherinstance:TOPICNAME",new TopologyContext(Optional.of("MYTENANT"), "deployment", "currentinstance", "111"));
 		Assert.assertEquals("MYTENANT-deployment-111-otherinstance-TOPICNAME", result);
 
-		result = CoreOperators.topicName("@TOPICNAME#112",new TopologyContext(Optional.of("MYTENANT"), "deployment", "currentinstance", "111"));
-		Assert.assertEquals("MYTENANT-deployment-112-currentinstance-TOPICNAME", result);
-
 		result = CoreOperators.topicName("TOPICNAME",new TopologyContext(Optional.empty(), "deployment", "currentinstance", "111"));
 		Assert.assertEquals("deployment-TOPICNAME", result);
 
@@ -125,8 +122,6 @@ public class TestTransformations {
 		result = CoreOperators.topicName("@otherinstance:TOPICNAME",new TopologyContext(Optional.empty(), "deployment", "currentinstance", "111"));
 		Assert.assertEquals("deployment-111-otherinstance-TOPICNAME", result);
 
-		result = CoreOperators.topicName("@TOPICNAME#112",new TopologyContext(Optional.empty(), "deployment", "currentinstance", "111"));
-		Assert.assertEquals("deployment-112-currentinstance-TOPICNAME", result);
 
 		
 		System.err.println("Result: "+result);

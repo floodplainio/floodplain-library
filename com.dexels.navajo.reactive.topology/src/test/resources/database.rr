@@ -1,0 +1,9 @@
+|>database(topic='dvd.public.address')
+    ->sink('@SINK1')
+    
+|>database(topic='dvd.public.city')
+	->joinRemote(key='country_id',
+		|>database(topic='dvd.public.country')
+			->set(last_update=null))
+	->set(country=[@country])
+    

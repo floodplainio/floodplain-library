@@ -24,7 +24,6 @@ import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferencePolicy;
 
-import com.dexels.kafka.streams.sink.mongo.MongoDirectSink;
 import com.dexels.pubsub.rx2.api.PersistentPublisher;
 import com.dexels.pubsub.rx2.api.PersistentSubscriber;
 import com.dexels.pubsub.rx2.api.TopicPublisher;
@@ -37,7 +36,6 @@ import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Action;
 import io.reactivex.functions.Predicate;
-import io.reactivex.schedulers.Schedulers;
 
 @Component(configurationPolicy=ConfigurationPolicy.IGNORE,  name="dexels.kafka.mongo.servlet",property={"servlet-name=dexels.kafka.servlet","alias=/kafkamongo","asyncSupported.Boolean=true"},immediate=true,service = { Servlet.class})
 public class KafkaDownloadMongoServlet extends HttpServlet {
@@ -127,18 +125,18 @@ public class KafkaDownloadMongoServlet extends HttpServlet {
 			d.dispose();
 			pub.deleteGroups(Arrays.asList(new String[]{generatedConsumerGroup}));
 		};
-		return Flowable.fromPublisher(kts.subscribeSingleRange(topic, generatedConsumerGroup, fromTag, toTag))
-				.subscribeOn(Schedulers.io())
-				.observeOn(Schedulers.io())
-				.concatMapIterable(e -> e)
-				.doOnNext(m -> messageCount.incrementAndGet()).retry(5)
-//				.filter(e -> e.value() != null)
-				.map(e->parser.parseBytes(e))
-				.filter(filter)
-				.compose(MongoDirectSink.createMongoCollection(database,host,""+port,collection))
-//				.doOnTerminate(() -> System.err.println(">>>>>Progress complete"))
-				.doOnTerminate(onTerminate)
-				.doOnCancel(onTerminate);
+		// TODO rebuild mongo direct here?
+		return Flowable.empty();
+//		return Flowable.fromPublisher(kts.subscribeSingleRange(topic, generatedConsumerGroup, fromTag, toTag))
+//				.subscribeOn(Schedulers.io())
+//				.observeOn(Schedulers.io())
+//				.concatMapIterable(e -> e)
+//				.doOnNext(m -> messageCount.incrementAndGet()).retry(5)
+//				.map(e->parser.parseBytes(e))
+//				.filter(filter)
+//				.compose(MongoDirectSink.createMongoCollection(database,host,""+port,collection))
+//				.doOnTerminate(onTerminate)
+//				.doOnCancel(onTerminate);
 	}
 
 }

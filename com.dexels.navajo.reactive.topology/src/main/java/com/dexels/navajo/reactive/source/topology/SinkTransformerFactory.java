@@ -22,7 +22,6 @@ public class SinkTransformerFactory implements ReactiveTransformerFactory {
 		return Collections.unmodifiableSet(types);
 	}
 
-	// TODO perhaps introduce type 'NONE'? or 'TERMINAL'?
 	@Override
 	public Type outType() {
 		return Type.MESSAGE;

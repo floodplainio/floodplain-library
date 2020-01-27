@@ -6,8 +6,6 @@ import static org.junit.Assert.assertNotNull;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -22,8 +20,8 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import com.dexels.kafka.streams.api.StreamConfiguration;
 import com.dexels.kafka.streams.base.StreamInstance;
-import com.dexels.kafka.streams.base.StreamRuntime;
 import com.mongodb.client.FindIterable;
 
 public class TestStreamJoins extends BaseTestStream {
@@ -34,14 +32,14 @@ public class TestStreamJoins extends BaseTestStream {
     public void setup() throws IOException, InterruptedException {
         System.out.println("Starting new run");
 
-        Reader r = new InputStreamReader(TestStreamJoins.class.getResourceAsStream("resources.xml"));
-        parseConfig = StreamRuntime.parseConfig("develop", r);
+        InputStream r = TestStreamJoins.class.getResourceAsStream("resources.xml");
+        parseConfig = StreamConfiguration.parseConfig("develop", r);
         this.dropMongo(GENERATION);
         System.out.println("Resetting streams application");
         this.reset(GENERATION);
         Thread.sleep(5000);
 		AdminClient adminClient = AdminClient.create(parseConfig.config());
-        instance = new StreamInstance(this.getClass() .getSimpleName(), parseConfig, adminClient, Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap());
+        instance = new StreamInstance(this.getClass() .getSimpleName(), parseConfig, adminClient, Collections.emptyMap(), Collections.emptyMap());
 
     }
 

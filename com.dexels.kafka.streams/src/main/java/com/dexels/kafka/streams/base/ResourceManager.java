@@ -1,9 +1,9 @@
 package com.dexels.kafka.streams.base;
 
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.Reader;
+import java.io.InputStream;
 import java.util.Dictionary;
 import java.util.Hashtable;
 
@@ -38,8 +38,8 @@ public class ResourceManager {
 	@Activate
 	public void activate() throws IOException {
 		File resources = new File(this.repositoryInstance.getRepositoryFolder(),"config/resources.xml");
-		try (Reader r = new FileReader(resources)){
-			this.configuration = StreamRuntime.parseConfig(this.repositoryInstance.getDeployment(),r);
+		try (InputStream r = new FileInputStream(resources)){
+			this.configuration = StreamConfiguration.parseConfig(this.repositoryInstance.getDeployment(),r);
 			createPublisherConfig(createOrReuse(KAFKA_PUBLISHER_PID, "(source=kafkastreams)"));
 			createSubscriberConfig(createOrReuse(KAFKA_SUBSCRIBER_PID, "(source=kafkastreams)"));
 		}

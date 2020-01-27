@@ -8,6 +8,7 @@ import org.apache.kafka.streams.processor.ProcessorSupplier;
 
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.kafka.streams.api.TopologyContext;
+import com.dexels.kafka.streams.remotejoin.ReplicationTopologyParser;
 import com.dexels.kafka.streams.remotejoin.TopologyConstructor;
 import com.dexels.navajo.document.stream.DataItem;
 import com.dexels.navajo.document.stream.api.StreamScriptContext;
@@ -26,6 +27,7 @@ public class FilterTransformer implements ReactiveTransformer,TopologyPipeCompon
 	private final ReactiveParameters parameters;
 	private final TransformerMetadata metadata;
 	private final ProcessorSupplier<String,ReplicationMessage> filterProcessor;
+	private boolean materialized = false;;
 
 	public FilterTransformer(TransformerMetadata metadata, ReactiveParameters parameters) {
 		this.parameters = parameters;
@@ -42,7 +44,14 @@ public class FilterTransformer implements ReactiveTransformer,TopologyPipeCompon
 	public int addToTopology(Stack<String> transformerNames, int pipeId,  Topology topology, TopologyContext topologyContext,TopologyConstructor topologyConstructor) {
 		String filterName = createName(transformerNames.size(), pipeId);
 		System.err.println("Stack top for transformer: "+transformerNames.peek());
-		topology.addProcessor(filterName, filterProcessor, transformerNames.peek());
+		if (this.materialized) {
+			topology.addProcessor(filterName+"_prematerialize",filterProcessor, transformerNames.peek());
+			ReplicationTopologyParser.addMaterializeStore(topology, topologyContext, topologyConstructor, filterName, filterName+"_prematerialize");
+		} else {
+			topology.addProcessor(filterName, filterProcessor, transformerNames.peek());
+
+		}
+		System.err.println("pushin2: "+filterName);
 		transformerNames.push(filterName);
 		return pipeId;
 	}
@@ -68,4 +77,20 @@ public class FilterTransformer implements ReactiveTransformer,TopologyPipeCompon
 	public ReactiveParameters parameters() {
 		return parameters;
 	}
+
+	@Override
+	public boolean materializeParent() {
+		return false;
+	}
+
+	@Override
+	public void setMaterialize() {
+		this.materialized  = true;
+	}
+
+	@Override
+	public boolean materialize() {
+		return this.materialized;
+	}
+
 }

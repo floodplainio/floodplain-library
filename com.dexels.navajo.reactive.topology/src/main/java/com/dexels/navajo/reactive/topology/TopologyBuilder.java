@@ -48,7 +48,7 @@ public class TopologyBuilder {
 		// TODO address default?
 		StreamScriptContext c = new StreamScriptContext(topologyContext.tenant.orElse("DEFAULT"), topologyContext.instance, topologyContext.deployment);
 		ReactiveResolvedParameters resolved = source.parameters().resolve(c, Optional.empty(), ImmutableFactory.empty(),source.metadata());
-		ReplicationTopologyParser.addSourceStore(topology, topologyContext, topologyConstructor, Optional.empty(), resolved.paramString("name"), Optional.empty());
+		ReplicationTopologyParser.addSourceStore(topology, topologyContext, topologyConstructor, Optional.empty(), resolved.paramString("name"), Optional.empty(),false);
 		pipe.transformers.forEach(e->{
 			System.err.println("Transformer: "+e);
 			if(e instanceof ReactiveTransformer) {

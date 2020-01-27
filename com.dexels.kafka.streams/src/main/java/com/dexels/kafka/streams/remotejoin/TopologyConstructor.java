@@ -23,6 +23,7 @@ public class TopologyConstructor {
     public final Map<String,MessageTransformer> transformerRegistry;
     public final Optional<AdminClient> adminClient;
     public final Set<String> stores = new HashSet<>();
+//    public final Set<String> processors = new HashSet<>();
     public final Map<String,String> sources = new HashMap<>();
     // TODO could race conditions happen? If so, would that be a problem?
     public final Set<String> topics = new HashSet<String>();
@@ -39,10 +40,10 @@ public class TopologyConstructor {
     	}
     }
     
-    public void ensureTopicExists(String topicName) {
+    public void ensureTopicExists(String topicName, Optional<Integer> partitionCount) {
     	if(topics.contains(topicName)) {
     		return;
     	}
-    	KafkaUtils.ensureExistsSync(adminClient, topicName,Optional.empty());
+    	KafkaUtils.ensureExistsSync(adminClient, topicName,partitionCount);
     }
 }

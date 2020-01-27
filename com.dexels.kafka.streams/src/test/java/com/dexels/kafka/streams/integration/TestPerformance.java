@@ -7,8 +7,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -26,8 +24,8 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import com.dexels.kafka.streams.api.StreamConfiguration;
 import com.dexels.kafka.streams.base.StreamInstance;
-import com.dexels.kafka.streams.base.StreamRuntime;
 import com.dexels.replication.factory.ReplicationFactory;
 import com.dexels.replication.impl.protobuf.FallbackReplicationMessageParser;
 import com.mongodb.client.MongoCollection;
@@ -43,15 +41,14 @@ public class TestPerformance extends BaseTestStream {
 //        ReplicationFactory.setInstance(new ReplicationMessageParserImpl());
         ReplicationFactory.setInstance(new FallbackReplicationMessageParser());
 
-        Reader r = new InputStreamReader(TestPerformance.class.getResourceAsStream("resources.xml"));
-		parseConfig = StreamRuntime.parseConfig("develop", r);
+		parseConfig = StreamConfiguration.parseConfig("develop", TestPerformance.class.getResourceAsStream("resources.xml"));
         this.dropMongo(GENERATION);
         System.out.println("Resetting streams application");
         this.reset(GENERATION);
         this.resetAll(GENERATION);
         Thread.sleep(5000);
 		AdminClient adminClient = AdminClient.create(parseConfig.config());
-        instance = new StreamInstance(this.getClass() .getSimpleName(), parseConfig, adminClient, Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap());
+        instance = new StreamInstance(this.getClass() .getSimpleName(), parseConfig, adminClient, Collections.emptyMap(), Collections.emptyMap());
 
     }
 

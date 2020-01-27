@@ -16,8 +16,8 @@ public class GroupByTransformer implements TopologyTransformer {
 	private final boolean ignoreOriginalKey;
 	private final String key;
 	private String name;
-	private Optional<String> from;
-	public GroupByTransformer(String key, String name, Optional<String> from,boolean ignoreOriginalKey) {
+	private String from;
+	public GroupByTransformer(String key, String name, String from,boolean ignoreOriginalKey) {
 		this.key = key;
 		this.name = name;
 		this.from = from;

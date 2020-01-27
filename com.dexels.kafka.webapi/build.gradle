@@ -8,7 +8,6 @@ dependencies {
     implementation project(':com.dexels.repository.api')
     implementation project(':com.dexels.replication.impl')
     implementation project(':com.dexels.kafka.streams.api')
-    implementation project(':com.dexels.kafka.streams.sink.mongo')
     implementation project(':com.dexels.replication.impl.json')
     implementation project(':com.dexels.replication.impl.protobuf')
     implementation project(':com.dexels.pubsub.rx2.api')

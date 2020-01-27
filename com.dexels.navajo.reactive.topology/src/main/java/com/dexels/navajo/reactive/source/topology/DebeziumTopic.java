@@ -1,7 +1,5 @@
 package com.dexels.navajo.reactive.source.topology;
 
-import static com.dexels.kafka.streams.api.CoreOperators.topicName;
-
 import java.util.Optional;
 import java.util.Stack;
 
@@ -29,12 +27,12 @@ import com.dexels.pubsub.rx2.api.PubSubMessage;
 
 import io.reactivex.Flowable;
 
-public class DebeziumSource implements ReactiveSource,TopologyPipeComponent {
+public class DebeziumTopic implements ReactiveSource,TopologyPipeComponent {
 
 	private final SourceMetadata metadata;
 	private final ReactiveParameters parameters;
 
-	public DebeziumSource(SourceMetadata metadata, ReactiveParameters params) {
+	public DebeziumTopic(SourceMetadata metadata, ReactiveParameters params) {
 		this.metadata = metadata;
 		this.parameters = params;
 	}
@@ -59,16 +57,16 @@ public class DebeziumSource implements ReactiveSource,TopologyPipeComponent {
 		String topicName = CoreOperators.topicName(topic, topologyContext);
 //		topology.addSource("debeziumSource", topicName);
 	    final String sourceProcessorName = processorName(name+"_debezium_conversion_source");
-	    final String convertProcessorName = processorName(name+"_debezium_conversion");
-	    final String sinkProcessorName = processorName(name+"_debezium_conversion_sink");
+//	    final String convertProcessorName = processorName(name+"_debezium_conversion");
+//	    final String sinkProcessorName = processorName(name+"_debezium_conversion_sink");
 		topology.addSource(sourceProcessorName,Serdes.String().deserializer(),Serdes.ByteArray().deserializer(), topicName);
-
+		
 //		topology.addProcessor(name, ()->processor, "debeziumSource");
 	    Serializer<PubSubMessage> ser = new PubSubSerializer();
 	    
 //		Serd
-		topology.addProcessor(convertProcessorName, ()->new DebeziumConversionProcessor(topicName,topologyContext, appendTenant, appendSchema), sourceProcessorName);
-		topology.addSink(sinkProcessorName, new PubSubTopicNameExtractor(topologyConstructor),Serdes.String().serializer(), ser, convertProcessorName);
+		topology.addProcessor(name, ()->new DebeziumConversionProcessor(topicName,topologyContext, appendTenant, appendSchema), sourceProcessorName);
+//		topology.addSink(sinkProcessorName, new PubSubTopicNameExtractor(topologyConstructor),Serdes.String().serializer(), ser, convertProcessorName);
 		
 //		String sourc2 = ReplicationTopologyParser.addSourceStore(topology, topologyContext, topologyConstructor, Optional.empty(), name, Optional.empty());
 //		topology.addProcessor(filterName, filterProcessor, transformerNames.peek());

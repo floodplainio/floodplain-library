@@ -28,6 +28,7 @@ public class DebeziumTransformer implements ReactiveTransformer,TopologyPipeComp
 
 	private TransformerMetadata metadata;
 	private ReactiveParameters parameters;
+	private boolean materialized = false;
 
 	public DebeziumTransformer(TransformerMetadata metadata, ReactiveParameters params) {
 		this.metadata = metadata;
@@ -61,8 +62,14 @@ public class DebeziumTransformer implements ReactiveTransformer,TopologyPipeComp
 		DebeziumConversionProcessor processor = new DebeziumConversionProcessor(topic, topologyContext, appendTenant, appendSchema);
 		String from = transformerNames.peek();
 		String name = createName(transformerNames.size(),pipeId);
-		topology.addProcessor(name, ()->processor, from);
-//		String sourc2 = ReplicationTopologyParser.addSourceStore(topology, topologyContext, topologyConstructor, Optional.empty(), name, Optional.empty());
+		if (this.materialized) {
+			topology.addProcessor(name+"_prematerialize", ()->processor, from);
+			ReplicationTopologyParser.addMaterializeStore(topology, topologyContext, topologyConstructor, name, name+"_prematerialize");
+		} else {
+			topology.addProcessor(name, ()->processor, from);
+
+		}
+		//		String sourc2 = ReplicationTopologyParser.addSourceStore(topology, topologyContext, topologyConstructor, Optional.empty(), name, Optional.empty());
 //		topology.addProcessor(filterName, filterProcessor, transformerNames.peek());
 		System.err.println(">>> "+name);
 		transformerNames.push(name);
@@ -74,8 +81,17 @@ public class DebeziumTransformer implements ReactiveTransformer,TopologyPipeComp
 	private  String createName(int transformerNumber, int pipeId) {
 		return pipeId+"_"+metadata.name()+"_"+transformerNumber;
 	}
+	@Override
+	public boolean materializeParent() {
+		return false;
+	}
+	@Override
+	public void setMaterialize() {
+		this.materialized = true;
+	}
 
-
-
-
+	@Override
+	public boolean materialize() {
+		return this.materialized;
+	}
 }

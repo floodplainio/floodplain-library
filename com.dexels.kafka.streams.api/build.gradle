@@ -4,6 +4,8 @@ dependencies {
     Map<String, String> dependencies = globalConf.commonDependencies
     compile dependencies.osgiAnnotations
     compile dependencies.reactiveStreams
+    compile dependencies.jacksonCore
+    compile dependencies.jacksonDatabind
     compile dependencies.rxJava
     compile dependencies.slf4j
     implementation project(':com.dexels.immutable.api')

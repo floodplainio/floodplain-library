@@ -5,9 +5,10 @@ import static com.dexels.kafka.streams.api.CoreOperators.topicName;
 import java.util.List;
 import java.util.Optional;
 import java.util.Stack;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.kafka.streams.Topology;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.immutable.factory.ImmutableFactory;
@@ -30,6 +31,10 @@ public class SinkTransformer implements ReactiveTransformer, TopologyPipeCompone
 
 	private TransformerMetadata metadata;
 	private ReactiveParameters parameters;
+	private boolean materialize = false;
+
+	
+	private final static Logger logger = LoggerFactory.getLogger(SinkTransformer.class);
 
 	public static final String SINK_PREFIX = "SINK_";
 	public SinkTransformer(TransformerMetadata metadata, ReactiveParameters params) {
@@ -55,23 +60,22 @@ public class SinkTransformer implements ReactiveTransformer, TopologyPipeCompone
 //		        String sinkTopic = topicName(sinkName, topologyContext);
 //				topology.addSink(sinkTopic, sinkTopic, transformerNames.peek());
 //				System.err.println("Sink source >>> "+sinkTopic+" >>> name: "+sinkName);
-//			});§
-
+//			});
+		
+		boolean create = resolved.optionalBoolean("create").orElse(false);
+		Optional<Integer> partitions = resolved.optionalInteger("partitions");
 		List<Operand> operands = resolved.unnamedParameters();
 		for (Operand operand : operands) {
 	        String sinkTopic = topicName( operand.stringValue(), topologyContext);
-			String sinkName = sinkTopic;
-			System.err.println("Stack top for transformer: "+transformerNames.peek());
+	        // TODO shouldn't we use the createName?
+	        String sinkName = sinkTopic;
+			if(create) {
+				topologyConstructor.ensureTopicExists(sinkTopic,partitions);
+			}
+			logger.info("Stack top for transformer: "+transformerNames.peek());
 			topology.addSink(SINK_PREFIX+sinkTopic, sinkTopic, transformerNames.peek());
-//			topology addSink(SINK_PREFIX+sinkTopic, sinkTopic, transformerNames.peek());
-			System.err.println("Sink source >>> "+sinkTopic+" >>> name: "+sinkName);
 		}
 		return pipeId;
-		//		String sinkName = resolved.paramString("name");
-
-		
-
-//		transformerNames.push(sinkName);
 	}
 	
 	private  String createName(int transformerNumber, int pipeId) {
@@ -87,6 +91,18 @@ public class SinkTransformer implements ReactiveTransformer, TopologyPipeCompone
 	public ReactiveParameters parameters() {
 		return parameters;
 	}
+	@Override
+	public boolean materializeParent() {
+		return false;
+	}
+	@Override
+	public void setMaterialize() {
+		this.materialize  = true;
+	}
 
+	@Override
+	public boolean materialize() {
+		return this.materialize;
+	}
 
 }

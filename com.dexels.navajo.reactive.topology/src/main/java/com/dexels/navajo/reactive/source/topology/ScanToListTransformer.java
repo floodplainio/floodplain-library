@@ -25,7 +25,7 @@ public class ScanToListTransformer implements ReactiveTransformer {
 	@Override
 	public FlowableTransformer<DataItem, DataItem> execute(StreamScriptContext context,
 			Optional<ImmutableMessage> current, ImmutableMessage param) {
-		return item->Flowable.error(()->new ReactiveParseException("Sink transformer shouldn't be executed"));
+		return item->Flowable.error(()->new ReactiveParseException("Topology transformer shouldn't be executed"));
 	}
 
 	@Override

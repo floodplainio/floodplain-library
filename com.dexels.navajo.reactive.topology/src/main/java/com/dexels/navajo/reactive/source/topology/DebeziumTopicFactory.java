@@ -13,7 +13,7 @@ import com.dexels.navajo.reactive.api.ReactiveParameters;
 import com.dexels.navajo.reactive.api.ReactiveSource;
 import com.dexels.navajo.reactive.api.ReactiveSourceFactory;
 
-public class DebeziumSourceFactory implements ReactiveSourceFactory {
+public class DebeziumTopicFactory implements ReactiveSourceFactory {
 
 	@Override
 	public Type sourceType() {
@@ -22,7 +22,7 @@ public class DebeziumSourceFactory implements ReactiveSourceFactory {
 
 	@Override
 	public Optional<List<String>> allowedParameters() {
-		return Optional.of(Arrays.asList("topic","appendTenant","appendSchema"));
+		return Optional.of(Arrays.asList("topic","appendSchema"));
 	}
 
 	@Override
@@ -34,7 +34,6 @@ public class DebeziumSourceFactory implements ReactiveSourceFactory {
 	public Optional<Map<String, String>> parameterTypes() {
 		Map<String, String> r = new HashMap<>();
 		r.put("topic", Property.STRING_PROPERTY);
-		r.put("appendTenant", Property.BOOLEAN_PROPERTY);
 		r.put("appendSchema", Property.BOOLEAN_PROPERTY);
 		return Optional.of(Collections.unmodifiableMap(r));
 	}
@@ -42,12 +41,12 @@ public class DebeziumSourceFactory implements ReactiveSourceFactory {
 
 	@Override
 	public ReactiveSource build(ReactiveParameters parameters) {
-		return new DebeziumSource(this,parameters);
+		return new DebeziumTopic(this,parameters);
 	}
 
 	@Override
 	public String sourceName() {
-		return "debeziumConvert";
+		return "debezium";
 	}
 
 

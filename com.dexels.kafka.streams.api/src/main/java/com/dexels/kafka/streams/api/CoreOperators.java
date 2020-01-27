@@ -24,7 +24,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class CoreOperators {
 	private static final int TOPIC_PARTITION_COUNT = 1;
-	private static final int TOPIC_REPLICATION_COUNT = 2;
+	private static final int TOPIC_REPLICATION_COUNT = 1;
 
 	private static ObjectMapper objectMapper = new ObjectMapper();
 	private static ObjectWriter objectWriter = objectMapper.writer().withDefaultPrettyPrinter();
@@ -237,15 +237,9 @@ public class CoreOperators {
     	
     	String name;
     	String generation;
-    	// generation can be overridden by #13 suffix
-    	String[] genParts = topicName.split("#");
-    	if(genParts.length==1) {
-    		name = topicName;
-    		generation = context.generation;
-    	} else {
-    		name = genParts[0];
-    		generation = genParts[1];
-    	}
+		name = topicName;
+		generation = context.generation;
+
     	
     	if(name==null) {
     		throw new NullPointerException("Can not create topic name when name is null. tenant: "+context.tenant.orElse("<no tenant>") +" deployment: "+context.deployment+" generation: "+generation);

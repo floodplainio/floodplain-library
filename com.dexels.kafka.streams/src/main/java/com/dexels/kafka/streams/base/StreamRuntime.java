@@ -2,24 +2,18 @@ package com.dexels.kafka.streams.base;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Dictionary;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -31,9 +25,6 @@ import javax.inject.Named;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.streams.Topology;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.service.cm.Configuration;
-import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -42,15 +33,8 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dexels.http.reactive.elasticsearch.ElasticSink;
-import com.dexels.http.reactive.graph.NeoSink;
 import com.dexels.kafka.streams.api.StreamConfiguration;
-import com.dexels.kafka.streams.api.StreamTopologyException;
-import com.dexels.kafka.streams.api.sink.Sink;
-import com.dexels.kafka.streams.api.sink.SinkConfiguration;
-import com.dexels.kafka.streams.base.StreamInstance.SinkType;
 import com.dexels.kafka.streams.processor.generic.GenericProcessorBuilder;
-import com.dexels.kafka.streams.sink.mongo.MongoDirectSink;
 import com.dexels.kafka.streams.transformer.custom.CommunicationTransformer;
 import com.dexels.kafka.streams.transformer.custom.CopyFieldTransformer;
 import com.dexels.kafka.streams.transformer.custom.CreateCoordinateTransformer;
@@ -62,8 +46,6 @@ import com.dexels.kafka.streams.transformer.custom.MergeDateTimeTransformer;
 import com.dexels.kafka.streams.transformer.custom.SplitToListTransformer;
 import com.dexels.kafka.streams.transformer.custom.StringToDateTransformer;
 import com.dexels.kafka.streams.transformer.custom.TeamName;
-import com.dexels.kafka.streams.xml.parser.CaseSensitiveXMLElement;
-import com.dexels.kafka.streams.xml.parser.XMLElement;
 import com.dexels.kafka.streams.xml.parser.XMLParseException;
 import com.dexels.navajo.repository.api.RepositoryInstance;
 import com.dexels.replication.transformer.api.MessageTransformer;
@@ -90,7 +72,6 @@ public class StreamRuntime {
 	private final Set<StreamInstance> startedInstances = new HashSet<>();
 	Subject<Runnable> updateQueue = PublishSubject.<Runnable>create().toSerialized();
 	private Disposable updateQueueSubscription;
-	private final Map<SinkType,Sink> sinkRegistry = new EnumMap<>(SinkType.class);
 
 	private final Map<String,MessageTransformer> transformerRegistry = new HashMap<>();
 	private final Map<String,GenericProcessorBuilder> genericProcessorRegistry = new HashMap<>();
@@ -125,10 +106,6 @@ public class StreamRuntime {
 				}});
 		this.updateQueueSubscription = updateQueue.observeOn(Schedulers.from(Executors.newSingleThreadExecutor()))
 			.subscribe(r->r.run());
-		
-		sinkRegistry.put(SinkType.ELASTICSEARCHDIRECT, new ElasticSink());
-		sinkRegistry.put(SinkType.MONGODBDIRECT, new MongoDirectSink());
-		sinkRegistry.put(SinkType.NEO4J, new NeoSink());
 	}
 
 	@Activate
@@ -136,8 +113,8 @@ public class StreamRuntime {
 	public void activate() throws IOException, InterruptedException, ExecutionException {
 		System.err.println("Starting runtime");
 		File resources = new File(this.repositoryInstance.getRepositoryFolder(),"config/resources.xml");
-		try (Reader r = new FileReader(resources)){
-			this.configuration = parseConfig(this.repositoryInstance.getDeployment(),r);
+		try (InputStream r = new FileInputStream(resources)){
+			this.configuration = StreamConfiguration.parseConfig(this.repositoryInstance.getDeployment(),r);
 			this.adminClient = AdminClient.create(this.configuration.config());
 		} catch (XMLParseException | IOException e) {
 			logger.error("Error starting streaminstance", e);
@@ -180,91 +157,24 @@ public class StreamRuntime {
 		this.genericProcessorRegistry.put("debezium", processor);
 	}
 
-	public static StreamConfiguration parseConfig(String deployment,Reader r) {
-		try {
-			XMLElement xe = new CaseSensitiveXMLElement();
-			xe.parseFromReader(r);
-			final Optional<StreamConfiguration> found = xe.getChildren()
-				.stream()
-				.filter(elt->"deployment".equals( elt.getName()))
-				.filter(elt->deployment.equals(elt.getStringAttribute("name")))
-				.map(elt->toStreamConfig(deployment,elt))
-				.findFirst();
-			if(!found.isPresent()) {
-				throw new StreamTopologyException("No configuration found for deployment: "+deployment);
-			}
-			return found.get();
-			
-		} catch (XMLParseException | IOException e) {
-			throw new StreamTopologyException("Configuration error for deployment: "+deployment,e);
-		}
-		
-	}
-
-	private static StreamConfiguration toStreamConfig(String deployment,XMLElement deploymentXML) {
-		String kafka = deploymentXML.getStringAttribute("kafka");
-		int maxWait = deploymentXML.getIntAttribute("maxWait", 5000);
-		int maxSize = deploymentXML.getIntAttribute("maxSize", 100);
-		int replicationFactor = deploymentXML.getIntAttribute("replicationFactor", 1);
-		Map<String,SinkConfiguration> sinks = deploymentXML.getChildren()
-			.stream()
-			.map(elt->new SinkConfiguration(elt.getName(),elt.getStringAttribute("name"), elt.attributes()))
-			.collect(Collectors.toMap(e->e.name(), e->e));
-		final StreamConfiguration streamConfiguration = new StreamConfiguration(kafka, sinks,deployment,maxWait,maxSize,replicationFactor);
-//		if(configAdmin!=null) {
-//			registerSinks(streamConfiguration,configAdmin);
-//		}
-		return streamConfiguration;
-	}
-
-	private static  void registerSinks(StreamConfiguration conf, ConfigurationAdmin configAdmin) {
-		conf.sinks().entrySet().forEach(e->{
-			String sinkResource = "dexels.streams.sink";
-			Dictionary<String,Object> settings = new Hashtable<String,Object>(e.getValue().settings());
-			final String name = e.getValue().name();
-			final String type = e.getValue().type();
-			settings.put("name", name);
-			settings.put("type", type);
-			try {
-				Configuration cf = createOrReuse(sinkResource,"(name="+name+")",configAdmin);
-				updateIfChanged(cf,settings);
-			} catch (Exception e1) {
-				logger.error("Error: ", e1);
-			}
-			
-		});
-	}
-	
-	protected static Configuration createOrReuse(String pid, final String filter, ConfigurationAdmin configAdmin)
-			throws IOException {
-		Configuration cc = null;
-		try {
-			Configuration[] c = configAdmin.listConfigurations(filter);
-			if(c!=null && c.length>1) {
-				logger.warn("Multiple configurations found for filter: {}", filter);
-			}
-			if(c!=null && c.length>0) {
-				cc = c[0];
-			}
-		} catch (InvalidSyntaxException e) {
-			logger.error("Error in filter: {}",filter,e);
-		}
-		if(cc==null) {
-			cc = configAdmin.createFactoryConfiguration(pid,null);
-		}
-		return cc;
-	}
-	
-    private static void updateIfChanged(Configuration c, Dictionary<String,Object> settings) throws IOException {
-		Dictionary<String,Object> old = c.getProperties();
-		if(old!=null) {
-			if(!old.equals(settings)) {
-				c.update(settings);
-			}
-		} else {
-			c.update(settings);
-		}
-	}
+//	private static  void registerSinks(StreamConfiguration conf, ConfigurationAdmin configAdmin) {
+//		conf.sinks().entrySet().forEach(e->{
+//			String sinkResource = "dexels.streams.sink";
+//			Dictionary<String,Object> settings = new Hashtable<String,Object>(e.getValue().settings());
+//			final String name = e.getValue().name();
+//			final String type = e.getValue().type();
+//			settings.put("name", name);
+//			settings.put("type", type);
+//			try {
+//				Configuration cf = createOrReuse(sinkResource,"(name="+name+")",configAdmin);
+//				updateIfChanged(cf,settings);
+//			} catch (Exception e1) {
+//				logger.error("Error: ", e1);
+//			}
+//			
+//		});
+//	}
+//	
 
 	
 	private void parseFromRepository() throws IOException, InterruptedException, ExecutionException {
@@ -336,7 +246,7 @@ public class StreamRuntime {
 			return;
 		}
 		try(InputStream definitionStream = new FileInputStream(file)) {
-			StreamInstance si = new StreamInstance(friendlyName(name), this.configuration,this.adminClient, this.transformerRegistry,this.genericProcessorRegistry,this.sinkRegistry);
+			StreamInstance si = new StreamInstance(friendlyName(name), this.configuration,this.adminClient, this.transformerRegistry,this.genericProcessorRegistry);
 			Topology topology = new Topology();
 			si.parseStreamMap(topology,definitionStream,outputStorage,this.repositoryInstance.getDeployment(),generation,Optional.of(file));
 			streams.put(friendlyName(name),si);

@@ -6,17 +6,20 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.UUID;
 
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.state.StreamsMetadata;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.dexels.immutable.factory.ImmutableFactory;
+import com.dexels.kafka.streams.api.StreamConfiguration;
 import com.dexels.kafka.streams.api.TopologyContext;
 import com.dexels.kafka.streams.base.StreamInstance;
 import com.dexels.kafka.streams.remotejoin.TopologyConstructor;
@@ -45,13 +48,12 @@ public class TestBuildTopology {
 	@Before
 	public void setup() {
 		ImmutableFactory.setInstance(ImmutableFactory.createParser());
-		topologyContext = new TopologyContext(Optional.of("DEFAULT"), "test", "someinstance", "3");
-		props = StreamInstance.createProperties("instance5", brokers, storagePath);
+		topologyContext = new TopologyContext(Optional.of("Generic"), "test", "someinstance", "3");
+		props = StreamInstance.createProperties(UUID.randomUUID().toString(), brokers, storagePath);
 		adminClient = AdminClient.create(props);
 		topologyConstructor = new TopologyConstructor(transformerRegistry , Optional.of(adminClient));
 		CoreReactiveFinder finder = new TopologyReactiveFinder();
 		Reactive.setFinderInstance(finder);
-
 		// TODO fill in props
 //		Reactive.finderInstance().addReactiveSourceFactory(new MongoReactiveSourceFactory(), "topic");
 
@@ -68,7 +70,73 @@ public class TestBuildTopology {
 	}
 
 	@Test
-	public void testJoinTopic() throws ParseException, IOException, InterruptedException {
+	public void testDatabase() throws ParseException, IOException {
+
+		CompiledReactiveScript crs = ReactiveStandalone.compileReactiveScript(getClass().getClassLoader().getResourceAsStream("database.rr"));
+		TopologyConstructor topologyConstructor = new TopologyConstructor(transformerRegistry , Optional.empty());
+		Topology topology = ReactivePipeParser.parseReactiveStreamDefinition(crs, topologyContext, topologyConstructor);
+		System.err.println("Topology: \n"+topology.describe());
+	}
+	
+	@Test
+	public void testStorelessTopic() throws ParseException, IOException {
+
+		CompiledReactiveScript crs = ReactiveStandalone.compileReactiveScript(getClass().getClassLoader().getResourceAsStream("simplewithoutstore.rr"));
+		TopologyConstructor topologyConstructor = new TopologyConstructor(transformerRegistry , Optional.empty());
+		
+		Topology topology = ReactivePipeParser.parseReactiveStreamDefinition(crs, topologyContext, topologyConstructor);
+		System.err.println("Topology: \n"+topology.describe());
+	}
+	
+	@Test
+	public void testJoinTopic() throws ParseException, IOException {
+
+		CompiledReactiveScript crs = ReactiveStandalone.compileReactiveScript(getClass().getClassLoader().getResourceAsStream("jointopic.rr"));
+		TopologyConstructor topologyConstructor = new TopologyConstructor(transformerRegistry , Optional.empty());
+		
+		Topology topology = ReactivePipeParser.parseReactiveStreamDefinition(crs, topologyContext, topologyConstructor);
+		System.err.println("Topology: \n"+topology.describe());
+	}
+
+	@Test
+	public void testConfigurationStreamInstance() throws ParseException, IOException, InterruptedException {
+		CompiledReactiveScript crs = ReactiveStandalone.compileReactiveScript(getClass().getClassLoader().getResourceAsStream("address.rr"));
+		Topology topology = ReactivePipeParser.parseReactiveStreamDefinition(crs, topologyContext, topologyConstructor);
+		StreamConfiguration sc = StreamConfiguration.parseConfig("test", getClass().getClassLoader().getResourceAsStream("resources.xml"));
+	}
+
+	@Test
+	public void testDebezium() throws ParseException, IOException, InterruptedException {
+
+		CompiledReactiveScript crs = ReactiveStandalone.compileReactiveScript(getClass().getClassLoader().getResourceAsStream("database.rr"));
+		Topology topology = ReactivePipeParser.parseReactiveStreamDefinition(crs, topologyContext, topologyConstructor);
+//		public static Properties createProperties(String applicationId,String brokers, String storagePath) {
+			
+		System.err.println("Topology: \n"+topology.describe());
+		KafkaStreams stream = new KafkaStreams(topology, props);
+		stream.setUncaughtExceptionHandler((thread,exception)->{
+			logger.error("Error in streams: ",exception);
+		});
+		stream.setStateListener((oldState,newState)->{
+			logger.info("State moving from {} to {}",oldState,newState);
+		});
+		stream.start();
+		for (int i = 0; i < 100; i++) {
+			boolean isRunning = stream.state().isRunning();
+	        String stateName = stream.state().name();
+	        System.err.println("State: "+stateName+" - "+isRunning);
+	        final Collection<StreamsMetadata> allMetadata = stream.allMetadata();
+	        System.err.println("meta: "+allMetadata);
+			Thread.sleep(5000);
+		}
+
+		stream.close();
+		Thread.sleep(10000);
+	}
+
+	
+	@Test @Ignore
+	public void testAddressTopic() throws ParseException, IOException, InterruptedException {
 
 		CompiledReactiveScript crs = ReactiveStandalone.compileReactiveScript(getClass().getClassLoader().getResourceAsStream("address.rr"));
 		Topology topology = ReactivePipeParser.parseReactiveStreamDefinition(crs, topologyContext, topologyConstructor);
@@ -90,7 +158,7 @@ public class TestBuildTopology {
 	        System.err.println("State: "+stateName+" - "+isRunning);
 	        final Collection<StreamsMetadata> allMetadata = stream.allMetadata();
 	        System.err.println("meta: "+allMetadata);
-			Thread.sleep(10000);
+			Thread.sleep(5000);
 		}
 
 		stream.close();

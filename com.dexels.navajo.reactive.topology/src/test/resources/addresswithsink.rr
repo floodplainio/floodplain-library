@@ -1,3 +1,6 @@
+|>topic('@CountryExample')
+	->mongo(name='replication',collection='country')
+	
 |>topic(name='country')
 	->joinWith(into='monkey',
 			|>topic(name='city')

@@ -105,7 +105,7 @@ public class ReplicationTopologyParser {
 				  
 					final Optional<String> to = Optional.ofNullable(xe.getStringAttribute("to"));
 		        	final Optional<ProcessorSupplier<String, ReplicationMessage>> processorFromChildren = processorFromChildren(Optional.of(xe), topicName(sourceTopicName, context), topologyConstructor);
-					addSourceStore(current, context, topologyConstructor,processorFromChildren, sourceTopicName, to);
+					addSourceStore(current, context, topologyConstructor,processorFromChildren, sourceTopicName, to,true);
 				}
 				break;
 				case DIFFSTORE:
@@ -157,7 +157,7 @@ public class ReplicationTopologyParser {
 						String sourceTopic = topicName(from, context);
 						boolean ignoreOriginalKey = xe.getBooleanAttribute("ignoreOriginalKey", "true", "false", false);
 //						Optional<String> filter = Optional.ofNullable(xe.getStringAttribute("filter"));
-						addGroupedProcessor(current, context,topologyConstructor, name,Optional.ofNullable(from),ignoreOriginalKey,
+						addGroupedProcessor(current, context,topologyConstructor, name,from,ignoreOriginalKey,
 								key,processorFromChildren(Optional.of(xe),sourceTopic, topologyConstructor));
 					}
 					break;
@@ -270,23 +270,36 @@ public class ReplicationTopologyParser {
        String storeTopic = topicName(sourceTopicName, context);
        // TODO It might be better to fail if the topic does not exist? -> Well depends, if it is external yes, but if it is created by the same instance, then no.
        // No: if the topic is dynamic, it won't exist at first, so better to ensure.
-       topologyConstructor.ensureTopicExists(storeTopic);
+       topologyConstructor.ensureTopicExists(storeTopic,Optional.empty());
        final String sourceProcessorName = processorName(sourceTopicName);
    	String sourceName;
     if(!topologyConstructor.sources.containsKey(storeTopic)) {
     	sourceName = sourceProcessorName+"_src";
 		currentBuilder.addSource(sourceName, storeTopic);
         topologyConstructor.sources.put(storeTopic,sourceName);
-    } else {
-    	sourceName = topologyConstructor.sources.get(storeTopic);
+        // TODO Optimize. The topology should be valid without adding identityprocessors
     	currentBuilder.addProcessor(sourceProcessorName,()->new IdentityProcessor(), sourceName);
+    } else {
+//    	sourceName = topologyConstructor.sources.get(storeTopic);
+//    	currentBuilder.addProcessor(sourceProcessorName,()->new IdentityProcessor(), sourceName);
     }
     return sourceProcessorName;
    }
-    
+
+//    ss
+	public static String addMaterializeStore(final Topology currentBuilder, TopologyContext context,
+			TopologyConstructor topologyConstructor, String name, String parentProcessor) {
+		final String sourceProcessorName = processorName(parentProcessor);
+		currentBuilder.addProcessor(name, () -> new StoreProcessor(STORE_PREFIX + sourceProcessorName),parentProcessor);
+		addStateStoreMapping(topologyConstructor.processorStateStoreMapper, sourceProcessorName,STORE_PREFIX + sourceProcessorName);
+		topologyConstructor.stores.add(STORE_PREFIX + sourceProcessorName);
+		topologyConstructor.stateStoreSupplier.put(STORE_PREFIX + sourceProcessorName,createMessageStoreSupplier(STORE_PREFIX + sourceProcessorName));
+		return name;
+	}
+   
     public static String addSourceStore(final Topology currentBuilder, TopologyContext context, TopologyConstructor topologyConstructor, Optional<ProcessorSupplier<String, ReplicationMessage>> processorFromChildren, 
             String sourceTopicName,
-            Optional<String> destination) {
+            Optional<String> destination, boolean materializeStore) {
         String storeTopic = topicName(sourceTopicName, context);
         // TODO It might be better to fail if the topic does not exist? -> Well depends, if it is external yes, but if it is created by the same instance, then no.
         final String sourceProcessorName = processorName(sourceTopicName);
@@ -301,18 +314,29 @@ public class ReplicationTopologyParser {
             } else {
             	sourceName = topologyConstructor.sources.get(storeTopic);
             }
-
 			if(processorFromChildren.isPresent()) {
-				currentBuilder.addProcessor(sourceProcessorName+"_transform",processorFromChildren.get(), sourceName);
-				currentBuilder.addProcessor(sourceProcessorName,()->new StoreProcessor(STORE_PREFIX+sourceProcessorName), sourceProcessorName+"_transform");
+				if(materializeStore) {
+					currentBuilder.addProcessor(sourceProcessorName+"_transform",processorFromChildren.get(), sourceName);
+					currentBuilder.addProcessor(sourceProcessorName,()->new StoreProcessor(STORE_PREFIX+sourceProcessorName), sourceProcessorName+"_transform");
+				} else {
+					currentBuilder.addProcessor(sourceProcessorName,processorFromChildren.get(), sourceName);
+					
+				}
 			} else {
-				currentBuilder.addProcessor(sourceProcessorName,()->new StoreProcessor(STORE_PREFIX+sourceProcessorName), sourceName);
+				if(materializeStore) {
+					currentBuilder.addProcessor(sourceProcessorName,()->new StoreProcessor(STORE_PREFIX+sourceProcessorName), sourceName);
+				} else {
+					currentBuilder.addProcessor(sourceProcessorName,()->new IdentityProcessor(), sourceName);
+					
+				}
 			}
 			
         }
-		addStateStoreMapping(topologyConstructor.processorStateStoreMapper,sourceProcessorName, STORE_PREFIX+sourceProcessorName);
-		topologyConstructor.stores.add(STORE_PREFIX+sourceProcessorName);
-        topologyConstructor.stateStoreSupplier.put(STORE_PREFIX+sourceProcessorName,createMessageStoreSupplier(STORE_PREFIX+sourceProcessorName));
+        if(materializeStore) {
+    		addStateStoreMapping(topologyConstructor.processorStateStoreMapper,sourceProcessorName, STORE_PREFIX+sourceProcessorName);
+    		topologyConstructor.stores.add(STORE_PREFIX+sourceProcessorName);
+            topologyConstructor.stateStoreSupplier.put(STORE_PREFIX+sourceProcessorName,createMessageStoreSupplier(STORE_PREFIX+sourceProcessorName));
+        }
 
         if(destination.isPresent()) {
 			addTopicDestination(currentBuilder, context,topologyConstructor, sourceProcessorName, destination.get(),sourceProcessorName,partitionsFromDestination(destination));
@@ -475,14 +499,14 @@ public class ReplicationTopologyParser {
 		if (!topologyConstructor.stores.contains(STORE_PREFIX+fromProcessor)) {
 	    	final Optional<ProcessorSupplier<String, ReplicationMessage>> fromProcessorFromChildren = processorFromChildren(Optional.empty(), topicName(from, topologyContext), topologyConstructor);
 			addSourceStore(current, topologyContext, topologyConstructor, fromProcessorFromChildren,
-                    from, Optional.empty());
+                    from, Optional.empty(),true);
         }
 		final String withProcessor  = processorName(with);
     	final Optional<ProcessorSupplier<String, ReplicationMessage>> withProcessorFromChildren = processorFromChildren(Optional.empty(), topicName(with, topologyContext), topologyConstructor);
 
         if (!topologyConstructor.stores.contains(STORE_PREFIX+withProcessor) ) {
         	addSourceStore(current, topologyContext, topologyConstructor, withProcessorFromChildren,
-        			with, Optional.empty());
+        			with, Optional.empty(),true);
         }
         
         String firstNamePre = name+"-forwardpre";
@@ -534,29 +558,29 @@ public class ReplicationTopologyParser {
 	}
 	
 
-	public static String addGroupedProcessor(final Topology current, TopologyContext topologyContext, TopologyConstructor topologyConstructor, String name, Optional<String> from, boolean ignoreOriginalKey, 
+	public static String addGroupedProcessor(final Topology current, TopologyContext topologyContext, TopologyConstructor topologyConstructor, String name, String from, boolean ignoreOriginalKey, 
 			String key, Optional<ProcessorSupplier<String,ReplicationMessage>> transformerSupplier) {
 
 		String sourceProcessorName;
 		String mappingStoreName;
-		if(from.isPresent()) {
-		    sourceProcessorName = processorName(from.get());
-		    if(!topologyConstructor.stores.contains(STORE_PREFIX+sourceProcessorName)) {
+	    sourceProcessorName = processorName(from);
+	    if(!topologyConstructor.stores.contains(STORE_PREFIX+sourceProcessorName)) {
 // 			if (topologyConstructor.stateStoreSupplier.get(sourceProcessorName) == null) {
-		    	System.err.println("Adding grouped with from, no source processor present for: "+sourceProcessorName+" created: "+topologyConstructor.stateStoreSupplier.keySet()+" and from: "+from);
+	    	System.err.println("Adding grouped with from, no source processor present for: "+sourceProcessorName+" created: "+topologyConstructor.stateStoreSupplier.keySet()+" and from: "+from);
 //		    	final Optional<ProcessorSupplier<String, ReplicationMessage>> processorFromChildren = processorFromChildren(Optional.empty(), topicName(from.get(), topologyContext), topologyConstructor);
-		    	// TODO removed, is that ok?
-		    	addLazySourceStore(current, topologyContext, topologyConstructor, 
-	                   from.get());
-	        }
-			
-			mappingStoreName = sourceProcessorName + "_mapping";
-		} else {
-		    throw new UnsupportedOperationException("GroupedStore should have 'from'");
-		}
+	    	// TODO removed, is that ok?
+	    	
+//	    	public static String addLazyStore(final Topology currentBuilder, TopologyContext context,
+//	    			TopologyConstructor topologyConstructor, String name, String parentProcessor) {
+	    	
+//	    	addLazySourceStore(current, topologyContext, topologyConstructor, 
+//                   from);
+        }
+		
+		mappingStoreName = sourceProcessorName + "_mapping";
+
 		String transformProcessor = name+"_transform";
 		current.addProcessor(transformProcessor,transformerSupplier.orElse(()->new IdentityProcessor()),sourceProcessorName);
-
 		// allow override to avoid clashes
 		addStateStoreMapping(topologyConstructor.processorStateStoreMapper, name, STORE_PREFIX+name);
 		topologyConstructor.stores.add(STORE_PREFIX+name);
@@ -598,7 +622,7 @@ public class ReplicationTopologyParser {
 			final Optional<ProcessorSupplier<String, ReplicationMessage>> processorFromChildren) {
 		final String fromProcessorName = processorName(from);
     	if (topologyConstructor.stateStoreSupplier.get(fromProcessorName) == null) {
-        	addSourceStore(current, topologyContext, topologyConstructor, processorFromChildren, from, Optional.empty());
+        	addSourceStore(current, topologyContext, topologyConstructor, processorFromChildren, from, Optional.empty(),true);
         }
         
         String nameCache = name+"-cache";
@@ -676,17 +700,15 @@ public class ReplicationTopologyParser {
 		String secondNamePre =  name+"-reversepre";
 		String finalJoin = name+"-joined";
 
-		if (!topologyConstructor.stores.contains(STORE_PREFIX+fromProcessorName)) {
-	    	final Optional<ProcessorSupplier<String, ReplicationMessage>> processorFromChildren = processorFromChildren(Optional.empty(), topicName(from, topologyContext),topologyConstructor);
-			addSourceStore(current, topologyContext, topologyConstructor,  processorFromChildren,from, Optional.empty());
-		}
-//		addProcessorStore(current, topologyContext, topologyConstructor, with);
-		if (!topologyConstructor.stores.contains(STORE_PREFIX+withProcessorName)) {
-//        if (topologyConstructor.stateStoreSupplier.get(withProcessorName) == null) {
-	    	final Optional<ProcessorSupplier<String, ReplicationMessage>> processorFromChildren = processorFromChildren(Optional.empty(), topicName(with, topologyContext), topologyConstructor);
-        	addSourceStore(current, topologyContext, topologyConstructor,processorFromChildren,
-        			 with, Optional.empty());
-        }
+//		if (!topologyConstructor.stores.contains(STORE_PREFIX+fromProcessorName)) {
+//	    	final Optional<ProcessorSupplier<String, ReplicationMessage>> processorFromChildren = processorFromChildren(Optional.empty(), topicName(from, topologyContext),topologyConstructor);
+//			addSourceStore(current, topologyContext, topologyConstructor,  processorFromChildren,from, Optional.empty(),true);
+//		}
+//		if (!topologyConstructor.stores.contains(STORE_PREFIX+withProcessorName)) {
+//	    	final Optional<ProcessorSupplier<String, ReplicationMessage>> processorFromChildren = processorFromChildren(Optional.empty(), topicName(with, topologyContext), topologyConstructor);
+//        	addSourceStore(current, topologyContext, topologyConstructor,processorFromChildren,
+//        			 with, Optional.empty(),true);
+//        }
         
         
         //Preprocessor - add info whether the resulting message is a reverse-join or not
@@ -699,6 +721,7 @@ public class ReplicationTopologyParser {
                 ,()->new PreJoinProcessor(true)
                 ,withProcessorName
         );
+        
         @SuppressWarnings("rawtypes")
         final Processor proc;
         if (isList) {

@@ -30,6 +30,32 @@ public class ReactivePipeParser {
 //		AtomicInteger pipeNr = new AtomicInteger(initialPipeNr); 
 //		System.err.println("source name: "+pipe.source.getClass().getName());
 //			pipe.source.execute(context, current, paramMessage)
+		int size = pipe.transformers.size();
+		for (int i = size; i >= 0; i--) {
+			System.err.println(">>> "+i);
+			TopologyPipeComponent source = (TopologyPipeComponent)pipe.source;
+			if(i==0) {
+				System.err.println("processing source");
+			} else {
+				Object type = pipe.transformers.get(i-1);
+				if(type instanceof TopologyPipeComponent) {
+					TopologyPipeComponent tpc = (TopologyPipeComponent)type;
+					TopologyPipeComponent parent = i-2 < 0 ? source : (TopologyPipeComponent) pipe.transformers.get(i-2);
+					System.err.println("processing transformer: "+(i-1));
+					if(tpc.materializeParent()) {
+						System.err.println("Materializing parent");
+						parent.setMaterialize();
+					}
+					
+//					pipeNr = tpc.addToTopology(pipeStack, pipeNr, topology, topologyContext, topologyConstructor);
+				} else {
+					System.err.println("Weird type found: "+type);
+				}
+				
+			}
+			
+		}
+
 		TopologyPipeComponent sourceTopologyComponent = (TopologyPipeComponent)pipe.source;
 		pipeNr = sourceTopologyComponent.addToTopology(pipeStack, pipeNr, topology, topologyContext, topologyConstructor);
 		for (Object e : pipe.transformers) {
@@ -39,6 +65,7 @@ public class ReactivePipeParser {
 				pipeNr = tpc.addToTopology(pipeStack, pipeNr, topology, topologyContext, topologyConstructor);
 			}
 		}
+
 		return pipeNr;
 //		pipe.transformers.forEach(e->{
 //			if(e instanceof ReactiveTransformer) {

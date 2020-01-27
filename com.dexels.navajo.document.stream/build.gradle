@@ -16,6 +16,7 @@ dependencies {
     implementation project(':com.dexels.replication.impl.json')
     implementation project(':com.dexels.navajo.document')
     implementation project(':com.dexels.navajo.api')
+    implementation project(':com.dexels.kafka.streams.api')
     compile dependencies.slf4j
     compile dependencies.jacksonCore
     compile dependencies.jacksonDatabind

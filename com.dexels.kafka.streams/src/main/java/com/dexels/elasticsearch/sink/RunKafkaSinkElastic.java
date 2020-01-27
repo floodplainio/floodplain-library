@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 import com.dexels.kafka.streams.api.CoreOperators;
 import com.dexels.kafka.streams.api.StreamConfiguration;
 import com.dexels.kafka.streams.api.TopologyContext;
-import com.dexels.kafka.streams.api.sink.SinkConfiguration;
+import com.dexels.kafka.streams.api.sink.ConnectConfiguration;
 import com.dexels.kafka.streams.base.ConnectSink;
 import com.dexels.kafka.streams.tools.KafkaUtils;
 import com.dexels.kafka.streams.xml.parser.XMLElement;
@@ -54,7 +54,7 @@ public class RunKafkaSinkElastic implements ConnectSink {
 	private Properties sinkProperties;
 	
 	public RunKafkaSinkElastic(XMLElement x, StreamConfiguration config, TopologyContext topologyContext, AdminClient adminClient, String sinkName, File storageFolder) throws IOException  {
-		Optional<SinkConfiguration> sinkConfig = config.sink(sinkName);
+		Optional<ConnectConfiguration> sinkConfig = config.sink(sinkName);
 		if(!sinkConfig.isPresent()) {
 			throw new IllegalArgumentException("No sink found: "+sinkName);
 		}
@@ -90,7 +90,7 @@ public class RunKafkaSinkElastic implements ConnectSink {
 		if(maybeTenant.isPresent()) {
 			sinkProperties.put("tenant",maybeTenant.get());
 		}
-		sinkProperties.put("deployment",config.deployment());
+		sinkProperties.put("deployment",topologyContext.deployment);
 		
 		workerProperties.put("bootstrap.servers", String.join(",", config.kafkaHosts()));
 		workerProperties.put("group.id", generationalGroup);
