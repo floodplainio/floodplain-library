@@ -124,16 +124,26 @@ public class FallbackReplicationMessageParser implements ReplicationMessageParse
 
 	@Override
 	public byte[] serializeMessageList(List<ReplicationMessage> msg) {
+		if(msg==null) {
+			throw  new NullPointerException("Describing null message list!");
+		}
+
 		return this.primary.serializeMessageList(msg);
 	}
 
 	@Override
 	public byte[] serialize(ReplicationMessage msg) {
+		if(msg==null) {
+			throw  new NullPointerException("Serializing null message!");
+		}
 		return this.primary.serialize(msg);
 	}
 
 	@Override
 	public String describe(ReplicationMessage msg) {
+		if(msg==null) {
+			throw  new NullPointerException("Describing null message!");
+		}
 		return this.primary.describe(msg);
 	}
 
@@ -141,7 +151,7 @@ public class FallbackReplicationMessageParser implements ReplicationMessageParse
 	@Override
 	public List<ReplicationMessage> parseMessageList(Optional<String> source, byte[] data) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Not implemented");
 	}
 
 	@Override

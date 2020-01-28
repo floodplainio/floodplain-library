@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import com.dexels.kafka.streams.api.CoreOperators;
 import com.dexels.kafka.streams.remotejoin.PreJoinProcessor;
+import com.dexels.kafka.streams.remotejoin.ReplicationTopologyParser;
 import com.dexels.kafka.streams.remotejoin.ReplicationTopologyParser.Flatten;
 import com.dexels.replication.api.ReplicationMessage;
 import com.dexels.replication.api.ReplicationMessage.Operation;
@@ -62,8 +63,8 @@ public class ManyToManyGroupedProcessor extends AbstractProcessor<String, Replic
 	@Override
 	public void init(ProcessorContext context) {
 		super.init(context);
-		this.forwardLookupStore = (KeyValueStore<String, ReplicationMessage>) context.getStateStore(fromProcessorName);
-		this.reverseLookupStore = (KeyValueStore<String, ReplicationMessage>) context.getStateStore(withProcessorName);
+		this.forwardLookupStore = (KeyValueStore<String, ReplicationMessage>) context.getStateStore(ReplicationTopologyParser.STORE_PREFIX+fromProcessorName);
+		this.reverseLookupStore = (KeyValueStore<String, ReplicationMessage>) context.getStateStore(ReplicationTopologyParser.STORE_PREFIX+withProcessorName);
 	}
 
 	@Override

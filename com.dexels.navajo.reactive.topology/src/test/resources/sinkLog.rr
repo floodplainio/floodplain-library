@@ -1,0 +1,3 @@
+|>database(topic='dvd.public.country')
+    ->sink(logName='bloep','@SINK2')
+    

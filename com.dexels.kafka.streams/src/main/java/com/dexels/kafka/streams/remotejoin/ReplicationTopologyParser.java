@@ -45,6 +45,7 @@ import com.dexels.kafka.streams.serializer.ReplicationMessageSerde;
 import com.dexels.kafka.streams.tools.KafkaUtils;
 import com.dexels.kafka.streams.xml.parser.XMLElement;
 import com.dexels.replication.api.ReplicationMessage;
+import com.dexels.replication.factory.ReplicationFactory;
 import com.dexels.replication.transformer.api.MessageTransformer;
 
 public class ReplicationTopologyParser {
@@ -58,7 +59,7 @@ public class ReplicationTopologyParser {
 	private static final String JOINGROUPED = "joinGrouped";
 	private static final String SPLIT = "split";
 	
-	private static final String STORE_PREFIX = "STORE_";
+	public static final String STORE_PREFIX = "STORE_";
 	
 	private static final Serde<ReplicationMessage> messageSerde = new ReplicationMessageSerde();
 	public enum Flatten { FIRST,LAST,NONE};
@@ -70,7 +71,7 @@ public class ReplicationTopologyParser {
 	}
 	
 
-	private static final void addStateStoreMapping(Map<String,List<String>> processorStateStoreMapper, String processor, String stateStore) {
+	public static final void addStateStoreMapping(Map<String,List<String>> processorStateStoreMapper, String processor, String stateStore) {
 		logger.info("Adding processor: {} with statestore: {}",processor,stateStore);
 		System.err.println("Adding processor: "+processor+" with sttestore: "+stateStore);
 		List<String> parts = processorStateStoreMapper.get(stateStore);
@@ -496,19 +497,19 @@ public class ReplicationTopologyParser {
             KafkaUtils.ensureExistsSync(topologyConstructor.adminClient, fromTopic,Optional.empty());
 		}
 		final String fromProcessor  = processorName(from);
-		if (!topologyConstructor.stores.contains(STORE_PREFIX+fromProcessor)) {
-	    	final Optional<ProcessorSupplier<String, ReplicationMessage>> fromProcessorFromChildren = processorFromChildren(Optional.empty(), topicName(from, topologyContext), topologyConstructor);
-			addSourceStore(current, topologyContext, topologyConstructor, fromProcessorFromChildren,
-                    from, Optional.empty(),true);
-        }
+//		if (!topologyConstructor.stores.contains(STORE_PREFIX+fromProcessor)) {
+//	    	final Optional<ProcessorSupplier<String, ReplicationMessage>> fromProcessorFromChildren = processorFromChildren(Optional.empty(), topicName(from, topologyContext), topologyConstructor);
+//			addSourceStore(current, topologyContext, topologyConstructor, fromProcessorFromChildren,
+//                    from, Optional.empty(),true);
+//        }
 		final String withProcessor  = processorName(with);
     	final Optional<ProcessorSupplier<String, ReplicationMessage>> withProcessorFromChildren = processorFromChildren(Optional.empty(), topicName(with, topologyContext), topologyConstructor);
 
-        if (!topologyConstructor.stores.contains(STORE_PREFIX+withProcessor) ) {
-        	addSourceStore(current, topologyContext, topologyConstructor, withProcessorFromChildren,
-        			with, Optional.empty(),true);
-        }
-        
+//        if (!topologyConstructor.stores.contains(STORE_PREFIX+withProcessor) ) {
+//        	addSourceStore(current, topologyContext, topologyConstructor, withProcessorFromChildren,
+//        			with, Optional.empty(),true);
+//        }
+//        
         String firstNamePre = name+"-forwardpre";
         String secondNamePre =  name+"-reversepre";
         String finalJoin = name+"-joined";
@@ -768,8 +769,11 @@ public class ReplicationTopologyParser {
 	}
 	
 	public static BiFunction<ReplicationMessage, List<ReplicationMessage>, ReplicationMessage> createParamListJoinFunction(String into) {
-		return (msg,list)->
-			msg.withParamMessage(ImmutableFactory.empty().withSubMessages(into, list.stream().map(ReplicationMessage::message).collect(Collectors.toList())));
+		return (msg,list)->{
+			ReplicationMessage combinedMessage = msg.withParamMessage(ImmutableFactory.empty().withSubMessages(into, list.stream().map(ReplicationMessage::message).collect(Collectors.toList())));
+			logger.info("Combined: {}",ReplicationFactory.getInstance().describe(combinedMessage));
+			return combinedMessage;
+		};
 	}
 	
 	public static BiFunction<ReplicationMessage, List<ReplicationMessage>, ReplicationMessage> createJoinFunction(
@@ -787,7 +791,7 @@ public class ReplicationTopologyParser {
         }
 		return listJoinFunction;
 	}
-	private static StoreBuilder<KeyValueStore<String, ReplicationMessage>> createMessageStoreSupplier(String name) {
+	public static StoreBuilder<KeyValueStore<String, ReplicationMessage>> createMessageStoreSupplier(String name) {
 		logger.info("Creating messagestore supplier: {}",name);
 		KeyValueBytesStoreSupplier storeSupplier = Stores.persistentKeyValueStore(name);
 		return Stores.keyValueStoreBuilder(storeSupplier, Serdes.String(), messageSerde);

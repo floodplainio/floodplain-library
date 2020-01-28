@@ -5,6 +5,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.dexels.immutable.factory.ImmutableFactory;
@@ -30,7 +31,7 @@ public class TestReactiveTopology {
 	}
 	
 	
-	@Test
+	@Test @Ignore
 	public void testMoreStreamsWithPartials() throws ParseException, IOException {
 
 		CompiledReactiveScript crs = ReactiveStandalone.compileReactiveScript(getClass().getClassLoader().getResourceAsStream("morestreamswithpartials.rr"));

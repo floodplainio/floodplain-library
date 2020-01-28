@@ -62,15 +62,15 @@ public class JSONToReplicationMessage {
 			TableIdentifier key = processDebeziumKey(keynode,appendTenant,appendSchema);
 			
 			if(!valuenode.has("payload") || valuenode.get("payload").isNull()) {
-				ReplicationMessage replMsg = ReplicationFactory.empty().with("table", key.table, "string").withOperation(Operation.DELETE);
-				final ReplicationMessage converted = appendTenant ? replMsg.with("tenant", key.tenant, "string") : replMsg;
+				ReplicationMessage replMsg = ReplicationFactory.empty().with("_table", key.table, "string").withOperation(Operation.DELETE);
+				final ReplicationMessage converted = appendTenant ? replMsg.with("_tenant", key.tenant, "string") : replMsg;
 				return PubSubTools.create(key.combinedKey,  ReplicationFactory.getInstance().serialize(converted), msg.timestamp(), Optional.empty());
 			}
 			final ReplicationMessage convOptional = convertToReplication(false,valuenode,key.table);
 			ReplicationMessage conv = convOptional;
-			conv = conv.with("table", key.table, "string")
+			conv = conv.with("_table", key.table, "string")
 				.withPrimaryKeys(key.fields);
-			final ReplicationMessage converted = appendTenant ? conv.with("tenant", key.tenant, "string") : conv;
+			final ReplicationMessage converted = appendTenant ? conv.with("_tenant", key.tenant, "string") : conv;
 			byte[] serialized = ReplicationFactory.getInstance().serialize(converted);
 			
 //			logger.info("Forwarding to: {}",context.topicName(key.table));

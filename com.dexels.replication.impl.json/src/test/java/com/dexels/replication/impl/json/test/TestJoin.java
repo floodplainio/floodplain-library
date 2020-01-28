@@ -22,6 +22,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.dexels.immutable.api.ImmutableMessage;
+import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.replication.api.ReplicationMessage;
 import com.dexels.replication.api.ReplicationMessageParser;
 import com.dexels.replication.api.ReplicationMessage.Operation;
@@ -211,6 +212,15 @@ public class TestJoin {
 		Assert.assertEquals(44, ss.size());
 	}
 
+	@Test
+	public void testToFlatMapWithParam() {
+		InputStream stream = TestJoin.class.getClassLoader().getResourceAsStream("submessage.json");
+		ReplicationMessage repl = ReplicationFactory.getInstance().parseStream(stream);
+		ReplicationMessage replWithParam = repl.withParamMessage(ImmutableFactory.empty().with("key", "value", ImmutableMessage.ValueType.STRING.toString()));
+		Map<String, Object> ss = replWithParam.flatValueMap(true, Collections.emptySet(), "");
+		System.err.println("Entry: " + ss.keySet());
+		Assert.assertEquals(45, ss.size());
+	}
 	@Test
 	public void testToFlatMapWithSubmessages() {
 		InputStream stream = TestJoin.class.getClassLoader().getResourceAsStream("composed.json");

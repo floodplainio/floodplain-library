@@ -37,6 +37,7 @@ public class SinkTransformer implements ReactiveTransformer, TopologyPipeCompone
 	private final static Logger logger = LoggerFactory.getLogger(SinkTransformer.class);
 
 	public static final String SINK_PREFIX = "SINK_";
+	public static final String SINKLOG_PREFIX = "SINK_LOG_";
 	public SinkTransformer(TransformerMetadata metadata, ReactiveParameters params) {
 		this.metadata = metadata;
 		this.parameters = params;
@@ -63,6 +64,12 @@ public class SinkTransformer implements ReactiveTransformer, TopologyPipeCompone
 //			});
 		
 		boolean create = resolved.optionalBoolean("create").orElse(false);
+		Optional<String> logName = resolved.optionalString("logName");
+		if(logName.isPresent()) {
+			logger.info("Stack top for transformer: "+transformerNames.peek());
+			topology.addProcessor(SINKLOG_PREFIX+"sinkTopic", ()->new LogProcessor(logName.get()), transformerNames.peek());
+			transformerNames.push(SINKLOG_PREFIX+"sinkTopic");
+		}
 		Optional<Integer> partitions = resolved.optionalInteger("partitions");
 		List<Operand> operands = resolved.unnamedParameters();
 		for (Operand operand : operands) {
@@ -74,6 +81,7 @@ public class SinkTransformer implements ReactiveTransformer, TopologyPipeCompone
 			}
 			logger.info("Stack top for transformer: "+transformerNames.peek());
 			topology.addSink(SINK_PREFIX+sinkTopic, sinkTopic, transformerNames.peek());
+//			transformerNames.push(SINK_PREFIX+sinkTopic);
 		}
 		return pipeId;
 	}

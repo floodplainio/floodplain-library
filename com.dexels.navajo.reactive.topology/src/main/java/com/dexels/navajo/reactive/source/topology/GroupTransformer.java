@@ -52,20 +52,24 @@ public class GroupTransformer implements ReactiveTransformer,TopologyPipeCompone
 			TopologyContext topologyContext, TopologyConstructor topologyConstructor) {
 		StreamScriptContext context =new StreamScriptContext(topologyContext.tenant.orElse(TopologyContext.DEFAULT_TENANT), topologyContext.instance, topologyContext.deployment);
 		ReactiveResolvedParameters resolved = parameters.resolve(context, Optional.empty(), ImmutableFactory.empty(), metadata);
-		String from = transformerNames.peek();
-		String name = createName(transformerNames.size(),pipeId);
 		String key = resolved.paramString("key");
-		boolean ignoreOriginalKey = false;
-		String grouped = ReplicationTopologyParser.addGroupedProcessor(topology, topologyContext, topologyConstructor, name, from, ignoreOriginalKey, key, Optional.empty());
-		transformerNames.push(grouped);
+		addGroupTransformer(transformerNames, pipeId, topology, topologyContext, topologyConstructor, key,metadata.name());
 		return pipeId;
 
 	}
-	
-	// TODO address multiple pipes
-	private  String createName(int transformerNumber, int pipeId) {
-		return pipeId+"_"+metadata.name()+"_"+transformerNumber;
+	public static void addGroupTransformer(Stack<String> transformerNames, int pipeId, Topology topology,
+			TopologyContext topologyContext, TopologyConstructor topologyConstructor, String key, String transformerName) {
+		String from = transformerNames.peek();
+		String name = createName(transformerName,transformerNames.size(),pipeId);
+		boolean ignoreOriginalKey = false;
+		String grouped = ReplicationTopologyParser.addGroupedProcessor(topology, topologyContext, topologyConstructor, name, from, ignoreOriginalKey, key, Optional.empty());
+		transformerNames.push(grouped);
 	}
+	
+	private static String createName(String name, int transformerNumber, int pipeId) {
+		return pipeId+"_"+name+"_"+transformerNumber;
+	}
+
 	@Override
 	public boolean materializeParent() {
 		return false;

@@ -1,18 +1,27 @@
 package com.dexels.navajo.reactive.source.topology;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.Stack;
+import java.util.Map.Entry;
 import java.util.function.Function;
 
 import org.apache.kafka.streams.Topology;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.dexels.immutable.api.ImmutableMessage;
+import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.kafka.streams.api.TopologyContext;
 import com.dexels.kafka.streams.remotejoin.TopologyConstructor;
+import com.dexels.navajo.document.Operand;
 import com.dexels.navajo.document.stream.DataItem;
 import com.dexels.navajo.document.stream.api.StreamScriptContext;
 import com.dexels.navajo.reactive.api.ReactiveParameters;
 import com.dexels.navajo.reactive.api.ReactiveParseException;
+import com.dexels.navajo.reactive.api.ReactiveResolvedParameters;
 import com.dexels.navajo.reactive.api.ReactiveTransformer;
 import com.dexels.navajo.reactive.api.TransformerMetadata;
 import com.dexels.navajo.reactive.mappers.SetSingle;
@@ -26,23 +35,80 @@ public class SetTransformer implements ReactiveTransformer, TopologyPipeComponen
 	private boolean materialize;
 	private final SetFactory metadata;
 	private final ReactiveParameters parameters;
-	SetSingle single = new SetSingle();
 	Function<StreamScriptContext,Function<DataItem,DataItem>> transformer;
 	
+	
+	private final static Logger logger = LoggerFactory.getLogger(SetTransformer.class);
+
 	public SetTransformer(SetFactory metadata, ReactiveParameters parameters) {
 		this.metadata = metadata;
 		this.parameters = parameters;
-		this.transformer = this.single.execute(parameters);
+		this.transformer = execute(parameters);
 	}
+	
+	// note copied from SetSingle
+	public Function<StreamScriptContext,Function<DataItem,DataItem>> execute(ReactiveParameters params) {
+		return context->(item)->{
+			ImmutableMessage s = item.message();
+			ReactiveResolvedParameters parms = params.resolve(context, Optional.of(s), item.stateMessage(), metadata);
+			boolean condition = parms.optionalBoolean("condition").orElse(true);
+			if(!condition) {
+				return item;
+			}
+			// will use the second message as input, if not present, will use the source message
+			for (Entry<String,Operand> elt : parms.namedParameters().entrySet()) {
+				if(!elt.getKey().equals("condition")) {
+					s = addColumn(s, elt.getKey(), elt.getValue());
+				}
+			}
+			return DataItem.of(s);
+		};
+	
+	}
+	
+	// note copied from SetSingle
+	private ImmutableMessage addColumn(ImmutableMessage input, String name, Operand value) {
+		return addColumn(input, Arrays.asList(name.split("/")), value);
+	}
+
+	// note copied from SetSingle
+	private ImmutableMessage addColumn(ImmutableMessage input, List<String> path, Operand value) {
+		logger.info("Setting path: {} value: {} type: {}",path,value.value,value.type);
+		if(path.size()>1) {
+			String submessage = path.get(0);
+			Optional<ImmutableMessage> im = input.subMessage(submessage);
+			List<String> popped = new ArrayList<>(path);
+			popped.remove(0);
+			if(im.isPresent()) {
+				return input.withSubMessage(submessage, addColumn(im.get(),popped,value));
+			} else {
+				ImmutableMessage nw = addColumn(ImmutableFactory.empty(), popped, value);
+				return input.withSubMessage(submessage, nw);
+			}
+		} else {
+			// TODO use enum
+			if("immutable".equals(value.type)) {
+				ImmutableMessage im = value.immutableMessageValue();
+				return input.withSubMessage(path.get(0), im);
+			} else if("immutableList".equals(value.type)) {
+				List<ImmutableMessage> immutableMessageList= value.immutableMessageList();
+				return input.withSubMessages(path.get(0), immutableMessageList);
+			} else {
+				return input.with(path.get(0), value.value, value.type);
+			}
+		}
+		
+	}
+
 	
 	@Override
 	public int addToTopology(Stack<String> transformerNames, int currentPipeId, Topology topology,
 			TopologyContext topologyContext, TopologyConstructor topologyConstructor) {
 		StreamScriptContext ssc = StreamScriptContext.fromTopologyContext(topologyContext);
-		FunctionProcessor fp = new FunctionProcessor(transformer.apply(ssc));
+		Function<DataItem, DataItem> apply = transformer.apply(ssc);
+		FunctionProcessor fp = new FunctionProcessor(apply);
 		String name = createName(this.metadata.name(),transformerNames.size(), currentPipeId);
 		topology.addProcessor(name, ()->fp, transformerNames.peek());
-//		System.err.println("bloop: "+);
 		transformerNames.push(name);
 		return currentPipeId;
 	}

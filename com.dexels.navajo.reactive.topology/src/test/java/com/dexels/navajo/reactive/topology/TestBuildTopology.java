@@ -1,6 +1,7 @@
 package com.dexels.navajo.reactive.topology;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -48,7 +49,7 @@ public class TestBuildTopology {
 	@Before
 	public void setup() {
 		ImmutableFactory.setInstance(ImmutableFactory.createParser());
-		topologyContext = new TopologyContext(Optional.of("Generic"), "test", "someinstance", "3");
+		topologyContext = new TopologyContext(Optional.of("Generic"), "test", "someinstance", "5");
 		props = StreamInstance.createProperties(UUID.randomUUID().toString(), brokers, storagePath);
 		adminClient = AdminClient.create(props);
 		topologyConstructor = new TopologyConstructor(transformerRegistry , Optional.of(adminClient));
@@ -59,115 +60,90 @@ public class TestBuildTopology {
 
 	}
 	
+	private void runTopology(Topology topology) throws InterruptedException {
+		KafkaStreams stream = new KafkaStreams(topology, props);
+		stream.setUncaughtExceptionHandler((thread,exception)->{
+			logger.error("Error in streams: ",exception);
+		});
+		stream.setStateListener((oldState,newState)->{
+			logger.info("State moving from {} to {}",oldState,newState);
+		});
+		stream.start();
+		for (int i = 0; i < 50; i++) {
+			boolean isRunning = stream.state().isRunning();
+	        String stateName = stream.state().name();
+	        System.err.println("State: "+stateName+" - "+isRunning);
+	        final Collection<StreamsMetadata> allMetadata = stream.allMetadata();
+	        System.err.println("meta: "+allMetadata);
+			Thread.sleep(1000);
+		}
+
+		stream.close();
+		Thread.sleep(5000);
+	}
+
+
+	private Topology parseReactivePipeTopology(InputStream input) throws ParseException, IOException {
+		CompiledReactiveScript crs = ReactiveStandalone.compileReactiveScript(input);
+		Topology topology = ReactivePipeParser.parseReactiveStreamDefinition(crs, topologyContext, topologyConstructor);
+		return topology;
+	}
+	
 	@Test
 	public void testSimpleTopic() throws ParseException, IOException {
-
-		CompiledReactiveScript crs = ReactiveStandalone.compileReactiveScript(getClass().getClassLoader().getResourceAsStream("simpletopic.rr"));
-		TopologyConstructor topologyConstructor = new TopologyConstructor(transformerRegistry , Optional.empty());
-		
-		Topology topology = ReactivePipeParser.parseReactiveStreamDefinition(crs, topologyContext, topologyConstructor);
+		Topology topology = parseReactivePipeTopology(getClass().getClassLoader().getResourceAsStream("simpletopic.rr"));
 		System.err.println("Topology: \n"+topology.describe());
 	}
 
 	@Test
 	public void testDatabase() throws ParseException, IOException {
-
-		CompiledReactiveScript crs = ReactiveStandalone.compileReactiveScript(getClass().getClassLoader().getResourceAsStream("database.rr"));
-		TopologyConstructor topologyConstructor = new TopologyConstructor(transformerRegistry , Optional.empty());
-		Topology topology = ReactivePipeParser.parseReactiveStreamDefinition(crs, topologyContext, topologyConstructor);
+		Topology topology = parseReactivePipeTopology(getClass().getClassLoader().getResourceAsStream("database.rr"));
 		System.err.println("Topology: \n"+topology.describe());
 	}
 	
 	@Test
 	public void testStorelessTopic() throws ParseException, IOException {
-
-		CompiledReactiveScript crs = ReactiveStandalone.compileReactiveScript(getClass().getClassLoader().getResourceAsStream("simplewithoutstore.rr"));
-		TopologyConstructor topologyConstructor = new TopologyConstructor(transformerRegistry , Optional.empty());
-		
-		Topology topology = ReactivePipeParser.parseReactiveStreamDefinition(crs, topologyContext, topologyConstructor);
+		Topology topology = parseReactivePipeTopology(getClass().getClassLoader().getResourceAsStream("simplewithoutstore.rr"));
 		System.err.println("Topology: \n"+topology.describe());
 	}
 	
-	@Test
-	public void testJoinTopic() throws ParseException, IOException {
-
-		CompiledReactiveScript crs = ReactiveStandalone.compileReactiveScript(getClass().getClassLoader().getResourceAsStream("jointopic.rr"));
-		TopologyConstructor topologyConstructor = new TopologyConstructor(transformerRegistry , Optional.empty());
-		
-		Topology topology = ReactivePipeParser.parseReactiveStreamDefinition(crs, topologyContext, topologyConstructor);
+	@Test @Ignore
+	public void testJoinTopic() throws ParseException, IOException, InterruptedException {
+		Topology topology = parseReactivePipeTopology(getClass().getClassLoader().getResourceAsStream("jointopic.rr"));
 		System.err.println("Topology: \n"+topology.describe());
+		runTopology(topology);
 	}
 
 	@Test
 	public void testConfigurationStreamInstance() throws ParseException, IOException, InterruptedException {
-		CompiledReactiveScript crs = ReactiveStandalone.compileReactiveScript(getClass().getClassLoader().getResourceAsStream("address.rr"));
-		Topology topology = ReactivePipeParser.parseReactiveStreamDefinition(crs, topologyContext, topologyConstructor);
 		StreamConfiguration sc = StreamConfiguration.parseConfig("test", getClass().getClassLoader().getResourceAsStream("resources.xml"));
-	}
-
-	@Test
-	public void testDebezium() throws ParseException, IOException, InterruptedException {
-
-		CompiledReactiveScript crs = ReactiveStandalone.compileReactiveScript(getClass().getClassLoader().getResourceAsStream("database.rr"));
-		Topology topology = ReactivePipeParser.parseReactiveStreamDefinition(crs, topologyContext, topologyConstructor);
-//		public static Properties createProperties(String applicationId,String brokers, String storagePath) {
-			
+		Topology topology = parseReactivePipeTopology(getClass().getClassLoader().getResourceAsStream("address.rr"));
 		System.err.println("Topology: \n"+topology.describe());
-		KafkaStreams stream = new KafkaStreams(topology, props);
-		stream.setUncaughtExceptionHandler((thread,exception)->{
-			logger.error("Error in streams: ",exception);
-		});
-		stream.setStateListener((oldState,newState)->{
-			logger.info("State moving from {} to {}",oldState,newState);
-		});
-		stream.start();
-		for (int i = 0; i < 100; i++) {
-			boolean isRunning = stream.state().isRunning();
-	        String stateName = stream.state().name();
-	        System.err.println("State: "+stateName+" - "+isRunning);
-	        final Collection<StreamsMetadata> allMetadata = stream.allMetadata();
-	        System.err.println("meta: "+allMetadata);
-			Thread.sleep(5000);
-		}
-
-		stream.close();
-		Thread.sleep(10000);
 	}
+
+	@Test @Ignore
+	public void testRemoteJoin() throws ParseException, IOException, InterruptedException {
+		Topology topology = parseReactivePipeTopology(getClass().getClassLoader().getResourceAsStream("remotejoin.rr"));
+		System.err.println("Topology: \n"+topology.describe());
+		runTopology(topology);
+	}
+
+	@Test @Ignore
+	public void testDebezium() throws ParseException, IOException, InterruptedException {
+		Topology topology = parseReactivePipeTopology(getClass().getClassLoader().getResourceAsStream("sinkLog.rr"));
+		System.err.println("Topology: \n"+topology.describe());
+		runTopology(topology);
+	}
+
 
 	
 	@Test @Ignore
 	public void testAddressTopic() throws ParseException, IOException, InterruptedException {
 
-		CompiledReactiveScript crs = ReactiveStandalone.compileReactiveScript(getClass().getClassLoader().getResourceAsStream("address.rr"));
-		Topology topology = ReactivePipeParser.parseReactiveStreamDefinition(crs, topologyContext, topologyConstructor);
-//		public static Properties createProperties(String applicationId,String brokers, String storagePath) {
-			
+		Topology topology = parseReactivePipeTopology(getClass().getClassLoader().getResourceAsStream("address.rr"));
 		System.err.println("Topology: \n"+topology.describe());
-		KafkaStreams stream = new KafkaStreams(topology, props);
-		stream.setUncaughtExceptionHandler((thread,exception)->{
-			logger.error("Error in streams: ",exception);
-		});
-		stream.setStateListener((oldState,newState)->{
-			logger.info("State moving from {} to {}",oldState,newState);
-		});
-		stream.start();
-		for (int i = 0; i < 100; i++) {
-			boolean isRunning = stream.state().isRunning();
-	        String stateName = stream.state().name();
-//	        stream.state().§
-	        System.err.println("State: "+stateName+" - "+isRunning);
-	        final Collection<StreamsMetadata> allMetadata = stream.allMetadata();
-	        System.err.println("meta: "+allMetadata);
-			Thread.sleep(5000);
-		}
+		runTopology(topology);
 
-		stream.close();
-		Thread.sleep(10000);
 	}
 
-	public static void main(String[] args) throws ParseException, IOException, InterruptedException {
-		TestBuildTopology tb = new TestBuildTopology();
-		tb.setup();
-		tb.testJoinTopic();
-	}
 }

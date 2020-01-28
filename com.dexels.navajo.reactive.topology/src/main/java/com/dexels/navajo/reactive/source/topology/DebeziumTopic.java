@@ -4,7 +4,6 @@ import java.util.Optional;
 import java.util.Stack;
 
 import org.apache.kafka.common.serialization.Serdes;
-import org.apache.kafka.common.serialization.Serializer;
 import org.apache.kafka.streams.Topology;
 
 import com.dexels.immutable.api.ImmutableMessage;
@@ -12,8 +11,9 @@ import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.kafka.streams.api.CoreOperators;
 import com.dexels.kafka.streams.api.TopologyContext;
 import com.dexels.kafka.streams.debezium.impl.DebeziumConversionProcessor;
-import com.dexels.kafka.streams.debezium.impl.PubSubSerializer;
-import com.dexels.kafka.streams.debezium.impl.PubSubTopicNameExtractor;
+import com.dexels.kafka.streams.remotejoin.IdentityProcessor;
+import com.dexels.kafka.streams.remotejoin.ReplicationTopologyParser;
+import com.dexels.kafka.streams.remotejoin.StoreProcessor;
 import com.dexels.kafka.streams.remotejoin.TopologyConstructor;
 import com.dexels.navajo.document.stream.DataItem;
 import com.dexels.navajo.document.stream.DataItem.Type;
@@ -23,7 +23,6 @@ import com.dexels.navajo.reactive.api.ReactiveResolvedParameters;
 import com.dexels.navajo.reactive.api.ReactiveSource;
 import com.dexels.navajo.reactive.api.SourceMetadata;
 import com.dexels.navajo.reactive.source.topology.api.TopologyPipeComponent;
-import com.dexels.pubsub.rx2.api.PubSubMessage;
 
 import io.reactivex.Flowable;
 
@@ -31,6 +30,7 @@ public class DebeziumTopic implements ReactiveSource,TopologyPipeComponent {
 
 	private final SourceMetadata metadata;
 	private final ReactiveParameters parameters;
+	private boolean materialize;
 
 	public DebeziumTopic(SourceMetadata metadata, ReactiveParameters params) {
 		this.metadata = metadata;
@@ -51,37 +51,36 @@ public class DebeziumTopic implements ReactiveSource,TopologyPipeComponent {
 		String topic = resolved.paramString("topic");
 		boolean appendTenant = resolved.optionalBoolean("appendTenant").orElse(false);
 		boolean appendSchema = resolved.optionalBoolean("appendSchema").orElse(false);
-//		DebeziumConversionProcessor processor = new DebeziumConversionProcessor(topic, topologyContext, appendTenant, appendSchema);
-//		String from = transformerNames.peek();
 		String name = processorName(createName(transformerNames.size(),pipeId));
 		String topicName = CoreOperators.topicName(topic, topologyContext);
-//		topology.addSource("debeziumSource", topicName);
-	    final String sourceProcessorName = processorName(name+"_debezium_conversion_source");
-//	    final String convertProcessorName = processorName(name+"_debezium_conversion");
-//	    final String sinkProcessorName = processorName(name+"_debezium_conversion_sink");
+
+		final String sourceProcessorName = processorName(name+"_debezium_conversion_source")+"-"+topicName;
+	    final String convertProcessorName = processorName(name+"_debezium_conversion")+"-"+topicName;
+	    final String finalProcessorName = processorName(name+"_debezium")+"-"+topicName;
 		topology.addSource(sourceProcessorName,Serdes.String().deserializer(),Serdes.ByteArray().deserializer(), topicName);
 		
-//		topology.addProcessor(name, ()->processor, "debeziumSource");
-	    Serializer<PubSubMessage> ser = new PubSubSerializer();
-	    
-//		Serd
-		topology.addProcessor(name, ()->new DebeziumConversionProcessor(topicName,topologyContext, appendTenant, appendSchema), sourceProcessorName);
-//		topology.addSink(sinkProcessorName, new PubSubTopicNameExtractor(topologyConstructor),Serdes.String().serializer(), ser, convertProcessorName);
-		
-//		String sourc2 = ReplicationTopologyParser.addSourceStore(topology, topologyContext, topologyConstructor, Optional.empty(), name, Optional.empty());
-//		topology.addProcessor(filterName, filterProcessor, transformerNames.peek());
-		System.err.println(">>> "+name);
-		transformerNames.push(name);
-		return pipeId;
-}
-	
-	
-//    String sourceTopic = topicName(source, context);
-//    final String sourceProcessorName = processorName(sourceTopic+"_debezium_conversion_source");
-//    final String convertProcessorName = processorName(sourceTopic+"_debezium_conversion");
-//    final String sinkProcessorName = processorName(sourceTopic+"_debezium_conversion_sink");
+//	    Serializer<PubSubMessage> ser = new PubSubSerializer();
+		topology.addProcessor(convertProcessorName, ()->new DebeziumConversionProcessor(topicName,topologyContext, appendTenant, appendSchema), sourceProcessorName);
 
-	
+		
+		materialize = true;
+		
+		if(materialize) {
+			topology.addProcessor(finalProcessorName,()->new StoreProcessor(ReplicationTopologyParser.STORE_PREFIX+finalProcessorName), convertProcessorName);
+		} else {
+			topology.addProcessor(finalProcessorName,()->new IdentityProcessor(), convertProcessorName);
+			
+		}
+		
+        if(materialize) {
+        	ReplicationTopologyParser.addStateStoreMapping(topologyConstructor.processorStateStoreMapper,finalProcessorName, ReplicationTopologyParser.STORE_PREFIX+finalProcessorName);
+    		topologyConstructor.stores.add(ReplicationTopologyParser.STORE_PREFIX+finalProcessorName);
+            topologyConstructor.stateStoreSupplier.put(ReplicationTopologyParser.STORE_PREFIX+finalProcessorName,ReplicationTopologyParser.createMessageStoreSupplier(ReplicationTopologyParser.STORE_PREFIX+finalProcessorName));
+        }
+		transformerNames.push(finalProcessorName);
+		return pipeId;
+	}
+
 	private static String processorName(String sourceTopicName) {
         return sourceTopicName.replace(':',  '_').replace('@', '.');
     }
@@ -114,7 +113,7 @@ public class DebeziumTopic implements ReactiveSource,TopologyPipeComponent {
 	}
 	@Override
 	public void setMaterialize() {
-		// ignore
+		this.materialize = true;
 	}
 	@Override
 	public boolean materialize() {

@@ -410,7 +410,11 @@ public class ReplicationImmutableMessageImpl implements ReplicationMessage {
 
 	@Override
 	public Map<String, Object> flatValueMap(boolean ignoreNull, Set<String> ignore, String prefix) {
-		return message().flatValueMap(ignoreNull, ignore, prefix);
+		Map<String, Object> param = paramMessage.map(prm->prm.flatValueMap(ignoreNull, ignore, prefix+"@param")).orElse(Collections.emptyMap());
+		Map<String, Object> flatValueMap = message().flatValueMap(ignoreNull, ignore, prefix);
+		Map<String,Object> combined = new HashMap<String, Object>(flatValueMap);
+		combined.putAll(param);
+		return Collections.unmodifiableMap(combined);
 	}
 
 	public Map<String, Object> flatValueMap(String prefix, Trifunction processType) {

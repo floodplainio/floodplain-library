@@ -41,7 +41,6 @@ public class TopicSource implements ReactiveSource,TopologyPipeComponent {
 		StreamScriptContext context =new StreamScriptContext(topologyContext.tenant.orElse(TopologyContext.DEFAULT_TENANT), topologyContext.instance, topologyContext.deployment);
 		ReactiveResolvedParameters resolved = parameters.resolve(context, Optional.empty(), ImmutableFactory.empty(), metadata);
 		String name = resolved.paramString("name");
-		System.err.println("thingy: "+this.materialize());
 		String source = ReplicationTopologyParser.addSourceStore(topology, topologyContext, topologyConstructor, Optional.empty(), resolved.paramString("name"), Optional.empty(),this.materialize());
 		transformerNames.push(source);
 		return pipeId;

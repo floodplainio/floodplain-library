@@ -1,10 +1,6 @@
-|>database(topic='dvd.public.address')
-    ->sink('@SINK1')
-    
 |>database(topic='dvd.public.city')
 	->joinRemote(key='country_id',
 		|>database(topic='dvd.public.country')
 		)
-	->set(country=[@country])
-    ->sink('@SINK2')
+    ->sink(logName='bloep','@SINK2')
     
