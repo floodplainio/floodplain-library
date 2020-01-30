@@ -4,7 +4,6 @@ package com.dexels.pubsub.rx2.api;
 import java.io.IOException;
 import java.util.function.Consumer;
 
-import org.osgi.annotation.versioning.ProviderType;
 import org.reactivestreams.Subscriber;
 
 
@@ -17,7 +16,6 @@ import org.reactivestreams.Subscriber;
  * @see ProviderType
  * @since 1.0
  */
-@ProviderType
 public interface MessagePublisher {
 	public void publish(String key, byte[] value) throws IOException;
 	public void publish(String key, byte[] value,Consumer<Object> onSuccess, Consumer<Throwable> onFail);

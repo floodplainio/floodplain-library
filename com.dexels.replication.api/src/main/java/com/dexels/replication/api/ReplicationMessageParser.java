@@ -4,11 +4,8 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
 
-import org.osgi.annotation.versioning.ProviderType;
-
 import com.dexels.pubsub.rx2.api.PubSubMessage;
 
-@ProviderType
 public interface ReplicationMessageParser {
 	@Deprecated
 	public ReplicationMessage parseBytes(byte[] data);

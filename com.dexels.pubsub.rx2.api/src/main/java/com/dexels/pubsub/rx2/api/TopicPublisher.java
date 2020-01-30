@@ -5,13 +5,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import org.osgi.annotation.versioning.ProviderType;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
 
-@ProviderType
 public interface TopicPublisher {
 	@Deprecated
 	public MessagePublisher publisherForTopic(String topic);

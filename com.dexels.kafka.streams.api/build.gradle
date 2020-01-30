@@ -2,7 +2,6 @@ def globalConf = rootProject.ext
 
 dependencies {
     Map<String, String> dependencies = globalConf.commonDependencies
-    compile dependencies.osgiAnnotations
     compile dependencies.reactiveStreams
     compile dependencies.jacksonCore
     compile dependencies.jacksonDatabind

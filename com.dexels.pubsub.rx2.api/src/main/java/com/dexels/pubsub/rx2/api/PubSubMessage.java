@@ -2,9 +2,6 @@ package com.dexels.pubsub.rx2.api;
 
 import java.util.Optional;
 
-import org.osgi.annotation.versioning.ProviderType;
-
-@ProviderType
 
 public interface PubSubMessage {
 	public String key();

@@ -5,10 +5,6 @@ dependencies {
     Map<String, String> dependencies = globalConf.commonDependencies
     implementation project(':com.dexels.immutable.api')
     implementation project(':com.dexels.pubsub.rx2.api')
-    compile dependencies.osgiAnnotations
-    compile dependencies.osgiComponentAnnotations
-    compile dependencies.osgiCompendium
-    compile dependencies.osgiCore
     testCompile dependencies.jUnit
 }
 

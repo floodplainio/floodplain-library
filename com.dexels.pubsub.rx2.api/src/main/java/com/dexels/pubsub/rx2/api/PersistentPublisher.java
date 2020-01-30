@@ -3,14 +3,11 @@ package com.dexels.pubsub.rx2.api;
 import java.util.List;
 import java.util.Map;
 
-import org.osgi.annotation.versioning.ProviderType;
-
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 
-@ProviderType
 public interface PersistentPublisher extends TopicPublisher {
 	public Observable<String> listConsumerGroups();
 	public Single<Map<String,Long>> consumerGroupOffsets(String groupId);

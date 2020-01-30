@@ -3,7 +3,6 @@ plugins {
     id 'java-library'
 }
 
-
 repositories {
     mavenCentral()
 }
@@ -16,10 +15,10 @@ dependencies {
     implementation project(':com.dexels.immutable.impl')
     implementation project(':com.dexels.replication.api')
     implementation project(':com.dexels.pubsub.rx2.api')
-    compile dependencies.osgiAnnotations
-    compile dependencies.osgiComponentAnnotations
     testCompile dependencies.jUnit
 }
 
-
-
+task copyToLib(type: Copy) {
+    into "$buildDir/output/lib"
+    from configurations.runtime
+}

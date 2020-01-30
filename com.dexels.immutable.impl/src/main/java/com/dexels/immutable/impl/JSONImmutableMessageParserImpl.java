@@ -2,12 +2,7 @@ package com.dexels.immutable.impl;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Default;
-import javax.inject.Named;
 
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +35,6 @@ public class JSONImmutableMessageParserImpl implements ImmutableMessageParser {
 		ImmutableFactory.setInstance(this);
 	}
 
-	@Deactivate
 	public void deactivate() {
 		ImmutableFactory.setInstance(null);
 	}

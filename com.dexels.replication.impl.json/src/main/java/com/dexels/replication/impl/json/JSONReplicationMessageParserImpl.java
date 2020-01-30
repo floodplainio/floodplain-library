@@ -10,14 +10,13 @@ import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
 
-import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.dexels.pubsub.rx2.api.PubSubMessage;
 import com.dexels.replication.api.ReplicationMessage;
-import com.dexels.replication.api.ReplicationMessageParser;
 import com.dexels.replication.api.ReplicationMessage.Operation;
+import com.dexels.replication.api.ReplicationMessageParser;
 import com.dexels.replication.factory.ReplicationFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -26,7 +25,6 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 //@Component(name="dexels.replication.parser.json", enabled=false)
-@Component(name="dexels.replication.parser.json", property={"name=json"})
 @Named("json") @ApplicationScoped
 public class JSONReplicationMessageParserImpl implements ReplicationMessageParser {
 	

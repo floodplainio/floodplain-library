@@ -8,8 +8,6 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Deactivate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,7 +64,6 @@ public class FileRepositoryInstanceImpl extends RepositoryInstanceImpl implement
 		applicationFolder = findConfiguration(path);
 
 	}
-	@Activate
 	public void activate(Map<String,Object> configuration) throws IOException {
 		try {
 			String path = (String) configuration.get("repository.folder");
@@ -103,8 +100,6 @@ public class FileRepositoryInstanceImpl extends RepositoryInstanceImpl implement
 		return storeFolder;
 	}
 
-
-	@Deactivate
 	public void deactivate() {
 	}
 	

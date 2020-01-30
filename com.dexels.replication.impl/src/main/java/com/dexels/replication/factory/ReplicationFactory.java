@@ -6,23 +6,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferencePolicy;
-
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.replication.api.ReplicationMessage;
 import com.dexels.replication.api.ReplicationMessage.Operation;
 import com.dexels.replication.api.ReplicationMessageParser;
 import com.dexels.replication.impl.ReplicationImmutableMessageImpl;
 
-@Component(name="dexels.replication.factory")
 public class ReplicationFactory {
 	private static ReplicationMessageParser instance;
 	private static final Runnable noopCommit = ()->{};
 
 
-	@Reference(policy=ReferencePolicy.DYNAMIC,unbind="clearReplicationMessageParser",target="(name=universal)")
 	public void setReplicationMessageParser(ReplicationMessageParser rmp) {
 		setInstance(rmp);
 	}

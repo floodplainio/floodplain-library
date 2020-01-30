@@ -7,11 +7,8 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import org.osgi.annotation.versioning.ProviderType;
-
 import com.dexels.immutable.api.ImmutableMessage;
 
-@ProviderType
 public interface ReplicationMessage {
 	
 	public static final String KEYSEPARATOR = "<$>";
