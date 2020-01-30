@@ -9,7 +9,6 @@ dependencies {
     implementation project(':com.dexels.replication.impl')
     implementation project(':com.dexels.replication.impl.json')
     implementation project(':com.dexels.replication.impl.protobuf')
-    implementation project(':com.dexels.pubsub.rx2.api')
     testCompile dependencies.jUnit
     testRuntime dependencies.slf4jSimple
     compile dependencies.kafkaStreams
