@@ -42,6 +42,7 @@ public class StreamScriptContext {
     private final long started;
 	private Optional<String> username;
 	
+	
 	private final static Logger logger = LoggerFactory.getLogger(StreamScriptContext.class);
 
 	public Map<String,String> createMDCMap(int linenr) {

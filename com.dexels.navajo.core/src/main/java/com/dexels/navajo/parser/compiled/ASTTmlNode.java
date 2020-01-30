@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.navajo.document.Message;
@@ -42,6 +45,10 @@ final class ASTTmlNode extends SimpleNode {
     String option = "";
     String selectionOption = "";
     boolean exists = false;
+    
+    
+	private final static Logger logger = LoggerFactory.getLogger(ASTTmlNode.class);
+
     
     ASTTmlNode(int id) {
         super(id);
@@ -373,7 +380,8 @@ final class ASTTmlNode extends SimpleNode {
 				if(subList.isPresent()) {
 					return Operand.ofImmutableList(subList.get());
 				}
-				throw new TMLExpressionException("Missing submessage: "+first);
+				logger.error("Submessage issue: {}", ImmutableFactory.getInstance().describe(rm));
+				throw new TMLExpressionException("Missing submessage: "+first+" with path list: "+path);
 			}
 
 			private Operand parseImmutablePath(List<String> path, ImmutableMessage rm) {

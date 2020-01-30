@@ -96,9 +96,10 @@ public class TestBuildTopology {
 	}
 
 	@Test
-	public void testDatabase() throws ParseException, IOException {
+	public void testDatabase() throws ParseException, IOException, InterruptedException {
 		Topology topology = parseReactivePipeTopology(getClass().getClassLoader().getResourceAsStream("database.rr"));
 		System.err.println("Topology: \n"+topology.describe());
+		runTopology(topology);
 	}
 	
 	@Test
@@ -121,7 +122,7 @@ public class TestBuildTopology {
 		System.err.println("Topology: \n"+topology.describe());
 	}
 
-	@Test @Ignore
+	@Test 
 	public void testRemoteJoin() throws ParseException, IOException, InterruptedException {
 		Topology topology = parseReactivePipeTopology(getClass().getClassLoader().getResourceAsStream("remotejoin.rr"));
 		System.err.println("Topology: \n"+topology.describe());

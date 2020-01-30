@@ -11,20 +11,18 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Default;
 import javax.inject.Named;
 
-import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.dexels.pubsub.rx2.api.PubSubMessage;
 import com.dexels.replication.api.ReplicationMessage;
-import com.dexels.replication.api.ReplicationMessageParser;
 import com.dexels.replication.api.ReplicationMessage.Operation;
+import com.dexels.replication.api.ReplicationMessageParser;
 import com.dexels.replication.factory.ReplicationFactory;
 import com.dexels.replication.impl.json.JSONReplicationMessageParserImpl;
 import com.dexels.replication.impl.protobuf.impl.ProtobufReplicationMessageParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-@Component(name="dexels.replication.parser.universal", property={"name=universal","version=1"})
 @Named("protobuffallback") @ApplicationScoped @Default
 
 public class FallbackReplicationMessageParser implements ReplicationMessageParser {
