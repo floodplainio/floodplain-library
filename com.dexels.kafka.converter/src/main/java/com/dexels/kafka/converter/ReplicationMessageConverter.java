@@ -30,6 +30,7 @@ public class ReplicationMessageConverter implements Converter {
 	public void configure(Map<String, ?> configs, boolean isKey) {
 		ReplicationFactory.setInstance(new FallbackReplicationMessageParser());
 		logger.info("Initializer of ReplicationMessageConverter key: {}",isKey);
+		logger.info("Configuration: {}",configs);
 		this.isKey = isKey;
 	}
 
