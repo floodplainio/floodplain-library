@@ -3,8 +3,6 @@ package com.dexels.navajo.reactive.topology;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.UUID;
@@ -22,15 +20,18 @@ import org.slf4j.LoggerFactory;
 import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.kafka.streams.api.StreamConfiguration;
 import com.dexels.kafka.streams.api.TopologyContext;
+import com.dexels.kafka.streams.api.sink.ConnectConfiguration;
 import com.dexels.kafka.streams.base.StreamInstance;
 import com.dexels.kafka.streams.remotejoin.TopologyConstructor;
+import com.dexels.kafka.streams.remotejoin.TopologyConstructor.ConnectorTopicTuple;
+import com.dexels.kafka.streams.remotejoin.TopologyDefinitionException;
 import com.dexels.navajo.parser.compiled.ParseException;
 import com.dexels.navajo.reactive.CoreReactiveFinder;
 import com.dexels.navajo.reactive.ReactiveStandalone;
 import com.dexels.navajo.reactive.api.CompiledReactiveScript;
 import com.dexels.navajo.reactive.api.Reactive;
 import com.dexels.navajo.reactive.source.topology.TopologyReactiveFinder;
-import com.dexels.replication.transformer.api.MessageTransformer;
+import com.dexels.navajo.reactive.source.topology.TopologyRunner;
 
 public class TestBuildTopology {
 	
@@ -38,7 +39,6 @@ public class TestBuildTopology {
 	private final static Logger logger = LoggerFactory.getLogger(TestBuildTopology.class);
 
 	AdminClient adminClient;
-	private Map<String, MessageTransformer> transformerRegistry = Collections.emptyMap();
 	private TopologyContext topologyContext;
 	private Properties props;
 
@@ -46,21 +46,29 @@ public class TestBuildTopology {
 	private String storagePath = "mystorage";
 
 	private TopologyConstructor topologyConstructor;
+	
+	public TopologyRunner runner = null;
 	@Before
 	public void setup() {
 		ImmutableFactory.setInstance(ImmutableFactory.createParser());
-		topologyContext = new TopologyContext(Optional.of("Generic"), "test", "someinstance", "5");
+		topologyContext = new TopologyContext(Optional.of("Generic"), "test", "someinstance", "20200203");
 		props = StreamInstance.createProperties(UUID.randomUUID().toString(), brokers, storagePath);
 		adminClient = AdminClient.create(props);
-		topologyConstructor = new TopologyConstructor(transformerRegistry , Optional.of(adminClient));
+		topologyConstructor = new TopologyConstructor(Optional.empty() , Optional.of(adminClient));
 		CoreReactiveFinder finder = new TopologyReactiveFinder();
 		Reactive.setFinderInstance(finder);
+		
+		runner = new TopologyRunner(topologyContext,topologyConstructor);
+		
 		// TODO fill in props
 //		Reactive.finderInstance().addReactiveSourceFactory(new MongoReactiveSourceFactory(), "topic");
 
 	}
 	
-	private void runTopology(Topology topology) throws InterruptedException {
+	private void runTopology(Topology topology, Optional<StreamConfiguration> streamConfiguration) throws InterruptedException, IOException {
+		if(streamConfiguration.isPresent()) {
+			runner.materializeConnectors(streamConfiguration.get(),true);
+		}
 		KafkaStreams stream = new KafkaStreams(topology, props);
 		stream.setUncaughtExceptionHandler((thread,exception)->{
 			logger.error("Error in streams: ",exception);
@@ -75,7 +83,7 @@ public class TestBuildTopology {
 	        System.err.println("State: "+stateName+" - "+isRunning);
 	        final Collection<StreamsMetadata> allMetadata = stream.allMetadata();
 	        System.err.println("meta: "+allMetadata);
-			Thread.sleep(1000);
+			Thread.sleep(10000);
 		}
 
 		stream.close();
@@ -99,7 +107,7 @@ public class TestBuildTopology {
 	public void testDatabase() throws ParseException, IOException, InterruptedException {
 		Topology topology = parseReactivePipeTopology(getClass().getClassLoader().getResourceAsStream("database.rr"));
 		System.err.println("Topology: \n"+topology.describe());
-		runTopology(topology);
+		runTopology(topology,Optional.empty());
 	}
 	
 	@Test
@@ -108,11 +116,12 @@ public class TestBuildTopology {
 		System.err.println("Topology: \n"+topology.describe());
 	}
 	
-	@Test @Ignore
+	@Test 
 	public void testJoinTopic() throws ParseException, IOException, InterruptedException {
 		Topology topology = parseReactivePipeTopology(getClass().getClassLoader().getResourceAsStream("jointopic.rr"));
+		StreamConfiguration sc = StreamConfiguration.parseConfig("test", getClass().getClassLoader().getResourceAsStream("resources.xml"));
 		System.err.println("Topology: \n"+topology.describe());
-		runTopology(topology);
+		runTopology(topology,Optional.of(sc));
 	}
 
 	@Test
@@ -125,15 +134,17 @@ public class TestBuildTopology {
 	@Test 
 	public void testRemoteJoin() throws ParseException, IOException, InterruptedException {
 		Topology topology = parseReactivePipeTopology(getClass().getClassLoader().getResourceAsStream("remotejoin.rr"));
+		StreamConfiguration sc = StreamConfiguration.parseConfig("test", getClass().getClassLoader().getResourceAsStream("resources.xml"));
 		System.err.println("Topology: \n"+topology.describe());
-		runTopology(topology);
+
+		runTopology(topology,Optional.of(sc));
 	}
 
 	@Test @Ignore
 	public void testDebezium() throws ParseException, IOException, InterruptedException {
 		Topology topology = parseReactivePipeTopology(getClass().getClassLoader().getResourceAsStream("sinkLog.rr"));
 		System.err.println("Topology: \n"+topology.describe());
-		runTopology(topology);
+		runTopology(topology,Optional.empty());
 	}
 
 
@@ -143,7 +154,7 @@ public class TestBuildTopology {
 
 		Topology topology = parseReactivePipeTopology(getClass().getClassLoader().getResourceAsStream("address.rr"));
 		System.err.println("Topology: \n"+topology.describe());
-		runTopology(topology);
+		runTopology(topology,Optional.empty());
 
 	}
 

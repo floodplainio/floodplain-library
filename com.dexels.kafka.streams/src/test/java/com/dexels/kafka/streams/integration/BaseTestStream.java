@@ -334,7 +334,7 @@ public class BaseTestStream {
     
     protected MongoDatabase getMongoDatabase(String generation) {
         StreamConfiguration streamConfiguration = parseConfig;
-        Map<String, String> map = streamConfiguration.sinks()
+        Map<String, String> map = streamConfiguration.connectors()
                 .get("replication")
                 .settings();
 

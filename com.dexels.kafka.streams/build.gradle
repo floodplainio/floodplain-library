@@ -15,6 +15,7 @@ dependencies {
     implementation project(':com.dexels.replication.http')
     implementation project(':com.dexels.pubsub.rx2.api')
     implementation project(':com.dexels.kafka.impl.rx2')
+    implementation project(':com.dexels.navajo.document')
     compile dependencies.osgiAnnotations
     compile dependencies.osgiComponentAnnotations
     compile dependencies.servletApi

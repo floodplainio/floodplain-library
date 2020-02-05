@@ -28,6 +28,7 @@ dependencies {
     implementation project(':com.dexels.pubsub.rx2.api')
     implementation project(':com.dexels.kafka.streams')
     implementation project(':com.dexels.kafka.streams.api')
+    implementation project(':com.dexels.kafka.converter')
     compile dependencies.slf4j
     compile dependencies.jacksonCore
     compile dependencies.jacksonDatabind

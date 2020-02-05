@@ -54,7 +54,7 @@ public class RunKafkaSinkElastic implements ConnectSink {
 	private Properties sinkProperties;
 	
 	public RunKafkaSinkElastic(XMLElement x, StreamConfiguration config, TopologyContext topologyContext, AdminClient adminClient, String sinkName, File storageFolder) throws IOException  {
-		Optional<ConnectConfiguration> sinkConfig = config.sink(sinkName);
+		Optional<ConnectConfiguration> sinkConfig = config.connector(sinkName);
 		if(!sinkConfig.isPresent()) {
 			throw new IllegalArgumentException("No sink found: "+sinkName);
 		}

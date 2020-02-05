@@ -1,13 +1,8 @@
 
-	
-|>database(topic='dvd.public.country')
-	->joinWith(|>database(topic='dvd.public.city')
+|>database(resource='dvd',schema='public',table='country')
+	->joinWith(|>database(resource='dvd',schema='public',table='city')
 					->group(key='country_id')
-					    , into='cities'
+				,into='cities'
 		)
 	->set(citylist=[@cities/])
-    ->sink(logName='bloep','@SINK3')
-    
-    
-    //    
-    
+    ->sink(connector='replication',collection='countrywithcities','@CITYWITHCOUNTRY')

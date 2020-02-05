@@ -236,26 +236,23 @@ public class CoreOperators {
     private static String topicNameForReal(String topicName,TopologyContext context) {
     	
     	String name;
-    	String generation;
 		name = topicName;
-		generation = context.generation;
 
     	
     	if(name==null) {
-    		throw new NullPointerException("Can not create topic name when name is null. tenant: "+context.tenant.orElse("<no tenant>") +" deployment: "+context.deployment+" generation: "+generation);
+    		throw new NullPointerException("Can not create topic name when name is null. tenant: "+context.tenant.orElse("<no tenant>") +" deployment: "+context.deployment+" generation: "+context.generation);
     	}
     	
     	if(name.startsWith("@")) {
-//    		return tenant+"-"+deployment+"-"+generation+"-"+instance+"-"+name.substring(1);
     		StringBuffer sb = new StringBuffer();
     		if(context.tenant.isPresent()) {
     			sb.append(context.tenant.get()+"-");
     		}
     		String[] withInstance = name.split(":");
     		if (withInstance.length>1) {
-    			sb.append(context.deployment+"-"+generation+"-"+withInstance[0].substring(1)+"-"+withInstance[1]);
+    			sb.append(context.deployment+"-"+context.generation+"-"+withInstance[0].substring(1)+"-"+withInstance[1]);
 			} else {
-    			sb.append(context.deployment+"-"+generation+"-"+context.instance+"-"+name.substring(1));
+    			sb.append(context.deployment+"-"+context.generation+"-"+context.instance+"-"+name.substring(1));
 			}
     		return sb.toString();
     	}
@@ -266,29 +263,25 @@ public class CoreOperators {
 		}
 	}
 
-    public static String nonGenerationalGroup(String name, TopologyContext context) {
+    public static String resolveGenerations(String name, TopologyContext context) {
     	if(name.startsWith("@")) {
     		String[] withInstance = name.split(":");
     		if (context.tenant.isPresent()) {
         		if (withInstance.length>1) {
-            		return context.tenant.get()+"-"+context.deployment+"-"+withInstance[0].substring(1)+"-"+withInstance[1];
+            		return context.tenant.get()+"-"+context.deployment+"-"+context.generation+"-"+withInstance[0].substring(1)+"-"+withInstance[1];
     			} else {
-    	    		return context.tenant.get()+"-"+context.deployment+"-"+context.instance+"-"+name.substring(1);
+    	    		return context.tenant.get()+"-"+context.deployment+"-"+context.generation+"-"+context.instance+"-"+name.substring(1);
     			}
 			} else {
 	    		if (withInstance.length>1) {
-	        		return context.deployment+"-"+withInstance[0].substring(1)+"-"+withInstance[1];
+	        		return context.deployment+"-"+context.generation+"-"+withInstance[0].substring(1)+"-"+withInstance[1];
 				} else {
-		    		return context.deployment+"-"+context.instance+"-"+name.substring(1);
+		    		return context.deployment+"-"+context.generation+"-"+context.instance+"-"+name.substring(1);
 				}
 			}
 //    		return tenant+"-"+deployment+"-"+generation+"-"+instance+"-"+name.substring(1);
     	}
-    	if(context.tenant.isPresent()) {
-    		return context.tenant.get()+"-"+context.deployment+"-"+context.instance+"-"+name;
-    	} else {
-    		return context.deployment+"-"+context.instance+"-"+name;
-    	}
+    	return name;
     }
     public static String generationalGroup(String name, TopologyContext context) {
     	if(name.startsWith("@")) {
@@ -335,7 +328,10 @@ public class CoreOperators {
 		}
 	}
 
-	
+
+	public static BiFunction<ReplicationMessage, ReplicationMessage, ReplicationMessage> getParamJoinFunction() {
+		return (a,b)->a.withParamMessage(b.message());
+	}
 	public static BiFunction<ReplicationMessage, ReplicationMessage, ReplicationMessage> getJoinFunction(Optional<String> into, Optional<String> columns) {
 		if (into.isPresent()) {
 			if (columns.isPresent()) {

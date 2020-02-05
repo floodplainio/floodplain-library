@@ -70,8 +70,8 @@ public class JoinRemoteTransformer implements ReactiveTransformer ,TopologyPipeC
 		String with = pipeStack.peek();
 		
 		String name = pipeId+"_"+metadata.name()+"_"+transformerNames.size();
-		Optional<String> filter = Optional.empty();
-		boolean isOptional = true;
+//		Optional<String> filter = Optional.empty();
+//		boolean isOptional = true;
 //        BiFunction<ReplicationMessage, List<ReplicationMessage>, ReplicationMessage> listJoinFunction = ReplicationTopologyParser.createListJoinFunction(into, from.get(), Optional.empty());
 //        BiFunction<ReplicationMessage, List<ReplicationMessage>, ReplicationMessage> listJoinFunction = ReplicationTopologyParser.createParamListJoinFunction(into);
 

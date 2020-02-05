@@ -84,7 +84,7 @@ public class ReplicationTopologyParser {
 	
 	public static void topologyFromXML(Topology current,List<XMLElement> xmlList,TopologyContext context, final Map<String,MessageTransformer> initialTransformerRegistry, AdminClient externalAdminClient, Map<String, GenericProcessorBuilder> genericProcessorRegistry, StreamConfiguration streamConfig) throws InterruptedException, ExecutionException {
 
-	    TopologyConstructor topologyConstructor = new TopologyConstructor(initialTransformerRegistry, Optional.of(externalAdminClient));
+	    TopologyConstructor topologyConstructor = new TopologyConstructor(Optional.of(initialTransformerRegistry), Optional.of(externalAdminClient));
 	    
 	    for (XMLElement xml : xmlList) {
 	    	Vector<XMLElement> children = xml.getChildren();

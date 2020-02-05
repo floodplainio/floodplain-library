@@ -26,10 +26,6 @@ public class ReactivePipeParser {
 	
 	public static int processPipe(TopologyContext topologyContext, TopologyConstructor topologyConstructor, Topology topology,
 			int pipeNr, Stack<String> pipeStack, ReactivePipe pipe) {
-//		String pipeId = "pipe_"+pipeNr++;
-//		AtomicInteger pipeNr = new AtomicInteger(initialPipeNr); 
-//		System.err.println("source name: "+pipe.source.getClass().getName());
-//			pipe.source.execute(context, current, paramMessage)
 		int size = pipe.transformers.size();
 		for (int i = size; i >= 0; i--) {
 			System.err.println(">>> "+i);
@@ -67,25 +63,6 @@ public class ReactivePipeParser {
 		}
 
 		return pipeNr;
-//		pipe.transformers.forEach(e->{
-//			if(e instanceof ReactiveTransformer) {
-//				ReactiveTransformer rt = (ReactiveTransformer)e;
-//				System.err.println("type: "+rt.metadata().name());
-//				if(!rt.parameters().named.isEmpty()) {
-//					System.err.println("named params:");
-//					rt.parameters().named.entrySet().forEach(entry->{
-//						System.err.println("param: "+entry.getKey()+" value: "+entry.getValue()+" type: "+entry.getValue().returnType());
-//					});
-//					System.err.println("|< end of named");
-//					
-//				}
-//				if(!rt.parameters().unnamed.isEmpty()) {
-//					rt.parameters().unnamed.forEach(elt->{
-//						System.err.println("E: "+elt+" type: "+elt.returnType());
-//					});
-//				}
-//			}
-//		});
-//		System.err.println("pipe: "+pipe);
 	}
-	}
+
+}

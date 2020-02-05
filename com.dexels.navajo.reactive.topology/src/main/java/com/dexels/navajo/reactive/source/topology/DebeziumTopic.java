@@ -1,5 +1,7 @@
 package com.dexels.navajo.reactive.source.topology;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Stack;
 
@@ -42,17 +44,36 @@ public class DebeziumTopic implements ReactiveSource,TopologyPipeComponent {
 		return Flowable.error(new Exception("Topology sources shouldn't be executed"));
 	}
 	
+	private String assembleDebeziumTopicName(TopologyContext topologyContext, String resource, String schema, String table) {
+		return CoreOperators.topicName(resource+"."+schema+"."+table, topologyContext);
+		 
+	}
+	
 	public int addToTopology(Stack<String> transformerNames, int pipeId,  Topology topology, TopologyContext topologyContext,TopologyConstructor topologyConstructor) {
 
 		StreamScriptContext context =new StreamScriptContext(topologyContext.tenant.orElse(TopologyContext.DEFAULT_TENANT), topologyContext.instance, topologyContext.deployment);
 
 		
 		ReactiveResolvedParameters resolved = parameters.resolve(context, Optional.empty(), ImmutableFactory.empty(), metadata);
-		String topic = resolved.paramString("topic");
+
+		
+//		Generic-test-dvd.public.city
+		String table = resolved.paramString("table");
+		String schema = resolved.paramString("schema");
+		String resource = resolved.paramString("resource");
+		
 		boolean appendTenant = resolved.optionalBoolean("appendTenant").orElse(false);
 		boolean appendSchema = resolved.optionalBoolean("appendSchema").orElse(false);
 		String name = processorName(createName(transformerNames.size(),pipeId));
-		String topicName = CoreOperators.topicName(topic, topologyContext);
+		String topicName = assembleDebeziumTopicName(topologyContext,resource,schema,table);
+//		CoreOperators.topicName(topic, topologyContext);
+		Map<String,String> associatedSettings = new HashMap<>();
+		associatedSettings.put("resource", resource);
+		associatedSettings.put("schema", schema);
+		associatedSettings.put("table", table);
+//		associatedSettings.put("topic", topicName);
+
+		topologyConstructor.addConnectSink(resource,topicName, associatedSettings);
 
 		final String sourceProcessorName = processorName(name+"_debezium_conversion_source")+"-"+topicName;
 	    final String convertProcessorName = processorName(name+"_debezium_conversion")+"-"+topicName;

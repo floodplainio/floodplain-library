@@ -303,12 +303,12 @@ public class StreamInstance {
 		// TODO deprecate this?
 		if (name == null) {
 	    	logger.warn("Sink without name found: {}",x.toString());
-	        Map<String, ConnectConfiguration> sinkconfigs = configuration.sinks();
+	        Map<String, ConnectConfiguration> sinkconfigs = configuration.connectors();
 	        for (String key  : sinkconfigs.keySet()) {
 	            addSinkConfig(type,x, topologyContext, key, sinkconfigs.get(key),adminClient, storageFolder);
 	        }
 	    } else {
-	        Optional<ConnectConfiguration> sinkConfig = configuration.sink(name);
+	        Optional<ConnectConfiguration> sinkConfig = configuration.connector(name);
 	        if(sinkConfig.isPresent()) {
 	            addSinkConfig(type,x,topologyContext, name, sinkConfig.get(),adminClient, storageFolder);
 	        } else {

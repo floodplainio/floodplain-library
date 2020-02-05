@@ -1,7 +1,7 @@
 package com.dexels.navajo.reactive.source.topology;
 
-import static com.dexels.kafka.streams.api.CoreOperators.topicName;
-
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Stack;
 
@@ -53,9 +53,10 @@ public class DebeziumSource implements ReactiveSource,TopologyPipeComponent {
 		String topic = resolved.paramString("topic");
 		boolean appendTenant = resolved.optionalBoolean("appendTenant").orElse(false);
 		boolean appendSchema = resolved.optionalBoolean("appendSchema").orElse(false);
+		String resourceName = resolved.paramString("resource");
 //		DebeziumConversionProcessor processor = new DebeziumConversionProcessor(topic, topologyContext, appendTenant, appendSchema);
 //		String from = transformerNames.peek();
-		String name = processorName(createName(transformerNames.size(),pipeId));
+		String name = processorName(resourceName +"_"+ createName(transformerNames.size(),pipeId));
 		String topicName = CoreOperators.topicName(topic, topologyContext);
 //		topology.addSource("debeziumSource", topicName);
 	    final String sourceProcessorName = processorName(name+"_debezium_conversion_source");
@@ -63,6 +64,8 @@ public class DebeziumSource implements ReactiveSource,TopologyPipeComponent {
 	    final String sinkProcessorName = processorName(name+"_debezium_conversion_sink");
 		topology.addSource(sourceProcessorName,Serdes.String().deserializer(),Serdes.ByteArray().deserializer(), topicName);
 
+		Map<String,String> associatedSettings = new HashMap<>();
+		associatedSettings.put("resource", resourceName);
 //		topology.addProcessor(name, ()->processor, "debeziumSource");
 	    Serializer<PubSubMessage> ser = new PubSubSerializer();
 	    
@@ -70,6 +73,7 @@ public class DebeziumSource implements ReactiveSource,TopologyPipeComponent {
 		topology.addProcessor(convertProcessorName, ()->new DebeziumConversionProcessor(topicName,topologyContext, appendTenant, appendSchema), sourceProcessorName);
 		topology.addSink(sinkProcessorName, new PubSubTopicNameExtractor(topologyConstructor),Serdes.String().serializer(), ser, convertProcessorName);
 		
+//		topologyConstructor.connectorAssociations.add(new ConnectorTopicTuple(topicName, connectorResourceName, sinkParameters));
 //		String sourc2 = ReplicationTopologyParser.addSourceStore(topology, topologyContext, topologyConstructor, Optional.empty(), name, Optional.empty());
 //		topology.addProcessor(filterName, filterProcessor, transformerNames.peek());
 		System.err.println(">>> "+name);

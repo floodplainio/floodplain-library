@@ -1,13 +1,7 @@
 package com.dexels.navajo.reactive.source.topology;
 
-import static com.dexels.kafka.streams.api.CoreOperators.topicName;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Stack;
-import java.util.stream.Collectors;
 
 import org.apache.kafka.streams.Topology;
 import org.slf4j.Logger;
@@ -17,7 +11,6 @@ import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.kafka.streams.api.TopologyContext;
 import com.dexels.kafka.streams.remotejoin.TopologyConstructor;
-import com.dexels.navajo.document.Operand;
 import com.dexels.navajo.document.stream.DataItem;
 import com.dexels.navajo.document.stream.api.StreamScriptContext;
 import com.dexels.navajo.reactive.api.ReactiveParameters;
@@ -30,18 +23,18 @@ import com.dexels.navajo.reactive.source.topology.api.TopologyPipeComponent;
 import io.reactivex.Flowable;
 import io.reactivex.FlowableTransformer;
 
-public class SinkTransformer implements ReactiveTransformer, TopologyPipeComponent {
+public class LogTransformer implements ReactiveTransformer, TopologyPipeComponent {
 
 	private TransformerMetadata metadata;
 	private ReactiveParameters parameters;
 	private boolean materialize = false;
 
 	
-	private final static Logger logger = LoggerFactory.getLogger(SinkTransformer.class);
+	private final static Logger logger = LoggerFactory.getLogger(LogTransformer.class);
 
 	public static final String SINK_PREFIX = "SINK_";
 	public static final String SINKLOG_PREFIX = "SINK_LOG_";
-	public SinkTransformer(TransformerMetadata metadata, ReactiveParameters params) {
+	public LogTransformer(TransformerMetadata metadata, ReactiveParameters params) {
 		this.metadata = metadata;
 		this.parameters = params;
 	}
@@ -56,44 +49,15 @@ public class SinkTransformer implements ReactiveTransformer, TopologyPipeCompone
 //		String filterName = createName(transformerNames.size(), pipeId);
 		StreamScriptContext context =new StreamScriptContext(topologyContext.tenant.orElse(TopologyContext.DEFAULT_TENANT), topologyContext.instance, topologyContext.deployment);
 		ReactiveResolvedParameters resolved = parameters.resolve(context, Optional.empty(), ImmutableFactory.empty(), metadata);
-//		resolved.unnamedParameters()
-//			.stream()
-//			.map(e->(String)(e.value))
-//			.forEach(sinkName->{
-//				System.err.println("Stack top for transformer: "+transformerNames.peek());
-//		        String sinkTopic = topicName(sinkName, topologyContext);
-//				topology.addSink(sinkTopic, sinkTopic, transformerNames.peek());
-//				System.err.println("Sink source >>> "+sinkTopic+" >>> name: "+sinkName);
-//			});
-		
-		boolean create = resolved.optionalBoolean("create").orElse(false);
-//		Optional<String> logName = resolved.optionalString("logName");
-//		if(logName.isPresent()) {
-//			logger.info("Stack top for transformer: "+transformerNames.peek());
-//			topology.addProcessor(SINKLOG_PREFIX+"sinkTopic", ()->new LogProcessor(logName.get()), transformerNames.peek());
-//			transformerNames.push(SINKLOG_PREFIX+"sinkTopic");
-//		}
-		Optional<Integer> partitions = resolved.optionalInteger("partitions");
-		List<Operand> operands = resolved.unnamedParameters();
-		
-//		Optional<String>  
-		Optional<String> sinkName = resolved.optionalString("connector");
-		for (Operand operand : operands) {
-	        String sinkTopic = topicName( operand.stringValue(), topologyContext);
-	        // TODO shouldn't we use the createName?
-	        // TODO still weird if we use multiple
-//	        String sinkName = sinkTopic;
-			if(create) {
-				topologyConstructor.ensureTopicExists(sinkTopic,partitions);
-			}
-			logger.info("Stack top for transformer: "+transformerNames.peek());
-			Map<String,String> values = resolved.namedParameters().entrySet().stream().collect(Collectors.toMap(e->e.getKey(), e->(String)e.getValue().value));
-			Map<String,String> withTopic = new HashMap<>(values);
-			withTopic.put("topic", sinkTopic);
-			sinkName.ifPresent(sink->topologyConstructor.addConnectSink(sink,sinkTopic, values));
-			topology.addSink(SINK_PREFIX+sinkTopic, sinkTopic, transformerNames.peek());
-//			transformerNames.push(SINK_PREFIX+sinkTopic);
+		Optional<Integer> every = resolved.optionalInteger("every");
+		if(every.isPresent()) {
+			throw new UnsupportedOperationException("'every' param not yet implemented in LogTransformer");
 		}
+		String logName = resolved.paramString("logName");
+		logger.info("Stack top for transformer: "+transformerNames.peek());
+		String name = createName(transformerNames.size(), pipeId);
+		topology.addProcessor(name, ()->new LogProcessor(logName), transformerNames.peek());
+		transformerNames.push(name);
 		return pipeId;
 	}
 	

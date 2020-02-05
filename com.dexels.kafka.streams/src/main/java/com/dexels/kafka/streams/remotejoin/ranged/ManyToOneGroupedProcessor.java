@@ -43,7 +43,8 @@ public class ManyToOneGroupedProcessor extends AbstractProcessor<String, Replica
         this.optional = optional;
         this.associationBypass = associationBypass.orElse((k, v) -> true);
 
-        joinFunction = CoreOperators.getJoinFunction(into, columns);
+//        joinFunction = CoreOperators.getJoinFunction(into, columns);
+        joinFunction = CoreOperators.getParamJoinFunction();
         
 
     }
