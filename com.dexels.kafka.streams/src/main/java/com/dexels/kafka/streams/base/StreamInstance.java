@@ -349,48 +349,6 @@ public class StreamInstance {
         connect.start();
     }
 
-//	private void createDirectSink(SinkType type, XMLElement x, StreamConfiguration streamConfiguration, TopologyContext context, String name) {
-//		System.err.println("Sink: "+x);
-//		System.err.println("name: "+name+" type: "+type);
-//		List<String> topics = x.getChildrenByTagName("sink")
-//				.stream()
-//				.map(e->e.getStringAttribute("topic"))
-//				.map(topic->CoreOperators.topicName(topic,context))
-//				.collect(Collectors.toList());
-//		logger.info("Registering topics: {}",topics);
-//		Map<String,FlowableTransformer<ReplicationMessage, Completable>> sinks = new HashMap<>();
-//		x.getChildrenByTagName("sink").forEach(xe->{
-//			final String tpc = xe.getStringAttribute("topic");
-//			String resolvedTopic = CoreOperators.topicName(tpc, context);
-//			sinks.put(resolvedTopic, sinkRegistry.get(type).createTransformer(xe.attributes(),streamConfiguration.sink(name), context.instance, context.tenant,context.deployment,context.generation));
-//			System.err.println("Compiled transformer for topic: "+resolvedTopic);
-//		});
-//		String genGroup = CoreOperators.generationalGroup(name,context.withInstance("directsink-"+context.instance));
-//		TopicSubscriber ts = createSubscriber(streamConfiguration, genGroup, context.instance);
-//		logger.info("Regst. sink: {} with group: {}",name,genGroup);
-//		Flowable.fromPublisher(ts.subscribe(topics, genGroup, Optional.empty(), true, ()->{}))
-//			.concatMap(e->Flowable.fromIterable(e))
-//			.map(p->ReplicationFactory.getInstance().parseBytes(p))
-//			.groupBy(msg->msg.source())
-//			.subscribeOn(Schedulers.io())
-//			.observeOn(Schedulers.io())
-//			.flatMap(e-> {
-//				if(!e.getKey().isPresent()) {
-//					System.err.println("e:"+e);
-//				}
-//				System.err.println("Retrieving sinkss: "+e.getKey().get());
-//				FlowableTransformer<ReplicationMessage, Completable> flowableTransformer = sinks.get(e.getKey().get());
-//				return e.doOnNext(res->System.err.println(ReplicationFactory.getInstance().describe(res)))
-//						.compose(flowableTransformer); 
-//			})
-//			.subscribe();
-//	}
-//	
-//	private static TopicSubscriber createSubscriber(StreamConfiguration streamConfiguration, String name, String instanceName) {
-//		return KafkaClientFactory.createSubscriber(streamConfiguration.kafkaHosts(), Collections.emptyMap());
-//	}
-	
-	
 	public StreamConfiguration getConfig() {
 		return configuration;
 	}

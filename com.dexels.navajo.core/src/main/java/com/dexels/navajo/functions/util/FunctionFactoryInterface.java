@@ -58,10 +58,8 @@ public abstract class FunctionFactoryInterface implements Serializable {
 	}
 	
 	private final FunctionDefinition getDef(String name)  {
-		System.err.println("Getting def: "+name);
 		if(defaultConfig!=null) {
 			FunctionDefinition fd = defaultConfig.get(name);
-			System.err.println("Found def: "+fd+" from default");
 			if(fd!=null) {
 				return fd;
 			}

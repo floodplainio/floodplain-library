@@ -28,6 +28,7 @@ import com.dexels.kafka.streams.api.sink.ConnectConfiguration;
 import com.dexels.kafka.streams.api.sink.ConnectType;
 import com.dexels.kafka.streams.remotejoin.TopologyConstructor;
 import com.dexels.kafka.streams.remotejoin.TopologyConstructor.ConnectorTopicTuple;
+import com.dexels.kafka.streams.tools.KafkaUtils;
 import com.dexels.kafka.streams.remotejoin.TopologyDefinitionException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -139,6 +140,16 @@ public class TopologyRunner {
     		logger.warn("No connectURL present, so not materializing anything");
     		return;
     	}
+    	List<String> topics = new ArrayList<>();
+		for (Entry<String,List<ConnectorTopicTuple>> e : topologyConstructor.connectorAssociations.entrySet()) {
+			for (ConnectorTopicTuple tuple : e.getValue()) {
+				topics.add(tuple.topicName);
+			}
+		}
+    	topologyConstructor.adminClient.ifPresent(admin->{
+    		KafkaUtils.ensureExistSync(topologyConstructor.adminClient, topics,CoreOperators.topicPartitionCount(),CoreOperators.topicReplicationCount());
+    	});
+		
 		for (Entry<String,List<ConnectorTopicTuple>> e : topologyConstructor.connectorAssociations.entrySet()) {
 			List<ConnectorTopicTuple> list = e.getValue();
 			

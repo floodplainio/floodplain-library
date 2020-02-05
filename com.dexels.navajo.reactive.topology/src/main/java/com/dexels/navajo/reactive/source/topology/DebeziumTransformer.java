@@ -59,7 +59,7 @@ public class DebeziumTransformer implements ReactiveTransformer,TopologyPipeComp
 		String topic = resolved.paramString("topic");
 		boolean appendTenant = resolved.optionalBoolean("appendTenant").orElse(false);
 		boolean appendSchema = resolved.optionalBoolean("appendSchema").orElse(false);
-		DebeziumConversionProcessor processor = new DebeziumConversionProcessor(topic, topologyContext, appendTenant, appendSchema);
+		DebeziumConversionProcessor processor = new DebeziumConversionProcessor(topic, topologyContext, appendTenant, appendSchema,false);
 		String from = transformerNames.peek();
 		String name = createName(transformerNames.size(),pipeId);
 		if (this.materialized) {

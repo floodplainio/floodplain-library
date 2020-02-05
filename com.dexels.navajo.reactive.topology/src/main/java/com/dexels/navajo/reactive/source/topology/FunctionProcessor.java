@@ -31,7 +31,7 @@ public class FunctionProcessor extends AbstractProcessor<String, ReplicationMess
 	private static DataItem toData(ReplicationMessage msg) {
 		Optional<ImmutableMessage> param = msg.paramMessage();
 		if(param.isPresent()) {
-			logger.info("DataITEM PARAM: {}",param.get().subMessageListMap());
+//			logger.info("DataITEM PARAM: {}",param.get().subMessageListMap());
 			return DataItem.of(msg.message(), param.get());
 		} else {
 			return DataItem.of(msg.message());

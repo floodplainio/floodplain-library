@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.dexels.immutable.factory.ImmutableFactory;
+import com.dexels.kafka.streams.api.CoreOperators;
 import com.dexels.kafka.streams.api.StreamConfiguration;
 import com.dexels.kafka.streams.api.TopologyContext;
 import com.dexels.kafka.streams.base.Filters;
@@ -159,7 +160,7 @@ public class ReplicationTopologyParser {
 						boolean ignoreOriginalKey = xe.getBooleanAttribute("ignoreOriginalKey", "true", "false", false);
 //						Optional<String> filter = Optional.ofNullable(xe.getStringAttribute("filter"));
 						addGroupedProcessor(current, context,topologyConstructor, name,from,ignoreOriginalKey,
-								key,processorFromChildren(Optional.of(xe),sourceTopic, topologyConstructor));
+								CoreOperators.extractKey(key),processorFromChildren(Optional.of(xe),sourceTopic, topologyConstructor));
 					}
 					break;
 				case JOINGROUPED:
@@ -203,7 +204,6 @@ public class ReplicationTopologyParser {
 	public static void materializeStateStores(TopologyConstructor topologyConstructor, Topology current) {
 		for (Entry<String,List<String>> element : topologyConstructor.processorStateStoreMapper.entrySet()) {
 			final String key = element.getKey();
-			System.err.println("Materializing: "+key);
 			final StoreBuilder<KeyValueStore<String, ReplicationMessage>> supplier = topologyConstructor.stateStoreSupplier.get(key);
 			if(supplier==null) {
 				logger.error("Missing supplier for: {}",element.getKey());
@@ -212,9 +212,6 @@ public class ReplicationTopologyParser {
 			
 			logger.info("Added processor: {} with sttstatestores: {} mappings: {}",element.getKey(), element.getValue(),topologyConstructor.processorStateStoreMapper.get(element.getKey()));
 	    }
-		for (Entry<String,List<String>> e : topologyConstructor.processorStateStoreMapper.entrySet()) {
-			System.err.println("e: "+e.getKey()+" => "+e.getValue());
-		}
 	}
 
 
@@ -560,7 +557,7 @@ public class ReplicationTopologyParser {
 	
 
 	public static String addGroupedProcessor(final Topology current, TopologyContext topologyContext, TopologyConstructor topologyConstructor, String name, String from, boolean ignoreOriginalKey, 
-			String key, Optional<ProcessorSupplier<String,ReplicationMessage>> transformerSupplier) {
+			Function<ReplicationMessage,String>  keyExtractor, Optional<ProcessorSupplier<String,ReplicationMessage>> transformerSupplier) {
 
 		String sourceProcessorName;
 		String mappingStoreName;
@@ -592,7 +589,7 @@ public class ReplicationTopologyParser {
 		topologyConstructor.stateStoreSupplier.put(STORE_PREFIX+name, createMessageStoreSupplier(STORE_PREFIX+name));
 		topologyConstructor.stateStoreSupplier.put(STORE_PREFIX+mappingStoreName, createMessageStoreSupplier(STORE_PREFIX+mappingStoreName));
 
-		current.addProcessor(name,()->new GroupedUpdateProcessor(STORE_PREFIX+name,key,STORE_PREFIX+mappingStoreName,ignoreOriginalKey),transformProcessor);
+		current.addProcessor(name,()->new GroupedUpdateProcessor(STORE_PREFIX+name,keyExtractor,STORE_PREFIX+mappingStoreName,ignoreOriginalKey),transformProcessor);
 		return name;
 	}	
 	

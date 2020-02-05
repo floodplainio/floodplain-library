@@ -73,7 +73,7 @@ public class SetTransformer implements ReactiveTransformer, TopologyPipeComponen
 
 	// note copied from SetSingle
 	private ImmutableMessage addColumn(ImmutableMessage input, List<String> path, Operand value) {
-		logger.info("Setting path: {} value: {} type: {}",path,value.value,value.type);
+//		logger.info("Setting path: {} value: {} type: {}",path,value.value,value.type);
 		if(path.size()>1) {
 			String submessage = path.get(0);
 			Optional<ImmutableMessage> im = input.subMessage(submessage);

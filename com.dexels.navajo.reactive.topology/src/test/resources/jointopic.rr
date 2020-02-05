@@ -1,7 +1,7 @@
 
 |>database(resource='dvd',schema='public',table='country')
 	->joinWith(|>database(resource='dvd',schema='public',table='city')
-					->group(key='country_id')
+					->group(key=ToString([country_id]))
 				,into='cities'
 		)
 	->set(citylist=[@cities/])

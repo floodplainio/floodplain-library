@@ -13,6 +13,7 @@ public interface ReplicationMessage {
 	
 	public static final String KEYSEPARATOR = "<$>";
 	public static final String PRETTY_JSON = "PRETTY_JSON";
+	public static final String INCLUDE_KAFKA_METADATA = "INCLUDE_KAFKA_METADATA";
 	public String transactionId();
 	public Optional<String> source();
 	public Optional<Integer> partition();
@@ -75,6 +76,12 @@ public interface ReplicationMessage {
 	public static boolean usePrettyPrint() {
 		return usePretty;
 	}
+
+	public static final boolean includeKafkaMetadata = System.getenv(INCLUDE_KAFKA_METADATA)!=null || System.getProperty(INCLUDE_KAFKA_METADATA)!=null;
+	public static boolean includeKafkaMetadata() {
+		return includeKafkaMetadata;
+	}
+		
 	public Map<String, ImmutableMessage> subMessageMap();
 	public Map<String, List<ImmutableMessage>> subMessageListMap();
 	public ReplicationMessage withAllSubMessageLists(Map<String, List<ImmutableMessage>> subMessageListMap);

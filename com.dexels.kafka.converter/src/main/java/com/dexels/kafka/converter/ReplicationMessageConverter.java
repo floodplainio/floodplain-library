@@ -8,6 +8,7 @@ import java.util.Optional;
 
 import org.apache.kafka.connect.data.Schema;
 import org.apache.kafka.connect.data.SchemaAndValue;
+import org.apache.kafka.connect.data.Struct;
 import org.apache.kafka.connect.storage.Converter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,10 +38,20 @@ public class ReplicationMessageConverter implements Converter {
 	public byte[] fromConnectData(String topic, Schema schema, Object value) {
 		logger.info("fromConnectData topic: {}, value: {}",topic,value);
 		if(isKey) {
-			String val = (String)value;
-			String converted = "{key:\""+val+"\"}";
-			logger.info("Converting key: {} into {}",val,converted);
-			return converted.getBytes(Charset.defaultCharset());
+			if(value instanceof String) {
+				String val = (String)value;
+				String converted = "{key:\""+val+"\"}";
+				logger.info("Converting key: {} into {}",val,converted);
+				return converted.getBytes(Charset.defaultCharset());
+			} else if (value instanceof Struct) {
+				System.err.println("Schema present? "+schema);
+//				schema.
+				Struct val = (Struct)value;
+				System.err.println("struct: "+val);
+//				Schema
+//				val.
+//				
+			}
 		}
 		ReplicationMessage rm = (ReplicationMessage) value;
 		return ReplicationFactory.getInstance().serialize(rm);

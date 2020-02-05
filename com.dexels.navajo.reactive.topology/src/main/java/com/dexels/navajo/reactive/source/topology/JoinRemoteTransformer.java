@@ -2,6 +2,7 @@ package com.dexels.navajo.reactive.source.topology;
 
 import java.util.Optional;
 import java.util.Stack;
+import java.util.function.Function;
 
 import org.apache.kafka.streams.Topology;
 
@@ -15,6 +16,7 @@ import com.dexels.kafka.streams.remotejoin.TopologyDefinitionException;
 import com.dexels.navajo.document.Operand;
 import com.dexels.navajo.document.stream.DataItem;
 import com.dexels.navajo.document.stream.api.StreamScriptContext;
+import com.dexels.navajo.expression.api.ContextExpression;
 import com.dexels.navajo.reactive.api.ReactiveParameters;
 import com.dexels.navajo.reactive.api.ReactiveParseException;
 import com.dexels.navajo.reactive.api.ReactivePipe;
@@ -23,6 +25,7 @@ import com.dexels.navajo.reactive.api.ReactiveTransformer;
 import com.dexels.navajo.reactive.api.TransformerMetadata;
 import com.dexels.navajo.reactive.source.topology.api.TopologyPipeComponent;
 import com.dexels.navajo.reactive.topology.ReactivePipeParser;
+import com.dexels.replication.api.ReplicationMessage;
 
 import io.reactivex.Flowable;
 import io.reactivex.FlowableTransformer;
@@ -56,12 +59,19 @@ public class JoinRemoteTransformer implements ReactiveTransformer ,TopologyPipeC
 	public int addToTopology(Stack<String> transformerNames, int pipeId, Topology topology,
 			TopologyContext topologyContext, TopologyConstructor topologyConstructor) {
 		StreamScriptContext context =new StreamScriptContext(topologyContext.tenant.orElse(TopologyContext.DEFAULT_TENANT), topologyContext.instance, topologyContext.deployment);
-		ReactiveResolvedParameters resolved = parameters.resolve(context, Optional.empty(), ImmutableFactory.empty(), metadata);
-		String key = resolved.paramString("key");
-		GroupTransformer.addGroupTransformer(transformerNames,pipeId,topology,topologyContext,topologyConstructor,key,metadata.name());
+//		ReactiveResolvedParameters resolved = parameters.resolve(context, Optional.empty(), ImmutableFactory.empty(), metadata);
+//		String key = resolved.paramString("key");
+//
+		ContextExpression keyExtract  = parameters.named.get("key");
+		Function<ReplicationMessage,String> keyExtractor = msg->keyExtract.apply(null, Optional.of(msg.message()), msg.paramMessage()).stringValue();
+		
+		
+		GroupTransformer.addGroupTransformer(transformerNames,pipeId,topology,topologyContext,topologyConstructor,keyExtractor,metadata.name());
 		
 		Optional<String> from = Optional.of(transformerNames.peek());
-
+		ReactiveResolvedParameters resolved = parameters.resolveUnnamed(context,Optional.empty(), ImmutableFactory.empty(), metadata);
+//		ReactiveResolvedParameters resolved = parameters.resolve(context, Optional.empty(), ImmutableFactory.empty(), metadata);
+		
 		Operand o = resolved.unnamedParameters().stream().findFirst().orElseThrow(()->new TopologyDefinitionException("Missing parameters for joinWith, should have one sub stream"));
 		ReactivePipe rp = (ReactivePipe)o.value;
 		Stack<String> pipeStack = new Stack<>();

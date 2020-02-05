@@ -56,7 +56,7 @@ public class SetFactory implements ReactiveTransformerFactory {
 
 	@Override
 	public String name() {
-		return "setbompa";
+		return "set";
 	}
 
 	@Override

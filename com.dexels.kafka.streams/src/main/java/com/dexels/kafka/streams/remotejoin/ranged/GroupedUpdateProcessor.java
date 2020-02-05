@@ -26,10 +26,10 @@ public class GroupedUpdateProcessor extends AbstractProcessor<String, Replicatio
 	private final static Logger logger = LoggerFactory.getLogger(GroupedUpdateProcessor.class);
 
 	
-	public GroupedUpdateProcessor(String lookupStoreName, String groupKey, String mappingStoreName,boolean ignoreOriginalKey) {
+	public GroupedUpdateProcessor(String lookupStoreName, Function<ReplicationMessage,String> keyExtract, String mappingStoreName,boolean ignoreOriginalKey) {
 		this.lookupStoreName = lookupStoreName;
 		this.mappingStoreName = mappingStoreName;
-		this.keyExtract =  CoreOperators.extractKey(groupKey);
+		this.keyExtract =  keyExtract;
 		this.ignoreOriginalKey = ignoreOriginalKey;
 		this.log = false
 				

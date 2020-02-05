@@ -53,6 +53,7 @@ public class DebeziumSource implements ReactiveSource,TopologyPipeComponent {
 		String topic = resolved.paramString("topic");
 		boolean appendTenant = resolved.optionalBoolean("appendTenant").orElse(false);
 		boolean appendSchema = resolved.optionalBoolean("appendSchema").orElse(false);
+		boolean appendTable = false;
 		String resourceName = resolved.paramString("resource");
 //		DebeziumConversionProcessor processor = new DebeziumConversionProcessor(topic, topologyContext, appendTenant, appendSchema);
 //		String from = transformerNames.peek();
@@ -70,7 +71,7 @@ public class DebeziumSource implements ReactiveSource,TopologyPipeComponent {
 	    Serializer<PubSubMessage> ser = new PubSubSerializer();
 	    
 //		Serd
-		topology.addProcessor(convertProcessorName, ()->new DebeziumConversionProcessor(topicName,topologyContext, appendTenant, appendSchema), sourceProcessorName);
+		topology.addProcessor(convertProcessorName, ()->new DebeziumConversionProcessor(topicName,topologyContext, appendTenant, appendSchema,appendTable), sourceProcessorName);
 		topology.addSink(sinkProcessorName, new PubSubTopicNameExtractor(topologyConstructor),Serdes.String().serializer(), ser, convertProcessorName);
 		
 //		topologyConstructor.connectorAssociations.add(new ConnectorTopicTuple(topicName, connectorResourceName, sinkParameters));

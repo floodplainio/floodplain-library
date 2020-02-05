@@ -2,22 +2,23 @@ package com.dexels.navajo.reactive.source.topology;
 
 import java.util.Optional;
 import java.util.Stack;
+import java.util.function.Function;
 
 import org.apache.kafka.streams.Topology;
 
 import com.dexels.immutable.api.ImmutableMessage;
-import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.kafka.streams.api.TopologyContext;
 import com.dexels.kafka.streams.remotejoin.ReplicationTopologyParser;
 import com.dexels.kafka.streams.remotejoin.TopologyConstructor;
 import com.dexels.navajo.document.stream.DataItem;
 import com.dexels.navajo.document.stream.api.StreamScriptContext;
+import com.dexels.navajo.expression.api.ContextExpression;
 import com.dexels.navajo.reactive.api.ReactiveParameters;
 import com.dexels.navajo.reactive.api.ReactiveParseException;
-import com.dexels.navajo.reactive.api.ReactiveResolvedParameters;
 import com.dexels.navajo.reactive.api.ReactiveTransformer;
 import com.dexels.navajo.reactive.api.TransformerMetadata;
 import com.dexels.navajo.reactive.source.topology.api.TopologyPipeComponent;
+import com.dexels.replication.api.ReplicationMessage;
 
 import io.reactivex.Flowable;
 import io.reactivex.FlowableTransformer;
@@ -50,19 +51,24 @@ public class GroupTransformer implements ReactiveTransformer,TopologyPipeCompone
 	@Override
 	public int addToTopology(Stack<String> transformerNames, int pipeId, Topology topology,
 			TopologyContext topologyContext, TopologyConstructor topologyConstructor) {
-		StreamScriptContext context =new StreamScriptContext(topologyContext.tenant.orElse(TopologyContext.DEFAULT_TENANT), topologyContext.instance, topologyContext.deployment);
-		ReactiveResolvedParameters resolved = parameters.resolve(context, Optional.empty(), ImmutableFactory.empty(), metadata);
-		String key = resolved.paramString("key");
-		addGroupTransformer(transformerNames, pipeId, topology, topologyContext, topologyConstructor, key,metadata.name());
+//		StreamScriptContext context =new StreamScriptContext(topologyContext.tenant.orElse(TopologyContext.DEFAULT_TENANT), topologyContext.instance, topologyContext.deployment);
+		ContextExpression keyExtract  = parameters.named.get("key");
+		Function<ReplicationMessage,String> keyExtractor = msg->{
+			String result = keyExtract.apply(null, Optional.of(msg.message()), msg.paramMessage()).stringValue();
+			System.err.println("Extracting key from message: "+result);
+			return result;
+		};
+//		ReactiveResolvedParameters resolved = parameters.resolve(context, Optional.empty(), ImmutableFactory.empty(), metadata);
+		addGroupTransformer(transformerNames, pipeId, topology, topologyContext, topologyConstructor, keyExtractor,metadata.name());
 		return pipeId;
 
 	}
 	public static void addGroupTransformer(Stack<String> transformerNames, int pipeId, Topology topology,
-			TopologyContext topologyContext, TopologyConstructor topologyConstructor, String key, String transformerName) {
+			TopologyContext topologyContext, TopologyConstructor topologyConstructor, Function<ReplicationMessage,String> keyExtractor, String transformerName) {
 		String from = transformerNames.peek();
 		String name = createName(transformerName,transformerNames.size(),pipeId);
 		boolean ignoreOriginalKey = false;
-		String grouped = ReplicationTopologyParser.addGroupedProcessor(topology, topologyContext, topologyConstructor, name, from, ignoreOriginalKey, key, Optional.empty());
+		String grouped = ReplicationTopologyParser.addGroupedProcessor(topology, topologyContext, topologyConstructor, name, from, ignoreOriginalKey, keyExtractor, Optional.empty());
 		transformerNames.push(grouped);
 	}
 	

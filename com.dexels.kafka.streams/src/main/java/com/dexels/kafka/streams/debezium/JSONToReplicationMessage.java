@@ -55,7 +55,7 @@ public class JSONToReplicationMessage {
 		return !node.get("schema").isNull();
 	}
 
-	public static PubSubMessage parse(TopologyContext context, PubSubMessage msg, boolean appendTenant, boolean appendSchema) {
+	public static PubSubMessage parse(TopologyContext context, PubSubMessage msg, boolean appendTenant, boolean appendSchema, boolean appendTable) {
 		try {
 			ObjectNode keynode = (ObjectNode) objectMapper.readTree(msg.key());
 			ObjectNode valuenode = (ObjectNode) objectMapper.readTree(msg.value());
