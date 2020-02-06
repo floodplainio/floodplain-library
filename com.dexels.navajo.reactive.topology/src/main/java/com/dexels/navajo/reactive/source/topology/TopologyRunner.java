@@ -173,6 +173,7 @@ public class TopologyRunner {
 		case "io.debezium.connector.postgresql.PostgresConnector":
 			String whitelist = tuples.stream().map(e->e.sinkParameters.get("schema")+"."+e.sinkParameters.get("table")).collect(Collectors.joining(","));
 			Map<String,String> settings = new HashMap<>(connectorConfig.settings());
+//			settings.putAll(this.baseSettings);
 			// TODO if 'resource' is still in the map, I should remove it, right?
 			settings.put("table.whitelist", whitelist);
 			return Arrays.asList(settings);
@@ -181,6 +182,7 @@ public class TopologyRunner {
 			for (ConnectorTopicTuple connectorTopicTuple : tuples) {
 				Map<String,String> cSettings = new HashMap<>(connectorConfig.settings());
 				cSettings.putAll(connectorTopicTuple.sinkParameters);
+				cSettings.putAll(this.baseSettings);
 				cSettings.put("topics",connectorTopicTuple.topicName);
 				cSettings.put("tasks.max","1");
 				System.err.println("Settings: "+cSettings);
@@ -195,7 +197,7 @@ public class TopologyRunner {
 	public void assembleConnector(ConnectConfiguration cc,Map<String,String> parameters, URL connectURL, boolean force) throws IOException {
 		
 		Map<String,String> result = new HashMap<>();
-		result.putAll(baseSettings);
+//		result.putAll(baseSettings);
 //		result.putAll(cc.settings());
 		result.putAll(parameters);
 		startConnector(connectURL, cc.name(),cc.type, force, result);
