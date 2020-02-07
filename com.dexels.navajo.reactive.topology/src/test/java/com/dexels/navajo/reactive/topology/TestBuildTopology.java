@@ -48,7 +48,7 @@ public class TestBuildTopology {
 	@Before
 	public void setup() {
 		ImmutableFactory.setInstance(ImmutableFactory.createParser());
-		topologyContext = new TopologyContext(Optional.of("Generic"), "test", "someinstance", "20200206");
+		topologyContext = new TopologyContext(Optional.of("Generic"), "test", "someinstance", "20200207");
 		props = StreamInstance.createProperties(UUID.randomUUID().toString(), brokers, storagePath);
 		adminClient = AdminClient.create(props);
 		topologyConstructor = new TopologyConstructor(Optional.empty() , Optional.of(adminClient));

@@ -85,7 +85,7 @@ public class DebeziumTopic implements ReactiveSource,TopologyPipeComponent {
 		topology.addProcessor(convertProcessorName, ()->new DebeziumConversionProcessor(topicName,topologyContext, appendTenant, appendSchema,appendTable), sourceProcessorName);
 
 		
-		materialize = true;
+//		materialize = true;
 		
 		if(materialize) {
 			topology.addProcessor(finalProcessorName,()->new StoreProcessor(ReplicationTopologyParser.STORE_PREFIX+finalProcessorName), convertProcessorName);

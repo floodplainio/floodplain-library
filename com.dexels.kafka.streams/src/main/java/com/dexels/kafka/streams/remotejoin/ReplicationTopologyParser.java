@@ -206,7 +206,8 @@ public class ReplicationTopologyParser {
 			final String key = element.getKey();
 			final StoreBuilder<KeyValueStore<String, ReplicationMessage>> supplier = topologyConstructor.stateStoreSupplier.get(key);
 			if(supplier==null) {
-				logger.error("Missing supplier for: {}",element.getKey());
+				logger.error("Missing supplier for: {}\nStore mappings: {}",element.getKey(),topologyConstructor.processorStateStoreMapper);
+				
 			}
 			current = current.addStateStore(supplier, element.getValue().toArray(new String[]{}));
 			
@@ -287,7 +288,7 @@ public class ReplicationTopologyParser {
 //    ss
 	public static String addMaterializeStore(final Topology currentBuilder, TopologyContext context,
 			TopologyConstructor topologyConstructor, String name, String parentProcessor) {
-		final String sourceProcessorName = processorName(parentProcessor);
+		final String sourceProcessorName = processorName(name);
 		currentBuilder.addProcessor(name, () -> new StoreProcessor(STORE_PREFIX + sourceProcessorName),parentProcessor);
 		addStateStoreMapping(topologyConstructor.processorStateStoreMapper, sourceProcessorName,STORE_PREFIX + sourceProcessorName);
 		topologyConstructor.stores.add(STORE_PREFIX + sourceProcessorName);
@@ -768,7 +769,6 @@ public class ReplicationTopologyParser {
 	public static BiFunction<ReplicationMessage, List<ReplicationMessage>, ReplicationMessage> createParamListJoinFunction(String into) {
 		return (msg,list)->{
 			ReplicationMessage combinedMessage = msg.withParamMessage(ImmutableFactory.empty().withSubMessages(into, list.stream().map(ReplicationMessage::message).collect(Collectors.toList())));
-			logger.info("Combined: {}",ReplicationFactory.getInstance().describe(combinedMessage));
 			return combinedMessage;
 		};
 	}

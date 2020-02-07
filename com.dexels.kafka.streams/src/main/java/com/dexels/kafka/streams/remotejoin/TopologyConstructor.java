@@ -46,6 +46,8 @@ public class TopologyConstructor {
     public final Map<String,String> sources = new HashMap<>();
     // TODO could race conditions happen? If so, would that be a problem?
     public final Set<String> topics = new HashSet<String>();
+    
+    private int pipeCounter = 1;
     public TopologyConstructor( Optional<Map<String,MessageTransformer>> transformerRegistry,
     		Optional<AdminClient> adminClient) {
     	this.transformerRegistry = transformerRegistry.orElse(Collections.emptyMap());
@@ -78,5 +80,9 @@ public class TopologyConstructor {
 //    public Set<String> topicsForConnector(String connectorName) {
 //    	return connectorAssociations.stream().filter(e->e.connectorResourceName.equals(connectorName)).map(e->e.topicName).collect(Collectors.toSet());
 //    }
+
+	public int generateNewPipeId() {
+		return pipeCounter++;
+	}
 
 }

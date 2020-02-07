@@ -54,9 +54,7 @@ public class GroupTransformer implements ReactiveTransformer,TopologyPipeCompone
 //		StreamScriptContext context =new StreamScriptContext(topologyContext.tenant.orElse(TopologyContext.DEFAULT_TENANT), topologyContext.instance, topologyContext.deployment);
 		ContextExpression keyExtract  = parameters.named.get("key");
 		Function<ReplicationMessage,String> keyExtractor = msg->{
-			String result = keyExtract.apply(null, Optional.of(msg.message()), msg.paramMessage()).stringValue();
-			System.err.println("Extracting key from message: "+result);
-			return result;
+			return keyExtract.apply(null, Optional.of(msg.message()), msg.paramMessage()).stringValue();
 		};
 //		ReactiveResolvedParameters resolved = parameters.resolve(context, Optional.empty(), ImmutableFactory.empty(), metadata);
 		addGroupTransformer(transformerNames, pipeId, topology, topologyContext, topologyConstructor, keyExtractor,metadata.name());

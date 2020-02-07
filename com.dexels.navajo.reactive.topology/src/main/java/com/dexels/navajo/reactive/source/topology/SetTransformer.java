@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.kafka.streams.api.TopologyContext;
+import com.dexels.kafka.streams.remotejoin.ReplicationTopologyParser;
 import com.dexels.kafka.streams.remotejoin.TopologyConstructor;
 import com.dexels.navajo.document.Operand;
 import com.dexels.navajo.document.stream.DataItem;
@@ -109,7 +110,15 @@ public class SetTransformer implements ReactiveTransformer, TopologyPipeComponen
 		FunctionProcessor fp = new FunctionProcessor(apply);
 		String name = createName(this.metadata.name(),transformerNames.size(), currentPipeId);
 		logger.info("Adding processor: {} to parent: {} hash: {}",name,transformerNames,transformerNames.hashCode());
-		topology.addProcessor(name, ()->fp, transformerNames.peek());
+
+		
+		if (this.materialize()) {
+			topology.addProcessor(name+"_prematerialize", ()->fp, transformerNames.peek());
+			ReplicationTopologyParser.addMaterializeStore(topology, topologyContext, topologyConstructor, name, name+"_prematerialize");
+		} else {
+			topology.addProcessor(name, ()->fp, transformerNames.peek());
+
+		}
 		transformerNames.push(name);
 		return currentPipeId;
 	}
