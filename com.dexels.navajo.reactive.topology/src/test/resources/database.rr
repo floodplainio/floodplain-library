@@ -6,5 +6,5 @@
 		|>database(resource='dvd',schema='public',table='country')
 	)
 	->set(country=[@country])
-    ->sink(topic='@SINK2',connector='mongo3')
+    ->sink(topic='@SINK2',connector='replication')
     

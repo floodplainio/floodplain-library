@@ -45,11 +45,8 @@ public class ReplicationMessageConverter implements Converter {
 				String converted = "{key:\""+val+"\"}";
 				return converted.getBytes(Charset.defaultCharset());
 			} else if (value instanceof Struct) {
-				Struct s = (Struct)value;
-				System.err.println("Schema present? "+schema);
 				Struct val = (Struct)value;
-				System.err.println("struct: "+val);
-				String result = schema.fields().stream().map(e->""+s.get(e)).collect(Collectors.joining(ReplicationMessage.KEYSEPARATOR));
+				String result = schema.fields().stream().map(e->""+val.get(e)).collect(Collectors.joining(ReplicationMessage.KEYSEPARATOR));
 				return result.getBytes(Charset.defaultCharset());
 			} else {
 				return (""+value).getBytes(Charset.defaultCharset());
@@ -68,9 +65,6 @@ public class ReplicationMessageConverter implements Converter {
 				logger.info("toConnect type: {}",jn.getClass().getName());
 				if(jn instanceof ObjectNode) {
 					return new SchemaAndValue(null, objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jn));
-//					ObjectNode on = (ObjectNode) objectMapper.readTree(value);
-//					logger.info("toConnect objectnode. {}",on.get("key").asText());
-//					return new SchemaAndValue(null, on.get("key").asText());
 				} else {
 					ObjectNode on = objectMapper.createObjectNode();
 					on.put("key", jn.asText());
@@ -86,7 +80,6 @@ public class ReplicationMessageConverter implements Converter {
 			}
 		} else {
 			ReplicationMessage replMessage = ReplicationFactory.getInstance().parseBytes(Optional.empty(),value);
-//			replMessage.valueMap(true, Collections.emptySet());
 			return new SchemaAndValue(null, replMessage.valueMap(true, Collections.emptySet()));
 		}
 	}

@@ -14,6 +14,8 @@ dependencies {
     implementation project(':com.dexels.replication.api')
     implementation project(':com.dexels.replication.impl')
     implementation project(':com.dexels.replication.impl.json')
+    implementation project(':com.dexels.repository.api')
+    implementation project(':com.dexels.repository.file')
     implementation project(':com.dexels.navajo.api')
     implementation project(':com.dexels.navajo.document')
     implementation project(':com.dexels.navajo.core')

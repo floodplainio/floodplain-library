@@ -14,6 +14,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.dexels.kafka.factory.KafkaClientFactory;
 import com.dexels.pubsub.rx2.api.TopicPublisher;
@@ -25,6 +27,10 @@ import io.reactivex.Flowable;
 
 public class TestTagging {
 	private KafkaTopicSubscriber kts;
+
+	
+	private final static Logger logger = LoggerFactory.getLogger(TestTagging.class);
+
 	@Before
 	public void setup() {
 		Map<String,String> config = new HashMap<>();
@@ -71,13 +77,13 @@ public class TestTagging {
 		TopicPublisher tp = KafkaClientFactory.createPublisher(System.getenv("KAFKA_DEVELOP"), 3, 1);
 		String temporaryTopic = "temptopic-"+UUID.randomUUID().toString();
 		int partitionCount = 5;
-		System.err.println("Using temp topic: "+temporaryTopic+" partitions: "+partitionCount);
+		logger.info("Using temp topic: "+temporaryTopic+" partitions: "+partitionCount);
 		
 		tp.create(temporaryTopic,Optional.of(1),Optional.of(partitionCount));
 		try {
 			Map<Integer,Long> result = kts.partitionOffsets(temporaryTopic);
 			long sum = result.entrySet().stream().map(e->e.getValue()).collect(Collectors.summarizingLong(e->e)).getSum();
-			System.err.println("result: "+result);
+			logger.info("result: "+result);
 			Assert.assertEquals(partitionCount, result.size());
 			Assert.assertEquals(partitionCount, sum);
 			long messageCount = 1000;
@@ -90,13 +96,13 @@ public class TestTagging {
 			});
 			tp.flush();
 			final Map<Integer, Long> offsets = kts.partitionOffsets(temporaryTopic);
-			System.err.println("Offsets now: "+offsets);
+			logger.info("Offsets now: "+offsets);
 			long sumAfter = offsets
 					.entrySet()
 					.stream()
 					.map(e->e.getValue())
 					.collect(Collectors.summarizingLong(e->e)).getSum();
-			System.err.println("Summary: "+sumAfter+" -> "+messageCount);
+			logger.info("Summary: "+sumAfter+" -> "+messageCount);
 			Assert.assertEquals(messageCount+partitionCount, sumAfter);
 			
 		} finally {
@@ -117,13 +123,13 @@ public class TestTagging {
 		long totalBefore = sumOffsets(beforeOffsets);
 		// Assert that every offset starts at one, so total offset equals = nr. of partitions
 		Assert.assertEquals(0, totalBefore);
-		System.err.println("BEF: "+beforeOffsets);
+		logger.info("BEF: "+beforeOffsets);
 		try {
 			IntStream.range(0, 5).forEach(i->{
 				publishMessages(tp, temporaryTopic, messageCount);
 				tp.flush();
 				final Map<Integer, Long> offsets = kts.partitionOffsets(temporaryTopic);
-				System.err.println("Offset of iteration: "+i+" :: "+offsets+" -> sum offsets: "+sumOffsets(offsets));
+				logger.info("Offset of iteration: "+i+" :: "+offsets+" -> sum offsets: "+sumOffsets(offsets));
 				Assert.assertEquals(messageCount * (i+1), sumOffsets(offsets));
 			});
 		} finally {
@@ -142,7 +148,7 @@ public class TestTagging {
 			tp.flush();
 			final Map<String,Map<Integer, Long>> offsets = kts.offsets(Arrays.asList(new String[]{temporaryTopic}));
 			String s =  kts.encodeTag(offsets);
-			System.err.println(":::::: "+s);
+			logger.info(":::::: "+s);
 		} finally {
 			tp.delete(temporaryTopic);
 		}
@@ -172,20 +178,20 @@ public class TestTagging {
 			fromOffsets.put(temporaryTopic, offsets);
 			Map<String,Map<Integer,Long>> toOffsets = new HashMap<>();
 			toOffsets.put(temporaryTopic, afterOffsets);
-			System.err.println("fromOFFSET: "+offsets);
-			System.err.println("toOFFSET: "+afterOffsets);
+			logger.info("fromOFFSET: "+offsets);
+			logger.info("toOFFSET: "+afterOffsets);
 			
 			long p = Flowable.fromPublisher(kts.subscribe(Arrays.asList(new String[]{temporaryTopic}), temporaryGroup, Optional.of((topic,partition)->fromOffsets.get(topic).get(partition)),  Optional.of((topic,partition)->toOffsets.get(topic).get(partition)), Optional.empty(), false, ()->{}))
 					.flatMap(l->Flowable.fromIterable(l))
 					.map(pb->pb.partition().get()+" - "+pb.offset().get()+" -> "+toOffsets)
 					.count()
 					.blockingGet();
-			System.err.println("Should be: "+offsets+" to: "+afterOffsets+" items: "+p);
+			logger.info("Should be: "+offsets+" to: "+afterOffsets+" items: "+p);
 //			for (String msg : msglist) {
-//				System.err.println("MessageList: "+msg);
+//				logger.info("MessageList: "+msg);
 //				
 //			}
-//			System.err.println("Count: "+count);
+//			logger.info("Count: "+count);
 			
 			Assert.assertEquals(messageCount, p);
 		} finally {
@@ -201,39 +207,39 @@ public class TestTagging {
 		String temporaryTopic = "temptopic-"+UUID.randomUUID().toString();
 		String temporaryGroup = "tempgroup-"+UUID.randomUUID().toString();
 		int partitionCount = 1;
-		System.err.println("Using temp topic: "+temporaryTopic+" partitions: "+partitionCount);
+		logger.info("Using temp topic: "+temporaryTopic+" partitions: "+partitionCount);
 		
 		tp.create(temporaryTopic,Optional.of(1),Optional.of(partitionCount));
 		try {
 			Map<Integer,Long> initialOffsets = kts.partitionOffsets(temporaryTopic);
 			long sum = initialOffsets.entrySet().stream().map(e->e.getValue()).collect(Collectors.summarizingLong(e->e)).getSum();
-			System.err.println("initial: "+initialOffsets);
+			logger.info("initial: "+initialOffsets);
 			Assert.assertEquals(partitionCount, initialOffsets.size());
 			Assert.assertEquals(partitionCount, sum);
 			long messageCount = 10;
 			publishMessages(tp, temporaryTopic, messageCount);
-			System.err.println("Published: "+messageCount+" messages");
+			logger.info("Published: "+messageCount+" messages");
 			tp.flush();
-			System.err.println("... and flushed");
+			logger.info("... and flushed");
 			final Map<Integer, Long> offsets = kts.partitionOffsets(temporaryTopic);
 
-			System.err.println("Offsets now: "+offsets);
+			logger.info("Offsets now: "+offsets);
 			long sumAfter = sumOffsets(offsets);
-			System.err.println("Summary: "+sumAfter+" -> "+messageCount);
+			logger.info("Summary: "+sumAfter+" -> "+messageCount);
 			Assert.assertEquals(messageCount, sumAfter);
 
 			publishMessages(tp, temporaryTopic, messageCount);
-			System.err.println("Published another: "+messageCount+" messages");
+			logger.info("Published another: "+messageCount+" messages");
 			tp.flush();
-			System.err.println("... and flushed");
+			logger.info("... and flushed");
 
 			final Map<Integer, Long> finalOffsets = kts.partitionOffsets(temporaryTopic);
 			publishMessages(tp, temporaryTopic, messageCount);
-			System.err.println("Published another (2): "+messageCount+" messages");
+			logger.info("Published another (2): "+messageCount+" messages");
 
 			tp.flush();
-			System.err.println("... and flushed");
-			System.err.println("Before: "+offsets+" total: "+sumOffsets(offsets)+" After: "+finalOffsets+" total: "+sumOffsets(finalOffsets));
+			logger.info("... and flushed");
+			logger.info("Before: "+offsets+" total: "+sumOffsets(offsets)+" After: "+finalOffsets+" total: "+sumOffsets(finalOffsets));
 			Map<String,Map<Integer,Long>> fromOffsets = new HashMap<>();
 			fromOffsets.put(temporaryTopic, offsets);
 			Map<String,Map<Integer,Long>> toOffsets = new HashMap<>();
@@ -244,8 +250,8 @@ public class TestTagging {
 				.map(pb->pb.topic().get()+" - "+pb.partition().get()+" - "+pb.offset().get())
 				.toList()
 				.blockingGet();
-			System.err.println("Size: "+msglist);
-			System.err.println("from: "+fromOffsets+" to: "+toOffsets);
+			logger.info("Size: "+msglist);
+			logger.info("from: "+fromOffsets+" to: "+toOffsets);
 			Assert.assertEquals(messageCount*2, sumOffsets(finalOffsets));
 			
 		} finally {
@@ -265,7 +271,7 @@ public class TestTagging {
 //				.map(e->e.getValue())
 				// subtract one:
 				.collect(Collectors.summarizingLong(e->e.getValue()-1)).getSum();
-		System.err.println("Offsets now: "+offsets+" total: "+size);
+		logger.info("Offsets now: "+offsets+" total: "+size);
 		return size;
 
 	}

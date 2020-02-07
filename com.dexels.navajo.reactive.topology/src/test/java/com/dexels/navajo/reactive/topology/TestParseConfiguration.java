@@ -2,25 +2,19 @@ package com.dexels.navajo.reactive.topology;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.UUID;
 
-import org.apache.kafka.clients.admin.AdminClient;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.kafka.streams.api.StreamConfiguration;
-import com.dexels.kafka.streams.api.StreamTopologyException;
 import com.dexels.kafka.streams.api.TopologyContext;
 import com.dexels.kafka.streams.api.sink.ConnectType;
-import com.dexels.kafka.streams.base.StreamInstance;
-import com.dexels.kafka.streams.remotejoin.TopologyConstructor;
 import com.dexels.navajo.reactive.CoreReactiveFinder;
 import com.dexels.navajo.reactive.api.Reactive;
 import com.dexels.navajo.reactive.source.topology.TopologyReactiveFinder;
@@ -32,17 +26,18 @@ public class TestParseConfiguration {
 	
 	private TopologyContext topologyContext;
 
-	private TopologyConstructor topologyConstructor;
+	private String brokers = "kafka:9092";
+	private String storagePath = "mystorage";
 
 	private TopologyRunner runner;
 	@Before
 	public void setup() {
+		String applicationId = UUID.randomUUID().toString();
 		ImmutableFactory.setInstance(ImmutableFactory.createParser());
 		topologyContext = new TopologyContext(Optional.of("Generic"), "test", "someinstance", "5");
 		CoreReactiveFinder finder = new TopologyReactiveFinder();
 		Reactive.setFinderInstance(finder);
-		topologyConstructor = new TopologyConstructor(Optional.empty() , Optional.empty());
-		runner = new TopologyRunner(topologyContext,topologyConstructor);
+		runner = new TopologyRunner(topologyContext,brokers,storagePath,applicationId);
 
 		// TODO fill in props
 //		Reactive.finderInstance().addReactiveSourceFactory(new MongoReactiveSourceFactory(), "topic");
@@ -57,11 +52,11 @@ public class TestParseConfiguration {
 			params.put("table", "address");
 //			params.put("topic", "blabla");
 			String topic = "blabla";
-			topologyConstructor.addConnectSink("dvd",topic, params);
+			runner.topologyConstructor().addConnectSink("dvd",topic, params);
 			Map<String,String> mongoParams = new HashMap<>();
 			mongoParams.put("collection", "somecollection");
 //			mongoParams.put("topics", "blabla");
-			topologyConstructor.addConnectSink("mongo3", topic, mongoParams);
+			runner.topologyConstructor().addConnectSink("replication", topic, mongoParams);
 
 			runner.materializeConnectors(sc,true);
 			int connectors = sc.connectors().size();

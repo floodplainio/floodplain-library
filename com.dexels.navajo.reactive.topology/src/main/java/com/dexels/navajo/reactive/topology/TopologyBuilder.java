@@ -7,6 +7,8 @@ import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 
 import org.apache.kafka.streams.Topology;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.kafka.streams.api.TopologyContext;
@@ -25,6 +27,8 @@ import com.dexels.navajo.reactive.api.ReactiveTransformer;
 public class TopologyBuilder {
 	
 //	getClass().getResourceAsStream("simpletopic.rr")
+	
+	private final static Logger logger = LoggerFactory.getLogger(TopologyBuilder.class);
 
 	public CompiledReactiveScript parseScript(InputStream is) throws ParseException, IOException {
 		return ReactiveStandalone.compileReactiveScript(is);
@@ -32,9 +36,9 @@ public class TopologyBuilder {
 	public void buildTopology(CompiledReactiveScript crs,TopologyContext topologyContext,TopologyConstructor topologyConstructor) {
 		Topology topology = new Topology();
 		for (ReactivePipe pipe : crs.pipes) {
-			System.err.println("source name: "+pipe.source.getClass().getName());
+			logger.info("source name: {}",pipe.source.getClass().getName());
 			parseTopology(pipe,topology,topologyContext,topologyConstructor);
-			System.err.println("pipe: "+pipe);
+			logger.info("pipe: {}", pipe);
 		}
 
 	}
@@ -50,22 +54,22 @@ public class TopologyBuilder {
 		ReactiveResolvedParameters resolved = source.parameters().resolve(c, Optional.empty(), ImmutableFactory.empty(),source.metadata());
 		ReplicationTopologyParser.addSourceStore(topology, topologyContext, topologyConstructor, Optional.empty(), resolved.paramString("name"), Optional.empty(),false);
 		pipe.transformers.forEach(e->{
-			System.err.println("Transformer: "+e);
+			logger.info("Transformer: {}", e);
 			if(e instanceof ReactiveTransformer) {
 				ReactiveTransformer rt = (ReactiveTransformer)e;
 				//
-				System.err.println("type: "+rt.metadata().name());
+				logger.info("type: {}", rt.metadata().name());
 				if(!rt.parameters().named.isEmpty()) {
-					System.err.println("named params:");
+					logger.info("named params:");
 					rt.parameters().named.entrySet().forEach(entry->{
-						System.err.println("param: "+entry.getKey()+" value: "+entry.getValue()+" type: "+entry.getValue().returnType());
+						logger.info("param: {} value: {} type: {}", entry.getKey(), entry.getValue(), entry.getValue().returnType());
 					});
-					System.err.println("|< end of named");
+					logger.info("|< end of named");
 					
 				}
 				if(!rt.parameters().unnamed.isEmpty()) {
 					rt.parameters().unnamed.forEach(elt->{
-						System.err.println("E: "+elt+" type: "+elt.returnType());
+						logger.info("E: {} type: {}", elt, elt.returnType());
 					});
 				}
 			}

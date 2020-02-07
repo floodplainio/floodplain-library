@@ -1,7 +1,6 @@
 package com.dexels.kafka.webapi;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Optional;
@@ -11,8 +10,6 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -41,7 +38,6 @@ import io.reactivex.Flowable;
 @Path("/gurgle/{tenant}/{deployment}/{generation}")
 public class Aap {
 
-	private static final long serialVersionUID = 8563181635935834994L;
 
 	@Inject
 	PersistentSubscriber persistentSubscriber;
@@ -172,11 +168,7 @@ public class Aap {
 		return grps;
 	}
 	
-	private Flowable<String> nonGenerationalTopics(String tenant, String deployment) {
-		return KafkaTools.getTopics(publisher).toFlowable()
-				.flatMap(struct->Flowable.fromIterable(struct.getTenant(tenant).getDeployment(deployment).getNonGenerationalTopics()));
-	}
-	
+
 	private Flowable<String> topics(String tenant, String deployment, String generation) {
 		return KafkaTools.getTopics(publisher).toFlowable()
 				.flatMap(struct->Flowable.fromIterable(struct.getTenant(tenant).getDeployment(deployment).getGeneration(generation).getTopics()));

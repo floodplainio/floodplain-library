@@ -66,14 +66,10 @@ public abstract class FunctionFactoryInterface implements Serializable {
 		} else {
 			logger.debug("No default config");
 		}
-		System.err.println("Not found from def. Going through: "+functionResolvers.size()+" resolvers");
 		for (FunctionResolver fr : functionResolvers) {
 			FunctionDefinition fd = fr.getFunction(name);
 			if(fd!=null) {
-				System.err.println("Found from resolver: "+fr);
 				return fd;
-			} else {
-				System.err.println("Not found from this resolver!");
 			}
 		}
 		

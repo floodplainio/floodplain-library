@@ -10,6 +10,9 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.dexels.kafka.factory.KafkaClientFactory;
 import com.dexels.replication.api.ReplicationMessage;
 import com.dexels.replication.api.ReplicationMessageParser;
@@ -22,6 +25,10 @@ import io.reactivex.functions.Function;
 import io.reactivex.functions.Predicate;
 
 public class TopicDump {
+	
+	
+	private final static Logger logger = LoggerFactory.getLogger(TopicDump.class);
+
 	public static Flowable<byte[]> downloadTopic(String bootstrapServer, String topic, Predicate<ReplicationMessage> filter, Function<ReplicationMessage,ReplicationMessage> map, Optional<String> from, Optional<String> to) throws IOException {
 
 		System.setProperty(ReplicationMessage.PRETTY_JSON, "true");
@@ -44,8 +51,8 @@ public class TopicDump {
 		AtomicLong writtenMessageCount = new AtomicLong();
 
 		final Disposable d = Flowable.interval(10, TimeUnit.SECONDS)
-			.doOnNext(e->System.err.println("In progress. MessageCount: "+messageCount.get()+" writtenMessageCount: "+writtenMessageCount+" written data: "+writtenDataCount.get()))
-			.doOnTerminate(()->System.err.println("Progress complete"))
+			.doOnNext(e->logger.info("In progress. MessageCount: "+messageCount.get()+" writtenMessageCount: "+writtenMessageCount+" written data: "+writtenDataCount.get()))
+			.doOnTerminate(()->logger.info("Progress complete"))
 			.subscribe();
 
 		
@@ -62,9 +69,6 @@ public class TopicDump {
 				)
 			.filter(filter)
 			.map(map)
-			.doFinally(()->{d.dispose();
-				System.err.println("Disposing progress monitor");
-			})
 			.map(e->jsonparser.serialize(e))
 			.doOnNext(e->{
 				writtenMessageCount.incrementAndGet();

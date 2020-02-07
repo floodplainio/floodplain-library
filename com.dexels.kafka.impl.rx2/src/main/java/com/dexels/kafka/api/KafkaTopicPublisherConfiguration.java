@@ -31,18 +31,12 @@ public class KafkaTopicPublisherConfiguration {
 		return partitions;
 	}
 	public Optional<String> compression() {
-		System.err.println("compression: "+this.compression);
 		if(partitions==null) {
 			return Optional.empty();
 		}
 		return compression;
 	}
 
-
-	
-	public KafkaTopicPublisherConfiguration() {
-		System.err.println("Created kafka topic pubconfig");
-	}
 	public KafkaTopicPublisherConfiguration(String bootstrapServers, Optional<Integer> retries, short replicationFactor, int partitions,Optional<String> compression) {
 		this.bootstrapServers = bootstrapServers;
 		this.retries = retries;

@@ -117,13 +117,11 @@ public class KafkaDumpSubscriber implements PersistentSubscriber {
 
 	@Override
 	public String encodeTopicTag(Map<Integer, Long> offsetMapInc) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public Map<Integer, Long> partitionOffsets(String topic) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

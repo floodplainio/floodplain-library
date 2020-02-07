@@ -6,6 +6,8 @@ import java.util.Optional;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.immutable.api.ImmutableMessageParser;
@@ -16,6 +18,9 @@ import com.dexels.immutable.factory.ImmutableFactory;
 public class TestImmutableJSON {
 	
 	private ImmutableMessageParser parser;
+	
+	private final static Logger logger = LoggerFactory.getLogger(TestImmutableJSON.class);
+
 	@Before
 	public void setup() {
 		parser = new JSONImmutableMessageParserImpl();
@@ -24,16 +29,14 @@ public class TestImmutableJSON {
 	public void testImmutable() {
 		ImmutableMessage msg = ImmutableFactory.empty().with("teststring", "bla", "string").with("testinteger", 3, ImmutableTypeParser.typeName(ImmutableMessage.ValueType.INTEGER));
 		byte[] bytes = parser.serialize(msg);
-		System.err.println("TEST: "+new String(bytes));
-//		parser.describe(msg);
+		logger.info("TEST: {}", new String(bytes));
 	}
 
 	@Test
 	public void testDescribe() {
 		ImmutableMessage msg = ImmutableFactory.empty().with("teststring", "bla", "string").with("testinteger", 3,ImmutableTypeParser.typeName(ImmutableMessage.ValueType.INTEGER));
 		String description = parser.describe(msg);
-		System.err.println("DESCRIPTION: "+description);
-//		parser.describe(msg);
+		logger.info("DESCRIPTION: {}",description);
 	}
 
 	@Test
@@ -62,7 +65,7 @@ public class TestImmutableJSON {
 	@Test
 	public void testNdJSON() throws IOException {
 		ImmutableMessage m = ImmutableFactory.empty().with("somenumber", 3, "integer");
-		System.err.println(ImmutableFactory.ndJson(m));
+		logger.info("{}",ImmutableFactory.ndJson(m));
 
 	}
 }

@@ -53,36 +53,17 @@ public class SinkTransformer implements ReactiveTransformer, TopologyPipeCompone
 
 	@Override
 	public int addToTopology(Stack<String> transformerNames, int pipeId,  Topology topology, TopologyContext topologyContext,TopologyConstructor topologyConstructor) {
-//		String filterName = createName(transformerNames.size(), pipeId);
 		StreamScriptContext context =new StreamScriptContext(topologyContext.tenant.orElse(TopologyContext.DEFAULT_TENANT), topologyContext.instance, topologyContext.deployment);
 		ReactiveResolvedParameters resolved = parameters.resolve(context, Optional.empty(), ImmutableFactory.empty(), metadata);
-//		resolved.unnamedParameters()
-//			.stream()
-//			.map(e->(String)(e.value))
-//			.forEach(sinkName->{
-//				System.err.println("Stack top for transformer: "+transformerNames.peek());
-//		        String sinkTopic = topicName(sinkName, topologyContext);
-//				topology.addSink(sinkTopic, sinkTopic, transformerNames.peek());
-//				System.err.println("Sink source >>> "+sinkTopic+" >>> name: "+sinkName);
-//			});
-		
+	
 		boolean create = resolved.optionalBoolean("create").orElse(false);
-//		Optional<String> logName = resolved.optionalString("logName");
-//		if(logName.isPresent()) {
-//			logger.info("Stack top for transformer: "+transformerNames.peek());
-//			topology.addProcessor(SINKLOG_PREFIX+"sinkTopic", ()->new LogProcessor(logName.get()), transformerNames.peek());
-//			transformerNames.push(SINKLOG_PREFIX+"sinkTopic");
-//		}
 		Optional<Integer> partitions = resolved.optionalInteger("partitions");
 		List<Operand> operands = resolved.unnamedParameters();
-		
-//		Optional<String>  
 		Optional<String> sinkName = resolved.optionalString("connector");
 		for (Operand operand : operands) {
 	        String sinkTopic = topicName( operand.stringValue(), topologyContext);
 	        // TODO shouldn't we use the createName?
 	        // TODO still weird if we use multiple
-//	        String sinkName = sinkTopic;
 			if(create) {
 				topologyConstructor.ensureTopicExists(sinkTopic,partitions);
 			}
@@ -92,7 +73,6 @@ public class SinkTransformer implements ReactiveTransformer, TopologyPipeCompone
 			withTopic.put("topic", sinkTopic);
 			sinkName.ifPresent(sink->topologyConstructor.addConnectSink(sink,sinkTopic, values));
 			topology.addSink(SINK_PREFIX+sinkTopic, sinkTopic, transformerNames.peek());
-//			transformerNames.push(SINK_PREFIX+sinkTopic);
 		}
 		return pipeId;
 	}

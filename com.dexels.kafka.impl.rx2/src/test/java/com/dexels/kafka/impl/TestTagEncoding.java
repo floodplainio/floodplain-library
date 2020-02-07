@@ -20,7 +20,6 @@ public class TestTagEncoding {
 		config.put("wait", "5000");
 		config.put("max", "50");
 		kts = (KafkaTopicSubscriber) KafkaClientFactory.createSubscriber(System.getenv("KAFKA_DEVELOP"), config);
-//		KafkaClientFactory.createPublisher(System.getenv("KAFKA_DEVELOP"), 1, 1)
 	}
 
 	@Test
@@ -29,7 +28,6 @@ public class TestTagEncoding {
 		final String initialTag = "0:1,1:1";
 		Function<Integer,Long> offset = kts.decodeTopicTag(initialTag);
 		String finalTag = kts.encodeTopicTag(offset,Arrays.asList(new Integer[]{0,1}));
-		System.err.println("Offset: "+offset);
 		Assert.assertEquals(initialTag, finalTag);
 		
 	}

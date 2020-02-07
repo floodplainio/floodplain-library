@@ -14,6 +14,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.dexels.kafka.factory.KafkaClientFactory;
 import com.dexels.replication.api.ReplicationMessage;
@@ -25,27 +27,31 @@ import io.reactivex.Flowable;
 
 public class TestSubscriber {
 	private KafkaTopicSubscriber kts;
+	
+	
+	private final static Logger logger = LoggerFactory.getLogger(TestSubscriber.class);
+
 	@Before
 	public void setup() {
 		Map<String,String> config = new HashMap<>();
 //		config.put("wait", "5000");
 //		config.put("max", "50");
 		final String server = System.getenv("KAFKA_DEVELOP");
-		System.err.println("Connecting to server: "+server);
+		logger.info("Connecting to server: {}", server);
 		kts = (KafkaTopicSubscriber) KafkaClientFactory.createSubscriber(server, config);
 	}
 
 	@Test  @Ignore
 	public void testTopicList() {
 		List<String> l = kts.topics();
-		System.err.println("Topics: >>>> "+l.size()+" <<<<");
+		logger.info("Topics: >>>> {} <<<<",l.size());
 		Assert.assertTrue("There should be topics",l.size()>1);
 	}
 
 	@Test @Ignore
 	public void testOffsetQuery() {
 		Map<Integer,Long> l = kts.partitionOffsets("NAVAJO-WORKFLOW-EVENT-develop");
-		System.err.println(">>>> "+l+" <<<<");
+		logger.info(">>>> {} <<<<",l);
 		
 	}
 	@Test @Ignore
@@ -81,8 +87,8 @@ public class TestSubscriber {
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
-		System.err.println("I'm done!");
-		System.err.println("Count: "+count.get());
+		logger.info("I'm done!");
+		logger.info("Count: "+count.get());
 
 		
 	}
@@ -117,13 +123,13 @@ public class TestSubscriber {
 					.map(e->jsonparser.serialize(e))
 					.doOnError(e->e.printStackTrace())
 					.blockingForEach(e->{
-						System.err.println("Item: "+new String(e));
+						logger.info("Item: "+new String(e));
 					});
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
-		System.err.println("I'm done!");
-		System.err.println("Count: "+count.get());
+		logger.info("I'm done!");
+		logger.info("Count: {}", count.get());
 
 		
 	}

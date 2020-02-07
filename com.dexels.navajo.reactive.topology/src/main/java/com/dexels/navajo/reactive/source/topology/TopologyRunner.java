@@ -1,12 +1,16 @@
 package com.dexels.navajo.reactive.source.topology;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -15,8 +19,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
+import javax.imageio.stream.FileImageInputStream;
+
+import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.streams.KafkaStreams;
+import org.apache.kafka.streams.Topology;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,10 +36,16 @@ import com.dexels.kafka.streams.api.StreamConfiguration;
 import com.dexels.kafka.streams.api.TopologyContext;
 import com.dexels.kafka.streams.api.sink.ConnectConfiguration;
 import com.dexels.kafka.streams.api.sink.ConnectType;
+import com.dexels.kafka.streams.base.StreamInstance;
 import com.dexels.kafka.streams.remotejoin.TopologyConstructor;
 import com.dexels.kafka.streams.remotejoin.TopologyConstructor.ConnectorTopicTuple;
-import com.dexels.kafka.streams.tools.KafkaUtils;
 import com.dexels.kafka.streams.remotejoin.TopologyDefinitionException;
+import com.dexels.kafka.streams.tools.KafkaUtils;
+import com.dexels.navajo.parser.compiled.ParseException;
+import com.dexels.navajo.reactive.ReactiveStandalone;
+import com.dexels.navajo.reactive.api.CompiledReactiveScript;
+import com.dexels.navajo.reactive.topology.ReactivePipeParser;
+import com.dexels.navajo.repository.api.RepositoryInstance;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -45,8 +61,9 @@ public class TopologyRunner {
 
 	
 	private final Map<String,String> baseSettings;
+	private final Properties props;
 
-	public TopologyRunner(TopologyContext topologyContext, TopologyConstructor topologyConstructor) {
+	public TopologyRunner(TopologyContext topologyContext, String brokers, String storagePath,String applicationId) {
 		Map<String,String> settings = new HashMap<>();			
 		settings.put("key.converter", ReplicationMessageConverter.class.getName());
 		settings.put("key.converter.schemas.enable", "false");
@@ -54,10 +71,70 @@ public class TopologyRunner {
 		settings.put("value.converter.schemas.enable", "false");
 		baseSettings = Collections.unmodifiableMap(settings);
 		this.topologyContext = topologyContext;
-		this.topologyConstructor = topologyConstructor;
+		props = StreamInstance.createProperties(applicationId, brokers, storagePath);
+		this.topologyConstructor =  new TopologyConstructor(Optional.empty() , Optional.of(AdminClient.create(props)));
 	}
 	
+	public KafkaStreams runTopology(Topology topology, Optional<StreamConfiguration> streamConfiguration) throws InterruptedException, IOException {
+		if(streamConfiguration.isPresent()) {
+			materializeConnectors(streamConfiguration.get(),true);
+		}
+		KafkaStreams stream = new KafkaStreams(topology, props);
+		stream.setUncaughtExceptionHandler((thread,exception)->{
+			logger.error("Error in streams: ",exception);
+		});
+		stream.setStateListener((oldState,newState)->{
+			logger.info("State moving from {} to {}",oldState,newState);
+		});
+		stream.start();
+		return stream;
+//		for (int i = 0; i < 50; i++) {
+//			boolean isRunning = stream.state().isRunning();
+//	        String stateName = stream.state().name();
+//	        System.err.println("State: "+stateName+" - "+isRunning);
+//	        final Collection<StreamsMetadata> allMetadata = stream.allMetadata();
+//	        System.err.println("meta: "+allMetadata);
+//			Thread.sleep(10000);
+//		}
+//
+//		stream.close();
+//		Thread.sleep(5000);
+	}
 
+	public TopologyConstructor topologyConstructor() {
+		return topologyConstructor;
+	}
+	
+//	private Topology parseReactivePipeTopology(String repositoryPath) throws ParseException, IOException {
+////		FileRepositoryInstanceImpl
+//	}
+//	
+	public Topology parseReactivePipeTopology(File repoPath, Path storatePath) throws ParseException, IOException {
+		Topology topology = new Topology();
+		File streams = new File(repoPath,"streams");
+		File resources = new File(repoPath,"config/resources.xml");
+		try(InputStream is = new FileInputStream(resources)) {
+			StreamConfiguration sc = StreamConfiguration.parseConfig("test", is);
+			parseReactivePipeFolder(topology,streams);
+		}
+		System.err.println("Combined topology:\n"+topology.describe());
+		return topology;
+	}
+	
+	private Topology parseReactivePipeFolder(Topology topology, File folder) throws ParseException, IOException {
+		File[] files = folder.listFiles(e->e.getName().endsWith(".rr"));
+		for (File file : files) {
+			try(InputStream is = new FileInputStream(file)) {
+				parseSinglePipeDefinition(topology,is,file.getName().split("\\.")[0]);
+			}
+		}
+		return topology;
+	}
+	public Topology parseSinglePipeDefinition(Topology topology, InputStream input, String namespace) throws ParseException, IOException {
+		CompiledReactiveScript crs = ReactiveStandalone.compileReactiveScript(input);
+		return ReactivePipeParser.parseReactiveStreamDefinition(topology, crs, topologyContext, topologyConstructor(),namespace);
+	}
+	
 	public void startConnector(URL connectURL, String connectorName, ConnectType type, boolean force, Map<String,String> parameters) throws IOException {
 		String generatedName = CoreOperators.topicName(connectorName, topologyContext);
 
@@ -86,7 +163,7 @@ public class TopologyRunner {
 		configNode.put("name", generatedName);
 		configNode.put("database.server.name", generatedName);
 		String jsonString = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(node);
-		System.err.println(">> "+jsonString);
+		logger.info(">> {}", jsonString);
 		postToHttp(connectURL, jsonString);
 	}
 	
@@ -186,7 +263,7 @@ public class TopologyRunner {
 				cSettings.put("topics",connectorTopicTuple.topicName);
 				cSettings.put("tasks.max","1");
 				cSettings.put("document.id.strategy","com.mongodb.kafka.connect.sink.processor.id.strategy.FullKeyStrategy");
-				System.err.println("Settings: "+cSettings);
+				logger.info("Settings: {}", cSettings);
 				result.add(cSettings);
 			}
 			return result;

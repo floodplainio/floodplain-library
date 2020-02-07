@@ -5,6 +5,8 @@ import java.util.Stack;
 
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.processor.ProcessorSupplier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.kafka.streams.api.TopologyContext;
@@ -27,7 +29,10 @@ public class FilterTransformer implements ReactiveTransformer,TopologyPipeCompon
 	private final ReactiveParameters parameters;
 	private final TransformerMetadata metadata;
 	private final ProcessorSupplier<String,ReplicationMessage> filterProcessor;
-	private boolean materialized = false;;
+	private boolean materialized = false;
+	
+	private final static Logger logger = LoggerFactory.getLogger(FilterTransformer.class);
+
 
 	public FilterTransformer(TransformerMetadata metadata, ReactiveParameters parameters) {
 		this.parameters = parameters;
@@ -43,7 +48,7 @@ public class FilterTransformer implements ReactiveTransformer,TopologyPipeCompon
 
 	public int addToTopology(Stack<String> transformerNames, int pipeId,  Topology topology, TopologyContext topologyContext,TopologyConstructor topologyConstructor) {
 		String filterName = createName(transformerNames.size(), pipeId);
-		System.err.println("Stack top for transformer: "+transformerNames.peek());
+		logger.info("Stack top for transformer: {}", transformerNames.peek());
 		if (this.materialized) {
 			topology.addProcessor(filterName+"_prematerialize",filterProcessor, transformerNames.peek());
 			ReplicationTopologyParser.addMaterializeStore(topology, topologyContext, topologyConstructor, filterName, filterName+"_prematerialize");
@@ -51,7 +56,6 @@ public class FilterTransformer implements ReactiveTransformer,TopologyPipeCompon
 			topology.addProcessor(filterName, filterProcessor, transformerNames.peek());
 
 		}
-		System.err.println("pushin2: "+filterName);
 		transformerNames.push(filterName);
 		return pipeId;
 	}
