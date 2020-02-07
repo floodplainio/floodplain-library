@@ -3,9 +3,9 @@ package com.dexels.navajo.reactive.source.topology;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Stack;
-import java.util.Map.Entry;
 import java.util.function.Function;
 
 import org.apache.kafka.streams.Topology;
@@ -25,7 +25,6 @@ import com.dexels.navajo.reactive.api.ReactiveParseException;
 import com.dexels.navajo.reactive.api.ReactiveResolvedParameters;
 import com.dexels.navajo.reactive.api.ReactiveTransformer;
 import com.dexels.navajo.reactive.api.TransformerMetadata;
-import com.dexels.navajo.reactive.mappers.SetSingle;
 import com.dexels.navajo.reactive.source.topology.api.TopologyPipeComponent;
 
 import io.reactivex.Flowable;
@@ -103,12 +102,12 @@ public class SetTransformer implements ReactiveTransformer, TopologyPipeComponen
 
 	
 	@Override
-	public int addToTopology(Stack<String> transformerNames, int currentPipeId, Topology topology,
+	public void addToTopology(String namespace, Stack<String> transformerNames, int currentPipeId, Topology topology,
 			TopologyContext topologyContext, TopologyConstructor topologyConstructor) {
 		StreamScriptContext ssc = StreamScriptContext.fromTopologyContext(topologyContext);
 		Function<DataItem, DataItem> apply = transformer.apply(ssc);
 		FunctionProcessor fp = new FunctionProcessor(apply);
-		String name = createName(this.metadata.name(),transformerNames.size(), currentPipeId);
+		String name = createName(namespace, this.metadata.name(),transformerNames.size(), currentPipeId);
 		logger.info("Adding processor: {} to parent: {} hash: {}",name,transformerNames,transformerNames.hashCode());
 
 		
@@ -120,11 +119,10 @@ public class SetTransformer implements ReactiveTransformer, TopologyPipeComponen
 
 		}
 		transformerNames.push(name);
-		return currentPipeId;
 	}
 	
-	private  String createName(String name, int transformerNumber, int pipeId) {
-		return pipeId+"_"+name+"_"+transformerNumber;
+	private  String createName(String namespace, String name, int transformerNumber, int pipeId) {
+		return namespace+"_"+pipeId+"_"+name+"_"+transformerNumber;
 	}
 	
 	@Override

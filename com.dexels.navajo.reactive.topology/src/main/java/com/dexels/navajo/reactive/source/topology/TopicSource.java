@@ -37,13 +37,18 @@ public class TopicSource implements ReactiveSource,TopologyPipeComponent {
 		return Flowable.error(new Exception("Topology sources shouldn't be executed"));
 	}
 	
-	public int addToTopology(Stack<String> transformerNames, int pipeId,  Topology topology, TopologyContext topologyContext,TopologyConstructor topologyConstructor) {
+	@Override
+	public void addToTopology(String namespace, Stack<String> transformerNames, int pipeId,  Topology topology, TopologyContext topologyContext,TopologyConstructor topologyConstructor) {
 		StreamScriptContext context =new StreamScriptContext(topologyContext.tenant.orElse(TopologyContext.DEFAULT_TENANT), topologyContext.instance, topologyContext.deployment);
 		ReactiveResolvedParameters resolved = parameters.resolve(context, Optional.empty(), ImmutableFactory.empty(), metadata);
-		String name = resolved.paramString("name");
+
+		// TODO unsure about the name
 		String source = ReplicationTopologyParser.addSourceStore(topology, topologyContext, topologyConstructor, Optional.empty(), resolved.paramString("name"), Optional.empty(),this.materialize());
 		transformerNames.push(source);
-		return pipeId;
+	}
+	
+	private  String createName(String namespace, int transformerNumber, int pipeId) {
+		return namespace+"_"+pipeId+"_"+metadata.sourceName()+"_"+transformerNumber;
 	}
 	
 	@Override

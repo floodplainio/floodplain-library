@@ -58,25 +58,23 @@ public class JoinWithTransformer implements ReactiveTransformer ,TopologyPipeCom
 		return parameters;
 	}
 	@Override
-	public int addToTopology(Stack<String> transformerNames, int pipeId, Topology topology,
-			TopologyContext topologyContext, TopologyConstructor topologyConstructor) {
+	public void addToTopology(String namespace, Stack<String> transformerNames, int pipeId, Topology topology,
+		TopologyContext topologyContext, TopologyConstructor topologyConstructor) {
 		StreamScriptContext context =new StreamScriptContext(topologyContext.tenant.orElse(TopologyContext.DEFAULT_TENANT), topologyContext.instance, topologyContext.deployment);
 		ReactiveResolvedParameters resolved = parameters.resolve(context, Optional.empty(), ImmutableFactory.empty(), metadata);
 		Optional<String> from = Optional.of(transformerNames.peek());
 		Operand o = resolved.unnamedParameters().stream().findFirst().orElseThrow(()->new TopologyDefinitionException("Missing parameters for joinWith, should have one sub stream"));
 		ReactivePipe rp = (ReactivePipe)o.value;
 		Stack<String> pipeStack = new Stack<>();
-		ReactivePipeParser.processPipe(topologyContext, topologyConstructor, topology, topologyConstructor.generateNewPipeId(),pipeStack, rp,true);
+		ReactivePipeParser.processPipe(topologyContext, topologyConstructor, topology, topologyConstructor.generateNewPipeId(),pipeStack, rp,true,namespace);
 		boolean isList = true;
 		String with = pipeStack.peek();
 		String into = resolved.paramString("into");
-		String name = pipeId+"_"+metadata.name()+"_"+transformerNames.size();
+		String name = createName(namespace, transformerNames.size(), pipeId);
 		Optional<String> filter = Optional.empty();
 		boolean isOptional = false;
-//        BiFunction<ReplicationMessage, List<ReplicationMessage>, ReplicationMessage> listJoinFunction = ReplicationTopologyParser.createListJoinFunction(into, from.get(), Optional.empty());
         BiFunction<ReplicationMessage, List<ReplicationMessage>, ReplicationMessage> listJoinFunction = ReplicationTopologyParser.createParamListJoinFunction(into);
 
-        
         //        ReplicationTopologyParser.createJoinFunction(isList, into, name, columns, keyField, valueField);
         final BiFunction<ReplicationMessage, ReplicationMessage, ReplicationMessage> joinFunction = CoreOperators.getJoinFunction(Optional.of(into),Optional.<String>empty());
 
@@ -84,11 +82,11 @@ public class JoinWithTransformer implements ReactiveTransformer ,TopologyPipeCom
 
 		ReplicationTopologyParser.addJoin(topology, topologyContext, topologyConstructor, from.get(), isList, with, name, isOptional, listJoinFunction, joinFunction, filterPredicate);
 		transformerNames.push(name);
-		return pipeId;
 	}
 
-	private  String createName(int transformerNumber, String pipeId) {
-		return pipeId+"_"+metadata.name()+"_"+transformerNumber;
+	private  String createName(String namespace, int transformerNumber, int pipeId) {
+		return namespace+"_"+pipeId+"_"+metadata.name()+"_"+transformerNumber;
+//		return pipeId+"_"+metadata.name()+"_"+transformerNumber;
 	}
 	@Override
 	public boolean materializeParent() {

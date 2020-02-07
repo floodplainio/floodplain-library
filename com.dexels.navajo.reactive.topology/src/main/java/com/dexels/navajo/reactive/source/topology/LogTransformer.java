@@ -45,7 +45,7 @@ public class LogTransformer implements ReactiveTransformer, TopologyPipeComponen
 	}
 
 	@Override
-	public int addToTopology(Stack<String> transformerNames, int pipeId,  Topology topology, TopologyContext topologyContext,TopologyConstructor topologyConstructor) {
+	public void addToTopology(String namespace, Stack<String> transformerNames, int pipeId,  Topology topology, TopologyContext topologyContext,TopologyConstructor topologyConstructor) {
 //		String filterName = createName(transformerNames.size(), pipeId);
 		StreamScriptContext context =new StreamScriptContext(topologyContext.tenant.orElse(TopologyContext.DEFAULT_TENANT), topologyContext.instance, topologyContext.deployment);
 		ReactiveResolvedParameters resolved = parameters.resolve(context, Optional.empty(), ImmutableFactory.empty(), metadata);
@@ -55,14 +55,13 @@ public class LogTransformer implements ReactiveTransformer, TopologyPipeComponen
 		}
 		String logName = resolved.paramString("logName");
 		logger.info("Stack top for transformer: "+transformerNames.peek());
-		String name = createName(transformerNames.size(), pipeId);
+		String name = createName(namespace, transformerNames.size(), pipeId);
 		topology.addProcessor(name, ()->new LogProcessor(logName), transformerNames.peek());
 		transformerNames.push(name);
-		return pipeId;
 	}
 	
-	private  String createName(int transformerNumber, int pipeId) {
-		return pipeId+"_"+metadata.name()+"_"+transformerNumber;
+	private  String createName(String namespace, int transformerNumber, int pipeId) {
+		return namespace+"_"+pipeId+"_"+metadata.name()+"_"+transformerNumber;
 	}
 	
 	@Override

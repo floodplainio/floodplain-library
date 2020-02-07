@@ -9,7 +9,7 @@ import com.dexels.kafka.streams.api.TopologyContext;
 import com.dexels.kafka.streams.remotejoin.TopologyConstructor;
 
 public interface TopologyPipeComponent {
-	public int addToTopology(Stack<String> transformerNames, int currentPipeId,  Topology topology, TopologyContext topologyContext,TopologyConstructor topologyConstructor);
+	public void addToTopology(String namespace, Stack<String> transformerNames, int currentPipeId,  Topology topology, TopologyContext topologyContext,TopologyConstructor topologyConstructor);
 	public boolean materializeParent();
 	public void setMaterialize();
 	public boolean materialize();

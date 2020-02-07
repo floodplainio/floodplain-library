@@ -52,7 +52,7 @@ public class SinkTransformer implements ReactiveTransformer, TopologyPipeCompone
 	}
 
 	@Override
-	public int addToTopology(Stack<String> transformerNames, int pipeId,  Topology topology, TopologyContext topologyContext,TopologyConstructor topologyConstructor) {
+	public void addToTopology(String namespace, Stack<String> transformerNames, int pipeId,  Topology topology, TopologyContext topologyContext,TopologyConstructor topologyConstructor) {
 		StreamScriptContext context =new StreamScriptContext(topologyContext.tenant.orElse(TopologyContext.DEFAULT_TENANT), topologyContext.instance, topologyContext.deployment);
 		ReactiveResolvedParameters resolved = parameters.resolve(context, Optional.empty(), ImmutableFactory.empty(), metadata);
 	
@@ -74,11 +74,10 @@ public class SinkTransformer implements ReactiveTransformer, TopologyPipeCompone
 			sinkName.ifPresent(sink->topologyConstructor.addConnectSink(sink,sinkTopic, values));
 			topology.addSink(SINK_PREFIX+sinkTopic, sinkTopic, transformerNames.peek());
 		}
-		return pipeId;
 	}
 	
-	private  String createName(int transformerNumber, int pipeId) {
-		return pipeId+"_"+metadata.name()+"_"+transformerNumber;
+	private  String createName(String namespace, int transformerNumber, int pipeId) {
+		return namespace+"_"+pipeId+"_"+metadata.name()+"_"+transformerNumber;
 	}
 	
 	@Override
