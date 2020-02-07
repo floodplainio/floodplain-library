@@ -36,7 +36,7 @@ public class DebeziumProcessor implements GenericProcessorBuilder {
 		String source = config.get("source");
 		boolean appendTenant = false;
 		boolean appendSchema = false;
-		boolean appendTable = true;
+		boolean appendTable = false;
 		
         String sourceTopic = topicName(source, context);
         final String sourceProcessorName = processorName(sourceTopic+"_debezium_conversion_source");

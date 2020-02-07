@@ -62,14 +62,17 @@ public class JSONToReplicationMessage {
 			TableIdentifier key = processDebeziumKey(keynode,appendTenant,appendSchema);
 			
 			if(!valuenode.has("payload") || valuenode.get("payload").isNull()) {
-				ReplicationMessage replMsg = ReplicationFactory.empty().with("_table", key.table, "string").withOperation(Operation.DELETE);
+				ReplicationMessage replMsg = ReplicationFactory.empty().withOperation(Operation.DELETE);
 				final ReplicationMessage converted = appendTenant ? replMsg.with("_tenant", key.tenant, "string") : replMsg;
-				return PubSubTools.create(key.combinedKey,  ReplicationFactory.getInstance().serialize(converted), msg.timestamp(), Optional.empty());
+				final ReplicationMessage convertedWTable = appendTable ? converted.with("_tenant", key.tenant, "string") : converted;
+				return PubSubTools.create(key.combinedKey,  ReplicationFactory.getInstance().serialize(convertedWTable), msg.timestamp(), Optional.empty());
 			}
 			final ReplicationMessage convOptional = convertToReplication(false,valuenode,key.table);
-			ReplicationMessage conv = convOptional;
-			conv = conv.with("_table", key.table, "string")
-				.withPrimaryKeys(key.fields);
+			ReplicationMessage conv = convOptional.withPrimaryKeys(key.fields);
+			if(appendTable) {
+				conv = conv.with("_table", key.table, "string");
+				
+			}
 			final ReplicationMessage converted = appendTenant ? conv.with("_tenant", key.tenant, "string") : conv;
 			byte[] serialized = ReplicationFactory.getInstance().serialize(converted);
 			

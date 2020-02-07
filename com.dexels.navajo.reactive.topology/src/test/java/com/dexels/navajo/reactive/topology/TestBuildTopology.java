@@ -20,11 +20,8 @@ import org.slf4j.LoggerFactory;
 import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.kafka.streams.api.StreamConfiguration;
 import com.dexels.kafka.streams.api.TopologyContext;
-import com.dexels.kafka.streams.api.sink.ConnectConfiguration;
 import com.dexels.kafka.streams.base.StreamInstance;
 import com.dexels.kafka.streams.remotejoin.TopologyConstructor;
-import com.dexels.kafka.streams.remotejoin.TopologyConstructor.ConnectorTopicTuple;
-import com.dexels.kafka.streams.remotejoin.TopologyDefinitionException;
 import com.dexels.navajo.parser.compiled.ParseException;
 import com.dexels.navajo.reactive.CoreReactiveFinder;
 import com.dexels.navajo.reactive.ReactiveStandalone;
@@ -51,7 +48,7 @@ public class TestBuildTopology {
 	@Before
 	public void setup() {
 		ImmutableFactory.setInstance(ImmutableFactory.createParser());
-		topologyContext = new TopologyContext(Optional.of("Generic"), "test", "someinstance", "20200203");
+		topologyContext = new TopologyContext(Optional.of("Generic"), "test", "someinstance", "20200206");
 		props = StreamInstance.createProperties(UUID.randomUUID().toString(), brokers, storagePath);
 		adminClient = AdminClient.create(props);
 		topologyConstructor = new TopologyConstructor(Optional.empty() , Optional.of(adminClient));

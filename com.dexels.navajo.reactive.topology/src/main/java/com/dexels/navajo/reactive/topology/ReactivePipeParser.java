@@ -3,6 +3,8 @@ package com.dexels.navajo.reactive.topology;
 import java.util.Stack;
 
 import org.apache.kafka.streams.Topology;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.dexels.kafka.streams.api.TopologyContext;
 import com.dexels.kafka.streams.remotejoin.ReplicationTopologyParser;
@@ -14,6 +16,8 @@ import com.dexels.navajo.reactive.source.topology.api.TopologyPipeComponent;
 public class ReactivePipeParser {
 	
 	
+	private final static Logger logger = LoggerFactory.getLogger(ReactivePipeParser.class);
+
 	public static Topology parseReactiveStreamDefinition(CompiledReactiveScript crs, TopologyContext topologyContext, TopologyConstructor topologyConstructor) {
 		Topology topology = new Topology();
 		int pipeNr = 0;
@@ -55,9 +59,10 @@ public class ReactivePipeParser {
 		TopologyPipeComponent sourceTopologyComponent = (TopologyPipeComponent)pipe.source;
 		pipeNr = sourceTopologyComponent.addToTopology(pipeStack, pipeNr, topology, topologyContext, topologyConstructor);
 		for (Object e : pipe.transformers) {
-			System.err.println("Transformer: "+e);
+			System.err.println("Transformer: "+e+" pipestack: "+pipeStack);
 			if(e instanceof TopologyPipeComponent) {
 				TopologyPipeComponent tpc = (TopologyPipeComponent)e;
+				logger.info("Adding pipe component: "+tpc.getClass()+" to stack: "+pipeStack);
 				pipeNr = tpc.addToTopology(pipeStack, pipeNr, topology, topologyContext, topologyConstructor);
 			}
 		}

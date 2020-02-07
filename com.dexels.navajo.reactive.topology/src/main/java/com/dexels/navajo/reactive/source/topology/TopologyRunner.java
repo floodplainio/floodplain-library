@@ -185,6 +185,7 @@ public class TopologyRunner {
 				cSettings.putAll(this.baseSettings);
 				cSettings.put("topics",connectorTopicTuple.topicName);
 				cSettings.put("tasks.max","1");
+				cSettings.put("document.id.strategy","com.mongodb.kafka.connect.sink.processor.id.strategy.FullKeyStrategy");
 				System.err.println("Settings: "+cSettings);
 				result.add(cSettings);
 			}

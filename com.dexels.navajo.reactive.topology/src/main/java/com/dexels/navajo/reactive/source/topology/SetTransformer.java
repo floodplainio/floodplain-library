@@ -108,6 +108,7 @@ public class SetTransformer implements ReactiveTransformer, TopologyPipeComponen
 		Function<DataItem, DataItem> apply = transformer.apply(ssc);
 		FunctionProcessor fp = new FunctionProcessor(apply);
 		String name = createName(this.metadata.name(),transformerNames.size(), currentPipeId);
+		logger.info("Adding processor: {} to parent: {} hash: {}",name,transformerNames,transformerNames.hashCode());
 		topology.addProcessor(name, ()->fp, transformerNames.peek());
 		transformerNames.push(name);
 		return currentPipeId;

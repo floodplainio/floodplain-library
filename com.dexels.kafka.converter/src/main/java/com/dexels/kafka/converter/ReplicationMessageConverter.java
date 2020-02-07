@@ -5,6 +5,7 @@ import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.kafka.connect.data.Schema;
 import org.apache.kafka.connect.data.SchemaAndValue;
@@ -42,16 +43,16 @@ public class ReplicationMessageConverter implements Converter {
 			if(value instanceof String) {
 				String val = (String)value;
 				String converted = "{key:\""+val+"\"}";
-				logger.info("Converting key: {} into {}",val,converted);
 				return converted.getBytes(Charset.defaultCharset());
 			} else if (value instanceof Struct) {
+				Struct s = (Struct)value;
 				System.err.println("Schema present? "+schema);
-//				schema.
 				Struct val = (Struct)value;
 				System.err.println("struct: "+val);
-//				Schema
-//				val.
-//				
+				String result = schema.fields().stream().map(e->""+s.get(e)).collect(Collectors.joining(ReplicationMessage.KEYSEPARATOR));
+				return result.getBytes(Charset.defaultCharset());
+			} else {
+				return (""+value).getBytes(Charset.defaultCharset());
 			}
 		}
 		ReplicationMessage rm = (ReplicationMessage) value;

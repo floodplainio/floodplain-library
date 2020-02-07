@@ -154,15 +154,28 @@ public class FallbackReplicationMessageParser implements ReplicationMessageParse
 
 	@Override
 	public ReplicationMessage parseBytes(PubSubMessage data) {
+		ReplicationMessage result = data.value()!=null ? parseBytes(data.value()) : ReplicationFactory.empty().withOperation(Operation.DELETE);
+		if(ReplicationMessage.includeKafkaMetadata()) {
+			return result
+					.withPartition(data.partition())
+					.withOffset(data.offset())
+					.withSource(data.topic())
+					.with("_kafkapartition", data.partition().orElse(-1), "integer")
+					.with("_kafkaoffset", data.offset().orElse(-1L), "long")
+					.with("_kafkakey", data.key(), "string")
+					.with("_kafkatopic",data.topic().orElse(null),"string");			
+		} else {
+			return result;
+		}
 		
-		return (data.value()!=null ? parseBytes(data.value()) : ReplicationFactory.empty().withOperation(Operation.DELETE))
-				.withPartition(data.partition())
-				.withOffset(data.offset())
-				.withSource(data.topic())
-				.with("_kafkapartition", data.partition().orElse(-1), "integer")
-				.with("_kafkaoffset", data.offset().orElse(-1L), "long")
-				.with("_kafkakey", data.key(), "string")
-				.with("_kafkatopic",data.topic().orElse(null),"string");
+//		return (data.value()!=null ? parseBytes(data.value()) : ReplicationFactory.empty().withOperation(Operation.DELETE))
+//				.withPartition(data.partition())
+//				.withOffset(data.offset())
+//				.withSource(data.topic())
+//				.with("_kafkapartition", data.partition().orElse(-1), "integer")
+//				.with("_kafkaoffset", data.offset().orElse(-1L), "long")
+//				.with("_kafkakey", data.key(), "string")
+//				.with("_kafkatopic",data.topic().orElse(null),"string");
 	}
 
 }

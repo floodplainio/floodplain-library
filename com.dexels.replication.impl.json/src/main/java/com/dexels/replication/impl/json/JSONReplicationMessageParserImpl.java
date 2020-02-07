@@ -169,7 +169,7 @@ public class JSONReplicationMessageParserImpl implements ReplicationMessageParse
 	@Override
 	public ReplicationMessage parseBytes(PubSubMessage data) {
 		ReplicationMessage result = data.value()!=null ? parseBytes(data.value()) : ReplicationFactory.empty().withOperation(Operation.DELETE);
-		if(ReplicationMessage.includeKafkaMetadata) {
+		if(ReplicationMessage.includeKafkaMetadata()) {
 			return result
 					.withPartition(data.partition())
 					.withOffset(data.offset())

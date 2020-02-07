@@ -64,7 +64,7 @@ public class DebeziumTopic implements ReactiveSource,TopologyPipeComponent {
 		
 		boolean appendTenant = resolved.optionalBoolean("appendTenant").orElse(false);
 		boolean appendSchema = resolved.optionalBoolean("appendSchema").orElse(false);
-		boolean appendTable = true;
+		boolean appendTable = false;
 		String name = processorName(createName(transformerNames.size(),pipeId));
 		String topicName = assembleDebeziumTopicName(topologyContext,resource,schema,table);
 //		CoreOperators.topicName(topic, topologyContext);

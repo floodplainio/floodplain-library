@@ -178,14 +178,19 @@ public class JSONDumpReplicationMessageParserImpl implements ReplicationMessageP
 
 	@Override
 	public ReplicationMessage parseBytes(PubSubMessage data) {
-		return (data.value()!=null ? parseBytes(data.value()) : ReplicationFactory.empty().withOperation(Operation.DELETE))
-				.withPartition(data.partition())
-				.withOffset(data.offset())
-				.withSource(data.topic())
-				.with("_kafkapartition", data.partition().orElse(-1), "integer")
-				.with("_kafkaoffset", data.offset().orElse(-1L), "long")
-				.with("_kafkakey", data.key(), "string")
-				.with("_kafkatopic",data.topic().orElse(null),"string");
+
+		ReplicationMessage initial = (data.value()!=null ? parseBytes(data.value()) : ReplicationFactory.empty().withOperation(Operation.DELETE));
+		if(ReplicationMessage.includeKafkaMetadata()) {
+			return initial
+					.withPartition(data.partition())
+					.withOffset(data.offset())
+					.withSource(data.topic())
+					.with("_kafkapartition", data.partition().orElse(-1), "integer")
+					.with("_kafkaoffset", data.offset().orElse(-1L), "long")
+					.with("_kafkakey", data.key(), "string")
+					.with("_kafkatopic",data.topic().orElse(null),"string");
+		}
+		return initial;
 	}
 
 	

@@ -77,9 +77,9 @@ public interface ReplicationMessage {
 		return usePretty;
 	}
 
-	public static final boolean includeKafkaMetadata = System.getenv(INCLUDE_KAFKA_METADATA)!=null || System.getProperty(INCLUDE_KAFKA_METADATA)!=null;
+//	private static final boolean includeKafkaMetadata = System.getenv(INCLUDE_KAFKA_METADATA)!=null || System.getProperty(INCLUDE_KAFKA_METADATA)!=null;
 	public static boolean includeKafkaMetadata() {
-		return includeKafkaMetadata;
+		return false;
 	}
 		
 	public Map<String, ImmutableMessage> subMessageMap();

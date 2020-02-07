@@ -1,6 +1,8 @@
 
 |>database(resource='dvd',schema='public',table='country')
+	->set(last_update=null)
 	->joinWith(|>database(resource='dvd',schema='public',table='city')
+					->set(last_update=null)
 					->group(key=ToString([country_id]))
 				,into='cities'
 		)

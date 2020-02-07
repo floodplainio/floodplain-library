@@ -1,4 +1,5 @@
 |>database(resource='dvd',schema='public',table='city')
+	->set(last_update=null)
 	->joinRemote(key=ToString([country_id]),
 		|>database(resource='dvd',schema='public',table='country')
 		)
