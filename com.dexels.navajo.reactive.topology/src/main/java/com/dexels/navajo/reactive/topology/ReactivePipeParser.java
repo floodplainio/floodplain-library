@@ -21,14 +21,12 @@ public class ReactivePipeParser {
 	public static Topology parseReactiveStreamDefinition(Topology topology, CompiledReactiveScript crs, TopologyContext topologyContext, TopologyConstructor topologyConstructor, String namespace) {
 		int pipeNr = topologyConstructor.generateNewPipeId();
 		for (ReactivePipe pipe : crs.pipes) {
-			ReactivePipeParser.processPipe(topologyContext, topologyConstructor, topology, pipeNr,new Stack<String>(), pipe,false);
+			ReactivePipeParser.processPipe(namespace, topologyContext, topologyConstructor, topology, pipeNr,new Stack<String>(), pipe,false);
 		}
-		logger.info("Topology before materialize: {}", topology.describe());
-		ReplicationTopologyParser.materializeStateStores(topologyConstructor, topology);
 		return topology;
 	}
 	
-	public static void processPipe(TopologyContext topologyContext, TopologyConstructor topologyConstructor, Topology topology,
+	public static void processPipe(String namespace, TopologyContext topologyContext, TopologyConstructor topologyConstructor, Topology topology,
 			int pipeNr, Stack<String> pipeStack, ReactivePipe pipe, boolean materializeTop) {
 		int size = pipe.transformers.size();
 		if(size==0) {
@@ -69,7 +67,7 @@ public class ReactivePipeParser {
 		}
 
 		TopologyPipeComponent sourceTopologyComponent = (TopologyPipeComponent)pipe.source;
-		sourceTopologyComponent.addToTopology(namespace, pipeStack, pipeNr, topology, topologyContext, topologyConstructor);
+		sourceTopologyComponent.addToTopology(namespace,pipeStack, pipeNr, topology, topologyContext, topologyConstructor);
 		for (Object e : pipe.transformers) {
 			logger.info("Transformer: {} pipestack: {}",e,pipeStack);
 			if(e instanceof TopologyPipeComponent) {

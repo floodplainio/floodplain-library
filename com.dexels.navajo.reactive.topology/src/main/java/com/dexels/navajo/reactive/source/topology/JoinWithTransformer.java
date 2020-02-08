@@ -66,7 +66,7 @@ public class JoinWithTransformer implements ReactiveTransformer ,TopologyPipeCom
 		Operand o = resolved.unnamedParameters().stream().findFirst().orElseThrow(()->new TopologyDefinitionException("Missing parameters for joinWith, should have one sub stream"));
 		ReactivePipe rp = (ReactivePipe)o.value;
 		Stack<String> pipeStack = new Stack<>();
-		ReactivePipeParser.processPipe(topologyContext, topologyConstructor, topology, topologyConstructor.generateNewPipeId(),pipeStack, rp,true,namespace);
+		ReactivePipeParser.processPipe(namespace, topologyContext, topologyConstructor, topology, topologyConstructor.generateNewPipeId(),pipeStack, rp,true);
 		boolean isList = true;
 		String with = pipeStack.peek();
 		String into = resolved.paramString("into");

@@ -19,6 +19,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.Topology;
@@ -264,26 +265,27 @@ public class ReplicationTopologyParser {
        return sourceProcessorName;
    }
 
-   public static String addLazySourceStore(final Topology currentBuilder, TopologyContext context, TopologyConstructor topologyConstructor, 
-           String sourceTopicName) {
-       String storeTopic = topicName(sourceTopicName, context);
-       // TODO It might be better to fail if the topic does not exist? -> Well depends, if it is external yes, but if it is created by the same instance, then no.
-       // No: if the topic is dynamic, it won't exist at first, so better to ensure.
-       topologyConstructor.ensureTopicExists(storeTopic,Optional.empty());
-       final String sourceProcessorName = processorName(sourceTopicName);
-   	String sourceName;
-    if(!topologyConstructor.sources.containsKey(storeTopic)) {
-    	sourceName = sourceProcessorName+"_src";
-		currentBuilder.addSource(sourceName, storeTopic);
-        topologyConstructor.sources.put(storeTopic,sourceName);
-        // TODO Optimize. The topology should be valid without adding identityprocessors
-    	currentBuilder.addProcessor(sourceProcessorName,()->new IdentityProcessor(), sourceName);
-    } else {
+	public static String addLazySourceStore(final Topology currentBuilder, TopologyContext context,
+			TopologyConstructor topologyConstructor, String topicName, Deserializer<?> keyDeserializer, Deserializer<?> valueDeserializer) {
+//		String storeTopic = topicName(topicName, context);
+		// TODO It might be better to fail if the topic does not exist? -> Well depends,
+		// if it is external yes, but if it is created by the same instance, then no.
+		// No: if the topic is dynamic, it won't exist at first, so better to ensure.
+		topologyConstructor.ensureTopicExists(topicName, Optional.empty());
+//		final String sourceProcessorName = processorName(sourceTopicName);
+//		String sourceName;
+		if (!topologyConstructor.sources.containsKey(topicName)) {
+//			sourceName = sourceProcessorName + "_src";
+			currentBuilder.addSource(topicName,keyDeserializer,valueDeserializer, topicName);
+			topologyConstructor.sources.put(topicName, topicName);
+			// TODO Optimize. The topology should be valid without adding identityprocessors
+		} else {
 //    	sourceName = topologyConstructor.sources.get(storeTopic);
 //    	currentBuilder.addProcessor(sourceProcessorName,()->new IdentityProcessor(), sourceName);
-    }
-    return sourceProcessorName;
-   }
+		}
+//		currentBuilder.addProcessor(sourceProcessorName, () -> new IdentityProcessor(), topicName);
+		return topicName;
+	}
 
 //    ss
 	public static String addMaterializeStore(final Topology currentBuilder, TopologyContext context,

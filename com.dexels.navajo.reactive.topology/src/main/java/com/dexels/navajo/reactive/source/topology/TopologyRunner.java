@@ -13,13 +13,16 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.imageio.stream.FileImageInputStream;
@@ -27,6 +30,7 @@ import javax.imageio.stream.FileImageInputStream;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.Topology;
+import org.apache.kafka.streams.state.StreamsMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +41,7 @@ import com.dexels.kafka.streams.api.TopologyContext;
 import com.dexels.kafka.streams.api.sink.ConnectConfiguration;
 import com.dexels.kafka.streams.api.sink.ConnectType;
 import com.dexels.kafka.streams.base.StreamInstance;
+import com.dexels.kafka.streams.remotejoin.ReplicationTopologyParser;
 import com.dexels.kafka.streams.remotejoin.TopologyConstructor;
 import com.dexels.kafka.streams.remotejoin.TopologyConstructor.ConnectorTopicTuple;
 import com.dexels.kafka.streams.remotejoin.TopologyDefinitionException;
@@ -109,17 +114,38 @@ public class TopologyRunner {
 ////		FileRepositoryInstanceImpl
 //	}
 //	
-	public Topology parseReactivePipeTopology(File repoPath, Path storatePath) throws ParseException, IOException {
+	public Topology parseReactivePipeTopology(File repoPath) throws ParseException, IOException {
 		Topology topology = new Topology();
 		File streams = new File(repoPath,"streams");
-		File resources = new File(repoPath,"config/resources.xml");
-		try(InputStream is = new FileInputStream(resources)) {
-			StreamConfiguration sc = StreamConfiguration.parseConfig("test", is);
-			parseReactivePipeFolder(topology,streams);
-		}
-		System.err.println("Combined topology:\n"+topology.describe());
+		parseReactivePipeFolder(topology,streams);
 		return topology;
 	}
+	
+	public KafkaStreams runPipeFolder(File repoPath) throws ParseException, IOException, InterruptedException {
+		Topology topology = parseReactivePipeTopology(repoPath);
+		System.err.println("Combined topology:\n"+topology.describe());
+		File resources = new File(repoPath,"config/resources.xml");
+		StreamConfiguration streamConfiguration;
+		try(InputStream is = new FileInputStream(resources)) {
+			streamConfiguration = StreamConfiguration.parseConfig("test", is);
+			return runTopology(topology, Optional.of(streamConfiguration));
+		}
+
+	}
+	
+//	private void runTopology(Topology topology, Optional<StreamConfiguration> streamConfiguration) throws InterruptedException, IOException {
+//		KafkaStreams stream = runner.runTopology(topology, streamConfiguration);
+//		for (int i = 0; i < 50; i++) {
+//			boolean isRunning = stream.state().isRunning();
+//	        String stateName = stream.state().name();
+//	        System.err.println("State: "+stateName+" - "+isRunning);
+//	        final Collection<StreamsMetadata> allMetadata = stream.allMetadata();
+//	        System.err.println("meta: "+allMetadata);
+//			Thread.sleep(100);
+//		}
+//		stream.close();
+//		Thread.sleep(1000);
+//	}
 	
 	private Topology parseReactivePipeFolder(Topology topology, File folder) throws ParseException, IOException {
 		File[] files = folder.listFiles(e->e.getName().endsWith(".rr"));
@@ -128,11 +154,14 @@ public class TopologyRunner {
 				parseSinglePipeDefinition(topology,is,file.getName().split("\\.")[0]);
 			}
 		}
+		ReplicationTopologyParser.materializeStateStores(topologyConstructor, topology);
 		return topology;
 	}
 	public Topology parseSinglePipeDefinition(Topology topology, InputStream input, String namespace) throws ParseException, IOException {
 		CompiledReactiveScript crs = ReactiveStandalone.compileReactiveScript(input);
-		return ReactivePipeParser.parseReactiveStreamDefinition(topology, crs, topologyContext, topologyConstructor(),namespace);
+		ReactivePipeParser.parseReactiveStreamDefinition(topology, crs, topologyContext, topologyConstructor(),namespace);
+		logger.info("Topology before materialize: {}", topology.describe());
+		return topology;
 	}
 	
 	public void startConnector(URL connectURL, String connectorName, ConnectType type, boolean force, Map<String,String> parameters) throws IOException {
@@ -217,7 +246,7 @@ public class TopologyRunner {
     		logger.warn("No connectURL present, so not materializing anything");
     		return;
     	}
-    	List<String> topics = new ArrayList<>();
+    	Set<String> topics = new HashSet<>();
 		for (Entry<String,List<ConnectorTopicTuple>> e : topologyConstructor.connectorAssociations.entrySet()) {
 			for (ConnectorTopicTuple tuple : e.getValue()) {
 				topics.add(tuple.topicName);
@@ -236,9 +265,11 @@ public class TopologyRunner {
 				throw new TopologyDefinitionException("Missing sink resource named: "+e.getKey());
 			}
 			List<Map<String,String>> parsed = parseConnector(list, cc.get());
+			int connectorCount = 0;
 			for (Map<String, String> element : parsed) {
 				Map<String,String> processed = element.entrySet().stream().collect(Collectors.toMap(key->key.getKey(),v->CoreOperators.resolveGenerations(v.getValue(), topologyContext)) );
-				assembleConnector(cc.get(),processed,sc.connectURL().get(),force);
+				assembleConnector(cc.get(),processed,sc.connectURL().get(),force,connectorCount);
+				connectorCount++;
 			}
 		}
 
@@ -272,13 +303,13 @@ public class TopologyRunner {
 		}
     }
     
-	public void assembleConnector(ConnectConfiguration cc,Map<String,String> parameters, URL connectURL, boolean force) throws IOException {
+	public void assembleConnector(ConnectConfiguration cc,Map<String,String> parameters, URL connectURL, boolean force, int connectorCount) throws IOException {
 		
 		Map<String,String> result = new HashMap<>();
 //		result.putAll(baseSettings);
 //		result.putAll(cc.settings());
 		result.putAll(parameters);
-		startConnector(connectURL, cc.name(),cc.type, force, result);
+		startConnector(connectURL, cc.name()+"_"+connectorCount,cc.type, force, result);
 		
 //		public void startConnector(TopologyContext context, StreamConfiguration streamConfig, ConnectConfiguration config, boolean force) throws IOException {
 

@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Stack;
 
+import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.Topology;
 
@@ -80,10 +81,13 @@ public class DebeziumTopic implements ReactiveSource,TopologyPipeComponent {
 		final String sourceProcessorName = processorName(namespace+"_"+name+"_debezium_conversion_source")+"-"+topicName;
 	    final String convertProcessorName = processorName(namespace+"_"+name+"_debezium_conversion")+"-"+topicName;
 	    final String finalProcessorName = processorName(namespace+"_"+name+"_debezium")+"-"+topicName;
-		topology.addSource(sourceProcessorName,Serdes.String().deserializer(),Serdes.ByteArray().deserializer(), topicName);
+	    ReplicationTopologyParser.addLazySourceStore(topology, topologyContext, topologyConstructor, topicName, Serdes.String().deserializer(),Serdes.ByteArray().deserializer());
+	    //topology.addSource(sourceProcessorName,Serdes.String().deserializer(),Serdes.ByteArray().deserializer(), topicName);
+//		public static String addLazySourceStore(final Topology currentBuilder, TopologyContext context,
+//				TopologyConstructor topologyConstructor, String sourceTopicName, Deserializer<?> keyDeserializer, Deserializer<?> valueDeserializer) {
 		
 //	    Serializer<PubSubMessage> ser = new PubSubSerializer();
-		topology.addProcessor(convertProcessorName, ()->new DebeziumConversionProcessor(topicName,topologyContext, appendTenant, appendSchema,appendTable), sourceProcessorName);
+		topology.addProcessor(convertProcessorName, ()->new DebeziumConversionProcessor(topicName,topologyContext, appendTenant, appendSchema,appendTable), topicName);
 
 		
 //		materialize = true;
