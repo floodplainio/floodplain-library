@@ -21,30 +21,30 @@ public class FunctionProcessor extends AbstractProcessor<String, ReplicationMess
 	private final static Logger logger = LoggerFactory.getLogger(FunctionProcessor.class);
 
 	
-	public FunctionProcessor(Function<DataItem,DataItem> func) {
-		this.function = func
-				.compose(FunctionProcessor::toData)
-				.andThen(FunctionProcessor::toReplication);
+	public FunctionProcessor(Function<ReplicationMessage,ReplicationMessage> func) {
+		this.function = func;
+//				.compose(FunctionProcessor::toData)
+//				.andThen(FunctionProcessor::toReplication);
 	}
 	
 
-	private static DataItem toData(ReplicationMessage msg) {
-		Optional<ImmutableMessage> param = msg.paramMessage();
-		if(param.isPresent()) {
-//			logger.info("DataITEM PARAM: {}",param.get().subMessageListMap());
-			return DataItem.of(msg.message(), param.get());
-		} else {
-			return DataItem.of(msg.message());
-		}
-		
-	}
-
-	private static ReplicationMessage toReplication(DataItem in) {
-		ImmutableMessage msg = in.message();
-		ImmutableMessage param = in.stateMessage();
-		return ReplicationFactory.createReplicationMessage(Optional.empty(), Optional.empty(), Optional.empty(), "", System.currentTimeMillis(),Operation.NONE, Collections.emptyList(), msg, Optional.empty(), Optional.of(param));
-		
-	}
+//	private static DataItem toData(ReplicationMessage msg) {
+//		Optional<ImmutableMessage> param = msg.paramMessage();
+//		if(param.isPresent()) {
+////			logger.info("DataITEM PARAM: {}",param.get().subMessageListMap());
+//			return DataItem.of(msg.message(), param.get());
+//		} else {
+//			return DataItem.of(msg.message());
+//		}
+//		
+//	}
+//
+//	private static ReplicationMessage toReplication(DataItem in) {
+//		ImmutableMessage msg = in.message();
+//		ImmutableMessage param = in.stateMessage();
+//		return ReplicationFactory.createReplicationMessage(Optional.empty(), Optional.empty(), Optional.empty(), "", System.currentTimeMillis(),Operation.NONE, Collections.emptyList(), msg, Optional.empty(), Optional.of(param));
+//		
+//	}
 
 	@Override
 	public void process(String key, ReplicationMessage value) {

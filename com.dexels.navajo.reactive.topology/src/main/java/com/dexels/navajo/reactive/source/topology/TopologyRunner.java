@@ -68,6 +68,20 @@ public class TopologyRunner {
 	private final Map<String,String> baseSettings;
 	private final Properties props;
 
+	private class MaterializedConnector {
+		public Optional<List<Map<String,String>>> list;
+		public Optional<Map<String,String>> single;
+		
+		public MaterializedConnector(List<Map<String,String>> list) {
+			this.list = Optional.of(list);
+			this.single = Optional.empty();
+		}
+		public MaterializedConnector(Map<String,String> single) {
+			this.list = Optional.empty();
+			this.single = Optional.of(single);
+		}
+
+	}
 	public TopologyRunner(TopologyContext topologyContext, String brokers, String storagePath,String applicationId) {
 		Map<String,String> settings = new HashMap<>();			
 		settings.put("key.converter", ReplicationMessageConverter.class.getName());
@@ -258,33 +272,46 @@ public class TopologyRunner {
 		
 		for (Entry<String,List<ConnectorTopicTuple>> e : topologyConstructor.connectorAssociations.entrySet()) {
 			List<ConnectorTopicTuple> list = e.getValue();
-			
-//			logger.info("CTT: resource {} topic: {} parameters: {}",e.getKey(), e.getValue().topicName, ctt.sinkParameters);
 			Optional<ConnectConfiguration> cc = sc.connector(e.getKey());
 			if(!cc.isPresent()) {
 				throw new TopologyDefinitionException("Missing sink resource named: "+e.getKey());
 			}
-			List<Map<String,String>> parsed = parseConnector(list, cc.get());
-			int connectorCount = 0;
-			for (Map<String, String> element : parsed) {
+//			List<Map<String,String>> parsed = parseConnector(list, cc.get());
+			MaterializedConnector parsed = parseConnector(list, cc.get());
+			if(parsed.list.isPresent()) {
+				int connectorCount = 0;
+				for (Map<String, String> element : parsed.list.get()) {
+					Map<String,String> processed = element.entrySet().stream().collect(Collectors.toMap(key->key.getKey(),v->CoreOperators.resolveGenerations(v.getValue(), topologyContext)) );
+					assembleConnector(cc.get(),processed,sc.connectURL().get(),force,Optional.of(connectorCount));
+					connectorCount++;
+				}
+			} else {
+				Map<String, String> element = parsed.single.get();
 				Map<String,String> processed = element.entrySet().stream().collect(Collectors.toMap(key->key.getKey(),v->CoreOperators.resolveGenerations(v.getValue(), topologyContext)) );
-				assembleConnector(cc.get(),processed,sc.connectURL().get(),force,connectorCount);
-				connectorCount++;
+				assembleConnector(cc.get(),processed,sc.connectURL().get(),force,Optional.empty());
 			}
+//			int connectorCount = 0;
+//			for (Map<String, String> element : parsed) {
+//				Map<String,String> processed = element.entrySet().stream().collect(Collectors.toMap(key->key.getKey(),v->CoreOperators.resolveGenerations(v.getValue(), topologyContext)) );
+//				assembleConnector(cc.get(),processed,sc.connectURL().get(),force,connectorCount);
+//				connectorCount++;
+//			}
 		}
 
     }
     
-    public List<Map<String,String>> parseConnector(List<ConnectorTopicTuple> tuples, ConnectConfiguration connectorConfig) {
+    public MaterializedConnector parseConnector(List<ConnectorTopicTuple> tuples, ConnectConfiguration connectorConfig) {
     	String clazz = connectorConfig.settings().get("connector.class");
     	switch (clazz) {
 		case "io.debezium.connector.postgresql.PostgresConnector":
-			String whitelist = tuples.stream().map(e->e.sinkParameters.get("schema")+"."+e.sinkParameters.get("table")).collect(Collectors.joining(","));
+			List<String> whitelist = tuples.stream().map(e->e.sinkParameters.get("schema")+"."+e.sinkParameters.get("table")).collect(Collectors.toList());
+			Set<String> unique = new HashSet<>(whitelist);
+			String whitelistFormat = unique.stream().collect(Collectors.joining(","));
 			Map<String,String> settings = new HashMap<>(connectorConfig.settings());
 //			settings.putAll(this.baseSettings);
 			// TODO if 'resource' is still in the map, I should remove it, right?
-			settings.put("table.whitelist", whitelist);
-			return Arrays.asList(settings);
+			settings.put("table.whitelist", whitelistFormat);
+			return new MaterializedConnector(settings);
 		case "com.mongodb.kafka.connect.MongoSinkConnector":
 			List<Map<String,String>> result = new ArrayList<>();
 			for (ConnectorTopicTuple connectorTopicTuple : tuples) {
@@ -297,19 +324,20 @@ public class TopologyRunner {
 				logger.info("Settings: {}", cSettings);
 				result.add(cSettings);
 			}
-			return result;
+			return new MaterializedConnector(result);
 		default:
 			throw new UnsupportedOperationException("Unknown connector class: "+clazz);
 		}
     }
     
-	public void assembleConnector(ConnectConfiguration cc,Map<String,String> parameters, URL connectURL, boolean force, int connectorCount) throws IOException {
+	public void assembleConnector(ConnectConfiguration cc,Map<String,String> parameters, URL connectURL, boolean force, Optional<Integer> connectorCount) throws IOException {
 		
 		Map<String,String> result = new HashMap<>();
 //		result.putAll(baseSettings);
 //		result.putAll(cc.settings());
 		result.putAll(parameters);
-		startConnector(connectURL, cc.name()+"_"+connectorCount,cc.type, force, result);
+		String connectorName = connectorCount.map(c->cc.name()+"_"+c).orElse(cc.name());
+		startConnector(connectURL, connectorName,cc.type, force, result);
 		
 //		public void startConnector(TopologyContext context, StreamConfiguration streamConfig, ConnectConfiguration config, boolean force) throws IOException {
 

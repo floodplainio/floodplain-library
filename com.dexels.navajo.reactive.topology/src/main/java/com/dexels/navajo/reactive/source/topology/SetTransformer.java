@@ -26,6 +26,8 @@ import com.dexels.navajo.reactive.api.ReactiveResolvedParameters;
 import com.dexels.navajo.reactive.api.ReactiveTransformer;
 import com.dexels.navajo.reactive.api.TransformerMetadata;
 import com.dexels.navajo.reactive.source.topology.api.TopologyPipeComponent;
+import com.dexels.replication.api.ReplicationMessage;
+import com.dexels.replication.factory.ReplicationFactory;
 
 import io.reactivex.Flowable;
 import io.reactivex.FlowableTransformer;
@@ -35,7 +37,7 @@ public class SetTransformer implements ReactiveTransformer, TopologyPipeComponen
 	private boolean materialize;
 	private final SetFactory metadata;
 	private final ReactiveParameters parameters;
-	Function<StreamScriptContext,Function<DataItem,DataItem>> transformer;
+	Function<StreamScriptContext, Function<ReplicationMessage, ReplicationMessage>> transformer;
 	
 	
 	private final static Logger logger = LoggerFactory.getLogger(SetTransformer.class);
@@ -47,10 +49,10 @@ public class SetTransformer implements ReactiveTransformer, TopologyPipeComponen
 	}
 	
 	// note copied from SetSingle
-	public Function<StreamScriptContext,Function<DataItem,DataItem>> execute(ReactiveParameters params) {
+	public Function<StreamScriptContext,Function<ReplicationMessage,ReplicationMessage>> execute(ReactiveParameters params) {
 		return context->(item)->{
 			ImmutableMessage s = item.message();
-			ReactiveResolvedParameters parms = params.resolve(context, Optional.of(s), item.stateMessage(), metadata);
+			ReactiveResolvedParameters parms = params.resolve(context, Optional.of(s), item.paramMessage().orElse(ImmutableFactory.empty()), metadata);
 			boolean condition = parms.optionalBoolean("condition").orElse(true);
 			if(!condition) {
 				return item;
@@ -61,7 +63,7 @@ public class SetTransformer implements ReactiveTransformer, TopologyPipeComponen
 					s = addColumn(s, elt.getKey(), elt.getValue());
 				}
 			}
-			return DataItem.of(s);
+			return ReplicationFactory.standardMessage(s).withOperation(item.operation()).withPrimaryKeys(item.primaryKeys());
 		};
 	
 	}
@@ -105,7 +107,7 @@ public class SetTransformer implements ReactiveTransformer, TopologyPipeComponen
 	public void addToTopology(String namespace, Stack<String> transformerNames, int currentPipeId, Topology topology,
 			TopologyContext topologyContext, TopologyConstructor topologyConstructor) {
 		StreamScriptContext ssc = StreamScriptContext.fromTopologyContext(topologyContext);
-		Function<DataItem, DataItem> apply = transformer.apply(ssc);
+		Function<ReplicationMessage, ReplicationMessage> apply = transformer.apply(ssc);
 		FunctionProcessor fp = new FunctionProcessor(apply);
 		String name = createName(namespace, this.metadata.name(),transformerNames.size(), currentPipeId);
 		logger.info("Adding processor: {} to parent: {} hash: {}",name,transformerNames,transformerNames.hashCode());

@@ -49,24 +49,19 @@ public class TestBuildTopology {
 	
 	private void runTopology(Topology topology, Optional<StreamConfiguration> streamConfiguration) throws InterruptedException, IOException {
 		KafkaStreams stream = runner.runTopology(topology, streamConfiguration);
-		for (int i = 0; i < 50; i++) {
+		for (int i = 0; i < 500; i++) {
 			boolean isRunning = stream.state().isRunning();
 	        String stateName = stream.state().name();
 	        System.err.println("State: "+stateName+" - "+isRunning);
 	        final Collection<StreamsMetadata> allMetadata = stream.allMetadata();
 	        System.err.println("meta: "+allMetadata);
-			Thread.sleep(100);
+			Thread.sleep(1000);
 		}
 		stream.close();
 		Thread.sleep(1000);
 	}
 	
-	@Test
-	public void testSimpleTopic() throws ParseException, IOException {
-		Topology topology = runner.parseSinglePipeDefinition(new Topology(),getClass().getClassLoader().getResourceAsStream("simpletopic.rr"),"junit");
-		ReplicationTopologyParser.materializeStateStores(runner.topologyConstructor(), topology);
-		System.err.println("Topology: \n"+topology.describe());
-	}
+
 
 	@Test
 	public void testDatabase() throws ParseException, IOException, InterruptedException {
@@ -98,7 +93,7 @@ public class TestBuildTopology {
 	        System.err.println("State: "+stateName+" - "+isRunning);
 	        final Collection<StreamsMetadata> allMetadata = stream.allMetadata();
 	        System.err.println("meta: "+allMetadata);
-			Thread.sleep(400);
+			Thread.sleep(4000);
 		}
 		stream.close();
 		Thread.sleep(1000);
@@ -124,11 +119,31 @@ public class TestBuildTopology {
 	public void testRemoteJoin() throws ParseException, IOException, InterruptedException {
 		Topology topology = runner.parseSinglePipeDefinition(new Topology(), getClass().getClassLoader().getResourceAsStream("remotejoin.rr"),"junit");
 		StreamConfiguration sc = StreamConfiguration.parseConfig("test", getClass().getClassLoader().getResourceAsStream("resources.xml"));
+		ReplicationTopologyParser.materializeStateStores(runner.topologyConstructor(), topology);
 		System.err.println("Topology: \n"+topology.describe());
 
 		runTopology(topology,Optional.of(sc));
 	}
 
+	@Test
+	public void testSimpleTopic() throws ParseException, IOException, InterruptedException {
+		Topology topology = runner.parseSinglePipeDefinition(new Topology(),getClass().getClassLoader().getResourceAsStream("simpletopic.rr"),"junit");
+		StreamConfiguration sc = StreamConfiguration.parseConfig("test", getClass().getClassLoader().getResourceAsStream("resources.xml"));
+		ReplicationTopologyParser.materializeStateStores(runner.topologyConstructor(), topology);
+		System.err.println("Topology: \n"+topology.describe());
+		runTopology(topology,Optional.of(sc));
+	}
+	
+	@Test
+	public void testFilms() throws ParseException, IOException, InterruptedException {
+		Topology topology = runner.parseSinglePipeDefinition(new Topology(),getClass().getClassLoader().getResourceAsStream("films.rr"),"junit");
+		StreamConfiguration sc = StreamConfiguration.parseConfig("test", getClass().getClassLoader().getResourceAsStream("resources.xml"));
+		ReplicationTopologyParser.materializeStateStores(runner.topologyConstructor(), topology);
+		System.err.println("Topology: \n"+topology.describe());
+		runTopology(topology,Optional.of(sc));
+	}
+
+	
 	@Test @Ignore
 	public void testDebezium() throws ParseException, IOException, InterruptedException {
 		Topology topology = runner.parseSinglePipeDefinition(new Topology(), getClass().getClassLoader().getResourceAsStream("sinkLog.rr"),"junit");

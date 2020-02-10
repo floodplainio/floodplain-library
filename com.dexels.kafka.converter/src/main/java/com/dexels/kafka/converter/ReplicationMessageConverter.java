@@ -1,6 +1,5 @@
 package com.dexels.kafka.converter;
 
-import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.Map;
@@ -17,9 +16,7 @@ import org.slf4j.LoggerFactory;
 import com.dexels.replication.api.ReplicationMessage;
 import com.dexels.replication.factory.ReplicationFactory;
 import com.dexels.replication.impl.protobuf.FallbackReplicationMessageParser;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class ReplicationMessageConverter implements Converter {
 
@@ -60,28 +57,35 @@ public class ReplicationMessageConverter implements Converter {
 	public SchemaAndValue toConnectData(String topic, byte[] value) {
 		logger.info("toConnectData topic: {}, value: {}",topic,value.length);
 		if(isKey) {
-			try {
-				JsonNode jn = objectMapper.readTree(value);
-				logger.info("toConnect type: {}",jn.getClass().getName());
-				if(jn instanceof ObjectNode) {
-					return new SchemaAndValue(null, objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jn));
-				} else {
-					ObjectNode on = objectMapper.createObjectNode();
-					on.put("key", jn.asText());
-//					;
-					return new SchemaAndValue(null,objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(on));
-				}
-
-			} catch (IOException e) {
-				if(value!=null) {
-					logger.error("Error writing value: "+new String(value));
-				}
-				throw new RuntimeException("Error parsing key bytes: ",e);
-			}
+			return toConnectDataKey(value);
 		} else {
 			ReplicationMessage replMessage = ReplicationFactory.getInstance().parseBytes(Optional.empty(),value);
 			return new SchemaAndValue(null, replMessage.valueMap(true, Collections.emptySet()));
 		}
+	}
+
+	private SchemaAndValue toConnectDataKey(byte[] value) {
+		String valueString = new String(value);
+		String converted = "{key:\""+valueString+"\"}";
+		return new SchemaAndValue(null, converted);
+//		try {
+//			JsonNode jn = objectMapper.readTree(value);
+//			logger.info("toConnect type: {}",jn.getClass().getName());
+//			if(jn instanceof ObjectNode) {
+//				return new SchemaAndValue(null, objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jn));
+//			} else {
+//				ObjectNode on = objectMapper.createObjectNode();
+//				on.put("key", jn.asText());
+////					;
+//				return new SchemaAndValue(null,objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(on));
+//			}
+//
+//		} catch (IOException e) {
+//			if(value!=null) {
+//				logger.error("Error writing value: "+new String(value));
+//			}
+//			throw new RuntimeException("Error parsing key bytes: ",e);
+//		}
 	}
 
 }

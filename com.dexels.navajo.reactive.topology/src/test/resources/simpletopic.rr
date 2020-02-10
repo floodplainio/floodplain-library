@@ -1,5 +1,3 @@
-|>topic(name='database-ACTIVITYATTRIBUTE')
-    ->filter([activityid] > 20)
-    ->group(key='activityid')
-    ->filter([activityid] > 21)
-    ->sink('SINK1','SINK2')
+|>database(resource='dvd',schema='public',table='film_category')
+	->set(last_update=null)
+	->sink('@SIMPLE_CATEGORY3')
