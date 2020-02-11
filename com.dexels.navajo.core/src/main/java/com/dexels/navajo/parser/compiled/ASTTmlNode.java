@@ -380,7 +380,7 @@ final class ASTTmlNode extends SimpleNode {
 				if(subList.isPresent()) {
 					return Operand.ofImmutableList(subList.get());
 				}
-				logger.error("Submessage issue: {}", ImmutableFactory.getInstance().describe(rm));
+				logger.error("Submessage issue for path: {} with message: {}", path, ImmutableFactory.getInstance().describe(rm));
 				throw new TMLExpressionException("Missing submessage: "+first+" with path list: "+path);
 			}
 

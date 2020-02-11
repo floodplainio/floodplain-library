@@ -303,7 +303,7 @@ public class ReplicationTopologyParser {
             Optional<String> destination, boolean materializeStore) {
         String storeTopic = topicName(sourceTopicName, context);
         // TODO It might be better to fail if the topic does not exist? -> Well depends, if it is external yes, but if it is created by the same instance, then no.
-        final String sourceProcessorName = processorName(sourceTopicName);
+        final String sourceProcessorName = processorName(storeTopic);
         System.err.println("Source proc name: "+sourceProcessorName);
 
         if(storeTopic!=null) {
@@ -312,26 +312,27 @@ public class ReplicationTopologyParser {
             	sourceName = sourceProcessorName+"_src";
     			currentBuilder.addSource(sourceName, storeTopic);
                 topologyConstructor.sources.put(storeTopic,sourceName);
+    			if(processorFromChildren.isPresent()) {
+    				if(materializeStore) {
+    					currentBuilder.addProcessor(sourceProcessorName+"_transform",processorFromChildren.get(), sourceName);
+    					currentBuilder.addProcessor(sourceProcessorName,()->new StoreProcessor(STORE_PREFIX+sourceProcessorName), sourceProcessorName+"_transform");
+    				} else {
+    					currentBuilder.addProcessor(sourceProcessorName,processorFromChildren.get(), sourceName);
+    					
+    				}
+    			} else {
+    				if(materializeStore) {
+    					currentBuilder.addProcessor(sourceProcessorName,()->new StoreProcessor(STORE_PREFIX+sourceProcessorName), sourceName);
+    				} else {
+    					currentBuilder.addProcessor(sourceProcessorName,()->new IdentityProcessor(), sourceName);
+    					
+    				}
+    			}
+    			
             } else {
             	sourceName = topologyConstructor.sources.get(storeTopic);
             }
-			if(processorFromChildren.isPresent()) {
-				if(materializeStore) {
-					currentBuilder.addProcessor(sourceProcessorName+"_transform",processorFromChildren.get(), sourceName);
-					currentBuilder.addProcessor(sourceProcessorName,()->new StoreProcessor(STORE_PREFIX+sourceProcessorName), sourceProcessorName+"_transform");
-				} else {
-					currentBuilder.addProcessor(sourceProcessorName,processorFromChildren.get(), sourceName);
-					
-				}
-			} else {
-				if(materializeStore) {
-					currentBuilder.addProcessor(sourceProcessorName,()->new StoreProcessor(STORE_PREFIX+sourceProcessorName), sourceName);
-				} else {
-					currentBuilder.addProcessor(sourceProcessorName,()->new IdentityProcessor(), sourceName);
-					
-				}
-			}
-			
+
         }
         if(materializeStore) {
     		addStateStoreMapping(topologyConstructor.processorStateStoreMapper,sourceProcessorName, STORE_PREFIX+sourceProcessorName);

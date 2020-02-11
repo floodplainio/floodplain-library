@@ -49,7 +49,7 @@ public class FunctionProcessor extends AbstractProcessor<String, ReplicationMess
 	@Override
 	public void process(String key, ReplicationMessage value) {
 		if(value==null) {
-			logger.warn("Null message to FunctionProcessor. Is this ok? Not propagating.");
+//			logger.warn("Null message to FunctionProcessor. Is this ok? Not propagating.");
 			return;
 		}
 		if(value.operation()!=Operation.DELETE) {

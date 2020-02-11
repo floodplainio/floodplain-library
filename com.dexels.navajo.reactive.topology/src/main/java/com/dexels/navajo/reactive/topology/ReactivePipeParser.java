@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.dexels.kafka.streams.api.TopologyContext;
-import com.dexels.kafka.streams.remotejoin.ReplicationTopologyParser;
 import com.dexels.kafka.streams.remotejoin.TopologyConstructor;
 import com.dexels.navajo.reactive.api.CompiledReactiveScript;
 import com.dexels.navajo.reactive.api.ReactivePipe;
@@ -19,8 +18,8 @@ public class ReactivePipeParser {
 	private final static Logger logger = LoggerFactory.getLogger(ReactivePipeParser.class);
 
 	public static Topology parseReactiveStreamDefinition(Topology topology, CompiledReactiveScript crs, TopologyContext topologyContext, TopologyConstructor topologyConstructor, String namespace) {
-		int pipeNr = topologyConstructor.generateNewPipeId();
 		for (ReactivePipe pipe : crs.pipes) {
+			int pipeNr = topologyConstructor.generateNewPipeId();
 			ReactivePipeParser.processPipe(namespace, topologyContext, topologyConstructor, topology, pipeNr,new Stack<String>(), pipe,false);
 		}
 		return topology;

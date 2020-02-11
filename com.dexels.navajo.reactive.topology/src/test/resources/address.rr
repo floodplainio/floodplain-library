@@ -1,7 +1,37 @@
-|>topic(name='country')
-	->joinWith(into='monkey',
-			|>topic(name='city')
-			    ->group(key='country_id')
+|>database(resource='dvd',schema='public',table='address')
+	->set(last_update=null)
+	->joinRemote(key=ToString([city_id]),
+		|>database(resource='dvd',schema='public',table='city')
+			->set(last_update=null)
+			->joinRemote(key=ToString([country_id]),
+				|>database(resource='dvd',schema='public',table='country')
+				)
+			->set(countryname=[@country])
+			->set(city_id=null)
 		)
-		->set('bliep',[@monkey/])
-	->sink('@CountryExample')
+	->set(cityname=[@city],countryname=[@countryname])
+    ->sink(connector='@replication',collection='address', '@ADDRESS')
+ 
+|>database(resource='dvd',schema='public',table='customer')
+	->joinRemote(key=ToString([address_id]),
+		|>topic(name='@ADDRESS')
+		)
+	->set(address=[@])
+	->set(address_id=null)
+    ->sink(connector='@replication',collection='customer', '@CUSTOMER')
+
+|>database(resource='dvd',schema='public',table='staff')
+	->joinRemote(key=ToString([address_id]),
+		|>topic(name='@ADDRESS')
+		)
+	->set(address=[@])
+	->set(address_id=null)
+    ->sink(connector='@replication',collection='staff', '@STAFF')
+
+|>database(resource='dvd',schema='public',table='store')
+	->joinRemote(key=ToString([address_id]),
+		|>topic(name='@ADDRESS')
+		)
+	->set(address=[@])
+	->set(address_id=null)
+    ->sink(connector='@replication',collection='store', '@STORE')

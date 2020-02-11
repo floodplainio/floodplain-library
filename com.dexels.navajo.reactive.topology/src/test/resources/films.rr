@@ -1,0 +1,27 @@
+|>database(resource='dvd',schema='public',table='actor')
+	->set(last_update=null)
+	->sink(connector='@replication',collection='actor','@ACTOR')
+
+|>database(resource='dvd',schema='public',table='film_actor')
+	->set(last_update=null)
+	->joinRemote(key=ToString([actor_id]),
+		|>topic(name='@ACTOR')
+	)
+	->set(first_name=[@first_name])
+	->set(last_name=[@last_name])
+	->sink(connector='@replication',collection='filmactor','@FILMACTOR')
+
+
+|>database(resource='dvd',schema='public',table='film')
+	->joinWith(|>database(resource='dvd',schema='public',table='film_category')
+					->set(last_update=null)
+					->joinRemote(key=ToString([category_id]),
+						|>database(resource='dvd',schema='public',table='category')
+					)
+					->set(categoryname=[@name])
+					->group(key=ToString([film_id]))
+					
+				,into='categories')
+	->set(categories=[@categories/])
+    ->sink(connector='@replication',collection='film','@FILM')
+
