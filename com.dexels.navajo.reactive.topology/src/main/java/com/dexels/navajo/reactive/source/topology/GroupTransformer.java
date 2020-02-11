@@ -75,7 +75,7 @@ public class GroupTransformer implements ReactiveTransformer,TopologyPipeCompone
 
 	@Override
 	public boolean materializeParent() {
-		return false;
+		return true;
 	}
 	@Override
 	public void setMaterialize() {

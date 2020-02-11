@@ -670,7 +670,7 @@ public class ReplicationTopologyParser {
 
         Optional<Predicate<String, ReplicationMessage>> filterPredicate = Filters.getFilter(filter);
         Topology current = addJoin(builderr, topologyContext, topologyConstructor, from, isList, with, name, optional,
-				listJoinFunction, joinFunction, filterPredicate);
+				listJoinFunction, joinFunction, filterPredicate,false);
 
         
 //        Add processor here?
@@ -694,7 +694,8 @@ public class ReplicationTopologyParser {
 			boolean optional,
 			BiFunction<ReplicationMessage, List<ReplicationMessage>, ReplicationMessage> listJoinFunction,
 			final BiFunction<ReplicationMessage, ReplicationMessage, ReplicationMessage> joinFunction,
-			Optional<Predicate<String, ReplicationMessage>> filterPredicate) {
+			Optional<Predicate<String, ReplicationMessage>> filterPredicate,
+			boolean materialize) {
 		KafkaUtils.ensureExistsSync(topologyConstructor.adminClient, topicName(from,topologyContext),Optional.empty());
         final String fromProcessorName = processorName(from);
 		final String withProcessorName  = processorName(with);
@@ -743,24 +744,29 @@ public class ReplicationTopologyParser {
         }
 
         // Create single processor to process changes from the processors
-        // 
+        //
+        String procName = materialize ? "proc_"+name : name;
 
         current.addProcessor(
-                name 
+        		procName 
                 ,()->proc
                 ,firstNamePre,secondNamePre
             );
 
-        String lastJoinId = finalJoin;
+//        String lastJoinId = finalJoin;
         
         // TODO fix stores if needed
 //        addStateStoreMapping(topologyConstructor.processorStateStoreMapper, name, STORE_PREFIX+lastJoinId);
-		addStateStoreMapping(topologyConstructor.processorStateStoreMapper, name, STORE_PREFIX+withProcessorName);
-		addStateStoreMapping(topologyConstructor.processorStateStoreMapper, name, STORE_PREFIX+fromProcessorName);
+		addStateStoreMapping(topologyConstructor.processorStateStoreMapper, procName, STORE_PREFIX+withProcessorName);
+		addStateStoreMapping(topologyConstructor.processorStateStoreMapper, procName, STORE_PREFIX+fromProcessorName);
 
-//		topologyConstructor.stores.add(STORE_PREFIX+name);
-//		topologyConstructor.stateStoreSupplier.put(STORE_PREFIX+name,createMessageStoreSupplier(STORE_PREFIX+name));
-//        current.addProcessor(name,()->new StoreProcessor(STORE_PREFIX+name),lastJoinId);
+		if(materialize) {
+			topologyConstructor.stores.add(STORE_PREFIX+name);
+			topologyConstructor.stateStoreSupplier.put(STORE_PREFIX+name,createMessageStoreSupplier(STORE_PREFIX+name));
+			addStateStoreMapping(topologyConstructor.processorStateStoreMapper, name, STORE_PREFIX+name);
+	        current.addProcessor(name,()->new StoreProcessor(STORE_PREFIX+name),procName);
+			
+		}
 		return current;
 	}
 

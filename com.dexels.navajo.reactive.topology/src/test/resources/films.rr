@@ -23,5 +23,9 @@
 					
 				,into='categories')
 	->set(categories=[@categories/])
+	->joinWith(|>topic(name='@FILMACTOR')
+		->group(key=ToString([film_id]))
+		,into='actors')
+	->set(actors=[@actors/])
     ->sink(connector='@replication',collection='film','@FILM')
 
