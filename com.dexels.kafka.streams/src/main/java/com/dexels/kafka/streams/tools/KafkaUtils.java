@@ -50,8 +50,10 @@ public class KafkaUtils {
     	Future<Void> ensured = ensureExist(adminClient.get(), topics, topicPartitionCount, topicReplicationCount);
     	try {
 			ensured.get();
-		} catch (InterruptedException | ExecutionException | TopicExistsException e) {
+		} catch (InterruptedException | ExecutionException e) {
 			logger.warn("Issue creating topics: {}. Ignoring and continuing",topics,e);
+		} catch(TopicExistsException e) {
+			// ignore
 		}
     }
     public static void ensureExistsSync(Optional<AdminClient> adminClient,String topicName, int topicPartitionCount, int topicReplicationCount) {
@@ -63,8 +65,10 @@ public class KafkaUtils {
 			ensured.get();
 		} catch ( ExecutionException e) {
 			logger.warn("Issue creating topic: {}. Ignoring and continuing",topicName,e);
-		} catch (InterruptedException | TopicExistsException e) {
+		} catch (InterruptedException e) {
 			logger.warn("Issue creating topic: {}. Ignoring and continuing",topicName);
+		} catch(TopicExistsException e) {
+			// ignore
 			
 		}
     }

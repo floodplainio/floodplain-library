@@ -24,10 +24,11 @@ import org.junit.Test;
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.replication.api.ReplicationMessage;
-import com.dexels.replication.api.ReplicationMessageParser;
 import com.dexels.replication.api.ReplicationMessage.Operation;
+import com.dexels.replication.api.ReplicationMessageParser;
 import com.dexels.replication.factory.ReplicationFactory;
 import com.dexels.replication.impl.json.JSONReplicationMessageParserImpl;
+import com.dexels.replication.impl.json.ReplicationJSON;
 
 public class TestJoin {
 
@@ -254,6 +255,14 @@ public class TestJoin {
 		Assert.assertEquals(11, combined.subMessages("standings").get().size());
 	}
 
+	@Test
+	public void testToConnectStyleJSON() {
+		InputStream stream = TestJoin.class.getClassLoader().getResourceAsStream("organizationaddress.json");
+		ReplicationMessage repl = ReplicationFactory.getInstance().parseStream(stream);
+		byte[] data = ReplicationJSON.replicationToConnectJSON(repl);
+		System.err.println(">>>>|>>>\n"+new String(data));
+	}
+	
 	@Test
 	public void testNull() {
 		Map<String, String> types = new HashMap<>();

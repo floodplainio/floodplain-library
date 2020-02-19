@@ -14,8 +14,6 @@ public class StoreProcessor extends AbstractProcessor<String, ReplicationMessage
 	private final String lookupStoreName;
 	private KeyValueStore<String, ReplicationMessage> lookupStore;
 	
-	private final static Logger logger = LoggerFactory.getLogger(StoreProcessor.class);
-	
 	public StoreProcessor(String lookupStoreName) {
 		this.lookupStoreName = lookupStoreName;
 	}

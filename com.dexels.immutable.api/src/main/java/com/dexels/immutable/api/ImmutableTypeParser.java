@@ -40,6 +40,8 @@ public class ImmutableTypeParser {
 			return "stopwatchtype";
 		case IMMUTABLE:
 			return "immutable";
+		case ENUM:
+			return "enum";
 		default:
 			break;
 		}
@@ -82,6 +84,10 @@ public class ImmutableTypeParser {
 			return ValueType.BINARY;
 		case "coordinate":
 			return ValueType.COORDINATE;
+		case "object":
+			return ValueType.UNKNOWN;
+		case "enum":
+			return ValueType.ENUM;
 		}
 		throw new UnsupportedOperationException("Unknown type: "+type);
 	}

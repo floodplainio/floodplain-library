@@ -1,5 +1,6 @@
 package com.dexels.pubsub.rx2.api;
 
+import java.util.Map;
 import java.util.Optional;
 
 
@@ -13,7 +14,7 @@ public interface PubSubMessage {
 	public PubSubMessage withKey(String key);
 	public PubSubMessage withValue(byte[] value);
 	public PubSubMessage withTimestamp(long timestamp);
-
+	public Map<String,byte[]> headers();
 	default public Optional<Integer> partition() {
 		return Optional.empty();
 	}

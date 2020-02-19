@@ -102,7 +102,7 @@ public class DebeziumTopic implements ReactiveSource,TopologyPipeComponent {
         if(materialize) {
         	ReplicationTopologyParser.addStateStoreMapping(topologyConstructor.processorStateStoreMapper,finalProcessorName, ReplicationTopologyParser.STORE_PREFIX+finalProcessorName);
     		topologyConstructor.stores.add(ReplicationTopologyParser.STORE_PREFIX+finalProcessorName);
-            topologyConstructor.stateStoreSupplier.put(ReplicationTopologyParser.STORE_PREFIX+finalProcessorName,ReplicationTopologyParser.createMessageStoreSupplier(ReplicationTopologyParser.STORE_PREFIX+finalProcessorName));
+            topologyConstructor.stateStoreSupplier.put(ReplicationTopologyParser.STORE_PREFIX+finalProcessorName,ReplicationTopologyParser.createMessageStoreSupplier(ReplicationTopologyParser.STORE_PREFIX+finalProcessorName,true));
         }
 		transformerNames.push(finalProcessorName);
 	}

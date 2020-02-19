@@ -1,6 +1,7 @@
 package com.dexels.pubsub.rx2.factory;
 
 import java.io.Reader;
+import java.util.Collections;
 import java.util.Optional;
 
 import com.dexels.pubsub.rx2.api.PubSubMessage;
@@ -30,7 +31,7 @@ public class PubSubTools {
 	}
 
 	public static PubSubMessage create(String key, byte[] value, long timestamp, Optional<String> topic, Optional<Integer> partition, Optional<Long> offset) {
-		return new BasePubSubMessage(key, value, topic, timestamp,partition,offset,Optional.empty());
+		return new BasePubSubMessage(key, value, topic, timestamp,partition,offset,Optional.empty(),Collections.emptyMap());
 	}
 	
 	public static TopicSubscriber createMockSubscriber(Reader reader) {

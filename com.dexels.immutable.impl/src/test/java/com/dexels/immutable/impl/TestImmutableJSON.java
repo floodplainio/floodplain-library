@@ -1,5 +1,6 @@
 package com.dexels.immutable.impl;
 
+import java.awt.image.ReplicateScaleFilter;
 import java.io.IOException;
 import java.util.Optional;
 
@@ -61,6 +62,9 @@ public class TestImmutableJSON {
 		ImmutableMessage combined = created.with("submessage", someOther, ImmutableTypeParser.typeName(ValueType.IMMUTABLE));
 		Assert.assertEquals(4,combined.value("submessage/Noot").get());
 	}
+	
+
+	
 	
 	@Test
 	public void testNdJSON() throws IOException {

@@ -237,7 +237,7 @@ public class ReplicationTopologyParser {
 		}
 		addStateStoreMapping(topologyConstructor.processorStateStoreMapper,diffProcessorNamePrefix, diffProcessorNamePrefix);
 		logger.info("Granting access for processor: {} to store: {}",diffProcessorNamePrefix,diffProcessorNamePrefix);
-		topologyConstructor.stateStoreSupplier.put(diffProcessorNamePrefix,createMessageStoreSupplier(diffProcessorNamePrefix));
+		topologyConstructor.stateStoreSupplier.put(diffProcessorNamePrefix,createMessageStoreSupplier(diffProcessorNamePrefix,true));
 	}
 
 
@@ -261,7 +261,7 @@ public class ReplicationTopologyParser {
 		addStateStoreMapping(topologyConstructor.processorStateStoreMapper,sourceProcessorName, STORE_PREFIX+sourceProcessorName);
 		topologyConstructor.stores.add(STORE_PREFIX+sourceProcessorName);
 		logger.info("Granting access for processor: {} to store: {}",sourceProcessorName, STORE_PREFIX+sourceProcessorName);
-       topologyConstructor.stateStoreSupplier.put(STORE_PREFIX+sourceProcessorName,createMessageStoreSupplier(STORE_PREFIX+sourceProcessorName));
+       topologyConstructor.stateStoreSupplier.put(STORE_PREFIX+sourceProcessorName,createMessageStoreSupplier(STORE_PREFIX+sourceProcessorName,true));
        return sourceProcessorName;
    }
 
@@ -294,7 +294,7 @@ public class ReplicationTopologyParser {
 		currentBuilder.addProcessor(name, () -> new StoreProcessor(STORE_PREFIX + sourceProcessorName),parentProcessor);
 		addStateStoreMapping(topologyConstructor.processorStateStoreMapper, sourceProcessorName,STORE_PREFIX + sourceProcessorName);
 		topologyConstructor.stores.add(STORE_PREFIX + sourceProcessorName);
-		topologyConstructor.stateStoreSupplier.put(STORE_PREFIX + sourceProcessorName,createMessageStoreSupplier(STORE_PREFIX + sourceProcessorName));
+		topologyConstructor.stateStoreSupplier.put(STORE_PREFIX + sourceProcessorName,createMessageStoreSupplier(STORE_PREFIX + sourceProcessorName,true));
 		return name;
 	}
    
@@ -337,7 +337,7 @@ public class ReplicationTopologyParser {
         if(materializeStore) {
     		addStateStoreMapping(topologyConstructor.processorStateStoreMapper,sourceProcessorName, STORE_PREFIX+sourceProcessorName);
     		topologyConstructor.stores.add(STORE_PREFIX+sourceProcessorName);
-            topologyConstructor.stateStoreSupplier.put(STORE_PREFIX+sourceProcessorName,createMessageStoreSupplier(STORE_PREFIX+sourceProcessorName));
+            topologyConstructor.stateStoreSupplier.put(STORE_PREFIX+sourceProcessorName,createMessageStoreSupplier(STORE_PREFIX+sourceProcessorName,true));
         }
 
         if(destination.isPresent()) {
@@ -554,7 +554,7 @@ public class ReplicationTopologyParser {
         topologyConstructor.stores.add(STORE_PREFIX+fromProcessor);
         topologyConstructor.stores.add(STORE_PREFIX+name);
         
-        topologyConstructor.stateStoreSupplier.put(STORE_PREFIX+name, createMessageStoreSupplier(STORE_PREFIX+name));
+        topologyConstructor.stateStoreSupplier.put(STORE_PREFIX+name, createMessageStoreSupplier(STORE_PREFIX+name,true));
 	    current.addProcessor(name,()->new StoreProcessor(STORE_PREFIX+name),finalJoin);
 		return finalJoin;
 	}
@@ -567,16 +567,7 @@ public class ReplicationTopologyParser {
 		String mappingStoreName;
 	    sourceProcessorName = processorName(from);
 	    if(!topologyConstructor.stores.contains(STORE_PREFIX+sourceProcessorName)) {
-// 			if (topologyConstructor.stateStoreSupplier.get(sourceProcessorName) == null) {
 	    	System.err.println("Adding grouped with from, no source processor present for: "+sourceProcessorName+" created: "+topologyConstructor.stateStoreSupplier.keySet()+" and from: "+from);
-//		    	final Optional<ProcessorSupplier<String, ReplicationMessage>> processorFromChildren = processorFromChildren(Optional.empty(), topicName(from.get(), topologyContext), topologyConstructor);
-	    	// TODO removed, is that ok?
-	    	
-//	    	public static String addLazyStore(final Topology currentBuilder, TopologyContext context,
-//	    			TopologyConstructor topologyConstructor, String name, String parentProcessor) {
-	    	
-//	    	addLazySourceStore(current, topologyContext, topologyConstructor, 
-//                   from);
         }
 		
 		mappingStoreName = sourceProcessorName + "_mapping";
@@ -590,8 +581,8 @@ public class ReplicationTopologyParser {
 		addStateStoreMapping(topologyConstructor.processorStateStoreMapper, name, STORE_PREFIX+mappingStoreName);
 		topologyConstructor.stores.add(STORE_PREFIX+mappingStoreName);
 		
-		topologyConstructor.stateStoreSupplier.put(STORE_PREFIX+name, createMessageStoreSupplier(STORE_PREFIX+name));
-		topologyConstructor.stateStoreSupplier.put(STORE_PREFIX+mappingStoreName, createMessageStoreSupplier(STORE_PREFIX+mappingStoreName));
+		topologyConstructor.stateStoreSupplier.put(STORE_PREFIX+name, createMessageStoreSupplier(STORE_PREFIX+name,true));
+		topologyConstructor.stateStoreSupplier.put(STORE_PREFIX+mappingStoreName, createMessageStoreSupplier(STORE_PREFIX+mappingStoreName,true));
 
 		current.addProcessor(name,()->new GroupedUpdateProcessor(STORE_PREFIX+name,keyExtractor,STORE_PREFIX+mappingStoreName,ignoreOriginalKey),transformProcessor);
 		return name;
@@ -636,8 +627,8 @@ public class ReplicationTopologyParser {
         );
         addStateStoreMapping(topologyConstructor.processorStateStoreMapper, nameCache, nameCache);
         addStateStoreMapping(topologyConstructor.processorStateStoreMapper, name, name);
-        topologyConstructor.stateStoreSupplier.put(name,createMessageStoreSupplier(name));
-        topologyConstructor.stateStoreSupplier.put(nameCache,createMessageStoreSupplier(nameCache));
+        topologyConstructor.stateStoreSupplier.put(name,createMessageStoreSupplier(name,true));
+        topologyConstructor.stateStoreSupplier.put(nameCache,createMessageStoreSupplier(nameCache,true));
         current.addProcessor(name,()->new StoreProcessor(STORE_PREFIX+name),nameCache);
         
         if(to.isPresent()) {
@@ -762,7 +753,7 @@ public class ReplicationTopologyParser {
 
 		if(materialize) {
 			topologyConstructor.stores.add(STORE_PREFIX+name);
-			topologyConstructor.stateStoreSupplier.put(STORE_PREFIX+name,createMessageStoreSupplier(STORE_PREFIX+name));
+			topologyConstructor.stateStoreSupplier.put(STORE_PREFIX+name,createMessageStoreSupplier(STORE_PREFIX+name,true));
 			addStateStoreMapping(topologyConstructor.processorStateStoreMapper, name, STORE_PREFIX+name);
 	        current.addProcessor(name,()->new StoreProcessor(STORE_PREFIX+name),procName);
 			
@@ -797,11 +788,32 @@ public class ReplicationTopologyParser {
         }
 		return listJoinFunction;
 	}
-	public static StoreBuilder<KeyValueStore<String, ReplicationMessage>> createMessageStoreSupplier(String name) {
+	
+	public static StoreBuilder<KeyValueStore<String, ReplicationMessage>> createMessageStoreSupplier(String name, boolean persistent) {
 		logger.info("Creating messagestore supplier: {}",name);
-		KeyValueBytesStoreSupplier storeSupplier = Stores.persistentKeyValueStore(name);
+		KeyValueBytesStoreSupplier storeSupplier = persistent ? Stores.persistentKeyValueStore(name) : Stores.inMemoryKeyValueStore(name);
 		return Stores.keyValueStoreBuilder(storeSupplier, Serdes.String(), messageSerde);
+	}
 
+	public static StoreBuilder<KeyValueStore<String, Long>> createKeyRowStoreSupplier(String name) {
+		logger.info("Creating key/long supplier: {}",name);
+		KeyValueBytesStoreSupplier storeSupplier = Stores.inMemoryKeyValueStore(name);
+		return Stores.keyValueStoreBuilder(storeSupplier, Serdes.String(), Serdes.Long());
+	}
+
+	public static String addKeyRowProcessor(Topology current, TopologyContext context,
+			TopologyConstructor topologyConstructor, String fromProcessor,
+			String name, boolean materialize) {
+		String from = processorName(fromProcessor);
+		current = current.addProcessor(name,()->new RowNumberProcessor(STORE_PREFIX+name),from);
+
+		addStateStoreMapping(topologyConstructor.processorStateStoreMapper,name, STORE_PREFIX+name);
+		logger.info("Granting access for processor: {} to store: {}",name,STORE_PREFIX+name);
+		topologyConstructor.stateStoreSupplier.put(STORE_PREFIX+name,createMessageStoreSupplier(STORE_PREFIX+name,false));
+		if(materialize) {
+			throw new UnsupportedOperationException("Sorry, didn't implement materialization yet");
+		}
+		return name;
 	}
 
 }

@@ -1,5 +1,7 @@
 package com.dexels.pubsub.rx2.factory.impl;
 
+import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
 
 import com.dexels.pubsub.rx2.api.PubSubMessage;
@@ -13,12 +15,14 @@ public class BasePubSubMessage implements PubSubMessage {
 	private final Optional<Long> offset;
 	private final Optional<Integer> partition;
 	private Optional<Runnable> commit;
+	private final Map<String, byte[]> headers;
+
 	
 	public BasePubSubMessage(String key, byte[] value, Optional<String> topic, long timestamp) {
-		this(key,value,topic,timestamp,Optional.empty(),Optional.empty(),Optional.empty());
+		this(key,value,topic,timestamp,Optional.empty(),Optional.empty(),Optional.empty(),Collections.emptyMap());
 	}
 	
-	public BasePubSubMessage(String key, byte[] value, Optional<String> topic, long timestamp, Optional<Integer> partition, Optional<Long> offset, Optional<Runnable> commit) {
+	public BasePubSubMessage(String key, byte[] value, Optional<String> topic, long timestamp, Optional<Integer> partition, Optional<Long> offset, Optional<Runnable> commit, Map<String, byte[]> headers) {
 		this.key = key;
 		this.value = value;
 		this.topic = topic;
@@ -26,6 +30,7 @@ public class BasePubSubMessage implements PubSubMessage {
 		this.partition = partition;
 		this.offset = offset;
 		this.commit = commit;
+		this.headers = headers;
 	}
 	@Override
 	public String key() {
@@ -80,5 +85,10 @@ public class BasePubSubMessage implements PubSubMessage {
 	@Override
 	public void commit() {
 		commit.ifPresent(r->r.run());
+	}
+
+	@Override
+	public Map<String, byte[]> headers() {
+		return this.headers;
 	}
 }

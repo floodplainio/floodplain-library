@@ -68,7 +68,7 @@ public class TestParseConfiguration {
 	public void testStart() throws IOException {
 		try(InputStream r = getClass().getClassLoader().getResourceAsStream("resources.xml")) {
 			StreamConfiguration sc = StreamConfiguration.parseConfig("test", r);
-			Map<String,String> config = new HashMap<String, String>();
+			Map<String,Object> config = new HashMap<>();
 			config.put("aap","noot");
 			// TODO -> not done yet
 			runner.startConnector(sc.connectURL().orElseThrow(()->new NullPointerException("missing connectURL")), "dvd",ConnectType.SOURCE,false,config);

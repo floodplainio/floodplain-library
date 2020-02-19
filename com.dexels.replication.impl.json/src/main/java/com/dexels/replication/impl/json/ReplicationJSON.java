@@ -15,18 +15,21 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.dexels.immutable.api.ImmutableMessage;
+import com.dexels.immutable.api.ImmutableMessage.TypedData;
 import com.dexels.immutable.api.customtypes.CoordinateType;
 import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.replication.api.ReplicationMessage;
 import com.dexels.replication.api.ReplicationMessage.Operation;
 import com.dexels.replication.api.ReplicationMessageParser;
 import com.dexels.replication.factory.ReplicationFactory;
+import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -270,7 +273,95 @@ public class ReplicationJSON {
 		return node;
 		
 	}
+	public static ObjectNode replicationToJSON(ReplicationMessage msg) {
+		ObjectNode node = objectMapper.createObjectNode();
+		node.set("payload", immutableToJSON(msg.message()));
+		ObjectNode schema = objectMapper.createObjectNode();
+		node.set("schema", schema);
+		return node;
+	}
 
+	public static byte[] replicationToConnectJSON(ReplicationMessage msg) {
+		ObjectNode node = replicationToJSON(msg);
+		try {
+			return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(node);
+		} catch (JsonProcessingException e) {
+			throw new RuntimeException("Error writing json",e);
+		}
+	}
+
+	private static ObjectNode immutableToJSON(ImmutableMessage msg) {
+		ObjectNode node = objectMapper.createObjectNode();
+		Map<String, TypedData> values = msg.toTypedDataMap();
+		for (Entry<String, TypedData> e : values.entrySet()) {
+			Object o = e.getValue().value;
+			String key = e.getKey();
+			if(o==null) {
+				continue;
+			}
+			switch(e.getValue().type) {
+
+			case BOOLEAN:
+				node.put(key, (Boolean)o);
+				break;
+			case DATE:
+				node.put(key, ((Date)o).toGMTString());
+				break;
+			case DOUBLE:
+				node.put(key, (Double)o);
+				break;
+			case FLOAT:
+				node.put(key, (Float)o);
+				break;
+			case INTEGER:
+				node.put(key, (Integer)o);
+				break;
+			case LIST:
+				List<String> s = (List<String>) o;
+				ArrayNode an = objectMapper.createArrayNode();
+				s.forEach(element->{
+					an.add(element);
+				});
+				node.set(key, an);
+				break;
+			case LONG:
+				node.put(key, (Long)o);
+				break;
+			case MEMO:
+			case STRING:
+				node.put(key, (String)o);
+				break;
+			case ENUM:
+				node.put(key, o.toString());
+				break;
+			case IMMUTABLE:
+				break;
+			case BINARY:
+			case BINARY_DIGEST:
+			case CLOCKTIME:
+			case COORDINATE:
+			case MONEY:
+			case PERCENTAGE:
+			case STOPWATCHTIME:
+				throw new RuntimeException("Whoops, illegal type: "+e.getValue().type);
+			// ignore this one:
+			case UNKNOWN:
+				break;
+			default:
+				break;
+			}
+			
+		}
+		msg.subMessageMap().entrySet().forEach(e->{
+			node.set(e.getKey(), immutableToJSON(e.getValue()));
+		});
+		msg.subMessageListMap().entrySet().forEach(e->{
+			ArrayNode al = objectMapper.createArrayNode();
+			e.getValue().stream().map(ReplicationJSON::immutableToJSON).forEach(elt->al.add(elt));
+			node.set(e.getKey(),al );
+		});
+		return node;
+	}
 	private static void appendImmutable(ObjectNode node, ImmutableMessage immutable, boolean includeNullValues) {
 		ObjectNode columns = objectMapper.createObjectNode();
 		node.set("Columns",columns);

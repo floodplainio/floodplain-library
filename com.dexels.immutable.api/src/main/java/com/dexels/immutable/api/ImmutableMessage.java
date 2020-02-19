@@ -26,7 +26,9 @@ public interface ImmutableMessage {
 		    STOPWATCHTIME,
 		    PERCENTAGE,
 		    MEMO,
-		    IMMUTABLE
+		    IMMUTABLE,
+		    UNKNOWN,
+		    ENUM
 		  }
 	public Set<String> columnNames();
 	/**

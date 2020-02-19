@@ -1,0 +1,104 @@
+{
+  "Timestamp": -1,
+  "Operation": "UPDATE",
+  "PrimaryKeys": [
+    "staff_id"
+  ],
+  "Columns": {
+    "store_id": {
+      "Type": "integer",
+      "Value": 2
+    },
+    "password": {
+      "Type": "string",
+      "Value": "8cb2237d0679ca88db6464eac60da96345513964"
+    },
+    "staff_id": {
+      "Type": "integer",
+      "Value": 2
+    },
+    "last_update": {
+      "Type": "long",
+      "Value": 1147795991793280
+    },
+    "address_id": {
+      "Type": "object",
+      "address_id": null
+    },
+    "last_name": {
+      "Type": "string",
+      "Value": "Stephens"
+    },
+    "active": {
+      "Type": "boolean",
+      "Value": true
+    },
+    "first_name": {
+      "Type": "string",
+      "Value": "Jon"
+    },
+    "email": {
+      "Type": "string",
+      "Value": "Jon.Stephens@sakilastaff.com"
+    },
+    "picture": {
+      "Type": "binary",
+      "picture": null
+    },
+    "username": {
+      "Type": "string",
+      "Value": "Jon"
+    }
+  },
+  "SubMessage": {
+    "address": {
+      "TransactionId": "",
+      "Timestamp": -1,
+      "Operation": "NONE",
+      "PrimaryKeys": [],
+      "Columns": {
+        "address": {
+          "Type": "string",
+          "Value": "1411 Lillydale Drive"
+        },
+        "address2": {
+          "Type": "string",
+          "address2": null
+        },
+        "phone": {
+          "Type": "string",
+          "Value": "6172235589"
+        },
+        "district": {
+          "Type": "string",
+          "Value": "QLD"
+        },
+        "last_update": {
+          "Type": "object",
+          "last_update": null
+        },
+        "cityname": {
+          "Type": "string",
+          "Value": "Woodridge"
+        },
+        "address_id": {
+          "Type": "integer",
+          "Value": 4
+        },
+        "countryname": {
+          "Type": "string",
+          "Value": "Australia"
+        },
+        "postal_code": {
+          "Type": "string",
+          "Value": ""
+        },
+        "city_id": {
+          "Type": "integer",
+          "Value": 576
+        }
+      },
+      "SubMessage": {}
+    }
+  }
+}

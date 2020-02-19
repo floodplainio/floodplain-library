@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import com.dexels.replication.api.ReplicationMessage;
 import com.dexels.replication.factory.ReplicationFactory;
 import com.dexels.replication.impl.protobuf.FallbackReplicationMessageParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ReplicationMessageConverter implements Converter {
@@ -23,8 +24,9 @@ public class ReplicationMessageConverter implements Converter {
 
 	private boolean isKey = false;
 	
-	private final static Logger logger = LoggerFactory.getLogger(ReplicationMessageConverter.class);
 	private static final ObjectMapper objectMapper = new ObjectMapper();
+	
+	private final static Logger logger = LoggerFactory.getLogger(ReplicationMessageConverter.class);
 	@Override
 	public void configure(Map<String, ?> configs, boolean isKey) {
 		ReplicationFactory.setInstance(new FallbackReplicationMessageParser());
@@ -55,12 +57,22 @@ public class ReplicationMessageConverter implements Converter {
 
 	@Override
 	public SchemaAndValue toConnectData(String topic, byte[] value) {
-		logger.info("toConnectData topic: {}, value: {}",topic,value.length);
+		logger.info("toConnectData topic: {}, value: {}",topic,value==null?0: value.length);
+		if(value==null) {
+			return new SchemaAndValue(null, null);
+		}
 		if(isKey) {
 			return toConnectDataKey(value);
 		} else {
 			ReplicationMessage replMessage = ReplicationFactory.getInstance().parseBytes(Optional.empty(),value);
-			return new SchemaAndValue(null, replMessage.valueMap(true, Collections.emptySet()));
+			Map<String, Object> valueMap = replMessage.valueMap(true, Collections.emptySet());
+//			objectMapper.writeValueAsString(valueMap);
+			try {
+				return new SchemaAndValue(null, objectMapper.writeValueAsString(valueMap));
+			} catch (JsonProcessingException e) {
+				throw new RuntimeException("Json issue",e);
+//				e.printStackTrace();
+			}
 		}
 	}
 

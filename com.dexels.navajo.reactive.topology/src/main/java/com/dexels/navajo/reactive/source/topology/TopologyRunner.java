@@ -10,10 +10,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.URL;
-import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -25,12 +22,9 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.imageio.stream.FileImageInputStream;
-
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.Topology;
-import org.apache.kafka.streams.state.StreamsMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +44,6 @@ import com.dexels.navajo.parser.compiled.ParseException;
 import com.dexels.navajo.reactive.ReactiveStandalone;
 import com.dexels.navajo.reactive.api.CompiledReactiveScript;
 import com.dexels.navajo.reactive.topology.ReactivePipeParser;
-import com.dexels.navajo.repository.api.RepositoryInstance;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -65,29 +58,30 @@ public class TopologyRunner {
 	private final TopologyConstructor topologyConstructor;
 
 	
-	private final Map<String,String> baseSettings;
+	private final Map<String,Object> baseSettings;
 	private final Properties props;
 
 	private class MaterializedConnector {
-		public Optional<List<Map<String,String>>> list;
-		public Optional<Map<String,String>> single;
+		public Optional<List<Map<String,Object>>> list;
+		public Optional<Map<String,Object>> single;
 		
-		public MaterializedConnector(List<Map<String,String>> list) {
+		public MaterializedConnector(List<Map<String,Object>> list) {
 			this.list = Optional.of(list);
 			this.single = Optional.empty();
 		}
-		public MaterializedConnector(Map<String,String> single) {
+		public MaterializedConnector(Map<String,Object> single) {
 			this.list = Optional.empty();
 			this.single = Optional.of(single);
 		}
 
 	}
 	public TopologyRunner(TopologyContext topologyContext, String brokers, String storagePath,String applicationId) {
-		Map<String,String> settings = new HashMap<>();			
+		Map<String,Object> settings = new HashMap<>();			
 		settings.put("key.converter", ReplicationMessageConverter.class.getName());
-		settings.put("key.converter.schemas.enable", "false");
+		settings.put("key.converter.schemas.enable", false);
 		settings.put("value.converter", ReplicationMessageConverter.class.getName());
-		settings.put("value.converter.schemas.enable", "false");
+		settings.put("value.converter.schemas.enable", false);
+//		settings.put("schemas.enable", false);
 		baseSettings = Collections.unmodifiableMap(settings);
 		this.topologyContext = topologyContext;
 		props = StreamInstance.createProperties(applicationId, brokers, storagePath);
@@ -178,7 +172,7 @@ public class TopologyRunner {
 		return topology;
 	}
 	
-	public void startConnector(URL connectURL, String connectorName, ConnectType type, boolean force, Map<String,String> parameters) throws IOException {
+	public void startConnector(URL connectURL, String connectorName, ConnectType type, boolean force, Map<String,Object> parameters) throws IOException {
 		String generatedName = CoreOperators.topicName(connectorName, topologyContext);
 
 		List<String> current = existingConnectors(connectURL);
@@ -191,7 +185,7 @@ public class TopologyRunner {
 				return;
 			}
 		}
-		String connector = parameters.get("connector.class");
+		String connector = (String) parameters.get("connector.class");
 		if(connector==null) {
 			throw new TopologyDefinitionException("Error creating connector message for connector: "+connectorName+" it has no connector.class setting");
 		}
@@ -200,10 +194,23 @@ public class TopologyRunner {
 		ObjectNode configNode = objectMapper.createObjectNode();
 		node.set("config", configNode);
 		parameters.forEach((k,v)->{
-			configNode.put(k, v);
+			if(v instanceof String) {
+				configNode.put(k, (String)v);
+			} else if(v instanceof Integer) {
+				configNode.put(k, (Integer)v);
+			} else if(v instanceof Long) {
+				configNode.put(k, (Long)v);
+			} else if(v instanceof Float) {
+				configNode.put(k, (Float)v);
+			} else if(v instanceof Double) {
+				configNode.put(k, (Double)v);
+			} else if(v instanceof Boolean) {
+				configNode.put(k, (Boolean)v);
+			}
 		});
 		// override name to match general name
 		configNode.put("name", generatedName);
+		// TODO this seems debezium specific
 		configNode.put("database.server.name", generatedName);
 		String jsonString = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(node);
 		logger.info(">> {}", jsonString);
@@ -280,14 +287,16 @@ public class TopologyRunner {
 			MaterializedConnector parsed = parseConnector(list, cc.get());
 			if(parsed.list.isPresent()) {
 				int connectorCount = 0;
-				for (Map<String, String> element : parsed.list.get()) {
-					Map<String,String> processed = element.entrySet().stream().collect(Collectors.toMap(key->key.getKey(),v->CoreOperators.resolveGenerations(v.getValue(), topologyContext)) );
+				for (Map<String, Object> element : parsed.list.get()) {
+					Map<String,Object> processed = resolveGenerationsForSettings(element);
+//					Map<String,Object> processed = element.entrySet().stream().collect(Collectors.toMap(key->key.getKey(),v->CoreOperators.resolveGenerations(v.getValue(), topologyContext)) );
 					assembleConnector(cc.get(),processed,sc.connectURL().get(),force,Optional.of(connectorCount));
 					connectorCount++;
 				}
 			} else {
-				Map<String, String> element = parsed.single.get();
-				Map<String,String> processed = element.entrySet().stream().collect(Collectors.toMap(key->key.getKey(),v->CoreOperators.resolveGenerations(v.getValue(), topologyContext)) );
+				Map<String, Object> element = parsed.single.get();
+				Map<String,Object> processed = resolveGenerationsForSettings(element);
+//				element.entrySet().stream().collect(Collectors.toMap(key->key.getKey(),v->CoreOperators.resolveGenerations(v.getValue(), topologyContext)) );
 				assembleConnector(cc.get(),processed,sc.connectURL().get(),force,Optional.empty());
 			}
 //			int connectorCount = 0;
@@ -300,6 +309,20 @@ public class TopologyRunner {
 
     }
     
+    
+    private Map<String,Object> resolveGenerationsForSettings(Map<String,Object> input) {
+    	Map<String,Object> result = new HashMap<>();
+    	input.entrySet().forEach(element->{
+    		Object value = element.getValue();
+    		if(value instanceof String) {
+    			result.put(element.getKey(), CoreOperators.resolveGenerations((String)element.getValue(), topologyContext));
+    		} else {
+    			result.put(element.getKey(),element.getValue());
+    		}
+    	});
+    	return result;
+    }
+    
     public MaterializedConnector parseConnector(List<ConnectorTopicTuple> tuples, ConnectConfiguration connectorConfig) {
     	String clazz = connectorConfig.settings().get("connector.class");
     	switch (clazz) {
@@ -307,15 +330,15 @@ public class TopologyRunner {
 			List<String> whitelist = tuples.stream().map(e->e.sinkParameters.get("schema")+"."+e.sinkParameters.get("table")).collect(Collectors.toList());
 			Set<String> unique = new HashSet<>(whitelist);
 			String whitelistFormat = unique.stream().collect(Collectors.joining(","));
-			Map<String,String> settings = new HashMap<>(connectorConfig.settings());
+			Map<String,Object> settings = new HashMap<>(connectorConfig.settings());
 //			settings.putAll(this.baseSettings);
 			// TODO if 'resource' is still in the map, I should remove it, right?
 			settings.put("table.whitelist", whitelistFormat);
 			return new MaterializedConnector(settings);
 		case "com.mongodb.kafka.connect.MongoSinkConnector":
-			List<Map<String,String>> result = new ArrayList<>();
+			List<Map<String,Object>> result = new ArrayList<>();
 			for (ConnectorTopicTuple connectorTopicTuple : tuples) {
-				Map<String,String> cSettings = new HashMap<>(connectorConfig.settings());
+				Map<String,Object> cSettings = new HashMap<>(connectorConfig.settings());
 				cSettings.putAll(connectorTopicTuple.sinkParameters);
 				cSettings.putAll(this.baseSettings);
 				cSettings.put("topics",connectorTopicTuple.topicName);
@@ -325,14 +348,30 @@ public class TopologyRunner {
 				result.add(cSettings);
 			}
 			return new MaterializedConnector(result);
+		case "io.floodplain.sink.SheetSinkConnector":
+			List<Map<String,Object>> matList = new ArrayList<>();
+//			Map<String,String> dSettings = new HashMap<>(connectorConfig.settings());
+			for (ConnectorTopicTuple tuple : tuples) {
+				Map<String,Object> cSettings = new HashMap<>(connectorConfig.settings());
+//				cSettings.putAll(baseSettings);
+				cSettings.put("topics", tuple.topicName);
+				cSettings.put("tasks.max","1");
+//				cSettings.put("schemas.enable",false);
+				cSettings.put("key.converter","org.apache.kafka.connect.storage.StringConverter");
+				cSettings.put("key.converter.schemas.enable",false);
+				cSettings.put("value.converter.schemas.enable",false);
+				cSettings.put("value.converter","org.apache.kafka.connect.json.JsonConverter");
+				matList.add(cSettings);
+			}
+			return new MaterializedConnector(matList);
 		default:
 			throw new UnsupportedOperationException("Unknown connector class: "+clazz);
 		}
     }
     
-	public void assembleConnector(ConnectConfiguration cc,Map<String,String> parameters, URL connectURL, boolean force, Optional<Integer> connectorCount) throws IOException {
+	public void assembleConnector(ConnectConfiguration cc,Map<String,Object> parameters, URL connectURL, boolean force, Optional<Integer> connectorCount) throws IOException {
 		
-		Map<String,String> result = new HashMap<>();
+		Map<String,Object> result = new HashMap<>();
 //		result.putAll(baseSettings);
 //		result.putAll(cc.settings());
 		result.putAll(parameters);

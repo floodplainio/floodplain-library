@@ -18,7 +18,14 @@
 		)
 	->set(address=[@])
 	->set(address_id=null)
+	->joinWith(|>database(resource='dvd',schema='public',table='payment')
+		->set(last_update=null)
+		->group(key=ToString([customer_id]))
+		,into='payments')
+	->set(payments=[@payments/])
     ->sink(connector='@replication',collection='customer', '@CUSTOMER')
+
+
 
 |>database(resource='dvd',schema='public',table='staff')
 	->joinRemote(key=ToString([address_id]),
