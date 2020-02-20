@@ -1,11 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <resources>
 	<deployment name="test" kafka="kafka:9092" connect="http://connect:8083/connectors">
-		<postgres.source name="dvd" connector.class="io.debezium.connector.postgresql.PostgresConnector" database.hostname="postgres" database.port="5432" database.user="postgres" database.password="mysecretpassword" database.dbname="dvdrental"/>
-		<mongodb.sink name="@replication" connector.class="com.mongodb.kafka.connect.MongoSinkConnector" connection.uri="mongodb://mongo" database="@total:dvdstore"/>
-		<googlesheets.sink name="@sheets" connector.class="io.floodplain.sink.SheetSinkConnector" spreadsheetId="1COkG3-Y0phnHKvwNiFpYewKhT3weEC5CmzmKkXUpPA4" columns="actor_id,last_name,first_name"/>
-		<googlesheets.sink name="@filmsheet" connector.class="io.floodplain.sink.SheetSinkConnector" spreadsheetId="1COkG3-Y0phnHKvwNiFpYewKhT3weEC5CmzmKkXUpPA4" columns="film_id,categories,film_actors,title,description,release_year,replacement_cost"/>
- 		<elasticsearch.sink name="elastic" url="http://elasticsearch:9200/_bulk" index="@demo"/>
- 		<neo4j.sink name="neo" url="http://neo4j:7474" username="neo4j" password="neo4jpw"/>
+		<postgres.source name="dvd" connector.class="io.debezium.connector.postgresql.PostgresConnector" database.hostname="postgres" database.port="5432" database.user="postgres" database.password="mysecretpassword" database.dbname="dvdrental" />
+		<mongodb.sink name="@replication" connector.class="com.mongodb.kafka.connect.MongoSinkConnector" connection.uri="mongodb://mongo" database="@total:dvdstore" />
+		<googlesheets.sink name="@sheets" connector.class="io.floodplain.sink.SheetSinkConnector" spreadsheetId="1COkG3-Y0phnHKvwNiFpYewKhT3weEC5CmzmKkXUpPA4" columns="actor_id,last_name,first_name" />
+		<googlesheets.sink name="@filmsheet" connector.class="io.floodplain.sink.SheetSinkConnector" spreadsheetId="1COkG3-Y0phnHKvwNiFpYewKhT3weEC5CmzmKkXUpPA4" columns="film_id,categories,film_actors,title,description,release_year,replacement_cost" />
 	</deployment>
 </resources>
