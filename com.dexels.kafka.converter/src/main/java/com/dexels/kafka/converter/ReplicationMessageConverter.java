@@ -2,6 +2,7 @@ package com.dexels.kafka.converter;
 
 import java.nio.charset.Charset;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -23,6 +24,8 @@ public class ReplicationMessageConverter implements Converter {
 
 
 	private boolean isKey = false;
+
+	private boolean schemaEnable;
 	
 	private static final ObjectMapper objectMapper = new ObjectMapper();
 	
@@ -32,6 +35,7 @@ public class ReplicationMessageConverter implements Converter {
 		ReplicationFactory.setInstance(new FallbackReplicationMessageParser());
 		logger.info("Initializer of ReplicationMessageConverter key: {}",isKey);
 		logger.info("Configuration: {}",configs);
+		this.schemaEnable = Optional.ofNullable((Boolean) configs.get("schema.enable")).orElse(false);
 		this.isKey = isKey;
 	}
 
@@ -66,7 +70,11 @@ public class ReplicationMessageConverter implements Converter {
 		} else {
 			ReplicationMessage replMessage = ReplicationFactory.getInstance().parseBytes(Optional.empty(),value);
 			Map<String, Object> valueMap = replMessage.valueMap(true, Collections.emptySet());
-//			objectMapper.writeValueAsString(valueMap);
+			if(this.schemaEnable) {
+				Map<String,Object> valueWithPayload = new HashMap<String, Object>();
+				valueWithPayload.put("payload", valueMap);
+				valueMap = valueWithPayload;
+			}
 			try {
 				return new SchemaAndValue(null, objectMapper.writeValueAsString(valueMap));
 			} catch (JsonProcessingException e) {
