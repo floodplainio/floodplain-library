@@ -3,6 +3,10 @@ apply from: 'gradle/dependencies.gradle'
 buildscript {
     repositories {
         mavenCentral()
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:5.2.0'
     }
 
 }

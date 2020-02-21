@@ -1,4 +1,6 @@
+
 apply from: "$rootProject.projectDir/gradle/dependencies.gradle"
+
 def globalConf = rootProject.ext
 
 dependencies {

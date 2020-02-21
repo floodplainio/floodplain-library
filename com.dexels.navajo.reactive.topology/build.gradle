@@ -4,8 +4,19 @@
  * This is a general purpose Gradle build.
  * Learn how to create Gradle builds at https://guides.gradle.org/creating-new-gradle-builds
  */
+ 
+plugins {
+    // Apply the java-library plugin to add support for Java Library
+    id 'java'
+	id 'distribution'
+	id 'application'
+  	id 'com.github.johnrengelman.shadow'
+
+  }
+mainClassName = 'io.vertx.core.Launcher'
 
 def globalConf = rootProject.ext
+
 
 dependencies {
     Map<String, String> dependencies = globalConf.commonDependencies
@@ -46,7 +57,7 @@ dependencies {
 	testImplementation dependencies.slf4jLog4j
  }
 
-
-
-
-
+shadowJar {
+    dependencies {
+    }
+}
