@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Optional;
-import java.util.UUID;
 
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.streams.KafkaStreams;
@@ -31,7 +30,6 @@ public class TestBuildTopology {
 	private TopologyContext topologyContext;
 //	private Properties props;
 
-	private String brokers = "kafka:9092";
 	private String storagePath = "mystorage";
 
 //	private TopologyConstructor topologyConstructor;
@@ -44,7 +42,8 @@ public class TestBuildTopology {
 		topologyContext = new TopologyContext(Optional.of("Generic"), "test", "someinstance", "20200215");
 		CoreReactiveFinder finder = new TopologyReactiveFinder();
 		Reactive.setFinderInstance(finder);
-		runner = new TopologyRunner(topologyContext,brokers,storagePath,applicationId);
+		StreamConfiguration sc = StreamConfiguration.parseConfig("test", getClass().getClassLoader().getResourceAsStream("resources.xml"));
+		runner = new TopologyRunner(topologyContext,storagePath,applicationId,sc);
 	}
 	
 	private void runTopology(Topology topology, Optional<StreamConfiguration> streamConfiguration) throws InterruptedException, IOException {

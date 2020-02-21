@@ -61,6 +61,8 @@ public class TopologyRunner {
 	private final Map<String,Object> baseSettings;
 	private final Properties props;
 
+	private final StreamConfiguration streamConfiguration;
+	
 	private class MaterializedConnector {
 		public Optional<List<Map<String,Object>>> list;
 		public Optional<Map<String,Object>> single;
@@ -75,7 +77,7 @@ public class TopologyRunner {
 		}
 
 	}
-	public TopologyRunner(TopologyContext topologyContext, String brokers, String storagePath,String applicationId) {
+	public TopologyRunner(TopologyContext topologyContext, String storagePath,String applicationId, StreamConfiguration streamConfiguration) {
 		Map<String,Object> settings = new HashMap<>();			
 		settings.put("key.converter", ReplicationMessageConverter.class.getName());
 		settings.put("key.converter.schemas.enable", false);
@@ -84,7 +86,8 @@ public class TopologyRunner {
 //		settings.put("schemas.enable", false);
 		baseSettings = Collections.unmodifiableMap(settings);
 		this.topologyContext = topologyContext;
-		props = StreamInstance.createProperties(applicationId, brokers, storagePath);
+		this.streamConfiguration = streamConfiguration;
+		props = StreamInstance.createProperties(applicationId, streamConfiguration.kafkaHosts(), storagePath);
 		this.topologyConstructor =  new TopologyConstructor(Optional.empty() , Optional.of(AdminClient.create(props)));
 	}
 	

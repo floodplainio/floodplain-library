@@ -37,7 +37,9 @@ public class TestParseConfiguration {
 		topologyContext = new TopologyContext(Optional.of("Generic"), "test", "someinstance", "5");
 		CoreReactiveFinder finder = new TopologyReactiveFinder();
 		Reactive.setFinderInstance(finder);
-		runner = new TopologyRunner(topologyContext,brokers,storagePath,applicationId);
+		StreamConfiguration sc = StreamConfiguration.parseConfig("test", getClass().getClassLoader().getResourceAsStream("resources.xml"));
+
+		runner = new TopologyRunner(topologyContext,storagePath,applicationId,sc);
 
 		// TODO fill in props
 //		Reactive.finderInstance().addReactiveSourceFactory(new MongoReactiveSourceFactory(), "topic");
