@@ -337,6 +337,8 @@ public class ReplicationJSON {
 			case IMMUTABLE:
 				break;
 			case BINARY:
+				// ignore binaries for now
+				break;
 			case BINARY_DIGEST:
 			case CLOCKTIME:
 			case COORDINATE:
