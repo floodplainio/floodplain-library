@@ -1,4 +1,4 @@
-|>database(resource='dvd',schema='public',table='actor')
+	|>database(resource='dvd',schema='public',table='actor')
 	->set(last_update=null)
 	->rownum()
 	->sink(connector='@sheets','@ACTOR', connect=true)

@@ -13,7 +13,7 @@ plugins {
   	id 'com.github.johnrengelman.shadow'
 
   }
-mainClassName = 'io.vertx.core.Launcher'
+mainClassName = 'io.floodplain.runtime.Main'
 
 def globalConf = rootProject.ext
 

@@ -58,7 +58,7 @@ public class TestParseConfiguration {
 			Map<String,String> mongoParams = new HashMap<>();
 			mongoParams.put("collection", "somecollection");
 //			mongoParams.put("topics", "blabla");
-			runner.topologyConstructor().addConnectSink("replication", topic, mongoParams);
+			runner.topologyConstructor().addConnectSink("@replication", topic, mongoParams);
 
 			runner.materializeConnectors(sc,true);
 			int connectors = sc.connectors().size();
@@ -72,6 +72,8 @@ public class TestParseConfiguration {
 			StreamConfiguration sc = StreamConfiguration.parseConfig("test", r);
 			Map<String,Object> config = new HashMap<>();
 			config.put("aap","noot");
+			config.put("aap","noot");
+			config.put("connector.class", "io.floodplain.sink.SomeConnector");
 			// TODO -> not done yet
 			runner.startConnector(sc.connectURL().orElseThrow(()->new NullPointerException("missing connectURL")), "dvd",ConnectType.SOURCE,false,config);
 		}

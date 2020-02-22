@@ -91,30 +91,18 @@ public class TopologyRunner {
 		this.topologyConstructor =  new TopologyConstructor(Optional.empty() , Optional.of(AdminClient.create(props)));
 	}
 	
-	public KafkaStreams runTopology(Topology topology, Optional<StreamConfiguration> streamConfiguration) throws InterruptedException, IOException {
-		if(streamConfiguration.isPresent()) {
-			materializeConnectors(streamConfiguration.get(),true);
-		}
+	public KafkaStreams runTopology(Topology topology) throws InterruptedException, IOException {
+		materializeConnectors(streamConfiguration,true);
 		KafkaStreams stream = new KafkaStreams(topology, props);
 		stream.setUncaughtExceptionHandler((thread,exception)->{
 			logger.error("Error in streams: ",exception);
+			stream.close();
 		});
 		stream.setStateListener((oldState,newState)->{
 			logger.info("State moving from {} to {}",oldState,newState);
 		});
 		stream.start();
 		return stream;
-//		for (int i = 0; i < 50; i++) {
-//			boolean isRunning = stream.state().isRunning();
-//	        String stateName = stream.state().name();
-//	        System.err.println("State: "+stateName+" - "+isRunning);
-//	        final Collection<StreamsMetadata> allMetadata = stream.allMetadata();
-//	        System.err.println("meta: "+allMetadata);
-//			Thread.sleep(10000);
-//		}
-//
-//		stream.close();
-//		Thread.sleep(5000);
 	}
 
 	public TopologyConstructor topologyConstructor() {
@@ -127,21 +115,14 @@ public class TopologyRunner {
 //	
 	public Topology parseReactivePipeTopology(File repoPath) throws ParseException, IOException {
 		Topology topology = new Topology();
-		File streams = new File(repoPath,"streams");
-		parseReactivePipeFolder(topology,streams);
+		parseReactivePipeFolder(topology,repoPath);
 		return topology;
 	}
 	
 	public KafkaStreams runPipeFolder(File repoPath) throws ParseException, IOException, InterruptedException {
 		Topology topology = parseReactivePipeTopology(repoPath);
 		System.err.println("Combined topology:\n"+topology.describe());
-		File resources = new File(repoPath,"config/resources.xml");
-		StreamConfiguration streamConfiguration;
-		try(InputStream is = new FileInputStream(resources)) {
-			streamConfiguration = StreamConfiguration.parseConfig("test", is);
-			return runTopology(topology, Optional.of(streamConfiguration));
-		}
-
+		return runTopology(topology);
 	}
 	
 //	private void runTopology(Topology topology, Optional<StreamConfiguration> streamConfiguration) throws InterruptedException, IOException {
@@ -351,6 +332,30 @@ public class TopologyRunner {
 				result.add(cSettings);
 			}
 			return new MaterializedConnector(result);
+//			{
+//				  "name": "HttpSink",
+//				  "config": {
+//				    "key.converter":"org.apache.kafka.connect.storage.StringConverter",
+//				    "key.converter.schemas.enable": false,
+//				    "headers": "Accept:application/json|Content-Type:application/json"
+//				  }
+//				}
+		case "uk.co.threefi.connect.http.HttpSinkConnector":
+			List<Map<String,Object>> httpresult = new ArrayList<>();
+			for (ConnectorTopicTuple connectorTopicTuple : tuples) {
+				Map<String,Object> cSettings = new HashMap<>(connectorConfig.settings());
+				cSettings.putAll(this.baseSettings);
+				cSettings.put("key.converter", "org.apache.kafka.connect.storage.StringConverter");
+				cSettings.put("key.converter.schemas.enable",false);
+				cSettings.put("value.converter","com.dexels.kafka.converter.ReplicationMessageConverter");
+				cSettings.put("value.converter.schemas.enable",false);
+				cSettings.put("topics",connectorTopicTuple.topicName);
+				cSettings.put("tasks.max","1");
+				cSettings.putAll(connectorTopicTuple.sinkParameters);
+				logger.info("Settings: {}", cSettings);
+				httpresult.add(cSettings);
+			}
+			return new MaterializedConnector(httpresult);
 		case "io.floodplain.sink.SheetSinkConnector":
 			List<Map<String,Object>> matList = new ArrayList<>();
 //			Map<String,String> dSettings = new HashMap<>(connectorConfig.settings());
