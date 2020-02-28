@@ -104,7 +104,7 @@ public class TestReactiveParser {
 			Assert.assertEquals(5, size);
 	}
 	
-	@Test
+	@Test @Ignore
 	public void testPipePartial() throws ParseException, IOException {
 		CompiledReactiveScript rs = ReactiveStandalone.compileReactiveScript(TestReactiveParser.class.getResourceAsStream("pipewithpartials.rr"));
 		Optional<ReactivePipe> foundPipe = rs.pipes.stream().findFirst();

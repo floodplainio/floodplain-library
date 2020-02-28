@@ -9,6 +9,7 @@ buildscript {
 }
 plugins {
   id "com.intershop.gradle.javacc" version "4.0.0"
+  id 'eclipse'
 }
 apply from: 'gradle/dependencies.gradle'
 
@@ -20,6 +21,7 @@ allprojects {
 
 subprojects {
 	apply plugin: "java"
+	apply plugin: "eclipse"
 	apply from: "$rootProject.projectDir/gradle/common.gradle"
     if (name.equals('com.dexels.navajo.core')) {
         apply plugin: 'com.intershop.gradle.javacc'

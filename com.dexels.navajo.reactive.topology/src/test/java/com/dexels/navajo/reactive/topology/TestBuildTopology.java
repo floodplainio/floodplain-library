@@ -202,7 +202,7 @@ public class TestBuildTopology {
 
 	}
 	
-	@Test
+	@Test @Ignore
 	public void testPipesWithPartials() throws ParseException, IOException, InterruptedException {
 
 		Topology topology = runner.parseSinglePipeDefinition(new Topology(),getClass().getClassLoader().getResourceAsStream("pipewithpartials.rr"),"junit");
@@ -212,7 +212,7 @@ public class TestBuildTopology {
 
 	}
 	
-	@Test
+	@Test @Ignore
 	public void testParams() throws ParseException, IOException, InterruptedException {
 
 		Topology topology = runner.parseSinglePipeDefinition(new Topology(),getClass().getClassLoader().getResourceAsStream("testparam.rr"),"junit");
