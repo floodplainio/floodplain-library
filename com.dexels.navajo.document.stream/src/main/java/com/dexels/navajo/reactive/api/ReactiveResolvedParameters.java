@@ -23,11 +23,14 @@ import com.dexels.navajo.expression.api.ContextExpression;
 import io.reactivex.Flowable;
 
 public class ReactiveResolvedParameters {
+	List<Operand> resolvedUnnamed = new ArrayList<>();
 
 	Map<String,Operand> resolvedNamed = new HashMap<>();
-	List<Operand> resolvedUnnamed = new ArrayList<>();
 	Map<String,String> resolvedTypes = new HashMap<>();
-	
+
+	Map<String,Operand> resolvedStateNamed = new HashMap<>();
+	Map<String,String> resolvedStateTypes = new HashMap<>();
+
 	private static final Logger logger = LoggerFactory.getLogger(ReactiveResolvedParameters.class);
 	private boolean allResolved = false;
 	private final Optional<ImmutableMessage> currentMessage;
@@ -35,18 +38,19 @@ public class ReactiveResolvedParameters {
 	private final Optional<Map<String,String>> expectedTypes;
 
 	private final Map<String, ContextExpression> named;
-
 	private final List<ContextExpression> unnamed;
+	private final Map<String, ContextExpression> namedState;
 
 	private final Optional<Flowable<DataItem>> inputFlowable;
 	private Navajo resolvedInput;
 	
-	public ReactiveResolvedParameters(StreamScriptContext context, Map<String, ContextExpression> named, List<ContextExpression> unnamed,
+	public ReactiveResolvedParameters(StreamScriptContext context, Map<String, ContextExpression> named, List<ContextExpression> unnamed,Map<String, ContextExpression> namedState,
 			Optional<ImmutableMessage> currentMessage, ImmutableMessage paramMessage, ParameterValidator validator) {
 		this.currentMessage = currentMessage;
 		this.paramMessage = paramMessage;
 		this.named = named;
 		this.unnamed = unnamed;
+		this.namedState = namedState;
 		this.resolvedInput = context.resolvedNavajo();
 		this.inputFlowable = context.inputFlowable();
 		Optional<List<String>> allowed = validator.allowedParameters();
@@ -83,10 +87,17 @@ public class ReactiveResolvedParameters {
 	public Map<String,Operand> namedParameters() {
 		return this.resolvedNamed;
 	}
+
+	public Map<String,Operand> namedStateParameters() {
+		return this.resolvedStateNamed;
+	}
+
+	
 	private Map<String,Object> resolveAllParams() {
 		if(!allResolved) {
 			resolveNamed();
 			resolveUnnamed();
+			resolveNamedState();
 		}
 		return Collections.unmodifiableMap(resolvedNamed);
 	}
@@ -198,6 +209,18 @@ public class ReactiveResolvedParameters {
 		allResolved = true;
 	}
 	
+	private void resolveNamedState() {
+		namedState.entrySet().forEach(e->{
+			Optional<String> expectedType = expectedTypes.isPresent() ? Optional.ofNullable(expectedTypes.get().get(e.getKey())) : Optional.empty();
+			ContextExpression value = e.getValue();
+			if(value==null) {
+				throw new NullPointerException("Named Expression with key: "+e.getKey()+" resolved to null");
+			}
+			resolveStateParam(e.getKey(),expectedType,value);
+		});
+		allResolved = true;
+	}
+	
 
 	private Operand resolveParam(String key,Optional<String> expectedType, ContextExpression function) {
 		Operand applied;
@@ -208,6 +231,22 @@ public class ReactiveResolvedParameters {
 			resolvedNamed.put(key, applied);
 			if(expectedType.isPresent()) {
 				resolvedTypes.put(key, expectedType.get());
+			}
+			return applied;
+		} catch (Exception e1) {
+			throw new ReactiveParameterException("Error applying param function for named param: "+key,e1);
+		}
+	}
+	
+	private Operand resolveStateParam(String key,Optional<String> expectedType, ContextExpression function) {
+		Operand applied;
+		try {
+			// TODO move this to constructor or something
+			Navajo in = this.resolvedInput!=null ? this.resolvedInput : inputFlowable.isPresent() ? null : resolvedInput;
+			applied = function.apply(in, currentMessage,Optional.of(paramMessage));
+			resolvedStateNamed.put(key, applied);
+			if(expectedType.isPresent()) {
+				resolvedStateTypes.put(key, expectedType.get());
 			}
 			return applied;
 		} catch (Exception e1) {

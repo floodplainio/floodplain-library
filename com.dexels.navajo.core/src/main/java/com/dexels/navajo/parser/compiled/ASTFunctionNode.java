@@ -69,13 +69,19 @@ final class ASTFunctionNode extends SimpleNode {
 		List<ContextExpression> unnamed = new LinkedList<>();
 		// TODO make lazy?
 		Map<String,ContextExpression> named = new HashMap<>();
+		Map<String,ContextExpression> namedParam = new HashMap<>();
 
 		for (int i = 0; i <jjtGetNumChildren(); i++) {
 			Node sn = jjtGetChild(i);
 			ContextExpression cn = sn.interpretToLambda(problems, expression,functionClassifier,mapResolver);
 			if(cn instanceof NamedExpression) {
 				NamedExpression ne = (NamedExpression)cn;
-				named.put(ne.name, ne.expression);
+				if(ne.isParam) {
+					namedParam.put(ne.name, ne.expression);
+				} else {
+					named.put(ne.name, ne.expression);
+				}
+				
 			} else {
 				unnamed.add(cn);
 			}
@@ -88,12 +94,12 @@ final class ASTFunctionNode extends SimpleNode {
 				
 				break;
 			case REACTIVE_SOURCE:
-				return new ReactiveParseItem(functionName, Reactive.ReactiveItemType.REACTIVE_SOURCE, named, unnamed, expression,this);
+				return new ReactiveParseItem(functionName, Reactive.ReactiveItemType.REACTIVE_SOURCE, named, unnamed,namedParam, expression,this);
 			case REACTIVE_TRANSFORMER:
-				return new ReactiveParseItem(functionName, Reactive.ReactiveItemType.REACTIVE_TRANSFORMER, named, unnamed, expression,this);
+				return new ReactiveParseItem(functionName, Reactive.ReactiveItemType.REACTIVE_TRANSFORMER, named, unnamed,namedParam, expression,this);
 	
 			case REACTIVE_REDUCER:
-				return new ReactiveParseItem(functionName, Reactive.ReactiveItemType.REACTIVE_MAPPER, named, unnamed, expression,this);
+				return new ReactiveParseItem(functionName, Reactive.ReactiveItemType.REACTIVE_MAPPER, named, unnamed,namedParam, expression,this);
 			case DEFAULT:
 				default:
 		}

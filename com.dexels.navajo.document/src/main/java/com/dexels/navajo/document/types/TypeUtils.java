@@ -2,6 +2,7 @@ package com.dexels.navajo.document.types;
 
 import java.util.List;
 
+import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.navajo.document.Message;
 import com.dexels.navajo.document.Property;
 import com.dexels.navajo.document.Selection;
@@ -56,7 +57,9 @@ public class TypeUtils {
             return Property.COORDINATE_PROPERTY;
         } else if (o instanceof Property) {
             return "property";
-        } else
+        } else if (o instanceof ImmutableMessage) {
+        	return Property.PROPERTY_IMMUTABLE;
+        }
             return defaultType;
     }
 

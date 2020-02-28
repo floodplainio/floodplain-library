@@ -16,9 +16,11 @@ import com.dexels.navajo.script.api.MappableTreeNode;
 public class NamedExpression implements ContextExpression {
 	public final String name;
 	public final ContextExpression expression;
+	public final boolean isParam;
 
-	public NamedExpression(String name, ContextExpression expression) {
+	public NamedExpression(String name, boolean isParam, ContextExpression expression) {
 		this.name = name;
+		this.isParam = isParam;
 		this.expression = expression;
 	}
 

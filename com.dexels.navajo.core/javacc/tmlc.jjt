@@ -391,10 +391,10 @@ void MappableLiteral() #void:
 }
 
 void KeyValue() #void:
-{Token t;}
+{Token t; boolean isParam = false;}
 {
-  (t = <NORMAL_IDENTIFIER> {jjtThis.val = t.image;} {jjtThis.args++;} "=" Expression() {jjtThis.args++;}
-  {jjtThis.val = t.image;}
+  ("@" {isParam = true;})? (t = <NORMAL_IDENTIFIER> {jjtThis.val = t.image;} {jjtThis.args++;} "=" Expression() {jjtThis.args++;}
+  {jjtThis.val = t.image; jjtThis.isParam = isParam;}
   ) #KeyValueNode
 }
 

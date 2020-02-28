@@ -113,7 +113,6 @@ import org.slf4j.LoggerFactory;
  */
 
 public class XMLElement implements java.io.Serializable {
-
 	
 	private static final Logger logger = LoggerFactory
 			.getLogger(XMLElement.class);

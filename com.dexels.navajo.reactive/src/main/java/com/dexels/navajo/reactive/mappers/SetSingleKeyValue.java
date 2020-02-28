@@ -23,7 +23,7 @@ public class SetSingleKeyValue implements ReactiveMerger {
 	@Override
 	public Function<StreamScriptContext, Function<DataItem, DataItem>> execute(ReactiveParameters params) {
 		return context->item->{
-			
+			// TODO need to accept @param= key values
 			ImmutableMessage s = item.message();
 			ReactiveResolvedParameters parms = params.resolve(context, Optional.of(s),item.stateMessage(), this);
 			boolean condition = parms.optionalBoolean("condition").orElse(true);

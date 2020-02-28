@@ -45,18 +45,19 @@ public class LogTransformer implements ReactiveTransformer, TopologyPipeComponen
 	}
 
 	@Override
-	public void addToTopology(String namespace, Stack<String> transformerNames, int pipeId,  Topology topology, TopologyContext topologyContext,TopologyConstructor topologyConstructor) {
+	public void addToTopology(String namespace, Stack<String> transformerNames, int pipeId,  Topology topology, TopologyContext topologyContext,TopologyConstructor topologyConstructor, ImmutableMessage stateMessage) {
 //		String filterName = createName(transformerNames.size(), pipeId);
 		StreamScriptContext context =new StreamScriptContext(topologyContext.tenant.orElse(TopologyContext.DEFAULT_TENANT), topologyContext.instance, topologyContext.deployment);
 		ReactiveResolvedParameters resolved = parameters.resolve(context, Optional.empty(), ImmutableFactory.empty(), metadata);
 		Optional<Integer> every = resolved.optionalInteger("every");
+		boolean dumpStack = resolved.optionalBoolean("dumpStack").orElse(false);
 		if(every.isPresent()) {
 			throw new UnsupportedOperationException("'every' param not yet implemented in LogTransformer");
 		}
 		String logName = resolved.paramString("logName");
 		logger.info("Stack top for transformer: "+transformerNames.peek());
 		String name = createName(namespace, transformerNames.size(), pipeId);
-		topology.addProcessor(name, ()->new LogProcessor(logName), transformerNames.peek());
+		topology.addProcessor(name, ()->new LogProcessor(logName,dumpStack), transformerNames.peek());
 		transformerNames.push(name);
 	}
 	

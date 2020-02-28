@@ -50,7 +50,7 @@ public class RowNumberTransformer implements ReactiveTransformer,TopologyPipeCom
 	}
 	@Override
 	public void addToTopology(String namespace, Stack<String> transformerNames, int pipeId, Topology topology,
-			TopologyContext topologyContext, TopologyConstructor topologyConstructor) {
+			TopologyContext topologyContext, TopologyConstructor topologyConstructor, ImmutableMessage stateMessage) {
 //		StreamScriptContext context =new StreamScriptContext(topologyContext.tenant.orElse(TopologyContext.DEFAULT_TENANT), topologyContext.instance, topologyContext.deployment);
 		ContextExpression keyExtract  = parameters.named.get("key");
 		Function<ReplicationMessage,String> keyExtractor = msg->{

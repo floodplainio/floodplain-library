@@ -15,7 +15,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -29,7 +28,6 @@ import com.dexels.replication.api.ReplicationMessage;
 import com.dexels.replication.api.ReplicationMessage.Operation;
 import com.dexels.replication.api.ReplicationMessageParser;
 import com.dexels.replication.factory.ReplicationFactory;
-import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -266,7 +264,14 @@ public class ReplicationJSON {
 			}
 			node.set("PrimaryKeys",keys);
 			ImmutableMessage immutable = instance.message();
+
 			appendImmutable(node, immutable, includeNullValues);
+			Optional<ImmutableMessage> paramMessage =  instance.paramMessage();
+			if(paramMessage.isPresent()) {
+				ObjectNode paramNode = objectMapper.createObjectNode();
+				node.set("ParamMessage", paramNode);
+				appendImmutable(paramNode, paramMessage.get(), includeNullValues);
+			}
 		} catch (Throwable e) {
 			logger.error("Error serializing replicationmessage "+instance.queueKey()+" columns: "+instance.values(),e);
 		}
@@ -289,6 +294,30 @@ public class ReplicationJSON {
 			throw new RuntimeException("Error writing json",e);
 		}
 	}
+	
+	public static byte[] immutableTotalToJSON(ImmutableMessage msg) {
+		ObjectNode node = objectMapper.createObjectNode();
+		appendImmutable(node, msg, false);
+		try {
+			return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(node);
+		} catch (JsonProcessingException e) {
+			throw new RuntimeException("Error writing json",e);
+		}
+	}
+	
+	public static byte[] serializeImmutable(ImmutableMessage msg) {
+		ObjectNode node = immutableToJSON(msg);
+		try {
+			return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(node);
+		} catch (JsonProcessingException e) {
+			throw new RuntimeException("Error writing json",e);
+		}
+	}
+	
+	public static ImmutableMessage parseReplicationMessage(byte[] data, ObjectMapper objectMapper) throws JsonProcessingException, IOException {
+		 return parseImmutable((ObjectNode)parseJSON(data,objectMapper));
+	}
+	
 
 	private static ObjectNode immutableToJSON(ImmutableMessage msg) {
 		ObjectNode node = objectMapper.createObjectNode();
@@ -439,7 +468,12 @@ public class ReplicationJSON {
 		return ReplicationFactory.createReplicationMessage(source,Optional.<Integer>empty(),Optional.<Long>empty(), transactionId, timestamp, operation, primaryKeys,flatMessage, Optional.<Runnable>empty(),Optional.ofNullable(paramMsg).map(ReplicationJSON::parseImmutable));
 
 	}
+	public static ImmutableMessage parseImmutable(byte[] data) throws JsonProcessingException, IOException {
+		return parseImmutable((ObjectNode)parseJSON(data,objectMapper));
+		
+	}
 
+	
 	private static ImmutableMessage parseImmutable(ObjectNode node) {
 		ObjectNode val = (ObjectNode) node.get("Columns");
 		Map<String,Object> localvalues = new HashMap<>();

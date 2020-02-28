@@ -1038,4 +1038,12 @@
 		<input>string</input>
 		<result>binary</result>
 	</function>
+	<function name="Msg" class="com.dexels.navajo.functions.Msg">
+		<description>Creates immutable message
+		</description>
+		<input></input>
+		<result>immutable</result>
+	</function>	
 </functiondef>
+
+

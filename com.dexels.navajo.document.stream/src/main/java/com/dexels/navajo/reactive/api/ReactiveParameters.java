@@ -23,24 +23,26 @@ public class ReactiveParameters {
 	
 	public final Map<String, ContextExpression> named;
 	public final List<ContextExpression> unnamed;
+	public final Map<String, ContextExpression> namedState;
 	private final ParameterValidator validator;
 
 //	Map<String, ContextExpression> namedParams, List<ContextExpression> unnamedParams
-	private ReactiveParameters(ParameterValidator validator, Map<String,ContextExpression> namedParameters,List<ContextExpression> unnamedParameters) {
+	private ReactiveParameters(ParameterValidator validator, Map<String,ContextExpression> namedParameters,List<ContextExpression> unnamedParameters, Map<String,ContextExpression> namedState) {
 		this.validator = validator;
 		this.named = namedParameters;
 		this.unnamed = unnamedParameters;
+		this.namedState = namedState;
 	}
 	
 	public ReactiveResolvedParameters resolve(StreamScriptContext context, Optional<ImmutableMessage> currentMessage,ImmutableMessage paramMessage, ParameterValidator metadata) {
-		return new ReactiveResolvedParameters(context, named,unnamed, currentMessage, paramMessage, validator);
+		return new ReactiveResolvedParameters(context, named,unnamed,namedState, currentMessage, paramMessage, validator);
 	}
 	public ReactiveResolvedParameters resolveNamed(StreamScriptContext context, Optional<ImmutableMessage> currentMessage,ImmutableMessage paramMessage, ParameterValidator metadata) {
-		return new ReactiveResolvedParameters(context, named,Collections.emptyList(), currentMessage, paramMessage, validator);
+		return new ReactiveResolvedParameters(context, named,Collections.emptyList(),namedState, currentMessage, paramMessage, validator);
 	}
 
 	public ReactiveResolvedParameters resolveUnnamed(StreamScriptContext context, Optional<ImmutableMessage> currentMessage,ImmutableMessage paramMessage, ParameterValidator metadata) {
-		return new ReactiveResolvedParameters(context, Collections.emptyMap(),unnamed, currentMessage, paramMessage, validator);
+		return new ReactiveResolvedParameters(context, Collections.emptyMap(),unnamed, namedState,currentMessage, paramMessage, validator);
 	}
 
 	public ReactiveParameters withConstant(String key, Object value, String type) {
@@ -81,7 +83,7 @@ public class ReactiveParameters {
 	public ReactiveParameters withExpression(ContextExpression expression) {
 		List<ContextExpression> list = new ArrayList<ContextExpression>(this.unnamed);
 		list.add(expression);
-		return new ReactiveParameters(validator, this.named, list);
+		return new ReactiveParameters(validator, this.named, list,this.namedState);
 	}
 
 	public ReactiveParameters withExpression(String key, ContextExpression expression) {
@@ -93,15 +95,15 @@ public class ReactiveParameters {
 	public ReactiveParameters with(String key, Map<String,ContextExpression> namedParameters) {
 		Map<String,ContextExpression> extended = new HashMap<>(named);
 		extended.putAll(namedParameters);
-		return ReactiveParameters.of(validator, extended,this.unnamed);
+		return ReactiveParameters.of(validator, extended,this.unnamed,this.namedState);
 	}
 	
-	public static ReactiveParameters of(ParameterValidator validator, Map<String,ContextExpression> namedParameters,List<ContextExpression> unnamedParameters) {
-		return new ReactiveParameters(validator,namedParameters,unnamedParameters);
+	public static ReactiveParameters of(ParameterValidator validator, Map<String,ContextExpression> namedParameters,List<ContextExpression> unnamedParameters, Map<String,ContextExpression> namedState) {
+		return new ReactiveParameters(validator,namedParameters,unnamedParameters,namedState);
 	}
 
 	public static ReactiveParameters empty(ParameterValidator validator) {
-		return ReactiveParameters.of(validator,Collections.emptyMap(),Collections.emptyList());
+		return ReactiveParameters.of(validator,Collections.emptyMap(),Collections.emptyList(),Collections.emptyMap());
 	}
 
 }

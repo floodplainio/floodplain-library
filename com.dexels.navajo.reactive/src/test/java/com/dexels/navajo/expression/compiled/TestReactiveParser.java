@@ -105,6 +105,12 @@ public class TestReactiveParser {
 	}
 	
 	@Test
+	public void testPipePartial() throws ParseException, IOException {
+		CompiledReactiveScript rs = ReactiveStandalone.compileReactiveScript(TestReactiveParser.class.getResourceAsStream("pipewithpartials.rr"));
+		Optional<ReactivePipe> foundPipe = rs.pipes.stream().findFirst();
+	}
+	
+	@Test
 	public void testPipeParser() throws ParseException, IOException {
 			CompiledReactiveScript rs = ReactiveStandalone.compileReactiveScript(TestReactiveParser.class.getResourceAsStream("pipe.rr"));
 			Optional<ReactivePipe> foundPipe = rs.pipes.stream().findFirst();

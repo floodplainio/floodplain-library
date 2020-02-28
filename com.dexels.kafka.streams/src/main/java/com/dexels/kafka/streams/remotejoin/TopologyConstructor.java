@@ -16,6 +16,7 @@ import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.streams.state.KeyValueStore;
 import org.apache.kafka.streams.state.StoreBuilder;
 
+import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.kafka.streams.tools.KafkaUtils;
 import com.dexels.replication.api.ReplicationMessage;
 import com.dexels.replication.transformer.api.MessageTransformer;
@@ -38,6 +39,7 @@ public class TopologyConstructor {
 //	public final List<ConnectorTopicTuple> connectorAssociations = new LinkedList<>();
     public final Map<String,List<String>> processorStateStoreMapper = new HashMap<>();
     public final Map<String,StoreBuilder<KeyValueStore<String, ReplicationMessage>>> stateStoreSupplier  = new HashMap<>();
+    public final Map<String,StoreBuilder<KeyValueStore<String, ImmutableMessage>>> immutableStoreSupplier  = new HashMap<>();
     // TODO: Could be optional, only needed in xml based stream code
     public final Map<String,MessageTransformer> transformerRegistry;
     public final Optional<AdminClient> adminClient;

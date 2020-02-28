@@ -37,13 +37,13 @@ public class TestBuildTopology {
 	public TopologyRunner runner = null;
 	@Before
 	public void setup() {
-		String applicationId = "junit"; // UUID.randomUUID().toString();
+		String applicationId = "junit_8"; // UUID.randomUUID().toString();
 		ImmutableFactory.setInstance(ImmutableFactory.createParser());
-		topologyContext = new TopologyContext(Optional.of("Generic"), "test", "someinstance", "20200215");
+		topologyContext = new TopologyContext(Optional.of("Generic"), "test", "someinstance", "20200217g");
 		CoreReactiveFinder finder = new TopologyReactiveFinder();
 		Reactive.setFinderInstance(finder);
 		StreamConfiguration sc = StreamConfiguration.parseConfig("test", getClass().getClassLoader().getResourceAsStream("resources.xml"));
-		runner = new TopologyRunner(topologyContext,storagePath,applicationId,sc);
+		runner = new TopologyRunner(topologyContext,storagePath,applicationId,sc,false);
 	}
 	
 	private void runTopology(Topology topology) throws InterruptedException, IOException {
@@ -54,10 +54,10 @@ public class TestBuildTopology {
 	        System.err.println("State: "+stateName+" - "+isRunning);
 	        final Collection<StreamsMetadata> allMetadata = stream.allMetadata();
 	        System.err.println("meta: "+allMetadata);
-			Thread.sleep(1000);
+			Thread.sleep(10000);
 		}
 		stream.close();
-		Thread.sleep(1000);
+		Thread.sleep(5000);
 	}
 	
 
@@ -70,7 +70,7 @@ public class TestBuildTopology {
 		runTopology(topology);
 	}
 	
-	@Test
+	@Test @Ignore
 	public void testStorelessTopic() throws ParseException, IOException {
 		Topology topology = runner.parseSinglePipeDefinition(new Topology(), getClass().getClassLoader().getResourceAsStream("simplewithoutstore.rr"),"junit");
 		System.err.println("Topology: \n"+topology.describe());
@@ -110,7 +110,7 @@ public class TestBuildTopology {
 		runTopology(topology);
 	}
 
-	@Test
+	@Test @Ignore
 	public void testConfigurationStreamInstance() throws ParseException, IOException, InterruptedException {
 		Topology topology = runner.parseSinglePipeDefinition(new Topology(), getClass().getClassLoader().getResourceAsStream("address.rr"),"junit");
 		ReplicationTopologyParser.materializeStateStores(runner.topologyConstructor(), topology);
@@ -196,6 +196,26 @@ public class TestBuildTopology {
 	public void testDemo4() throws ParseException, IOException, InterruptedException {
 
 		Topology topology = runner.parseSinglePipeDefinition(new Topology(),getClass().getClassLoader().getResourceAsStream("demo4.rr"),"junit");
+		ReplicationTopologyParser.materializeStateStores(runner.topologyConstructor(), topology);
+		System.err.println("Topology: \n"+topology.describe());
+		runTopology(topology);
+
+	}
+	
+	@Test
+	public void testPipesWithPartials() throws ParseException, IOException, InterruptedException {
+
+		Topology topology = runner.parseSinglePipeDefinition(new Topology(),getClass().getClassLoader().getResourceAsStream("pipewithpartials.rr"),"junit");
+		ReplicationTopologyParser.materializeStateStores(runner.topologyConstructor(), topology);
+		System.err.println("Topology: \n"+topology.describe());
+		runTopology(topology);
+
+	}
+	
+	@Test
+	public void testParams() throws ParseException, IOException, InterruptedException {
+
+		Topology topology = runner.parseSinglePipeDefinition(new Topology(),getClass().getClassLoader().getResourceAsStream("testparam.rr"),"junit");
 		ReplicationTopologyParser.materializeStateStores(runner.topologyConstructor(), topology);
 		System.err.println("Topology: \n"+topology.describe());
 		runTopology(topology);

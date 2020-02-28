@@ -33,6 +33,7 @@ public class SetSingle implements ReactiveMerger {
 	public Function<StreamScriptContext,Function<DataItem,DataItem>> execute(ReactiveParameters params) {
 		return context->(item)->{
 			ImmutableMessage s = item.message();
+			ImmutableMessage state = item.stateMessage();
 			ReactiveResolvedParameters parms = params.resolve(context, Optional.of(s), item.stateMessage(), this);
 			boolean condition = parms.optionalBoolean("condition").orElse(true);
 			if(!condition) {
@@ -42,6 +43,11 @@ public class SetSingle implements ReactiveMerger {
 			for (Entry<String,Operand> elt : parms.namedParameters().entrySet()) {
 				if(!elt.getKey().equals("condition")) {
 					s = addColumn(s, elt.getKey(), elt.getValue());
+				}
+			}
+			for (Entry<String,Operand> elt : parms.namedStateParameters().entrySet()) {
+				if(!elt.getKey().equals("condition")) {
+					state = addColumn(state, elt.getKey(), elt.getValue());
 				}
 			}
 			return DataItem.of(s);

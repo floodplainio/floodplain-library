@@ -41,6 +41,7 @@ public interface Property extends java.io.Serializable, Comparable<Property>, Cl
   public static final String PROPERTY_EXTENDS = "extends";
   public static final String PROPERTY_BIND = "bind";
   public static final String PROPERTY_METHOD = "method";
+  public static final String PROPERTY_IMMUTABLE = "immutable";
 
 
   public static final String ANY_PROPERTY = "any";

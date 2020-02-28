@@ -10,29 +10,34 @@ import com.dexels.navajo.expression.api.ContextExpression;
 import com.dexels.navajo.expression.api.FunctionClassification;
 import com.dexels.navajo.parser.NamedExpression;
 
-
 public class ASTKeyValueNode extends SimpleNode {
 
-    int args = 0;
-    String val = "";
+	int args = 0;
+	String val = "";
+	boolean isParam = false;
 
-    ASTKeyValueNode(int id) {
-    	super(id);
-    }
-
-  public ASTKeyValueNode(CompiledParser p, int id) {
-    super(id);
-  }
-
-@Override
-public ContextExpression interpretToLambda(List<String> problems, String originalExpression, Function<String, FunctionClassification> functionClassifier, Function<String,Optional<Node>> mapResolver) {
-	int num = jjtGetNumChildren();
-	if(num!=1) {
-		problems.add("Incorrect # of params in named parameter");
+	ASTKeyValueNode(int id) {
+		super(id);
 	}
-	ContextExpression exp = jjtGetChild(0).interpretToLambda(problems, originalExpression,functionClassifier,mapResolver);
-	return new NamedExpression(val, exp);
-}
+
+	public ASTKeyValueNode(CompiledParser p, int id) {
+		super(id);
+	}
+
+	@Override
+	public ContextExpression interpretToLambda(List<String> problems, String originalExpression,
+			Function<String, FunctionClassification> functionClassifier, Function<String, Optional<Node>> mapResolver) {
+		int num = jjtGetNumChildren();
+		if (num != 1) {
+			problems.add("Incorrect # of params in named parameter");
+		}
+		ContextExpression exp = jjtGetChild(0).interpretToLambda(problems, originalExpression, functionClassifier,
+				mapResolver);
+		return new NamedExpression(val,isParam, exp);
+	}
 
 }
-/* JavaCC - OriginalChecksum=52c601dbc6b20940070dc38767537d98 (do not edit this line) */
+/*
+ * JavaCC - OriginalChecksum=52c601dbc6b20940070dc38767537d98 (do not edit this
+ * line)
+ */

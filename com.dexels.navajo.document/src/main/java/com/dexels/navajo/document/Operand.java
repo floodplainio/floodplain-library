@@ -147,7 +147,7 @@ public ImmutableMessage immutableMessageValue() {
 public List<ImmutableMessage> immutableMessageList() {
 	if(value instanceof List) {
 		return (List<ImmutableMessage>) value;
-	}
+	} 
 	throw new ClassCastException("Operand does not have the required immutablemessage type but: "+type);
 }
 
@@ -188,5 +188,8 @@ public static Operand ofImmutableList(List<ImmutableMessage> rm) {
 	return new Operand(rm,"immutableList");
 }
 
+public String toString() {
+	return "Operand["+this.type+","+this.value+"]";
+}
 
 }

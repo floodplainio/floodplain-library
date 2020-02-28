@@ -90,7 +90,7 @@ public class JSONToReplicationMessage {
 
 	public static ImmutableMessage convert(ObjectNode node, Consumer<String> callbackFieldList,boolean isKey, Optional<Operation> o, String table) {
 		if(!isKey && o.isPresent() && o.get().equals(Operation.DELETE)) {
-			System.err.println("DELETE DETECTED!");
+//			System.err.println("DELETE DETECTED!");
 			return ImmutableFactory.empty().with("table", table, "string");
 		}
 		try {

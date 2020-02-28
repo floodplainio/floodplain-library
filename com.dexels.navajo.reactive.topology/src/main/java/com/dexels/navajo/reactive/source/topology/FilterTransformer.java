@@ -47,7 +47,7 @@ public class FilterTransformer implements ReactiveTransformer,TopologyPipeCompon
 	}
 
 	@Override
-	public void addToTopology(String namespace, Stack<String> transformerNames, int pipeId,  Topology topology, TopologyContext topologyContext,TopologyConstructor topologyConstructor) {
+	public void addToTopology(String namespace, Stack<String> transformerNames, int pipeId,  Topology topology, TopologyContext topologyContext,TopologyConstructor topologyConstructor, ImmutableMessage stateMessage) {
 		String filterName = createName(namespace, transformerNames.size(), pipeId);
 		logger.info("Stack top for transformer: {}", transformerNames.peek());
 		if (this.materialized) {

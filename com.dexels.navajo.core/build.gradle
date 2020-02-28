@@ -5,6 +5,18 @@
  * Learn how to create Gradle builds at https://guides.gradle.org/creating-new-gradle-builds
  */
 
+plugins {
+  id "com.intershop.gradle.javacc"
+}
+//javacc {
+//        template {
+//            inputFile = file('javacc/tmlc.jjt')
+//            packageName = 'javacccorporate.internal.parser'
+//            lookahead = '2'
+//        }
+//    }
+//}
+
 def globalConf = rootProject.ext
 
 dependencies {

@@ -37,7 +37,7 @@ public class LogTransformerFactory implements ReactiveTransformerFactory {
 	@Override
 	public Optional<List<String>> allowedParameters() {
 		// TODO Auto-generated method stub
-		return Optional.of(Arrays.asList(new String[] {"every","logName"}));
+		return Optional.of(Arrays.asList(new String[] {"every","logName","dumpStack"}));
 	}
 
 	@Override
@@ -49,6 +49,7 @@ public class LogTransformerFactory implements ReactiveTransformerFactory {
 	public Optional<Map<String, String>> parameterTypes() {
 		Map<String, String> r = new HashMap<>();
 		r.put("every", Property.INTEGER_PROPERTY);
+		r.put("dumpStack", Property.BOOLEAN_PROPERTY);
 		r.put("logName", Property.STRING_PROPERTY);
 		return Optional.of(Collections.unmodifiableMap(r));
 	}

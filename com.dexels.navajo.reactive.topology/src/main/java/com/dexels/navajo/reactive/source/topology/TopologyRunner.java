@@ -62,6 +62,7 @@ public class TopologyRunner {
 	private final Properties props;
 
 	private final StreamConfiguration streamConfiguration;
+	private boolean offline;
 	
 	private class MaterializedConnector {
 		public Optional<List<Map<String,Object>>> list;
@@ -77,18 +78,19 @@ public class TopologyRunner {
 		}
 
 	}
-	public TopologyRunner(TopologyContext topologyContext, String storagePath,String applicationId, StreamConfiguration streamConfiguration) {
+	public TopologyRunner(TopologyContext topologyContext, String storagePath,String applicationId, StreamConfiguration streamConfiguration, boolean offline) {
 		Map<String,Object> settings = new HashMap<>();			
 		settings.put("key.converter", ReplicationMessageConverter.class.getName());
 		settings.put("key.converter.schemas.enable", false);
 		settings.put("value.converter", ReplicationMessageConverter.class.getName());
 		settings.put("value.converter.schemas.enable", false);
 //		settings.put("schemas.enable", false);
+		this.offline = offline;
 		baseSettings = Collections.unmodifiableMap(settings);
 		this.topologyContext = topologyContext;
 		this.streamConfiguration = streamConfiguration;
 		props = StreamInstance.createProperties(applicationId, streamConfiguration.kafkaHosts(), storagePath);
-		this.topologyConstructor =  new TopologyConstructor(Optional.empty() , Optional.of(AdminClient.create(props)));
+		this.topologyConstructor =  new TopologyConstructor(Optional.empty() ,offline?Optional.empty(): Optional.of(AdminClient.create(props)));
 	}
 	
 	public KafkaStreams runTopology(Topology topology) throws InterruptedException, IOException {
@@ -101,7 +103,11 @@ public class TopologyRunner {
 		stream.setStateListener((oldState,newState)->{
 			logger.info("State moving from {} to {}",oldState,newState);
 		});
-		stream.start();
+		if(this.offline) {
+			logger.warn("In offline mode, KafkaStreams instance won't be started");
+		} else {
+			stream.start();
+		}
 		return stream;
 	}
 
@@ -378,16 +384,14 @@ public class TopologyRunner {
     }
     
 	public void assembleConnector(ConnectConfiguration cc,Map<String,Object> parameters, URL connectURL, boolean force, Optional<Integer> connectorCount) throws IOException {
-		
 		Map<String,Object> result = new HashMap<>();
-//		result.putAll(baseSettings);
-//		result.putAll(cc.settings());
 		result.putAll(parameters);
 		String connectorName = connectorCount.map(c->cc.name()+"_"+c).orElse(cc.name());
-		startConnector(connectURL, connectorName,cc.type, force, result);
-		
-//		public void startConnector(TopologyContext context, StreamConfiguration streamConfig, ConnectConfiguration config, boolean force) throws IOException {
-
+		if (this.offline) {
+			logger.warn("No connectors will be started in offline mode");
+		} else {
+			startConnector(connectURL, connectorName,cc.type, force, result);
+		}
 	}
 
 }

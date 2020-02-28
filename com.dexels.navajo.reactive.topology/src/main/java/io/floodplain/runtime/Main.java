@@ -39,7 +39,7 @@ public class Main {
 			sc = StreamConfiguration.parseConfig("test", configStream);
 		}
 
-		TopologyRunner runner = new TopologyRunner(topologyContext,storagePath,applicationId,sc);
+		TopologyRunner runner = new TopologyRunner(topologyContext,storagePath,applicationId,sc,false);
 		runner.runPipeFolder(currentFolder);
 	}
 

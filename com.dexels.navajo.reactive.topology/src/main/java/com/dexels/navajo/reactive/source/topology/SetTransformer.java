@@ -52,18 +52,24 @@ public class SetTransformer implements ReactiveTransformer, TopologyPipeComponen
 	public Function<StreamScriptContext,Function<ReplicationMessage,ReplicationMessage>> execute(ReactiveParameters params) {
 		return context->(item)->{
 			ImmutableMessage s = item.message();
+			ImmutableMessage state = item.paramMessage().orElse(ImmutableFactory.empty());
 			ReactiveResolvedParameters parms = params.resolve(context, Optional.of(s), item.paramMessage().orElse(ImmutableFactory.empty()), metadata);
 			boolean condition = parms.optionalBoolean("condition").orElse(true);
 			if(!condition) {
 				return item;
 			}
 			// will use the second message as input, if not present, will use the source message
+//			System.err.println("ELT: "+parms.namedParameters().entrySet());
+//			System.err.println("ELT2: "+parms.namedStateParameters().entrySet());
 			for (Entry<String,Operand> elt : parms.namedParameters().entrySet()) {
 				if(!elt.getKey().equals("condition")) {
 					s = addColumn(s, elt.getKey(), elt.getValue());
 				}
 			}
-			return ReplicationFactory.standardMessage(s).withOperation(item.operation()).withPrimaryKeys(item.primaryKeys());
+			for (Entry<String,Operand> elt : parms.namedStateParameters().entrySet()) {
+				state = addColumn(state, elt.getKey(), elt.getValue());
+			}
+			return ReplicationFactory.standardMessage(s).withParamMessage(state).withOperation(item.operation()).withPrimaryKeys(item.primaryKeys());
 		};
 	
 	}
@@ -105,7 +111,7 @@ public class SetTransformer implements ReactiveTransformer, TopologyPipeComponen
 	
 	@Override
 	public void addToTopology(String namespace, Stack<String> transformerNames, int currentPipeId, Topology topology,
-			TopologyContext topologyContext, TopologyConstructor topologyConstructor) {
+			TopologyContext topologyContext, TopologyConstructor topologyConstructor, ImmutableMessage stateMessage) {
 		StreamScriptContext ssc = StreamScriptContext.fromTopologyContext(topologyContext);
 		Function<ReplicationMessage, ReplicationMessage> apply = transformer.apply(ssc);
 		FunctionProcessor fp = new FunctionProcessor(apply);

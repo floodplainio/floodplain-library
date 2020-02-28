@@ -6,6 +6,7 @@ import org.apache.kafka.streams.Topology;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.kafka.streams.api.TopologyContext;
 import com.dexels.kafka.streams.remotejoin.TopologyConstructor;
 import com.dexels.navajo.reactive.api.CompiledReactiveScript;
@@ -66,13 +67,13 @@ public class ReactivePipeParser {
 		}
 
 		TopologyPipeComponent sourceTopologyComponent = (TopologyPipeComponent)pipe.source;
-		sourceTopologyComponent.addToTopology(namespace,pipeStack, pipeNr, topology, topologyContext, topologyConstructor);
+		sourceTopologyComponent.addToTopology(namespace,pipeStack, pipeNr, topology, topologyContext, topologyConstructor,ImmutableFactory.empty());
 		for (Object e : pipe.transformers) {
 			logger.info("Transformer: {} pipestack: {}",e,pipeStack);
 			if(e instanceof TopologyPipeComponent) {
 				TopologyPipeComponent tpc = (TopologyPipeComponent)e;
 				logger.info("Adding pipe component: "+tpc.getClass()+" to stack: "+pipeStack);
-				tpc.addToTopology(namespace, pipeStack, pipeNr, topology, topologyContext, topologyConstructor);
+				tpc.addToTopology(namespace, pipeStack, pipeNr, topology, topologyContext, topologyConstructor,ImmutableFactory.empty());
 			}
 		}
 	}

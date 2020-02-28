@@ -309,6 +309,11 @@ public abstract class FunctionInterface {
 		return operandList.stream().map(e->e.value).collect(Collectors.toList());
 	}
 
+
+	protected final List<Operand> operands() {
+		return operandList;
+	}
+
 	protected final Navajo getNavajo() {
 		return this.inMessage;
 	}

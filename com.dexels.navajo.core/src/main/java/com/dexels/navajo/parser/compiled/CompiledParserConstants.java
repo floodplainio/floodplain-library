@@ -149,6 +149,7 @@ public interface CompiledParserConstants {
     "\"$\"",
     "\"]\"",
     "\".\"",
+    "\"@\"",
     "\"=\"",
   };
 

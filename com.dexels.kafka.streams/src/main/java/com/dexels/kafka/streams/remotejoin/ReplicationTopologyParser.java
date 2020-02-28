@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Stack;
 import java.util.Vector;
 import java.util.concurrent.ExecutionException;
 import java.util.function.BiFunction;
@@ -33,6 +34,7 @@ import org.apache.kafka.streams.state.Stores;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.kafka.streams.api.CoreOperators;
 import com.dexels.kafka.streams.api.StreamConfiguration;
@@ -43,11 +45,13 @@ import com.dexels.kafka.streams.remotejoin.ranged.GroupedUpdateProcessor;
 import com.dexels.kafka.streams.remotejoin.ranged.ManyToManyGroupedProcessor;
 import com.dexels.kafka.streams.remotejoin.ranged.ManyToOneGroupedProcessor;
 import com.dexels.kafka.streams.remotejoin.ranged.OneToManyGroupedProcessor;
+import com.dexels.kafka.streams.serializer.ImmutableMessageSerde;
 import com.dexels.kafka.streams.serializer.ReplicationMessageSerde;
 import com.dexels.kafka.streams.tools.KafkaUtils;
 import com.dexels.kafka.streams.xml.parser.XMLElement;
+import com.dexels.navajo.reactive.source.topology.api.TopologyPipeComponent;
 import com.dexels.replication.api.ReplicationMessage;
-import com.dexels.replication.factory.ReplicationFactory;
+import com.dexels.replication.api.ReplicationMessage.Operation;
 import com.dexels.replication.transformer.api.MessageTransformer;
 
 public class ReplicationTopologyParser {
@@ -64,6 +68,7 @@ public class ReplicationTopologyParser {
 	public static final String STORE_PREFIX = "STORE_";
 	
 	private static final Serde<ReplicationMessage> messageSerde = new ReplicationMessageSerde();
+	private static final Serde<ImmutableMessage> immutableMessageSerde = new ImmutableMessageSerde();
 	public enum Flatten { FIRST,LAST,NONE};
 	
 	private static final Logger logger = LoggerFactory.getLogger(ReplicationTopologyParser.class);
@@ -207,12 +212,20 @@ public class ReplicationTopologyParser {
 			final String key = element.getKey();
 			final StoreBuilder<KeyValueStore<String, ReplicationMessage>> supplier = topologyConstructor.stateStoreSupplier.get(key);
 			if(supplier==null) {
-				logger.error("Missing supplier for: {}\nStore mappings: {}",element.getKey(),topologyConstructor.processorStateStoreMapper);
+				final StoreBuilder<KeyValueStore<String, ImmutableMessage>> immutableSupplier = topologyConstructor.immutableStoreSupplier.get(key);
+//				supplier = topologyConstructor.immutableStoreSupplier.get(key);
+				if(immutableSupplier!=null) {
+					current = current.addStateStore(immutableSupplier, element.getValue().toArray(new String[]{}));
+					logger.info("Added processor: {} with sttstatestores: {} mappings: {}",element.getKey(), element.getValue(),topologyConstructor.processorStateStoreMapper.get(element.getKey()));
+				} else {
+					logger.error("Missing supplier for: {}\nStore mappings: {} available suppliers: {}",element.getKey(),topologyConstructor.processorStateStoreMapper,topologyConstructor.immutableStoreSupplier);
+					throw new RuntimeException("Missing supplier!");
+				}
 				
+			} else {
+				current = current.addStateStore(supplier, element.getValue().toArray(new String[]{}));
+				logger.info("Added processor: {} with sttstatestores: {} mappings: {}",element.getKey(), element.getValue(),topologyConstructor.processorStateStoreMapper.get(element.getKey()));
 			}
-			current = current.addStateStore(supplier, element.getValue().toArray(new String[]{}));
-			
-			logger.info("Added processor: {} with sttstatestores: {} mappings: {}",element.getKey(), element.getValue(),topologyConstructor.processorStateStoreMapper.get(element.getKey()));
 	    }
 	}
 
@@ -569,7 +582,6 @@ public class ReplicationTopologyParser {
 	    if(!topologyConstructor.stores.contains(STORE_PREFIX+sourceProcessorName)) {
 	    	System.err.println("Adding grouped with from, no source processor present for: "+sourceProcessorName+" created: "+topologyConstructor.stateStoreSupplier.keySet()+" and from: "+from);
         }
-		
 		mappingStoreName = sourceProcessorName + "_mapping";
 
 		String transformProcessor = name+"_transform";
@@ -577,13 +589,10 @@ public class ReplicationTopologyParser {
 		// allow override to avoid clashes
 		addStateStoreMapping(topologyConstructor.processorStateStoreMapper, name, STORE_PREFIX+name);
 		topologyConstructor.stores.add(STORE_PREFIX+name);
-//		addStateStoreMapping(topologyConstructor.processorStateStoreMapper, name, sourceProcessorName);
 		addStateStoreMapping(topologyConstructor.processorStateStoreMapper, name, STORE_PREFIX+mappingStoreName);
 		topologyConstructor.stores.add(STORE_PREFIX+mappingStoreName);
-		
 		topologyConstructor.stateStoreSupplier.put(STORE_PREFIX+name, createMessageStoreSupplier(STORE_PREFIX+name,true));
 		topologyConstructor.stateStoreSupplier.put(STORE_PREFIX+mappingStoreName, createMessageStoreSupplier(STORE_PREFIX+mappingStoreName,true));
-
 		current.addProcessor(name,()->new GroupedUpdateProcessor(STORE_PREFIX+name,keyExtractor,STORE_PREFIX+mappingStoreName,ignoreOriginalKey),transformProcessor);
 		return name;
 	}	
@@ -679,6 +688,63 @@ public class ReplicationTopologyParser {
 		
 	}
 
+	public static String addReducer(final Topology topology, TopologyContext topologyContext,TopologyConstructor topologyConstructor,
+			String namespace, Stack<String> transformerNames, int currentPipeId,List<TopologyPipeComponent> onAdd, List<TopologyPipeComponent> onRemove,
+			ImmutableMessage stateMessage, boolean materialize) {
+
+		String parentName = processorName(transformerNames.peek());
+		String reduceReader = processorName(transformerNames.peek()+"_reduceread");
+		String ifElseName = processorName(namespace+"_"+currentPipeId+"_"+"ifelse"+transformerNames.size());
+		transformerNames.push(ifElseName);
+		int trueBranchPipeId = topologyConstructor.generateNewPipeId();
+		int falseBranchPipeId = topologyConstructor.generateNewPipeId();
+		String trueBranchName = processorName(namespace+"_"+trueBranchPipeId+"_"+"addbranch"+transformerNames.size());
+		String falseBranchName = processorName(namespace+"_"+falseBranchPipeId+"_"+"removebranch"+transformerNames.size());
+
+		String reduceName = processorName(namespace+"_"+currentPipeId+"_"+"reduce"+transformerNames.size());
+		String reduceStoreName = STORE_PREFIX+reduceName;
+
+		topology.addProcessor(reduceReader, ()->new ReduceReadProcessor(reduceStoreName, stateMessage), parentName);
+		topology.addProcessor(ifElseName, ()->new IfElseProcessor(msg->msg.operation()!=Operation.DELETE, trueBranchName, Optional.of(falseBranchName)), reduceReader);
+
+		Stack<String> addProcessorStack = new Stack<>();
+		addProcessorStack.addAll(transformerNames);
+		
+		topology.addProcessor(trueBranchName, ()->new IdentityProcessor(), addProcessorStack.peek());
+		addProcessorStack.push(trueBranchName);
+
+
+		Stack<String> removeProcessorStack = new Stack<>();
+		removeProcessorStack.addAll(transformerNames);
+		topology.addProcessor(falseBranchName, ()->new IdentityProcessor(), removeProcessorStack.peek());
+		removeProcessorStack.push(falseBranchName);
+
+		for (TopologyPipeComponent addBranchComponents : onAdd) {
+			addBranchComponents.addToTopology(namespace, addProcessorStack, trueBranchPipeId, topology, topologyContext, topologyConstructor, stateMessage);
+		}
+		for (TopologyPipeComponent removePipeComponents : onRemove) {
+			removePipeComponents.addToTopology(namespace, removeProcessorStack, falseBranchPipeId, topology, topologyContext, topologyConstructor, stateMessage);
+		}
+//		topologyConstructor
+		// TODO I think there is something wrong in the bookkeeping of the transformerStack
+		topology.addProcessor(reduceName, ()->new StoreStateProcessor(reduceName, reduceStoreName, stateMessage), addProcessorStack.peek(),removeProcessorStack.peek());
+		addStateStoreMapping(topologyConstructor.processorStateStoreMapper, reduceName, reduceStoreName);
+		addStateStoreMapping(topologyConstructor.processorStateStoreMapper, reduceReader, reduceStoreName);
+		if(!topologyConstructor.immutableStoreSupplier.containsKey(reduceStoreName)) {
+			topologyConstructor.immutableStoreSupplier.put(reduceStoreName,createImmutableMessageSupplier(reduceStoreName,false));
+		}
+//		addStateStoreMapping(topologyConstructor.processorStateStoreMapper, procName, STORE_PREFIX+fromProcessorName);
+
+		if(materialize) {
+			throw new RuntimeException("Not implemented materialization yet");
+//			topologyConstructor.stores.add(STORE_PREFIX+name);
+//			topologyConstructor.stateStoreSupplier.put(STORE_PREFIX+name,createMessageStoreSupplier(STORE_PREFIX+name,true));
+//			addStateStoreMapping(topologyConstructor.processorStateStoreMapper, name, STORE_PREFIX+name);
+//	        current.addProcessor(name,()->new StoreProcessor(STORE_PREFIX+name),procName);
+			
+		}
+		return reduceName;
+	}
 
 	public static Topology addJoin(final Topology current, TopologyContext topologyContext,
 			TopologyConstructor topologyConstructor, String from, boolean isList, String with, String name,
@@ -793,6 +859,12 @@ public class ReplicationTopologyParser {
 		logger.info("Creating messagestore supplier: {}",name);
 		KeyValueBytesStoreSupplier storeSupplier = persistent ? Stores.persistentKeyValueStore(name) : Stores.inMemoryKeyValueStore(name);
 		return Stores.keyValueStoreBuilder(storeSupplier, Serdes.String(), messageSerde);
+	}
+	
+	public static StoreBuilder<KeyValueStore<String, ImmutableMessage>> createImmutableMessageSupplier(String name, boolean persistent) {
+		logger.info("Creating messagestore supplier: {}",name);
+		KeyValueBytesStoreSupplier storeSupplier = persistent ? Stores.persistentKeyValueStore(name) : Stores.inMemoryKeyValueStore(name);
+		return Stores.keyValueStoreBuilder(storeSupplier, Serdes.String(), immutableMessageSerde);
 	}
 
 	public static StoreBuilder<KeyValueStore<String, Long>> createKeyRowStoreSupplier(String name) {
