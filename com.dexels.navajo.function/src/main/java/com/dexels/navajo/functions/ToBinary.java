@@ -9,7 +9,7 @@ import com.dexels.navajo.expression.api.FunctionInterface;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: Dexels BV</p>
  * @author Arjen Schoneveld
- * @version $Id$
+ * @version $Id: 01d510ba7a697d35b101c621b6587778d1ad76aa $
  */
 
 public class ToBinary extends FunctionInterface {

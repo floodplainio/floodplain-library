@@ -22,7 +22,7 @@ import com.dexels.navajo.expression.api.TMLExpressionException;
  * </p>
  * 
  * @author not attributable
- * @version $Id$
+ * @version $Id: e6d1028716969034bd520c92429e15d8b8acbe7c $
  */
 
 public final class DayOfWeek extends FunctionInterface {

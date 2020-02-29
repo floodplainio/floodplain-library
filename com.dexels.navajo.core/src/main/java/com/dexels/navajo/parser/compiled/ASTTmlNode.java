@@ -38,7 +38,7 @@ import com.dexels.navajo.util.Util;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: Dexels BV</p>
  * @author Arjen Schoneveld
- * @version $Id$
+ * @version $Id: 70dcf0f895286219cb344e0196223683027c9edf $
  */
 final class ASTTmlNode extends SimpleNode {
     String val = "";

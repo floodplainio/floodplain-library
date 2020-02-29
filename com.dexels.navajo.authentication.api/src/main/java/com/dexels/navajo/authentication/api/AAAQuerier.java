@@ -13,7 +13,7 @@ import com.dexels.navajo.script.api.AuthorizationException;
  * document created by the "werkgroep Autorisatie/Authenticatie" d.d. 20-12-2002.
  *
  * @author Arjen Schoneveld
- * @version $Id$
+ * @version $Id: 515f55246cfd53e0c6ee0daa32e757997c2bef17 $
  */
 
 public interface AAAQuerier {

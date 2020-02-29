@@ -19,6 +19,8 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.enterprise.context.ContextException;
+
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.Serde;
@@ -49,6 +51,7 @@ import com.dexels.kafka.streams.serializer.ImmutableMessageSerde;
 import com.dexels.kafka.streams.serializer.ReplicationMessageSerde;
 import com.dexels.kafka.streams.tools.KafkaUtils;
 import com.dexels.kafka.streams.xml.parser.XMLElement;
+import com.dexels.navajo.expression.api.ContextExpression;
 import com.dexels.navajo.reactive.source.topology.api.TopologyPipeComponent;
 import com.dexels.replication.api.ReplicationMessage;
 import com.dexels.replication.api.ReplicationMessage.Operation;
@@ -690,7 +693,7 @@ public class ReplicationTopologyParser {
 
 	public static String addReducer(final Topology topology, TopologyContext topologyContext,TopologyConstructor topologyConstructor,
 			String namespace, Stack<String> transformerNames, int currentPipeId,List<TopologyPipeComponent> onAdd, List<TopologyPipeComponent> onRemove,
-			ImmutableMessage stateMessage, boolean materialize) {
+			ImmutableMessage stateMessage, boolean materialize, Optional<ContextExpression> keyExtractor) {
 
 		String parentName = processorName(transformerNames.peek());
 		String reduceReader = processorName(transformerNames.peek()+"_reduceread");
@@ -704,7 +707,7 @@ public class ReplicationTopologyParser {
 		String reduceName = processorName(namespace+"_"+currentPipeId+"_"+"reduce"+transformerNames.size());
 		String reduceStoreName = STORE_PREFIX+reduceName;
 
-		topology.addProcessor(reduceReader, ()->new ReduceReadProcessor(reduceStoreName, stateMessage), parentName);
+		topology.addProcessor(reduceReader, ()->new ReduceReadProcessor(reduceStoreName, stateMessage,keyExtractor), parentName);
 		topology.addProcessor(ifElseName, ()->new IfElseProcessor(msg->msg.operation()!=Operation.DELETE, trueBranchName, Optional.of(falseBranchName)), reduceReader);
 
 		Stack<String> addProcessorStack = new Stack<>();
@@ -727,7 +730,7 @@ public class ReplicationTopologyParser {
 		}
 //		topologyConstructor
 		// TODO I think there is something wrong in the bookkeeping of the transformerStack
-		topology.addProcessor(reduceName, ()->new StoreStateProcessor(reduceName, reduceStoreName, stateMessage), addProcessorStack.peek(),removeProcessorStack.peek());
+		topology.addProcessor(reduceName, ()->new StoreStateProcessor(reduceName, reduceStoreName, stateMessage,keyExtractor), addProcessorStack.peek(),removeProcessorStack.peek());
 		addStateStoreMapping(topologyConstructor.processorStateStoreMapper, reduceName, reduceStoreName);
 		addStateStoreMapping(topologyConstructor.processorStateStoreMapper, reduceReader, reduceStoreName);
 		if(!topologyConstructor.immutableStoreSupplier.containsKey(reduceStoreName)) {

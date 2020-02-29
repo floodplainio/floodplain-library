@@ -12,7 +12,7 @@ import com.dexels.immutable.api.ImmutableMessage;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: Dexels BV</p>
  * @author Frank Lyaruu
- * @version $Id$
+ * @version $Id: 10b50307534865a8ccbccf46cccbf7c3ea1c8916 $
  */
 
 public interface ExpressionEvaluator {

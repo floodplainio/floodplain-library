@@ -13,7 +13,7 @@ import com.dexels.navajo.expression.api.TMLExpressionException;
  * Copyright:    Copyright (c) 2001
  * Company:      Dexels
  * @author Arjen Schoneveld en Martin Bergman
- * @version $Id$
+ * @version $Id: 373fe5c4aca73c6aa42e4863f400dbe4b0e9519f $
  */
 
 public final class CheckRange extends FunctionInterface {

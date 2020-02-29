@@ -8,7 +8,7 @@ import com.dexels.navajo.expression.api.FunctionInterface;
  * Title: Navajo Description: Copyright: Copyright (c) 2001 Company: Dexels
  * 
  * @author Arjen Schoneveld en Martin Bergman
- * @version $Id$
+ * @version $Id: e21ae58fa4e4024049be2a04b4bc2a908be8a2b3 $
  */
 
 public final class OffsetDate extends FunctionInterface {

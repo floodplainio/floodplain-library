@@ -39,7 +39,7 @@ import navajocore.Version;
  * Copyright:    Copyright (c) 2001 - 2011
  * Company:      Dexels
  * @author Arjen Schoneveld en Martin Bergman
- * @version $Id$
+ * @version $Id: d8e2e63643473d556707ec2d2c9c669c47e64531 $
  *
  * This class is used to run Navajo script web services.
  *

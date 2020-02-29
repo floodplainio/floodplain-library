@@ -12,7 +12,7 @@ import java.util.Map;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: Dexels BV</p>
  * @author Arjen Schoneveld
- * @version $Id$
+ * @version $Id: 245e7fe072eadfe99af38a5a840fbc4e24423d6c $
  *
  * A Message object represents the "data holding" structure of a Navajo document.
  * A message contains data, it does not represent data.

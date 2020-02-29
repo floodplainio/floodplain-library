@@ -2,7 +2,7 @@
  * Created on 26-jan-2006
  *
  * @author Dexels developer
- * @version $Id$
+ * @version $Id: 62276fa9c24fdedf90a7d41c8fbdfdcf9de8c667 $
  */
 package com.dexels.navajo.util;
 

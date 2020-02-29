@@ -16,7 +16,7 @@ import com.dexels.navajo.expression.api.TMLExpressionException;
  * Copyright:    Copyright (c) 2001
  * Company:      Dexels
  * @author Marte Koning
- * @version $Id$
+ * @version $Id: 695a662b8499b4a81efd2932d5d2a0e5a3d5e5c9 $
  */
 
 public final class GetUTF8Length extends FunctionInterface {

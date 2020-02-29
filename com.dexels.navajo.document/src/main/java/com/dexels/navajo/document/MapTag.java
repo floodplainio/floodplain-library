@@ -6,7 +6,7 @@ package com.dexels.navajo.document;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: Dexels BV</p>
  * @author Arjen Schoneveld
- * @version $Id$
+ * @version $Id: 8ae054fe91f71350dcdbffb05057a9657352f145 $
  */
 
 public interface MapTag {

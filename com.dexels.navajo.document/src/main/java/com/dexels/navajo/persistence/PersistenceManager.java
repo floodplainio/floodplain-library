@@ -8,7 +8,7 @@ import com.dexels.navajo.document.Navajo;
  * Copyright:    Copyright (c) 2002
  * Company:      Dexels BV
  * @author Arjen Schoneveld
- * @version $Id$
+ * @version $Id: 15217f8be390c37a70fa48c01aac07b260c441ef $
  *
  * $Log$
  * Revision 1.6  2008/02/26 13:26:37  arjen

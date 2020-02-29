@@ -8,7 +8,7 @@ import com.dexels.navajo.expression.api.FunctionInterface;
  * Copyright:    Copyright (c) 2001
  * Company:      Dexels
  * @author Arjen Schoneveld en Martin Bergman
- * @version $Id$
+ * @version $Id: 1981de8bfb7d6ae2f5e29fb8fd04f4f5da2f9f1b $
  */
 
 public final class StringDistance 

@@ -17,7 +17,7 @@ import com.dexels.navajo.document.Property;
  * </p>
  * 
  * @author not attributable
- * @version $Id$
+ * @version $Id: bcc8cd4c541c7cc9592252254d6220c771380e0b $
  */
 
 public final class Memo extends NavajoType implements Comparable<Memo> {

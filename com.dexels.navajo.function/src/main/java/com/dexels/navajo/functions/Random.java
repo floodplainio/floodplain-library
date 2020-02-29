@@ -8,7 +8,7 @@ import com.dexels.navajo.expression.api.FunctionInterface;
  * <p>Copyright: Copyright (c) 2002<br></p>
  * <p>Company: Dexels.com<br></p>
  * @author unascribed
- * @version $Id$
+ * @version $Id: 5712b7dedecec66b2b08904f2251b7f99e185cec $
  */
 
 public final class Random extends FunctionInterface {

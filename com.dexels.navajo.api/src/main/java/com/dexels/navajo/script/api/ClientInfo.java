@@ -17,7 +17,7 @@ import java.util.Date;
  * </p>
  * 
  * @author Arjen Schoneveld
- * @version $Id$
+ * @version $Id: 9535ab98f2b60018a34b438b5ba93ba912af4105 $
  *
  *          DISCLAIMER
  *

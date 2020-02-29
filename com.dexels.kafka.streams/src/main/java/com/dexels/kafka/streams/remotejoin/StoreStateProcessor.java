@@ -1,5 +1,7 @@
 package com.dexels.kafka.streams.remotejoin;
 
+import java.util.Optional;
+
 import org.apache.kafka.streams.processor.AbstractProcessor;
 import org.apache.kafka.streams.processor.ProcessorContext;
 import org.apache.kafka.streams.state.KeyValueStore;
@@ -7,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.dexels.immutable.api.ImmutableMessage;
+import com.dexels.navajo.expression.api.ContextExpression;
 import com.dexels.replication.api.ReplicationMessage;
 
 public class StoreStateProcessor extends AbstractProcessor<String, ReplicationMessage> {
@@ -17,11 +20,13 @@ public class StoreStateProcessor extends AbstractProcessor<String, ReplicationMe
 	private final String lookupStoreName;
 	private final ImmutableMessage initial;
 	private KeyValueStore<String, ImmutableMessage> lookupStore;
+	private final Optional<ContextExpression> keyExtractor;
 	public static final String COMMONKEY = "singlerestore";
-	public StoreStateProcessor(String name, String lookupStoreName, ImmutableMessage initial) {
+	public StoreStateProcessor(String name, String lookupStoreName, ImmutableMessage initial, Optional<ContextExpression> keyExtractor) {
 		this.name = name;
 		this.lookupStoreName = lookupStoreName;
 		this.initial = initial;
+		this.keyExtractor = keyExtractor;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -35,8 +40,11 @@ public class StoreStateProcessor extends AbstractProcessor<String, ReplicationMe
 	}
 
 	@Override
-	public void process(String key, ReplicationMessage value) {
-//		for (int i = 0; i < 50; i++) {
+	public void process(String key, ReplicationMessage inputValue) {
+
+		Optional<String> extracted = keyExtractor.map(e->e.apply(null,Optional.of(inputValue.message()),inputValue.paramMessage())).map(e->(String)e.value);
+
+		//		for (int i = 0; i < 50; i++) {
 //			lookupStore.put(""+i, ImmutableFactory.empty().with("number", i, "integer").with("aap","noot", "string"));
 //		}
 
@@ -55,19 +63,19 @@ public class StoreStateProcessor extends AbstractProcessor<String, ReplicationMe
 //			System.err.println("Found: "+vl.toFlatString(ImmutableFactory.createParser()));
 //			System.err.println("Input msg: "+value.message().toFlatString(ImmutableFactory.createParser()));
 //			System.err.println("Input param: "+value.paramMessage().orElse(ImmutableFactory.empty()).toFlatString(ImmutableFactory.createParser()));
-			ImmutableMessage paramMessage = value.paramMessage().get();
+			ImmutableMessage paramMessage = inputValue.paramMessage().get();
 //			paramMessage.with(UUID.randomUUID().toString(), RandomUtils.nextInt(), "integer");
 //			l = lookupStore.approximateNumEntries();
 //			System.err.println("Number of entries: "+l);
-			lookupStore.put(COMMONKEY, paramMessage);
+			lookupStore.put(extracted.orElse(COMMONKEY), paramMessage);
 //			l = lookupStore.approximateNumEntries();
 //			System.err.println("After number of entries: "+l);
 //			System.err.println("Storing key: "+COMMONKEY+" into store: "+lookupStoreName);
 //		}
 //		ImmutableMessage paramMessage = Optional.ofNullable(lookupStore.get(COMMONKEY)).map(e->e.paramMessage()).orElse(initial);
 //		ImmutableMessage msg = Optional.ofNullable(paramMessage.orElse(initial)).orElse(initial);
-		
-		super.context().forward(COMMONKEY, value);
+//		String keyVal = this.key.map(e->)
+		super.context().forward(extracted.orElse(COMMONKEY), inputValue);
 	}
 
 }

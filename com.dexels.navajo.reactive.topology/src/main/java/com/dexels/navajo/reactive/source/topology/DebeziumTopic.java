@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Stack;
 
-import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.Topology;
 

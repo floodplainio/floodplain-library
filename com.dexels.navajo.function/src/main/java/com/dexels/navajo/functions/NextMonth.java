@@ -12,7 +12,7 @@ import com.dexels.navajo.expression.api.FunctionInterface;
  * Copyright:    Copyright (c) 2001
  * Company:      Dexels
  * @author Arjen Schoneveld en Martin Bergman
- * @version $Id$
+ * @version $Id: 4d4dbef31958cfa4721f2a1b2dc655552167d592 $
  */
 
 public final class NextMonth extends FunctionInterface {

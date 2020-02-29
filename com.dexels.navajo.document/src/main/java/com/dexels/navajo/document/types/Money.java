@@ -19,7 +19,7 @@ import com.dexels.navajo.document.Property;
  * <p>Copyright: Copyright (c) 2003-2004</p>
  * <p>Company: Dexels BV</p>
  * @author $Author$
- * @version $Id$
+ * @version $Id: fa704cff67580a1234bc50165e384b258e5a12e6 $
  */
 
 public final class Money

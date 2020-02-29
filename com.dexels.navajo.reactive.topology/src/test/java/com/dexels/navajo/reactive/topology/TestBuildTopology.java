@@ -202,16 +202,25 @@ public class TestBuildTopology {
 
 	}
 	
-	@Test @Ignore
+	@Test
 	public void testPipesWithPartials() throws ParseException, IOException, InterruptedException {
 
 		Topology topology = runner.parseSinglePipeDefinition(new Topology(),getClass().getClassLoader().getResourceAsStream("pipewithpartials.rr"),"junit");
 		ReplicationTopologyParser.materializeStateStores(runner.topologyConstructor(), topology);
 		System.err.println("Topology: \n"+topology.describe());
 		runTopology(topology);
-
 	}
 	
+
+	@Test
+	public void testGroupBy() throws ParseException, IOException, InterruptedException {
+
+		Topology topology = runner.parseSinglePipeDefinition(new Topology(),getClass().getClassLoader().getResourceAsStream("totalpayment.rr"),"junit");
+		ReplicationTopologyParser.materializeStateStores(runner.topologyConstructor(), topology);
+		System.err.println("Topology: \n"+topology.describe());
+		runTopology(topology);
+	}
+
 	@Test @Ignore
 	public void testParams() throws ParseException, IOException, InterruptedException {
 

@@ -13,7 +13,7 @@ import com.dexels.navajo.parser.Expression;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: Dexels BV</p>
  * @author Arjen Schoneveld
- * @version $Id$
+ * @version $Id: 1c6a39a5cda280718bd6dbd875889a3c2cf8df73 $
  *
  * DISCLAIMER
  *

@@ -6,7 +6,7 @@ package com.dexels.navajo.server;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: Dexels BV</p>
  * @author Arjen Schoneveld
- * @version $Id$
+ * @version $Id: 8481d21e1cf90d8c7175dbb133814c0ba42d89fa $
  *
  * DISCLAIMER
  *

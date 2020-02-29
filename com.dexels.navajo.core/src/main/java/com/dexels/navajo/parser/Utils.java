@@ -195,6 +195,8 @@ public final class Utils extends Exception {
 			throw new TMLExpressionException("Subtraction not defined for Strings");
 		} else if (a instanceof Double && b instanceof Integer) {
 			return Double.valueOf(((Double) a).doubleValue() - ((Integer) b).intValue());
+		} else if (a instanceof Long && b instanceof Long) {
+			return Long.valueOf(((Long) a).longValue() - ((Long) b).longValue());
 		} else if (a instanceof Integer && b instanceof Double) {
 			return Double.valueOf(((Integer) a).intValue() - ((Double) b).doubleValue());
 		} else if (a instanceof Double && b instanceof Double) {
@@ -281,6 +283,8 @@ public final class Utils extends Exception {
 			return a;
 		else if ((a instanceof Integer) && (b instanceof Integer))
 			return Integer.valueOf(((Integer) a).intValue() + ((Integer) b).intValue());
+		else if ((a instanceof Long) && (b instanceof Long))
+			return Long.valueOf(((Long) a).longValue() + ((Long) b).longValue());
 		else if ((a instanceof String) || (b instanceof String)) {
 			String sA = Utils.getStringValue(a);
 			String sB = Utils.getStringValue(b);

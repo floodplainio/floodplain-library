@@ -115,16 +115,17 @@ public class JSONToReplicationMessage {
 				callbackFieldList.accept(field);
 				JsonNode name = e.get("name");
 				Optional<String> typeName = name==null?Optional.empty():Optional.of(name.asText());
+				Optional<JsonNode> typeParameters = Optional.ofNullable(e.get("parameters"));
 				if(typeName.isPresent()) {
 					typeNames.put(field, typeName.get());
 				}
 				String rawType = e.get("type").asText();
-				String type = resolveType(rawType,typeName);
+				String type = resolveType(rawType,typeName,typeParameters);
 				types.put(field, type);
 				boolean hasAfter = payload.get().has("after");
 				boolean reallyHasAfter = hasAfter && !payload.get().get("after").isNull();
 				final Optional<ObjectNode> after = reallyHasAfter ? Optional.ofNullable((ObjectNode)payload.get().get("after")) : Optional.empty();
-				final Object resolvedValue = reallyHasAfter ? resolveValue(after, field,type, typeName) : resolveValue(payload, field,type,typeName);
+				final Object resolvedValue = reallyHasAfter ? resolveValue(after, field,type, typeName,e) : resolveValue(payload, field,type,typeName,e);
 				jsonValues.put(field,resolvedValue);
 			});
 			return ImmutableFactory.create(jsonValues, types);
@@ -149,19 +150,19 @@ public class JSONToReplicationMessage {
 		return StreamSupport.stream(node.spliterator(),false).filter(pred).findFirst();
 	}
 	
-	private static Object resolveValue(Optional<ObjectNode> fields, String field, String type, Optional<String> typeName) {
+	private static Object resolveValue(Optional<ObjectNode> fields, String field, String type, Optional<String> typeName, JsonNode currentType) {
 		try {
 			JsonNode node = fields.get().get(field);
 			if(node==null) {
 				throw new NullPointerException("Missing node for field: "+field+" type: "+type+" typeName: "+typeName);
 			}
-			return resolveValue(type, typeName,node);
+			return resolveValue(type, typeName,node,currentType);
 		} catch (Throwable e) {
 			throw new RuntimeException("Error resolving value: "+field+" with type: "+type+" named type: "+typeName,e);
 		}
 	}
 	
-	public static String resolveType(String type, Optional<String> namedType) {
+	public static String resolveType(String type, Optional<String> namedType,Optional<JsonNode> parameters) {
 		if(!namedType.isPresent()) {
 			return resolveSimpleType(type);
 		}
@@ -177,6 +178,12 @@ public class JSONToReplicationMessage {
 			case "io.debezium.data.VariableScaleDecimal":
 				return "long";
 			case "org.apache.kafka.connect.data.Decimal":
+				if(parameters.isPresent()) {
+					JsonNode scaleNode = parameters.get().get("scale");
+					if(scaleNode!=null) {
+						return Integer.parseInt(scaleNode.asText()) > 0 ? "double" : "long";
+					}
+				}
 				return "long";
 			case "io.debezium.data.Enum":
 				return "enum";
@@ -187,7 +194,7 @@ public class JSONToReplicationMessage {
 		
 	}
 
-	public static Object resolveValue(String type, Optional<String> namedType, JsonNode value) {
+	public static Object resolveValue(String type, Optional<String> namedType, JsonNode value, JsonNode typeParameters) {
 		
 		if(value.isNull()) {
 			return null;
@@ -221,9 +228,10 @@ public class JSONToReplicationMessage {
 			return decoded.longValue();
 		case "org.apache.kafka.connect.data.Decimal":
 			String decval = value.asText();
+			Optional<ObjectNode> typeParams = Optional.ofNullable((ObjectNode) typeParameters.get("parameters"));
 			byte[] da = Base64.getDecoder().decode(decval);
 			
-			return bytesToLong(da);
+			return parseDecimal(da,typeParams);
 		case "io.debezium.data.Enum":
 			return value.asText();
 		default:
@@ -231,30 +239,43 @@ public class JSONToReplicationMessage {
 		}
 	}
 	
-	private static long bytesToLong(byte[] bytes) {
+//	private BigDecimal parseDecimal(byte[] data, int scale, )
+	
+	private static Object parseDecimal(byte[] bytes, Optional<ObjectNode> typeParams) {
 //		logger.info("long byte size: {}",bytes.length);
-		switch(bytes.length) {
-		case 1:
-		    ByteBuffer bytebuffer = ByteBuffer.allocate(Long.BYTES);
-		    bytebuffer.put(bytes);
-		    bytebuffer.flip();//need flip 
-		    return bytebuffer.get();
-		case 2:
-		    ByteBuffer shortbuffer = ByteBuffer.allocate(Long.BYTES);
-		    shortbuffer.put(bytes);
-		    shortbuffer.flip();//need flip 
-		    return shortbuffer.getShort();
-		case 4:
-		    ByteBuffer intbuffer = ByteBuffer.allocate(Long.BYTES);
-		    intbuffer.put(bytes);
-		    intbuffer.flip();//need flip 
-		    return intbuffer.getInt();
-		default:
-		    ByteBuffer longbuffer = ByteBuffer.allocate(Long.BYTES);
-		    longbuffer.put(bytes);
-		    longbuffer.flip();//need flip 
-		    return longbuffer.getInt();
+		Optional<JsonNode> scaleNode = typeParams.map(e->e.get("scale"));
+		Optional<Integer> scale =  scaleNode.filter(e->!e.isNull()).map(e->Integer.parseInt(e.asText()));
+//		Optional<Integer> scale = typeParams.map(t->t.get("scale").asText()).map(Integer::parseInt);
+		
+		final BigDecimal decoded = scale.isPresent()?  new BigDecimal(new BigInteger(bytes), scale.get()) : new BigDecimal(new BigInteger(bytes));
+		if (decoded.scale()>0) {
+			return decoded.doubleValue();
+		} else {
+			return decoded.longValue();
+
 		}
+//		switch(bytes.length) {
+//		case 1:
+//		    ByteBuffer bytebuffer = ByteBuffer.allocate(Long.BYTES);
+//		    bytebuffer.put(bytes);
+//		    bytebuffer.flip();//need flip 
+//		    return bytebuffer.get();
+//		case 2:
+//		    ByteBuffer shortbuffer = ByteBuffer.allocate(Long.BYTES);
+//		    shortbuffer.put(bytes);
+//		    shortbuffer.flip();//need flip 
+//		    return shortbuffer.getShort();
+//		case 4:
+//		    ByteBuffer intbuffer = ByteBuffer.allocate(Long.BYTES);
+//		    intbuffer.put(bytes);
+//		    intbuffer.flip();//need flip 
+//		    return intbuffer.getInt();
+//		default:
+//		    ByteBuffer longbuffer = ByteBuffer.allocate(Long.BYTES);
+//		    longbuffer.put(bytes);
+//		    longbuffer.flip();//need flip 
+//		    return longbuffer.getInt();
+//		}
 
 	}
 	
@@ -329,14 +350,7 @@ private static Object resolveSimple(String type, JsonNode value) {
 				return Operation.NONE;
 		}
 	}
-	
 
-
-	public static String mapType(String dbsType, Optional<String> typeName) {
-		final String resolvedType = resolveType(dbsType, typeName);
-		return resolvedType;
-	}
-	
 	public static TableIdentifier processDebeziumKey(ObjectNode on, boolean appendTenant, boolean appendSchema) {
 		List<String> fields = new ArrayList<>();
 		ImmutableMessage converted = convert(on,field->fields.add(field),true,Optional.empty(),null);

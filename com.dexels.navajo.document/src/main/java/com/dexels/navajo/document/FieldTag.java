@@ -6,7 +6,7 @@ package com.dexels.navajo.document;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: Dexels BV</p>
  * @author Arjen Schoneveld
- * @version $Id$
+ * @version $Id: 800d41acdb9d813bd93b3f0096ef79ca319080b0 $
  */
 
 public interface FieldTag {

@@ -15,7 +15,7 @@ import com.dexels.navajo.parser.Expression;
  * Copyright:    Copyright (c) 2002
  * Company:      Dexels
  * @author Arjen Schoneveld en Martin Bergman
- * @version $Id$
+ * @version $Id: 39e31ed545dcb2d2e184a6558dd5b75a1beaa9bc $
  */
 
 public final class FormatStringList extends FunctionInterface {

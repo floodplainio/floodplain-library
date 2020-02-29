@@ -6,7 +6,7 @@ package com.dexels.navajo.server;
  * Copyright:    Copyright (c) 2001
  * Company:      Dexels
  * @author Arjen Schoneveld en Martin Bergman
- * @version $Id$
+ * @version $Id: 3df3c92f4cb4acef410a13c841b82e98a58c40da $
  *
  * DISCLAIMER
  *

@@ -29,4 +29,16 @@ public class TestJsonDebeziumTransformation {
 		System.err.println("Message: "+serialized);
 
 	}
+	
+	@Test
+	public void testDecimal() throws JsonProcessingException, IOException {
+		ObjectMapper mapper = new ObjectMapper();
+		JsonNode node = mapper.readTree(this.getClass().getClassLoader().getResourceAsStream("decimalwithscale.json"));
+		System.setProperty(ReplicationMessage.PRETTY_JSON, "true");
+		ReplicationFactory.setInstance(new JSONReplicationMessageParserImpl());
+		ReplicationMessage msg = JSONToReplicationMessage.convertToReplication(false, (ObjectNode)node,"photo");
+		final String serialized = new String(msg.toBytes(ReplicationFactory.getInstance()));
+		System.err.println("Message: "+serialized);
+
+	}
 }

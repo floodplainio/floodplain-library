@@ -1,38 +1,45 @@
 package com.dexels.kafka.streams.remotejoin;
 
+import java.util.Optional;
+
 import org.apache.kafka.streams.processor.AbstractProcessor;
 import org.apache.kafka.streams.processor.ProcessorContext;
 import org.apache.kafka.streams.state.KeyValueStore;
 
 import com.dexels.immutable.api.ImmutableMessage;
-import com.dexels.immutable.factory.ImmutableFactory;
+import com.dexels.navajo.expression.api.ContextExpression;
 import com.dexels.replication.api.ReplicationMessage;
 import com.dexels.replication.api.ReplicationMessage.Operation;
 import com.dexels.replication.factory.ReplicationFactory;
 
 public class ReduceReadProcessor extends AbstractProcessor<String, ReplicationMessage> {
 
-	private final String lookupStoreName;
-	private KeyValueStore<String, ImmutableMessage> lookupStore;
+	private final String accumulatorStoreName;
+	private KeyValueStore<String, ImmutableMessage> accumulatorStore;
+	private KeyValueStore<String, ReplicationMessage> lookupStore;
 	private final ImmutableMessage initial;
+	private final Optional<ContextExpression> keyExtractor;
 
-	public ReduceReadProcessor(String lookupStoreName, ImmutableMessage initial) {
-		this.lookupStoreName = lookupStoreName;
+	public ReduceReadProcessor(String accumulatorStoreName, ImmutableMessage initial, Optional<ContextExpression> keyExtractor) {
+		this.accumulatorStoreName = accumulatorStoreName;
 		this.initial = initial;
+		this.keyExtractor = keyExtractor;
 	}
 	
 	@SuppressWarnings("unchecked")
 	@Override
 	public void init(ProcessorContext context) {
-		lookupStore = (KeyValueStore<String, ImmutableMessage>) context.getStateStore(lookupStoreName);
+		accumulatorStore = (KeyValueStore<String, ImmutableMessage>) context.getStateStore(accumulatorStoreName);
 		super.init(context);
 	}
 
 	@Override
-	public void process(String key, ReplicationMessage value) {
-		ImmutableMessage msg = this.lookupStore.get(StoreStateProcessor.COMMONKEY);
-//		System.err.println("Reading reduce. KEy: "+StoreStateProcessor.COMMONKEY+" from lookupstore: "+lookupStoreName);
-		if(value==null) {
+	public void process(String key, final ReplicationMessage inputValue) {
+		Optional<String> extracted = keyExtractor.map(e->e.apply(null,Optional.of(inputValue.message()),inputValue.paramMessage())).map(e->(String)e.value);
+		System.err.println("KEY: "+extracted);
+		ImmutableMessage msg = this.accumulatorStore.get(extracted.orElse(StoreStateProcessor.COMMONKEY));
+		ReplicationMessage value = inputValue;
+		if(inputValue==null) {
 			// delete
 			ImmutableMessage param = msg==null ? initial : msg;
 			value = ReplicationFactory.empty().withOperation(Operation.DELETE).withParamMessage(param);

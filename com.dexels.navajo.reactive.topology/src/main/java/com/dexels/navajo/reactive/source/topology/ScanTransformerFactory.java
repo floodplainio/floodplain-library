@@ -8,22 +8,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.Stack;
 
-import org.apache.kafka.streams.Topology;
-
-import com.dexels.kafka.streams.api.TopologyContext;
-import com.dexels.kafka.streams.remotejoin.TopologyConstructor;
 import com.dexels.navajo.document.stream.DataItem.Type;
 import com.dexels.navajo.document.stream.ReactiveParseProblem;
 import com.dexels.navajo.reactive.api.ReactiveParameters;
 import com.dexels.navajo.reactive.api.ReactiveTransformer;
 import com.dexels.navajo.reactive.api.ReactiveTransformerFactory;
-import com.dexels.navajo.reactive.source.topology.api.TopologyPipeComponent;
 
 public class ScanTransformerFactory implements ReactiveTransformerFactory {
-
-	private boolean materialize;
 
 	@Override
 	public Set<Type> inType() {
@@ -45,7 +37,7 @@ public class ScanTransformerFactory implements ReactiveTransformerFactory {
 
 	@Override
 	public Optional<List<String>> allowedParameters() {
-		return Optional.of(Arrays.asList(new String[] {}));
+		return Optional.of(Arrays.asList(new String[] {"key"}));
 	}
 
 	@Override
@@ -56,6 +48,7 @@ public class ScanTransformerFactory implements ReactiveTransformerFactory {
 	@Override
 	public Optional<Map<String, String>> parameterTypes() {
 		Map<String,String> types = new HashMap<>();
+		types.put("key", "string");
 		return Optional.of(Collections.unmodifiableMap(types));
 	}
 

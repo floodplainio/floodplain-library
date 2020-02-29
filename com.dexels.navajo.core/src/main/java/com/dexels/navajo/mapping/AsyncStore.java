@@ -21,7 +21,7 @@ import com.dexels.navajo.util.AuditLog;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: Dexels BV</p>
  * @author Arjen Schoneveld
- * @version $Id$
+ * @version $Id: f184997131f61a27562a8df0b4cc0101477da109 $
  *
  * This (singleton) object is used to store instances of (active) asynchronous mappable objects.
  * An instance is de-activated if the store() or kill() methods is called or if a certain time-out is reached.

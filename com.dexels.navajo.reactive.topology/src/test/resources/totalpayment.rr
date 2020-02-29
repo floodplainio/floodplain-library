@@ -1,0 +1,8 @@
+|>database(resource='dvd',schema='public',table='payment')
+	->scan(key=ToString([customer_id])
+		, Msg(total=ToDouble(0))
+        ,->set(@total=[@total]+[amount])
+        ,->set(@total=[@total]-[amount])
+    )
+    ->set(total=[@total])
+    ->sink(connector='@replication',collection='parmentpercustomer', '@PAYMENTPERCUSTOMER')

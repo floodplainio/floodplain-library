@@ -5,7 +5,6 @@ import java.util.function.Function;
 import org.apache.kafka.streams.processor.AbstractProcessor;
 
 import com.dexels.replication.api.ReplicationMessage;
-import com.dexels.replication.api.ReplicationMessage.Operation;
 
 public class FunctionProcessor extends AbstractProcessor<String, ReplicationMessage> {
 

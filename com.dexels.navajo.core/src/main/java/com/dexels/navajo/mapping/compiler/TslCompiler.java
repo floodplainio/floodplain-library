@@ -6,7 +6,7 @@ package com.dexels.navajo.mapping.compiler;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: Dexels BV</p>
  * @author Arjen Schoneveld
- * @version $Id$get
+ * @version $Id: 7288188db8eed773d1d1916718ca9ce744cc01f4 $get
  */
 
 /**

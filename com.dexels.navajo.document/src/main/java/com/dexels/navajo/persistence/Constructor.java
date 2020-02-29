@@ -7,7 +7,7 @@ package com.dexels.navajo.persistence;
  * Copyright:    Copyright (c) 2002
  * Company:      Dexels BV
  * @author Arjen Schoneveld
- * @version $Id$
+ * @version $Id: 932cdcfc40ca0bf600a991189176559bf270f01d $
  */
 
 /**

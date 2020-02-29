@@ -7,7 +7,7 @@ import com.dexels.navajo.expression.api.TMLExpressionException;
  * Title: Navajo Description: Copyright: Copyright (c) 2001 Company: Dexels
  * 
  * @author Arjen Schoneveld en Martin Bergman
- * @version $Id$
+ * @version $Id: daacc8b9402a1424640d5e590d2a250399267c4d $
  */
 
 public final class StringField extends FunctionInterface {

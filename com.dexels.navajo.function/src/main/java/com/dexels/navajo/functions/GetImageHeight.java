@@ -19,7 +19,7 @@ import com.dexels.navajo.expression.api.TMLExpressionException;
  * Copyright:    Copyright (c) 2001
  * Company:      Dexels
  * @author Erik Versteeg
- * @version $Id$
+ * @version $Id: 72701dc527d26f0122d5cf3638cb9ced6154cafc $
  */
 
 public final class GetImageHeight extends FunctionInterface {

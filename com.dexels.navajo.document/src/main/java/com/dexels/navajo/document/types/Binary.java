@@ -59,7 +59,7 @@ import com.dexels.navajo.document.saximpl.qdxml.QDParser;
  * </p>
  * 
  * @author aphilip
- * @version $Id$
+ * @version $Id: 22485bd491e0357859af9cdd8b64e29d62ed146a $
  */
 
 public final class Binary extends NavajoType implements Serializable,Comparable<Binary> {
