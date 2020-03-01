@@ -16,6 +16,7 @@ public class TopologyReactiveFinder extends CoreReactiveFinder {
 		addReactiveTransformerFactory(new ScanToListTransformerFactory(),"scanToList");
 		addReactiveTransformerFactory(new ScanTransformerFactory(),"scan");
 		addReactiveTransformerFactory(new SetFactory(),"set");
+		addReactiveTransformerFactory(new OnlyFactory(),"only");
 		addReactiveTransformerFactory(new LogTransformerFactory(),"log");
 		addReactiveTransformerFactory(new RowNumberTransformerFactory(),"rownum");
 	}

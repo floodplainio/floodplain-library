@@ -35,23 +35,25 @@ import io.reactivex.FlowableTransformer;
 public class SetTransformer implements ReactiveTransformer, TopologyPipeComponent {
 
 	private boolean materialize;
-	private final SetFactory metadata;
+	private final TransformerMetadata metadata;
 	private final ReactiveParameters parameters;
+	private final boolean fromEmpty;
 	Function<StreamScriptContext, Function<ReplicationMessage, ReplicationMessage>> transformer;
 	
 	
 	private final static Logger logger = LoggerFactory.getLogger(SetTransformer.class);
 
-	public SetTransformer(SetFactory metadata, ReactiveParameters parameters) {
+	public SetTransformer(TransformerMetadata metadata, ReactiveParameters parameters, boolean fromEmpty) {
 		this.metadata = metadata;
 		this.parameters = parameters;
 		this.transformer = execute(parameters);
+		this.fromEmpty = fromEmpty;
 	}
 	
 	// note copied from SetSingle
 	public Function<StreamScriptContext,Function<ReplicationMessage,ReplicationMessage>> execute(ReactiveParameters params) {
 		return context->(item)->{
-			ImmutableMessage s = item.message();
+			ImmutableMessage s = fromEmpty? ImmutableFactory.empty() : item.message();
 			ImmutableMessage state = item.paramMessage().orElse(ImmutableFactory.empty());
 			ReactiveResolvedParameters parms = params.resolve(context, Optional.of(s), item.paramMessage().orElse(ImmutableFactory.empty()), metadata);
 			boolean condition = parms.optionalBoolean("condition").orElse(true);

@@ -48,6 +48,17 @@ public class TestBuildTopology {
 	
 	private void runTopology(Topology topology) throws InterruptedException, IOException {
 		KafkaStreams stream = runner.runTopology(topology);
+		Runtime.getRuntime().addShutdownHook(new Thread() 
+	    { 
+	      public void run() 
+	      { 
+	  		stream.close();
+//			try {
+//				Thread.sleep(5000);
+//			} catch (InterruptedException e) {
+//			}
+	      } 
+	    }); 
 		for (int i = 0; i < 500; i++) {
 			boolean isRunning = stream.state().isRunning();
 	        String stateName = stream.state().name();
@@ -56,8 +67,6 @@ public class TestBuildTopology {
 	        System.err.println("meta: "+allMetadata);
 			Thread.sleep(10000);
 		}
-		stream.close();
-		Thread.sleep(5000);
 	}
 	
 

@@ -54,7 +54,7 @@ public class ScanTransformer implements ReactiveTransformer,TopologyPipeComponen
 	public void addToTopology(String namespace, Stack<String> transformerNames, int currentPipeId, Topology topology,
 			TopologyContext topologyContext, TopologyConstructor topologyConstructor, ImmutableMessage stateMessage) {
 		StreamScriptContext context =new StreamScriptContext(topologyContext.tenant.orElse(TopologyContext.DEFAULT_TENANT), topologyContext.instance, topologyContext.deployment);
-		
+//		junit_junit_1_debezium_0_debezium-Generic-test-dvd.public.payment
 //		ReactiveResolvedParameters resolved = parameters.resolve(context, Optional.empty(), ImmutableFactory.empty(), metadata);
 		Optional<ContextExpression> keyExtractor = Optional.ofNullable(parameters.named.get("key"));
 		ImmutableMessage initial = (ImmutableMessage) parameters.unnamed.get(0).apply().value;

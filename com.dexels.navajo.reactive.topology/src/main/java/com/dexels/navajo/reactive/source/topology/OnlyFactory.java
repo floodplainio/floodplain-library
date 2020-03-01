@@ -14,10 +14,10 @@ import com.dexels.navajo.reactive.api.ReactiveParameters;
 import com.dexels.navajo.reactive.api.ReactiveTransformer;
 import com.dexels.navajo.reactive.api.ReactiveTransformerFactory;
 
-public class SetFactory implements ReactiveTransformerFactory {
+public class OnlyFactory implements ReactiveTransformerFactory {
 
 
-	public SetFactory() {
+	public OnlyFactory() {
 
 	}
 
@@ -54,7 +54,7 @@ public class SetFactory implements ReactiveTransformerFactory {
 
 	@Override
 	public ReactiveTransformer build(List<ReactiveParseProblem> problems, ReactiveParameters parameters) {
-		return new SetTransformer(this,parameters,false);
+		return new SetTransformer(this,parameters,true);
 	}
 
 

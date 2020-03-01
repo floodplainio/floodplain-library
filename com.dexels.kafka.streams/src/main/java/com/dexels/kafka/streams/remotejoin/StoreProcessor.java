@@ -33,8 +33,8 @@ public class StoreProcessor extends AbstractProcessor<String, ReplicationMessage
 	@Override
 	public void process(String key, ReplicationMessage outerMessage) {
 		if(outerMessage==null || outerMessage.operation()==Operation.DELETE) {
-//			logger.info("Delete detected in store: {} with key: {}",lookupStoreName,key);
 			ReplicationMessage previous = lookupStore.get(key);
+//			logger.info("Delete detected in store: {} with key: {}",lookupStoreName,key);
 			if(previous!=null) {
 				lookupStore.delete(key);
 				context().forward(key, previous.withOperation(Operation.DELETE));

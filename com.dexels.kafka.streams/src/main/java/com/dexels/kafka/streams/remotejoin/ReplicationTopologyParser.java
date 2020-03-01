@@ -696,6 +696,7 @@ public class ReplicationTopologyParser {
 			ImmutableMessage stateMessage, boolean materialize, Optional<ContextExpression> keyExtractor) {
 
 		String parentName = processorName(transformerNames.peek());
+//		String parentStoreName = STORE_PREFIX+parentName;
 		String reduceReader = processorName(transformerNames.peek()+"_reduceread");
 		String ifElseName = processorName(namespace+"_"+currentPipeId+"_"+"ifelse"+transformerNames.size());
 		transformerNames.push(ifElseName);
@@ -706,8 +707,9 @@ public class ReplicationTopologyParser {
 
 		String reduceName = processorName(namespace+"_"+currentPipeId+"_"+"reduce"+transformerNames.size());
 		String reduceStoreName = STORE_PREFIX+reduceName;
+		String inputStoreName = STORE_PREFIX+parentName+"_reduce_inputstore";
 
-		topology.addProcessor(reduceReader, ()->new ReduceReadProcessor(reduceStoreName, stateMessage,keyExtractor), parentName);
+		topology.addProcessor(reduceReader, ()->new ReduceReadProcessor(inputStoreName,reduceStoreName, stateMessage,keyExtractor), parentName);
 		topology.addProcessor(ifElseName, ()->new IfElseProcessor(msg->msg.operation()!=Operation.DELETE, trueBranchName, Optional.of(falseBranchName)), reduceReader);
 
 		Stack<String> addProcessorStack = new Stack<>();
@@ -733,10 +735,16 @@ public class ReplicationTopologyParser {
 		topology.addProcessor(reduceName, ()->new StoreStateProcessor(reduceName, reduceStoreName, stateMessage,keyExtractor), addProcessorStack.peek(),removeProcessorStack.peek());
 		addStateStoreMapping(topologyConstructor.processorStateStoreMapper, reduceName, reduceStoreName);
 		addStateStoreMapping(topologyConstructor.processorStateStoreMapper, reduceReader, reduceStoreName);
+		addStateStoreMapping(topologyConstructor.processorStateStoreMapper, reduceReader, inputStoreName);
+		
 		if(!topologyConstructor.immutableStoreSupplier.containsKey(reduceStoreName)) {
 			topologyConstructor.immutableStoreSupplier.put(reduceStoreName,createImmutableMessageSupplier(reduceStoreName,false));
 		}
-//		addStateStoreMapping(topologyConstructor.processorStateStoreMapper, procName, STORE_PREFIX+fromProcessorName);
+		if(!topologyConstructor.stateStoreSupplier.containsKey(inputStoreName)) {
+			topologyConstructor.stateStoreSupplier.put(inputStoreName,createMessageStoreSupplier(inputStoreName,false));
+		}
+
+		//		addStateStoreMapping(topologyConstructor.processorStateStoreMapper, procName, STORE_PREFIX+fromProcessorName);
 
 		if(materialize) {
 			throw new RuntimeException("Not implemented materialization yet");

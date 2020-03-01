@@ -142,7 +142,7 @@ public class DebeziumTopic implements ReactiveSource,TopologyPipeComponent {
 	}
 	@Override
 	public boolean materialize() {
-		return false;
+		return this.materialize;
 	}
 
 }

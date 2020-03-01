@@ -4,5 +4,5 @@
         ,->set(@total=[@total]+[amount])
         ,->set(@total=[@total]-[amount])
     )
-    ->set(total=[@total])
+    ->only(total=[@total])
     ->sink(connector='@replication',collection='parmentpercustomer', '@PAYMENTPERCUSTOMER')
