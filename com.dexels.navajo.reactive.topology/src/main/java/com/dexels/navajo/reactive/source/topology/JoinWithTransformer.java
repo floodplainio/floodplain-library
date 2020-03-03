@@ -67,20 +67,19 @@ public class JoinWithTransformer implements ReactiveTransformer ,TopologyPipeCom
 		ReactivePipe rp = (ReactivePipe)o.value;
 		Stack<String> pipeStack = new Stack<>();
 		ReactivePipeParser.processPipe(namespace, topologyContext, topologyConstructor, topology, topologyConstructor.generateNewPipeId(),pipeStack, rp,true);
-		boolean isList = true;
+		Optional<String> into = resolved.optionalString("into");
+//		boolean isList = into.isPresent();
 		String with = pipeStack.peek();
-		String into = resolved.paramString("into");
 		String name = createName(namespace, transformerNames.size(), pipeId);
 		Optional<String> filter = Optional.empty();
 		boolean isOptional = false;
-        BiFunction<ReplicationMessage, List<ReplicationMessage>, ReplicationMessage> listJoinFunction = ReplicationTopologyParser.createParamListJoinFunction(into);
 
         //        ReplicationTopologyParser.createJoinFunction(isList, into, name, columns, keyField, valueField);
-        final BiFunction<ReplicationMessage, ReplicationMessage, ReplicationMessage> joinFunction = CoreOperators.getJoinFunction(Optional.of(into),Optional.<String>empty());
+        final BiFunction<ReplicationMessage, ReplicationMessage, ReplicationMessage> joinFunction = (msg,comsg)->msg.withParamMessage(comsg.message());
 
         Optional<Predicate<String, ReplicationMessage>> filterPredicate = Filters.getFilter(filter);
 
-		ReplicationTopologyParser.addJoin(topology, topologyContext, topologyConstructor, from.get(), isList, with, name, isOptional, listJoinFunction, joinFunction, filterPredicate,this.materialize);
+		ReplicationTopologyParser.addJoin(topology, topologyContext, topologyConstructor, from.get(), with, name, isOptional, into, filterPredicate,this.materialize);
 		transformerNames.push(name);
 	}
 

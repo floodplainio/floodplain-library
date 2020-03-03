@@ -36,7 +36,6 @@ public class LogTransformerFactory implements ReactiveTransformerFactory {
 
 	@Override
 	public Optional<List<String>> allowedParameters() {
-		// TODO Auto-generated method stub
 		return Optional.of(Arrays.asList(new String[] {"every","logName","dumpStack"}));
 	}
 

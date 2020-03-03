@@ -375,6 +375,7 @@ public class TopologyRunner {
 				cSettings.put("key.converter.schemas.enable",false);
 				cSettings.put("value.converter.schemas.enable",false);
 				cSettings.put("value.converter","org.apache.kafka.connect.json.JsonConverter");
+				cSettings.putAll(tuple.sinkParameters);
 				matList.add(cSettings);
 			}
 			return new MaterializedConnector(matList);

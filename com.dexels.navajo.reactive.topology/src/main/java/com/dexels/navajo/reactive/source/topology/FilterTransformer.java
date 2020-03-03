@@ -55,7 +55,6 @@ public class FilterTransformer implements ReactiveTransformer,TopologyPipeCompon
 			ReplicationTopologyParser.addMaterializeStore(topology, topologyContext, topologyConstructor, filterName, filterName+"_prematerialize");
 		} else {
 			topology.addProcessor(filterName, filterProcessor, transformerNames.peek());
-
 		}
 		transformerNames.push(filterName);
 	}

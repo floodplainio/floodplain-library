@@ -39,7 +39,7 @@ public class TestBuildTopology {
 	public void setup() {
 		String applicationId = "junit_8"; // UUID.randomUUID().toString();
 		ImmutableFactory.setInstance(ImmutableFactory.createParser());
-		topologyContext = new TopologyContext(Optional.of("Generic"), "test", "someinstance", "20200217g");
+		topologyContext = new TopologyContext(Optional.of("Generic"), "test", "someinstance", "20200217i");
 		CoreReactiveFinder finder = new TopologyReactiveFinder();
 		Reactive.setFinderInstance(finder);
 		StreamConfiguration sc = StreamConfiguration.parseConfig("test", getClass().getClassLoader().getResourceAsStream("resources.xml"));
@@ -230,6 +230,15 @@ public class TestBuildTopology {
 		runTopology(topology);
 	}
 
+	@Test
+	public void testCustomerWithTotal() throws ParseException, IOException, InterruptedException {
+
+		Topology topology = runner.parseSinglePipeDefinition(new Topology(),getClass().getClassLoader().getResourceAsStream("customerwithtotals.rr"),"junit");
+		ReplicationTopologyParser.materializeStateStores(runner.topologyConstructor(), topology);
+		System.err.println("Topology: \n"+topology.describe());
+		runTopology(topology);
+	}
+	
 	@Test @Ignore
 	public void testParams() throws ParseException, IOException, InterruptedException {
 

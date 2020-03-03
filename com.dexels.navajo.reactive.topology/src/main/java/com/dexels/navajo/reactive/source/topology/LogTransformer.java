@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.kafka.streams.api.TopologyContext;
+import com.dexels.kafka.streams.remotejoin.ReplicationTopologyParser;
 import com.dexels.kafka.streams.remotejoin.TopologyConstructor;
 import com.dexels.navajo.document.stream.DataItem;
 import com.dexels.navajo.document.stream.api.StreamScriptContext;
@@ -57,7 +58,13 @@ public class LogTransformer implements ReactiveTransformer, TopologyPipeComponen
 		String logName = resolved.paramString("logName");
 		logger.info("Stack top for transformer: "+transformerNames.peek());
 		String name = createName(namespace, transformerNames.size(), pipeId);
-		topology.addProcessor(name, ()->new LogProcessor(logName,dumpStack), transformerNames.peek());
+		if (this.materialize()) {
+//			topology.addProcessor(filterName+"_prematerialize",filterProcessor, transformerNames.peek());
+			topology.addProcessor(name+"_prematerialize", ()->new LogProcessor(logName,dumpStack), transformerNames.peek());
+			ReplicationTopologyParser.addMaterializeStore(topology, topologyContext, topologyConstructor, name, name+"_prematerialize");
+		} else {
+			topology.addProcessor(name, ()->new LogProcessor(logName,dumpStack), transformerNames.peek());
+		}
 		transformerNames.push(name);
 	}
 	
