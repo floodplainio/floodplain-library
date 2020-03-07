@@ -99,7 +99,7 @@ public class LocalClientDispatcherWrapper implements LocalClient {
     }
 	@Override
 	public boolean isSpecialWebservice(String name) {
-		return Dispatcher.isSpecialwebservice(name);
+		return false;
 	}
 
 	@Override

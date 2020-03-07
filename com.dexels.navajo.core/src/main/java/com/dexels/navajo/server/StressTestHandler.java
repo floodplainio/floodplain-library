@@ -41,9 +41,4 @@ public class StressTestHandler  extends ServiceHandler {
         return NavajoFactory.getInstance().createNavajo();
     }
 
-    @Override
-    public boolean needsRecompile( Access a ) throws Exception {
-        return false;
-    }
-
 }

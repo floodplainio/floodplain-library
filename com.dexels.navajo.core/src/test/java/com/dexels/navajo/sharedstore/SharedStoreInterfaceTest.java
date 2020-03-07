@@ -20,7 +20,6 @@ import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dexels.navajo.server.Dispatcher;
 import com.dexels.navajo.server.DispatcherFactory;
 import com.dexels.navajo.server.enterprise.tribe.DefaultTribeManager;
 import com.dexels.navajo.server.enterprise.tribe.TribeManagerFactory;

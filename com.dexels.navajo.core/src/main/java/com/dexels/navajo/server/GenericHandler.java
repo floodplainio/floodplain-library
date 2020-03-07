@@ -13,8 +13,6 @@ import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dexels.navajo.compiler.BundleCreator;
-import com.dexels.navajo.compiler.BundleCreatorFactory;
 import com.dexels.navajo.document.Header;
 import com.dexels.navajo.document.Navajo;
 import com.dexels.navajo.document.NavajoException;
@@ -39,7 +37,7 @@ import navajocore.Version;
  * Copyright:    Copyright (c) 2001 - 2011
  * Company:      Dexels
  * @author Arjen Schoneveld en Martin Bergman
- * @version $Id: d8e2e63643473d556707ec2d2c9c669c47e64531 $
+ * @version $Id$
  *
  * This class is used to run Navajo script web services.
  *
@@ -250,18 +248,7 @@ public class GenericHandler extends ServiceHandler {
     	}
     	return (!sourceFile.exists() || (scriptFile.lastModified() > sourceFile.lastModified()) || sourceFile.length() == 0);
     }
-    
-    /**
-     * Check whether Java class file needs to be recompiled.
-     * 
-     * @param serviceName
-     * @param sourceFile
-     * @param targetFile
-     * @return
-     */
-    private static final boolean checkJavaRecompile(File sourceFile, File targetFile) {
-    	return !targetFile.exists() || (sourceFile.lastModified() > targetFile.lastModified());
-    }
+
     
     private static final NavajoClassSupplier getScriptLoader(boolean isBetaUser, String className) {
     	NavajoClassSupplier newLoader = loadedClasses.get(className);
@@ -276,31 +263,7 @@ public class GenericHandler extends ServiceHandler {
          }
          return newLoader;
     }
-    
-    /**
-     * Check whether web service Access needs recompile.
-     * Can be used by interested parties, e.g. Dispatcher.
-     * 
-     * @param a
-     * @return
-     */
-    public final boolean needsRecompile(Access a) throws Exception {
-    	Object [] all = getScriptPathServiceNameAndScriptFile(a, a.rpcName, a.betaUser);
- 		if(all==null) {
- 			return false;
- 		}
 
-    	File scriptFile = (File) all[2];
-    	File sourceFile = (File) all[4];
-    	String className = (String) all[5];
-    	File targetFile = (File) all[7];
-    	boolean isCompilable = (Boolean)all[8];
-
-    	return isCompilable && (checkScriptRecompile(scriptFile, sourceFile) || 
-    	             checkJavaRecompile(sourceFile, targetFile) ||
-    	             hasDirtyDepedencies(a, className));
-    }
-    
     /**
      * Non-OSGi only
      * @param a
@@ -386,78 +349,7 @@ public class GenericHandler extends ServiceHandler {
      */
 	@Override
     public final Navajo doService( Access a ) throws UserException, SystemException, AuthorizationException {
-
-        // Check whether break-was-set for access from 'the-outside'. If so, do NOT perform service and return
-        // current value of outputdoc.
-
-        if (a.isBreakWasSet()) {
-            if (a.getOutputDoc() == null) {
-                Navajo outDoc = NavajoFactory.getInstance().createNavajo();
-                a.setOutputDoc(outDoc);
-            }
-            return a.getOutputDoc();
-        }
-
-        Navajo outDoc = null;
-        StringBuilder compilerErrors = new StringBuilder();
-        outDoc = NavajoFactory.getInstance().createNavajo();
-        CompiledScriptInterface cso = null;
-        try {
-            cso = loadOnDemand(a, a.rpcName);
-        } catch (Throwable e) {
-            logger.error("Exception on getting compiledscript", e);
-            if (e instanceof FileNotFoundException) {
-                a.setExitCode(Access.EXIT_SCRIPT_NOT_FOUND);
-            }
-            throw new SystemException(-1, e.getMessage(), e);
-        }
-        try {
-
-            if (cso == null) {
-                if (Version.osgiActive()) {
-                    logger.warn("Script not found from OSGi registry while OSGi is active");
-                }
-                logger.error("No compiled script found, proceeding further is useless.");
-                throw new RuntimeException("Can not resolve script: " + a.rpcName);
-            }
-            a.setOutputDoc(outDoc);
-            a.setCompiledScript(cso);
-            if (cso.getClassLoader() == null) {
-                logger.error("No classloader present!");
-            }
-
-            cso.run(a);
-
-            return a.getOutputDoc();
-        } catch (Throwable e) {
-
-            if (e instanceof com.dexels.navajo.mapping.BreakEvent) {
-                outDoc = a.getOutputDoc(); // Outdoc might have been changed by running script
-                // Create dummy header to set breakwasset attribute.
-
-                Header h = NavajoFactory.getInstance().createHeader(outDoc, "", "", "", -1);
-                outDoc.addHeader(h);
-                outDoc.getHeader().setHeaderAttribute("breakwasset", "true");
-                return outDoc;
-            } else if (e instanceof com.dexels.navajo.server.ConditionErrorException) {
-                return ((com.dexels.navajo.server.ConditionErrorException) e).getNavajo();
-            } else if (e instanceof UserException) {
-                throw (UserException) e;
-            }
-            throw new SystemException(-1, e.getMessage(), e);
-        }
+		return null;
     }
 
-	// THIS rpcName seems to have a tenant suffix
-	private CompiledScriptInterface loadOnDemand(Access a, String rpcName) throws Exception {
-		
-		
-		final String tenant;
-		if (a.getTenant()==null) {
-			tenant = tenantConfig.getInstanceGroup();
-		} else {
-			tenant = a.getTenant();
-		}
-		return BundleCreatorFactory.getInstance().getOnDemandScriptService(rpcName, tenant);
-	}
 }

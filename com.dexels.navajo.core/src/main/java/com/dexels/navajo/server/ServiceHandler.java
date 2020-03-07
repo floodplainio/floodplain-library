@@ -7,7 +7,7 @@ package com.dexels.navajo.server;
  * Copyright:    Copyright (c) 2001
  * Company:      Dexels
  * @author Arjen Schoneveld en Martin Bergman
- * @version $Id: 915860e4be1b3bc7df1da96cf1cc0eb8c36335a9 $
+ * @version $Id$
  *
  * DISCLAIMER
  *
@@ -55,8 +55,6 @@ public abstract class ServiceHandler implements Constructor {
 	public final Persistable construct() throws Exception {
         return doService( null );
     }
-
-    public abstract boolean needsRecompile( Access a ) throws Exception;
 
     public abstract void setNavajoConfig( NavajoConfigInterface navajoConfig );
     

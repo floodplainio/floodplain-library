@@ -127,24 +127,7 @@ public class TestDispatcher implements DispatcherInterface {
 	}
 
 
-	@Override
-	public int getHealth(String resourceId) {
-		return 0;
-	}
 
-	@Override
-	public int getWaitingTime(String resourceId) {
-		return 0;
-	}
-
-	@Override
-	public boolean isAvailable(String resourceId) {
-		return false;
-	}
-
-	@Override
-	public void setHealth(String resourceId, int h) {
-	}
 
 	@Override
 	public Navajo generateErrorMessage(Access access, String message, int code, int level, Throwable t) throws FatalException {

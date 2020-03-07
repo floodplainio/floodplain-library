@@ -13,7 +13,6 @@ import com.dexels.navajo.server.enterprise.monitoring.AgentFactory;
 import com.dexels.navajo.server.enterprise.statistics.StatisticsRunnerFactory;
 import com.dexels.navajo.server.enterprise.tribe.TribeManagerFactory;
 import com.dexels.navajo.server.jmx.JMXHelper;
-import com.dexels.navajo.server.resource.ResourceCheckerManager;
 import com.dexels.navajo.util.AuditLog;
 
 import navajoextension.AbstractCoreExtension;
