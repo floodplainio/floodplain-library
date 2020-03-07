@@ -1,10 +1,10 @@
 package com.dexels.kafka.streams.transformer.custom;
 
-import java.math.BigInteger;
-import java.util.Map;
-
 import com.dexels.replication.api.ReplicationMessage;
 import com.dexels.replication.transformer.api.MessageTransformer;
+
+import java.math.BigInteger;
+import java.util.Map;
 
 public class CreatePublicIdTransformer implements MessageTransformer {
     private static final int MAX_INT = Integer.MAX_VALUE;

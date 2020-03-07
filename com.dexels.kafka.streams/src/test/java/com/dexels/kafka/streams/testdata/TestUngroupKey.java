@@ -1,9 +1,8 @@
 package com.dexels.kafka.streams.testdata;
 
+import com.dexels.kafka.streams.api.CoreOperators;
 import org.junit.Assert;
 import org.junit.Test;
-
-import com.dexels.kafka.streams.api.CoreOperators;
 
 
 public class TestUngroupKey {

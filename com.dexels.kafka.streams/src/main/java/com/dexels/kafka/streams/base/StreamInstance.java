@@ -1,23 +1,16 @@
 package com.dexels.kafka.streams.base;
 
-import static com.dexels.kafka.streams.base.StreamOperators.transformersFromChildren;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.Properties;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
-
+import com.dexels.kafka.streams.api.CoreOperators;
+import com.dexels.kafka.streams.api.StreamConfiguration;
+import com.dexels.kafka.streams.api.StreamTopologyException;
+import com.dexels.kafka.streams.api.TopologyContext;
+import com.dexels.kafka.streams.processor.generic.GenericProcessor;
+import com.dexels.kafka.streams.processor.generic.GenericProcessorBuilder;
+import com.dexels.kafka.streams.remotejoin.ReplicationTopologyParser;
+import com.dexels.kafka.streams.xml.parser.CaseSensitiveXMLElement;
+import com.dexels.kafka.streams.xml.parser.XMLElement;
+import com.dexels.replication.api.ReplicationMessage;
+import com.dexels.replication.transformer.api.MessageTransformer;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -32,21 +25,12 @@ import org.apache.kafka.streams.state.StreamsMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dexels.elasticsearch.sink.RunKafkaSinkElastic;
-import com.dexels.kafka.streams.api.CoreOperators;
-import com.dexels.kafka.streams.api.StreamConfiguration;
-import com.dexels.kafka.streams.api.StreamTopologyException;
-import com.dexels.kafka.streams.api.TopologyContext;
-import com.dexels.kafka.streams.api.sink.ConnectConfiguration;
-import com.dexels.kafka.streams.processor.generic.GenericProcessor;
-import com.dexels.kafka.streams.processor.generic.GenericProcessorBuilder;
-import com.dexels.kafka.streams.remotejoin.ReplicationTopologyParser;
-import com.dexels.kafka.streams.xml.parser.CaseSensitiveXMLElement;
-import com.dexels.kafka.streams.xml.parser.XMLElement;
-import com.dexels.mongodb.sink.RunKafkaConnect;
-import com.dexels.mongodb.sink.SinkTransformerRegistry;
-import com.dexels.replication.api.ReplicationMessage;
-import com.dexels.replication.transformer.api.MessageTransformer;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.ExecutionException;
 
 public class StreamInstance {
 	private final Map<String,KafkaStreams> streams = new HashMap<>();
@@ -213,7 +197,8 @@ public class StreamInstance {
 				if(x.getName().equals("direct")) {
 					lowLevelAPIElements.add(x);
 				} else if(x.getName().endsWith(".sink")) {
-					addSinks(x.getName().split("\\.")[0],x,generation,brokers,tenant,deployment,storageFolder, i);
+					throw new RuntimeException("Disabled sinks, removed addSinks");
+//					addSinks(x.getName().split("\\.")[0],x,generation,brokers,tenant,deployment,storageFolder, i);
 				}
 				i++;
 			}
@@ -253,20 +238,20 @@ public class StreamInstance {
 		}
 	}
 
-	private final void registerSinkTransformer(XMLElement x, TopologyContext context, String sinkName) {
-		for(XMLElement e : x.getChildren()) {
-			String sinkInstance = e.getStringAttribute("instance");
-			if (sinkInstance == null) {
-			    sinkInstance = instanceName;
-			}
-			TopologyContext currentContext = sinkInstance == null? context: context.withInstance(sinkInstance);
-			String topicName = CoreOperators.topicName( e.getStringAttribute("topic"),currentContext);
-			Optional<MessageTransformer> transformer = transformersFromChildren(Optional.of(e),transformerRegistry,topicName);
-			if(transformer.isPresent()) {
-				SinkTransformerRegistry.registerTransformerForSink(sinkName, currentContext,topicName, transformer.get());
-			}
-		}
-	}
+//	private void registerSinkTransformer(XMLElement x, TopologyContext context, String sinkName) {
+//		for(XMLElement e : x.getChildren()) {
+//			String sinkInstance = e.getStringAttribute("instance");
+//			if (sinkInstance == null) {
+//			    sinkInstance = instanceName;
+//			}
+//			TopologyContext currentContext = sinkInstance == null? context: context.withInstance(sinkInstance);
+//			String topicName = CoreOperators.topicName( e.getStringAttribute("topic"),currentContext);
+//			Optional<MessageTransformer> transformer = transformersFromChildren(Optional.of(e),transformerRegistry,topicName);
+//			if(transformer.isPresent()) {
+//				SinkTransformerRegistry.registerTransformerForSink(sinkName, currentContext,topicName, transformer.get());
+//			}
+//		}
+//	}
 //	
 //	public TopicPublisher createPublisher() {
 //		return KafkaClientFactory.createPublisher(this.configuration.kafkaHosts(),1,this.configuration.kafkaReplicationFactor());
@@ -279,75 +264,67 @@ public class StreamInstance {
 //		return KafkaClientFactory.createSubscriber(this.configuration.kafkaHosts(), conf);
 //	}
 //	
-	private void addSinks(String sinkType, XMLElement x, String generation, String brokers, Optional<String> tenant, String deployment, File storageFolder, int index) throws IOException, InterruptedException, ExecutionException {
-		boolean useDirectSinks = System.getenv("DIRECT_SINK")!=null && "true".equals(System.getenv("DIRECT_SINK"));
-	   createSink(determineSinkType(sinkType,useDirectSinks),x, adminClient, generation, tenant, deployment, storageFolder);
-    }
+//	private void addSinks(String sinkType, XMLElement x, String generation, String brokers, Optional<String> tenant, String deployment, File storageFolder, int index) throws IOException, InterruptedException, ExecutionException {
+//		boolean useDirectSinks = System.getenv("DIRECT_SINK")!=null && "true".equals(System.getenv("DIRECT_SINK"));
+//	   createSink(determineSinkType(sinkType,useDirectSinks),x, adminClient, generation, tenant, deployment, storageFolder);
+//    }
 	
-	private SinkType determineSinkType(String sinkTypeName, boolean useDirectSinks) {
-		switch(sinkTypeName) {
-		case "mongodb":
-			return useDirectSinks? SinkType.MONGODBDIRECT : SinkType.MONGODB;
-		case "elasticsearch":
-			return useDirectSinks? SinkType.ELASTICSEARCHDIRECT : SinkType.ELASTICSEARCH;
-		case "neo4j":
-			return SinkType.NEO4J;
-		default:
-			throw new IllegalArgumentException("Unknown sink type: "+sinkTypeName);
-		}
-	}
+//	private SinkType determineSinkType(String sinkTypeName, boolean useDirectSinks) {
+//		switch(sinkTypeName) {
+//		case "mongodb":
+//			return useDirectSinks? SinkType.MONGODBDIRECT : SinkType.MONGODB;
+//		case "elasticsearch":
+//			return useDirectSinks? SinkType.ELASTICSEARCHDIRECT : SinkType.ELASTICSEARCH;
+//		case "neo4j":
+//			return SinkType.NEO4J;
+//		default:
+//			throw new IllegalArgumentException("Unknown sink type: "+sinkTypeName);
+//		}
+//	}
 
-	private void createSink(SinkType type, XMLElement x, AdminClient adminClient, String generation, Optional<String> tenant, String deployment, File storageFolder) throws IOException, InterruptedException, ExecutionException {
-		TopologyContext topologyContext = new TopologyContext(tenant, deployment, this.instanceName, generation);
-		String name = x.getStringAttribute("name");
-		// TODO deprecate this?
-		if (name == null) {
-	    	logger.warn("Sink without name found: {}",x.toString());
-	        Map<String, ConnectConfiguration> sinkconfigs = configuration.connectors();
-	        for (String key  : sinkconfigs.keySet()) {
-	            addSinkConfig(type,x, topologyContext, key, sinkconfigs.get(key),adminClient, storageFolder);
-	        }
-	    } else {
-	        Optional<ConnectConfiguration> sinkConfig = configuration.connector(name);
-	        if(sinkConfig.isPresent()) {
-	            addSinkConfig(type,x,topologyContext, name, sinkConfig.get(),adminClient, storageFolder);
-	        } else {
-	            logger.warn("Unable to find {} sink {}!",type, name);
-	        }
-	    }
-	}
+//	private void createSink(SinkType type, XMLElement x, AdminClient adminClient, String generation, Optional<String> tenant, String deployment, File storageFolder) throws IOException, InterruptedException, ExecutionException {
+//		TopologyContext topologyContext = new TopologyContext(tenant, deployment, this.instanceName, generation);
+//		String name = x.getStringAttribute("name");
+//		// TODO deprecate this?
+//		if (name == null) {
+//	    	logger.warn("Sink without name found: {}",x.toString());
+//	        Map<String, ConnectConfiguration> sinkconfigs = configuration.connectors();
+//	        for (String key  : sinkconfigs.keySet()) {
+//	            addSinkConfig(type,x, topologyContext, key, sinkconfigs.get(key),adminClient, storageFolder);
+//	        }
+//	    } else {
+//	        Optional<ConnectConfiguration> sinkConfig = configuration.connector(name);
+//	        if(sinkConfig.isPresent()) {
+//	            addSinkConfig(type,x,topologyContext, name, sinkConfig.get(),adminClient, storageFolder);
+//	        } else {
+//	            logger.warn("Unable to find {} sink {}!",type, name);
+//	        }
+//	    }
+//	}
 
-    private void addSinkConfig(SinkType type, XMLElement x, TopologyContext topologyContext, String name, ConnectConfiguration sinkConfig, AdminClient adminClient, File storageFolder) throws IOException, InterruptedException, ExecutionException {
-    	final String sinkTenant = sinkConfig.settings().get("tenant");
-		if (sinkTenant != null && topologyContext.tenant.isPresent()) {
-            if (!sinkTenant.equalsIgnoreCase(topologyContext.tenant.get())) {
-                logger.info("Skipping sink {} for {} due to tenant mismatch: {} {}", name, instanceName, topologyContext.tenant, sinkTenant);
-                return;
-            }
-        }
-        registerSinkTransformer(x,topologyContext,name);
-        if(type==SinkType.NEO4J) {
-        	return;
-        	// TODO Neo disabled
-        }
-        if(type==SinkType.ELASTICSEARCHDIRECT || type==SinkType.MONGODBDIRECT| type==SinkType.NEO4J) {
-//        	createDirectSink(type,x,configuration,topologyContext, name);
-        	return;
-        }
-        final ConnectSink connect;
-        switch(type) {
-        	case MONGODB:
-        		connect =  new RunKafkaConnect(Optional.of(x),configuration,topologyContext,adminClient, name, storageFolder);
-        		break;
-        	case ELASTICSEARCH:
-        		connect =  new RunKafkaSinkElastic(x,configuration,topologyContext, adminClient, name, storageFolder);
-        		break;
-        	default:
-        		throw new StreamTopologyException("Unsupported sink type: "+type.toString());
-        }
-        sinks.add(connect);
-        connect.start();
-    }
+//    private void addSinkConfig(SinkType type, XMLElement x, TopologyContext topologyContext, String name, ConnectConfiguration sinkConfig, AdminClient adminClient, File storageFolder) throws IOException, InterruptedException, ExecutionException {
+//    	final String sinkTenant = sinkConfig.settings().get("tenant");
+//		if (sinkTenant != null && topologyContext.tenant.isPresent()) {
+//            if (!sinkTenant.equalsIgnoreCase(topologyContext.tenant.get())) {
+//                logger.info("Skipping sink {} for {} due to tenant mismatch: {} {}", name, instanceName, topologyContext.tenant, sinkTenant);
+//                return;
+//            }
+//        }
+//        registerSinkTransformer(x,topologyContext,name);
+//        final ConnectSink connect;
+//        switch(type) {
+//        	case MONGODB:
+//        		connect =  new RunKafkaConnect(Optional.of(x),configuration,topologyContext,adminClient, name, storageFolder);
+//        		break;
+//        	case ELASTICSEARCH:
+//        		connect =  new RunKafkaSinkElastic(x,configuration,topologyContext, adminClient, name, storageFolder);
+//        		break;
+//        	default:
+//        		throw new StreamTopologyException("Unsupported sink type: "+type.toString());
+//        }
+//        sinks.add(connect);
+//        connect.start();
+//    }
 
 	public StreamConfiguration getConfig() {
 		return configuration;

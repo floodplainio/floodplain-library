@@ -1,10 +1,9 @@
 package com.dexels.kafka.streams.testdata;
 
+import com.dexels.kafka.streams.base.StreamRuntime;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-import com.dexels.kafka.streams.base.StreamRuntime;
 
 
 public class TestFileOperations {

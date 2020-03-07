@@ -1,19 +1,22 @@
 package com.dexels.kafka.streams.base;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
+import com.dexels.kafka.streams.api.StreamConfiguration;
+import com.dexels.kafka.streams.processor.generic.GenericProcessorBuilder;
+import com.dexels.kafka.streams.transformer.custom.*;
+import com.dexels.kafka.streams.xml.parser.XMLParseException;
+import com.dexels.navajo.repository.api.RepositoryInstance;
+import com.dexels.replication.transformer.api.MessageTransformer;
+import io.reactivex.Observable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subjects.Subject;
+import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.streams.Topology;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.osgi.service.component.annotations.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -21,40 +24,13 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 import javax.inject.Named;
-
-import org.apache.kafka.clients.admin.AdminClient;
-import org.apache.kafka.streams.Topology;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferencePolicy;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.dexels.kafka.streams.api.StreamConfiguration;
-import com.dexels.kafka.streams.processor.generic.GenericProcessorBuilder;
-import com.dexels.kafka.streams.transformer.custom.CommunicationTransformer;
-import com.dexels.kafka.streams.transformer.custom.CopyFieldTransformer;
-import com.dexels.kafka.streams.transformer.custom.CreateCoordinateTransformer;
-import com.dexels.kafka.streams.transformer.custom.CreateListTransformer;
-import com.dexels.kafka.streams.transformer.custom.CreatePublicIdTransformer;
-import com.dexels.kafka.streams.transformer.custom.FormatGenderTransformer;
-import com.dexels.kafka.streams.transformer.custom.FormatZipCodeTransformer;
-import com.dexels.kafka.streams.transformer.custom.MergeDateTimeTransformer;
-import com.dexels.kafka.streams.transformer.custom.SplitToListTransformer;
-import com.dexels.kafka.streams.transformer.custom.StringToDateTransformer;
-import com.dexels.kafka.streams.transformer.custom.TeamName;
-import com.dexels.kafka.streams.xml.parser.XMLParseException;
-import com.dexels.navajo.repository.api.RepositoryInstance;
-import com.dexels.replication.transformer.api.MessageTransformer;
-
-import io.reactivex.Observable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subjects.PublishSubject;
-import io.reactivex.subjects.Subject;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
 
 @Component(name="kafka.stream.runtime", service = {StreamRuntime.class}, immediate=true)
 @ApplicationScoped @Default

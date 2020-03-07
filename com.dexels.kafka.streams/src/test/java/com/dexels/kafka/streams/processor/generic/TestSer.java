@@ -1,16 +1,15 @@
 package com.dexels.kafka.streams.processor.generic;
 
-import java.util.Optional;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
 import com.dexels.replication.api.ReplicationMessage;
 import com.dexels.replication.api.ReplicationMessageParser;
 import com.dexels.replication.factory.ReplicationFactory;
 import com.dexels.replication.impl.json.JSONReplicationMessageParserImpl;
 import com.dexels.replication.impl.protobuf.FallbackReplicationMessageParser;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.Optional;
 
 public class TestSer {
 // /TODO protobuf binaries

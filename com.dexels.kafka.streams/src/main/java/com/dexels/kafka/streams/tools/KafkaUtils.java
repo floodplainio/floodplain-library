@@ -1,13 +1,6 @@
 package com.dexels.kafka.streams.tools;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.stream.Collectors;
-
+import com.dexels.kafka.streams.api.CoreOperators;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.CreateTopicsResult;
 import org.apache.kafka.clients.admin.DeleteTopicsResult;
@@ -17,7 +10,13 @@ import org.apache.kafka.common.errors.TopicExistsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dexels.kafka.streams.api.CoreOperators;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 public class KafkaUtils {
 	

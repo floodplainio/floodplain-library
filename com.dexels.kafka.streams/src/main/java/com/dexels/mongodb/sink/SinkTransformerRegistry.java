@@ -1,12 +1,12 @@
 package com.dexels.mongodb.sink;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-
 import com.dexels.kafka.streams.api.CoreOperators;
 import com.dexels.kafka.streams.api.TopologyContext;
 import com.dexels.replication.transformer.api.MessageTransformer;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 public class SinkTransformerRegistry {
 

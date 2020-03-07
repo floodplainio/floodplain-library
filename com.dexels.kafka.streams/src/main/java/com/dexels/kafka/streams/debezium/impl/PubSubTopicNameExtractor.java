@@ -1,13 +1,12 @@
 package com.dexels.kafka.streams.debezium.impl;
 
-import java.util.Optional;
-
-import org.apache.kafka.streams.processor.RecordContext;
-import org.apache.kafka.streams.processor.TopicNameExtractor;
-
 import com.dexels.kafka.streams.remotejoin.TopologyConstructor;
 import com.dexels.kafka.streams.tools.KafkaUtils;
 import com.dexels.pubsub.rx2.api.PubSubMessage;
+import org.apache.kafka.streams.processor.RecordContext;
+import org.apache.kafka.streams.processor.TopicNameExtractor;
+
+import java.util.Optional;
 
 public class PubSubTopicNameExtractor implements TopicNameExtractor<String, PubSubMessage> {
 	

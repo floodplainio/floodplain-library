@@ -1,25 +1,15 @@
 package com.dexels.kafka.streams.remotejoin;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
-
-import org.apache.kafka.clients.admin.AdminClient;
-import org.apache.kafka.streams.state.KeyValueStore;
-import org.apache.kafka.streams.state.StoreBuilder;
-
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.kafka.streams.tools.KafkaUtils;
 import com.dexels.replication.api.ReplicationMessage;
 import com.dexels.replication.transformer.api.MessageTransformer;
+import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.streams.state.KeyValueStore;
+import org.apache.kafka.streams.state.StoreBuilder;
+
+import java.util.*;
+import java.util.concurrent.ExecutionException;
 
 public class TopologyConstructor {
 	

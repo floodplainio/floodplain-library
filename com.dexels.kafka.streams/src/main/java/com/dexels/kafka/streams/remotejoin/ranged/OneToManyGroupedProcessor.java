@@ -1,10 +1,9 @@
 package com.dexels.kafka.streams.remotejoin.ranged;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.BiFunction;
-
+import com.dexels.kafka.streams.api.CoreOperators;
+import com.dexels.kafka.streams.remotejoin.PreJoinProcessor;
+import com.dexels.replication.api.ReplicationMessage;
+import com.dexels.replication.api.ReplicationMessage.Operation;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.kstream.Predicate;
 import org.apache.kafka.streams.processor.AbstractProcessor;
@@ -14,10 +13,10 @@ import org.apache.kafka.streams.state.KeyValueStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dexels.kafka.streams.api.CoreOperators;
-import com.dexels.kafka.streams.remotejoin.PreJoinProcessor;
-import com.dexels.replication.api.ReplicationMessage;
-import com.dexels.replication.api.ReplicationMessage.Operation;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.BiFunction;
 
 public class OneToManyGroupedProcessor extends AbstractProcessor<String, ReplicationMessage> {
 	private static final Logger logger = LoggerFactory.getLogger(OneToManyGroupedProcessor.class);

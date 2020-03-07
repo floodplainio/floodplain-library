@@ -1,18 +1,17 @@
 package com.dexels.kafka.streams.remotejoin;
 
-import java.util.Collections;
-import java.util.Optional;
-
-import org.apache.kafka.streams.kstream.Predicate;
-import org.apache.kafka.streams.processor.AbstractProcessor;
-import org.apache.kafka.streams.processor.ProcessorContext;
-import org.apache.kafka.streams.processor.Punctuator;
-
 import com.dexels.kafka.streams.base.Filters;
 import com.dexels.kafka.streams.base.StreamOperators;
 import com.dexels.kafka.streams.xml.parser.XMLElement;
 import com.dexels.replication.api.ReplicationMessage;
 import com.dexels.replication.transformer.api.MessageTransformer;
+import org.apache.kafka.streams.kstream.Predicate;
+import org.apache.kafka.streams.processor.AbstractProcessor;
+import org.apache.kafka.streams.processor.ProcessorContext;
+import org.apache.kafka.streams.processor.Punctuator;
+
+import java.util.Collections;
+import java.util.Optional;
 
 public class XmlTransformerProcessor extends AbstractProcessor<String, ReplicationMessage> implements Punctuator {
 

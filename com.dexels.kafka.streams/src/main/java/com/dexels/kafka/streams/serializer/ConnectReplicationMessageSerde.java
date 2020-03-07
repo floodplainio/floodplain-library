@@ -1,14 +1,13 @@
 package com.dexels.kafka.streams.serializer;
 
-import java.util.Map;
-import java.util.stream.Collectors;
-
+import com.dexels.replication.api.ReplicationMessage;
+import com.dexels.replication.impl.json.ReplicationJSON;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serializer;
 
-import com.dexels.replication.api.ReplicationMessage;
-import com.dexels.replication.impl.json.ReplicationJSON;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ConnectReplicationMessageSerde implements Serde<ReplicationMessage> {
 

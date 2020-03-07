@@ -1,28 +1,20 @@
 package com.dexels.mongodb.sink;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Properties;
-import java.util.UUID;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
-
+import com.dexels.kafka.streams.api.CoreOperators;
+import com.dexels.kafka.streams.api.StreamConfiguration;
+import com.dexels.kafka.streams.api.TopologyContext;
+import com.dexels.kafka.streams.api.sink.ConnectConfiguration;
+import com.dexels.kafka.streams.base.ConnectSink;
+import com.dexels.kafka.streams.tools.KafkaUtils;
+import com.dexels.kafka.streams.xml.parser.XMLElement;
+import com.mongodb.MongoClient;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.IndexOptions;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.common.utils.Time;
 import org.apache.kafka.common.utils.Utils;
-import org.apache.kafka.connect.runtime.ConnectorConfig;
-import org.apache.kafka.connect.runtime.Herder;
-import org.apache.kafka.connect.runtime.Worker;
-import org.apache.kafka.connect.runtime.WorkerConfig;
-import org.apache.kafka.connect.runtime.WorkerInfo;
+import org.apache.kafka.connect.runtime.*;
 import org.apache.kafka.connect.runtime.isolation.Plugins;
 import org.apache.kafka.connect.runtime.rest.entities.ConnectorInfo;
 import org.apache.kafka.connect.runtime.standalone.StandaloneConfig;
@@ -35,17 +27,12 @@ import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dexels.kafka.streams.api.CoreOperators;
-import com.dexels.kafka.streams.api.StreamConfiguration;
-import com.dexels.kafka.streams.api.TopologyContext;
-import com.dexels.kafka.streams.api.sink.ConnectConfiguration;
-import com.dexels.kafka.streams.base.ConnectSink;
-import com.dexels.kafka.streams.tools.KafkaUtils;
-import com.dexels.kafka.streams.xml.parser.XMLElement;
-import com.mongodb.MongoClient;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.model.IndexOptions;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 public class RunKafkaConnect implements ConnectSink {
 	private static final Logger logger = LoggerFactory.getLogger(RunKafkaConnect.class);

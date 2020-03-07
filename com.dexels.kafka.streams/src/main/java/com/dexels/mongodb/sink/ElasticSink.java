@@ -1,17 +1,10 @@
 package com.dexels.mongodb.sink;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Properties;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicBoolean;
-
+import com.dexels.kafka.streams.api.CoreOperators;
+import com.dexels.kafka.streams.api.StreamConfiguration;
+import com.dexels.kafka.streams.api.TopologyContext;
+import com.dexels.kafka.streams.base.ConnectSink;
+import com.dexels.kafka.streams.xml.parser.XMLElement;
 import org.apache.kafka.common.utils.Utils;
 import org.apache.kafka.connect.runtime.ConnectorConfig;
 import org.apache.kafka.connect.runtime.Worker;
@@ -21,11 +14,11 @@ import org.apache.kafka.connect.util.FutureCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dexels.kafka.streams.api.CoreOperators;
-import com.dexels.kafka.streams.api.StreamConfiguration;
-import com.dexels.kafka.streams.api.TopologyContext;
-import com.dexels.kafka.streams.base.ConnectSink;
-import com.dexels.kafka.streams.xml.parser.XMLElement;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ElasticSink implements ConnectSink {
 	private static final Logger logger = LoggerFactory.getLogger(ElasticSink.class);

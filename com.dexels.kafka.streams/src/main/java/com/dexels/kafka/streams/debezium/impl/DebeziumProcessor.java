@@ -1,21 +1,19 @@
 package com.dexels.kafka.streams.debezium.impl;
 
-import static com.dexels.kafka.streams.api.CoreOperators.topicName;
-
-import java.util.Map;
-
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Named;
-
+import com.dexels.kafka.streams.api.StreamConfiguration;
+import com.dexels.kafka.streams.api.TopologyContext;
+import com.dexels.kafka.streams.processor.generic.GenericProcessorBuilder;
+import com.dexels.pubsub.rx2.api.PubSubMessage;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.serialization.Serializer;
 import org.apache.kafka.streams.Topology;
 import org.osgi.service.component.annotations.Component;
 
-import com.dexels.kafka.streams.api.StreamConfiguration;
-import com.dexels.kafka.streams.api.TopologyContext;
-import com.dexels.kafka.streams.processor.generic.GenericProcessorBuilder;
-import com.dexels.pubsub.rx2.api.PubSubMessage;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Named;
+import java.util.Map;
+
+import static com.dexels.kafka.streams.api.CoreOperators.topicName;
 
 @Component(name="dexels.debezium.processor",property={"name=dexels.debezium.processor"})
 @ApplicationScoped @Named("debezium")

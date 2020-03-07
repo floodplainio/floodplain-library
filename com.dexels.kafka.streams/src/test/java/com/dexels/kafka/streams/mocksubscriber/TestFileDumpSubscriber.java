@@ -1,14 +1,12 @@
 package com.dexels.kafka.streams.mocksubscriber;
 
-import java.io.FileNotFoundException;
-import java.io.InputStreamReader;
-
+import com.dexels.pubsub.rx2.factory.PubSubTools;
+import io.reactivex.Flowable;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.dexels.pubsub.rx2.factory.PubSubTools;
-
-import io.reactivex.Flowable;
+import java.io.FileNotFoundException;
+import java.io.InputStreamReader;
 
 public class TestFileDumpSubscriber {
 

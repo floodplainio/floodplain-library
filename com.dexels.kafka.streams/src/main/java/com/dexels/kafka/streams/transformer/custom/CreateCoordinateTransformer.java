@@ -1,13 +1,12 @@
 package com.dexels.kafka.streams.transformer.custom;
 
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.dexels.immutable.api.customtypes.CoordinateType;
 import com.dexels.replication.api.ReplicationMessage;
 import com.dexels.replication.transformer.api.MessageTransformer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Map;
 
 // TODO this name is weird
 public class CreateCoordinateTransformer implements MessageTransformer {

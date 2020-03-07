@@ -1,13 +1,13 @@
 package com.dexels.kafka.streams.debezium;
 
+import com.dexels.immutable.api.ImmutableMessage;
+import com.dexels.replication.api.ReplicationMessage;
+
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import com.dexels.immutable.api.ImmutableMessage;
-import com.dexels.replication.api.ReplicationMessage;
 
 public class TableIdentifier {
 	public final String deployment;

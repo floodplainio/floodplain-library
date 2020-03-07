@@ -1,12 +1,13 @@
 package com.dexels.elasticsearch.sink;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
+import com.dexels.http.reactive.elasticsearch.ElasticInsertTransformer;
+import com.dexels.http.reactive.http.HttpInsertTransformer;
+import com.dexels.http.reactive.http.JettyClient;
+import com.dexels.kafka.streams.api.CoreOperators;
+import com.dexels.kafka.streams.api.TopologyContext;
+import com.dexels.replication.api.ReplicationMessage;
+import io.reactivex.Completable;
+import io.reactivex.Flowable;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.connect.sink.SinkRecord;
@@ -15,15 +16,7 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dexels.http.reactive.elasticsearch.ElasticInsertTransformer;
-import com.dexels.http.reactive.http.HttpInsertTransformer;
-import com.dexels.http.reactive.http.JettyClient;
-import com.dexels.kafka.streams.api.CoreOperators;
-import com.dexels.kafka.streams.api.TopologyContext;
-import com.dexels.replication.api.ReplicationMessage;
-
-import io.reactivex.Completable;
-import io.reactivex.Flowable;
+import java.util.*;
 
 /**
  * MongodbSinkTask is a Task that takes records loaded from Kafka and sends them to

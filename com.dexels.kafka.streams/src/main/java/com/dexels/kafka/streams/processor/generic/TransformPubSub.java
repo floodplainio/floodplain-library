@@ -1,15 +1,14 @@
 package com.dexels.kafka.streams.processor.generic;
 
-import java.util.Optional;
-import java.util.function.Function;
-
-import org.apache.commons.text.StringSubstitutor;
-
 import com.dexels.kafka.streams.api.CoreOperators;
 import com.dexels.kafka.streams.api.TopologyContext;
 import com.dexels.pubsub.rx2.api.PubSubMessage;
 import com.dexels.replication.api.ReplicationMessage;
 import com.dexels.replication.factory.ReplicationFactory;
+import org.apache.commons.text.StringSubstitutor;
+
+import java.util.Optional;
+import java.util.function.Function;
 
 public class TransformPubSub implements Function<PubSubMessage, PubSubMessage> {
 	private final String destinationTemplate;

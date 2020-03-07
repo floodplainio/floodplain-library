@@ -1,17 +1,16 @@
 package com.dexels.kafka.streams.remotejoin;
 
-import java.util.Optional;
-
+import com.dexels.immutable.api.ImmutableMessage;
+import com.dexels.navajo.expression.api.ContextExpression;
+import com.dexels.replication.api.ReplicationMessage;
+import com.dexels.replication.api.ReplicationMessage.Operation;
 import org.apache.kafka.streams.processor.AbstractProcessor;
 import org.apache.kafka.streams.processor.ProcessorContext;
 import org.apache.kafka.streams.state.KeyValueStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dexels.immutable.api.ImmutableMessage;
-import com.dexels.navajo.expression.api.ContextExpression;
-import com.dexels.replication.api.ReplicationMessage;
-import com.dexels.replication.api.ReplicationMessage.Operation;
+import java.util.Optional;
 
 public class StoreStateProcessor extends AbstractProcessor<String, ReplicationMessage> {
 

@@ -1,14 +1,13 @@
 package com.dexels.kafka.streams.serializer;
 
-import java.util.Map;
-
+import com.dexels.replication.api.ReplicationMessage;
+import com.dexels.replication.factory.ReplicationFactory;
+import com.dexels.replication.impl.protobuf.FallbackReplicationMessageParser;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serializer;
 
-import com.dexels.replication.api.ReplicationMessage;
-import com.dexels.replication.factory.ReplicationFactory;
-import com.dexels.replication.impl.protobuf.FallbackReplicationMessageParser;
+import java.util.Map;
 
 public class ReplicationMessageSerde implements Serde<ReplicationMessage> {
 

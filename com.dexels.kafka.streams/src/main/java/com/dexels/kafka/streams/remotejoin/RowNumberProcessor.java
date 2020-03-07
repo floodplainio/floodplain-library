@@ -1,13 +1,12 @@
 package com.dexels.kafka.streams.remotejoin;
 
+import com.dexels.replication.api.ReplicationMessage;
+import com.dexels.replication.factory.ReplicationFactory;
 import org.apache.kafka.streams.processor.AbstractProcessor;
 import org.apache.kafka.streams.processor.ProcessorContext;
 import org.apache.kafka.streams.state.KeyValueStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.dexels.replication.api.ReplicationMessage;
-import com.dexels.replication.factory.ReplicationFactory;
 
 
 public class RowNumberProcessor extends AbstractProcessor<String, ReplicationMessage> {

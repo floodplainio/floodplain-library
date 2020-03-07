@@ -1,10 +1,9 @@
 package com.dexels.kafka.streams.serializer;
 
-import java.util.Map;
-
+import com.dexels.replication.api.ReplicationMessage;
 import org.apache.kafka.common.serialization.Deserializer;
 
-import com.dexels.replication.api.ReplicationMessage;
+import java.util.Map;
 
 public class ReplicationMessageDeserializer implements org.apache.kafka.common.serialization.Deserializer<ReplicationMessage>{
 	private Deserializer<ReplicationMessage> deserializer = new ReplicationMessageSerde().deserializer();

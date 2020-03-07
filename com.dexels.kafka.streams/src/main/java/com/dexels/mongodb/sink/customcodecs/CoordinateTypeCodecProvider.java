@@ -1,11 +1,10 @@
 package com.dexels.mongodb.sink.customcodecs;
 
+import com.dexels.immutable.api.customtypes.CoordinateType;
 import org.bson.codecs.BsonTypeClassMap;
 import org.bson.codecs.Codec;
 import org.bson.codecs.configuration.CodecProvider;
 import org.bson.codecs.configuration.CodecRegistry;
-
-import com.dexels.immutable.api.customtypes.CoordinateType;
 
 public class CoordinateTypeCodecProvider implements CodecProvider {
 

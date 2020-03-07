@@ -1,14 +1,13 @@
 package com.dexels.kafka.streams.remotejoin;
 
-import java.util.Optional;
-import java.util.function.Predicate;
-
+import com.dexels.replication.api.ReplicationMessage;
 import org.apache.kafka.streams.processor.AbstractProcessor;
 import org.apache.kafka.streams.processor.To;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dexels.replication.api.ReplicationMessage;
+import java.util.Optional;
+import java.util.function.Predicate;
 
 public class IfElseProcessor extends AbstractProcessor<String, ReplicationMessage> {
 

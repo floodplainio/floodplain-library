@@ -1,5 +1,6 @@
 package com.dexels.mongodb.sink.customcodecs;
 
+import com.dexels.immutable.api.customtypes.CoordinateType;
 import org.bson.BsonReader;
 import org.bson.BsonValue;
 import org.bson.BsonWriter;
@@ -10,8 +11,6 @@ import org.bson.codecs.EncoderContext;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.dexels.immutable.api.customtypes.CoordinateType;
 
 public class CoordinateTypeCodec implements CollectibleCodec<CoordinateType> {
 

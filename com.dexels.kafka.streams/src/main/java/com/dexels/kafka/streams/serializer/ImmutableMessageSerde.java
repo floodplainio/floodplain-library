@@ -1,14 +1,13 @@
 package com.dexels.kafka.streams.serializer;
 
-import java.io.IOException;
-import java.util.Map;
-
+import com.dexels.immutable.api.ImmutableMessage;
+import com.dexels.replication.impl.json.ReplicationJSON;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serializer;
 
-import com.dexels.immutable.api.ImmutableMessage;
-import com.dexels.replication.impl.json.ReplicationJSON;
+import java.io.IOException;
+import java.util.Map;
 
 public class ImmutableMessageSerde implements Serde<ImmutableMessage> {
 

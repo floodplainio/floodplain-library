@@ -1,20 +1,12 @@
 package com.dexels.kafka.streams.base;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
+import com.dexels.replication.api.ReplicationMessage;
+import io.reactivex.functions.Function3;
 import org.apache.kafka.streams.kstream.Predicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dexels.replication.api.ReplicationMessage;
-
-import io.reactivex.functions.Function3;
+import java.util.*;
 
 public class Filters {
 	

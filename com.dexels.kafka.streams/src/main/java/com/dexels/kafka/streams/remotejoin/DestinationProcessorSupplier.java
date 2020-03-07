@@ -1,14 +1,13 @@
 package com.dexels.kafka.streams.remotejoin;
 
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.Function;
-
+import com.dexels.replication.api.ReplicationMessage;
 import org.apache.kafka.streams.kstream.Predicate;
 import org.apache.kafka.streams.processor.AbstractProcessor;
 import org.apache.kafka.streams.processor.Processor;
 import org.apache.kafka.streams.processor.ProcessorSupplier;
 
-import com.dexels.replication.api.ReplicationMessage;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Function;
 
 
 public class DestinationProcessorSupplier implements ProcessorSupplier<String, ReplicationMessage> {

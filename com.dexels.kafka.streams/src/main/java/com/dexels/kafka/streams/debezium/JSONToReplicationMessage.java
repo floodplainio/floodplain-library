@@ -1,33 +1,9 @@
 package com.dexels.kafka.streams.debezium;
 
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.nio.ByteBuffer;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-import java.util.stream.StreamSupport;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.kafka.streams.api.CoreOperators;
 import com.dexels.kafka.streams.api.TopologyContext;
-import com.dexels.kafka.streams.base.StreamOperators;
 import com.dexels.pubsub.rx2.api.PubSubMessage;
 import com.dexels.pubsub.rx2.factory.PubSubTools;
 import com.dexels.replication.api.ReplicationMessage;
@@ -38,6 +14,19 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.stream.StreamSupport;
 
 public class JSONToReplicationMessage {
 	

@@ -1,15 +1,13 @@
 package com.dexels.http.reactive.elasticsearch;
 
-import org.reactivestreams.Publisher;
-
 import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.replication.api.ReplicationMessage;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-
 import io.reactivex.Flowable;
 import io.reactivex.FlowableTransformer;
 import io.reactivex.functions.Function;
+import org.reactivestreams.Publisher;
 
 public class ElasticInsertTransformer implements FlowableTransformer<ReplicationMessage,Flowable<byte[]>> {
 

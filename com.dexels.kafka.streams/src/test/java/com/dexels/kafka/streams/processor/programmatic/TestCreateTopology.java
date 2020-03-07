@@ -1,10 +1,8 @@
 package com.dexels.kafka.streams.processor.programmatic;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-
+import com.dexels.kafka.streams.api.TopologyContext;
+import com.dexels.kafka.streams.remotejoin.ReplicationTopologyParser;
+import com.dexels.kafka.streams.remotejoin.TopologyConstructor;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -12,9 +10,10 @@ import org.apache.kafka.streams.Topology;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import com.dexels.kafka.streams.api.TopologyContext;
-import com.dexels.kafka.streams.remotejoin.ReplicationTopologyParser;
-import com.dexels.kafka.streams.remotejoin.TopologyConstructor;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
 public class TestCreateTopology {
 

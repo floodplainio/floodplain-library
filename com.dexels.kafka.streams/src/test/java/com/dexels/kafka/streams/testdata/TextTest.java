@@ -1,10 +1,10 @@
 package com.dexels.kafka.streams.testdata;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.commons.text.StrSubstitutor;
 import org.junit.Test;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class TextTest {
 	

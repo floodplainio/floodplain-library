@@ -1,24 +1,18 @@
 package com.dexels.kafka.streams.web;
 
-import java.io.IOException;
+import com.dexels.kafka.streams.base.StreamRuntime;
+import org.apache.kafka.streams.KafkaStreams;
+import org.apache.kafka.streams.KafkaStreams.State;
+import org.osgi.service.component.annotations.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.kafka.streams.KafkaStreams;
-import org.apache.kafka.streams.KafkaStreams.State;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.dexels.kafka.streams.base.StreamRuntime;
+import java.io.IOException;
 
 @Component(name="dexels.kafkastreams.servlet",service=Servlet.class, immediate=true, property={"alias=/streams","servlet-name=streams"},configurationPolicy=ConfigurationPolicy.OPTIONAL)
 public class KafkaStreamsServlet extends HttpServlet {

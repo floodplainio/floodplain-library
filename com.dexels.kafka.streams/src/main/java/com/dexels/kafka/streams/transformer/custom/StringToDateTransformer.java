@@ -1,16 +1,15 @@
 package com.dexels.kafka.streams.transformer.custom;
 
+import com.dexels.replication.api.ReplicationMessage;
+import com.dexels.replication.transformer.api.MessageTransformer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.dexels.replication.api.ReplicationMessage;
-import com.dexels.replication.transformer.api.MessageTransformer;
 
 public class StringToDateTransformer implements MessageTransformer {
     private final static Logger logger = LoggerFactory.getLogger(StringToDateTransformer.class);

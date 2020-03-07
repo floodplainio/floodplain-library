@@ -1,16 +1,14 @@
 package com.dexels.kafka.streams.remotejoin.ranged;
 
-import java.util.function.Function;
-
+import com.dexels.replication.api.ReplicationMessage;
+import com.dexels.replication.api.ReplicationMessage.Operation;
 import org.apache.kafka.streams.processor.AbstractProcessor;
 import org.apache.kafka.streams.processor.ProcessorContext;
 import org.apache.kafka.streams.state.KeyValueStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dexels.kafka.streams.api.CoreOperators;
-import com.dexels.replication.api.ReplicationMessage;
-import com.dexels.replication.api.ReplicationMessage.Operation;
+import java.util.function.Function;
 
 public class GroupedUpdateProcessor extends AbstractProcessor<String, ReplicationMessage> {
 	private final String mappingStoreName;

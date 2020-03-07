@@ -1,14 +1,5 @@
 package com.dexels.replication.elasticsearch;
 
-import java.io.IOException;
-import java.util.Optional;
-import java.util.concurrent.TimeUnit;
-
-import org.eclipse.jetty.http.HttpMethod;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-
 import com.dexels.http.reactive.elasticsearch.ElasticInsertTransformer;
 import com.dexels.http.reactive.http.HttpInsertTransformer;
 import com.dexels.http.reactive.http.JettyClient;
@@ -16,8 +7,15 @@ import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.replication.api.ReplicationMessage;
 import com.dexels.replication.factory.ReplicationFactory;
 import com.dexels.replication.impl.json.JSONReplicationMessageParserImpl;
-
 import io.reactivex.Flowable;
+import org.eclipse.jetty.http.HttpMethod;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+
+import java.io.IOException;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 public class TestPut {
 	

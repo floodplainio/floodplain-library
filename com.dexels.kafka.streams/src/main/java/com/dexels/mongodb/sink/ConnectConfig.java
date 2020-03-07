@@ -1,8 +1,8 @@
 package com.dexels.mongodb.sink;
 
-import java.util.Map;
-
 import org.apache.kafka.connect.runtime.WorkerConfig;
+
+import java.util.Map;
 
 public class ConnectConfig extends WorkerConfig {
 

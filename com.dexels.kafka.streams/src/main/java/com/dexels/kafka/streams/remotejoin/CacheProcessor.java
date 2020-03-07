@@ -1,11 +1,7 @@
 package com.dexels.kafka.streams.remotejoin;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-
+import com.dexels.replication.api.ReplicationMessage;
+import com.dexels.replication.api.ReplicationMessage.Operation;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.processor.AbstractProcessor;
 import org.apache.kafka.streams.processor.ProcessorContext;
@@ -15,8 +11,11 @@ import org.apache.kafka.streams.state.KeyValueStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dexels.replication.api.ReplicationMessage;
-import com.dexels.replication.api.ReplicationMessage.Operation;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class CacheProcessor extends AbstractProcessor<String, ReplicationMessage> {
     private static final String CACHED_AT_KEY = "_cachedAt";

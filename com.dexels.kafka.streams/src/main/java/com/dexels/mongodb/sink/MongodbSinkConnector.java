@@ -1,12 +1,5 @@
 package com.dexels.mongodb.sink;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
 import org.apache.kafka.common.config.ConfigDef;
 import org.apache.kafka.common.utils.AppInfoParser;
 import org.apache.kafka.connect.connector.Task;
@@ -15,6 +8,8 @@ import org.apache.kafka.connect.sink.SinkConnector;
 import org.apache.kafka.connect.util.ConnectorUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.*;
 
 /**
  * MongodbSinkConnector implement the Connector interface to send Kafka

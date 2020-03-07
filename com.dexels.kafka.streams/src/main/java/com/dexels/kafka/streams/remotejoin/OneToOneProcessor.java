@@ -1,8 +1,7 @@
 package com.dexels.kafka.streams.remotejoin;
 
-import java.util.Optional;
-import java.util.function.BiFunction;
-
+import com.dexels.replication.api.ReplicationMessage;
+import com.dexels.replication.api.ReplicationMessage.Operation;
 import org.apache.kafka.streams.kstream.Predicate;
 import org.apache.kafka.streams.processor.AbstractProcessor;
 import org.apache.kafka.streams.processor.ProcessorContext;
@@ -10,8 +9,8 @@ import org.apache.kafka.streams.state.KeyValueStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dexels.replication.api.ReplicationMessage;
-import com.dexels.replication.api.ReplicationMessage.Operation;
+import java.util.Optional;
+import java.util.function.BiFunction;
 
 
 public class OneToOneProcessor extends AbstractProcessor<String, ReplicationMessage> {

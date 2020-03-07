@@ -1,28 +1,5 @@
 package com.dexels.mongodb.sink;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Collectors;
-
-import org.apache.kafka.clients.consumer.OffsetAndMetadata;
-import org.apache.kafka.common.TopicPartition;
-import org.apache.kafka.connect.errors.ConnectException;
-import org.apache.kafka.connect.sink.SinkRecord;
-import org.apache.kafka.connect.sink.SinkTask;
-import org.bson.Document;
-import org.bson.codecs.configuration.CodecRegistries;
-import org.bson.codecs.configuration.CodecRegistry;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.dexels.kafka.streams.api.CoreOperators;
 import com.dexels.kafka.streams.api.TopologyContext;
 import com.dexels.mongodb.sink.customcodecs.CoordinateTypeCodecProvider;
@@ -36,12 +13,21 @@ import com.mongodb.ServerAddress;
 import com.mongodb.bulk.BulkWriteError;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.model.BulkWriteOptions;
-import com.mongodb.client.model.DeleteOneModel;
-import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.ReplaceOneModel;
-import com.mongodb.client.model.UpdateOptions;
-import com.mongodb.client.model.WriteModel;
+import com.mongodb.client.model.*;
+import org.apache.kafka.clients.consumer.OffsetAndMetadata;
+import org.apache.kafka.common.TopicPartition;
+import org.apache.kafka.connect.errors.ConnectException;
+import org.apache.kafka.connect.sink.SinkRecord;
+import org.apache.kafka.connect.sink.SinkTask;
+import org.bson.Document;
+import org.bson.codecs.configuration.CodecRegistries;
+import org.bson.codecs.configuration.CodecRegistry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 /**
  * MongodbSinkTask is a Task that takes records loaded from Kafka and sends them to

@@ -1,21 +1,20 @@
 package com.dexels.kafka.streams.testdata;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collections;
-import java.util.Optional;
-
-import org.apache.kafka.clients.admin.AdminClient;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
 import com.dexels.kafka.streams.api.StreamConfiguration;
 import com.dexels.kafka.streams.base.Filters;
 import com.dexels.kafka.streams.base.StreamInstance;
 import com.dexels.replication.api.ReplicationMessage;
 import com.dexels.replication.factory.ReplicationFactory;
 import com.dexels.replication.impl.protobuf.FallbackReplicationMessageParser;
+import org.apache.kafka.clients.admin.AdminClient;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collections;
+import java.util.Optional;
 
 public class TestFilters {
 

@@ -1,8 +1,7 @@
 package com.dexels.kafka.streams.remotejoin;
 
-import org.apache.kafka.streams.processor.AbstractProcessor;
-
 import com.dexels.replication.api.ReplicationMessage;
+import org.apache.kafka.streams.processor.AbstractProcessor;
 
 public class IdentityProcessor extends AbstractProcessor<String, ReplicationMessage> {
 

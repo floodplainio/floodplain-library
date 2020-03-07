@@ -1,16 +1,15 @@
 package com.dexels.kafka.streams.debezium.impl;
 
-import java.util.Optional;
-
-import org.apache.kafka.streams.processor.Processor;
-import org.apache.kafka.streams.processor.ProcessorContext;
-
 import com.dexels.kafka.streams.api.TopologyContext;
 import com.dexels.kafka.streams.debezium.JSONToReplicationMessage;
 import com.dexels.pubsub.rx2.api.PubSubMessage;
 import com.dexels.pubsub.rx2.factory.PubSubTools;
 import com.dexels.replication.api.ReplicationMessage;
 import com.dexels.replication.impl.protobuf.FallbackReplicationMessageParser;
+import org.apache.kafka.streams.processor.Processor;
+import org.apache.kafka.streams.processor.ProcessorContext;
+
+import java.util.Optional;
 
 public class DebeziumConversionProcessor implements Processor<String, byte[]> {
 

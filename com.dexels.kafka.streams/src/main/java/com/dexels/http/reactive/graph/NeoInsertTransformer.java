@@ -1,17 +1,5 @@
 package com.dexels.http.reactive.graph;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.text.StringSubstitutor;
-import org.bson.internal.Base64;
-import org.eclipse.jetty.http.HttpMethod;
-import org.reactivestreams.Publisher;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.dexels.http.reactive.http.HttpInsertTransformer;
 import com.dexels.http.reactive.http.ReactiveReply;
 import com.dexels.immutable.api.ImmutableMessage;
@@ -21,9 +9,19 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-
 import io.reactivex.Flowable;
 import io.reactivex.FlowableTransformer;
+import org.apache.commons.text.StringSubstitutor;
+import org.bson.internal.Base64;
+import org.eclipse.jetty.http.HttpMethod;
+import org.reactivestreams.Publisher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class NeoInsertTransformer implements FlowableTransformer<List<ReplicationMessage>,Flowable<byte[]>> {
 

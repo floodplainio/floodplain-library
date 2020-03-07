@@ -1,38 +1,5 @@
 package com.dexels.kafka.streams.remotejoin;
 
-import static com.dexels.kafka.streams.api.CoreOperators.extractKey;
-import static com.dexels.kafka.streams.api.CoreOperators.getListJoinFunction;
-import static com.dexels.kafka.streams.api.CoreOperators.joinFieldList;
-import static com.dexels.kafka.streams.api.CoreOperators.topicName;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.Stack;
-import java.util.Vector;
-import java.util.concurrent.ExecutionException;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import org.apache.kafka.clients.admin.AdminClient;
-import org.apache.kafka.common.serialization.Deserializer;
-import org.apache.kafka.common.serialization.Serde;
-import org.apache.kafka.common.serialization.Serdes;
-import org.apache.kafka.streams.Topology;
-import org.apache.kafka.streams.kstream.Predicate;
-import org.apache.kafka.streams.processor.Processor;
-import org.apache.kafka.streams.processor.ProcessorSupplier;
-import org.apache.kafka.streams.state.KeyValueBytesStoreSupplier;
-import org.apache.kafka.streams.state.KeyValueStore;
-import org.apache.kafka.streams.state.StoreBuilder;
-import org.apache.kafka.streams.state.Stores;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.kafka.streams.api.CoreOperators;
@@ -53,6 +20,30 @@ import com.dexels.navajo.reactive.source.topology.api.TopologyPipeComponent;
 import com.dexels.replication.api.ReplicationMessage;
 import com.dexels.replication.api.ReplicationMessage.Operation;
 import com.dexels.replication.transformer.api.MessageTransformer;
+import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.common.serialization.Deserializer;
+import org.apache.kafka.common.serialization.Serde;
+import org.apache.kafka.common.serialization.Serdes;
+import org.apache.kafka.streams.Topology;
+import org.apache.kafka.streams.kstream.Predicate;
+import org.apache.kafka.streams.processor.Processor;
+import org.apache.kafka.streams.processor.ProcessorSupplier;
+import org.apache.kafka.streams.state.KeyValueBytesStoreSupplier;
+import org.apache.kafka.streams.state.KeyValueStore;
+import org.apache.kafka.streams.state.StoreBuilder;
+import org.apache.kafka.streams.state.Stores;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.ExecutionException;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import static com.dexels.kafka.streams.api.CoreOperators.extractKey;
+import static com.dexels.kafka.streams.api.CoreOperators.topicName;
 
 public class ReplicationTopologyParser {
 	private static final String STORE = "store";

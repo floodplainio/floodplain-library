@@ -1,8 +1,11 @@
 package com.dexels.kafka.streams.base;
 
-import java.util.Map;
-import java.util.Optional;
-
+import com.dexels.kafka.streams.serializer.ReplicationMessageListSerde;
+import com.dexels.kafka.streams.serializer.ReplicationMessageSerde;
+import com.dexels.kafka.streams.xml.XmlMessageTransformerImpl;
+import com.dexels.kafka.streams.xml.parser.XMLElement;
+import com.dexels.replication.api.ReplicationMessage;
+import com.dexels.replication.transformer.api.MessageTransformer;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.state.KeyValueBytesStoreSupplier;
 import org.apache.kafka.streams.state.KeyValueStore;
@@ -11,12 +14,8 @@ import org.apache.kafka.streams.state.Stores;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dexels.kafka.streams.serializer.ReplicationMessageListSerde;
-import com.dexels.kafka.streams.serializer.ReplicationMessageSerde;
-import com.dexels.kafka.streams.xml.XmlMessageTransformerImpl;
-import com.dexels.kafka.streams.xml.parser.XMLElement;
-import com.dexels.replication.api.ReplicationMessage;
-import com.dexels.replication.transformer.api.MessageTransformer;
+import java.util.Map;
+import java.util.Optional;
 
 public class StreamOperators {
 	

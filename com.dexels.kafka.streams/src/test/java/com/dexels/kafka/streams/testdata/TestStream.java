@@ -1,14 +1,14 @@
 package com.dexels.kafka.streams.testdata;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import org.apache.kafka.streams.kstream.ValueJoiner;
 
 import com.dexels.kafka.streams.api.TopologyContext;
 import com.dexels.replication.api.ReplicationMessage;
 import com.dexels.replication.factory.ReplicationFactory;
 import com.dexels.replication.impl.json.JSONReplicationMessageParserImpl;
+import org.apache.kafka.streams.kstream.ValueJoiner;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 //import kafka.consumer.ConsumerConfig;
 

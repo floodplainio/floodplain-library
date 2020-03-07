@@ -1,11 +1,11 @@
 package com.dexels.kafka.streams.transformer.custom;
 
+import com.dexels.replication.api.ReplicationMessage;
+import com.dexels.replication.transformer.api.MessageTransformer;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
-
-import com.dexels.replication.api.ReplicationMessage;
-import com.dexels.replication.transformer.api.MessageTransformer;
 
 public class MergeDateTimeTransformer implements MessageTransformer {
 

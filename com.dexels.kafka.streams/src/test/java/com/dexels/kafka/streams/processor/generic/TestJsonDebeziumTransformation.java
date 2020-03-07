@@ -1,10 +1,5 @@
 package com.dexels.kafka.streams.processor.generic;
 
-import java.io.IOException;
-
-import org.junit.Assert;
-import org.junit.Test;
-
 import com.dexels.kafka.streams.debezium.JSONToReplicationMessage;
 import com.dexels.replication.api.ReplicationMessage;
 import com.dexels.replication.factory.ReplicationFactory;
@@ -13,6 +8,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.junit.Assert;
+import org.junit.Test;
+
+import java.io.IOException;
 
 
 public class TestJsonDebeziumTransformation {

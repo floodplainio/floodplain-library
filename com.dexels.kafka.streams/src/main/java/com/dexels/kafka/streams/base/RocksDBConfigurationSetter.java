@@ -1,15 +1,11 @@
 package com.dexels.kafka.streams.base;
 
-import java.util.Map;
-
 import org.apache.kafka.streams.state.RocksDBConfigSetter;
-import org.rocksdb.BlockBasedTableConfig;
-import org.rocksdb.BloomFilter;
-import org.rocksdb.CompressionType;
-import org.rocksdb.InfoLogLevel;
-import org.rocksdb.Options;
+import org.rocksdb.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Map;
 
 public class RocksDBConfigurationSetter implements RocksDBConfigSetter {
     private final static Logger logger = LoggerFactory.getLogger(RocksDBConfigurationSetter.class);

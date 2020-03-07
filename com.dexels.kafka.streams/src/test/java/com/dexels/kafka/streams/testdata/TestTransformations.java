@@ -1,33 +1,10 @@
 package com.dexels.kafka.streams.testdata;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-
-import org.bson.Document;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.kafka.streams.api.CoreOperators;
 import com.dexels.kafka.streams.api.TopologyContext;
 import com.dexels.kafka.streams.base.StreamOperators;
-import com.dexels.kafka.streams.transformer.custom.CommunicationTransformer;
-import com.dexels.kafka.streams.transformer.custom.CreateCoordinateTransformer;
-import com.dexels.kafka.streams.transformer.custom.CreateListTransformer;
-import com.dexels.kafka.streams.transformer.custom.FormatGenderTransformer;
-import com.dexels.kafka.streams.transformer.custom.MergeDateTimeTransformer;
+import com.dexels.kafka.streams.transformer.custom.*;
 import com.dexels.kafka.streams.xml.XmlMessageTransformerImpl;
 import com.dexels.kafka.streams.xml.parser.CaseSensitiveXMLElement;
 import com.dexels.kafka.streams.xml.parser.XMLElement;
@@ -36,6 +13,15 @@ import com.dexels.replication.api.ReplicationMessageParser;
 import com.dexels.replication.factory.ReplicationFactory;
 import com.dexels.replication.impl.protobuf.FallbackReplicationMessageParser;
 import com.dexels.replication.transformer.api.MessageTransformer;
+import org.bson.Document;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
 
 
 public class TestTransformations {

@@ -1,17 +1,5 @@
 package com.dexels.kafka.streams.xml;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicLong;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.kafka.streams.api.CoreOperators;
@@ -21,6 +9,11 @@ import com.dexels.replication.api.ReplicationMessage;
 import com.dexels.replication.api.ReplicationMessageParser;
 import com.dexels.replication.factory.ReplicationFactory;
 import com.dexels.replication.transformer.api.MessageTransformer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class XmlMessageTransformerImpl implements MessageTransformer {
 	public static final ReplicationMessageParser parser = ReplicationFactory.getInstance();

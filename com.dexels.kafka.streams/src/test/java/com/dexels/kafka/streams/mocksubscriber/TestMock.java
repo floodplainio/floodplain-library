@@ -1,19 +1,17 @@
 package com.dexels.kafka.streams.mocksubscriber;
 
-import java.io.InputStreamReader;
-import java.util.Optional;
-
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
-
 import com.dexels.http.reactive.graph.NeoInsertTransformer;
 import com.dexels.http.reactive.http.JettyClient;
 import com.dexels.pubsub.rx2.factory.PubSubTools;
 import com.dexels.replication.factory.ReplicationFactory;
 import com.dexels.replication.impl.protobuf.FallbackReplicationMessageParser;
-
 import io.reactivex.Flowable;
+import org.junit.Assert;
+import org.junit.Ignore;
+import org.junit.Test;
+
+import java.io.InputStreamReader;
+import java.util.Optional;
 
 public class TestMock {
 

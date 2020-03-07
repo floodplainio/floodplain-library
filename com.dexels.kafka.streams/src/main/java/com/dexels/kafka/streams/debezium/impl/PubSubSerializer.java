@@ -1,10 +1,9 @@
 package com.dexels.kafka.streams.debezium.impl;
 
-import java.util.Map;
-
+import com.dexels.pubsub.rx2.api.PubSubMessage;
 import org.apache.kafka.common.serialization.Serializer;
 
-import com.dexels.pubsub.rx2.api.PubSubMessage;
+import java.util.Map;
 
 public class PubSubSerializer implements Serializer<PubSubMessage> {
 

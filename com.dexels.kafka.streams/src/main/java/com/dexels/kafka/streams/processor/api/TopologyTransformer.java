@@ -1,9 +1,8 @@
 package com.dexels.kafka.streams.processor.api;
 
-import org.apache.kafka.streams.Topology;
-
 import com.dexels.kafka.streams.api.TopologyContext;
 import com.dexels.kafka.streams.remotejoin.TopologyConstructor;
+import org.apache.kafka.streams.Topology;
 
 public interface TopologyTransformer {
 

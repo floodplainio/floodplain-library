@@ -1,18 +1,17 @@
 package com.dexels.kafka.streams.testdata;
 
-import java.util.Arrays;
-import java.util.List;
-
+import com.mongodb.MongoClient;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.IndexOptions;
 import org.bson.Document;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mongodb.MongoClient;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.model.IndexOptions;
+import java.util.Arrays;
+import java.util.List;
 
 public class TestIndices {
 
