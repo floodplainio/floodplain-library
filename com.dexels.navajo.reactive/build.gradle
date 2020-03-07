@@ -32,7 +32,6 @@ dependencies {
     compile dependencies.osgiComponentAnnotations
     compile dependencies.commonsIo
     compile dependencies.cdiApi
-    compile dependencies.guava
     compile dependencies.reactiveStreams
     compile dependencies.rxJava
     testCompile dependencies.jUnit
