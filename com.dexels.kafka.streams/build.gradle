@@ -9,7 +9,6 @@ dependencies {
     implementation project(':com.dexels.repository.api')
     implementation project(':com.dexels.replication.impl')
     implementation project(':com.dexels.kafka.streams.api')
-    implementation project(':com.dexels.kafka.streams.sink.mongo')
     implementation project(':com.dexels.replication.impl.json')
     implementation project(':com.dexels.replication.impl.protobuf')
     implementation project(':com.dexels.replication.http')
@@ -25,13 +24,8 @@ dependencies {
     compile dependencies.mongoCore
     compile dependencies.mongoBson
     compile dependencies.mongoDriver
-    compile dependencies.mongoReactive
     compile dependencies.kafkaClient
     compile dependencies.kafkaStreams
-    compile dependencies.kafkaConnectApi
-    compile dependencies.kafkaConnectJson
-    compile dependencies.kafkaConnectRuntime
-    compile dependencies.kafkaConnectFile
     compile dependencies.reactiveStreams
     compile dependencies.rxJava
     compile "org.apache.commons:commons-text:1.8"

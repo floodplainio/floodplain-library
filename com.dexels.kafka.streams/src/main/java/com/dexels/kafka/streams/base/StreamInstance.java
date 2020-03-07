@@ -52,15 +52,7 @@ public class StreamInstance {
 	private final AdminClient adminClient;
 	private String generation = null;
 	private final Map<String, GenericProcessorBuilder> genericProcessorRegistry;
-	
-	public enum SinkType {
-			MONGODB,
-			MONGODBDIRECT,
-			ELASTICSEARCH,
-			NEO4J, 
-			ELASTICSEARCHDIRECT
-	}
-	
+
 	static {
 		String threadCount = System.getenv("KAFKA_STREAMS_THREADCOUNT");
 		if (threadCount==null) {
