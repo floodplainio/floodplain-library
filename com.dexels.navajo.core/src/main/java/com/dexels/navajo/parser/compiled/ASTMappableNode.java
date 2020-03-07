@@ -21,7 +21,6 @@ import com.dexels.navajo.expression.api.FunctionClassification;
 import com.dexels.navajo.expression.api.TMLExpressionException;
 import com.dexels.navajo.expression.api.TipiLink;
 import com.dexels.navajo.mapping.MappingUtils;
-import com.dexels.navajo.mapping.bean.DomainObjectMapper;
 import com.dexels.navajo.script.api.Access;
 import com.dexels.navajo.script.api.MappableTreeNode;
 
@@ -43,13 +42,7 @@ final class ASTMappableNode extends SimpleNode {
 		try {
 			oValue = MappingUtils.getAttributeValue(mapNode, text, parameterArray);
 		} catch (Exception e2) {
-			logger.error("Error: ", e2);
-			// Maybe domainobjectmapper?
-			if ( mapNode.myObject instanceof DomainObjectMapper ) {
-				oValue = ((DomainObjectMapper) mapNode.myObject).getDomainObjectAttribute(text, parameterArray);
-			} else {
-				throw new TMLExpressionException("Can not resolve attribute value",e2);
-			}
+			throw new TMLExpressionException("Can not resolve attribute value",e2);
 		}
 		return oValue;
 	}

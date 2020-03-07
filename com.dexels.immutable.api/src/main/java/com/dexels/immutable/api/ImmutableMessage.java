@@ -33,7 +33,7 @@ public interface ImmutableMessage {
 	public Set<String> columnNames();
 	/**
 	 * Use value(name) instead
-	 * @param name
+	 * @param name name of column
 	 * @return
 	 */
 	@Deprecated

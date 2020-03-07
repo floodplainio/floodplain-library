@@ -264,80 +264,8 @@ public class GenericHandler extends ServiceHandler {
          return newLoader;
     }
 
-    /**
-     * Non-OSGi only
-     * @param a
-     * @param compilerErrors
-     * @return
-     * @throws Exception
-     */
-    public CompiledScript compileScript(Access a, StringBuilder compilerErrors) throws Exception {
-    	
-    	NavajoConfigInterface properties = DispatcherFactory.getInstance().getNavajoConfig();
-    	List<Dependency> deps = new ArrayList<>();
-    	String scriptPath = properties.getScriptPath();
-    	
-    		Object [] all = getScriptPathServiceNameAndScriptFile(a, a.rpcName, a.betaUser);
-    		if(all==null) {
-    			throw new FileNotFoundException("No script found for: "+a.rpcName);
-    		}
-    		String pathPrefix = (String) all[0];
-    		String serviceName = (String) all[1];
-    		File scriptFile = (File) all[2];
-//    		String sourceFileName = (String) all[3];
-    		File sourceFile = (File) all[4];
-    		String className = (String) all[5];
-//    		File targetFile = (File) all[7];
 
-    		if (properties.isCompileScripts()) {
 
-    			if ( scriptFile != null && scriptFile.exists()) { // We have a script that exists.
-
-    				if ( checkScriptRecompile(scriptFile, sourceFile) || hasDirtyDepedencies(a, className) ) {
-
-    					synchronized (mutex1) { // Check for outdated compiled script Java source.
-
-    						if ( checkScriptRecompile(scriptFile, sourceFile) || hasDirtyDepedencies(a, className) ) {
-
-    							com.dexels.navajo.mapping.compiler.TslCompiler tslCompiler = new
-    							com.dexels.navajo.mapping.compiler.TslCompiler(properties.getClassloader());
-
-    							try {
-    								final String tenant = tenantConfig.getInstanceGroup();
-									tslCompiler.compileScript(serviceName, 
-    										scriptPath,
-    										properties.getCompiledScriptPath(),
-    										pathPrefix,properties.getOutputWriter(properties.getCompiledScriptPath(), pathPrefix, serviceName, ".java"),deps,tenant,tenantConfig.hasTenantScriptFile(serviceName, tenant, null), false);
-    							} catch (SystemException ex) {
-    								Files.deleteIfExists(sourceFile.toPath());
-    								AuditLog.log(AuditLog.AUDIT_MESSAGE_SCRIPTCOMPILER , ex.getMessage(), Level.SEVERE, a.accessID);
-    								throw ex;
-    							}
-    						}
-    					}
-    				} // end of sync block.
-
-    				// Java recompile.
-    				// TODO check if this removal is ok
-//    				compilerErrors.append(recompileJava(a, sourceFileName, sourceFile, className, targetFile,serviceName));
-
-    			} else {
-    				
-    				// Maybe the jave file exists in the script path.
-    				if ( !sourceFile.exists() ) { // There is no java file present.
-    					AuditLog.log(AuditLog.AUDIT_MESSAGE_SCRIPTCOMPILER, "SCRIPT FILE DOES NOT EXISTS, I WILL TRY TO LOAD THE CLASS FILE ANYWAY....", Level.WARNING, a.accessID);
-    				} else {
-    					// Compile java file using normal java compiler.
-    					if(sourceFile.getName().endsWith("java")) {
-    						logger.error("Separate java scripts not supported!");
-    					}
-    				}
-    			}
-    		}
-    
-    		return getCompiledScript(a, className,sourceFile,serviceName);
-    }
-    
     /**
      * doService() is called by Dispatcher to perform web service.
      *

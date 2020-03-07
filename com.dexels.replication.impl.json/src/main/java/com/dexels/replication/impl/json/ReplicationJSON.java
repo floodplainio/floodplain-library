@@ -337,10 +337,8 @@ public class ReplicationJSON {
 				node.put(key, ((Date)o).toGMTString());
 				break;
 			case DOUBLE:
-				node.put(key, (Double)o);
-				break;
 			case FLOAT:
-				node.put(key, (Float)o);
+				node.put(key, (Double)o);
 				break;
 			case INTEGER:
 				node.put(key, (Integer)o);

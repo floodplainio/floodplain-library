@@ -73,7 +73,6 @@ public class ImmutableTypeParser {
 		case "binary_digest":
 			return ValueType.BINARY_DIGEST;
 		case "date":
-			return ValueType.DATE;
 		case "timestamp":
 			return ValueType.DATE;
 		case "clocktime":

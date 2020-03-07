@@ -18,7 +18,6 @@ dependencies {
     implementation project(':com.dexels.navajo.document')
     implementation project(':com.dexels.navajo.core')
     implementation project(':com.dexels.navajo.document.stream')
-    implementation project(':com.dexels.navajo.adapters.stream')
     implementation project(':com.dexels.navajo.function')
     implementation project(':com.dexels.navajo.version')
     implementation project(':com.dexels.navajo.authentication.api')

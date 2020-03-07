@@ -7,9 +7,6 @@ import com.dexels.navajo.events.types.AuditLogEventTest;
 import com.dexels.navajo.events.types.CacheExpiryEventTest;
 import com.dexels.navajo.events.types.NavajoCompileScriptEventTest;
 import com.dexels.navajo.events.types.NavajoEventMapTest;
-import com.dexels.navajo.mapping.bean.DomainObjectMapperTest;
-import com.dexels.navajo.mapping.bean.ServiceMapperTest;
-import com.dexels.navajo.mapping.compiler.meta.SQLFieldDependencyTest;
 import com.dexels.navajo.sharedstore.SharedStoreInterfaceTest;
 
 @RunWith(Suite.class)
@@ -21,10 +18,7 @@ import com.dexels.navajo.sharedstore.SharedStoreInterfaceTest;
 	CacheExpiryEventTest.class, 
 	NavajoEventMapTest.class, 
 	SharedStoreInterfaceTest.class, 
-	DomainObjectMapperTest.class, 
-	ServiceMapperTest.class, 
-	SQLFieldDependencyTest.class
-	})  
+	})
 public class Navajo {
 
 	

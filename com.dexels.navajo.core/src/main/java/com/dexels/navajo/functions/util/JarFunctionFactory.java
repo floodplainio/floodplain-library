@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import com.dexels.navajo.document.nanoimpl.CaseSensitiveXMLElement;
 import com.dexels.navajo.document.nanoimpl.XMLElement;
 import com.dexels.navajo.expression.api.FunctionDefinition;
-import com.dexels.navajo.mapping.compiler.meta.MapMetaData;
 import com.dexels.navajo.server.DispatcherFactory;
 
 import navajo.ExtensionDefinition;
@@ -65,11 +64,6 @@ public class JarFunctionFactory extends FunctionFactoryInterface implements Seri
 		if(fd!=null) {
 			FunctionDefinition functionDefinition = new FunctionDefinition(className, null, null, null);
 			getAdapterConfig(fd).put(name, functionDefinition);
-			try {
-				MapMetaData.getInstance().addMapDefinition(element);
-			} catch (Exception e) {
-				logger.error("Error: ", e);
-			}
 		} else {
 			throw new UnsupportedOperationException("Can not register adapter (pre-OSGi) without a ExtensionDefinition.");
 		}

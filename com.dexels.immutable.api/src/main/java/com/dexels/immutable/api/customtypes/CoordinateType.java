@@ -65,7 +65,7 @@ public class CoordinateType extends CustomType {
         } else if (latitude instanceof Double) {
             this.latitude = (Double) latitude;
         } else if (latitude instanceof Integer) {
-            this.latitude = new Double(((Integer) latitude).intValue() + "");
+            this.latitude = new Double((Integer) latitude + "");
         } else {
             this.latitude = new Double(latitude + "");
         }
@@ -83,7 +83,7 @@ public class CoordinateType extends CustomType {
         } else if (longitude instanceof Double) {
             this.longitude = (Double) longitude;
         } else if (longitude instanceof Integer) {
-            this.longitude = new Double(((Integer) longitude).intValue() + "");
+            this.longitude = new Double((Integer) longitude + "");
         } else {
             this.longitude = new Double(longitude + "");
         }

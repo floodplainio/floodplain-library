@@ -30,7 +30,6 @@ import com.dexels.navajo.reactive.mappers.ToSubMessageList;
 import com.dexels.navajo.reactive.source.input.InputSourceFactory;
 import com.dexels.navajo.reactive.source.input.TmlInputSourceFactory;
 import com.dexels.navajo.reactive.source.single.SingleSourceFactory;
-import com.dexels.navajo.reactive.source.sql.SQLReactiveSourceFactory;
 import com.dexels.navajo.reactive.source.test.EventStreamSourceFactory;
 import com.dexels.navajo.reactive.transformer.call.CallTransformerFactory;
 import com.dexels.navajo.reactive.transformer.call.PipeTransformerFactory;
@@ -71,7 +70,6 @@ public class CoreReactiveFinder implements ReactiveFinder {
 		reactiveReducer.put("toSubList", new ToSubMessageList());
 		
 		addReactiveSourceFactory(new SingleSourceFactory(), "single");
-		addReactiveSourceFactory(new SQLReactiveSourceFactory(), "sql");
 		addReactiveSourceFactory(new EventStreamSourceFactory(), "eventsource");
 		addReactiveSourceFactory(new InputSourceFactory(),"input");
 		addReactiveSourceFactory(new TmlInputSourceFactory(),"tmlinput");
