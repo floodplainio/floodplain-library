@@ -19,8 +19,6 @@ dependencies {
     compile dependencies.osgiComponentAnnotations
     compile dependencies.osgiCompendium
     compile dependencies.cdiApi
-    compile dependencies.guava
-    compile dependencies.commonsNet
  }
 
 

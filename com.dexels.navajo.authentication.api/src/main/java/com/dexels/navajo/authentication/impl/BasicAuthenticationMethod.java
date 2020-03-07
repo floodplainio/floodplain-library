@@ -1,8 +1,8 @@
 package com.dexels.navajo.authentication.impl;
 
+import java.util.Base64;
 import java.util.StringTokenizer;
 
-import org.apache.commons.net.util.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,7 +14,6 @@ import com.dexels.navajo.script.api.AuthorizationException;
 public class BasicAuthenticationMethod implements AuthenticationMethod {
 	private static final Logger logger = LoggerFactory.getLogger(BasicAuthenticationMethod.class);
 
-	private Base64 base64;
 	private AAAQuerier authenticator;
 
 	private String username;
@@ -43,8 +42,6 @@ public class BasicAuthenticationMethod implements AuthenticationMethod {
 	@Override
 	public AuthenticationMethod getInstanceForRequest(String header) {
 		BasicAuthenticationMethod newInstance = new BasicAuthenticationMethod();
-		newInstance.base64 = new Base64();
-
 		newInstance.getAuthenticationFromHeader(header);
 		newInstance.setAAAQuerier(this.authenticator);
 		return newInstance;
@@ -55,8 +52,7 @@ public class BasicAuthenticationMethod implements AuthenticationMethod {
 		StringTokenizer st = new StringTokenizer(authHeader);
 		if (st.hasMoreTokens() && st.nextToken().equalsIgnoreCase(getIdentifier())) {
 			String credentials;
-
-			credentials = new String(base64.decode(st.nextToken()));
+			credentials = new String(Base64.getDecoder().decode(st.nextToken()));
 
 			int p = credentials.indexOf(':');
 			if (p != -1) {

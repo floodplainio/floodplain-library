@@ -40,7 +40,6 @@ dependencies {
     compile dependencies.osgiComponentAnnotations
     compile dependencies.commonsIo
     compile dependencies.cdiApi
-    compile dependencies.guava
     testCompile dependencies.jUnit
 
  }

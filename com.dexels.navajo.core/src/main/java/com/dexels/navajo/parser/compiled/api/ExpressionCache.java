@@ -1,12 +1,7 @@
 package com.dexels.navajo.parser.compiled.api;
 
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
@@ -28,9 +23,6 @@ import com.dexels.navajo.parser.compiled.Node;
 import com.dexels.navajo.parser.compiled.ParseException;
 import com.dexels.navajo.script.api.Access;
 import com.dexels.navajo.script.api.MappableTreeNode;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 
 
 public class ExpressionCache {
@@ -39,28 +31,15 @@ public class ExpressionCache {
 
 	private static ExpressionCache instance;
 
-    private final LoadingCache<String, Optional<ContextExpression>> exprCache;
-    private final LoadingCache<String, Optional<Operand>> expressionValueCache;
+    private final Map<String, ContextExpression> exprCache = new HashMap<>();
+    private final Map<String, Operand> expressionValueCache = new HashMap<>();
 
 	private final AtomicLong hitCount = new AtomicLong();
 	private final AtomicLong pureHitCount = new AtomicLong();
 	private final AtomicLong parsedCount = new AtomicLong();
 	
 	public ExpressionCache() {
-		exprCache = CacheBuilder.from(DEFAULT_CACHE_SPEC).build(new CacheLoader<String, Optional<ContextExpression>>() {
-			public Optional<ContextExpression> load(String key) {
-				// Return empty optional and let the application handle it.
-				return Optional.empty();
-			}
-		});
-		
-		expressionValueCache = CacheBuilder.from(DEFAULT_CACHE_SPEC).build(new CacheLoader<String, Optional<Operand>>() {
-			public Optional<Operand> load(String key) {
-				// Return empty optional and let the application handle it.
-				return Optional.empty();
-			}
-		});
-		
+
 		try {
 	        Timer time = new Timer(); // Instantiate Timer Object
 
@@ -79,7 +58,7 @@ public class ExpressionCache {
 
 	public Operand evaluate(String expression,Navajo doc, Message parentMsg, Message parentParamMsg, Selection parentSel,
 			 MappableTreeNode mapNode, TipiLink tipiLink, Access access, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
-		Optional<Operand> cachedValue = expressionValueCache.getUnchecked(expression);
+		Optional<Operand> cachedValue = Optional.ofNullable(expressionValueCache.get(expression));
 		if(cachedValue.isPresent()) {
 			pureHitCount.incrementAndGet();
 			return cachedValue.get();
@@ -103,7 +82,7 @@ public class ExpressionCache {
 	}
 	
 	public ContextExpression parse(List<String> problems, String expression,Function<String,FunctionClassification> functionClassifier, Function<String,Optional<Node>> mapResolver) {
-		Optional<ContextExpression> cachedParsedExpression = exprCache.getUnchecked(expression);
+		Optional<ContextExpression> cachedParsedExpression = Optional.ofNullable(exprCache.get(expression));
 		if(cachedParsedExpression.isPresent()) {
 			hitCount.incrementAndGet();
 			return cachedParsedExpression.get();
@@ -117,9 +96,9 @@ public class ExpressionCache {
 	        parsedCount.incrementAndGet();
 	        if(parsed.isLiteral()) {
 	        		Operand result = parsed.apply();
-	        		exprCache.put(expression, Optional.ofNullable(parsed));
+	        		exprCache.put(expression, parsed);
 	        		if(result!=null) {
-		        		expressionValueCache.put(expression,  Optional.of(result));
+		        		expressionValueCache.put(expression,  result);
 	        		}
 	        		return new ContextExpression() {
 						
@@ -145,7 +124,7 @@ public class ExpressionCache {
 						}
 					};
 	        } else {
-	        		exprCache.put(expression, Optional.ofNullable(parsed));
+	        		exprCache.put(expression, parsed);
 	        		return parsed;
 	        }
 	        
