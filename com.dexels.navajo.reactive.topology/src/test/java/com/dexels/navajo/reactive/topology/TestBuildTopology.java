@@ -211,7 +211,7 @@ public class TestBuildTopology {
 
 	}
 	
-	@Test
+	@Test @Ignore
 	public void testPipesWithPartials() throws ParseException, IOException, InterruptedException {
 
 		Topology topology = runner.parseSinglePipeDefinition(new Topology(),getClass().getClassLoader().getResourceAsStream("pipewithpartials.rr"),"junit");
@@ -221,7 +221,7 @@ public class TestBuildTopology {
 	}
 	
 
-	@Test
+	@Test @Ignore
 	public void testGroupBy() throws ParseException, IOException, InterruptedException {
 
 		Topology topology = runner.parseSinglePipeDefinition(new Topology(),getClass().getClassLoader().getResourceAsStream("totalpayment.rr"),"junit");
@@ -230,7 +230,7 @@ public class TestBuildTopology {
 		runTopology(topology);
 	}
 
-	@Test
+	@Test @Ignore
 	public void testCustomerWithTotal() throws ParseException, IOException, InterruptedException {
 
 		Topology topology = runner.parseSinglePipeDefinition(new Topology(),getClass().getClassLoader().getResourceAsStream("customerwithtotals.rr"),"junit");

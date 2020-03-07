@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.navajo.expression.api.ContextExpression;
 import com.dexels.replication.api.ReplicationMessage;
+import com.dexels.replication.api.ReplicationMessage.Operation;
 
 public class StoreStateProcessor extends AbstractProcessor<String, ReplicationMessage> {
 
@@ -75,7 +76,8 @@ public class StoreStateProcessor extends AbstractProcessor<String, ReplicationMe
 //		ImmutableMessage paramMessage = Optional.ofNullable(lookupStore.get(COMMONKEY)).map(e->e.paramMessage()).orElse(initial);
 //		ImmutableMessage msg = Optional.ofNullable(paramMessage.orElse(initial)).orElse(initial);
 //		String keyVal = this.key.map(e->)
-		super.context().forward(extracted.orElse(COMMONKEY), inputValue);
+//		super.context().forward(extracted.orElse(COMMONKEY), inputValue);
+		super.context().forward(extracted.orElse(COMMONKEY), inputValue.withOperation(Operation.UPDATE));
 	}
 
 }

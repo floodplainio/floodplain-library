@@ -1,7 +1,6 @@
 package com.dexels.kafka.streams.remotejoin;
 
 import static com.dexels.kafka.streams.api.CoreOperators.extractKey;
-import static com.dexels.kafka.streams.api.CoreOperators.getJoinFunction;
 import static com.dexels.kafka.streams.api.CoreOperators.getListJoinFunction;
 import static com.dexels.kafka.streams.api.CoreOperators.joinFieldList;
 import static com.dexels.kafka.streams.api.CoreOperators.topicName;
@@ -18,8 +17,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import javax.enterprise.context.ContextException;
 
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.common.serialization.Deserializer;
@@ -668,12 +665,14 @@ public class ReplicationTopologyParser {
         Optional<String> to = Optional.ofNullable(xe.getStringAttribute("to"));
         Optional<String> keyField = Optional.ofNullable(xe.getStringAttribute("keyField"));
         Optional<String> valueField = Optional.ofNullable(xe.getStringAttribute("valueField"));
-        BiFunction<ReplicationMessage, List<ReplicationMessage>, ReplicationMessage> listJoinFunction = createJoinFunction(isList, into, name, columns, keyField, valueField);
-        final BiFunction<ReplicationMessage, ReplicationMessage, ReplicationMessage> joinFunction = getJoinFunction(into,columns);
+//        BiFunction<ReplicationMessage, List<ReplicationMessage>, ReplicationMessage> listJoinFunction = createJoinFunction(isList, into, name, columns, keyField, valueField);
+//        final BiFunction<ReplicationMessage, ReplicationMessage, ReplicationMessage> joinFunction = getJoinFunction(into,columns);
 
         Optional<Predicate<String, ReplicationMessage>> filterPredicate = Filters.getFilter(filter);
-        Topology current = addJoin(builderr, topologyContext, topologyConstructor, from, isList, with, name, optional,
-				listJoinFunction, joinFunction, filterPredicate,false);
+//        ReplicationTopologyParser.createParamListJoinFunction(into.get()));
+
+        Topology current = addJoin(builderr, topologyContext, topologyConstructor, from, with, name, optional,into,
+        		filterPredicate,false);
 
         
 //        Add processor here?
@@ -696,7 +695,6 @@ public class ReplicationTopologyParser {
 			ImmutableMessage stateMessage, boolean materialize, Optional<ContextExpression> keyExtractor) {
 
 		String parentName = processorName(transformerNames.peek());
-//		String parentStoreName = STORE_PREFIX+parentName;
 		String reduceReader = processorName(transformerNames.peek()+"_reduceread");
 		String ifElseName = processorName(namespace+"_"+currentPipeId+"_"+"ifelse"+transformerNames.size());
 		transformerNames.push(ifElseName);
@@ -732,7 +730,7 @@ public class ReplicationTopologyParser {
 		}
 //		topologyConstructor
 		// TODO I think there is something wrong in the bookkeeping of the transformerStack
-		topology.addProcessor(reduceName, ()->new StoreStateProcessor(reduceName, reduceStoreName, stateMessage,keyExtractor), addProcessorStack.peek(),removeProcessorStack.peek());
+		topology.addProcessor(materialize? "_proc"+reduceName: reduceName, ()->new StoreStateProcessor(reduceName, reduceStoreName, stateMessage,keyExtractor), addProcessorStack.peek(),removeProcessorStack.peek());
 		addStateStoreMapping(topologyConstructor.processorStateStoreMapper, reduceName, reduceStoreName);
 		addStateStoreMapping(topologyConstructor.processorStateStoreMapper, reduceReader, reduceStoreName);
 		addStateStoreMapping(topologyConstructor.processorStateStoreMapper, reduceReader, inputStoreName);
@@ -743,25 +741,16 @@ public class ReplicationTopologyParser {
 		if(!topologyConstructor.stateStoreSupplier.containsKey(inputStoreName)) {
 			topologyConstructor.stateStoreSupplier.put(inputStoreName,createMessageStoreSupplier(inputStoreName,false));
 		}
-
-		//		addStateStoreMapping(topologyConstructor.processorStateStoreMapper, procName, STORE_PREFIX+fromProcessorName);
-
 		if(materialize) {
-			throw new RuntimeException("Not implemented materialization yet");
-//			topologyConstructor.stores.add(STORE_PREFIX+name);
-//			topologyConstructor.stateStoreSupplier.put(STORE_PREFIX+name,createMessageStoreSupplier(STORE_PREFIX+name,true));
-//			addStateStoreMapping(topologyConstructor.processorStateStoreMapper, name, STORE_PREFIX+name);
-//	        current.addProcessor(name,()->new StoreProcessor(STORE_PREFIX+name),procName);
-			
+			addMaterializeStore(topology, topologyContext, topologyConstructor, reduceName, "_proc"+reduceName);
 		}
 		return reduceName;
 	}
 
 	public static Topology addJoin(final Topology current, TopologyContext topologyContext,
-			TopologyConstructor topologyConstructor, String from, boolean isList, String with, String name,
+			TopologyConstructor topologyConstructor, String from, String with, String name,
 			boolean optional,
-			BiFunction<ReplicationMessage, List<ReplicationMessage>, ReplicationMessage> listJoinFunction,
-			final BiFunction<ReplicationMessage, ReplicationMessage, ReplicationMessage> joinFunction,
+			Optional<String> into,
 			Optional<Predicate<String, ReplicationMessage>> filterPredicate,
 			boolean materialize) {
 		KafkaUtils.ensureExistsSync(topologyConstructor.adminClient, topicName(from,topologyContext),Optional.empty());
@@ -769,19 +758,7 @@ public class ReplicationTopologyParser {
 		final String withProcessorName  = processorName(with);
 		String firstNamePre = name+"-forwardpre";
 		String secondNamePre =  name+"-reversepre";
-		String finalJoin = name+"-joined";
 
-//		if (!topologyConstructor.stores.contains(STORE_PREFIX+fromProcessorName)) {
-//	    	final Optional<ProcessorSupplier<String, ReplicationMessage>> processorFromChildren = processorFromChildren(Optional.empty(), topicName(from, topologyContext),topologyConstructor);
-//			addSourceStore(current, topologyContext, topologyConstructor,  processorFromChildren,from, Optional.empty(),true);
-//		}
-//		if (!topologyConstructor.stores.contains(STORE_PREFIX+withProcessorName)) {
-//	    	final Optional<ProcessorSupplier<String, ReplicationMessage>> processorFromChildren = processorFromChildren(Optional.empty(), topicName(with, topologyContext), topologyConstructor);
-//        	addSourceStore(current, topologyContext, topologyConstructor,processorFromChildren,
-//        			 with, Optional.empty(),true);
-//        }
-        
-        
         //Preprocessor - add info whether the resulting message is a reverse-join or not
         current.addProcessor(
                 firstNamePre 
@@ -795,36 +772,29 @@ public class ReplicationTopologyParser {
         
         @SuppressWarnings("rawtypes")
         final Processor proc;
-        if (isList) {
+        if (into.isPresent()) {
             proc = new OneToManyGroupedProcessor(
                      STORE_PREFIX+fromProcessorName,
                      STORE_PREFIX+withProcessorName,
                      optional,
                      filterPredicate,
-                     listJoinFunction);
+                     ReplicationTopologyParser.createParamListJoinFunction(into.get()));
         } else {
 			proc = new OneToOneProcessor(
 					STORE_PREFIX+fromProcessorName,
 					STORE_PREFIX+withProcessorName,
                     optional,
                     filterPredicate,
-                    joinFunction);
+                    (msg,comsg)->msg.withParamMessage(comsg.message()));
         }
 
-        // Create single processor to process changes from the processors
-        //
         String procName = materialize ? "proc_"+name : name;
-
         current.addProcessor(
         		procName 
                 ,()->proc
                 ,firstNamePre,secondNamePre
             );
 
-//        String lastJoinId = finalJoin;
-        
-        // TODO fix stores if needed
-//        addStateStoreMapping(topologyConstructor.processorStateStoreMapper, name, STORE_PREFIX+lastJoinId);
 		addStateStoreMapping(topologyConstructor.processorStateStoreMapper, procName, STORE_PREFIX+withProcessorName);
 		addStateStoreMapping(topologyConstructor.processorStateStoreMapper, procName, STORE_PREFIX+fromProcessorName);
 
@@ -838,32 +808,11 @@ public class ReplicationTopologyParser {
 		return current;
 	}
 
-	public static BiFunction<ReplicationMessage, List<ReplicationMessage>, ReplicationMessage> createListJoinFunction(
-			String into, String name, Optional<String> columns) {
-		return createJoinFunction(true, Optional.of(into), name, columns, Optional.empty(), Optional.empty());
-	}
-	
 	public static BiFunction<ReplicationMessage, List<ReplicationMessage>, ReplicationMessage> createParamListJoinFunction(String into) {
 		return (msg,list)->{
 			ReplicationMessage combinedMessage = msg.withParamMessage(ImmutableFactory.empty().withSubMessages(into, list.stream().map(ReplicationMessage::message).collect(Collectors.toList())));
 			return combinedMessage;
 		};
-	}
-	
-	public static BiFunction<ReplicationMessage, List<ReplicationMessage>, ReplicationMessage> createJoinFunction(
-			boolean isList, Optional<String> into, String name, Optional<String> columns, Optional<String> keyField,
-			Optional<String> valueField) {
-		final BiFunction<ReplicationMessage, List<ReplicationMessage>, ReplicationMessage> listJoinFunction;
-        if (isList && !keyField.isPresent()) {
-        	if(!into.isPresent()) {
-        		throw new TopologyDefinitionException("Missing into in join definition: "+name+" into is required when joining with a list");
-        	} else {
-				listJoinFunction = getListJoinFunction(into.get(),false, columns);
-        	}
-        } else {
-            listJoinFunction =  (m1,m2)-> joinFieldList(m1, m2,keyField.get(),valueField.get(),Collections.emptyList(),Optional.empty());
-        }
-		return listJoinFunction;
 	}
 	
 	public static StoreBuilder<KeyValueStore<String, ReplicationMessage>> createMessageStoreSupplier(String name, boolean persistent) {

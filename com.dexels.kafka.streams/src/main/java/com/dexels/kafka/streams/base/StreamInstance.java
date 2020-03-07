@@ -366,9 +366,9 @@ public class StreamInstance {
 	    streamsConfiguration.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, StreamOperators.replicationSerde.getClass());
 
 	    streamsConfiguration.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-	    streamsConfiguration.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, 60000);
-	    streamsConfiguration.put(ConsumerConfig.REQUEST_TIMEOUT_MS_CONFIG, 80000);
-	    streamsConfiguration.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, 10000);
+	    streamsConfiguration.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, 30000);
+	    streamsConfiguration.put(ConsumerConfig.REQUEST_TIMEOUT_MS_CONFIG, 40000);
+	    streamsConfiguration.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, 5000);
 	    streamsConfiguration.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 7200000);
 	    streamsConfiguration.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 100);
 	    streamsConfiguration.put(ProducerConfig.COMPRESSION_TYPE_CONFIG, "lz4");

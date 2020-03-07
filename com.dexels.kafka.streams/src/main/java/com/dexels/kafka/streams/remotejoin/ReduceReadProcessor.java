@@ -38,13 +38,24 @@ public class ReduceReadProcessor extends AbstractProcessor<String, ReplicationMe
 
 	@Override
 	public void process(String key, final ReplicationMessage inputValue) {
-		Optional<String> extracted = keyExtractor.map(e->e.apply(null,Optional.of(inputValue.message()),inputValue.paramMessage())).map(e->(String)e.value);
+		ReplicationMessage stored = inputStore.get(key);
+		Optional<String> extracted;
+		if(stored==null) {
+			// no stored value, so must be upsert.
+			if(inputValue==null || inputValue.operation()==Operation.DELETE) {
+				throw new RuntimeException("Issue: Deleting (?) a message that isn't there. Is this bad?");
+			}
+			extracted = keyExtractor.map(e->e.apply(null,Optional.of(inputValue.message()),inputValue.paramMessage())).map(e->(String)e.value);
+		} else {
+			extracted = keyExtractor.map(e->e.apply(null,Optional.of(stored.message()),stored.paramMessage())).map(e->(String)e.value);
+			
+		}
+//		Optional<String> extracted = keyExtractor.map(e->e.apply(null,Optional.of(stored.message()),stored.paramMessage())).map(e->(String)e.value);
 //		System.err.println("KEY: "+extracted);
 		ImmutableMessage msg = this.accumulatorStore.get(extracted.orElse(StoreStateProcessor.COMMONKEY));
 		ReplicationMessage value = inputValue;
-		ReplicationMessage stored = inputStore.get(key);
 		inputStore.put(key, inputValue);
-		if(inputValue==null) {
+		if(inputValue==null || inputValue.operation()==Operation.DELETE) {
 			if(stored==null) {
 				throw new RuntimeException("Issue: Deleting a message that isn't there. Is this bad?");
 			}
