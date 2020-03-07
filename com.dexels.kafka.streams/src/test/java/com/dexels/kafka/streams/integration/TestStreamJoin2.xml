@@ -1,7 +1,0 @@
-<joins tenants="tenant">
-    <mongodb.sink>
-        <sink collection="TestStreamJoin2" topic="TestStreamJoin-PERSON">
-        </sink>
-    </mongodb.sink>
-   
-</joins>

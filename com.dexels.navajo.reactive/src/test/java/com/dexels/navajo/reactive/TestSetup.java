@@ -10,7 +10,6 @@ import com.dexels.navajo.document.stream.api.StreamScriptContext;
 import com.dexels.navajo.parser.Expression;
 import com.dexels.navajo.reactive.api.ReactiveFinder;
 import com.dexels.navajo.reactive.source.single.SingleSourceFactory;
-import com.dexels.navajo.reactive.source.sql.SQLReactiveSourceFactory;
 import com.dexels.navajo.reactive.source.test.EventStreamSourceFactory;
 import com.dexels.navajo.reactive.stored.InputStreamSourceFactory;
 import com.dexels.navajo.reactive.transformer.call.CallTransformerFactory;
@@ -36,7 +35,6 @@ public class TestSetup {
 		ReplicationFactory.setInstance(new JSONReplicationMessageParserImpl());
 		ReactiveFinder finder = new CoreReactiveFinder();
 		Expression.compileExpressions = true;
-		finder.addReactiveSourceFactory(new SQLReactiveSourceFactory(),"sql");
 		finder.addReactiveSourceFactory(new SingleSourceFactory(),"single");
 		finder.addReactiveSourceFactory(new InputStreamSourceFactory(),"inputstream");
 		finder.addReactiveSourceFactory(new EventStreamSourceFactory(),"eventstream");
