@@ -74,17 +74,5 @@ public class Security {
 		Key key = new SecretKeySpec(keyValue, KEY_ALGO);
 		return key;
 	}
-	
-    public static void main(String[] args) throws Exception {
-
-        String password = "mypassword";
-        Security s = new Security("%#'/'_+!@");
-        String passwordEnc = s.encrypt(password);
-        String passwordDec = s.decrypt(passwordEnc);
-
-        System.out.println("Plain Text : " + password);
-        System.out.println("Encrypted Text : " + passwordEnc);
-        System.out.println("Decrypted Text : " + passwordDec);
-    }
 
 }
