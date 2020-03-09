@@ -25,7 +25,6 @@ import com.dexels.navajo.server.NavajoIOConfig;
 import com.dexels.navajo.server.enterprise.integrity.WorkerInterface;
 import com.dexels.navajo.server.enterprise.scheduler.WebserviceListenerFactory;
 import com.dexels.navajo.server.enterprise.tribe.TribeManagerInterface;
-import com.dexels.navajo.sharedstore.SharedStoreInterface;
 
 public class NavajoConfigComponent implements NavajoConfigInterface {
 
@@ -36,7 +35,6 @@ public class NavajoConfigComponent implements NavajoConfigInterface {
 	private final Map<Class<?>,ServiceReference<?>> serviceReferences = new HashMap<>();
 	private ConfigurationAdmin myConfigurationAdmin;
 	private WorkerInterface integrityWorker;
-	private SharedStoreInterface sharedStore;
 	private TribeManagerInterface tribeManager;
 	private static final Logger logger = LoggerFactory
 			.getLogger(NavajoConfigComponent.class);
@@ -45,14 +43,7 @@ public class NavajoConfigComponent implements NavajoConfigInterface {
 	}
 	
 	
-	public void setSharedStore(SharedStoreInterface sharedStore) {
-		this.sharedStore = sharedStore;
-	}
-	
-	public void clearSharedStore(SharedStoreInterface sharedShore) {
-		this.sharedStore = null;
-	}
-	
+
 	public void setIOConfig(NavajoIOConfig config) {
 		this.navajoIOConfig = config;
 	}
@@ -298,11 +289,6 @@ public class NavajoConfigComponent implements NavajoConfigInterface {
 	@Override
 	public Object getParameter(String string) {
 		return properties.get(string);
-	}
-
-	@Override
-	public SharedStoreInterface getSharedStore() {
-		return sharedStore;
 	}
 
 	@Override

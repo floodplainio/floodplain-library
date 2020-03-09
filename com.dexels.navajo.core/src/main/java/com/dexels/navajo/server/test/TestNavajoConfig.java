@@ -8,8 +8,6 @@ import org.slf4j.LoggerFactory;
 import com.dexels.navajo.server.FileNavajoConfig;
 import com.dexels.navajo.server.NavajoConfigInterface;
 import com.dexels.navajo.server.enterprise.integrity.WorkerInterface;
-import com.dexels.navajo.sharedstore.SharedFileStore;
-import com.dexels.navajo.sharedstore.SharedStoreInterface;
 
 public class TestNavajoConfig extends FileNavajoConfig implements NavajoConfigInterface {
 
@@ -142,16 +140,6 @@ public class TestNavajoConfig extends FileNavajoConfig implements NavajoConfigIn
 	@Override
 	public Object getParameter(String string) {
 		return null;
-	}
-
-	@Override
-	public SharedStoreInterface getSharedStore() {
-		try {
-			return new SharedFileStore();
-		} catch (Exception e) {
-			logger.error("Error: ", e);
-			return null;
-		}
 	}
 
     @Override

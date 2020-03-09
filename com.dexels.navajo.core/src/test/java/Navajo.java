@@ -7,7 +7,6 @@ import com.dexels.navajo.events.types.AuditLogEventTest;
 import com.dexels.navajo.events.types.CacheExpiryEventTest;
 import com.dexels.navajo.events.types.NavajoCompileScriptEventTest;
 import com.dexels.navajo.events.types.NavajoEventMapTest;
-import com.dexels.navajo.sharedstore.SharedStoreInterfaceTest;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
@@ -17,7 +16,6 @@ import com.dexels.navajo.sharedstore.SharedStoreInterfaceTest;
 	AuditLogEventTest.class, 
 	CacheExpiryEventTest.class, 
 	NavajoEventMapTest.class, 
-	SharedStoreInterfaceTest.class, 
 	})
 public class Navajo {
 

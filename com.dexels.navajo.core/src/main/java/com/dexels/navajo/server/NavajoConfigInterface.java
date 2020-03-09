@@ -1,7 +1,6 @@
 package com.dexels.navajo.server;
 
 import com.dexels.navajo.server.enterprise.integrity.WorkerInterface;
-import com.dexels.navajo.sharedstore.SharedStoreInterface;
 
 public interface NavajoConfigInterface extends NavajoIOConfig {
 
@@ -14,7 +13,6 @@ public interface NavajoConfigInterface extends NavajoIOConfig {
 	public String getInstanceGroup();
 	
 	// Available modules.
-	public SharedStoreInterface getSharedStore();
 	public ClassLoader getClassloader();
 	
 	public WorkerInterface getIntegrityWorker();
