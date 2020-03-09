@@ -68,7 +68,7 @@ publishing {
             from components.java
             artifact shadowJar
             groupId = "io.floodplain"
-            artifactId = project.name
+            artifactId = "topology-shadow"
             version = rootProject.ext.floodplain_version
         }
     }
