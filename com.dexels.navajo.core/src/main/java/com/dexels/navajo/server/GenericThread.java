@@ -33,8 +33,6 @@ import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dexels.navajo.events.NavajoEventRegistry;
-import com.dexels.navajo.events.types.NavajoHealthCheckEvent;
 import com.dexels.navajo.script.api.Access;
 import com.dexels.navajo.script.api.Mappable;
 import com.dexels.navajo.script.api.MappableException;
@@ -244,21 +242,6 @@ public class GenericThread implements Runnable, Mappable {
 	
 	public long getTotalSleepTime() {
 		return this.totalSleepTime;
-	}
-	
-	/**
-	 * This method can be used by GenericThread object to signal health problems.
-	 * 
-	 * @param level
-	 * @param warningLevel
-	 * @param severity
-	 * @param message
-	 */
-	public final void sendHealthCheck(int level, int warningLevel, Level severity, String message) {
-
-		String m = severity + ":" + "level=" + level + ",warninglevel=" + warningLevel + ",message=" + message;
-		NavajoEventRegistry.getInstance().publishAsynchronousEvent(new NavajoHealthCheckEvent(severity, m));
-
 	}
 
 	public Thread getThread() {

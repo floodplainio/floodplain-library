@@ -63,7 +63,6 @@ import com.dexels.navajo.script.api.UserException;
 import com.dexels.navajo.server.ConditionData;
 import com.dexels.navajo.server.ConditionErrorException;
 import com.dexels.navajo.server.DispatcherFactory;
-import com.dexels.navajo.server.enterprise.tribe.TribeManagerFactory;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public abstract class CompiledScript implements CompiledScriptMXBean, Mappable, CompiledScriptInterface {
@@ -780,19 +779,7 @@ public abstract class CompiledScript implements CompiledScriptMXBean, Mappable, 
         logger.info("{} ({}): {}",myAccess.getRpcName(),myAccess.getAccessID() + "): ",msg);
     }
 
-    /**
-     * Get a lock for the synchronized block.
-     * @throws CompilationException 
-     * 
-     */
-    public Lock getLock(String user, String service, String key) throws CompilationException {
-        if (user == null && service == null && key == null) {
-            throw new CompilationException("Either user or service or both should be specified.");
-        }
-        String name = user + "-" + service + "-" + key;
-        logger.debug("lockname: {}", name);
-        return TribeManagerFactory.getInstance().getLock(name);
-    }
+
     
     public void acquiredLock(Lock l ) {
         acquiredLocks.add(l);

@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 
 import com.dexels.navajo.server.FileNavajoConfig;
 import com.dexels.navajo.server.NavajoConfigInterface;
-import com.dexels.navajo.server.enterprise.integrity.WorkerInterface;
 
 public class TestNavajoConfig extends FileNavajoConfig implements NavajoConfigInterface {
 
@@ -120,11 +119,6 @@ public class TestNavajoConfig extends FileNavajoConfig implements NavajoConfigIn
 	public void doClearScriptCache() {
 	}
 
-	@Override
-	public WorkerInterface getIntegrityWorker() {
-		
-		return null;
-	}
 
 	@Override
 	public int getMaxAccessSetSize() {

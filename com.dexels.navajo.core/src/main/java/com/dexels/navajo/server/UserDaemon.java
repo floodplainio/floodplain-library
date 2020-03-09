@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import com.dexels.navajo.document.Message;
 import com.dexels.navajo.document.Navajo;
 import com.dexels.navajo.document.Property;
-import com.dexels.navajo.util.AuditLog;
 
 /**
  * This class can be used to create user defined services that must be started
@@ -30,12 +29,6 @@ public class UserDaemon extends GenericThread {
 		if (!userServices.containsKey(userService.getMyId())) {
 			userServices.put(userService.getMyId(), userService);
 			userService.startThread(userService);
-			AuditLog.log("USERDAEMON",
-					"Started user daemon: " + userService.getMyId());
-		} else {
-			AuditLog.log("USERSERVICES", "Could not register user service: "
-					+ userService.getMyId()
-					+ ": already got service with this name.");
 		}
 	}
 	
@@ -83,11 +76,7 @@ public class UserDaemon extends GenericThread {
 					ud.setSleepTime(Integer.parseInt(sleepTime.getValue()));
 					startService(ud);
 				} catch (Exception e) {
-					AuditLog.log(
-							"USERDAEMON",
-							"Could not instantiate user daemon class: "
-									+ className.getValue() + ", reason: "
-									+ e.getMessage());
+					logger.error("Error",e);
 				}
 			}
 		}

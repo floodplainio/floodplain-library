@@ -1,6 +1,5 @@
 package com.dexels.navajo.server;
 
-import com.dexels.navajo.server.enterprise.integrity.WorkerInterface;
 
 public interface NavajoConfigInterface extends NavajoIOConfig {
 
@@ -14,9 +13,7 @@ public interface NavajoConfigInterface extends NavajoIOConfig {
 	
 	// Available modules.
 	public ClassLoader getClassloader();
-	
-	public WorkerInterface getIntegrityWorker();
-	
+
 	// Statistics.
 	public double getCurrentCPUload();
 	

@@ -22,9 +22,6 @@ import com.dexels.navajo.document.Navajo;
 import com.dexels.navajo.script.api.NavajoClassSupplier;
 import com.dexels.navajo.server.NavajoConfigInterface;
 import com.dexels.navajo.server.NavajoIOConfig;
-import com.dexels.navajo.server.enterprise.integrity.WorkerInterface;
-import com.dexels.navajo.server.enterprise.scheduler.WebserviceListenerFactory;
-import com.dexels.navajo.server.enterprise.tribe.TribeManagerInterface;
 
 public class NavajoConfigComponent implements NavajoConfigInterface {
 
@@ -34,8 +31,7 @@ public class NavajoConfigComponent implements NavajoConfigInterface {
 	private BundleContext bundleContext;
 	private final Map<Class<?>,ServiceReference<?>> serviceReferences = new HashMap<>();
 	private ConfigurationAdmin myConfigurationAdmin;
-	private WorkerInterface integrityWorker;
-	private TribeManagerInterface tribeManager;
+
 	private static final Logger logger = LoggerFactory
 			.getLogger(NavajoConfigComponent.class);
 	
@@ -181,26 +177,6 @@ public class NavajoConfigComponent implements NavajoConfigInterface {
 		return getClass().getClassLoader();
 	}
 
-	public void setTribeManager(TribeManagerInterface tmi) {
-		tribeManager = tmi;
-	}
-	
-	public void clearTribeManager(TribeManagerInterface tmi) {
-		tribeManager = null;
-	}
-	
-	public void clearIntegrityWorker(WorkerInterface dpi) {
-		this.integrityWorker = null;
-	}
-
-	public void setIntegrityWorker(WorkerInterface dpi) {
-		this.integrityWorker = dpi;
-	}
-
-	@Override
-	public WorkerInterface getIntegrityWorker() {
-		return integrityWorker;
-	}
 
 	@Override
 	public double getCurrentCPUload() {

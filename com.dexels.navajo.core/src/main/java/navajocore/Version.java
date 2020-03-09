@@ -5,12 +5,6 @@ import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dexels.navajo.events.NavajoEventRegistry;
-import com.dexels.navajo.server.GenericThread;
-import com.dexels.navajo.server.enterprise.monitoring.AgentFactory;
-import com.dexels.navajo.server.enterprise.tribe.TribeManagerFactory;
-import com.dexels.navajo.util.AuditLog;
-
 import navajoextension.AbstractCoreExtension;
 
 
