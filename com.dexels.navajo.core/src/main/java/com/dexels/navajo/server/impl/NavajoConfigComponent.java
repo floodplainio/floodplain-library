@@ -19,14 +19,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.dexels.navajo.document.Navajo;
-import com.dexels.navajo.mapping.AsyncStore;
 import com.dexels.navajo.script.api.NavajoClassSupplier;
 import com.dexels.navajo.server.NavajoConfigInterface;
 import com.dexels.navajo.server.NavajoIOConfig;
-import com.dexels.navajo.server.descriptionprovider.DescriptionProviderInterface;
 import com.dexels.navajo.server.enterprise.integrity.WorkerInterface;
 import com.dexels.navajo.server.enterprise.scheduler.WebserviceListenerFactory;
-import com.dexels.navajo.server.enterprise.statistics.StatisticsRunnerInterface;
 import com.dexels.navajo.server.enterprise.tribe.TribeManagerInterface;
 import com.dexels.navajo.sharedstore.SharedStoreInterface;
 
@@ -37,9 +34,7 @@ public class NavajoConfigComponent implements NavajoConfigInterface {
 	private Map<String, Object> properties;
 	private BundleContext bundleContext;
 	private final Map<Class<?>,ServiceReference<?>> serviceReferences = new HashMap<>();
-	private final Map<String, DescriptionProviderInterface> desciptionProviders = new HashMap<>();
 	private ConfigurationAdmin myConfigurationAdmin;
-	private AsyncStore asyncStore;
 	private WorkerInterface integrityWorker;
 	private SharedStoreInterface sharedStore;
 	private TribeManagerInterface tribeManager;
@@ -189,38 +184,10 @@ public class NavajoConfigComponent implements NavajoConfigInterface {
 			return null;
 		}
 	}
-	
-	
-
-	@Override
-	public StatisticsRunnerInterface getStatisticsRunner() {
-		return (StatisticsRunnerInterface) getService(StatisticsRunnerInterface.class);
-	}
 
 	@Override
 	public ClassLoader getClassloader() {
 		return getClass().getClassLoader();
-	}
-
-	public void setAsyncStore(AsyncStore as) {
-		this.asyncStore = as;
-	}
-	
-	public void clearAsyncStore(AsyncStore as) {
-		this.asyncStore = null;
-	}
-	
-	@Override
-	public AsyncStore getAsyncStore() {
-		return this.asyncStore;
-	}
-
-	public void addDescriptionProvider(DescriptionProviderInterface dpi) {
-		desciptionProviders.put(dpi.getClass().getName(), dpi);
-	}
-
-	public void removeDescriptionProvider(DescriptionProviderInterface dpi) {
-		desciptionProviders.remove(dpi.getClass().getName());
 	}
 
 	public void setTribeManager(TribeManagerInterface tmi) {
@@ -238,11 +205,6 @@ public class NavajoConfigComponent implements NavajoConfigInterface {
 	public void setIntegrityWorker(WorkerInterface dpi) {
 		this.integrityWorker = dpi;
 	}
-	
-	@Override
-	public DescriptionProviderInterface getDescriptionProvider() {
-		return desciptionProviders.get(properties.get("descriptionProviderClass"));
-	}
 
 	@Override
 	public WorkerInterface getIntegrityWorker() {
@@ -252,16 +214,6 @@ public class NavajoConfigComponent implements NavajoConfigInterface {
 	@Override
 	public double getCurrentCPUload() {
 		return -1;
-	}
-
-	@Override
-	public void setStatisticsRunnerEnabled(boolean b) {
-		StatisticsRunnerInterface sm = (StatisticsRunnerInterface)getService(StatisticsRunnerInterface.class);
-		if(sm!=null) {
-			sm.setEnabled( b);
-			return;
-		}
-		logger.warn("Warning: setStatisticsRunnerEnabled failed, no ServiceMonitor found.");
 	}
 
 	@Override
@@ -331,19 +283,6 @@ public class NavajoConfigComponent implements NavajoConfigInterface {
 			return b;
 		}
 		return false;
-	}
-
-	/**
-	 * This one asks the statisticsrunner
-	 * @return
-	 */
-	@Override
-	public boolean isStatisticsRunnerEnabled() {
-		StatisticsRunnerInterface s = getStatisticsRunner();
-		if(s==null) {
-			return false;
-		}
-		return s.isEnabled();
 	}
 
 	@Override

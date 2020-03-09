@@ -5,12 +5,9 @@ import java.io.File;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dexels.navajo.mapping.AsyncStore;
 import com.dexels.navajo.server.FileNavajoConfig;
 import com.dexels.navajo.server.NavajoConfigInterface;
-import com.dexels.navajo.server.descriptionprovider.DescriptionProviderInterface;
 import com.dexels.navajo.server.enterprise.integrity.WorkerInterface;
-import com.dexels.navajo.server.enterprise.statistics.StatisticsRunnerInterface;
 import com.dexels.navajo.sharedstore.SharedFileStore;
 import com.dexels.navajo.sharedstore.SharedStoreInterface;
 
@@ -70,11 +67,6 @@ public class TestNavajoConfig extends FileNavajoConfig implements NavajoConfigIn
 	}
 
 	@Override
-	public StatisticsRunnerInterface getStatisticsRunner() {
-		return null;
-	}
-
-	@Override
 	public String getRootPath() {
 		return getConfigPath();
 	}
@@ -84,10 +76,6 @@ public class TestNavajoConfig extends FileNavajoConfig implements NavajoConfigIn
 		return null;
 	}
 
-	@Override
-	public AsyncStore getAsyncStore() {
-		return null;
-	}
 
 	@Override
 	public float getAsyncTimeout() {
@@ -99,10 +87,6 @@ public class TestNavajoConfig extends FileNavajoConfig implements NavajoConfigIn
 		return new File(configRoot,"classes").getAbsolutePath();
 	}
 
-	@Override
-	public DescriptionProviderInterface getDescriptionProvider() {
-		return null;
-	}
 
 	@Override
 	public String getResourcePath() {
@@ -126,19 +110,7 @@ public class TestNavajoConfig extends FileNavajoConfig implements NavajoConfigIn
 	}
 
 	@Override
-	public boolean isStatisticsRunnerEnabled() {
-		return false;
-	}
-
-	@Override
-	public void setStatisticsRunnerEnabled(boolean b) {
-	}
-
-
-	@Override
 	public void doClearCache() {
-		
-		
 	}
 
 	@Override

@@ -1,9 +1,6 @@
 package com.dexels.navajo.server;
 
-import com.dexels.navajo.mapping.AsyncStore;
-import com.dexels.navajo.server.descriptionprovider.DescriptionProviderInterface;
 import com.dexels.navajo.server.enterprise.integrity.WorkerInterface;
-import com.dexels.navajo.server.enterprise.statistics.StatisticsRunnerInterface;
 import com.dexels.navajo.sharedstore.SharedStoreInterface;
 
 public interface NavajoConfigInterface extends NavajoIOConfig {
@@ -18,11 +15,8 @@ public interface NavajoConfigInterface extends NavajoIOConfig {
 	
 	// Available modules.
 	public SharedStoreInterface getSharedStore();
-	public StatisticsRunnerInterface getStatisticsRunner();
 	public ClassLoader getClassloader();
 	
-	public AsyncStore getAsyncStore();
-	public DescriptionProviderInterface getDescriptionProvider();
 	public WorkerInterface getIntegrityWorker();
 	
 	// Statistics.
@@ -32,7 +26,6 @@ public interface NavajoConfigInterface extends NavajoIOConfig {
 
    
 	// Setters/getters.
-	public void setStatisticsRunnerEnabled(boolean b);
 	public int getMaxAccessSetSize();
 	public float getAsyncTimeout();
 	public void doClearCache();
@@ -48,7 +41,6 @@ public interface NavajoConfigInterface extends NavajoIOConfig {
 	 * This one asks the statisticsrunner
 	 * @return
 	 */
-	public boolean isStatisticsRunnerEnabled();
 	public boolean isCompileScripts();
 	
 
