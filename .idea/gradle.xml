@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="GradleMigrationSettings" migrationVersion="1" />
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
@@ -17,9 +18,7 @@
             <option value="$PROJECT_DIR$/com.dexels.kafka.impl.rx2" />
             <option value="$PROJECT_DIR$/com.dexels.kafka.streams" />
             <option value="$PROJECT_DIR$/com.dexels.kafka.streams.api" />
-            <option value="$PROJECT_DIR$/com.dexels.kafka.streams.sink.mongo" />
             <option value="$PROJECT_DIR$/com.dexels.kafka.webapi" />
-            <option value="$PROJECT_DIR$/com.dexels.navajo.adapters.stream" />
             <option value="$PROJECT_DIR$/com.dexels.navajo.api" />
             <option value="$PROJECT_DIR$/com.dexels.navajo.authentication.api" />
             <option value="$PROJECT_DIR$/com.dexels.navajo.core" />

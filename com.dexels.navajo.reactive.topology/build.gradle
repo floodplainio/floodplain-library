@@ -11,7 +11,7 @@ plugins {
 	id 'distribution'
 	id 'application'
   	id 'com.github.johnrengelman.shadow'
-
+    id 'maven-publish'
   }
 mainClassName = 'io.floodplain.runtime.Main'
 
@@ -56,6 +56,20 @@ dependencies {
  }
 
 shadowJar {
-    dependencies {
+    mergeServiceFiles {
+        path = 'META-INF/custom'
+        exclude 'META-INF/services/javax.xml.stream.*'
+    }
+}
+
+publishing {
+    publications {
+        shadow(MavenPublication) {
+            from components.java
+            artifact shadowJar
+            groupId = "io.floodplain"
+            artifactId = project.name
+            version = rootProject.ext.floodplain_version
+        }
     }
 }

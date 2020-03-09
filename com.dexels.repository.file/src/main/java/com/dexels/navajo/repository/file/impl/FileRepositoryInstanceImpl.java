@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -14,19 +13,14 @@ import org.slf4j.LoggerFactory;
 import com.dexels.navajo.repository.api.RepositoryInstance;
 import com.dexels.navajo.repository.core.impl.RepositoryInstanceImpl;
 
-@ApplicationScoped
 public class FileRepositoryInstanceImpl extends RepositoryInstanceImpl implements RepositoryInstance {
 
-	@ConfigProperty(name = "repository.folder")
 	String configuredRepositoryFolder;
 
-	@ConfigProperty(name = "repository.type",defaultValue = "default.repository.type")
 	String configuredRepositoryType;
 
-	@ConfigProperty(name = "repository.name",defaultValue = "default.repository.name")
 	String configuredRepositoryName;
 	
-	@ConfigProperty(name = "repository.deployment",defaultValue = "default.repository.deployment")
 	String configuredRepositoryDeployment;
 	
 	public FileRepositoryInstanceImpl() {
@@ -54,7 +48,6 @@ public class FileRepositoryInstanceImpl extends RepositoryInstanceImpl implement
 		return configuredRepositoryDeployment;
 	}
 
-	@PostConstruct
 	public void activate() throws IOException {
 		logger.info("Activating repository with folder: {}",configuredRepositoryFolder);
 		String path = configuredRepositoryFolder();

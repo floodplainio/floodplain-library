@@ -1,9 +1,6 @@
 package io.floodplain.runtime;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.Optional;
 
 import com.dexels.immutable.factory.ImmutableFactory;
@@ -15,10 +12,13 @@ import com.dexels.navajo.reactive.api.Reactive;
 import com.dexels.navajo.reactive.source.topology.TopologyReactiveFinder;
 import com.dexels.navajo.reactive.source.topology.TopologyRunner;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Default;
+
+@ApplicationScoped @Default
 public class Main {
 
-	
-	public static void main(String[] args) throws IOException, ParseException, InterruptedException {
+	public Main() throws IOException, ParseException, InterruptedException {
 		String applicationId = "singleRuntime"; // UUID.randomUUID().toString();
 		String deployment = "test";
 		String storagePath = "storage";
@@ -41,6 +41,10 @@ public class Main {
 
 		TopologyRunner runner = new TopologyRunner(topologyContext,storagePath,applicationId,sc,false);
 		runner.runPipeFolder(currentFolder);
+	}
+	
+	public static void main(String[] args) throws IOException, ParseException, InterruptedException {
+		new Main();
 	}
 
 }

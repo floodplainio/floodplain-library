@@ -20,9 +20,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Default;
-import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.File;
 import java.io.FileInputStream;
@@ -33,7 +30,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 
 @Component(name="kafka.stream.runtime", service = {StreamRuntime.class}, immediate=true)
-@ApplicationScoped @Default
 public class StreamRuntime {
 
 	@ConfigProperty(name="stream.generation")
@@ -128,7 +124,6 @@ public class StreamRuntime {
 
 
 	@Reference(target="(name=dexels.debezium.processor)")
-	@Inject @Named(value = "debezium")
 	public void setDebeziumProcessor(GenericProcessorBuilder processor) {
 		this.genericProcessorRegistry.put("debezium", processor);
 	}
@@ -236,7 +231,6 @@ public class StreamRuntime {
 		return name.replaceAll("/", "-");
 	}
 
-	@Inject
 	@Reference(policy=ReferencePolicy.DYNAMIC,unbind="clearRepositoryInstance")
 	public void setRepositoryInstance(RepositoryInstance instance) {
 		this.repositoryInstance = instance;

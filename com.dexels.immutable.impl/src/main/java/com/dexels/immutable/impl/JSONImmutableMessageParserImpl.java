@@ -1,7 +1,5 @@
 package com.dexels.immutable.impl;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +9,6 @@ import com.dexels.immutable.api.ImmutableMessageParser;
 import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.immutable.json.ImmutableJSON;
 
-@ApplicationScoped
 public class JSONImmutableMessageParserImpl implements ImmutableMessageParser {
 
 	private static final boolean INCLUDENULLVALUES = true;
@@ -28,7 +25,6 @@ public class JSONImmutableMessageParserImpl implements ImmutableMessageParser {
 		return new String( ImmutableJSON.jsonSerializer(msg,INCLUDENULLVALUES,false));
 	}
 
-	@PostConstruct
 	public void activate() {
 		logger.info("Immutable parser constructed");
 //		logger.

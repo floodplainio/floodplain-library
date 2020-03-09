@@ -14,7 +14,7 @@ pluginManagement {
         google()
     }
     plugins {
-	  id 'com.github.johnrengelman.shadow' version '2.0.4'
+	  id 'com.github.johnrengelman.shadow' version '5.2.0'
       id 'io.quarkus' version "${quarkusPluginVersion}"
     }
 }

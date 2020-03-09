@@ -16,8 +16,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.ConsumerGroupDescription;
@@ -57,7 +55,6 @@ import io.reactivex.subscribers.DisposableSubscriber;
 
 
 @Component(name="navajo.resource.kafkatopicpublisher", configurationPolicy=ConfigurationPolicy.REQUIRE, immediate=true)
-@ApplicationScoped
 public class KafkaTopicPublisher implements PersistentPublisher,TopicPublisher {
 
 	private static final Logger logger = LoggerFactory.getLogger(KafkaTopicPublisher.class);
@@ -81,7 +78,6 @@ public class KafkaTopicPublisher implements PersistentPublisher,TopicPublisher {
 		
 	}
 
-	@Inject
 	public void activate(KafkaTopicPublisherConfiguration publisherConfig) {
 		logger.info("Constructing Kafka Publisher: "+publisherConfig.compression());
 		Properties props = new Properties();
