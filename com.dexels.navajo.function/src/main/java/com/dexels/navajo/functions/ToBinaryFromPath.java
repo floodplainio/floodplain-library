@@ -13,7 +13,7 @@ import com.dexels.navajo.expression.api.TMLExpressionException;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: Dexels BV</p>
  * @author Arjen Schoneveld
- * @version $Id: d76e476a1094810b9d3666ad931379dfa3bda1a1 $
+ * @version $Id$
  */
 
 public class ToBinaryFromPath extends FunctionInterface {

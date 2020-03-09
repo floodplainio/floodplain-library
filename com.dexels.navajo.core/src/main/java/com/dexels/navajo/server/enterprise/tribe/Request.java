@@ -10,7 +10,7 @@ import com.dexels.navajo.server.DispatcherFactory;
  * Copyright:    Copyright 2002-2008 (c) Dexels BV<p>
  * Company:      Dexels<p>
  * @author Arjen Schoneveld
- * @version $Id: 51de7fcc898781a511b94f27929fa324f449bd30 $
+ * @version $Id$
  *
  * DISCLAIMER
  *

@@ -11,7 +11,7 @@ import com.dexels.navajo.expression.api.FunctionInterface;
  * <p>Copyright: Copyright (c) 2002<br></p>
  * <p>Company: Dexels.com<br></p>
  * @author Arjen Schoneveld
- * @version $Id: 28217cdb9079bd97ed5af2cd930fad21b0eff99a $
+ * @version $Id$
  */
 
 public final class FormatZipCode extends FunctionInterface {

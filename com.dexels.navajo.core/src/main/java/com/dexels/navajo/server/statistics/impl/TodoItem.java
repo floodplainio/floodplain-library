@@ -4,7 +4,7 @@
  * <p>Copyright: Copyright (c) 2005</p>
  * <p>Company: Dexels BV</p>
  * @author 
- * @version $Id: c01d81741abb51b258b190d39878895ed2f6e012 $.
+ * @version $Id$.
  *
  * DISCLAIMER
  *

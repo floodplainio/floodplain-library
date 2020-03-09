@@ -12,7 +12,7 @@ import com.dexels.navajo.document.NavajoException;
  * Copyright:    Copyright (c) 2002
  * Company:      Dexels BV
  * @author Arjen Schoneveld
- * @version $Id: c6b9be4ba407761293dac456115d7bcc53e05bf1 $
+ * @version $Id$
  */
 
 public class PersistenceManagerFactory {

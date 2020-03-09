@@ -30,7 +30,7 @@ public final class ClockTime extends NavajoType implements Comparable<ClockTime>
 	private static final long serialVersionUID = -1867359996556685730L;
     private static final Logger logger = LoggerFactory.getLogger(ClockTime.class);
 
-	public static final String VERSION = "$Id: 7401cc0f7b7c395861194d61d72243147bed9f0e $";
+	public static final String VERSION = "$Id$";
 
 	//Set the fixed year constants.
 	public static final int FIXED_YEAR = 1971;

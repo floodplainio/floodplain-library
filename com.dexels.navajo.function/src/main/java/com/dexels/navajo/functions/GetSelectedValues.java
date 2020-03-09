@@ -22,7 +22,7 @@ import com.dexels.navajo.expression.api.TMLExpressionException;
  * </p>
  * 
  * @author Erik Versteeg
- * @version $Id: 6f52d57ed129c6fbb46e36e7e3544ece38924700 $
+ * @version $Id$
  * 
  *          DISCLAIMER
  * 

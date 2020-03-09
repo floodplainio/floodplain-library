@@ -4,7 +4,7 @@
  * Copyright:    Copyright (c) Arjen Schoneveld<p>
  * Company:      Dexels<p>
  * @author Arjen Schoneveld
- * @version $Id: 0a197ec060aa6f106f6e2f065d92c747e844fd3a $
+ * @version $Id$
  *
  * DISCLAIMER
  *
@@ -81,7 +81,7 @@ public final class Access implements java.io.Serializable, Mappable {
     public static final String LEGACY_APPLICATION = "legacy";
     
     @SuppressWarnings("unused")
-    private static final String VERSION = "$Id: 0a197ec060aa6f106f6e2f065d92c747e844fd3a $";
+    private static final String VERSION = "$Id$";
 
     public java.util.Date created = new java.util.Date();
     private static int accessCount = 0;

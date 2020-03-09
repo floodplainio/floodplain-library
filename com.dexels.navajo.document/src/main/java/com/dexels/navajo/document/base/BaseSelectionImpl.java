@@ -19,7 +19,7 @@ import com.dexels.navajo.document.Selection;
  * <p>Part of the Navajo mini client, based on the NanoXML parser</p>
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: Dexels </p>
- * <p>$Id: ff4a7d92543e6ca9137c6dfbdcf744dbaaeafdb6 $</p>
+ * <p>$Id$</p>
  * @author Frank Lyaruu
  * @version $Revision$
  */

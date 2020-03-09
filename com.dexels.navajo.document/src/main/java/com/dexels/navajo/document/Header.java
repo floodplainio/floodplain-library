@@ -12,7 +12,7 @@ import java.util.Set;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: Dexels BV</p>
  * @author Arjen Schoneveld
- * @version $Id: cf68d9fe545d98d3aa4cb0503878607a8ed331b4 $
+ * @version $Id$
  *
  * The Header object specifies general control data regarding a Navajo message.
  *

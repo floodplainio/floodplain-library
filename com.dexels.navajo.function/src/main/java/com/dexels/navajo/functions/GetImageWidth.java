@@ -19,7 +19,7 @@ import com.dexels.navajo.expression.api.TMLExpressionException;
  * Copyright:    Copyright (c) 2001
  * Company:      Dexels
  * @author Erik Versteeg
- * @version $Id: c7dbbc71d6b2d2600a6193923cb5dfba1cea4c63 $
+ * @version $Id$
  */
 
 public final class GetImageWidth extends FunctionInterface {

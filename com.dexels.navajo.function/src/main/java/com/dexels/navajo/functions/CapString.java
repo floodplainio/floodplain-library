@@ -18,12 +18,12 @@ import com.dexels.navajo.expression.api.TMLExpressionException;
  * </p>
  * 
  * @author unascribed
- * @version $Id: fb58998d74e1204bec5881bed1b146fe43c30f94 $
+ * @version $Id$
  */
 
 public final class CapString extends FunctionInterface {
 
-	public static final String vcIdent = "$Id: fb58998d74e1204bec5881bed1b146fe43c30f94 $";
+	public static final String vcIdent = "$Id$";
 
 	public CapString() {
 	}

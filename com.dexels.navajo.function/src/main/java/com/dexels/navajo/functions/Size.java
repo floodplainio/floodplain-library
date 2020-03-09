@@ -22,7 +22,7 @@ import com.dexels.navajo.parser.Expression;
  * Copyright:    Copyright (c) 2001
  * Company:      Dexels
  * @author Arjen Schoneveld en Martin Bergman
- * @version $Id: 71d0ec956ea169c5bab7722673e8a3a370d9278a $
+ * @version $Id$
  */
 
 public final class Size extends FunctionInterface {

@@ -16,7 +16,7 @@ import com.dexels.navajo.expression.api.TMLExpressionException;
  * Copyright:    Copyright (c) 2001
  * Company:      Dexels
  * @author Erik Versteeg
- * @version $Id: fdac5d5396d43878ada1c55d79e77190e849a92c $
+ * @version $Id$
  */
 public class IsDate extends FunctionInterface {
     private final static Logger logger = LoggerFactory.getLogger(IsDate.class);

@@ -12,7 +12,7 @@ import com.dexels.navajo.expression.api.TMLExpressionException;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: Dexels BV</p>
  * @author Arjen Schoneveld
- * @version $Id: 8ccab73d6a50231f433e91fb49e380e2eacbb766 $
+ * @version $Id$
  *
  * DISCLAIMER
  *

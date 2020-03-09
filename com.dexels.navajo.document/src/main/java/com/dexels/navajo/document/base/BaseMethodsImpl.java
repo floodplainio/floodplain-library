@@ -13,7 +13,7 @@ import com.dexels.navajo.document.Navajo;
  * <p>Part of the Navajo mini client, based on the NanoXML parser</p>
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: Dexels </p>
- * <p>$Id: 49631750289f0440400b28d90200302f183d4c5b $</p>
+ * <p>$Id$</p>
  * @author Frank Lyaruu
  * @version $Revision$
  */

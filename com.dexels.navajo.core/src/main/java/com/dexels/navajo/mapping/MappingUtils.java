@@ -6,7 +6,7 @@ package com.dexels.navajo.mapping;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: Dexels BV</p>
  * @author Arjen Schoneveld
- * @version $Id: 219c506ea757126d27529634e678340eaae966b7 $
+ * @version $Id$
  */
 
 import java.lang.reflect.Field;

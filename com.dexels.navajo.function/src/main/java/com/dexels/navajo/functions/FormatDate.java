@@ -10,7 +10,7 @@ import com.dexels.navajo.expression.api.TMLExpressionException;
  * Title: Navajo Description: Copyright: Copyright (c) 2002 Company: Dexels
  * 
  * @author Arjen Schoneveld en Martin Bergman
- * @version $Id: 66d13c6e7b8d4a401162900092f56cbfbfc81d4b $
+ * @version $Id$
  */
 
 public final class FormatDate extends FunctionInterface {

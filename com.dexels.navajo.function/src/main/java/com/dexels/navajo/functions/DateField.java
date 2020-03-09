@@ -12,7 +12,7 @@ import com.dexels.navajo.expression.api.FunctionInterface;
  * Copyright:    Copyright (c) 2002
  * Company:      Dexels BV
  * @author Arjen Schoneveld
- * @version $Id: 2129fae4950023967cefa6f604c1cf7820d7395c $
+ * @version $Id$
  */
 
 public final class DateField extends FunctionInterface {

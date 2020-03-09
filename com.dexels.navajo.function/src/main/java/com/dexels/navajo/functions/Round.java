@@ -11,9 +11,9 @@ import com.dexels.navajo.expression.api.TMLExpressionException;
  * Copyright:    Copyright (c) 2001
  * Company:      Dexels
  * @author Arjen Schoneveld en Martin Bergman
- * @version $Id: 53715cf6644faad5c8fea7501ef005b2bde00dc6 $
+ * @version $Id$
  *
- * $Id: 53715cf6644faad5c8fea7501ef005b2bde00dc6 $
+ * $Id$
  *
  $ $Log$
  $ Revision 1.2  2011/03/09 09:31:43  frank

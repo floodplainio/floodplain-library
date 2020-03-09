@@ -12,7 +12,7 @@ import com.dexels.navajo.expression.api.TMLExpressionException;
  * Copyright:    Copyright (c) 2001
  * Company:      Dexels
  * @author Erik Versteeg
- * @version $Id: 4ae47bdfd51aa969bf33f82f581bc11e8c04c2e2 $
+ * @version $Id$
  */
 public class IsDateBetween extends FunctionInterface {
     private final static Logger logger = LoggerFactory.getLogger(IsDateBetween.class);

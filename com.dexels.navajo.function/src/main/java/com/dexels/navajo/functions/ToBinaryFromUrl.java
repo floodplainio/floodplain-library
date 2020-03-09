@@ -26,7 +26,7 @@ import com.dexels.navajo.expression.api.TMLExpressionException;
  * </p>
  * 
  * @author Arjen Schoneveld
- * @version $Id: 2b8ab85f79954493be57c0f319b978d6a688bb54 $
+ * @version $Id$
  */
 
 public class ToBinaryFromUrl extends FunctionInterface {

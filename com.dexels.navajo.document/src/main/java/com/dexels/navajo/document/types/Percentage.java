@@ -10,7 +10,7 @@ import com.dexels.navajo.document.Property;
  * <p>Copyright: Copyright (c) 2003-2004</p>
  * <p>Company: Dexels BV</p>
  * @author $author$
- * @version $Id: 812f5bdbc42a76eddf8f3887f6d5db3d89cca574 $
+ * @version $Id$
  */
 
 public final class Percentage extends NavajoType implements Comparable<Percentage> {

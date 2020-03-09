@@ -17,7 +17,7 @@ package com.dexels.navajo.authentication.api;
  * </p>
  * 
  * @author unascribed
- * @version $Id: 52aaf6f94d9cf6efdc6e0a76290400134bf94eff $
+ * @version $Id$
  * 
  *          DISCLAIMER
  * 

@@ -19,7 +19,7 @@ import com.dexels.navajo.util.AuditLog;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: Dexels BV</p>
  * @author Arjen Schoneveld
- * @version $Id: 4c52eddc31bafe280cb87dcfa0a198bdb8f6f742 $
+ * @version $Id$
  *
  * AsyncMappable objects seperate the request and response part of the object's attributes explicitly by asynchronous action.
  *
@@ -87,7 +87,7 @@ import com.dexels.navajo.util.AuditLog;
 
 public abstract class AsyncMappable implements Mappable, AsyncMappableMXBean {
 
-  private static final String VERSION = "$Id: 4c52eddc31bafe280cb87dcfa0a198bdb8f6f742 $";
+  private static final String VERSION = "$Id$";
 
   
 private static final Logger logger = LoggerFactory

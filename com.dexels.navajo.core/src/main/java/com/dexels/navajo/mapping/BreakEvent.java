@@ -7,7 +7,7 @@ package com.dexels.navajo.mapping;
  * Copyright:    Copyright (c) 2002
  * Company:      Dexels BV
  * @author Arjen Schoneveld
- * @version $Id: 7fdea96555a9fb9859d2a02ca29a4ef552f846e5 $
+ * @version $Id$
  */
 
 

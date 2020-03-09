@@ -14,7 +14,7 @@ import com.dexels.navajo.expression.api.TMLExpressionException;
  * <p>Copyright: Copyright (c) 2002<br></p>
  * <p>Company: Dexels.com<br></p>
  * @author not attributable
- * @version $Id: f204f7e6b8821bc6180a542ecfc966336c92bdb7 $
+ * @version $Id$
  */
 
 public class GetWeekDayDate extends FunctionInterface {

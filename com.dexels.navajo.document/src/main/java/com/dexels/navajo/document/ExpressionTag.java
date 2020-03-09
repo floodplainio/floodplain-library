@@ -6,7 +6,7 @@ package com.dexels.navajo.document;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: Dexels BV</p>
  * @author Arjen Schoneveld
- * @version $Id: fae8b8d76b77e128467c8f32e5e46d07f13cc2f4 $
+ * @version $Id$
  */
 
 public interface ExpressionTag extends java.io.Serializable, Comparable<ExpressionTag>, Cloneable {

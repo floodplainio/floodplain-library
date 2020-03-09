@@ -13,7 +13,7 @@ import com.dexels.navajo.expression.api.TMLExpressionException;
  * Copyright:    Copyright (c) 2001
  * Company:      Dexels
  * @author Arjen Schoneveld en Martin Bergman
- * @version $Id: dfa07b7e846e3587bba6e0f2f368a0974aab7a6a $
+ * @version $Id$
  */
 
 public final class GetInitials extends FunctionInterface {

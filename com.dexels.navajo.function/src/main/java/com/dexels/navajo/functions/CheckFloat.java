@@ -11,7 +11,7 @@ import com.dexels.navajo.expression.api.FunctionInterface;
  * <p>Copyright: Copyright (c) 2007</p>
  * <p>Company: Dexels BV</p>
  * @author Martin Bergman
- * @version $Id: 15f30ef07b4a4217d5e4c4060f27da40ab29526e $
+ * @version $Id$
  *
  * DISCLAIMER
  *

@@ -18,12 +18,12 @@ import com.dexels.navajo.expression.api.TMLExpressionException;
  * </p>
  * 
  * @author unascribed
- * @version $Id: e093f55832744e22a1ecf565fc72108b5e4d58e2 $
+ * @version $Id$
  */
 
 public final class Trim extends FunctionInterface {
 
-	public static final String vcIdent = "$Id: e093f55832744e22a1ecf565fc72108b5e4d58e2 $";
+	public static final String vcIdent = "$Id$";
 
 	public Trim() {
 	}

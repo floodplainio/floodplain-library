@@ -23,7 +23,7 @@ import com.dexels.navajo.expression.api.TMLExpressionException;
  * </p>
  * 
  * @author Marte Koning
- * @version $Id: 54c041836228454ec12ba498d8f4184c0956e598 $
+ * @version $Id$
  * 
  *          DISCLAIMER
  * 

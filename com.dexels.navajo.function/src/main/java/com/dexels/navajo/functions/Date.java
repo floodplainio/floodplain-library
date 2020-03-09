@@ -11,7 +11,7 @@ import com.dexels.navajo.expression.api.TMLExpressionException;
  * Copyright:    Copyright (c) 2001
  * Company:      Dexels
  * @author Arjen Schoneveld en Martin Bergman
- * @version $Id: 9ebfef09738324b0c750876d14f7e549b095866e $
+ * @version $Id$
  */
 
 public final class Date extends FunctionInterface {

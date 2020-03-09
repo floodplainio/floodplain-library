@@ -8,7 +8,7 @@ import com.dexels.navajo.expression.api.TMLExpressionException;
 
 public final class RandomString extends FunctionInterface {
 
-  public final String vcIdent = "$Id: aaf4d06a706647b64743e33d11d439ecc5633875 $";
+  public final String vcIdent = "$Id$";
 
   private static Random rand = null;
 

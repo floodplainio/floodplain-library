@@ -11,7 +11,7 @@ import java.util.Date;
  * Copyright:    Copyright (c) 2001
  * Company:      Dexels
  * @author Arjen Schoneveld en Martin Bergman
- * @version $Id: c79e4b5878041440d1d63bbe8680736a25e5f032 $
+ * @version $Id$
  */
 
 import java.util.List;

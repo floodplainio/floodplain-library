@@ -19,12 +19,12 @@ import com.dexels.navajo.expression.api.TMLExpressionException;
  * </p>
  * 
  * @author unascribed
- * @version $Id: 460dd55f5c71e2d433bac270a1ad0214d1cf7ec0 $
+ * @version $Id$
  */
 
 public final class GetCents extends FunctionInterface {
 
-	public static final String vcIdent = "$Id: 460dd55f5c71e2d433bac270a1ad0214d1cf7ec0 $";
+	public static final String vcIdent = "$Id$";
 
 	public GetCents() {
 	}

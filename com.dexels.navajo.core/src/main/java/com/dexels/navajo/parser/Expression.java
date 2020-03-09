@@ -4,7 +4,7 @@
  * Copyright:    Copyright (c) Arjen Schoneveld<p>
  * Company:      Dexels<p>
  * @author Arjen Schoneveld
- * @version $Id: 392817ba8f188bc83eaf84a0065f0e198f10650a $
+ * @version $Id$
  */
 package com.dexels.navajo.parser;
 

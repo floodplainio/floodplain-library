@@ -8,7 +8,7 @@ import java.io.StringWriter;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: Dexels BV</p>
  * @author Arjen Schoneveld
- * @version $Id: 368fcd1fe6c6fa23e025692f592c18b014dcaaf4 $
+ * @version $Id$
  *
  * DISCLAIMER
  *

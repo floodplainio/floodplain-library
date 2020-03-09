@@ -6,7 +6,7 @@
  * Copyright:    Copyright (c) Arjen Schoneveld<p>
  * Company:      Dexels<p>
  * @author Arjen Schoneveld
- * @version $Id: 5b6b951902ea2c2804a9c35a1b185502d5b59dcf $
+ * @version $Id$
  *
  * DISCLAIMER
  *

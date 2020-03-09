@@ -19,7 +19,7 @@ import com.dexels.navajo.expression.api.FunctionInterface;
  * </p>
  * 
  * @author unascribed
- * @version $Id: 2d35a96e41d013b9f5820645c07303486380db7c $
+ * @version $Id$
  *
  *          DISCLAIMER
  *

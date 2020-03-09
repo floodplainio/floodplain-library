@@ -9,7 +9,7 @@ import com.dexels.navajo.expression.api.TMLExpressionException;
  * Copyright:    Copyright (c) 2001
  * Company:      Dexels
  * @author Arjen Schoneveld en Martin Bergman
- * @version $Id: 944e9c7bd161a4df0e2f278146660ae123b53b56 $
+ * @version $Id$
  */
 
 public final class DecimalChar extends FunctionInterface {

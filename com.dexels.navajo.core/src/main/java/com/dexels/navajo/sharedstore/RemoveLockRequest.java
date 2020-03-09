@@ -4,7 +4,7 @@
  * Copyright:    Copyright 2002-2008 (c) Dexels BV<p>
  * Company:      Dexels<p>
  * @author Arjen Schoneveld
- * @version $Id: 8babbba2d6c417b69d17943360d10c0506687053 $
+ * @version $Id$
  *
  * DISCLAIMER
  *
