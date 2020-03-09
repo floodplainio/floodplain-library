@@ -6,7 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.dexels.navajo.mapping.AsyncStore;
-import com.dexels.navajo.persistence.PersistenceManager;
 import com.dexels.navajo.server.FileNavajoConfig;
 import com.dexels.navajo.server.NavajoConfigInterface;
 import com.dexels.navajo.server.descriptionprovider.DescriptionProviderInterface;
@@ -20,7 +19,6 @@ public class TestNavajoConfig extends FileNavajoConfig implements NavajoConfigIn
 	String name = "testinstance";
 	String group = "testgroup";
 	
-	private PersistenceManager myPersistenceManager;
 	private final File configRoot;
 	
 	
@@ -41,11 +39,6 @@ public class TestNavajoConfig extends FileNavajoConfig implements NavajoConfigIn
 		this.group = group;
 		this.configRoot = null;
 	}
-	
-	
-	public void setMyPersistenceManager(PersistenceManager myPersistenceManager) {
-		this.myPersistenceManager = myPersistenceManager;
-	}
 
 	
 	@Override
@@ -53,10 +46,6 @@ public class TestNavajoConfig extends FileNavajoConfig implements NavajoConfigIn
 		return name;
 	}
 
-	@Override
-	public PersistenceManager getPersistenceManager() {
-		return myPersistenceManager;
-	}
 
 	@Override
 	public String getConfigPath() {

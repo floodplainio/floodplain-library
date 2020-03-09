@@ -1022,24 +1022,6 @@ public class StandardFunctionsTest {
 	}
 
 	@Test
-	public void testIsServiceCached() {
-
-		FunctionInterface fi = fff.getInstance(cl, "IsServiceCached");
-		fi.reset();
-		fi.insertStringOperand("aap");
-		fi.insertStringOperand("noot");
-
-		try {
-			Object o = fi.evaluateWithTypeChecking();
-
-			assertNotNull(o);
-		} catch (NullPointerException n) {
-
-		}
-
-	}
-
-	@Test
 	public void testIsNull() {
 
 		FunctionInterface fi = fff.getInstance(cl, "IsNull");
