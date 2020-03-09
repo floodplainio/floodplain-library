@@ -19,7 +19,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.dexels.navajo.document.Navajo;
-import com.dexels.navajo.loader.NavajoBasicClassLoader;
 import com.dexels.navajo.mapping.AsyncStore;
 import com.dexels.navajo.script.api.NavajoClassSupplier;
 import com.dexels.navajo.server.NavajoConfigInterface;
@@ -200,9 +199,6 @@ public class NavajoConfigComponent implements NavajoConfigInterface {
 
 	@Override
 	public ClassLoader getClassloader() {
-		if ( WebserviceListenerFactory.getInstance() != null ) {
-			return new NavajoBasicClassLoader(WebserviceListenerFactory.getInstance().getClass().getClassLoader());
-		}
 		return getClass().getClassLoader();
 	}
 

@@ -19,7 +19,6 @@ import org.slf4j.LoggerFactory;
 import com.dexels.navajo.events.types.ChangeNotificationEvent;
 import com.dexels.navajo.events.types.LevelEvent;
 import com.dexels.navajo.server.enterprise.scheduler.tribe.NavajoEventProxyInterface;
-import com.dexels.navajo.server.jmx.JMXHelper;
 
 import navajocore.Version;
 
@@ -79,11 +78,6 @@ public class NavajoEventRegistry extends NotificationBroadcasterSupport implemen
 
 					if ( instance == null ) {
 						instance = new NavajoEventRegistry();
-						try {
-							JMXHelper.registerMXBean(instance, JMXHelper.NAVAJO_DOMAIN, ID);
-						} catch (Exception t) {
-							logger.error("Error: ", t);
-						} 
 					}
 				}
 			} else {
@@ -336,14 +330,8 @@ public class NavajoEventRegistry extends NotificationBroadcasterSupport implemen
 		return registry.size();
 	}
 	
-	@SuppressWarnings("ucd")
 	public void activate() {
 		setInstance(this);
-		try {
-			JMXHelper.registerMXBean(instance, JMXHelper.NAVAJO_DOMAIN, ID);
-		} catch (Exception e) {
-			logger.error("Caught Error: ", e);
-		}
 	}
 
 

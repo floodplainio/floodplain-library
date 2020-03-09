@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 
 import com.dexels.navajo.script.api.Access;
 import com.dexels.navajo.server.GenericThread;
-import com.dexels.navajo.server.jmx.JMXHelper;
 import com.dexels.navajo.util.AuditLog;
 
 /**
@@ -43,7 +42,7 @@ import com.dexels.navajo.util.AuditLog;
  * ====================================================================
  */
 
-public final class AsyncStore extends GenericThread implements AsyncStoreMXBean {
+public final class AsyncStore extends GenericThread {
 
 	// volatile seems legit here
   private static volatile AsyncStore instance = null;
@@ -74,11 +73,6 @@ public final class AsyncStore extends GenericThread implements AsyncStoreMXBean 
   }
 
 	public void activate() {
-		try {
-			JMXHelper.registerMXBean(this, JMXHelper.NAVAJO_DOMAIN, ID);
-		} catch (Throwable e) {
-			logger.error("Caught Error: ", e);
-		}
 		setInstance(this);
 		this.setSleepTime(THREADWAIT);
 		this.startThread(this);
@@ -171,7 +165,6 @@ public final void worker() {
 	  }
   }
   
-  @Override
 public int getStoreSize() {
 	  return objectStore.size();
   }
@@ -195,11 +188,6 @@ public int getStoreSize() {
 		  }
 		  objectStore.clear();
 		  accessStore.clear();
-		  try {
-			  JMXHelper.deregisterMXBean(JMXHelper.NAVAJO_DOMAIN, ID);
-		  } catch (Throwable e) {
-			  logger.error("Throwable caught: ", e);
-		  }
 		  resetInstance();
 		  AuditLog.log(AuditLog.AUDIT_MESSAGE_ASYNC_RUNNER, "Killed");
 	} catch (Throwable e) {

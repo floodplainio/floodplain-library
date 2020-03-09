@@ -5,7 +5,12 @@ import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dexels.navajo.adapter.core.NavajoCoreAdapterLibrary;
+import com.dexels.navajo.events.NavajoEventRegistry;
+import com.dexels.navajo.server.GenericThread;
+import com.dexels.navajo.server.enterprise.monitoring.AgentFactory;
+import com.dexels.navajo.server.enterprise.statistics.StatisticsRunnerFactory;
+import com.dexels.navajo.server.enterprise.tribe.TribeManagerFactory;
+import com.dexels.navajo.util.AuditLog;
 
 import navajoextension.AbstractCoreExtension;
 
@@ -21,8 +26,6 @@ public class Version extends AbstractCoreExtension {
 			super.start(bc);
 			setBundleContext(bc);
 			logger.debug("Bundle context set in Navajo Version: {} hash: {}",osgiActive(), Version.class.hashCode());
-			NavajoCoreAdapterLibrary library = new NavajoCoreAdapterLibrary();
-			registerAll(library);
 
 	}
 
