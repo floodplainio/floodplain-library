@@ -93,9 +93,6 @@ public class FileRepositoryInstanceImpl extends RepositoryInstanceImpl implement
 		return storeFolder;
 	}
 
-	public void deactivate() {
-	}
-	
 	public Map<String,Object> getSettings() {
 		return super.getSettings();
 	}

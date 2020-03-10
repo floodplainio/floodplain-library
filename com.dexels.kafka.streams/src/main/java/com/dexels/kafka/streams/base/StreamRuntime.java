@@ -4,7 +4,6 @@ import com.dexels.kafka.streams.api.StreamConfiguration;
 import com.dexels.kafka.streams.processor.generic.GenericProcessorBuilder;
 import com.dexels.kafka.streams.transformer.custom.*;
 import com.dexels.kafka.streams.xml.parser.XMLParseException;
-import com.dexels.navajo.repository.api.RepositoryInstance;
 import com.dexels.replication.transformer.api.MessageTransformer;
 import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
@@ -14,7 +13,6 @@ import io.reactivex.subjects.Subject;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.streams.Topology;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.osgi.service.component.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +27,7 @@ import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 
-@Component(name="kafka.stream.runtime", service = {StreamRuntime.class}, immediate=true)
+//@Component(name="kafka.stream.runtime", service = {StreamRuntime.class}, immediate=true)
 public class StreamRuntime {
 
 	@ConfigProperty(name="stream.generation")
@@ -38,7 +36,6 @@ public class StreamRuntime {
 	private static final Logger logger = LoggerFactory.getLogger(StreamRuntime.class);
 	private final Map<String,StreamInstance> streams = new HashMap<>();
 	
-	private RepositoryInstance repositoryInstance;
 	private StreamConfiguration configuration;
 	private final List<String> instanceFilter;
 	private final Set<StreamInstance> startedInstances = new HashSet<>();
@@ -46,11 +43,16 @@ public class StreamRuntime {
 	private Disposable updateQueueSubscription;
 
 	private final Map<String,MessageTransformer> transformerRegistry = new HashMap<>();
-	private final Map<String,GenericProcessorBuilder> genericProcessorRegistry = new HashMap<>();
 
 	private AdminClient adminClient;
-	
-	public StreamRuntime() {
+	private final String deployment;
+	private final File path;
+	private final File outputFolder;
+
+	public StreamRuntime(String deployment, File path, File outputFolder) {
+		this.deployment = deployment;
+		this.path = path;
+		this.outputFolder = outputFolder;
 		String filter = System.getenv("FILTER_INSTANCES");
 		if(filter==null || "".equals(filter)) {
 			this.instanceFilter = Collections.emptyList();
@@ -80,13 +82,12 @@ public class StreamRuntime {
 			.subscribe(r->r.run());
 	}
 
-	@Activate
 	@PostConstruct
 	public void activate() throws IOException, InterruptedException, ExecutionException {
 		System.err.println("Starting runtime");
-		File resources = new File(this.repositoryInstance.getRepositoryFolder(),"config/resources.xml");
+		File resources = new File(this.path,"config/resources.xml");
 		try (InputStream r = new FileInputStream(resources)){
-			this.configuration = StreamConfiguration.parseConfig(this.repositoryInstance.getDeployment(),r);
+			this.configuration = StreamConfiguration.parseConfig(this.deployment,r);
 			this.adminClient = AdminClient.create(this.configuration.config());
 		} catch (XMLParseException | IOException e) {
 			logger.error("Error starting streaminstance", e);
@@ -122,12 +123,6 @@ public class StreamRuntime {
 		
 	}
 
-
-	@Reference(target="(name=dexels.debezium.processor)")
-	public void setDebeziumProcessor(GenericProcessorBuilder processor) {
-		this.genericProcessorRegistry.put("debezium", processor);
-	}
-
 //	private static  void registerSinks(StreamConfiguration conf, ConfigurationAdmin configAdmin) {
 //		conf.sinks().entrySet().forEach(e->{
 //			String sinkResource = "dexels.streams.sink";
@@ -149,14 +144,13 @@ public class StreamRuntime {
 
 	
 	private void parseFromRepository() throws IOException, InterruptedException, ExecutionException {
-		File repo = this.repositoryInstance.getRepositoryFolder();
 		File output = getOutputFolder();
 		logger.info("Using output folder: {}",output.getAbsolutePath());
 		if(!output.exists()) {
 			logger.info("Creating output folder: {}",output.getAbsolutePath());
 			output.mkdirs();
 		}
-		File streamFolder = new File(repo,"streams");
+		File streamFolder = new File(this.path,"streams");
 		File[] folders =  streamFolder.listFiles(file->file.isDirectory());
 		String generationEnv = configuredGeneration().orElseGet(()->System.getenv("GENERATION")); // System.getenv("GENERATION");
 		
@@ -217,9 +211,9 @@ public class StreamRuntime {
 			return;
 		}
 		try(InputStream definitionStream = new FileInputStream(file)) {
-			StreamInstance si = new StreamInstance(friendlyName(name), this.configuration,this.adminClient, this.transformerRegistry,this.genericProcessorRegistry);
+			StreamInstance si = new StreamInstance(friendlyName(name), this.configuration,this.adminClient, this.transformerRegistry);
 			Topology topology = new Topology();
-			si.parseStreamMap(topology,definitionStream,outputStorage,this.repositoryInstance.getDeployment(),generation,Optional.of(file));
+			si.parseStreamMap(topology,definitionStream,outputStorage,this.deployment,generation,Optional.of(file));
 			streams.put(friendlyName(name),si);
 		}
 	}
@@ -231,17 +225,7 @@ public class StreamRuntime {
 		return name.replaceAll("/", "-");
 	}
 
-	@Reference(policy=ReferencePolicy.DYNAMIC,unbind="clearRepositoryInstance")
-	public void setRepositoryInstance(RepositoryInstance instance) {
-		this.repositoryInstance = instance;
-	}
-
-	public void clearRepositoryInstance(RepositoryInstance instance) {
-		this.repositoryInstance = null;
-	}
-
 	@PreDestroy
-    @Deactivate
     public void deactivate() {
     	logger.info("Starting deactivate of Kafka Streams");
     	if(this.updateQueueSubscription!=null) {
@@ -274,7 +258,7 @@ public class StreamRuntime {
 
 
 	private File getOutputFolder() {
-		return new File(this.repositoryInstance.getOutputFolder(),"storage");
+		return new File(this.outputFolder,"storage");
 	}
 
     public Map<String,StreamInstance> getStreams() {

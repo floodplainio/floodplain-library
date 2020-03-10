@@ -51,7 +51,6 @@ public class StreamInstance {
 	private static final long maxBytesBuffering;
 	private final AdminClient adminClient;
 	private String generation = null;
-	private final Map<String, GenericProcessorBuilder> genericProcessorRegistry;
 
 	static {
 		String threadCount = System.getenv("KAFKA_STREAMS_THREADCOUNT");
@@ -75,11 +74,10 @@ public class StreamInstance {
 		}
 		
 	}
-	public StreamInstance(String instanceName, StreamConfiguration configuration, AdminClient adminClient, Map<String,MessageTransformer> transformerRegistry, Map<String, GenericProcessorBuilder> genericProcessorRegistry) {
+	public StreamInstance(String instanceName, StreamConfiguration configuration, AdminClient adminClient, Map<String,MessageTransformer> transformerRegistry) {
 		this.instanceName = instanceName;
 		this.configuration = configuration;
 		this.transformerRegistry = Collections.unmodifiableMap(transformerRegistry);
-		this.genericProcessorRegistry = Collections.unmodifiableMap(genericProcessorRegistry);
 		this.adminClient = adminClient;
 		Filters.registerPredicate("clublogo", (id, params,message)->"CLUBLOGO".equals(message.columnValue("objecttype")) && message.columnValue("data")!=null);
 		Filters.registerPredicate("photo", (id,params, message)->"PHOTO".equals(message.columnValue("objecttype")) && message.columnValue("data")!=null);
@@ -196,7 +194,7 @@ public class StreamInstance {
 			}
 			if(!lowLevelAPIElements.isEmpty()) {
 				TopologyContext context = new TopologyContext(tenant, deployment, this.instanceName, generation);
-				ReplicationTopologyParser.topologyFromXML(topology,lowLevelAPIElements, context, transformerRegistry,this.adminClient,genericProcessorRegistry,this.configuration);
+				ReplicationTopologyParser.topologyFromXML(topology,lowLevelAPIElements, context, transformerRegistry,this.adminClient,Collections.emptyMap(),this.configuration);
 				Properties streamsConfiguration = createProperties(context.applicationId(),brokers,storagePath);
 				System.err.println("Topology:\n"+topology.describe().toString());
 				KafkaStreams stream = new KafkaStreams(topology, streamsConfiguration);
