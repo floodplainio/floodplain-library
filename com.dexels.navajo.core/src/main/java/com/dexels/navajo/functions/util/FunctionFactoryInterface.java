@@ -50,13 +50,6 @@ public abstract class FunctionFactoryInterface implements Serializable {
 	
 	public abstract void readDefinitionFile(Map<String, FunctionDefinition> fuds, ExtensionDefinition fd) ;
 
-	public void addFunctionResolver(FunctionResolver fr) {
-		functionResolvers.add(fr);
-	}
-	public void removeFunctionResolver(FunctionResolver fr) {
-		functionResolvers.remove(fr);
-	}
-	
 	private final FunctionDefinition getDef(String name)  {
 		if(defaultConfig!=null) {
 			FunctionDefinition fd = defaultConfig.get(name);
@@ -125,20 +118,7 @@ public abstract class FunctionFactoryInterface implements Serializable {
 		return functionDefinition.getObject().trim();
 	}
 
-	public final Object getAdapterInstance(String name, ClassLoader cl)  {
-		try {
-			// Old skool, adapter should have been supplied by an OSGi service
-			Class<?> c = getAdapterClass(name, cl);
-			if(c==null) {
-				// No adapter found, going older skool:
-				c = Class.forName(name, true, cl);
-			}
-			return c.getDeclaredConstructor().newInstance();
-		} catch (InstantiationException|IllegalAccessException|ClassNotFoundException|IllegalArgumentException|InvocationTargetException|NoSuchMethodException|SecurityException e) {
-			logger.error("Caught exception. ",e);
-		}
-		return null;
-	}
+
 
 	public  Class<?> getAdapterClass(String name, ClassLoader cl) throws ClassNotFoundException {
 		for (ExtensionDefinition elt : adapterConfig.keySet()) {
@@ -173,9 +153,6 @@ public abstract class FunctionFactoryInterface implements Serializable {
 	public Set<String> getAdapterNames(ExtensionDefinition ed) {
 		return getAdapterConfig(ed).keySet();
 	}
-//	public void clearAdapterNames() {
-//		adapterConfig.clear();
-//	}
 
 	@SuppressWarnings("unchecked")
 	public FunctionInterface getInstance(final ClassLoader cl, final String functionName)  {
@@ -236,39 +213,6 @@ public abstract class FunctionFactoryInterface implements Serializable {
 	public void setDefaultConfig(Map<String, FunctionDefinition> config) {
 		this.defaultConfig = config;
 	}
-	
-	public boolean isInitializing() {
-		return initializing;
-	}
-
-	public void setInitializing(boolean initializing) {
-		this.initializing = initializing;
-	}
-	@SuppressWarnings("unchecked")
-	public FunctionInterface instantiateFunctionClass(FunctionDefinition fd, ClassLoader classLoader) {
-		try {
-			Class<? extends FunctionInterface> clz = (Class<? extends FunctionInterface>) Class.forName(fd.getObject(),true,classLoader);
-			return clz.getDeclaredConstructor().newInstance();
-		} catch (ClassNotFoundException|InstantiationException|IllegalAccessException|IllegalArgumentException|InvocationTargetException|NoSuchMethodException|SecurityException e) {
-			logger.error("Caught exception. ",e);
-		}
-		return null;
-	}
-//	
-	/**
-	 * @param interfaceClass  
-	 * @param propertyKey 
-	 */
-	public List<XMLElement> getAllFunctionElements(String interfaceClass, String propertyKey)  {
-		throw new UnsupportedOperationException("getAllFunctionElements only implemented in OSGi");
-	}
 
 
-	/**
-	 * @param interfaceClass  
-	 * @param propertyKey 
-	 */
-	public List<XMLElement> getAllAdapterElements(String interfaceClass, String propertyKey) {
-		throw new UnsupportedOperationException("getAllAdapterElements only implemented in OSGi");
-	}
 }

@@ -9,7 +9,6 @@ import com.dexels.navajo.document.Navajo;
 import com.dexels.navajo.script.api.Access;
 import com.dexels.navajo.script.api.ClientInfo;
 import com.dexels.navajo.script.api.FatalException;
-import com.dexels.navajo.server.AfterWebServiceEmitter;
 import com.dexels.navajo.server.DispatcherInterface;
 import com.dexels.navajo.server.NavajoConfigInterface;
 
@@ -135,23 +134,6 @@ public class TestDispatcher implements DispatcherInterface {
 		return null;
 	}
 
-	@Override
-	public void finalizeService(Navajo inMessage, Access access,
-			String rpcName, String rpcUser,
-			Throwable myException, String origThreadName,
-			boolean scheduledWebservice, boolean afterWebServiceActivated,
-			AfterWebServiceEmitter emit) {
-		
-		
-	}
-
-	@Override
-	public Navajo handle(Navajo inMessage, String instance, boolean skipAuth,
-			AfterWebServiceEmitter emit, ClientInfo clientInfo)
-			throws FatalException {
-		
-		return null;
-	}
 
 	@Override
 	public Navajo handleCallbackPointers(Navajo inMessage, String tenant) {

@@ -29,7 +29,6 @@ import com.dexels.navajo.expression.api.TMLExpressionException;
 import com.dexels.navajo.expression.api.TipiLink;
 import com.dexels.navajo.script.api.Access;
 import com.dexels.navajo.script.api.MappableTreeNode;
-import com.dexels.navajo.util.Util;
 
 /**
  *
@@ -121,7 +120,7 @@ final class ASTTmlNode extends SimpleNode {
 		            text = text.substring(length);
 		        }
 		    
-		        if (Util.isRegularExpression(text))
+		        if (isRegularExpression(text))
 		            singleMatch = false;
 		        else
 		            singleMatch = true;
@@ -412,5 +411,15 @@ final class ASTTmlNode extends SimpleNode {
 				return expression;
 			}
 		};
+	}
+
+	private static final boolean isRegularExpression(String s) {
+
+		if (s.startsWith(Navajo.PARENT_MESSAGE+Navajo.MESSAGE_SEPARATOR))
+			return isRegularExpression(s.substring((Navajo.PARENT_MESSAGE +Navajo.MESSAGE_SEPARATOR).length()));
+		return (s.indexOf('*') != -1) || (s.indexOf('.') != -1)
+				|| (s.indexOf('\\') != -1) || (s.indexOf('?') != -1)
+				|| (s.indexOf('[') != -1) || (s.indexOf(']') != -1);
+
 	}
 }

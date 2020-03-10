@@ -48,59 +48,6 @@ public class OsgiFunctionFactory extends JarFunctionFactory {
 		}
 	}
 
-
-	@SuppressWarnings("rawtypes")
-	@Override
-	public List<XMLElement> getAllFunctionElements(String interfaceClass, String propertyKey)  {
-		List<XMLElement> result = new ArrayList<>();
-		BundleContext context = Version.getDefaultBundleContext();
-		try {
-			ServiceReference[] refs = context.getServiceReferences(interfaceClass, null);
-			if(refs==null) {
-				logger.warn("Service enumeration failed class: {}", interfaceClass);
-				return null;
-			}
-			for (ServiceReference serviceReference : refs) {
-				Object o = serviceReference.getProperty(propertyKey);
-				FunctionDefinition fd = (FunctionDefinition)o;
-				XMLElement xe = fd.getXmlElement();
-				if(xe!=null) {
-					result.add(xe);
-				}
-			}
-			
-		} catch (InvalidSyntaxException e) {
-			logger.error("Error: ", e);
-		}
-		return result;
-	}
-	
-	@SuppressWarnings("rawtypes")
-	@Override
-	//TODO not ok, seems to return function elements
-	public List<XMLElement> getAllAdapterElements(String interfaceClass, String propertyKey)  {
-		List<XMLElement> result = new ArrayList<>();
-		BundleContext context = Version.getDefaultBundleContext();
-		try {
-			ServiceReference[] refs = context.getServiceReferences(interfaceClass, null);
-			if(refs==null) {
-				logger.warn("Service enumeration failed class: {}", interfaceClass);
-				return null;
-			}
-			for (ServiceReference serviceReference : refs) {
-				Object o = serviceReference.getProperty(propertyKey);
-				FunctionDefinition fd = (FunctionDefinition)o;
-				XMLElement xe = fd.getXmlElement();
-				if(xe!=null) {
-					result.add(xe);
-				}
-			}
-		} catch (InvalidSyntaxException e) {
-			logger.error("Error: ", e);
-		}
-		return result;
-	}
-	
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Object getComponent( final String name, String serviceKey, Class interfaceClass)  {

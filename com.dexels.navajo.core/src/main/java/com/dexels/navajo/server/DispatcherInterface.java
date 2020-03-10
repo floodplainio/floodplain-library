@@ -17,12 +17,10 @@ public interface DispatcherInterface  {
 	 * Methods to handle Navajo services.
 	 */
 	public Navajo handle(Navajo inMessage, String instance, Object userCertificate, ClientInfo clientInfo) throws FatalException;
-	public Navajo handle(Navajo inMessage, String instance, boolean skipAuth, AfterWebServiceEmitter emit, ClientInfo clientInfo) throws FatalException;
 	public Navajo handle(Navajo inMessage, boolean skipAuth) throws FatalException;
 	public Navajo handle(Navajo inMessage) throws FatalException;
 	public Navajo handle(Navajo inMessage, String instance, boolean skipAuth) throws FatalException;
 	
-	public void finalizeService(Navajo inMessage, Access access, String rpcName, String rpcUser,		Throwable myException, String origThreadName, boolean scheduledWebservice, boolean afterWebServiceActivated, AfterWebServiceEmitter emit);
 
 	/**
 	 * Create a temp file with the names prefix and suffix in the designated temp path.
