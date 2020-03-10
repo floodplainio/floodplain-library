@@ -76,11 +76,6 @@ public final class MappableTreeNode implements Mappable, Serializable {
         if (myAccess != null && !arrayElement && !hasArrayParent()) {
             myStatistics = a.createStatistics();
         }
-        // Call setDebug automatically if object class implements Debugable
-        // interface and full debug is set for webservice.
-        if (a != null && a.logFullAccessLog() && Debugable.class.isInstance(o)) {
-            ((Debugable) o).setDebug(true);
-        }
     }
 
     public Object getMyMap() {

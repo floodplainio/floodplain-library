@@ -102,7 +102,6 @@ public final class Access implements java.io.Serializable, Mappable {
     public String organization;
     public String clientDescription;
     public boolean betaUser = false;
-    public transient CompiledScriptInterface myScript = null;
     public transient Operation myOperation = null;
     public int queueSize;
     public String queueId;
@@ -339,34 +338,6 @@ public final class Access implements java.io.Serializable, Mappable {
         return waitingForPreviousRequest;
     }
 
-    /**
-     * Sets the compiled script that is used to handle this access.
-     * 
-     * @param cs
-     */
-    public void setCompiledScript(CompiledScriptInterface cs) {
-        myScript = cs;
-    }
-
-    /**
-     * Get the compiled script used for handling this access. (Used from within
-     * scripts)
-     * 
-     * @return
-     */
-    public CompiledScriptInterface getMyScript() {
-        return myScript;
-    }
-
-    /**
-     * Get the compiled script used for handling this access.
-     * 
-     * @return
-     */
-    public CompiledScriptInterface getCompiledScript() {
-        return myScript;
-    }
-    
     public Operation getOperation() {
         return myOperation;
     }
@@ -468,22 +439,6 @@ public final class Access implements java.io.Serializable, Mappable {
 
     public Message getCurrentOutMessage() {
         return currentOutMessage;
-    }
-
-    public Message getCurrentInMessage() {
-        if (myScript != null) {
-            return myScript.getCurrentInMsg();
-        } else {
-            return null;
-        }
-    }
-
-    public Selection getCurrentInSelection() {
-        if (myScript != null) {
-            return myScript.getCurrentSelection();
-        } else {
-            return null;
-        }
     }
 
     public void setCurrentOutMessage(Message currentOutMessage) {
@@ -615,9 +570,7 @@ public final class Access implements java.io.Serializable, Mappable {
 
     @Override
     public void kill() {
-        if (myScript != null) {
-            myScript.kill();
-        }
+
     }
 
     @Override
@@ -627,9 +580,6 @@ public final class Access implements java.io.Serializable, Mappable {
 
     @Override
     public void store() throws MappableException, UserException {
-        if (myScript != null) {
-            myScript.store();
-        }
     }
 
     public String getRpcUser() {
@@ -835,18 +785,6 @@ public final class Access implements java.io.Serializable, Mappable {
 
     public String getQueueId() {
         return queueId;
-    }
-
-    public boolean logFullAccessLog() {
-        return isDebugAll() || (getCompiledScript() != null && getCompiledScript().isDebugAll());
-    }
-    
-    public boolean logRequestAccessLog() {
-        return getCompiledScript() != null && getCompiledScript().debugRequest();
-    }
-    
-    public boolean logResponseAccessLog() {
-        return getCompiledScript() != null && getCompiledScript().debugResponse();
     }
 
     public void setQueueId(String queueId) {
