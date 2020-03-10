@@ -15,7 +15,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dexels.navajo.repository.api.RepositoryInstance;
 import com.dexels.pubsub.rx2.api.PersistentPublisher;
 import com.dexels.pubsub.rx2.api.PersistentSubscriber;
 import com.fasterxml.jackson.core.JsonGenerationException;
@@ -38,22 +37,21 @@ public class KafkaServlet {
 	@Inject
 	PersistentPublisher publisher;
 
-	@Inject
-	RepositoryInstance repositoryInstance;
-
 	
 	private static final ObjectMapper objectMapper = new ObjectMapper();
 
 	
 	private final static Logger logger = LoggerFactory.getLogger(KafkaServlet.class);
 
-	
-	@PostConstruct
-	public void activate() {
-		System.err.println("Blini online");
+	private String deployment;
+	private String repositoryPath;
+
+
+	public KafkaServlet(String deployment, String repositoryPath) {
+		this.deployment = deployment;
+		this.repositoryPath = repositoryPath;
 	}
 
-	
 	protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		resp.addHeader("Access-Control-Allow-Origin", "*");
 		try(final PrintWriter writer = resp.getWriter()) {
@@ -101,11 +99,7 @@ public class KafkaServlet {
 	}
 
 	private void shutdownStreamInstance(Writer writer) throws IOException, ServletException {
-		if(this.repositoryInstance==null) {
-			writer.write("No bound repo, can't proceed");
-			return;
-		}
-		String deployment = repositoryInstance.getDeployment();
+		String deployment = this.deployment;
 		String generation = System.getenv("GENERATION");
 		String tenants = System.getenv("TENANT_MASTER");
 		String[] tenantArray = tenants.split(",");

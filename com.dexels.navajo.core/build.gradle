@@ -33,9 +33,9 @@ dependencies {
     implementation project(':com.dexels.resourcebundle')
     implementation project(':com.dexels.config.runtime')
     compile dependencies.slf4j
+    compile dependencies.osgiCompendium
     compile dependencies.cdiApi
     testCompile dependencies.jUnit
-
  }
 
 
