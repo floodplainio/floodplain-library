@@ -9,7 +9,7 @@ ext {
     debezium_version= "1.0.0.Final"
     commonDependencies = [
             cdiApi            : "jakarta.enterprise:jakarta.enterprise.cdi-api:2.0.2",
-            microProfileConfig : "org.eclipse.microprofile.config:microprofile-config-api:1.3",            
+            microProfileConfig : "org.eclipse.microprofile.config:microprofile-config-api:1.3",
             jUnit             : "junit:junit:4.12",
             rxJava            : "io.reactivex.rxjava2:rxjava:2.2.16",
             rxFile            : "com.github.davidmoten:rxjava2-file:0.1.6",
@@ -26,26 +26,16 @@ ext {
             commonsIo         : "commons-io:commons-io:2.6",
             jacksonCore       : "com.fasterxml.jackson.core:jackson-core:$jackson_version",
             jacksonDatabind   : "com.fasterxml.jackson.core:jackson-databind:$jackson_version",
-            osgiAnnotations   : "org.osgi:osgi.annotation:$osgi_version",
             osgiCompendium    : "org.osgi:osgi.cmpn:$osgi_version",
             osgiCore          : "org.osgi:osgi.core:$osgi_version",
-            osgiComponentAnnotations: "org.osgi:org.osgi.service.component.annotations:1.4.0",
             mongoCore         : "org.mongodb:mongodb-driver-core:$mongodb_version",
             mongoBson         : "org.mongodb:bson:$mongodb_version",
             mongoDriver       : "org.mongodb:mongodb-driver:$mongodb_version",
             mongoAsync        : "org.mongodb:mongodb-driver-async:$mongodb_version",
             mongoReactive     : "org.mongodb:mongodb-driver-reactivestreams:1.13.0",
-            mysqlDriver       : "mysql:mysql-connector-java:$mysql_version",
             kafkaClient       : "org.apache.kafka:kafka-clients:$kafka_version",
             kafkaConnectApi        : "org.apache.kafka:connect-api:$kafka_version",
-            kafkaConnectRuntime    : "org.apache.kafka:connect-runtime:$kafka_version",
-            kafkaConnectJson       : "org.apache.kafka:connect-json:$kafka_version",
-            kafkaConnectFile       : "org.apache.kafka:connect-file:$kafka_version",
-            kafkaConnectTransform  : "org.apache.kafka:connect-transform:$kafka_version",
             kafkaStreams           : "org.apache.kafka:kafka-streams:$kafka_version",
-            debeziumCore           : "io.debezium:debezium-core:$debezium_version",
-            debeziumEmbedded       : "io.debezium:debezium-embedded:$debezium_version",
-            debeziumPostgres       : "io.debezium:debezium-connector-postgres:$debezium_version",
     ]
 
 }

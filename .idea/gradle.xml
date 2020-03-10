@@ -38,8 +38,6 @@
             <option value="$PROJECT_DIR$/com.dexels.repository.api" />
             <option value="$PROJECT_DIR$/com.dexels.repository.file" />
             <option value="$PROJECT_DIR$/com.dexels.resourcebundle" />
-            <option value="$PROJECT_DIR$/io.floodplain.debezium" />
-            <option value="$PROJECT_DIR$/io.floodplain.googlesheet" />
           </set>
         </option>
         <option name="useQualifiedModuleNames" value="true" />

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <bytecodeTargetLevel>
+      <module name="floodplain.repository.io.floodplain.debezium.main" target="1.8" />
+      <module name="floodplain.repository.io.floodplain.debezium.test" target="1.8" />
+      <module name="floodplain.repository.io.floodplain.googlesheet.main" target="1.8" />
+      <module name="floodplain.repository.io.floodplain.googlesheet.test" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

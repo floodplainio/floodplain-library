@@ -15,8 +15,7 @@ dependencies {
     implementation project(':com.dexels.pubsub.rx2.api')
     implementation project(':com.dexels.navajo.api')
     implementation project(':com.dexels.navajo.document')
-    compile dependencies.osgiAnnotations
-    compile dependencies.osgiComponentAnnotations
+    compile dependencies.osgiCompendium
     compile dependencies.servletApi
     testCompile dependencies.jUnit
     testRuntime dependencies.slf4jSimple

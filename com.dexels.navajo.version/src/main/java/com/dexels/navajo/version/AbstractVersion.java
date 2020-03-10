@@ -11,11 +11,7 @@ import org.slf4j.LoggerFactory;
 
 public  class AbstractVersion implements BundleActivator {
 
-
-	
 	private static final Logger logger = LoggerFactory.getLogger(AbstractVersion.class);
-
-	
 	protected BundleContext context = null;
 	
 	@Override
@@ -29,13 +25,7 @@ public  class AbstractVersion implements BundleActivator {
 	
 	
 	public static boolean osgiActive() {
-		try {
-			Bundle b = org.osgi.framework.FrameworkUtil.getBundle(AbstractVersion.class);
-			
-			return b!=null;
-		} catch (Exception t) {
-			return false;
-		}
+		return false;
 	}
 	
 	

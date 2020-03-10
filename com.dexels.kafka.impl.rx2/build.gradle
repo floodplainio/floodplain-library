@@ -10,8 +10,7 @@ dependencies {
     implementation project(':com.dexels.replication.impl.json')
     implementation project(':com.dexels.replication.impl.protobuf')
     implementation project(':com.dexels.pubsub.rx2.api')
-    compile dependencies.osgiAnnotations
-    compile dependencies.osgiComponentAnnotations
+    compile dependencies.osgiCompendium
     implementation dependencies.reactiveStreams
     implementation dependencies.rxJava
     testCompile dependencies.jUnit

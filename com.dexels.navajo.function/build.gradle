@@ -25,8 +25,7 @@ dependencies {
     compile dependencies.jacksonCore
     compile dependencies.jacksonDatabind
     compile dependencies.jacksonDatabind
-    compile dependencies.osgiAnnotations
-    compile dependencies.osgiComponentAnnotations
+    compile dependencies.osgiCompendium
     compile dependencies.commonsIo
     compile dependencies.cdiApi
     testCompile dependencies.jUnit

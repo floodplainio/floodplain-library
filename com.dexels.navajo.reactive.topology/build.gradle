@@ -44,10 +44,7 @@ dependencies {
     compile dependencies.slf4j
     compile dependencies.jacksonCore
     compile dependencies.jacksonDatabind
-    compile dependencies.jacksonDatabind
-    compile dependencies.osgiAnnotations
-    compile dependencies.osgiComponentAnnotations
-    compile dependencies.commonsIo
+    compile dependencies.osgiCompendium
     compile dependencies.cdiApi
     compile dependencies.reactiveStreams
     compile dependencies.rxJava
