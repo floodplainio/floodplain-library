@@ -11,10 +11,6 @@ import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +28,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
 
-@Path("/blini")
 public class KafkaServlet {
 
 	private static final long serialVersionUID = 8563181635935834994L;
@@ -129,12 +124,6 @@ public class KafkaServlet {
 	}
 	
 
-	@GET
-	@Produces(MediaType.TEXT_PLAIN)
-	protected String something() {
-		return "boob";
-	}
-	
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		resp.addHeader("Access-Control-Allow-Origin", "*");
 		resp.setContentType("application/json");

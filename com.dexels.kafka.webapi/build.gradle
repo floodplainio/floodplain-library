@@ -23,6 +23,4 @@ dependencies {
     compile dependencies.mongoReactive
     compile dependencies.reactiveStreams
     compile dependencies.rxJava
-    implementation 'io.quarkus:quarkus-resteasy-jsonb'
-    implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
 }

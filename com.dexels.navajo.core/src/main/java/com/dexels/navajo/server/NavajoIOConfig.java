@@ -33,13 +33,6 @@ public interface NavajoIOConfig {
 	public String getDeployment();
 
 	public Navajo readConfig(String s) throws IOException;
-	public void writeConfig(String name, Navajo conf) throws IOException;
-
-	
-	void writeOutput(String scriptName, String suffix, InputStream is)
-			throws IOException;
-	
-
 	/**
 	 * Name does not include tenant suffix
 	 */

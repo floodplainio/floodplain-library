@@ -49,8 +49,6 @@ import com.dexels.navajo.functions.util.FunctionFactoryInterface;
 import com.dexels.navajo.parser.Expression;
 import com.dexels.navajo.script.api.SystemException;
 import com.dexels.navajo.server.DispatcherFactory;
-import com.dexels.navajo.server.test.TestDispatcher;
-import com.dexels.navajo.server.test.TestNavajoConfig;
 
 @SuppressWarnings("unused")
 public class StandardFunctionsTest {
@@ -1501,7 +1499,6 @@ public class StandardFunctionsTest {
 	@Test
 	public void testEvaluateExpression() {
 
-		DispatcherFactory.createDispatcher(new TestDispatcher(new TestNavajoConfig()));
 		FunctionInterface fi = fff.getInstance(cl, "EvaluateExpression");
 		fi.reset();
 		Navajo doc = createTestNavajo();
@@ -1520,7 +1517,6 @@ public class StandardFunctionsTest {
 
 	@Test
 	public void testEuro() {
-		DispatcherFactory.createDispatcher(new TestDispatcher(new TestNavajoConfig()));
 		FunctionInterface fi = fff.getInstance(cl, "Euro");
 		fi.reset();
 

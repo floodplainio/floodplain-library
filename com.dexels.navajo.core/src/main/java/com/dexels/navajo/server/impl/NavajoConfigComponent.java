@@ -135,17 +135,6 @@ public class NavajoConfigComponent implements NavajoConfigInterface {
 	}
 
 	@Override
-	public void writeConfig(String name, Navajo conf) throws IOException {
-		navajoIOConfig.writeConfig(name, conf);
-	}
-
-	@Override
-	public void writeOutput(String scriptName, String suffix, InputStream is)
-			throws IOException {
-		navajoIOConfig.writeOutput(scriptName, suffix, is);
-	}
-
-	@Override
 	public String getInstanceName() {
 		return (String) properties.get("instanceName");
 	}

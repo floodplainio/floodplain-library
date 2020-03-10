@@ -24,7 +24,6 @@ import com.dexels.navajo.expression.api.FunctionInterface;
 import com.dexels.navajo.expression.api.TMLExpressionException;
 import com.dexels.navajo.expression.api.TipiLink;
 import com.dexels.navajo.functions.util.FunctionFactoryFactory;
-import com.dexels.navajo.functions.util.OSGiFunctionFactoryFactory;
 import com.dexels.navajo.parser.NamedExpression;
 import com.dexels.navajo.parser.compiled.api.CacheSubexpression;
 import com.dexels.navajo.parser.compiled.api.ReactiveParseItem;
@@ -58,8 +57,7 @@ final class ASTFunctionNode extends SimpleNode {
 			cl = DispatcherFactory.getInstance().getNavajoConfig().getClassloader();
 		} 
 
-		return AbstractVersion.osgiActive() ? OSGiFunctionFactoryFactory.getFunctionInterface(functionName) :
-			FunctionFactoryFactory.getInstance().getInstance(cl, functionName);
+		return FunctionFactoryFactory.getInstance().getInstance(cl, functionName);
 	}
 	
 	@Override

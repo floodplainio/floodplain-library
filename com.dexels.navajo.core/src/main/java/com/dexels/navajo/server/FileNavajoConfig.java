@@ -10,9 +10,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.Writer;
+import java.net.URL;
 import java.util.Date;
 
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,9 +22,7 @@ import com.dexels.navajo.document.NavajoFactory;
 
 public abstract class FileNavajoConfig implements NavajoIOConfig {
 
-    private final InputStreamReader inputStreamReader = new FileInputStreamReader();
 
-	
 	private static final Logger logger = LoggerFactory
 			.getLogger(FileNavajoConfig.class);
 	
@@ -91,10 +89,10 @@ public abstract class FileNavajoConfig implements NavajoIOConfig {
 		} else {
 			path = scriptPath + name + extension;
 		}
-		input = inputStreamReader.getResource(path);
+		input = getResource(path);
 		if(input==null) {
     		path = scriptPath + name + ".tsl";
-			input = inputStreamReader.getResource(path);
+			input = getResource(path);
 		}
 		if(input==null) {
 			logger.debug("No resource found");
@@ -170,39 +168,13 @@ public abstract class FileNavajoConfig implements NavajoIOConfig {
 	
 	@Override
     public final InputStream getConfig(String name) throws IOException {
-      InputStream input = inputStreamReader.getResource(getConfigPath() + "/" + name);
+      InputStream input = getResource(getConfigPath() + "/" + name);
       return input;
     }
 
     @Override
-    public final void writeConfig(String name, Navajo conf) throws IOException {
-      Writer output = new FileWriter(new File(getConfigPath() + "/" + name));
-      try {
-        conf.write(output);
-      }
-      catch (NavajoException ex) {
-        throw new IOException(ex.getMessage());
-      }
-      output.close();
-    }
-
-	@Override
-	public void writeOutput(String scriptName, String suffix, InputStream is) throws IOException {
-	   	File opath = new File(getCompiledScriptPath());
-	   	final String path = opath.getAbsolutePath()+"/"+scriptName+suffix;
-		File fin = new File(path);
-		File parent = fin.getParentFile();
-		if(!parent.exists()) {
-			parent.mkdirs();
-		}
-	   	FileOutputStream fos = new FileOutputStream(fin);
-	   	IOUtils.copy(is, fos);
-	   	fos.close();
-	   	is.close();
-	}    
-    @Override
     public final Navajo readConfig(String name) throws IOException {
-    	InputStream is = inputStreamReader.getResource(getConfigPath() + File.separator + name);
+    	InputStream is = getResource(getConfigPath() + File.separator + name);
     	try {
     		if (is == null) {
     			return null;
@@ -225,6 +197,30 @@ public abstract class FileNavajoConfig implements NavajoIOConfig {
         logger.warn("getDeplyoment not implemented in OSGi implementation");
         return null;
     }
+
+	public InputStream getResource(String name) {
+		String filePath = System.getProperty("user.dir");
+		try {
+			File f = new File(name);
+			if (f.exists()) {
+				return new FileInputStream(f);
+			}
+			File dir = new File(filePath);
+			File target = new File(dir,name);
+			if(!target.exists()) {
+				logger.debug("Could not load resource...: " + name + " no such file: "+target.getAbsolutePath());
+				return null;
+			}
+			URL baseDir = dir.toURI().toURL();
+			URL res = new URL(baseDir,name);
+			logger.debug("Resolved to res url: "+res.toString()+" while resolving name: "+name);
+			return res.openStream();
+		} catch (Exception ioe) {
+
+			logger.error("Could not load resource...: " + name + "(" + ioe.getMessage() + ")",ioe);
+			return null;
+		}
+	}
 
 	
     

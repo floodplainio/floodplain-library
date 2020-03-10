@@ -33,12 +33,6 @@ dependencies {
     implementation project(':com.dexels.resourcebundle')
     implementation project(':com.dexels.config.runtime')
     compile dependencies.slf4j
-    compile dependencies.jacksonCore
-    compile dependencies.jacksonDatabind
-    compile dependencies.jacksonDatabind
-    compile dependencies.osgiAnnotations
-    compile dependencies.osgiComponentAnnotations
-    compile dependencies.commonsIo
     compile dependencies.cdiApi
     testCompile dependencies.jUnit
 
