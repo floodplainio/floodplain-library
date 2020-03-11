@@ -1,0 +1,10 @@
+
+def globalConf = rootProject.ext
+
+dependencies {
+    Map<String, String> dependencies = globalConf.commonDependencies
+    implementation project(':immutable-api')
+    implementation project(':pubsub-rx2')
+    testCompile dependencies.jUnit
+}
+

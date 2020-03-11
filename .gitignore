@@ -8,6 +8,7 @@ buildOutputCleanup
 .project
 .settings
 .classpath
+sharedstore
 
 # Ignore Gradle build output directory
 build
