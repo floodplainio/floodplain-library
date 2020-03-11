@@ -19,7 +19,6 @@ dependencies {
     implementation project(':com.dexels.navajo.document.stream')
     implementation project(':com.dexels.navajo.version')
     implementation project(':com.dexels.navajo.authentication.api')
-    implementation project(':com.dexels.resourcebundle')
     implementation project(':com.dexels.config.runtime')
     compile dependencies.slf4j
     compile dependencies.jacksonCore

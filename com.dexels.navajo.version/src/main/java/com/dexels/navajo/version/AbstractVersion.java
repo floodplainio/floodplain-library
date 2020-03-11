@@ -29,10 +29,6 @@ public  class AbstractVersion implements BundleActivator {
 	}
 	
 	
-	public BundleContext getBundleContext() {
-		return context;
-	}
-
 	@Override
 	public void stop(BundleContext arg0) throws Exception {
 		context = null;
@@ -46,20 +42,4 @@ public  class AbstractVersion implements BundleActivator {
 		}
 		logger.info("Shutting down bundle: {}",getClass().getName());
 	}
-	
-
-	@SuppressWarnings("unchecked")
-	public static void shutdownNavajoExtension(String name) {
-		  // This should be replaced by OSGi bundle management
-		  logger.warn("non-OSGi Extension shutdown of: {}",name);
-		  try {
-			Class <? extends AbstractVersion> version = (Class<? extends AbstractVersion>) Class.forName(name.toLowerCase()+".Version");
-			AbstractVersion v = version.getDeclaredConstructor().newInstance();
-			v.shutdown();
-		  } catch (Exception e) {
-				logger.warn("Extension shutdown failed.",e);
-		}
-		  
-	}
-
 }

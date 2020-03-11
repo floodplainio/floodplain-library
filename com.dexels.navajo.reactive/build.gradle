@@ -21,7 +21,6 @@ dependencies {
     implementation project(':com.dexels.navajo.function')
     implementation project(':com.dexels.navajo.version')
     implementation project(':com.dexels.navajo.authentication.api')
-    implementation project(':com.dexels.resourcebundle')
     implementation project(':com.dexels.config.runtime')
     implementation project(':com.dexels.pubsub.rx2.api')
     compile dependencies.slf4j

@@ -6,7 +6,6 @@ dependencies {
     implementation project(':com.dexels.immutable.api')
     implementation project(':com.dexels.immutable.impl')
     implementation project(':com.dexels.replication.api')
-    implementation project(':com.dexels.repository.api')
     implementation project(':com.dexels.replication.impl')
     implementation project(':com.dexels.kafka.streams.api')
     implementation project(':com.dexels.replication.impl.json')
