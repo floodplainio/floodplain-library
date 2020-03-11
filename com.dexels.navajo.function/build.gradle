@@ -9,7 +9,7 @@ def globalConf = rootProject.ext
 
 dependencies {
     Map<String, String> dependencies = globalConf.commonDependencies
-    implementation project(':com.dexels.immutable.api')
+    implementation project(':immutable-api')
     implementation project(':com.dexels.immutable.impl')
     implementation project(':com.dexels.replication.api')
     implementation project(':com.dexels.replication.impl')
@@ -19,7 +19,7 @@ dependencies {
     implementation project(':com.dexels.navajo.document.stream')
     implementation project(':com.dexels.navajo.version')
     implementation project(':com.dexels.navajo.authentication.api')
-    implementation project(':com.dexels.config.runtime')
+    implementation project(':config-runtime')
     compile dependencies.slf4j
     compile dependencies.jacksonCore
     compile dependencies.jacksonDatabind
