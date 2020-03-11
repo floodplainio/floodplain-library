@@ -18,7 +18,7 @@ pluginManagement {
     }
 }
 
-rootProject.name = 'floodplain.repository'
+rootProject.name = 'floodplain-library'
 include 'immutable-api',
 'immutable-impl',
 'replication-api',

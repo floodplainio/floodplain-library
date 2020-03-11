@@ -307,12 +307,6 @@
 		<input>string</input>
 		<result>string</result>
 	</function>
-	<function name="GetBinary" class="com.dexels.navajo.functions.GetBinary">
-		<description>Gets a binary object from Shared Store
-		</description>
-		<input>string</input>
-		<result>binary</result>
-	</function>
 	<function name="GetBinaryPath" class="com.dexels.navajo.functions.GetBinaryPath">
 		<description>Returns the path to a binary</description>
 		<input>binary</input>
@@ -495,13 +489,6 @@
         <input>string</input>
         <result>integer</result>
     </function>
-    
-      
-	<function name="GetValidationDescription" class="com.dexels.navajo.functions.GetValidationDescription">
-		<description>Gets a description from ResourceBundle</description>
-		<input>string|integer,String|empty, String|empty</input>
-        <result>integer</result>
-	</function>
 	<function name="GetValue" class="com.dexels.navajo.functions.GetValue">
 		<description>Gets a typed value from a property object</description>
 		<input />
@@ -571,13 +558,6 @@
 	<function name="IsNumeric" class="com.dexels.navajo.functions.IsNumeric">
 		<description>IsNumeric(string|integer|float)</description>
 		<input>string|integer|float</input>
-		<result>boolean</result>
-	</function>
-	<function name="IsServiceCached" class="com.dexels.navajo.functions.IsServiceCached">
-		<description>Function to check whether a service with optionally
-			service key values is cached
-		</description>
-		<input>string,string</input>
 		<result>boolean</result>
 	</function>
     <function name="IsValidXMLFile" class="com.dexels.navajo.functions.IsValidXMLFile">
@@ -774,12 +754,6 @@
 		<input>string|binary|list|message</input>
 		<result>integer</result>
 	</function>
-	<function name="StoreBinary" class="com.dexels.navajo.functions.StoreBinary">
-		<description>Store a binary object in Shared Store
-		</description>
-		<input>string, binary</input>
-		<result>string</result>
-	</function> 
 	<function name="StringDistance" class="com.dexels.navajo.functions.StringDistance">
 		<description>Returns an Integer representing how much the two strings
 			differ, 0 is equal
