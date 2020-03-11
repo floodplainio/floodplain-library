@@ -2,6 +2,7 @@ package com.dexels.navajo.functions;
 
 import java.util.StringTokenizer;
 
+import com.dexels.navajo.expression.api.StatefulFunctionInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,7 +14,7 @@ import com.dexels.navajo.expression.api.FunctionInterface;
 import com.dexels.navajo.expression.api.TMLExpressionException;
 import com.dexels.navajo.parser.Expression;
 
-public class EvaluateParameters extends FunctionInterface {
+public class EvaluateParameters extends StatefulFunctionInterface {
     private final static Logger logger = LoggerFactory.getLogger(EvaluateParameters.class);
 
 	@Override

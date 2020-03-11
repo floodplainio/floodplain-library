@@ -1,5 +1,6 @@
 package com.dexels.navajo.functions;
 
+import com.dexels.navajo.expression.api.StatefulFunctionInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,7 +11,7 @@ import com.dexels.navajo.document.Property;
 import com.dexels.navajo.expression.api.FunctionInterface;
 import com.dexels.navajo.expression.api.TMLExpressionException;
 
-public class FindElement extends FunctionInterface {
+public class FindElement extends StatefulFunctionInterface {
 
 	
 	private final static Logger logger = LoggerFactory.getLogger(FindElement.class);

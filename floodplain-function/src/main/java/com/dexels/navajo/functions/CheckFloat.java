@@ -1,9 +1,9 @@
 package com.dexels.navajo.functions;
 
 import com.dexels.navajo.document.Message;
-import com.dexels.navajo.document.Operand;
 import com.dexels.navajo.document.Property;
 import com.dexels.navajo.expression.api.FunctionInterface;
+import com.dexels.navajo.expression.api.TMLExpressionException;
 
 /**
  * <p>Title: Navajo Product Project</p>
@@ -44,18 +44,15 @@ public class CheckFloat extends FunctionInterface {
 
 		// If strict flag is set, properties can be passed as string values.
 		if (getOperands().size() > 1) {
-//			Object o2 = getOperand(1);
-//			if (o2 instanceof Boolean) {
-//				boolean sforce = ((Boolean) o2).booleanValue();
+
+			throw new TMLExpressionException(this,"Can not use multiple args in CheckFloat");
+//			String propertyName = (String) o;
+//			final Message curMsg = getCurrentMessage();
+//
+//			Property p = (curMsg != null ? curMsg.getProperty(propertyName) : this.getNavajo().getProperty(propertyName));
+//			if (p != null) {
+//				o = p.getValue();
 //			}
-
-			String propertyName = (String) o;
-			final Message curMsg = getCurrentMessage();
-
-			Property p = (curMsg != null ? curMsg.getProperty(propertyName) : this.getNavajo().getProperty(propertyName));
-			if (p != null) {
-				o = p.getValue();
-			}
 		}
 
 		try {

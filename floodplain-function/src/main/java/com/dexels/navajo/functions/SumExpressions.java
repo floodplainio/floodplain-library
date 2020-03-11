@@ -13,6 +13,7 @@ import com.dexels.navajo.document.Operand;
 import com.dexels.navajo.document.types.Money;
 import com.dexels.navajo.document.types.Percentage;
 import com.dexels.navajo.expression.api.FunctionInterface;
+import com.dexels.navajo.expression.api.StatefulFunctionInterface;
 import com.dexels.navajo.expression.api.TMLExpressionException;
 import com.dexels.navajo.parser.Condition;
 import com.dexels.navajo.parser.Expression;
@@ -22,7 +23,7 @@ import com.dexels.navajo.script.api.SystemException;
  * @author arjen
  *
  */
-public class SumExpressions extends FunctionInterface {
+public class SumExpressions extends StatefulFunctionInterface {
 
 	/* (non-Javadoc)
 	 * @see com.dexels.navajo.parser.FunctionInterface#remarks()

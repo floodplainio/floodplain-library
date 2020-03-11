@@ -15,7 +15,7 @@ import com.dexels.navajo.expression.api.FunctionInterface;
  * @version 1.0
  */
 
-public class ToMilliseconds extends FunctionInterface{
+public class ToMilliseconds extends FunctionInterface {
 
   @Override
 public final Object evaluate() throws com.dexels.navajo.expression.api.TMLExpressionException {

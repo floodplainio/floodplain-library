@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.dexels.navajo.expression.api.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,11 +19,6 @@ import com.dexels.navajo.document.Message;
 import com.dexels.navajo.document.Navajo;
 import com.dexels.navajo.document.Operand;
 import com.dexels.navajo.document.Selection;
-import com.dexels.navajo.expression.api.ContextExpression;
-import com.dexels.navajo.expression.api.FunctionClassification;
-import com.dexels.navajo.expression.api.FunctionInterface;
-import com.dexels.navajo.expression.api.TMLExpressionException;
-import com.dexels.navajo.expression.api.TipiLink;
 import com.dexels.navajo.functions.util.FunctionFactoryFactory;
 import com.dexels.navajo.parser.NamedExpression;
 import com.dexels.navajo.parser.compiled.api.CacheSubexpression;
@@ -31,7 +27,6 @@ import com.dexels.navajo.reactive.api.Reactive;
 import com.dexels.navajo.script.api.Access;
 import com.dexels.navajo.script.api.MappableTreeNode;
 import com.dexels.navajo.server.DispatcherFactory;
-import com.dexels.navajo.version.AbstractVersion;
 
 
 final class ASTFunctionNode extends SimpleNode {
@@ -50,14 +45,7 @@ final class ASTFunctionNode extends SimpleNode {
 	}
 	
 	private FunctionInterface getFunction() {
-		ClassLoader cl = null;
-		if ( DispatcherFactory.getInstance() == null ) {
-			cl = getClass().getClassLoader();
-		} else  {
-			cl = DispatcherFactory.getInstance().getNavajoConfig().getClassloader();
-		} 
-
-		return FunctionFactoryFactory.getInstance().getInstance(cl, functionName);
+		return FunctionFactoryFactory.getInstance().getInstance(getClass().getClassLoader(), functionName);
 	}
 	
 	@Override
@@ -135,10 +123,13 @@ final class ASTFunctionNode extends SimpleNode {
 					 MappableTreeNode mapNode, TipiLink tipiLink, Access access, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
 				FunctionInterface f = getFunction();
 				Map<String,Operand> resolvedNamed = named.entrySet().stream().collect(Collectors.toMap(e->e.getKey(),e->e.getValue().apply(doc, parentMsg, parentParamMsg, parentSel, mapNode,tipiLink, access,immutableMessage,paramMessage)));
-				f.setInMessage(doc);
 				f.setNamedParameter(resolvedNamed);
-				f.setCurrentMessage(parentMsg);
-				f.setAccess(access);
+				if(f instanceof StatefulFunctionInterface) {
+					StatefulFunctionInterface sfi = (StatefulFunctionInterface)f;
+					sfi.setInMessage(doc);
+					sfi.setCurrentMessage(parentMsg);
+					sfi.setAccess(access);
+				}
 				f.reset();
 				l.stream()
 					.map(e->{

@@ -13,7 +13,7 @@ import com.dexels.navajo.expression.api.TMLExpressionException;
  * @version 1.0
  */
 
-public class ToStopwatchTime extends FunctionInterface{
+public class ToStopwatchTime extends FunctionInterface {
 
   @Override
 public final Object evaluate() throws com.dexels.navajo.expression.api.TMLExpressionException {

@@ -2,9 +2,10 @@ package com.dexels.navajo.functions;
 
 import com.dexels.navajo.document.Navajo;
 import com.dexels.navajo.expression.api.FunctionInterface;
+import com.dexels.navajo.expression.api.StatefulFunctionInterface;
 import com.dexels.navajo.expression.api.TMLExpressionException;
 
-public class ExistsProperty extends FunctionInterface {
+public class ExistsProperty extends StatefulFunctionInterface {
 
 	@Override
 	public Object evaluate() throws TMLExpressionException {

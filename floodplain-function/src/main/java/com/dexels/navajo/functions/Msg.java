@@ -18,7 +18,7 @@ import com.dexels.navajo.expression.api.TMLExpressionException;
  * @version 1.0
  */
 
-public final class Msg  extends FunctionInterface{
+public final class Msg  extends FunctionInterface {
   public Msg() {
   }
   @Override

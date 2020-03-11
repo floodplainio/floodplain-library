@@ -3,6 +3,7 @@ package com.dexels.navajo.functions;
 import com.dexels.navajo.document.Message;
 import com.dexels.navajo.document.Property;
 import com.dexels.navajo.expression.api.FunctionInterface;
+import com.dexels.navajo.expression.api.StatefulFunctionInterface;
 import com.dexels.navajo.expression.api.TMLExpressionException;
 
 
@@ -31,7 +32,7 @@ import com.dexels.navajo.expression.api.TMLExpressionException;
  * ====================================================================
  */
 
-public class GetPropertySubType extends FunctionInterface {
+public class GetPropertySubType extends StatefulFunctionInterface {
   public GetPropertySubType() {
   }
   @Override

@@ -1,5 +1,6 @@
 package com.dexels.navajo.functions;
 
+import com.dexels.navajo.expression.api.StatefulFunctionInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +23,7 @@ import com.dexels.navajo.script.api.SystemException;
  * @version 1.0
  */
 
-public final class EvaluateExpression extends FunctionInterface {
+public final class EvaluateExpression extends StatefulFunctionInterface {
 
 	
 	private final static Logger logger = LoggerFactory

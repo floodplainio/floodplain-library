@@ -2,6 +2,7 @@ package com.dexels.navajo.functions;
 
 import java.util.List;
 
+import com.dexels.navajo.expression.api.StatefulFunctionInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +26,7 @@ import com.dexels.navajo.script.api.SystemException;
  * @version 1.0
  */
 
-public class ForAll extends FunctionInterface {
+public class ForAll extends StatefulFunctionInterface {
 	
 	private final static Logger logger = LoggerFactory.getLogger(ForAll.class);
 	

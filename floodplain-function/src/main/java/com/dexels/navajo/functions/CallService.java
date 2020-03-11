@@ -2,6 +2,7 @@ package com.dexels.navajo.functions;
 
 import java.io.OutputStream;
 
+import com.dexels.navajo.expression.api.StatefulFunctionInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,7 +15,7 @@ import com.dexels.navajo.parser.Expression;
 import com.dexels.navajo.server.DispatcherFactory;
 import com.dexels.navajo.server.DispatcherInterface;
 
-public class CallService extends FunctionInterface {
+public class CallService extends StatefulFunctionInterface {
 
 	private final static Logger logger = LoggerFactory
 			.getLogger(EvaluateExpression.class);

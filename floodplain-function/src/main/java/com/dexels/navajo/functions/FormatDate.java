@@ -4,6 +4,7 @@ import java.util.Locale;
 
 import com.dexels.navajo.document.types.ClockTime;
 import com.dexels.navajo.expression.api.FunctionInterface;
+import com.dexels.navajo.expression.api.StatefulFunctionInterface;
 import com.dexels.navajo.expression.api.TMLExpressionException;
 
 /**
@@ -13,7 +14,7 @@ import com.dexels.navajo.expression.api.TMLExpressionException;
  * @version $Id$
  */
 
-public final class FormatDate extends FunctionInterface {
+public final class FormatDate extends StatefulFunctionInterface {
 
     public FormatDate() {
 

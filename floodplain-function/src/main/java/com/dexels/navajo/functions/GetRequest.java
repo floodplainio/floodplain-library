@@ -3,9 +3,10 @@ package com.dexels.navajo.functions;
 import java.io.StringWriter;
 
 import com.dexels.navajo.expression.api.FunctionInterface;
+import com.dexels.navajo.expression.api.StatefulFunctionInterface;
 import com.dexels.navajo.expression.api.TMLExpressionException;
 
-public class GetRequest extends FunctionInterface {
+public class GetRequest extends StatefulFunctionInterface {
 
 	@Override
 	public String remarks() {

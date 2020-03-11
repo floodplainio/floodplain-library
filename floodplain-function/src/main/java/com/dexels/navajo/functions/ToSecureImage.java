@@ -8,7 +8,6 @@ import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
 import java.util.Random;
 
 import javax.imageio.ImageIO;
@@ -29,7 +28,7 @@ import com.dexels.navajo.expression.api.TMLExpressionException;
  * @version 1.0
  */
 
-public class ToSecureImage extends FunctionInterface{
+public class ToSecureImage extends FunctionInterface {
   private int width = 110;
   private int height = 30;
   private String str;

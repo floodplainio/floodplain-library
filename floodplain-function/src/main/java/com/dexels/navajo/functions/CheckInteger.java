@@ -39,24 +39,7 @@ public String remarks() {
 
   @Override
 public Object evaluate() throws com.dexels.navajo.expression.api.TMLExpressionException {
-
-//    boolean force = false;
     Object o = operand(0).value;
-
-    // If strict flag is set, properties can be passed as string values.
-    if (getOperands().size() > 1) {
-//      Object o2 = getOperand(1);
-//      if (o2 instanceof Boolean) {
-//        force = ((Boolean) o2).booleanValue();
-//      }
-    	  final Message curMsg = getCurrentMessage();
-      String propertyName = (String) o;
-      Property p = (curMsg != null ? curMsg.getProperty(propertyName) : this.getNavajo().getProperty(propertyName));
-      if (p != null) {
-        o = p.getValue();
-      }
-    }
-
     try {
       Integer.parseInt(o+"");
       return Boolean.TRUE;

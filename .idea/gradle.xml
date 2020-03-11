@@ -11,33 +11,29 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/com.dexels.config.runtime" />
-            <option value="$PROJECT_DIR$/com.dexels.immutable.api" />
-            <option value="$PROJECT_DIR$/com.dexels.immutable.impl" />
-            <option value="$PROJECT_DIR$/com.dexels.kafka.converter" />
-            <option value="$PROJECT_DIR$/com.dexels.kafka.impl.rx2" />
-            <option value="$PROJECT_DIR$/com.dexels.kafka.streams" />
-            <option value="$PROJECT_DIR$/com.dexels.kafka.streams.api" />
-            <option value="$PROJECT_DIR$/com.dexels.kafka.webapi" />
-            <option value="$PROJECT_DIR$/com.dexels.navajo.api" />
-            <option value="$PROJECT_DIR$/com.dexels.navajo.authentication.api" />
-            <option value="$PROJECT_DIR$/com.dexels.navajo.core" />
-            <option value="$PROJECT_DIR$/com.dexels.navajo.document" />
-            <option value="$PROJECT_DIR$/com.dexels.navajo.document.json" />
-            <option value="$PROJECT_DIR$/com.dexels.navajo.document.stream" />
-            <option value="$PROJECT_DIR$/com.dexels.navajo.function" />
-            <option value="$PROJECT_DIR$/com.dexels.navajo.reactive" />
-            <option value="$PROJECT_DIR$/com.dexels.navajo.reactive.topology" />
-            <option value="$PROJECT_DIR$/com.dexels.navajo.version" />
-            <option value="$PROJECT_DIR$/com.dexels.pubsub.rx2.api" />
-            <option value="$PROJECT_DIR$/com.dexels.replication.api" />
-            <option value="$PROJECT_DIR$/com.dexels.replication.http" />
-            <option value="$PROJECT_DIR$/com.dexels.replication.impl" />
-            <option value="$PROJECT_DIR$/com.dexels.replication.impl.json" />
-            <option value="$PROJECT_DIR$/com.dexels.replication.impl.protobuf" />
-            <option value="$PROJECT_DIR$/com.dexels.repository.api" />
-            <option value="$PROJECT_DIR$/com.dexels.repository.file" />
-            <option value="$PROJECT_DIR$/com.dexels.resourcebundle" />
+            <option value="$PROJECT_DIR$/config-runtime" />
+            <option value="$PROJECT_DIR$/floodplain-api" />
+            <option value="$PROJECT_DIR$/floodplain-authentication-api" />
+            <option value="$PROJECT_DIR$/floodplain-core" />
+            <option value="$PROJECT_DIR$/floodplain-document" />
+            <option value="$PROJECT_DIR$/floodplain-document-stream" />
+            <option value="$PROJECT_DIR$/floodplain-function" />
+            <option value="$PROJECT_DIR$/floodplain-reactive" />
+            <option value="$PROJECT_DIR$/floodplain-reactive-topology" />
+            <option value="$PROJECT_DIR$/floodplain-version" />
+            <option value="$PROJECT_DIR$/immutable-api" />
+            <option value="$PROJECT_DIR$/immutable-impl" />
+            <option value="$PROJECT_DIR$/kafka-converter" />
+            <option value="$PROJECT_DIR$/kafka-rx2" />
+            <option value="$PROJECT_DIR$/kafka-webapi" />
+            <option value="$PROJECT_DIR$/pubsub-rx2" />
+            <option value="$PROJECT_DIR$/replication-api" />
+            <option value="$PROJECT_DIR$/replication-http" />
+            <option value="$PROJECT_DIR$/replication-impl" />
+            <option value="$PROJECT_DIR$/replication-json" />
+            <option value="$PROJECT_DIR$/replication-protobuf" />
+            <option value="$PROJECT_DIR$/streams" />
+            <option value="$PROJECT_DIR$/streams-api" />
           </set>
         </option>
         <option name="useQualifiedModuleNames" value="true" />

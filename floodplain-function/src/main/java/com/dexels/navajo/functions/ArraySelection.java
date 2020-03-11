@@ -9,6 +9,7 @@ import com.dexels.navajo.document.NavajoFactory;
 import com.dexels.navajo.document.Property;
 import com.dexels.navajo.document.Selection;
 import com.dexels.navajo.expression.api.FunctionInterface;
+import com.dexels.navajo.expression.api.StatefulFunctionInterface;
 import com.dexels.navajo.expression.api.TMLExpressionException;
 
 /**
@@ -29,7 +30,7 @@ import com.dexels.navajo.expression.api.TMLExpressionException;
  * @version 1.0
  */
 
-public class ArraySelection extends FunctionInterface {
+public class ArraySelection extends StatefulFunctionInterface {
 
 	
 

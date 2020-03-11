@@ -1,19 +1,18 @@
 package com.dexels.navajo.functions.util;
 
 import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.dexels.navajo.expression.api.FunctionInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dexels.navajo.document.nanoimpl.XMLElement;
 import com.dexels.navajo.expression.api.FunctionDefinition;
-import com.dexels.navajo.expression.api.FunctionInterface;
+import com.dexels.navajo.expression.api.StatefulFunctionInterface;
 import com.dexels.navajo.expression.api.TMLExpressionException;
 import com.dexels.navajo.script.api.UserException;
 
@@ -118,26 +117,6 @@ public abstract class FunctionFactoryInterface implements Serializable {
 		return functionDefinition.getObject().trim();
 	}
 
-
-
-	public  Class<?> getAdapterClass(String name, ClassLoader cl) throws ClassNotFoundException {
-		for (ExtensionDefinition elt : adapterConfig.keySet()) {
-			String ss = getAdapterClass(name, elt);
-			if(ss!=null) {
-				try {
-					return Class.forName(getAdapterClass(name,elt),true,cl);
-				} catch (ClassNotFoundException e) {
-					logger.warn("Class definition {} found, but no actual class could be loaded: {}",name,ss,e);
-					// not found in this extensiondefinition.
-				}				
-			}
-		}
-		// no class found, throw.
-		throw new ClassNotFoundException("Adapter named: "+name+" not found.");
-		
-		}
-
-	
 	public Set<String> getFunctionNames(ExtensionDefinition ed) {
 		final Map<String, FunctionDefinition> functionsForExtension = functionConfig.get(ed);
 		if(functionsForExtension==null) {

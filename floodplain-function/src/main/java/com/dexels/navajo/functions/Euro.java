@@ -12,7 +12,7 @@ import com.dexels.navajo.expression.api.TMLExpressionException;
  * @version 1.0
  */
 
-public final class Euro  extends FunctionInterface{
+public final class Euro  extends FunctionInterface {
   public Euro() {
   }
   @Override

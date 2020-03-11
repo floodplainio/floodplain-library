@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.dexels.navajo.expression.api.FunctionDefinition;
+import com.dexels.navajo.expression.api.StatefulFunctionInterface;
 import com.dexels.navajo.expression.api.FunctionInterface;
 import com.dexels.navajo.functions.util.FunctionFactoryFactory;
 import com.dexels.navajo.functions.util.FunctionFactoryInterface;
@@ -103,7 +104,7 @@ public class AbstractCoreExtension extends com.dexels.navajo.version.AbstractVer
 		if(inputParams!=null) {
 			props.put("input", inputParams);
 		}
-		
+
 		final String[] resultParam = fd.getResultParam();
 		if(resultParam!=null) {
 			props.put("output", resultParam);

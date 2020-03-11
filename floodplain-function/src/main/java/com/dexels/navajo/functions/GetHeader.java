@@ -2,9 +2,10 @@ package com.dexels.navajo.functions;
 
 import com.dexels.navajo.document.Header;
 import com.dexels.navajo.expression.api.FunctionInterface;
+import com.dexels.navajo.expression.api.StatefulFunctionInterface;
 import com.dexels.navajo.expression.api.TMLExpressionException;
 
-public class GetHeader extends FunctionInterface {
+public class GetHeader extends StatefulFunctionInterface {
 
 	public GetHeader() {
 

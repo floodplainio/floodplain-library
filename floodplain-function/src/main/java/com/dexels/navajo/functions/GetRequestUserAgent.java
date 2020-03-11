@@ -1,8 +1,9 @@
 package com.dexels.navajo.functions;
 
 import com.dexels.navajo.expression.api.FunctionInterface;
+import com.dexels.navajo.expression.api.StatefulFunctionInterface;
 
-public class GetRequestUserAgent  extends FunctionInterface {
+public class GetRequestUserAgent  extends StatefulFunctionInterface {
 
     private static final Object DEFAULT_USER_AGENT = "";
 

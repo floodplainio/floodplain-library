@@ -2,6 +2,60 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel>
+      <module name="floodplain.repository.com.dexels.config.runtime.main" target="1.8" />
+      <module name="floodplain.repository.com.dexels.config.runtime.test" target="1.8" />
+      <module name="floodplain.repository.com.dexels.immutable.api.main" target="1.8" />
+      <module name="floodplain.repository.com.dexels.immutable.api.test" target="1.8" />
+      <module name="floodplain.repository.com.dexels.immutable.impl.main" target="1.8" />
+      <module name="floodplain.repository.com.dexels.immutable.impl.test" target="1.8" />
+      <module name="floodplain.repository.com.dexels.kafka.converter.main" target="1.8" />
+      <module name="floodplain.repository.com.dexels.kafka.converter.test" target="1.8" />
+      <module name="floodplain.repository.com.dexels.kafka.impl.rx2.main" target="1.8" />
+      <module name="floodplain.repository.com.dexels.kafka.impl.rx2.test" target="1.8" />
+      <module name="floodplain.repository.com.dexels.kafka.streams.api.main" target="1.8" />
+      <module name="floodplain.repository.com.dexels.kafka.streams.api.test" target="1.8" />
+      <module name="floodplain.repository.com.dexels.kafka.streams.main" target="1.8" />
+      <module name="floodplain.repository.com.dexels.kafka.streams.test" target="1.8" />
+      <module name="floodplain.repository.com.dexels.kafka.webapi.main" target="1.8" />
+      <module name="floodplain.repository.com.dexels.kafka.webapi.test" target="1.8" />
+      <module name="floodplain.repository.com.dexels.navajo.api.main" target="1.8" />
+      <module name="floodplain.repository.com.dexels.navajo.api.test" target="1.8" />
+      <module name="floodplain.repository.com.dexels.navajo.authentication.api.main" target="1.8" />
+      <module name="floodplain.repository.com.dexels.navajo.authentication.api.test" target="1.8" />
+      <module name="floodplain.repository.com.dexels.navajo.core.main" target="1.8" />
+      <module name="floodplain.repository.com.dexels.navajo.core.test" target="1.8" />
+      <module name="floodplain.repository.com.dexels.navajo.document.json.main" target="1.8" />
+      <module name="floodplain.repository.com.dexels.navajo.document.json.test" target="1.8" />
+      <module name="floodplain.repository.com.dexels.navajo.document.main" target="1.8" />
+      <module name="floodplain.repository.com.dexels.navajo.document.stream.main" target="1.8" />
+      <module name="floodplain.repository.com.dexels.navajo.document.stream.test" target="1.8" />
+      <module name="floodplain.repository.com.dexels.navajo.document.test" target="1.8" />
+      <module name="floodplain.repository.com.dexels.navajo.function.main" target="1.8" />
+      <module name="floodplain.repository.com.dexels.navajo.function.test" target="1.8" />
+      <module name="floodplain.repository.com.dexels.navajo.reactive.main" target="1.8" />
+      <module name="floodplain.repository.com.dexels.navajo.reactive.test" target="1.8" />
+      <module name="floodplain.repository.com.dexels.navajo.reactive.topology.main" target="1.8" />
+      <module name="floodplain.repository.com.dexels.navajo.reactive.topology.test" target="1.8" />
+      <module name="floodplain.repository.com.dexels.navajo.version.main" target="1.8" />
+      <module name="floodplain.repository.com.dexels.navajo.version.test" target="1.8" />
+      <module name="floodplain.repository.com.dexels.pubsub.rx2.api.main" target="1.8" />
+      <module name="floodplain.repository.com.dexels.pubsub.rx2.api.test" target="1.8" />
+      <module name="floodplain.repository.com.dexels.replication.api.main" target="1.8" />
+      <module name="floodplain.repository.com.dexels.replication.api.test" target="1.8" />
+      <module name="floodplain.repository.com.dexels.replication.http.main" target="1.8" />
+      <module name="floodplain.repository.com.dexels.replication.http.test" target="1.8" />
+      <module name="floodplain.repository.com.dexels.replication.impl.json.main" target="1.8" />
+      <module name="floodplain.repository.com.dexels.replication.impl.json.test" target="1.8" />
+      <module name="floodplain.repository.com.dexels.replication.impl.main" target="1.8" />
+      <module name="floodplain.repository.com.dexels.replication.impl.protobuf.main" target="1.8" />
+      <module name="floodplain.repository.com.dexels.replication.impl.protobuf.test" target="1.8" />
+      <module name="floodplain.repository.com.dexels.replication.impl.test" target="1.8" />
+      <module name="floodplain.repository.com.dexels.repository.api.main" target="1.8" />
+      <module name="floodplain.repository.com.dexels.repository.api.test" target="1.8" />
+      <module name="floodplain.repository.com.dexels.repository.file.main" target="1.8" />
+      <module name="floodplain.repository.com.dexels.repository.file.test" target="1.8" />
+      <module name="floodplain.repository.com.dexels.resourcebundle.main" target="1.8" />
+      <module name="floodplain.repository.com.dexels.resourcebundle.test" target="1.8" />
       <module name="floodplain.repository.io.floodplain.debezium.main" target="1.8" />
       <module name="floodplain.repository.io.floodplain.debezium.test" target="1.8" />
       <module name="floodplain.repository.io.floodplain.googlesheet.main" target="1.8" />

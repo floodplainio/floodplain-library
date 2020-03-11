@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.dexels.navajo.expression.api.*;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -15,11 +16,6 @@ import com.dexels.navajo.document.Navajo;
 import com.dexels.navajo.document.NavajoFactory;
 import com.dexels.navajo.document.Operand;
 import com.dexels.navajo.document.Property;
-import com.dexels.navajo.expression.api.ContextExpression;
-import com.dexels.navajo.expression.api.FunctionClassification;
-import com.dexels.navajo.expression.api.FunctionDefinition;
-import com.dexels.navajo.expression.api.FunctionInterface;
-import com.dexels.navajo.expression.api.TMLExpressionException;
 import com.dexels.navajo.expression.compiled.AddTestFunction;
 import com.dexels.navajo.expression.compiled.ParameterNamesFunction;
 import com.dexels.navajo.functions.util.FunctionFactoryFactory;
@@ -258,7 +254,7 @@ public class TestCompiledExpression {
 
 	@Test
 	public void testEmptyFunctionCall() throws ParseException {
-        FunctionInterface testFunction = new AddTestFunction();
+       FunctionInterface testFunction = new AddTestFunction();
         FunctionDefinition fd = new FunctionDefinition(testFunction.getClass().getName(), "blib", "bleb", "blab");
         FunctionFactoryFactory.getInstance().addExplicitFunctionDefinition("addtest",fd);
 

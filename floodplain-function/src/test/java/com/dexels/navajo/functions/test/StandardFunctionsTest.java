@@ -16,6 +16,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import com.dexels.navajo.expression.api.StatefulFunctionInterface;
 import org.dexels.utils.Base64;
 import org.junit.Assert;
 import org.junit.Before;
@@ -40,7 +41,6 @@ import com.dexels.navajo.functions.CheckFloat;
 import com.dexels.navajo.functions.CheckInteger;
 import com.dexels.navajo.functions.CreateExpression;
 import com.dexels.navajo.functions.DateTime;
-import com.dexels.navajo.functions.StandardFunctionDefinitions;
 import com.dexels.navajo.functions.ToPercentage;
 import com.dexels.navajo.functions.ValidatePhoneNumber;
 import com.dexels.navajo.functions.WeekDay;
@@ -48,7 +48,6 @@ import com.dexels.navajo.functions.util.FunctionFactoryFactory;
 import com.dexels.navajo.functions.util.FunctionFactoryInterface;
 import com.dexels.navajo.parser.Expression;
 import com.dexels.navajo.script.api.SystemException;
-import com.dexels.navajo.server.DispatcherFactory;
 
 @SuppressWarnings("unused")
 public class StandardFunctionsTest {
@@ -112,9 +111,9 @@ public class StandardFunctionsTest {
 		Property p3 = NavajoFactory.getInstance().createProperty(doc, "Noot",
 				Property.STRING_PROPERTY, "pet", 10, "", "in");
 		array3.addProperty(p3);
-		
-		
-		FunctionInterface fi = fff.getInstance(cl, "FindElement");
+
+
+		StatefulFunctionInterface fi = (StatefulFunctionInterface) fff.getInstance(cl, "FindElement");
 		doc.write(System.err);
 		fi.reset();
 		fi.insertStringOperand("Noot");
@@ -533,7 +532,7 @@ public class StandardFunctionsTest {
 	@Test
 	public void testSumProperties() {
 
-		FunctionInterface fi = fff.getInstance(cl, "SumProperties");
+		StatefulFunctionInterface fi = (StatefulFunctionInterface) fff.getInstance(cl, "SumProperties");
 		fi.setInMessage(createTestNavajo());
 
 		fi.reset();
@@ -553,7 +552,7 @@ public class StandardFunctionsTest {
 
 		FunctionInterface fi = fff.getInstance(cl, "SumMessage");
 		Navajo doc = createTestNavajo();
-		fi.setInMessage(doc);
+//		fi.setInMessage(doc);
 
 		fi.reset();
 		fi.insertMessageOperand(doc.getMessage("Aap"));
@@ -570,7 +569,7 @@ public class StandardFunctionsTest {
 	@Test
 	public void testSumExpressions() {
 
-		FunctionInterface fi = fff.getInstance(cl, "SumExpressions");
+		StatefulFunctionInterface fi = (StatefulFunctionInterface) fff.getInstance(cl, "SumExpressions");
 		Navajo doc = createTestNavajo();
 		fi.setInMessage(doc);
 
@@ -758,7 +757,7 @@ public class StandardFunctionsTest {
 
 		FunctionInterface fi = fff.getInstance(cl, "SetAllProperties");
 		fi.reset();
-		fi.setInMessage(createTestNavajo());
+//		fi.setInMessage(createTestNavajo());
 		fi.insertMessageOperand(createTestNavajo().getMessage("Aap"));
 		fi.insertStringOperand("Noot");
 		fi.insertIntegerOperand(Integer.valueOf(2));
@@ -1155,7 +1154,7 @@ public class StandardFunctionsTest {
 
 		FunctionInterface fi = fff.getInstance(cl, "GetPropertyValue");
 		fi.reset();
-		fi.setInMessage(createTestNavajo());
+//		fi.setInMessage(createTestNavajo());
 		Navajo doc = createTestNavajo();
 		fi.insertMessageOperand(doc.getMessage("Single"));
 		fi.insertStringOperand("Selectie");
@@ -1169,7 +1168,7 @@ public class StandardFunctionsTest {
 	@Test
 	public void testGetPropertyType() {
 
-		FunctionInterface fi = fff.getInstance(cl, "GetPropertyType");
+		StatefulFunctionInterface fi = (StatefulFunctionInterface)  fff.getInstance(cl, "GetPropertyType");
 		fi.reset();
 		fi.setInMessage(createTestNavajo());
 		Navajo doc = createTestNavajo();
@@ -1184,7 +1183,7 @@ public class StandardFunctionsTest {
 	@Test
 	public void testGetPropertyDirection1() {
 
-		FunctionInterface fi = fff.getInstance(cl, "GetPropertyDirection");
+		StatefulFunctionInterface fi = (StatefulFunctionInterface) fff.getInstance(cl, "GetPropertyDirection");
 		fi.reset();
 		fi.setInMessage(createTestNavajo());
 		Navajo doc = createTestNavajo();
@@ -1200,7 +1199,7 @@ public class StandardFunctionsTest {
 	@Test
 	public void testGetPropertyDirection2() {
 
-		FunctionInterface fi = fff.getInstance(cl, "GetPropertyDirection");
+		StatefulFunctionInterface fi = (StatefulFunctionInterface) fff.getInstance(cl, "GetPropertyDirection");
 		fi.reset();
 		fi.setInMessage(createTestNavajo());
 		Navajo doc = createTestNavajo();
@@ -1216,7 +1215,7 @@ public class StandardFunctionsTest {
 	@Test
 	public void testGetPropertySubType() {
 
-		FunctionInterface fi = fff.getInstance(cl, "GetPropertySubType");
+		StatefulFunctionInterface fi = (StatefulFunctionInterface) fff.getInstance(cl, "GetPropertySubType");
 		fi.reset();
 		fi.setInMessage(createTestNavajo());
 		Navajo doc = createTestNavajo();
@@ -1234,7 +1233,7 @@ public class StandardFunctionsTest {
 
 		FunctionInterface fi = fff.getInstance(cl, "GetProperty");
 		fi.reset();
-		fi.setInMessage(createTestNavajo());
+//		fi.setInMessage(createTestNavajo());
 		Navajo doc = createTestNavajo();
 		fi.insertMessageOperand(doc.getMessage("Single"));
 		fi.insertStringOperand("Selectie");
@@ -1260,7 +1259,7 @@ public class StandardFunctionsTest {
 	@Test
 	public void testGetMessage() {
 
-		FunctionInterface fi = fff.getInstance(cl, "GetMessage");
+		StatefulFunctionInterface fi = (StatefulFunctionInterface) fff.getInstance(cl, "GetMessage");
 		Navajo doc = createTestNavajo();
 		fi.setInMessage(doc);
 
@@ -1274,27 +1273,11 @@ public class StandardFunctionsTest {
 	}
 
 	@Test
-	public void testGetLogoImage() {
-
-		FunctionInterface fi = fff.getInstance(cl, "GetLogoImage");
-		Navajo doc = createTestNavajo();
-		fi.setInMessage(doc);
-
-		fi.reset();
-		fi.insertStringOperand("Logo");
-
-		Object o = fi.evaluateWithTypeChecking();
-
-		assertNotNull(o);
-		assertEquals(Binary.class, o.getClass());
-	}
-
-	@Test
 	public void testGetInitials() {
 
 		FunctionInterface fi = fff.getInstance(cl, "GetInitials");
 		Navajo doc = createTestNavajo();
-		fi.setInMessage(doc);
+//		fi.setInMessage(doc);
 
 		fi.reset();
 		fi.insertStringOperand("aap noot mies");
@@ -1310,8 +1293,6 @@ public class StandardFunctionsTest {
 
 		FunctionInterface fi = fff.getInstance(cl, "GetFileExtension");
 		Navajo doc = createTestNavajo();
-		fi.setInMessage(doc);
-
 		fi.reset();
 		fi.insertOperand(Operand.NULL);
 
@@ -1326,7 +1307,7 @@ public class StandardFunctionsTest {
 
 		FunctionInterface fi = fff.getInstance(cl, "GetDescription");
 		fi.reset();
-		fi.setInMessage(createTestNavajo());
+//		fi.setInMessage(createTestNavajo());
 		Navajo doc = createTestNavajo();
 		fi.insertPropertyOperand(doc.getProperty("/Single/Selectie"));
 
@@ -1339,7 +1320,7 @@ public class StandardFunctionsTest {
 	@Test
 	public void testGetCurrentMessage() {
 
-		FunctionInterface fi = fff.getInstance(cl, "GetCurrentMessage");
+		StatefulFunctionInterface fi = (StatefulFunctionInterface)fff.getInstance(cl, "GetCurrentMessage");
 		fi.reset();
 		fi.setInMessage(createTestNavajo());
 		Navajo doc = createTestNavajo();
@@ -1355,7 +1336,7 @@ public class StandardFunctionsTest {
 
 		FunctionInterface fi = fff.getInstance(cl, "GetCents");
 		fi.reset();
-		fi.setInMessage(createTestNavajo());
+//		fi.setInMessage(createTestNavajo());
 		Navajo doc = createTestNavajo();
 		fi.insertMoneyOperand(new Money(100.50));
 
@@ -1416,7 +1397,7 @@ public class StandardFunctionsTest {
 	@Test
 	public void testForAll() {
 
-		FunctionInterface fi = fff.getInstance(cl, "ForAll");
+		StatefulFunctionInterface fi = (StatefulFunctionInterface)  fff.getInstance(cl, "ForAll");
 		fi.reset();
 		fi.setInMessage(createTestNavajo());
 		fi.insertStringOperand("/Aap");
@@ -1471,7 +1452,7 @@ public class StandardFunctionsTest {
 	@Test
 	public void testExistsProperty() {
 
-		FunctionInterface fi = fff.getInstance(cl, "ExistsProperty");
+		StatefulFunctionInterface fi = (StatefulFunctionInterface) fff.getInstance(cl, "ExistsProperty");
 		fi.reset();
 		fi.setInMessage(createTestNavajo());
 		fi.insertStringOperand("/Single/Selectie");
@@ -1484,7 +1465,7 @@ public class StandardFunctionsTest {
 	@Test
 	public void testExists() {
 
-		FunctionInterface fi = fff.getInstance(cl, "Exists");
+		StatefulFunctionInterface fi = (StatefulFunctionInterface) fff.getInstance(cl, "Exists");
 		fi.reset();
 		fi.setInMessage(createTestNavajo());
 		fi.insertMessageOperand(createTestNavajo().getMessage("Aap"));
@@ -1499,7 +1480,7 @@ public class StandardFunctionsTest {
 	@Test
 	public void testEvaluateExpression() {
 
-		FunctionInterface fi = fff.getInstance(cl, "EvaluateExpression");
+		StatefulFunctionInterface fi = (StatefulFunctionInterface) fff.getInstance(cl, "EvaluateExpression");
 		fi.reset();
 		Navajo doc = createTestNavajo();
 		Header h = NavajoFactory.getInstance().createHeader(doc, "aap", "noot",
@@ -1681,7 +1662,7 @@ public class StandardFunctionsTest {
 	@Test
 	public void testCheckUniqueness() {
 
-		FunctionInterface fi = fff.getInstance(cl, "CheckUniqueness");
+		StatefulFunctionInterface fi = (StatefulFunctionInterface)fff.getInstance(cl, "CheckUniqueness");
 		fi.reset();
 		fi.setInMessage(createTestNavajo());
 		fi.insertStringOperand("Aap");
@@ -1703,7 +1684,7 @@ public class StandardFunctionsTest {
 		list.add(Integer.valueOf(10));
 
 		fi.reset();
-		fi.setInMessage(createTestNavajo());
+//		fi.setInMessage(createTestNavajo());
 		fi.insertListOperand(list);
 		fi.insertIntegerOperand(30);
 
@@ -1792,7 +1773,7 @@ public class StandardFunctionsTest {
 	@Test
 	public void testArraySelection() {
 
-		FunctionInterface fi = fff.getInstance(cl, "ArraySelection");
+		StatefulFunctionInterface fi = (StatefulFunctionInterface)  fff.getInstance(cl, "ArraySelection");
 
 		fi.reset();
 		fi.setInMessage(createTestNavajo());
@@ -1808,11 +1789,9 @@ public class StandardFunctionsTest {
 
 	@Test
 	public void testAppendArray() {
-
 		FunctionInterface fi = fff.getInstance(cl, "AppendArray");
-
 		fi.reset();
-		fi.setInMessage(createTestNavajo());
+//		fi.setInMessage(createTestNavajo());
 		fi.insertMessageOperand(createTestNavajo().getMessage("Aap"));
 		fi.insertMessageOperand(createTestNavajo().getMessage("Aap"));
 
@@ -1827,7 +1806,7 @@ public class StandardFunctionsTest {
 
 		FunctionInterface fi = fff.getInstance(cl, "Age");
 		fi.reset();
-		fi.setInMessage(createTestNavajo());
+//		fi.setInMessage(createTestNavajo());
 		fi.insertDateOperand(new java.util.Date());
 
 		Object o = fi.evaluateWithTypeChecking();
@@ -1857,7 +1836,7 @@ public class StandardFunctionsTest {
 	@Test
 	public void testNavajoRequestToString() {
 		Navajo n = createTestNavajo();
-		FunctionInterface fi = fff.getInstance(cl, "NavajoRequestToString");
+		StatefulFunctionInterface fi = (StatefulFunctionInterface) fff.getInstance(cl, "NavajoRequestToString");
 		fi.setInMessage(n);
 		fi.reset();
 		Object o = fi.evaluate();

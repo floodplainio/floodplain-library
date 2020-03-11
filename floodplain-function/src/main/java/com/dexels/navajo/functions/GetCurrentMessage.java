@@ -1,9 +1,10 @@
 package com.dexels.navajo.functions;
 
 import com.dexels.navajo.expression.api.FunctionInterface;
+import com.dexels.navajo.expression.api.StatefulFunctionInterface;
 import com.dexels.navajo.expression.api.TMLExpressionException;
 
-public class GetCurrentMessage extends FunctionInterface {
+public class GetCurrentMessage extends StatefulFunctionInterface {
 
 	@Override
 	public String remarks() {
