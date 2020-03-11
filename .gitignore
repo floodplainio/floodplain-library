@@ -5,6 +5,9 @@ bin/
 com.dexels.navajo.core/sharedstore
 buildOutputCleanup
 .vscode
+.project
+.settings
+.classpath
 
 # Ignore Gradle build output directory
 build
