@@ -52,4 +52,9 @@ public class ToSubMessage implements ReactiveMerger {
 		r.put("condition", Property.BOOLEAN_PROPERTY);
 		return Optional.of(Collections.unmodifiableMap(r));
 	}
+
+	@Override
+	public String name() {
+		return "toSubMessage";
+	}
 }

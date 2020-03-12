@@ -59,7 +59,7 @@ public class SingleSourceFactory implements ReactiveSourceFactory, SourceMetadat
 	}
 
 	@Override
-	public String sourceName() {
+	public String name() {
 		return "single";
 	}
 

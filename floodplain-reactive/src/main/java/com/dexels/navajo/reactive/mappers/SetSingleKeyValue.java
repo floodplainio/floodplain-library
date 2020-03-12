@@ -56,4 +56,9 @@ public class SetSingleKeyValue implements ReactiveMerger {
 		return Optional.of(Collections.unmodifiableMap(r));
 	}
 
+	@Override
+	public String name() {
+		return "singleKeyValue";
+	}
+
 }

@@ -49,7 +49,7 @@ public class InputStreamSourceFactory implements ReactiveSourceFactory, SourceMe
 	}
 
 	@Override
-	public String sourceName() {
+	public String name() {
 		return "input";
 	}
 

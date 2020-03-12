@@ -43,7 +43,7 @@ public class NDJsonSourceFactory implements ReactiveSourceFactory {
 	}
 
 	@Override
-	public String sourceName() {
+	public String name() {
 		return "ndjson";
 	}
 

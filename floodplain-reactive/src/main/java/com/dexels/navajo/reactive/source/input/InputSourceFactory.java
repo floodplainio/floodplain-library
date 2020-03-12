@@ -44,7 +44,7 @@ public class InputSourceFactory implements ReactiveSourceFactory, SourceMetadata
 	}
 
 	@Override
-	public String sourceName() {
+	public String name() {
 		return "input";
 	}
 }

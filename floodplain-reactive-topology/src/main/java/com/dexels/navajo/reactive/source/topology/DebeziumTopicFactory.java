@@ -47,7 +47,7 @@ public class DebeziumTopicFactory implements ReactiveSourceFactory {
 	}
 
 	@Override
-	public String sourceName() {
+	public String name() {
 		return "debezium";
 	}
 

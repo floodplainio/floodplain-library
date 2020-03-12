@@ -46,7 +46,7 @@ public class EventStreamSourceFactory implements ReactiveSourceFactory {
 	}
 
 	@Override
-	public String sourceName() {
+	public String name() {
 		return "eventsource";
 	}
 

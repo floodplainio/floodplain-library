@@ -116,4 +116,10 @@ public class Log implements ReactiveMerger {
 		r.put("field", Property.STRING_PROPERTY);
 		return Optional.of(Collections.unmodifiableMap(r));
 	}
+
+	@Override
+	public String name() {
+		return "log";
+	}
+
 }

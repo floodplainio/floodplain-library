@@ -44,7 +44,7 @@ public class TmlInputSourceFactory implements ReactiveSourceFactory, SourceMetad
 	}
 
 	@Override
-	public String sourceName() {
+	public String name() {
 		return "tmlinput";
 	}
 }

@@ -46,7 +46,7 @@ public class TopicSourceFactory implements ReactiveSourceFactory {
 	}
 
 	@Override
-	public String sourceName() {
+	public String name() {
 		return "topic";
 	}
 

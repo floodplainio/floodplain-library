@@ -8,5 +8,6 @@ public interface ParameterValidator {
 	public Optional<List<String>> allowedParameters();
 	public Optional<List<String>> requiredParameters();
 	public Optional<Map<String,String>> parameterTypes();
+	public String name();
 
 }

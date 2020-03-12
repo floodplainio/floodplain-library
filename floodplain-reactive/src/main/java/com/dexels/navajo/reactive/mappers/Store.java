@@ -57,4 +57,10 @@ public class Store implements ReactiveMerger {
 	public Optional<Map<String, String>> parameterTypes() {
 		return Optional.empty();
 	}
+
+	@Override
+	public String name() {
+		return "store";
+	}
+
 }

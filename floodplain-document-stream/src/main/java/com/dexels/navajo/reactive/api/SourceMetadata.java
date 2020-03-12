@@ -5,6 +5,6 @@ import com.dexels.navajo.document.stream.DataItem.Type;
 public interface SourceMetadata extends ParameterValidator {
 
 	public Type sourceType();
-	public String sourceName();
+	public String name();
 
 }

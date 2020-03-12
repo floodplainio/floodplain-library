@@ -111,7 +111,7 @@ public class DebeziumTopic implements ReactiveSource,TopologyPipeComponent {
     }
 	
 	private  String createName(TopologyContext topologyContext, int transformerNumber, int pipeId) {
-		return topologyContext.instance+"_"+pipeId+"_"+metadata.sourceName()+"_"+transformerNumber;
+		return topologyContext.instance+"_"+pipeId+"_"+metadata.name()+"_"+transformerNumber;
 	}
 
 	@Override

@@ -49,7 +49,7 @@ public class TopicSource implements ReactiveSource,TopologyPipeComponent {
 	}
 	
 	private  String createName(String namespace, int transformerNumber, int pipeId) {
-		return namespace+"_"+pipeId+"_"+metadata.sourceName()+"_"+transformerNumber;
+		return namespace+"_"+pipeId+"_"+metadata.name()+"_"+transformerNumber;
 	}
 	
 	@Override

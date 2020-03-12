@@ -72,4 +72,9 @@ public class StoreAsSubMessage implements ReactiveMerger {
 		result.put("debug", Property.BOOLEAN_PROPERTY);
 		return Optional.of(Collections.unmodifiableMap(result));
 	}
+
+	@Override
+	public String name() {
+		return "storeAsSubMessage";
+	}
 }
