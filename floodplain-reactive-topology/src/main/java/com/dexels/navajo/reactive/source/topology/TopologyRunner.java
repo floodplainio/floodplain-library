@@ -54,7 +54,7 @@ public class TopologyRunner {
 	private final static Logger logger = LoggerFactory.getLogger(TopologyRunner.class);
 	private static final ObjectMapper objectMapper = new ObjectMapper();
 
-	private final TopologyContext topologyContext;
+//	private final TopologyContext topologyContext;
 	private final TopologyConstructor topologyConstructor;
 
 	
@@ -78,23 +78,20 @@ public class TopologyRunner {
 		}
 
 	}
-	public TopologyRunner(TopologyContext topologyContext, String storagePath,String applicationId, StreamConfiguration streamConfiguration, boolean offline) {
+	public TopologyRunner(String storagePath,String applicationId, StreamConfiguration streamConfiguration, boolean offline) {
 		Map<String,Object> settings = new HashMap<>();			
 		settings.put("key.converter", ReplicationMessageConverter.class.getName());
 		settings.put("key.converter.schemas.enable", false);
 		settings.put("value.converter", ReplicationMessageConverter.class.getName());
 		settings.put("value.converter.schemas.enable", false);
-//		settings.put("schemas.enable", false);
 		this.offline = offline;
 		baseSettings = Collections.unmodifiableMap(settings);
-		this.topologyContext = topologyContext;
 		this.streamConfiguration = streamConfiguration;
 		props = StreamInstance.createProperties(applicationId, streamConfiguration.kafkaHosts(), storagePath);
 		this.topologyConstructor =  new TopologyConstructor(Optional.empty() ,offline?Optional.empty(): Optional.of(AdminClient.create(props)));
 	}
 	
 	public KafkaStreams runTopology(Topology topology) throws InterruptedException, IOException {
-		materializeConnectors(streamConfiguration,true);
 		KafkaStreams stream = new KafkaStreams(topology, props);
 		stream.setUncaughtExceptionHandler((thread,exception)->{
 			logger.error("Error in streams: ",exception);
@@ -114,20 +111,18 @@ public class TopologyRunner {
 	public TopologyConstructor topologyConstructor() {
 		return topologyConstructor;
 	}
-	
-//	private Topology parseReactivePipeTopology(String repositoryPath) throws ParseException, IOException {
-////		FileRepositoryInstanceImpl
-//	}
-//	
-	public Topology parseReactivePipeTopology(File repoPath) throws ParseException, IOException {
+
+	public Topology parseReactivePipeTopology(TopologyContext topologyContext, File repoPath) throws ParseException, IOException {
 		Topology topology = new Topology();
-		parseReactivePipeFolder(topology,repoPath);
+		parseReactivePipeFolder(topologyContext,topology,repoPath);
 		return topology;
 	}
 	
-	public KafkaStreams runPipeFolder(File repoPath) throws ParseException, IOException, InterruptedException {
-		Topology topology = parseReactivePipeTopology(repoPath);
+	public KafkaStreams runPipeFolder(TopologyContext topologyContext, File repoPath) throws ParseException, IOException, InterruptedException {
+		Topology topology = parseReactivePipeTopology(topologyContext,repoPath);
 		System.err.println("Combined topology:\n"+topology.describe());
+		materializeConnectors(topologyContext, streamConfiguration,true);
+
 		return runTopology(topology);
 	}
 	
@@ -145,24 +140,24 @@ public class TopologyRunner {
 //		Thread.sleep(1000);
 //	}
 	
-	private Topology parseReactivePipeFolder(Topology topology, File folder) throws ParseException, IOException {
+	private Topology parseReactivePipeFolder(TopologyContext topologyContext, Topology topology, File folder) throws ParseException, IOException {
 		File[] files = folder.listFiles(e->e.getName().endsWith(".rr"));
 		for (File file : files) {
 			try(InputStream is = new FileInputStream(file)) {
-				parseSinglePipeDefinition(topology,is,file.getName().split("\\.")[0]);
+				parseSinglePipeDefinition(topologyContext.withInstance(file.getName().split("\\.")[0]), topology,is);
 			}
 		}
 		ReplicationTopologyParser.materializeStateStores(topologyConstructor, topology);
 		return topology;
 	}
-	public Topology parseSinglePipeDefinition(Topology topology, InputStream input, String namespace) throws ParseException, IOException {
+	public Topology parseSinglePipeDefinition(TopologyContext topologyContext, Topology topology, InputStream input) throws ParseException, IOException {
 		CompiledReactiveScript crs = ReactiveStandalone.compileReactiveScript(input);
-		ReactivePipeParser.parseReactiveStreamDefinition(topology, crs, topologyContext, topologyConstructor(),namespace);
+		ReactivePipeParser.parseReactiveStreamDefinition(topology, crs, topologyContext, topologyConstructor());
 		logger.info("Topology before materialize: {}", topology.describe());
 		return topology;
 	}
 	
-	public void startConnector(URL connectURL, String connectorName, ConnectType type, boolean force, Map<String,Object> parameters) throws IOException {
+	public void startConnector(TopologyContext topologyContext, URL connectURL, String connectorName, ConnectType type, boolean force, Map<String,Object> parameters) throws IOException {
 		String generatedName = CoreOperators.topicName(connectorName, topologyContext);
 
 		List<String> current = existingConnectors(connectURL);
@@ -252,7 +247,7 @@ public class TopologyRunner {
 	}
 	
     
-    public void materializeConnectors(StreamConfiguration sc, boolean force) throws IOException {
+    public void materializeConnectors(TopologyContext topologyContext, StreamConfiguration sc, boolean force) throws IOException {
     	if(!sc.connectURL().isPresent()) {
     		logger.warn("No connectURL present, so not materializing anything");
     		return;
@@ -273,34 +268,24 @@ public class TopologyRunner {
 			if(!cc.isPresent()) {
 				throw new TopologyDefinitionException("Missing sink resource named: "+e.getKey());
 			}
-//			List<Map<String,String>> parsed = parseConnector(list, cc.get());
 			MaterializedConnector parsed = parseConnector(list, cc.get());
 			if(parsed.list.isPresent()) {
 				int connectorCount = 0;
 				for (Map<String, Object> element : parsed.list.get()) {
-					Map<String,Object> processed = resolveGenerationsForSettings(element);
-//					Map<String,Object> processed = element.entrySet().stream().collect(Collectors.toMap(key->key.getKey(),v->CoreOperators.resolveGenerations(v.getValue(), topologyContext)) );
-					assembleConnector(cc.get(),processed,sc.connectURL().get(),force,Optional.of(connectorCount));
+					Map<String,Object> processed = resolveGenerationsForSettings(topologyContext, element);
+					assembleConnector(topologyContext, cc.get(),processed,sc.connectURL().get(),force,Optional.of(connectorCount));
 					connectorCount++;
 				}
 			} else {
 				Map<String, Object> element = parsed.single.get();
-				Map<String,Object> processed = resolveGenerationsForSettings(element);
-//				element.entrySet().stream().collect(Collectors.toMap(key->key.getKey(),v->CoreOperators.resolveGenerations(v.getValue(), topologyContext)) );
-				assembleConnector(cc.get(),processed,sc.connectURL().get(),force,Optional.empty());
+				Map<String,Object> processed = resolveGenerationsForSettings(topologyContext, element);
+				assembleConnector(topologyContext, cc.get(),processed,sc.connectURL().get(),force,Optional.empty());
 			}
-//			int connectorCount = 0;
-//			for (Map<String, String> element : parsed) {
-//				Map<String,String> processed = element.entrySet().stream().collect(Collectors.toMap(key->key.getKey(),v->CoreOperators.resolveGenerations(v.getValue(), topologyContext)) );
-//				assembleConnector(cc.get(),processed,sc.connectURL().get(),force,connectorCount);
-//				connectorCount++;
-//			}
 		}
-
     }
     
     
-    private Map<String,Object> resolveGenerationsForSettings(Map<String,Object> input) {
+    private Map<String,Object> resolveGenerationsForSettings(TopologyContext topologyContext, Map<String,Object> input) {
     	Map<String,Object> result = new HashMap<>();
     	input.entrySet().forEach(element->{
     		Object value = element.getValue();
@@ -313,7 +298,7 @@ public class TopologyRunner {
     	return result;
     }
     
-    public MaterializedConnector parseConnector(List<ConnectorTopicTuple> tuples, ConnectConfiguration connectorConfig) {
+    private MaterializedConnector parseConnector(List<ConnectorTopicTuple> tuples, ConnectConfiguration connectorConfig) {
     	String clazz = connectorConfig.settings().get("connector.class");
     	switch (clazz) {
 		case "io.debezium.connector.postgresql.PostgresConnector":
@@ -384,14 +369,14 @@ public class TopologyRunner {
 		}
     }
     
-	public void assembleConnector(ConnectConfiguration cc,Map<String,Object> parameters, URL connectURL, boolean force, Optional<Integer> connectorCount) throws IOException {
+	private void assembleConnector(TopologyContext topologyContext,  ConnectConfiguration cc,Map<String,Object> parameters, URL connectURL, boolean force, Optional<Integer> connectorCount) throws IOException {
 		Map<String,Object> result = new HashMap<>();
 		result.putAll(parameters);
 		String connectorName = connectorCount.map(c->cc.name()+"_"+c).orElse(cc.name());
 		if (this.offline) {
 			logger.warn("No connectors will be started in offline mode");
 		} else {
-			startConnector(connectURL, connectorName,cc.type, force, result);
+			startConnector(topologyContext, connectURL, connectorName,cc.type, force, result);
 		}
 	}
 

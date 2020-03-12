@@ -43,7 +43,7 @@ public class TestBuildTopology {
 		CoreReactiveFinder finder = new TopologyReactiveFinder();
 		Reactive.setFinderInstance(finder);
 		StreamConfiguration sc = StreamConfiguration.parseConfig("test", getClass().getClassLoader().getResourceAsStream("resources.xml"));
-		runner = new TopologyRunner(topologyContext,storagePath,applicationId,sc,false);
+		runner = new TopologyRunner(storagePath,applicationId,sc,false);
 	}
 	
 	private void runTopology(Topology topology) throws InterruptedException, IOException {
@@ -73,7 +73,7 @@ public class TestBuildTopology {
 
 	@Test @Ignore
 	public void testDatabase() throws ParseException, IOException, InterruptedException {
-		Topology topology = runner.parseSinglePipeDefinition(new Topology(), getClass().getClassLoader().getResourceAsStream("database.rr"),"junit");
+		Topology topology = runner.parseSinglePipeDefinition(topologyContext, new Topology(), getClass().getClassLoader().getResourceAsStream("database.rr"));
 		ReplicationTopologyParser.materializeStateStores(runner.topologyConstructor(), topology);
 		System.err.println("Topology: \n"+topology.describe());
 		runTopology(topology);
@@ -81,24 +81,15 @@ public class TestBuildTopology {
 	
 	@Test @Ignore
 	public void testStorelessTopic() throws ParseException, IOException {
-		Topology topology = runner.parseSinglePipeDefinition(new Topology(), getClass().getClassLoader().getResourceAsStream("simplewithoutstore.rr"),"junit");
+		Topology topology = runner.parseSinglePipeDefinition(topologyContext, new Topology(), getClass().getClassLoader().getResourceAsStream("simplewithoutstore.rr"));
 		System.err.println("Topology: \n"+topology.describe());
 	}
-	
-	
-	// TODO fix, but I'd need to fix all the files, I don't know which one is acting up.
-	@Test @Ignore
-	public void testParseFolder() throws ParseException, IOException {
-		Topology topology = runner.parseReactivePipeTopology(Paths.get("/Users/frank/git/dvdstore.replication/streams").toFile());
-//		Topology topology = runner.parseReactivePipeTopology(Paths.get("/Users/frank/git/dvdstore.replication").toFile(),Paths.get(this.storagePath));
-		System.err.println("Topology: \n"+topology.describe());
-	}
-	
+
 	@Test @Ignore
 	public void runParseFolder() throws ParseException, IOException, InterruptedException {
 		StreamConfiguration sc = StreamConfiguration.parseConfig("test", getClass().getClassLoader().getResourceAsStream("resources.xml"));
 
-		KafkaStreams stream = runner.runPipeFolder(Paths.get("/Users/frank/git/dvdstore.replication").toFile());
+		KafkaStreams stream = runner.runPipeFolder(topologyContext, Paths.get("/Users/frank/git/dvdstore.replication").toFile());
 		for (int i = 0; i < 50; i++) {
 			boolean isRunning = stream.state().isRunning();
 	        String stateName = stream.state().name();
@@ -113,7 +104,7 @@ public class TestBuildTopology {
 	
 	@Test @Ignore
 	public void testJoinTopic() throws ParseException, IOException, InterruptedException {
-		Topology topology = runner.parseSinglePipeDefinition(new Topology(), getClass().getClassLoader().getResourceAsStream("jointopic.rr"),"junit");
+		Topology topology = runner.parseSinglePipeDefinition(topologyContext, new Topology(), getClass().getClassLoader().getResourceAsStream("jointopic.rr"));
 		ReplicationTopologyParser.materializeStateStores(runner.topologyConstructor(), topology);
 		System.err.println("Topology: \n"+topology.describe());
 		runTopology(topology);
@@ -121,14 +112,14 @@ public class TestBuildTopology {
 
 	@Test @Ignore
 	public void testConfigurationStreamInstance() throws ParseException, IOException, InterruptedException {
-		Topology topology = runner.parseSinglePipeDefinition(new Topology(), getClass().getClassLoader().getResourceAsStream("address.rr"),"junit");
+		Topology topology = runner.parseSinglePipeDefinition(topologyContext, new Topology(), getClass().getClassLoader().getResourceAsStream("address.rr"));
 		ReplicationTopologyParser.materializeStateStores(runner.topologyConstructor(), topology);
 		System.err.println("Topology: \n"+topology.describe());
 	}
 
 	@Test @Ignore
 	public void testRemoteJoin() throws ParseException, IOException, InterruptedException {
-		Topology topology = runner.parseSinglePipeDefinition(new Topology(), getClass().getClassLoader().getResourceAsStream("remotejoin.rr"),"junit");
+		Topology topology = runner.parseSinglePipeDefinition(topologyContext, new Topology(), getClass().getClassLoader().getResourceAsStream("remotejoin.rr"));
 		ReplicationTopologyParser.materializeStateStores(runner.topologyConstructor(), topology);
 		System.err.println("Topology: \n"+topology.describe());
 
@@ -137,7 +128,7 @@ public class TestBuildTopology {
 
 	@Test @Ignore
 	public void testSimpleTopic() throws ParseException, IOException, InterruptedException {
-		Topology topology = runner.parseSinglePipeDefinition(new Topology(),getClass().getClassLoader().getResourceAsStream("simpletopic.rr"),"junit");
+		Topology topology = runner.parseSinglePipeDefinition(topologyContext, new Topology(),getClass().getClassLoader().getResourceAsStream("simpletopic.rr"));
 		ReplicationTopologyParser.materializeStateStores(runner.topologyConstructor(), topology);
 		System.err.println("Topology: \n"+topology.describe());
 		runTopology(topology);
@@ -145,7 +136,7 @@ public class TestBuildTopology {
 	
 	@Test @Ignore
 	public void testFilms() throws ParseException, IOException, InterruptedException {
-		Topology topology = runner.parseSinglePipeDefinition(new Topology(),getClass().getClassLoader().getResourceAsStream("films.rr"),"junit");
+		Topology topology = runner.parseSinglePipeDefinition(topologyContext, new Topology(),getClass().getClassLoader().getResourceAsStream("films.rr"));
 		ReplicationTopologyParser.materializeStateStores(runner.topologyConstructor(), topology);
 		System.err.println("Topology: \n"+topology.describe());
 		runTopology(topology);
@@ -153,7 +144,7 @@ public class TestBuildTopology {
 	
 	@Test @Ignore
 	public void testActors() throws ParseException, IOException, InterruptedException {
-		Topology topology = runner.parseSinglePipeDefinition(new Topology(),getClass().getClassLoader().getResourceAsStream("actor.rr"),"junit");
+		Topology topology = runner.parseSinglePipeDefinition(topologyContext, new Topology(),getClass().getClassLoader().getResourceAsStream("actor.rr"));
 		ReplicationTopologyParser.materializeStateStores(runner.topologyConstructor(), topology);
 		System.err.println("Topology: \n"+topology.describe());
 		runTopology(topology);
@@ -162,7 +153,7 @@ public class TestBuildTopology {
 	
 	@Test @Ignore
 	public void testDebezium() throws ParseException, IOException, InterruptedException {
-		Topology topology = runner.parseSinglePipeDefinition(new Topology(), getClass().getClassLoader().getResourceAsStream("sinkLog.rr"),"junit");
+		Topology topology = runner.parseSinglePipeDefinition(topologyContext, new Topology(), getClass().getClassLoader().getResourceAsStream("sinkLog.rr"));
 		ReplicationTopologyParser.materializeStateStores(runner.topologyConstructor(), topology);
 		System.err.println("Topology: \n"+topology.describe());
 		runTopology(topology);
@@ -173,7 +164,7 @@ public class TestBuildTopology {
 	@Test @Ignore
 	public void testAddressTopic() throws ParseException, IOException, InterruptedException {
 
-		Topology topology = runner.parseSinglePipeDefinition(new Topology(),getClass().getClassLoader().getResourceAsStream("address.rr"),"junit");
+		Topology topology = runner.parseSinglePipeDefinition(topologyContext, new Topology(),getClass().getClassLoader().getResourceAsStream("address.rr"));
 		ReplicationTopologyParser.materializeStateStores(runner.topologyConstructor(), topology);
 		System.err.println("Topology: \n"+topology.describe());
 		runTopology(topology);
@@ -183,7 +174,7 @@ public class TestBuildTopology {
 	@Test @Ignore
 	public void testDemo1() throws ParseException, IOException, InterruptedException {
 
-		Topology topology = runner.parseSinglePipeDefinition(new Topology(),getClass().getClassLoader().getResourceAsStream("demo1.rr"),"junit");
+		Topology topology = runner.parseSinglePipeDefinition(topologyContext, new Topology(),getClass().getClassLoader().getResourceAsStream("demo1.rr"));
 		ReplicationTopologyParser.materializeStateStores(runner.topologyConstructor(), topology);
 		System.err.println("Topology: \n"+topology.describe());
 		runTopology(topology);
@@ -194,7 +185,7 @@ public class TestBuildTopology {
 	@Test @Ignore
 	public void testDemo3() throws ParseException, IOException, InterruptedException {
 
-		Topology topology = runner.parseSinglePipeDefinition(new Topology(),getClass().getClassLoader().getResourceAsStream("demo3.rr"),"junit");
+		Topology topology = runner.parseSinglePipeDefinition(topologyContext, new Topology(),getClass().getClassLoader().getResourceAsStream("demo3.rr"));
 		ReplicationTopologyParser.materializeStateStores(runner.topologyConstructor(), topology);
 		System.err.println("Topology: \n"+topology.describe());
 		runTopology(topology);
@@ -204,7 +195,7 @@ public class TestBuildTopology {
 	@Test @Ignore
 	public void testDemo4() throws ParseException, IOException, InterruptedException {
 
-		Topology topology = runner.parseSinglePipeDefinition(new Topology(),getClass().getClassLoader().getResourceAsStream("demo4.rr"),"junit");
+		Topology topology = runner.parseSinglePipeDefinition(topologyContext, new Topology(),getClass().getClassLoader().getResourceAsStream("demo4.rr"));
 		ReplicationTopologyParser.materializeStateStores(runner.topologyConstructor(), topology);
 		System.err.println("Topology: \n"+topology.describe());
 		runTopology(topology);
@@ -214,7 +205,7 @@ public class TestBuildTopology {
 	@Test @Ignore
 	public void testPipesWithPartials() throws ParseException, IOException, InterruptedException {
 
-		Topology topology = runner.parseSinglePipeDefinition(new Topology(),getClass().getClassLoader().getResourceAsStream("pipewithpartials.rr"),"junit");
+		Topology topology = runner.parseSinglePipeDefinition(topologyContext, new Topology(),getClass().getClassLoader().getResourceAsStream("pipewithpartials.rr"));
 		ReplicationTopologyParser.materializeStateStores(runner.topologyConstructor(), topology);
 		System.err.println("Topology: \n"+topology.describe());
 		runTopology(topology);
@@ -224,7 +215,7 @@ public class TestBuildTopology {
 	@Test @Ignore
 	public void testGroupBy() throws ParseException, IOException, InterruptedException {
 
-		Topology topology = runner.parseSinglePipeDefinition(new Topology(),getClass().getClassLoader().getResourceAsStream("totalpayment.rr"),"junit");
+		Topology topology = runner.parseSinglePipeDefinition(topologyContext, new Topology(),getClass().getClassLoader().getResourceAsStream("totalpayment.rr"));
 		ReplicationTopologyParser.materializeStateStores(runner.topologyConstructor(), topology);
 		System.err.println("Topology: \n"+topology.describe());
 		runTopology(topology);
@@ -233,7 +224,7 @@ public class TestBuildTopology {
 	@Test @Ignore
 	public void testCustomerWithTotal() throws ParseException, IOException, InterruptedException {
 
-		Topology topology = runner.parseSinglePipeDefinition(new Topology(),getClass().getClassLoader().getResourceAsStream("customerwithtotals.rr"),"junit");
+		Topology topology = runner.parseSinglePipeDefinition(topologyContext, new Topology(),getClass().getClassLoader().getResourceAsStream("customerwithtotals.rr"));
 		ReplicationTopologyParser.materializeStateStores(runner.topologyConstructor(), topology);
 		System.err.println("Topology: \n"+topology.describe());
 		runTopology(topology);
@@ -242,7 +233,7 @@ public class TestBuildTopology {
 	@Test @Ignore
 	public void testParams() throws ParseException, IOException, InterruptedException {
 
-		Topology topology = runner.parseSinglePipeDefinition(new Topology(),getClass().getClassLoader().getResourceAsStream("testparam.rr"),"junit");
+		Topology topology = runner.parseSinglePipeDefinition(topologyContext, new Topology(),getClass().getClassLoader().getResourceAsStream("testparam.rr"));
 		ReplicationTopologyParser.materializeStateStores(runner.topologyConstructor(), topology);
 		System.err.println("Topology: \n"+topology.describe());
 		runTopology(topology);

@@ -35,7 +35,6 @@ import com.dexels.navajo.document.stream.api.Method;
 import com.dexels.navajo.document.stream.api.Msg;
 import com.dexels.navajo.document.stream.api.NavajoHead;
 import com.dexels.navajo.document.stream.api.Prop;
-import com.dexels.navajo.document.stream.base.BackpressureAdministrator;
 import com.dexels.navajo.document.stream.events.Events;
 import com.dexels.navajo.document.stream.events.NavajoStreamEvent;
 import com.dexels.navajo.document.stream.events.NavajoStreamEvent.NavajoEventTypes;
@@ -535,139 +534,7 @@ public class StreamDocument {
 
 		};
 	}
-	
-	public static FlowableOperator<String, byte[]> decode(String encodingName) {
-		
-		final CharsetDecoder charsetDecoder = Charset.forName(encodingName).newDecoder();
-		return new FlowableOperator<String,byte[]>() {
 
-			@Override
-			public Subscriber<? super byte[]> apply(Subscriber<? super String> child) throws Exception {
-				return new Op(child);
-			}
-			
-			final class Op implements FlowableSubscriber<byte[]> {
-				final Subscriber<? super String> child;
-                private ByteBuffer leftOver = null;
-				private BackpressureAdministrator backpressureAdmin;
-			
-				public Op(Subscriber<? super String> child) {
-					this.child = child;
-				}
-
-				@Override
-				public void onSubscribe(Subscription s) {
-			        this.backpressureAdmin = new BackpressureAdministrator("decodeString: "+encodingName,Long.MAX_VALUE, s);
-					child.onSubscribe(backpressureAdmin);
-					backpressureAdmin.initialize();
-				}
-
-                @Override
-                public void onComplete() {
-                    if (process(null, leftOver, true))
-                        child.onComplete();
-                }
-
-                @Override
-                public void onError(Throwable e) {
-                	e.printStackTrace();
-                    if (process(null, leftOver, true)) {
-                    	child.onError(e);                    	
-                    }
-                }
-
-                @Override
-                public void onNext(byte[] bytes) {
-                    process(bytes, leftOver, false);
-                }
-
-
-                public boolean process(byte[] next, ByteBuffer last, boolean endOfInput) {
-                    ByteBuffer bb;
-                    if (last != null) {
-                        if (next != null) {
-                            // merge leftover in front of the next bytes
-                            bb = ByteBuffer.allocate(last.remaining() + next.length);
-                            bb.put(last);
-                            bb.put(next);
-                            bb.flip();
-                        }
-                        else { // next == null
-                            bb = last;
-                        }
-                    }
-                    else { // last == null
-                        if (next != null) {
-                            bb = ByteBuffer.wrap(next);
-                        }
-                        else { // next == null
-                            return true;
-                        }
-                    }
-
-                    CharBuffer cb = CharBuffer.allocate((int) (bb.limit() * charsetDecoder.averageCharsPerByte()));
-                    CoderResult cr = charsetDecoder.decode(bb, cb, endOfInput);
-                    cb.flip();
-
-                    if (cr.isError()) {
-                        try {
-                            cr.throwException();
-                        }
-                        catch (CharacterCodingException e) {
-                            child.onError(e);
-                            return false;
-                        }
-                    }
-
-                    if (bb.remaining() > 0) {
-                        leftOver = bb;
-                    }
-                    else {
-                        leftOver = null;
-                    }
-
-                    String string = cb.toString();
-                    if (!string.isEmpty()) {
-                        child.onNext(string);
-                        backpressureAdmin.registerEmission(1);
-                        backpressureAdmin.requestIfNeeded();
-                    } else {
-                        backpressureAdmin.requestIfNeeded();
-                    }
-
-                    return true;
-                }
-			}
-		};
-	}
-	public static void removeFile(final String path) {
-		File f = new File(path);
-		if(f.exists()) {
-			f.delete();
-		}
- 	}
-	
-	/**
-	 * Not very fast, as stream gets opened and closed all the time
-	 * @param path
-	 * @return
-	 */
-	public static Consumer<byte[]> appendToFile(final String path) {
-		return b->{
-			File appendTo = new File(path);
-			
-			if(appendTo.isAbsolute() && !appendTo.getParentFile().exists()) {
-				appendTo.getParentFile().mkdirs();
-			}
-			try(FileOutputStream out = new FileOutputStream(appendTo,true)) {
-				out.write(b);
-			} catch (IOException e) {
-				logger.error("Error dumping data to file: ", path);
-			}
-			
-		};
-	}
-	
 	public static Subscriber<byte[]> dumpToFile(final String path) {
 		return new Subscriber<byte[]>() {
 			
@@ -766,25 +633,6 @@ public class StreamDocument {
 		return StreamDocument.replicationMessageToStreamEvents(name, msg,isArray);
 	}
 
-//	public static FlowableTransformer<ImmutableMessage, Flowable<NavajoStreamEvent>> toMessageEventStream(String name, boolean isArray) {
-//			return flow->{
-//				if(!isArray) {
-//					flow = flow.take(1);
-//				}
-//				Flowable<Flowable<NavajoStreamEvent>> events = flow.map(msg->StreamDocument.replicationMessageToStreamEvents(name, msg,isArray)
-//						
-//						);
-//				if(!isArray) {
-//					return events;
-//				}
-//				return events
-//						.startWith(Flowable.just(Events.arrayStarted(name,Collections.emptyMap())))
-//						.concatWith(Flowable.just(Events.arrayDone(name)));
-//				
-//			};
-//				
-//		};
-//	}
 	
 	public static FlowableTransformer<ImmutableMessage, NavajoStreamEvent> toMessage(String name) {
 		return new FlowableTransformer<ImmutableMessage, NavajoStreamEvent>() {

@@ -40,7 +40,7 @@ public class TestParseConfiguration {
 		Reactive.setFinderInstance(finder);
 		StreamConfiguration sc = StreamConfiguration.parseConfig("test", getClass().getClassLoader().getResourceAsStream("resources.xml"));
 
-		runner = new TopologyRunner(topologyContext,storagePath,applicationId,sc,false);
+		runner = new TopologyRunner(storagePath,applicationId,sc,false);
 
 		// TODO fill in props
 //		Reactive.finderInstance().addReactiveSourceFactory(new MongoReactiveSourceFactory(), "topic");
@@ -61,22 +61,9 @@ public class TestParseConfiguration {
 //			mongoParams.put("topics", "blabla");
 			runner.topologyConstructor().addConnectSink("@replication", topic, mongoParams);
 
-			runner.materializeConnectors(sc,true);
+			runner.materializeConnectors(topologyContext, sc,true);
 			int connectors = sc.connectors().size();
 			Assert.assertEquals(4, connectors);
-		}
-	}
-
-	@Test @Ignore
-	public void testStart() throws IOException {
-		try(InputStream r = getClass().getClassLoader().getResourceAsStream("resources.xml")) {
-			StreamConfiguration sc = StreamConfiguration.parseConfig("test", r);
-			Map<String,Object> config = new HashMap<>();
-			config.put("aap","noot");
-			config.put("aap","noot");
-			config.put("connector.class", "io.floodplain.sink.SomeConnector");
-			// TODO -> not done yet
-			runner.startConnector(sc.connectURL().orElseThrow(()->new NullPointerException("missing connectURL")), "dvd",ConnectType.SOURCE,false,config);
 		}
 	}
 

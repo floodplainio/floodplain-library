@@ -714,10 +714,10 @@ public class ReplicationTopologyParser {
 		removeProcessorStack.push(falseBranchName);
 
 		for (TopologyPipeComponent addBranchComponents : onAdd) {
-			addBranchComponents.addToTopology(namespace, addProcessorStack, trueBranchPipeId, topology, topologyContext, topologyConstructor, stateMessage);
+			addBranchComponents.addToTopology(addProcessorStack, trueBranchPipeId, topology, topologyContext, topologyConstructor, stateMessage);
 		}
 		for (TopologyPipeComponent removePipeComponents : onRemove) {
-			removePipeComponents.addToTopology(namespace, removeProcessorStack, falseBranchPipeId, topology, topologyContext, topologyConstructor, stateMessage);
+			removePipeComponents.addToTopology(removeProcessorStack, falseBranchPipeId, topology, topologyContext, topologyConstructor, stateMessage);
 		}
 //		topologyConstructor
 		// TODO I think there is something wrong in the bookkeeping of the transformerStack

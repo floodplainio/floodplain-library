@@ -48,8 +48,9 @@ public class GroupTransformer implements ReactiveTransformer,TopologyPipeCompone
 	public ReactiveParameters parameters() {
 		return parameters;
 	}
+
 	@Override
-	public void addToTopology(String namespace, Stack<String> transformerNames, int pipeId, Topology topology,
+	public void addToTopology(Stack<String> transformerNames, int pipeId, Topology topology,
 			TopologyContext topologyContext, TopologyConstructor topologyConstructor, ImmutableMessage stateMessage) {
 //		StreamScriptContext context =new StreamScriptContext(topologyContext.tenant.orElse(TopologyContext.DEFAULT_TENANT), topologyContext.instance, topologyContext.deployment);
 		ContextExpression keyExtract  = parameters.named.get("key");
@@ -57,20 +58,20 @@ public class GroupTransformer implements ReactiveTransformer,TopologyPipeCompone
 			return keyExtract.apply(null, Optional.of(msg.message()), msg.paramMessage()).stringValue();
 		};
 //		ReactiveResolvedParameters resolved = parameters.resolve(context, Optional.empty(), ImmutableFactory.empty(), metadata);
-		addGroupTransformer(namespace, transformerNames, pipeId, topology, topologyContext, topologyConstructor, keyExtractor,metadata.name());
+		addGroupTransformer(transformerNames, pipeId, topology, topologyContext, topologyConstructor, keyExtractor,metadata.name());
 
 	}
-	public static void addGroupTransformer(String namespace, Stack<String> transformerNames, int pipeId, Topology topology,
+	public static void addGroupTransformer(Stack<String> transformerNames, int pipeId, Topology topology,
 			TopologyContext topologyContext, TopologyConstructor topologyConstructor, Function<ReplicationMessage,String> keyExtractor, String transformerName) {
 		String from = transformerNames.peek();
-		String name = createName(namespace, transformerName,transformerNames.size(),pipeId);
+		String name = createName(topologyContext, transformerName,transformerNames.size(),pipeId);
 		boolean ignoreOriginalKey = false;
 		String grouped = ReplicationTopologyParser.addGroupedProcessor(topology, topologyContext, topologyConstructor, name, from, ignoreOriginalKey, keyExtractor, Optional.empty());
 		transformerNames.push(grouped);
 	}
 	
-	private static String createName(String namespace, String name, int transformerNumber, int pipeId) {
-		return namespace+"_"+pipeId+"_"+name+"_"+transformerNumber;
+	private static String createName(TopologyContext topologyContext, String name, int transformerNumber, int pipeId) {
+		return topologyContext.instance+"_"+pipeId+"_"+name+"_"+transformerNumber;
 	}
 
 	@Override

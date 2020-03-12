@@ -39,8 +39,8 @@ public class Main {
 			sc = StreamConfiguration.parseConfig("test", configStream);
 		}
 
-		TopologyRunner runner = new TopologyRunner(topologyContext,storagePath,applicationId,sc,false);
-		runner.runPipeFolder(currentFolder);
+		TopologyRunner runner = new TopologyRunner(storagePath,applicationId,sc,false);
+		runner.runPipeFolder(topologyContext, currentFolder);
 	}
 	
 	public static void main(String[] args) throws IOException, ParseException, InterruptedException {

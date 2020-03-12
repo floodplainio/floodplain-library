@@ -18,15 +18,15 @@ public class ReactivePipeParser {
 	
 	private final static Logger logger = LoggerFactory.getLogger(ReactivePipeParser.class);
 
-	public static Topology parseReactiveStreamDefinition(Topology topology, CompiledReactiveScript crs, TopologyContext topologyContext, TopologyConstructor topologyConstructor, String namespace) {
+	public static Topology parseReactiveStreamDefinition(Topology topology, CompiledReactiveScript crs, TopologyContext topologyContext, TopologyConstructor topologyConstructor) {
 		for (ReactivePipe pipe : crs.pipes) {
 			int pipeNr = topologyConstructor.generateNewPipeId();
-			ReactivePipeParser.processPipe(namespace, topologyContext, topologyConstructor, topology, pipeNr,new Stack<String>(), pipe,false);
+			ReactivePipeParser.processPipe(topologyContext, topologyConstructor, topology, pipeNr,new Stack<String>(), pipe,false);
 		}
 		return topology;
 	}
 	
-	public static void processPipe(String namespace, TopologyContext topologyContext, TopologyConstructor topologyConstructor, Topology topology,
+	public static void processPipe(TopologyContext topologyContext, TopologyConstructor topologyConstructor, Topology topology,
 			int pipeNr, Stack<String> pipeStack, ReactivePipe pipe, boolean materializeTop) {
 		int size = pipe.transformers.size();
 		if(size==0) {
@@ -42,7 +42,6 @@ public class ReactivePipeParser {
 			}
 		}
 		for (int i = size; i >= 0; i--) {
-			logger.info(">>> {}", i);
 			TopologyPipeComponent source = (TopologyPipeComponent)pipe.source;
 			if(i==0) {
 				logger.info("processing source");
@@ -56,24 +55,20 @@ public class ReactivePipeParser {
 						logger.info("Materializing parent");
 						parent.setMaterialize();
 					}
-					
-//					pipeNr = tpc.addToTopology(pipeStack, pipeNr, topology, topologyContext, topologyConstructor);
 				} else {
 					logger.warn("Weird type found: {}", type);
 				}
-				
 			}
-			
 		}
 
 		TopologyPipeComponent sourceTopologyComponent = (TopologyPipeComponent)pipe.source;
-		sourceTopologyComponent.addToTopology(namespace,pipeStack, pipeNr, topology, topologyContext, topologyConstructor,ImmutableFactory.empty());
+		sourceTopologyComponent.addToTopology(pipeStack, pipeNr, topology, topologyContext, topologyConstructor,ImmutableFactory.empty());
 		for (Object e : pipe.transformers) {
 			logger.info("Transformer: {} pipestack: {}",e,pipeStack);
 			if(e instanceof TopologyPipeComponent) {
 				TopologyPipeComponent tpc = (TopologyPipeComponent)e;
 				logger.info("Adding pipe component: "+tpc.getClass()+" to stack: "+pipeStack);
-				tpc.addToTopology(namespace, pipeStack, pipeNr, topology, topologyContext, topologyConstructor,ImmutableFactory.empty());
+				tpc.addToTopology(pipeStack, pipeNr, topology, topologyContext, topologyConstructor,ImmutableFactory.empty());
 			}
 		}
 	}

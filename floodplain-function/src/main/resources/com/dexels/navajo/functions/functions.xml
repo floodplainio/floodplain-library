@@ -369,12 +369,6 @@
 		<input>string</input>
 		<result>string</result>
 	</function>
-	<function name="GetLogoImage" class="com.dexels.navajo.functions.GetLogoImage">
-		<description>Get the specified string a a nice mirroed logo image
-		</description>
-		<input />
-		<result />
-	</function>
 	<function name="GetMessage" class="com.dexels.navajo.functions.GetMessage">
 		<description>Gets a message from an array message. Or:
 			GetMessage('MessagePath') will retrieve the message from the current

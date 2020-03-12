@@ -107,15 +107,6 @@ public abstract class FunctionFactoryInterface implements Serializable {
 			}
 		}
 	}
-	
-	public  String getAdapterClass(String name, ExtensionDefinition ed)  {
-		FunctionDefinition functionDefinition = getAdapterConfig(ed).get(name);
-		if(functionDefinition==null) {
-			logger.info("No function definition found for: {}, assuming class name.",name);
-			return name;
-		}
-		return functionDefinition.getObject().trim();
-	}
 
 	public Set<String> getFunctionNames(ExtensionDefinition ed) {
 		final Map<String, FunctionDefinition> functionsForExtension = functionConfig.get(ed);
@@ -127,10 +118,6 @@ public abstract class FunctionFactoryInterface implements Serializable {
 	}
 	public void clearFunctionNames() {
 		functionConfig.clear();
-	}
-
-	public Set<String> getAdapterNames(ExtensionDefinition ed) {
-		return getAdapterConfig(ed).keySet();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -165,17 +152,6 @@ public abstract class FunctionFactoryInterface implements Serializable {
 		functionConfig.put(ed,map);
 		return map;
 	}
-	
-	public Map<String, FunctionDefinition> getAdapterConfig(ExtensionDefinition ed) {
-		Map<String, FunctionDefinition> map = adapterConfig.get(ed);
-		if(map!=null) {
-			return map;
-		}
-		map = new HashMap<>();
-		adapterConfig.put(ed,map);
-		return map;
-	}
-	
 
 	public void setAdapterConfig(ExtensionDefinition ed, Map<String, FunctionDefinition> config) {
 		this.adapterConfig.put(ed, config);

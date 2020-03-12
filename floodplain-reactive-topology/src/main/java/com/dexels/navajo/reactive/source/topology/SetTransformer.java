@@ -112,12 +112,12 @@ public class SetTransformer implements ReactiveTransformer, TopologyPipeComponen
 
 	
 	@Override
-	public void addToTopology(String namespace, Stack<String> transformerNames, int currentPipeId, Topology topology,
+	public void addToTopology(Stack<String> transformerNames, int currentPipeId, Topology topology,
 			TopologyContext topologyContext, TopologyConstructor topologyConstructor, ImmutableMessage stateMessage) {
 		StreamScriptContext ssc = StreamScriptContext.fromTopologyContext(topologyContext);
 		Function<ReplicationMessage, ReplicationMessage> apply = transformer.apply(ssc);
 		FunctionProcessor fp = new FunctionProcessor(apply);
-		String name = createName(namespace, this.metadata.name(),transformerNames.size(), currentPipeId);
+		String name = createName(topologyContext, this.metadata.name(),transformerNames.size(), currentPipeId);
 		logger.info("Adding processor: {} to parent: {} hash: {}",name,transformerNames,transformerNames.hashCode());
 
 		
@@ -131,8 +131,8 @@ public class SetTransformer implements ReactiveTransformer, TopologyPipeComponen
 		transformerNames.push(name);
 	}
 	
-	private  String createName(String namespace, String name, int transformerNumber, int pipeId) {
-		return namespace+"_"+pipeId+"_"+name+"_"+transformerNumber;
+	private  String createName(TopologyContext topologyContext,String name, int transformerNumber, int pipeId) {
+		return topologyContext.instance+"_"+pipeId+"_"+name+"_"+transformerNumber;
 	}
 	
 	@Override

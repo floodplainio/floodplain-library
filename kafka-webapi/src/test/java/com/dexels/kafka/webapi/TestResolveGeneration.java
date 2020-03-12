@@ -19,8 +19,8 @@ public class TestResolveGeneration {
 
 	@Test
 	public void test() {
-		String s = "@total:replication";
-		 String resolvedDatabaseName = CoreOperators.topicName(s, new TopologyContext(Optional.of("TENANT"), "deployment",null, "generation-12345"));
+		String s = "@replication";
+		 String resolvedDatabaseName = CoreOperators.topicName(s, new TopologyContext(Optional.of("TENANT"), "deployment","total", "generation-12345"));
 		 System.err.println("> "+resolvedDatabaseName);
 		 
 		 assertEquals("TENANT-deployment-generation-12345-total-replication", resolvedDatabaseName);

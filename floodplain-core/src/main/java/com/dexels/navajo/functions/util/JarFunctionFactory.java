@@ -47,25 +47,10 @@ public class JarFunctionFactory extends FunctionFactoryInterface implements Seri
 				if(element.getName().equals("function")) {
 					parseFunction(fuds, element);
 				}
-				if(element.getName().equals("map")) {
-					parseAdapters(fuds, fd, element);
-				}
-
 			}
 			
 		} catch (Exception e) {
 			throw new RuntimeException(e);
-		}
-	}
-
-	public void parseAdapters(Map<String, FunctionDefinition> fuds, ExtensionDefinition fd, XMLElement element) {
-		String name = element.getElementByTagName("tagname").getContent();
-		String className = element.getElementByTagName("object").getContent();
-		if(fd!=null) {
-			FunctionDefinition functionDefinition = new FunctionDefinition(className, null, null, null);
-			getAdapterConfig(fd).put(name, functionDefinition);
-		} else {
-			throw new UnsupportedOperationException("Can not register adapter (pre-OSGi) without a ExtensionDefinition.");
 		}
 	}
 	

@@ -57,8 +57,9 @@ public class JoinWithTransformer implements ReactiveTransformer ,TopologyPipeCom
 	public ReactiveParameters parameters() {
 		return parameters;
 	}
+
 	@Override
-	public void addToTopology(String namespace, Stack<String> transformerNames, int pipeId, Topology topology,
+	public void addToTopology(Stack<String> transformerNames, int pipeId, Topology topology,
 		TopologyContext topologyContext, TopologyConstructor topologyConstructor, ImmutableMessage stateMessage) {
 		StreamScriptContext context =new StreamScriptContext(topologyContext.tenant.orElse(TopologyContext.DEFAULT_TENANT), topologyContext.instance, topologyContext.deployment);
 		ReactiveResolvedParameters resolved = parameters.resolve(context, Optional.empty(), ImmutableFactory.empty(), metadata);
@@ -66,11 +67,11 @@ public class JoinWithTransformer implements ReactiveTransformer ,TopologyPipeCom
 		Operand o = resolved.unnamedParameters().stream().findFirst().orElseThrow(()->new TopologyDefinitionException("Missing parameters for joinWith, should have one sub stream"));
 		ReactivePipe rp = (ReactivePipe)o.value;
 		Stack<String> pipeStack = new Stack<>();
-		ReactivePipeParser.processPipe(namespace, topologyContext, topologyConstructor, topology, topologyConstructor.generateNewPipeId(),pipeStack, rp,true);
+		ReactivePipeParser.processPipe(topologyContext, topologyConstructor, topology, topologyConstructor.generateNewPipeId(),pipeStack, rp,true);
 		Optional<String> into = resolved.optionalString("into");
 //		boolean isList = into.isPresent();
 		String with = pipeStack.peek();
-		String name = createName(namespace, transformerNames.size(), pipeId);
+		String name = createName(topologyContext, transformerNames.size(), pipeId);
 		Optional<String> filter = Optional.empty();
 		boolean isOptional = false;
 
@@ -83,9 +84,8 @@ public class JoinWithTransformer implements ReactiveTransformer ,TopologyPipeCom
 		transformerNames.push(name);
 	}
 
-	private  String createName(String namespace, int transformerNumber, int pipeId) {
-		return namespace+"_"+pipeId+"_"+metadata.name()+"_"+transformerNumber;
-//		return pipeId+"_"+metadata.name()+"_"+transformerNumber;
+	private  String createName(TopologyContext topologyContext, int transformerNumber, int pipeId) {
+		return topologyContext.instance+"_"+pipeId+"_"+metadata.name()+"_"+transformerNumber;
 	}
 	@Override
 	public boolean materializeParent() {

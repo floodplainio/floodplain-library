@@ -251,6 +251,7 @@ public class CoreOperators {
     		String[] withInstance = name.split(":");
     		if (withInstance.length>1) {
     			sb.append(context.deployment+"-"+context.generation+"-"+withInstance[0].substring(1)+"-"+withInstance[1]);
+    			throw new IllegalArgumentException("Instance / generational references are no longer supported");
 			} else {
     			sb.append(context.deployment+"-"+context.generation+"-"+context.instance+"-"+name.substring(1));
 			}

@@ -50,7 +50,7 @@ public class DebeziumTopic implements ReactiveSource,TopologyPipeComponent {
 	}
 	
 	@Override
-	public void addToTopology(String namespace, Stack<String> transformerNames, int pipeId,  Topology topology, TopologyContext topologyContext,TopologyConstructor topologyConstructor, ImmutableMessage stateMessage) {
+	public void addToTopology(Stack<String> transformerNames, int pipeId,  Topology topology, TopologyContext topologyContext,TopologyConstructor topologyConstructor, ImmutableMessage stateMessage) {
 
 		StreamScriptContext context =new StreamScriptContext(topologyContext.tenant.orElse(TopologyContext.DEFAULT_TENANT), topologyContext.instance, topologyContext.deployment);
 
@@ -66,7 +66,7 @@ public class DebeziumTopic implements ReactiveSource,TopologyPipeComponent {
 		boolean appendTenant = resolved.optionalBoolean("appendTenant").orElse(false);
 		boolean appendSchema = resolved.optionalBoolean("appendSchema").orElse(false);
 		boolean appendTable = false;
-		String name = processorName(createName(namespace, transformerNames.size(),pipeId));
+		String name = processorName(createName(topologyContext, transformerNames.size(),pipeId));
 		String topicName = assembleDebeziumTopicName(topologyContext,resource,schema,table);
 //		CoreOperators.topicName(topic, topologyContext);
 		Map<String,String> associatedSettings = new HashMap<>();
@@ -77,9 +77,9 @@ public class DebeziumTopic implements ReactiveSource,TopologyPipeComponent {
 
 		topologyConstructor.addConnectSink(resource,topicName, associatedSettings);
 
-		final String sourceProcessorName = processorName(namespace+"_"+name+"_debezium_conversion_source")+"-"+topicName;
-	    final String convertProcessorName = processorName(namespace+"_"+name+"_debezium_conversion")+"-"+topicName;
-	    final String finalProcessorName = processorName(namespace+"_"+name+"_debezium")+"-"+topicName;
+		final String sourceProcessorName = processorName(topologyContext.instance+"_"+name+"_debezium_conversion_source")+"-"+topicName;
+	    final String convertProcessorName = processorName(topologyContext.instance+"_"+name+"_debezium_conversion")+"-"+topicName;
+	    final String finalProcessorName = processorName(topologyContext.instance+"_"+name+"_debezium")+"-"+topicName;
 	    ReplicationTopologyParser.addLazySourceStore(topology, topologyContext, topologyConstructor, topicName, Serdes.String().deserializer(),Serdes.ByteArray().deserializer());
 	    //topology.addSource(sourceProcessorName,Serdes.String().deserializer(),Serdes.ByteArray().deserializer(), topicName);
 //		public static String addLazySourceStore(final Topology currentBuilder, TopologyContext context,
@@ -110,8 +110,8 @@ public class DebeziumTopic implements ReactiveSource,TopologyPipeComponent {
         return sourceTopicName.replace(':',  '_').replace('@', '.');
     }
 	
-	private  String createName(String namespace, int transformerNumber, int pipeId) {
-		return namespace+"_"+pipeId+"_"+metadata.sourceName()+"_"+transformerNumber;
+	private  String createName(TopologyContext topologyContext, int transformerNumber, int pipeId) {
+		return topologyContext.instance+"_"+pipeId+"_"+metadata.sourceName()+"_"+transformerNumber;
 	}
 
 	@Override

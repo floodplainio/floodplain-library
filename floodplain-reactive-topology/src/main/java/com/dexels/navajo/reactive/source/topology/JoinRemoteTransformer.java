@@ -56,14 +56,14 @@ public class JoinRemoteTransformer implements ReactiveTransformer ,TopologyPipeC
 		return parameters;
 	}
 	@Override
-	public void addToTopology(String namespace, Stack<String> transformerNames, int pipeId, Topology topology,
+	public void addToTopology(Stack<String> transformerNames, int pipeId, Topology topology,
 			TopologyContext topologyContext, TopologyConstructor topologyConstructor, ImmutableMessage stateMessage) {
 		StreamScriptContext context =new StreamScriptContext(topologyContext.tenant.orElse(TopologyContext.DEFAULT_TENANT), topologyContext.instance, topologyContext.deployment);
 		ContextExpression keyExtract  = parameters.named.get("key");
 		Function<ReplicationMessage,String> keyExtractor = msg->keyExtract.apply(null, Optional.of(msg.message()), msg.paramMessage()).stringValue();
 		
 		
-		GroupTransformer.addGroupTransformer(namespace, transformerNames,pipeId,topology,topologyContext,topologyConstructor,keyExtractor,metadata.name());
+		GroupTransformer.addGroupTransformer(transformerNames,pipeId,topology,topologyContext,topologyConstructor,keyExtractor,metadata.name());
 		
 		Optional<String> from = Optional.of(transformerNames.peek());
 		ReactiveResolvedParameters resolved = parameters.resolveUnnamed(context,Optional.empty(), ImmutableFactory.empty(), metadata);
@@ -71,11 +71,11 @@ public class JoinRemoteTransformer implements ReactiveTransformer ,TopologyPipeC
 		Operand o = resolved.unnamedParameters().stream().findFirst().orElseThrow(()->new TopologyDefinitionException("Missing parameters for joinWith, should have one sub stream"));
 		ReactivePipe rp = (ReactivePipe)o.value;
 		Stack<String> pipeStack = new Stack<>();
-		ReactivePipeParser.processPipe(namespace,topologyContext, topologyConstructor, topology, topologyConstructor.generateNewPipeId(),pipeStack, rp,true);
+		ReactivePipeParser.processPipe(topologyContext, topologyConstructor, topology, topologyConstructor.generateNewPipeId(),pipeStack, rp,true);
 		boolean isList = false;
 		String with = pipeStack.peek();
 		
-		String name = namespace+"_"+pipeId+"_"+metadata.name()+"_"+transformerNames.size();
+		String name = topologyContext.instance+"_"+pipeId+"_"+metadata.name()+"_"+transformerNames.size();
         Optional<String> into = Optional.of("monkeymonkey");
         boolean optional = false;
         

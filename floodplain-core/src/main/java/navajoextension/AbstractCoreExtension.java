@@ -46,40 +46,12 @@ public class AbstractCoreExtension extends com.dexels.navajo.version.AbstractVer
 			 registerFunction(context, fi, functionName, fd,extensionDef);
 		}
 	}
-	
-	private void registerAllAdapters(ExtensionDefinition extensionDef) {
-		FunctionFactoryInterface fi= FunctionFactoryFactory.getInstance();
-		fi.init();
-		fi.clearFunctionNames();
-		fi.injectExtension(extensionDef);
-		for(String adapterName: fi.getAdapterNames(extensionDef)) {
-			fi.getAdapterConfig(extensionDef).get(adapterName);
-			String adapterClass = fi.getAdapterClass(adapterName,extensionDef);
-			Class<?> c = null;
-			
-			try {
-				c = Class.forName(adapterClass,true,this.getClass().getClassLoader());
-				 Dictionary<String, Object> props = new Hashtable<>();
-				 props.put("adapterName", adapterName);
-				 props.put("adapterClass", c.getName());
-				 props.put("type", "adapter");
 
-				if(adapterClass!=null) {
-					context.registerService(Class.class.getName(), c, props);
-				}
-			} catch (Exception e) {
-				logger.error("Error loading class for adapterClass: "+adapterClass,e);
-			}
-			
-		}
-	}
 /**
- * Register both adapters and
- * @param extensionDef
+ * Register functions * @param extensionDef
  */
 	protected void registerAll(ExtensionDefinition extensionDef)  {
 		try {
-			registerAllAdapters(extensionDef);
 			registerAllFunctions(extensionDef);
 		} catch (Throwable e) {
 			logger.error("Error registering functions / adapters",e);

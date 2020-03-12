@@ -50,8 +50,9 @@ public class ScanTransformer implements ReactiveTransformer,TopologyPipeComponen
 		return parameters;
 	}
 	@SuppressWarnings("unchecked")
+
 	@Override
-	public void addToTopology(String namespace, Stack<String> transformerNames, int currentPipeId, Topology topology,
+	public void addToTopology(Stack<String> transformerNames, int currentPipeId, Topology topology,
 			TopologyContext topologyContext, TopologyConstructor topologyConstructor, ImmutableMessage stateMessage) {
 		StreamScriptContext context =new StreamScriptContext(topologyContext.tenant.orElse(TopologyContext.DEFAULT_TENANT), topologyContext.instance, topologyContext.deployment);
 //		junit_junit_1_debezium_0_debezium-Generic-test-dvd.public.payment
@@ -69,40 +70,10 @@ public class ScanTransformer implements ReactiveTransformer,TopologyPipeComponen
 //		ReplicationTopologyParser.addReducer(initial,onAdd,onRemove);
 		// TODO everything after the first is ignored
 //		onAdd.get(0).addToTopology(namespace, transformerNames, currentPipeId, topology, topologyContext, topologyConstructor, initial);
-		String reducerName = ReplicationTopologyParser.addReducer(topology, topologyContext, topologyConstructor, namespace, transformerNames, currentPipeId, onAdd, onRemove, initial, materialize,keyExtractor);
+		String reducerName = ReplicationTopologyParser.addReducer(topology, topologyContext, topologyConstructor, topologyContext.instance, transformerNames, currentPipeId, onAdd, onRemove, initial, materialize,keyExtractor);
 		transformerNames.push(reducerName);
 		//		addReducer(topology, topologyContext, topologyConstructor, namespace, transformerNames, currentPipeId, onAdd, onRemove, stateMessage);
 	}
-//	
-//	private static void addReducer(final Topology topology, TopologyContext topologyContext,TopologyConstructor topologyConstructor,
-//			String namespace, Stack<String> transformerNames, int currentPipeId,List<TopologyPipeComponent> onAdd, List<TopologyPipeComponent> onRemove, ImmutableMessage stateMessage) {
-//
-//		String parentName = transformerNames.peek();
-//		String ifElseName = namespace+"_"+currentPipeId+"_"+"ifelse"+transformerNames.size();
-//		transformerNames.push(ifElseName);
-//		String trueBranchName = namespace+"_"+currentPipeId+"_"+"addbranch"+transformerNames.size();
-//		String falseBranchName = namespace+"_"+currentPipeId+"_"+"removebranch"+transformerNames.size();
-//
-//		String reduceName = namespace+"_"+currentPipeId+"_"+"reduce"+transformerNames.size();
-//		String reduceStoreName = "STORE_"+reduceName;
-//		Stack<String> addProcessorStack = new Stack<>();
-//		addProcessorStack.addAll(transformerNames);
-//
-//		Stack<String> removeProcessorStack = new Stack<>();
-//		removeProcessorStack.addAll(transformerNames);
-//
-//		topology.addProcessor(ifElseName, ()->new IfElseProcessor(msg->false, trueBranchName, Optional.of(falseBranchName)), parentName);
-//		for (TopologyPipeComponent addBranchComponents : onAdd) {
-//			addBranchComponents.addToTopology(namespace, addProcessorStack, currentPipeId, topology, topologyContext, topologyConstructor, stateMessage);
-//		}
-//		for (TopologyPipeComponent removePipeComponents : onRemove) {
-//			removePipeComponents.addToTopology(namespace, removeProcessorStack, currentPipeId, topology, topologyContext, topologyConstructor, stateMessage);
-//		}
-//		// TODO I think there is something wrong in the bookkeeping of the transformerStack
-//		topology.addProcessor(reduceName, ()->new StoreStateProcessor(reduceName, reduceStoreName, stateMessage), addProcessorStack.peek(),removeProcessorStack.peek());
-//
-//		
-//	}
 
 	@Override
 	public boolean materializeParent() {

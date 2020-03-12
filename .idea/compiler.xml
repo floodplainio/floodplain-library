@@ -56,10 +56,56 @@
       <module name="floodplain.repository.com.dexels.repository.file.test" target="1.8" />
       <module name="floodplain.repository.com.dexels.resourcebundle.main" target="1.8" />
       <module name="floodplain.repository.com.dexels.resourcebundle.test" target="1.8" />
+      <module name="floodplain.repository.config-runtime.main" target="1.8" />
+      <module name="floodplain.repository.config-runtime.test" target="1.8" />
+      <module name="floodplain.repository.floodplain-api.main" target="1.8" />
+      <module name="floodplain.repository.floodplain-api.test" target="1.8" />
+      <module name="floodplain.repository.floodplain-authentication-api.main" target="1.8" />
+      <module name="floodplain.repository.floodplain-authentication-api.test" target="1.8" />
+      <module name="floodplain.repository.floodplain-core.main" target="1.8" />
+      <module name="floodplain.repository.floodplain-core.test" target="1.8" />
+      <module name="floodplain.repository.floodplain-document-stream.main" target="1.8" />
+      <module name="floodplain.repository.floodplain-document-stream.test" target="1.8" />
+      <module name="floodplain.repository.floodplain-document.main" target="1.8" />
+      <module name="floodplain.repository.floodplain-document.test" target="1.8" />
+      <module name="floodplain.repository.floodplain-function.main" target="1.8" />
+      <module name="floodplain.repository.floodplain-function.test" target="1.8" />
+      <module name="floodplain.repository.floodplain-reactive-topology.main" target="1.8" />
+      <module name="floodplain.repository.floodplain-reactive-topology.test" target="1.8" />
+      <module name="floodplain.repository.floodplain-reactive.main" target="1.8" />
+      <module name="floodplain.repository.floodplain-reactive.test" target="1.8" />
+      <module name="floodplain.repository.floodplain-version.main" target="1.8" />
+      <module name="floodplain.repository.floodplain-version.test" target="1.8" />
+      <module name="floodplain.repository.immutable-api.main" target="1.8" />
+      <module name="floodplain.repository.immutable-api.test" target="1.8" />
+      <module name="floodplain.repository.immutable-impl.main" target="1.8" />
+      <module name="floodplain.repository.immutable-impl.test" target="1.8" />
       <module name="floodplain.repository.io.floodplain.debezium.main" target="1.8" />
       <module name="floodplain.repository.io.floodplain.debezium.test" target="1.8" />
       <module name="floodplain.repository.io.floodplain.googlesheet.main" target="1.8" />
       <module name="floodplain.repository.io.floodplain.googlesheet.test" target="1.8" />
+      <module name="floodplain.repository.kafka-converter.main" target="1.8" />
+      <module name="floodplain.repository.kafka-converter.test" target="1.8" />
+      <module name="floodplain.repository.kafka-rx2.main" target="1.8" />
+      <module name="floodplain.repository.kafka-rx2.test" target="1.8" />
+      <module name="floodplain.repository.kafka-webapi.main" target="1.8" />
+      <module name="floodplain.repository.kafka-webapi.test" target="1.8" />
+      <module name="floodplain.repository.pubsub-rx2.main" target="1.8" />
+      <module name="floodplain.repository.pubsub-rx2.test" target="1.8" />
+      <module name="floodplain.repository.replication-api.main" target="1.8" />
+      <module name="floodplain.repository.replication-api.test" target="1.8" />
+      <module name="floodplain.repository.replication-http.main" target="1.8" />
+      <module name="floodplain.repository.replication-http.test" target="1.8" />
+      <module name="floodplain.repository.replication-impl.main" target="1.8" />
+      <module name="floodplain.repository.replication-impl.test" target="1.8" />
+      <module name="floodplain.repository.replication-json.main" target="1.8" />
+      <module name="floodplain.repository.replication-json.test" target="1.8" />
+      <module name="floodplain.repository.replication-protobuf.main" target="1.8" />
+      <module name="floodplain.repository.replication-protobuf.test" target="1.8" />
+      <module name="floodplain.repository.streams-api.main" target="1.8" />
+      <module name="floodplain.repository.streams-api.test" target="1.8" />
+      <module name="floodplain.repository.streams.main" target="1.8" />
+      <module name="floodplain.repository.streams.test" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>
