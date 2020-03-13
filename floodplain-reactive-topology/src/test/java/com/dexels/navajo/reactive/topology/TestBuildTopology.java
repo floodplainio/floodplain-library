@@ -36,10 +36,10 @@ public class TestBuildTopology {
 	
 	public TopologyRunner runner = null;
 	@Before
-	public void setup() {
-		String applicationId = "junit_8"; // UUID.randomUUID().toString();
+	public void setup() throws IOException {
 		ImmutableFactory.setInstance(ImmutableFactory.createParser());
-		topologyContext = new TopologyContext(Optional.of("Generic"), "test", "someinstance", "20200217i");
+		topologyContext = new TopologyContext(Optional.of("Generic"), "test", "someinstance", "20200310");
+		String applicationId = topologyContext.applicationId();
 		CoreReactiveFinder finder = new TopologyReactiveFinder();
 		Reactive.setFinderInstance(finder);
 		StreamConfiguration sc = StreamConfiguration.parseConfig("test", getClass().getClassLoader().getResourceAsStream("resources.xml"));
@@ -67,6 +67,7 @@ public class TestBuildTopology {
 	        System.err.println("meta: "+allMetadata);
 			Thread.sleep(10000);
 		}
+//		runner.materializeConnectors();
 	}
 	
 
@@ -117,7 +118,7 @@ public class TestBuildTopology {
 		System.err.println("Topology: \n"+topology.describe());
 	}
 
-	@Test
+	@Test @Ignore
 	public void testRemoteJoin() throws ParseException, IOException, InterruptedException {
 		Topology topology = runner.parseSinglePipeDefinition(topologyContext, new Topology(), getClass().getClassLoader().getResourceAsStream("remotejoin.rr"));
 		ReplicationTopologyParser.materializeStateStores(runner.topologyConstructor(), topology);
@@ -212,12 +213,13 @@ public class TestBuildTopology {
 	}
 	
 
-	@Test @Ignore
+	@Test
 	public void testGroupBy() throws ParseException, IOException, InterruptedException {
-
 		Topology topology = runner.parseSinglePipeDefinition(topologyContext, new Topology(),getClass().getClassLoader().getResourceAsStream("totalpayment.rr"));
 		ReplicationTopologyParser.materializeStateStores(runner.topologyConstructor(), topology);
+
 		System.err.println("Topology: \n"+topology.describe());
+		runner.materializeConnectors(topologyContext,true);
 		runTopology(topology);
 	}
 

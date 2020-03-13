@@ -6,4 +6,4 @@
     )
     ->only(total=[@total], customer_id=[@customer_id])
 	->log(logName='ble')
-    ->sink(connector='@replication',collection='parmentpercustomer', '@PAYMENTPERCUSTOMER')
+    ->sink(connector='@replication',collection='paymentpercustomer', '@PAYMENTPERCUSTOMER')

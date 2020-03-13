@@ -122,7 +122,7 @@ public class ReplicationTopologyParser {
 					// TODO add store filter
 					final Optional<ProcessorSupplier<String, ReplicationMessage>> processorFromChildren = processorFromChildren(Optional.of(xe),sourceTopicName, topologyConstructor);
 
-					String diffProcessorNamePrefix = processorName(name);
+					String diffProcessorNamePrefix = name;
 					 
 					addDiffProcessor(current, context, topologyConstructor, sourceTopicName, from, toDiffSink,
 							processorFromChildren, diffProcessorNamePrefix);
@@ -233,8 +233,7 @@ public class ReplicationTopologyParser {
 		    		.addProcessor(diffProcessorNamePrefix,()->new DiffProcessor(diffProcessorNamePrefix),diffProcessorNamePrefix+"_transform");
 		} else {
 			// TODO shouldn't the processorFromChildren be added here too?
-			String diffProcessorFrom = processorName(fromProcessor);
-			current = current.addProcessor(diffProcessorNamePrefix,()->new DiffProcessor(diffProcessorNamePrefix),diffProcessorFrom);
+			current = current.addProcessor(diffProcessorNamePrefix,()->new DiffProcessor(diffProcessorNamePrefix),fromProcessor);
 		}
 		if(destination.isPresent()) {
 			addTopicDestination(current, context,topologyConstructor, diffProcessorNamePrefix, destination.get(),diffProcessorNamePrefix,partitionsFromDestination(destination));
@@ -260,14 +259,14 @@ public class ReplicationTopologyParser {
 	}
 	
 	// unused?
-   public static String addProcessorStore(final Topology currentBuilder, TopologyContext context, TopologyConstructor topologyConstructor,String processorName) {
-	   final String sourceProcessorName = processorName(processorName);
-		addStateStoreMapping(topologyConstructor.processorStateStoreMapper,sourceProcessorName, STORE_PREFIX+sourceProcessorName);
-		topologyConstructor.stores.add(STORE_PREFIX+sourceProcessorName);
-		logger.info("Granting access for processor: {} to store: {}",sourceProcessorName, STORE_PREFIX+sourceProcessorName);
-       topologyConstructor.stateStoreSupplier.put(STORE_PREFIX+sourceProcessorName,createMessageStoreSupplier(STORE_PREFIX+sourceProcessorName,true));
-       return sourceProcessorName;
-   }
+//   public static String addProcessorStore(final Topology currentBuilder, TopologyContext context, TopologyConstructor topologyConstructor,String processorName) {
+//	   final String sourceProcessorName = processorName(processorName);
+//		addStateStoreMapping(topologyConstructor.processorStateStoreMapper,sourceProcessorName, STORE_PREFIX+sourceProcessorName);
+//		topologyConstructor.stores.add(STORE_PREFIX+sourceProcessorName);
+//		logger.info("Granting access for processor: {} to store: {}",sourceProcessorName, STORE_PREFIX+sourceProcessorName);
+//       topologyConstructor.stateStoreSupplier.put(STORE_PREFIX+sourceProcessorName,createMessageStoreSupplier(STORE_PREFIX+sourceProcessorName,true));
+//       return sourceProcessorName;
+//   }
 
 	public static String addLazySourceStore(final Topology currentBuilder, TopologyContext context,
 			TopologyConstructor topologyConstructor, String topicName, Deserializer<?> keyDeserializer, Deserializer<?> valueDeserializer) {
@@ -294,7 +293,7 @@ public class ReplicationTopologyParser {
 //    ss
 	public static String addMaterializeStore(final Topology currentBuilder, TopologyContext context,
 			TopologyConstructor topologyConstructor, String name, String parentProcessor) {
-		final String sourceProcessorName = processorName(name);
+		final String sourceProcessorName = name;
 		currentBuilder.addProcessor(name, () -> new StoreProcessor(STORE_PREFIX + sourceProcessorName),parentProcessor);
 		addStateStoreMapping(topologyConstructor.processorStateStoreMapper, sourceProcessorName,STORE_PREFIX + sourceProcessorName);
 		topologyConstructor.stores.add(STORE_PREFIX + sourceProcessorName);
@@ -307,7 +306,7 @@ public class ReplicationTopologyParser {
             Optional<String> destination, boolean materializeStore) {
         String storeTopic = topicName(sourceTopicName, context);
         // TODO It might be better to fail if the topic does not exist? -> Well depends, if it is external yes, but if it is created by the same instance, then no.
-        final String sourceProcessorName = processorName(storeTopic);
+        final String sourceProcessorName = storeTopic;
         System.err.println("Source proc name: "+sourceProcessorName);
 
         if(storeTopic!=null) {
@@ -353,9 +352,9 @@ public class ReplicationTopologyParser {
         return sourceProcessorName;
     }
 
-	private static String processorName(String sourceTopicName) {
-        return sourceTopicName.replace(':',  '_').replace('@', '.');
-    }
+//	private static String processorName(String sourceTopicName) {
+//        return sourceTopicName.replace(':',  '_').replace('@', '.');
+//    }
 	
 	
 	// TODO replace, with the new streams api we can extract topic names from messages in a more declarative way
@@ -363,7 +362,7 @@ public class ReplicationTopologyParser {
 			Optional<ProcessorSupplier<String, ReplicationMessage>> transformerSupplier, List<XMLElement> destinations, Optional<XMLElement> defaultDestination, Optional<AdminClient> adminClient) throws InterruptedException, ExecutionException {
 		String transformProcessor;
 		if(from.isPresent()) {
-			String sourceProcessor = processorName(from.get());
+			String sourceProcessor = from.get();
 		    transformProcessor = name+"_transform";
 		    current.addProcessor(transformProcessor,transformerSupplier.orElse(()->new IdentityProcessor()),sourceProcessor);
 		} else {
@@ -407,7 +406,7 @@ public class ReplicationTopologyParser {
 
 	private static void addSplitDestination(Topology builder, String parentProcessor, String destinationName, String destinationTopic,
 			Function<ReplicationMessage, String> keyExtract, Predicate<String, ReplicationMessage> destinationFilter, Optional<AdminClient> adminClient,Optional<Integer> partitions) {
-		String destinationProcName = processorName(destinationName);
+		String destinationProcName = destinationName;
 
 		KafkaUtils.ensureExistsSync(adminClient, destinationTopic,partitions);
 	    builder.addProcessor(destinationProcName, new DestinationProcessorSupplier(keyExtract, destinationFilter), parentProcessor)
@@ -494,21 +493,19 @@ public class ReplicationTopologyParser {
 
 
 	public static String addSingleJoinGrouped(final Topology current, TopologyContext topologyContext,
-			TopologyConstructor topologyConstructor, String from, Optional<String> into, String name,
+			TopologyConstructor topologyConstructor, String fromProcessor, Optional<String> into, String name,
 			Optional<String> columns, Optional<Predicate<String, ReplicationMessage>> associationBypass,
-			Flatten flattenEnum, boolean isList, String with, boolean optional) {
-		if(from.startsWith("@")) {
-		    String fromTopic = topicName(from,topologyContext);
-            KafkaUtils.ensureExistsSync(topologyConstructor.adminClient, fromTopic,Optional.empty());
-		}
-		final String fromProcessor  = processorName(from);
+			Flatten flattenEnum, boolean isList, String withProcessor, boolean optional) {
+//		if(from.startsWith("@")) {
+//		    String fromTopic = topicName(from,topologyContext);
+//            KafkaUtils.ensureExistsSync(topologyConstructor.adminClient, fromTopic,Optional.empty());
+//		}
 //		if (!topologyConstructor.stores.contains(STORE_PREFIX+fromProcessor)) {
 //	    	final Optional<ProcessorSupplier<String, ReplicationMessage>> fromProcessorFromChildren = processorFromChildren(Optional.empty(), topicName(from, topologyContext), topologyConstructor);
 //			addSourceStore(current, topologyContext, topologyConstructor, fromProcessorFromChildren,
 //                    from, Optional.empty(),true);
 //        }
-		final String withProcessor  = processorName(with);
-    	final Optional<ProcessorSupplier<String, ReplicationMessage>> withProcessorFromChildren = processorFromChildren(Optional.empty(), topicName(with, topologyContext), topologyConstructor);
+    	final Optional<ProcessorSupplier<String, ReplicationMessage>> withProcessorFromChildren = processorFromChildren(Optional.empty(), topicName(withProcessor, topologyContext), topologyConstructor);
 
 //        if (!topologyConstructor.stores.contains(STORE_PREFIX+withProcessor) ) {
 //        	addSourceStore(current, topologyContext, topologyConstructor, withProcessorFromChildren,
@@ -567,16 +564,14 @@ public class ReplicationTopologyParser {
 	public static String addGroupedProcessor(final Topology current, TopologyContext topologyContext, TopologyConstructor topologyConstructor, String name, String from, boolean ignoreOriginalKey, 
 			Function<ReplicationMessage,String>  keyExtractor, Optional<ProcessorSupplier<String,ReplicationMessage>> transformerSupplier) {
 
-		String sourceProcessorName;
 		String mappingStoreName;
-	    sourceProcessorName = processorName(from);
-	    if(!topologyConstructor.stores.contains(STORE_PREFIX+sourceProcessorName)) {
-	    	System.err.println("Adding grouped with from, no source processor present for: "+sourceProcessorName+" created: "+topologyConstructor.stateStoreSupplier.keySet()+" and from: "+from);
+	    if(!topologyConstructor.stores.contains(STORE_PREFIX+from)) {
+	    	System.err.println("Adding grouped with from, no source processor present for: "+from+" created: "+topologyConstructor.stateStoreSupplier.keySet()+" and from: "+from);
         }
-		mappingStoreName = sourceProcessorName + "_mapping";
+		mappingStoreName = from + "_mapping";
 
 		String transformProcessor = name+"_transform";
-		current.addProcessor(transformProcessor,transformerSupplier.orElse(()->new IdentityProcessor()),sourceProcessorName);
+		current.addProcessor(transformProcessor,transformerSupplier.orElse(()->new IdentityProcessor()),from);
 		// allow override to avoid clashes
 		addStateStoreMapping(topologyConstructor.processorStateStoreMapper, name, STORE_PREFIX+name);
 		topologyConstructor.stores.add(STORE_PREFIX+name);
@@ -610,12 +605,11 @@ public class ReplicationTopologyParser {
 
 
 	public static void addPersistentCache(Topology current, TopologyContext topologyContext,
-			TopologyConstructor topologyConstructor, String name, String from, Optional<String> cacheTime,
+			TopologyConstructor topologyConstructor, String name, String fromProcessorName, Optional<String> cacheTime,
 			Optional<String> maxSize, Optional<String> to, Optional<Integer> partitions,
 			final Optional<ProcessorSupplier<String, ReplicationMessage>> processorFromChildren) {
-		final String fromProcessorName = processorName(from);
     	if (topologyConstructor.stateStoreSupplier.get(fromProcessorName) == null) {
-        	addSourceStore(current, topologyContext, topologyConstructor, processorFromChildren, from, Optional.empty(),true);
+        	addSourceStore(current, topologyContext, topologyConstructor, processorFromChildren, fromProcessorName, Optional.empty(),true);
         }
         
         String nameCache = name+"-cache";
@@ -685,18 +679,26 @@ public class ReplicationTopologyParser {
 			String namespace, Stack<String> transformerNames, int currentPipeId,List<TopologyPipeComponent> onAdd, List<TopologyPipeComponent> onRemove,
 			ImmutableMessage stateMessage, boolean materialize, Optional<ContextExpression> keyExtractor) {
 
-		String parentName = processorName(transformerNames.peek());
-		String reduceReader = processorName(transformerNames.peek()+"_reduceread");
-		String ifElseName = processorName(namespace+"_"+currentPipeId+"_"+"ifelse"+transformerNames.size());
+		String parentName =  transformerNames.peek();
+		String reduceReader = topologyContext.qualifiedName("reduce",transformerNames.size(),currentPipeId);
+		transformerNames.push(reduceReader);
+//		String reduceReader = processorName(transformerNames.peek()+"_reduceread");
+//		String ifElseName = processorName(namespace+"_"+currentPipeId+"_"+"ifelse"+transformerNames.size());
+		String ifElseName = topologyContext.qualifiedName("ifelse",transformerNames.size(),currentPipeId);
 		transformerNames.push(ifElseName);
 		int trueBranchPipeId = topologyConstructor.generateNewPipeId();
 		int falseBranchPipeId = topologyConstructor.generateNewPipeId();
-		String trueBranchName = processorName(namespace+"_"+trueBranchPipeId+"_"+"addbranch"+transformerNames.size());
-		String falseBranchName = processorName(namespace+"_"+falseBranchPipeId+"_"+"removebranch"+transformerNames.size());
 
-		String reduceName = processorName(namespace+"_"+currentPipeId+"_"+"reduce"+transformerNames.size());
+		String trueBranchName = topologyContext.qualifiedName("addbranch",transformerNames.size(),currentPipeId);
+//		String trueBranchName = processorName(namespace+"_"+trueBranchPipeId+"_"+"addbranch"+transformerNames.size());
+//		String falseBranchName = processorName(namespace+"_"+falseBranchPipeId+"_"+"removebranch"+transformerNames.size());
+		String falseBranchName = topologyContext.qualifiedName("removeBranch",transformerNames.size(),currentPipeId);
+
+//		String reduceName = processorName(namespace+"_"+currentPipeId+"_"+"reduce"+transformerNames.size());
+		String reduceName = topologyContext.qualifiedName("reduce",transformerNames.size(),currentPipeId);
+
 		String reduceStoreName = STORE_PREFIX+reduceName;
-		String inputStoreName = STORE_PREFIX+parentName+"_reduce_inputstore";
+			String inputStoreName = STORE_PREFIX+parentName+"_reduce_inputstore";
 
 		topology.addProcessor(reduceReader, ()->new ReduceReadProcessor(inputStoreName,reduceStoreName, stateMessage,keyExtractor), parentName);
 		topology.addProcessor(ifElseName, ()->new IfElseProcessor(msg->msg.operation()!=Operation.DELETE, trueBranchName, Optional.of(falseBranchName)), reduceReader);
@@ -720,9 +722,8 @@ public class ReplicationTopologyParser {
 			removePipeComponents.addToTopology(removeProcessorStack, falseBranchPipeId, topology, topologyContext, topologyConstructor, stateMessage);
 		}
 //		topologyConstructor
-		// TODO I think there is something wrong in the bookkeeping of the transformerStack
 		topology.addProcessor(materialize? "_proc"+reduceName: reduceName, ()->new StoreStateProcessor(reduceName, reduceStoreName, stateMessage,keyExtractor), addProcessorStack.peek(),removeProcessorStack.peek());
-		addStateStoreMapping(topologyConstructor.processorStateStoreMapper, reduceName, reduceStoreName);
+ 		addStateStoreMapping(topologyConstructor.processorStateStoreMapper, reduceName, reduceStoreName);
 		addStateStoreMapping(topologyConstructor.processorStateStoreMapper, reduceReader, reduceStoreName);
 		addStateStoreMapping(topologyConstructor.processorStateStoreMapper, reduceReader, inputStoreName);
 		
@@ -739,14 +740,14 @@ public class ReplicationTopologyParser {
 	}
 
 	public static Topology addJoin(final Topology current, TopologyContext topologyContext,
-			TopologyConstructor topologyConstructor, String from, String with, String name,
+			TopologyConstructor topologyConstructor, String fromProcessorName, String withProcessorName, String name,
 			boolean optional,
 			Optional<String> into,
 			Optional<Predicate<String, ReplicationMessage>> filterPredicate,
 			boolean materialize) {
-		KafkaUtils.ensureExistsSync(topologyConstructor.adminClient, topicName(from,topologyContext),Optional.empty());
-        final String fromProcessorName = processorName(from);
-		final String withProcessorName  = processorName(with);
+//		KafkaUtils.ensureExistsSync(topologyConstructor.adminClient, topicName(from,topologyContext),Optional.empty());
+//        final String fromProcessorName = processorName(from);
+//		final String withProcessorName  = processorName(with);
 		String firstNamePre = name+"-forwardpre";
 		String secondNamePre =  name+"-reversepre";
 
@@ -827,8 +828,8 @@ public class ReplicationTopologyParser {
 	public static String addKeyRowProcessor(Topology current, TopologyContext context,
 			TopologyConstructor topologyConstructor, String fromProcessor,
 			String name, boolean materialize) {
-		String from = processorName(fromProcessor);
-		current = current.addProcessor(name,()->new RowNumberProcessor(STORE_PREFIX+name),from);
+//		String from = processorName(fromProcessor);
+		current = current.addProcessor(name,()->new RowNumberProcessor(STORE_PREFIX+name),fromProcessor);
 
 		addStateStoreMapping(topologyConstructor.processorStateStoreMapper,name, STORE_PREFIX+name);
 		logger.info("Granting access for processor: {} to store: {}",name,STORE_PREFIX+name);

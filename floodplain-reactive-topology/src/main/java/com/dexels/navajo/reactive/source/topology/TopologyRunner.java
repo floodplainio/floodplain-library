@@ -121,7 +121,7 @@ public class TopologyRunner {
 	public KafkaStreams runPipeFolder(TopologyContext topologyContext, File repoPath) throws ParseException, IOException, InterruptedException {
 		Topology topology = parseReactivePipeTopology(topologyContext,repoPath);
 		System.err.println("Combined topology:\n"+topology.describe());
-		materializeConnectors(topologyContext, streamConfiguration,true);
+		materializeConnectors(topologyContext,true);
 
 		return runTopology(topology);
 	}
@@ -247,8 +247,8 @@ public class TopologyRunner {
 	}
 	
     
-    public void materializeConnectors(TopologyContext topologyContext, StreamConfiguration sc, boolean force) throws IOException {
-    	if(!sc.connectURL().isPresent()) {
+    public void materializeConnectors(TopologyContext topologyContext, boolean force) throws IOException {
+    	if(!streamConfiguration.connectURL().isPresent()) {
     		logger.warn("No connectURL present, so not materializing anything");
     		return;
     	}
@@ -264,7 +264,7 @@ public class TopologyRunner {
 		
 		for (Entry<String,List<ConnectorTopicTuple>> e : topologyConstructor.connectorAssociations.entrySet()) {
 			List<ConnectorTopicTuple> list = e.getValue();
-			Optional<ConnectConfiguration> cc = sc.connector(e.getKey());
+			Optional<ConnectConfiguration> cc = streamConfiguration.connector(e.getKey());
 			if(!cc.isPresent()) {
 				throw new TopologyDefinitionException("Missing sink resource named: "+e.getKey());
 			}
@@ -273,13 +273,13 @@ public class TopologyRunner {
 				int connectorCount = 0;
 				for (Map<String, Object> element : parsed.list.get()) {
 					Map<String,Object> processed = resolveGenerationsForSettings(topologyContext, element);
-					assembleConnector(topologyContext, cc.get(),processed,sc.connectURL().get(),force,Optional.of(connectorCount));
+					assembleConnector(topologyContext, cc.get(),processed,streamConfiguration.connectURL().get(),force,Optional.of(connectorCount));
 					connectorCount++;
 				}
 			} else {
 				Map<String, Object> element = parsed.single.get();
 				Map<String,Object> processed = resolveGenerationsForSettings(topologyContext, element);
-				assembleConnector(topologyContext, cc.get(),processed,sc.connectURL().get(),force,Optional.empty());
+				assembleConnector(topologyContext, cc.get(),processed,streamConfiguration.connectURL().get(),force,Optional.empty());
 			}
 		}
     }

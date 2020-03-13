@@ -46,7 +46,7 @@ public class TestParseConfiguration {
 //		Reactive.finderInstance().addReactiveSourceFactory(new MongoReactiveSourceFactory(), "topic");
 
 	}
-	@Test @Ignore
+	@Test
 	public void testParse() throws IOException {
 		try(InputStream r = getClass().getClassLoader().getResourceAsStream("resources.xml")) {
 			StreamConfiguration sc = StreamConfiguration.parseConfig("test", r);
@@ -61,7 +61,7 @@ public class TestParseConfiguration {
 //			mongoParams.put("topics", "blabla");
 			runner.topologyConstructor().addConnectSink("@replication", topic, mongoParams);
 
-			runner.materializeConnectors(topologyContext, sc,true);
+			runner.materializeConnectors(topologyContext, true);
 			int connectors = sc.connectors().size();
 			Assert.assertEquals(4, connectors);
 		}
