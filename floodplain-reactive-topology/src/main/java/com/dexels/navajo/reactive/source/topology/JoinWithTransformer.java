@@ -71,7 +71,8 @@ public class JoinWithTransformer implements ReactiveTransformer ,TopologyPipeCom
 		Optional<String> into = resolved.optionalString("into");
 //		boolean isList = into.isPresent();
 		String with = pipeStack.peek();
-		String name = createName(topologyContext, transformerNames.size(), pipeId);
+//		String name = createName(topologyContext, transformerNames.size(), pipeId);
+		String name = topologyContext.qualifiedName(this.metadata.name(),transformerNames.size(), pipeId);
 		Optional<String> filter = Optional.empty();
 		boolean isOptional = false;
 
@@ -84,9 +85,7 @@ public class JoinWithTransformer implements ReactiveTransformer ,TopologyPipeCom
 		transformerNames.push(name);
 	}
 
-	private  String createName(TopologyContext topologyContext, int transformerNumber, int pipeId) {
-		return topologyContext.instance+"_"+pipeId+"_"+metadata.name()+"_"+transformerNumber;
-	}
+//
 	@Override
 	public boolean materializeParent() {
 		return true;

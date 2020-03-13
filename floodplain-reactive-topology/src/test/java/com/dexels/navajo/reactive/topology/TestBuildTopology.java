@@ -76,7 +76,7 @@ public class TestBuildTopology {
 		Topology topology = runner.parseSinglePipeDefinition(topologyContext, new Topology(), getClass().getClassLoader().getResourceAsStream("database.rr"));
 		ReplicationTopologyParser.materializeStateStores(runner.topologyConstructor(), topology);
 		System.err.println("Topology: \n"+topology.describe());
-		runTopology(topology);
+//		runTopology(topology);
 	}
 	
 	@Test @Ignore
@@ -117,7 +117,7 @@ public class TestBuildTopology {
 		System.err.println("Topology: \n"+topology.describe());
 	}
 
-	@Test @Ignore
+	@Test
 	public void testRemoteJoin() throws ParseException, IOException, InterruptedException {
 		Topology topology = runner.parseSinglePipeDefinition(topologyContext, new Topology(), getClass().getClassLoader().getResourceAsStream("remotejoin.rr"));
 		ReplicationTopologyParser.materializeStateStores(runner.topologyConstructor(), topology);

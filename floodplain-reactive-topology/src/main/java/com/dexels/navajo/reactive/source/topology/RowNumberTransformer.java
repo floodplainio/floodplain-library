@@ -60,17 +60,13 @@ public class RowNumberTransformer implements ReactiveTransformer,TopologyPipeCom
 //		ReactiveResolvedParameters resolved = parameters.resolve(context, Optional.empty(), ImmutableFactory.empty(), metadata);
 		addGroupTransformer(transformerNames, pipeId, topology, topologyContext, topologyConstructor, keyExtractor,metadata.name());
 		String from = transformerNames.peek();
-		String name = createName(topologyContext, metadata.name(),transformerNames.size(),pipeId);
+		String name = topologyContext.qualifiedName(this.metadata.name(),transformerNames.size(), pipeId);
 		String rowNum = ReplicationTopologyParser.addKeyRowProcessor(topology, topologyContext, topologyConstructor, from, name,this.materialize);
 		transformerNames.push(rowNum);
 	}
 	public static void addGroupTransformer(Stack<String> transformerNames, int pipeId, Topology topology,
 			TopologyContext topologyContext, TopologyConstructor topologyConstructor, Function<ReplicationMessage,String> keyExtractor, String transformerName) {
 
-	}
-	
-	private static String createName(TopologyContext topologyContext, String name, int transformerNumber, int pipeId) {
-		return topologyContext.instance+"_"+pipeId+"_"+name+"_"+transformerNumber;
 	}
 
 	@Override

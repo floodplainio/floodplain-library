@@ -83,10 +83,10 @@ public class SinkTransformer implements ReactiveTransformer, TopologyPipeCompone
 			}
 		}
 	}
-	
-	private  String createName(String namespace, int transformerNumber, int pipeId) {
-		return namespace+"_"+pipeId+"_"+metadata.name()+"_"+transformerNumber;
-	}
+
+//	private  String createName(String namespace, int transformerNumber, int pipeId) {
+//		return namespace+"_"+pipeId+"_"+metadata.name()+"_"+transformerNumber;
+//	}
 	
 	@Override
 	public TransformerMetadata metadata() {

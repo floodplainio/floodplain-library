@@ -64,15 +64,13 @@ public class GroupTransformer implements ReactiveTransformer,TopologyPipeCompone
 	public static void addGroupTransformer(Stack<String> transformerNames, int pipeId, Topology topology,
 			TopologyContext topologyContext, TopologyConstructor topologyConstructor, Function<ReplicationMessage,String> keyExtractor, String transformerName) {
 		String from = transformerNames.peek();
-		String name = createName(topologyContext, transformerName,transformerNames.size(),pipeId);
+//		String name = createName(topologyContext, transformerName,transformerNames.size(),pipeId);
+		String name = topologyContext.qualifiedName(transformerName,transformerNames.size(), pipeId);
 		boolean ignoreOriginalKey = false;
 		String grouped = ReplicationTopologyParser.addGroupedProcessor(topology, topologyContext, topologyConstructor, name, from, ignoreOriginalKey, keyExtractor, Optional.empty());
 		transformerNames.push(grouped);
 	}
-	
-	private static String createName(TopologyContext topologyContext, String name, int transformerNumber, int pipeId) {
-		return topologyContext.instance+"_"+pipeId+"_"+name+"_"+transformerNumber;
-	}
+
 
 	@Override
 	public boolean materializeParent() {

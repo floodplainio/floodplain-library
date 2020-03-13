@@ -1,4 +1,4 @@
-package com.dexels.kafka.streams.api;
+package com.dexels.navajo.reactive.api;
 
 import java.util.Optional;
 
@@ -28,13 +28,18 @@ public class TopologyContext {
 		return tenant.orElse(DEFAULT_TENANT)+"-"+deployment+"-"+generation+"-"+instance;
 	}
 
-	public String qualifiedName(String name, int currentTransformer, int currentPipe) {
-		return CoreOperators.topicName("@"+name+"_"+currentPipe+"_"+currentTransformer,this);
+	private String processorName(String sourceTopicName) {
+		return sourceTopicName.replace(':',  '_').replace('@', '.');
 	}
 
-//	private static String processorName(String sourceTopicName) {
-//		return sourceTopicName.replace(':',  '_').replace('@', '.');
+//	public String qualifiedName(int pipeNr, int transformerNr, ParameterValidator validator) {
+//
 //	}
 
+
+
+
+//	final String sourceProcessorName = processorName(topologyContext.instance+"_"+name+"_debezium_conversion_source")+"-"+topicName;
+//   StreamScriptContext context =new StreamScriptContext(topologyContext.tenant.orElse(TopologyContext.DEFAULT_TENANT), topologyContext.instance, topologyContext.deployment);
 
 }

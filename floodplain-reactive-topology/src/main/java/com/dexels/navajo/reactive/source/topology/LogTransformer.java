@@ -57,7 +57,8 @@ public class LogTransformer implements ReactiveTransformer, TopologyPipeComponen
 		}
 		String logName = resolved.paramString("logName");
 		logger.info("Stack top for transformer: "+transformerNames.peek());
-		String name = createName(topologyContext, transformerNames.size(), pipeId);
+//		String name = createName(topologyContext, transformerNames.size(), pipeId);
+		String name = topologyContext.qualifiedName(this.metadata.name(),transformerNames.size(), pipeId);
 		if (this.materialize()) {
 //			topology.addProcessor(filterName+"_prematerialize",filterProcessor, transformerNames.peek());
 			topology.addProcessor(name+"_prematerialize", ()->new LogProcessor(logName,dumpStack), transformerNames.peek());
@@ -68,9 +69,9 @@ public class LogTransformer implements ReactiveTransformer, TopologyPipeComponen
 		transformerNames.push(name);
 	}
 	
-	private  String createName(TopologyContext topologyContext, int transformerNumber, int pipeId) {
-		return topologyContext.instance+"_"+pipeId+"_"+metadata.name()+"_"+transformerNumber;
-	}
+//	private  String createName(TopologyContext topologyContext, int transformerNumber, int pipeId) {
+//		return topologyContext.instance+"_"+pipeId+"_"+metadata.name()+"_"+transformerNumber;
+//	}
 
 	@Override
 	public TransformerMetadata metadata() {

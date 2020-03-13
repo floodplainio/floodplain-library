@@ -62,7 +62,6 @@ public class JoinRemoteTransformer implements ReactiveTransformer ,TopologyPipeC
 		ContextExpression keyExtract  = parameters.named.get("key");
 		Function<ReplicationMessage,String> keyExtractor = msg->keyExtract.apply(null, Optional.of(msg.message()), msg.paramMessage()).stringValue();
 		
-		
 		GroupTransformer.addGroupTransformer(transformerNames,pipeId,topology,topologyContext,topologyConstructor,keyExtractor,metadata.name());
 		
 		Optional<String> from = Optional.of(transformerNames.peek());

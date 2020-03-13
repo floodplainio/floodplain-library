@@ -48,7 +48,9 @@ public class FilterTransformer implements ReactiveTransformer,TopologyPipeCompon
 
 	@Override
 	public void addToTopology(Stack<String> transformerNames, int pipeId,  Topology topology, TopologyContext topologyContext,TopologyConstructor topologyConstructor, ImmutableMessage stateMessage) {
-		String filterName = createName(topologyContext.instance, transformerNames.size(), pipeId);
+//		String filterName = createName(topologyContext.instance, transformerNames.size(), pipeId);
+		String filterName = topologyContext.qualifiedName(this.metadata.name(),transformerNames.size(), pipeId);
+
 		logger.info("Stack top for transformer: {}", transformerNames.peek());
 		if (this.materialized) {
 			topology.addProcessor(filterName+"_prematerialize",filterProcessor, transformerNames.peek());
@@ -67,10 +69,10 @@ public class FilterTransformer implements ReactiveTransformer,TopologyPipeCompon
 //		return sourceName+"_"+transformerNumber;
 //	}
 //	
-	private  String createName(String namespace, int transformerNumber, int pipeId) {
-		return namespace+"_"+pipeId+"_"+metadata.name()+"_"+transformerNumber;
-	}
-	
+//	private  String createName(String namespace, int transformerNumber, int pipeId) {
+//		return namespace+"_"+pipeId+"_"+metadata.name()+"_"+transformerNumber;
+//	}
+//
 	@Override
 	public TransformerMetadata metadata() {
 		return metadata;

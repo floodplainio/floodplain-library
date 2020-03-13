@@ -117,7 +117,8 @@ public class SetTransformer implements ReactiveTransformer, TopologyPipeComponen
 		StreamScriptContext ssc = StreamScriptContext.fromTopologyContext(topologyContext);
 		Function<ReplicationMessage, ReplicationMessage> apply = transformer.apply(ssc);
 		FunctionProcessor fp = new FunctionProcessor(apply);
-		String name = createName(topologyContext, this.metadata.name(),transformerNames.size(), currentPipeId);
+		String name = topologyContext.qualifiedName(this.metadata.name(),transformerNames.size(), currentPipeId);
+//		String name = createName(topologyContext, this.metadata.name(),transformerNames.size(), currentPipeId);
 		logger.info("Adding processor: {} to parent: {} hash: {}",name,transformerNames,transformerNames.hashCode());
 
 		
@@ -130,11 +131,13 @@ public class SetTransformer implements ReactiveTransformer, TopologyPipeComponen
 		}
 		transformerNames.push(name);
 	}
-	
-	private  String createName(TopologyContext topologyContext,String name, int transformerNumber, int pipeId) {
-		return topologyContext.instance+"_"+pipeId+"_"+name+"_"+transformerNumber;
-	}
-	
+//
+//	private  String createName(TopologyContext topologyContext,String name, int transformerNumber, int pipeId) {
+//		return topologyContext.instance+"_"+pipeId+"_"+name+"_"+transformerNumber;
+//	}
+//
+
+
 	@Override
 	public boolean materializeParent() {
 		return false;

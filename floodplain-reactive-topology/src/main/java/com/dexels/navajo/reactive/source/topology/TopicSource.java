@@ -47,10 +47,10 @@ public class TopicSource implements ReactiveSource,TopologyPipeComponent {
 		KafkaUtils.ensureExistsSync(topologyConstructor.adminClient, source, Optional.empty());
 		transformerNames.push(source);
 	}
-	
-	private  String createName(String namespace, int transformerNumber, int pipeId) {
-		return namespace+"_"+pipeId+"_"+metadata.name()+"_"+transformerNumber;
-	}
+//
+//	private  String createName(String namespace, int transformerNumber, int pipeId) {
+//		return namespace+"_"+pipeId+"_"+metadata.name()+"_"+transformerNumber;
+//	}
 	
 	@Override
 	public boolean streamInput() {

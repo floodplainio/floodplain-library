@@ -22,7 +22,6 @@ import com.dexels.navajo.reactive.api.ReactiveResolvedParameters;
 
 public class StoreAsSubMessage implements ReactiveMerger {
 
-	
 	private static final Logger logger = LoggerFactory.getLogger(StoreAsSubMessage.class);
 
 	public StoreAsSubMessage() {
