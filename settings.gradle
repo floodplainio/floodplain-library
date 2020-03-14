@@ -45,5 +45,3 @@ include 'immutable-api',
 'floodplain-reactive-topology',
 'floodplain-quarkus',
 'kafka-converter'
-
-
