@@ -5,7 +5,8 @@
 
 options {
    MULTI=true;
-   LOOKAHEAD=2;
+   LOOKAHEAD=3;
+   FORCE_LA_CHECK=true;
    STATIC=false;
    TRACK_TOKENS=true;
    NODE_PACKAGE="com.dexels.navajo.parser.compiled";

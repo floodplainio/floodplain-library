@@ -14,8 +14,8 @@ class ExampleResource {
 
     @Inject
     lateinit var runtime: Main
-//    @Inject
-//    lateinit var source: DataSource
+    @Inject
+    lateinit var source: DataSource
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     fun hello(): String {

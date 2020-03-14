@@ -16,12 +16,12 @@ public class CompiledParser/*@bgen(jjtree)*/implements CompiledParserTreeConstan
      jjtn001.jjtSetFirstToken(getToken(1));
     try {
       jj_consume_token(BEGIN_LIST);
-      if (jj_2_2(2)) {
+      if (jj_2_2(50)) {
         Expression();
                                   jjtn001.args++;
         label_1:
         while (true) {
-          if (jj_2_1(2)) {
+          if (jj_2_1(50)) {
             ;
           } else {
             break label_1;
@@ -57,9 +57,9 @@ public class CompiledParser/*@bgen(jjtree)*/implements CompiledParserTreeConstan
   }
 
   final public void Expression() throws ParseException {
-    if (jj_2_3(2)) {
+    if (jj_2_3(50)) {
       OrExpression();
-    } else if (jj_2_4(2)) {
+    } else if (jj_2_4(50)) {
       PipeDefinition();
     } else {
       jj_consume_token(-1);
@@ -74,14 +74,14 @@ public class CompiledParser/*@bgen(jjtree)*/implements CompiledParserTreeConstan
   jjtree.openNodeScope(jjtn000);
   jjtn000.jjtSetFirstToken(getToken(1));
     try {
-      if (jj_2_7(2)) {
+      if (jj_2_7(50)) {
         jj_consume_token(PIPE);
                 jjtn000.partial = true;
         OrExpression();
                                                           jjtn000.args++;
         label_2:
         while (true) {
-          if (jj_2_5(2)) {
+          if (jj_2_5(50)) {
             ;
           } else {
             break label_2;
@@ -94,14 +94,14 @@ public class CompiledParser/*@bgen(jjtree)*/implements CompiledParserTreeConstan
                                                                                                                        jjtc000 = false;
                                                                                                                        jjtn000.jjtSetLastToken(getToken(0));
                                                                                                                       {if (true) return jjtn000;}
-      } else if (jj_2_8(2)) {
+      } else if (jj_2_8(50)) {
         jj_consume_token(PIPESTART);
                        jjtn000.partial = false;
         OrExpression();
                                                                  jjtn000.args++;
         label_3:
         while (true) {
-          if (jj_2_6(2)) {
+          if (jj_2_6(50)) {
             ;
           } else {
             break label_3;
@@ -147,16 +147,16 @@ public class CompiledParser/*@bgen(jjtree)*/implements CompiledParserTreeConstan
           jjtree.openNodeScope(jjtn001);
           jjtn001.jjtSetFirstToken(getToken(1));
     try {
-      if (jj_2_11(2)) {
+      if (jj_2_11(50)) {
         jj_consume_token(HEADER);
                            jjtn001.hasHeader = true;
         jj_consume_token(45);
-        if (jj_2_10(2)) {
+        if (jj_2_10(50)) {
           KeyValue();
                                                                         jjtn001.headers++;
           label_4:
           while (true) {
-            if (jj_2_9(2)) {
+            if (jj_2_9(50)) {
               ;
             } else {
               break label_4;
@@ -172,10 +172,10 @@ public class CompiledParser/*@bgen(jjtree)*/implements CompiledParserTreeConstan
       } else {
         ;
       }
-      if (jj_2_12(2)) {
+      if (jj_2_12(50)) {
         PipeDefinition();
                             jjtn001.args++;
-      } else if (jj_2_13(2)) {
+      } else if (jj_2_13(50)) {
         KeyValue();
                       jjtn001.args++;
       } else {
@@ -184,15 +184,15 @@ public class CompiledParser/*@bgen(jjtree)*/implements CompiledParserTreeConstan
       }
       label_5:
       while (true) {
-        if (jj_2_14(2)) {
+        if (jj_2_14(50)) {
           ;
         } else {
           break label_5;
         }
-        if (jj_2_15(2)) {
+        if (jj_2_15(50)) {
           PipeDefinition();
                                           jjtn001.args++;
-        } else if (jj_2_16(2)) {
+        } else if (jj_2_16(50)) {
           KeyValue();
                                   jjtn001.args++;
         } else {
@@ -227,7 +227,7 @@ public class CompiledParser/*@bgen(jjtree)*/implements CompiledParserTreeConstan
     AndExpression();
     label_6:
     while (true) {
-      if (jj_2_17(2)) {
+      if (jj_2_17(50)) {
         ;
       } else {
         break label_6;
@@ -266,7 +266,7 @@ public class CompiledParser/*@bgen(jjtree)*/implements CompiledParserTreeConstan
     EqualityExpression();
     label_7:
     while (true) {
-      if (jj_2_18(2)) {
+      if (jj_2_18(50)) {
         ;
       } else {
         break label_7;
@@ -305,12 +305,12 @@ public class CompiledParser/*@bgen(jjtree)*/implements CompiledParserTreeConstan
     RelationalExpression();
     label_8:
     while (true) {
-      if (jj_2_19(2)) {
+      if (jj_2_19(50)) {
         ;
       } else {
         break label_8;
       }
-      if (jj_2_20(2)) {
+      if (jj_2_20(50)) {
         jj_consume_token(EQUALS);
                ASTEQNode jjtn001 = new ASTEQNode(JJTEQNODE);
                boolean jjtc001 = true;
@@ -338,7 +338,7 @@ public class CompiledParser/*@bgen(jjtree)*/implements CompiledParserTreeConstan
                  jjtn001.jjtSetLastToken(getToken(0));
                }
         }
-      } else if (jj_2_21(2)) {
+      } else if (jj_2_21(50)) {
         jj_consume_token(NOT_EQUALS);
                   ASTNENode jjtn002 = new ASTNENode(JJTNENODE);
                   boolean jjtc002 = true;
@@ -377,12 +377,12 @@ public class CompiledParser/*@bgen(jjtree)*/implements CompiledParserTreeConstan
     AdditiveExpression();
     label_9:
     while (true) {
-      if (jj_2_22(2)) {
+      if (jj_2_22(50)) {
         ;
       } else {
         break label_9;
       }
-      if (jj_2_23(2)) {
+      if (jj_2_23(50)) {
         jj_consume_token(47);
           ASTLTNode jjtn001 = new ASTLTNode(JJTLTNODE);
           boolean jjtc001 = true;
@@ -410,7 +410,7 @@ public class CompiledParser/*@bgen(jjtree)*/implements CompiledParserTreeConstan
             jjtn001.jjtSetLastToken(getToken(0));
           }
         }
-      } else if (jj_2_24(2)) {
+      } else if (jj_2_24(50)) {
         jj_consume_token(48);
           ASTGTNode jjtn002 = new ASTGTNode(JJTGTNODE);
           boolean jjtc002 = true;
@@ -438,7 +438,7 @@ public class CompiledParser/*@bgen(jjtree)*/implements CompiledParserTreeConstan
             jjtn002.jjtSetLastToken(getToken(0));
           }
         }
-      } else if (jj_2_25(2)) {
+      } else if (jj_2_25(50)) {
         jj_consume_token(49);
            ASTLENode jjtn003 = new ASTLENode(JJTLENODE);
            boolean jjtc003 = true;
@@ -466,7 +466,7 @@ public class CompiledParser/*@bgen(jjtree)*/implements CompiledParserTreeConstan
              jjtn003.jjtSetLastToken(getToken(0));
            }
         }
-      } else if (jj_2_26(2)) {
+      } else if (jj_2_26(50)) {
         jj_consume_token(50);
            ASTGENode jjtn004 = new ASTGENode(JJTGENODE);
            boolean jjtc004 = true;
@@ -504,9 +504,9 @@ public class CompiledParser/*@bgen(jjtree)*/implements CompiledParserTreeConstan
   final public void PrimaryExpression() throws ParseException {
     if (jj_2_27(2147483647)) {
       DatePatternLiteral();
-    } else if (jj_2_28(2)) {
+    } else if (jj_2_28(50)) {
       Literal();
-    } else if (jj_2_29(2)) {
+    } else if (jj_2_29(50)) {
       jj_consume_token(45);
       Expression();
       jj_consume_token(46);
@@ -520,12 +520,12 @@ public class CompiledParser/*@bgen(jjtree)*/implements CompiledParserTreeConstan
     MultiplicativeExpression();
     label_10:
     while (true) {
-      if (jj_2_30(2)) {
+      if (jj_2_30(50)) {
         ;
       } else {
         break label_10;
       }
-      if (jj_2_31(2)) {
+      if (jj_2_31(50)) {
         jj_consume_token(ADD);
             ASTAddNode jjtn001 = new ASTAddNode(JJTADDNODE);
             boolean jjtc001 = true;
@@ -553,7 +553,7 @@ public class CompiledParser/*@bgen(jjtree)*/implements CompiledParserTreeConstan
               jjtn001.jjtSetLastToken(getToken(0));
             }
         }
-      } else if (jj_2_32(2)) {
+      } else if (jj_2_32(50)) {
         jj_consume_token(MIN);
             ASTSubtractNode jjtn002 = new ASTSubtractNode(JJTSUBTRACTNODE);
             boolean jjtc002 = true;
@@ -592,12 +592,12 @@ public class CompiledParser/*@bgen(jjtree)*/implements CompiledParserTreeConstan
     UnaryExpression();
     label_11:
     while (true) {
-      if (jj_2_33(2)) {
+      if (jj_2_33(50)) {
         ;
       } else {
         break label_11;
       }
-      if (jj_2_34(2)) {
+      if (jj_2_34(50)) {
         jj_consume_token(MUL);
              ASTMulNode jjtn001 = new ASTMulNode(JJTMULNODE);
              boolean jjtc001 = true;
@@ -625,7 +625,7 @@ public class CompiledParser/*@bgen(jjtree)*/implements CompiledParserTreeConstan
                jjtn001.jjtSetLastToken(getToken(0));
              }
         }
-      } else if (jj_2_35(2)) {
+      } else if (jj_2_35(50)) {
         jj_consume_token(DIV);
              ASTDivNode jjtn002 = new ASTDivNode(JJTDIVNODE);
              boolean jjtc002 = true;
@@ -653,7 +653,7 @@ public class CompiledParser/*@bgen(jjtree)*/implements CompiledParserTreeConstan
                jjtn002.jjtSetLastToken(getToken(0));
              }
         }
-      } else if (jj_2_36(2)) {
+      } else if (jj_2_36(50)) {
         jj_consume_token(MOD);
              ASTModNode jjtn003 = new ASTModNode(JJTMODNODE);
              boolean jjtc003 = true;
@@ -689,7 +689,7 @@ public class CompiledParser/*@bgen(jjtree)*/implements CompiledParserTreeConstan
   }
 
   final public void UnaryExpression() throws ParseException {
-    if (jj_2_37(2)) {
+    if (jj_2_37(50)) {
       jj_consume_token(MIN);
           ASTNegativeNode jjtn001 = new ASTNegativeNode(JJTNEGATIVENODE);
           boolean jjtc001 = true;
@@ -717,7 +717,7 @@ public class CompiledParser/*@bgen(jjtree)*/implements CompiledParserTreeConstan
             jjtn001.jjtSetLastToken(getToken(0));
           }
       }
-    } else if (jj_2_38(2)) {
+    } else if (jj_2_38(50)) {
       jj_consume_token(NOT);
           ASTNotNode jjtn002 = new ASTNotNode(JJTNOTNODE);
           boolean jjtc002 = true;
@@ -745,7 +745,7 @@ public class CompiledParser/*@bgen(jjtree)*/implements CompiledParserTreeConstan
             jjtn002.jjtSetLastToken(getToken(0));
           }
       }
-    } else if (jj_2_39(2)) {
+    } else if (jj_2_39(50)) {
       PrimaryExpression();
     } else {
       jj_consume_token(-1);
@@ -754,15 +754,15 @@ public class CompiledParser/*@bgen(jjtree)*/implements CompiledParserTreeConstan
   }
 
   final public void Literal() throws ParseException {
-    if (jj_2_40(2)) {
+    if (jj_2_40(50)) {
       ForAllLiteral();
-    } else if (jj_2_41(2)) {
+    } else if (jj_2_41(50)) {
       ListExpression();
-    } else if (jj_2_42(2)) {
+    } else if (jj_2_42(50)) {
       FloatLiteral();
-    } else if (jj_2_43(2)) {
+    } else if (jj_2_43(50)) {
       IntegerLiteral();
-    } else if (jj_2_44(2)) {
+    } else if (jj_2_44(50)) {
                                                                              ASTNullNode jjtn001 = new ASTNullNode(JJTNULLNODE);
                                                                              boolean jjtc001 = true;
                                                                              jjtree.openNodeScope(jjtn001);
@@ -775,7 +775,7 @@ public class CompiledParser/*@bgen(jjtree)*/implements CompiledParserTreeConstan
                                                                                jjtn001.jjtSetLastToken(getToken(0));
                                                                              }
       }
-    } else if (jj_2_45(2)) {
+    } else if (jj_2_45(50)) {
                                                                                                 ASTTodayNode jjtn002 = new ASTTodayNode(JJTTODAYNODE);
                                                                                                 boolean jjtc002 = true;
                                                                                                 jjtree.openNodeScope(jjtn002);
@@ -788,7 +788,7 @@ public class CompiledParser/*@bgen(jjtree)*/implements CompiledParserTreeConstan
                                                                                                   jjtn002.jjtSetLastToken(getToken(0));
                                                                                                 }
       }
-    } else if (jj_2_46(2)) {
+    } else if (jj_2_46(50)) {
                                                                                                                      ASTTrueNode jjtn003 = new ASTTrueNode(JJTTRUENODE);
                                                                                                                      boolean jjtc003 = true;
                                                                                                                      jjtree.openNodeScope(jjtn003);
@@ -801,7 +801,7 @@ public class CompiledParser/*@bgen(jjtree)*/implements CompiledParserTreeConstan
                                                                                                                        jjtn003.jjtSetLastToken(getToken(0));
                                                                                                                      }
       }
-    } else if (jj_2_47(2)) {
+    } else if (jj_2_47(50)) {
                                                                                                                                         ASTFalseNode jjtn004 = new ASTFalseNode(JJTFALSENODE);
                                                                                                                                         boolean jjtc004 = true;
                                                                                                                                         jjtree.openNodeScope(jjtn004);
@@ -814,17 +814,17 @@ public class CompiledParser/*@bgen(jjtree)*/implements CompiledParserTreeConstan
                                                                                                                                           jjtn004.jjtSetLastToken(getToken(0));
                                                                                                                                         }
       }
-    } else if (jj_2_48(2)) {
+    } else if (jj_2_48(50)) {
       FunctionLiteral();
-    } else if (jj_2_49(2)) {
+    } else if (jj_2_49(50)) {
       StringLiteral();
-    } else if (jj_2_50(2)) {
+    } else if (jj_2_50(50)) {
       ExistsTmlLiteral();
-    } else if (jj_2_51(2)) {
+    } else if (jj_2_51(50)) {
       TmlLiteral();
-    } else if (jj_2_52(2)) {
+    } else if (jj_2_52(50)) {
       TipiLiteral();
-    } else if (jj_2_53(2)) {
+    } else if (jj_2_53(50)) {
       jj_consume_token(52);
       MappableLiteral();
     } else {
@@ -881,7 +881,7 @@ public class CompiledParser/*@bgen(jjtree)*/implements CompiledParserTreeConstan
     try {
       t = jj_consume_token(SARTRE);
       jj_consume_token(45);
-      if (jj_2_54(2)) {
+      if (jj_2_54(50)) {
         StringLiteral();
         jj_consume_token(LIST_SEPARATOR);
         ExpressionLiteral();
@@ -925,11 +925,11 @@ public class CompiledParser/*@bgen(jjtree)*/implements CompiledParserTreeConstan
       t = jj_consume_token(NORMAL_IDENTIFIER);
      jjtn001.functionName = t.image;
       jj_consume_token(45);
-      if (jj_2_60(2)) {
-        if (jj_2_55(2)) {
+      if (jj_2_60(50)) {
+        if (jj_2_55(50)) {
           Expression();
                         jjtn001.args++;
-        } else if (jj_2_56(2)) {
+        } else if (jj_2_56(50)) {
           KeyValue();
                       jjtn001.args++;
         } else {
@@ -938,16 +938,16 @@ public class CompiledParser/*@bgen(jjtree)*/implements CompiledParserTreeConstan
         }
         label_12:
         while (true) {
-          if (jj_2_57(2)) {
+          if (jj_2_57(50)) {
             ;
           } else {
             break label_12;
           }
           jj_consume_token(LIST_SEPARATOR);
-          if (jj_2_58(2)) {
+          if (jj_2_58(50)) {
             Expression();
                                       jjtn001.args++;
-          } else if (jj_2_59(2)) {
+          } else if (jj_2_59(50)) {
             KeyValue();
                                   jjtn001.args++;
           } else {
@@ -1069,11 +1069,11 @@ public class CompiledParser/*@bgen(jjtree)*/implements CompiledParserTreeConstan
     jjtn001.jjtSetFirstToken(getToken(1));
     try {
       t = jj_consume_token(EXISTS_TML_IDENTIFIER);
-      if (jj_2_63(2)) {
-        if (jj_2_61(2)) {
+      if (jj_2_63(50)) {
+        if (jj_2_61(50)) {
           jj_consume_token(NAME_OPTION);
                                                  jjtn001.selectionOption = "name";
-        } else if (jj_2_62(2)) {
+        } else if (jj_2_62(50)) {
           jj_consume_token(VALUE_OPTION);
                                                                                                       jjtn001.selectionOption = "value";
         } else {
@@ -1084,7 +1084,7 @@ public class CompiledParser/*@bgen(jjtree)*/implements CompiledParserTreeConstan
         ;
       }
       jj_consume_token(53);
-      if (jj_2_64(2)) {
+      if (jj_2_64(50)) {
         jj_consume_token(54);
         jj_consume_token(NORMAL_IDENTIFIER);
                                                                                                                                                                             jjtn001.option = token.image;
@@ -1111,11 +1111,11 @@ public class CompiledParser/*@bgen(jjtree)*/implements CompiledParserTreeConstan
     jjtn001.jjtSetFirstToken(getToken(1));
     try {
       t = jj_consume_token(TML_IDENTIFIER);
-      if (jj_2_67(2)) {
-        if (jj_2_65(2)) {
+      if (jj_2_67(50)) {
+        if (jj_2_65(50)) {
           jj_consume_token(NAME_OPTION);
                                 jjtn001.selectionOption = "name";
-        } else if (jj_2_66(2)) {
+        } else if (jj_2_66(50)) {
           jj_consume_token(VALUE_OPTION);
                                           jjtn001.selectionOption = "value";
         } else {
@@ -1126,7 +1126,7 @@ public class CompiledParser/*@bgen(jjtree)*/implements CompiledParserTreeConstan
         ;
       }
       jj_consume_token(53);
-      if (jj_2_68(2)) {
+      if (jj_2_68(50)) {
         jj_consume_token(54);
         jj_consume_token(NORMAL_IDENTIFIER);
                              jjtn001.option = token.image;
@@ -1173,14 +1173,14 @@ public class CompiledParser/*@bgen(jjtree)*/implements CompiledParserTreeConstan
     jjtn001.jjtSetFirstToken(getToken(1));
     try {
       t = jj_consume_token(NORMAL_IDENTIFIER);
-      if (jj_2_71(2)) {
+      if (jj_2_71(50)) {
         jj_consume_token(45);
-        if (jj_2_70(2)) {
+        if (jj_2_70(50)) {
           Expression();
                      jjtn001.args++;
           label_13:
           while (true) {
-            if (jj_2_69(2)) {
+            if (jj_2_69(50)) {
               ;
             } else {
               break label_13;
@@ -1224,7 +1224,7 @@ public class CompiledParser/*@bgen(jjtree)*/implements CompiledParserTreeConstan
 
   final public void KeyValue() throws ParseException {
  Token t; boolean isParam = false;
-    if (jj_2_72(2)) {
+    if (jj_2_72(50)) {
       jj_consume_token(55);
         isParam = true;
     } else {
@@ -1848,7 +1848,7 @@ public class CompiledParser/*@bgen(jjtree)*/implements CompiledParserTreeConstan
     return false;
   }
 
-  private boolean jj_3R_38() {
+  private boolean jj_3R_36() {
     if (jj_scan_token(EXPRESSION_LITERAL)) return true;
     return false;
   }
@@ -1913,7 +1913,7 @@ public class CompiledParser/*@bgen(jjtree)*/implements CompiledParserTreeConstan
   private boolean jj_3_54() {
     if (jj_3R_31()) return true;
     if (jj_scan_token(LIST_SEPARATOR)) return true;
-    if (jj_3R_38()) return true;
+    if (jj_3R_36()) return true;
     return false;
   }
 
@@ -1994,7 +1994,7 @@ public class CompiledParser/*@bgen(jjtree)*/implements CompiledParserTreeConstan
     return false;
   }
 
-  private boolean jj_3R_37() {
+  private boolean jj_3R_38() {
     if (jj_3R_22()) return true;
     if (jj_scan_token(51)) return true;
     if (jj_3R_22()) return true;
@@ -2199,6 +2199,11 @@ public class CompiledParser/*@bgen(jjtree)*/implements CompiledParserTreeConstan
 
   private boolean jj_3_10() {
     if (jj_3R_17()) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3_9()) { jj_scanpos = xsp; break; }
+    }
     return false;
   }
 
@@ -2207,15 +2212,15 @@ public class CompiledParser/*@bgen(jjtree)*/implements CompiledParserTreeConstan
     return false;
   }
 
-  private boolean jj_3R_36() {
-    if (jj_3R_37()) return true;
+  private boolean jj_3R_37() {
+    if (jj_3R_38()) return true;
     return false;
   }
 
   private boolean jj_3R_25() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_36()) {
+    if (jj_3R_37()) {
     jj_scanpos = xsp;
     if (jj_3_28()) {
     jj_scanpos = xsp;
@@ -2379,6 +2384,10 @@ public class CompiledParser/*@bgen(jjtree)*/implements CompiledParserTreeConstan
   private boolean jj_3_11() {
     if (jj_scan_token(HEADER)) return true;
     if (jj_scan_token(45)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_10()) jj_scanpos = xsp;
+    if (jj_scan_token(46)) return true;
     return false;
   }
 
@@ -2688,7 +2697,7 @@ public class CompiledParser/*@bgen(jjtree)*/implements CompiledParserTreeConstan
       return (jj_ntk = jj_nt.kind);
   }
 
-  private java.util.List<int[]> jj_expentries = new java.util.ArrayList<int[]>();
+  private java.util.List jj_expentries = new java.util.ArrayList();
   private int[] jj_expentry;
   private int jj_kind = -1;
   private int[] jj_lasttokens = new int[100];
@@ -2703,7 +2712,7 @@ public class CompiledParser/*@bgen(jjtree)*/implements CompiledParserTreeConstan
       for (int i = 0; i < jj_endpos; i++) {
         jj_expentry[i] = jj_lasttokens[i];
       }
-      jj_entries_loop: for (java.util.Iterator<?> it = jj_expentries.iterator(); it.hasNext();) {
+      jj_entries_loop: for (java.util.Iterator it = jj_expentries.iterator(); it.hasNext();) {
         int[] oldentry = (int[])(it.next());
         if (oldentry.length == jj_expentry.length) {
           for (int i = 0; i < jj_expentry.length; i++) {
@@ -2751,7 +2760,7 @@ public class CompiledParser/*@bgen(jjtree)*/implements CompiledParserTreeConstan
     jj_add_error_token(0, 0);
     int[][] exptokseq = new int[jj_expentries.size()][];
     for (int i = 0; i < jj_expentries.size(); i++) {
-      exptokseq[i] = jj_expentries.get(i);
+      exptokseq[i] = (int[])jj_expentries.get(i);
     }
     return new ParseException(token, exptokseq, tokenImage);
   }
