@@ -10,28 +10,8 @@ dependencies {
     implementation 'io.quarkus:quarkus-vertx'
     implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
     implementation 'io.quarkus:quarkus-resteasy'
-    implementation "io.floodplain:config-runtime:${floodplain_version}"
-    implementation "io.floodplain:floodplain-reactive-topology:${floodplain_version}"
-    implementation "io.floodplain:floodplain-document-stream:${floodplain_version}"
-    implementation "io.floodplain:floodplain-document:${floodplain_version}"
-    implementation "io.floodplain:floodplain-authentication-api:${floodplain_version}"
-    implementation "io.floodplain:floodplain-core:${floodplain_version}"
-    implementation "io.floodplain:floodplain-reactive:${floodplain_version}"
-    implementation "io.floodplain:floodplain-function:${floodplain_version}"
-    implementation "io.floodplain:floodplain-reactive:${floodplain_version}"
-    implementation "io.floodplain:floodplain-version:${floodplain_version}"
-    implementation "io.floodplain:immutable-api:${floodplain_version}"
-    implementation "io.floodplain:immutable-impl:${floodplain_version}"
-    implementation "io.floodplain:replication-api:${floodplain_version}"
-    implementation "io.floodplain:replication-impl:${floodplain_version}"
-    implementation "io.floodplain:replication-json:${floodplain_version}"
-    implementation "io.floodplain:replication-protobuf:${floodplain_version}"
-    implementation "io.floodplain:streams-api:${floodplain_version}"
-    implementation "io.floodplain:streams:${floodplain_version}"
-    implementation "io.floodplain:kafka-rx2:${floodplain_version}"
-    implementation "io.floodplain:pubsub-rx2:${floodplain_version}"
-    implementation "io.floodplain:kafka-converter:${floodplain_version}"
-    implementation "io.floodplain:floodplain-api:${floodplain_version}"
+    implementation project(':floodplain-reactive-topology')
+    implementation project(':floodplain-document-stream')
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
 
     testImplementation 'io.quarkus:quarkus-junit5'

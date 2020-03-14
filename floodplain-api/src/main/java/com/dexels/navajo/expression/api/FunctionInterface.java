@@ -45,7 +45,6 @@ public abstract class FunctionInterface {
     }
 
     private final String genPipedParamMsg(Class[] c) {
-
         if (c == null) {
             return "unknown";
         }
