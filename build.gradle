@@ -23,10 +23,10 @@ allprojects {
 
 subprojects {
     version  = rootProject.ext.floodplain_version
+    apply plugin: 'com.intershop.gradle.javacc'
     apply plugin: "java"
 	apply plugin: "eclipse"
     apply plugin: "maven-publish"
-    apply plugin: 'com.intershop.gradle.javacc'
     apply plugin: 'io.quarkus'
 	apply from: "$rootProject.projectDir/gradle/common.gradle"
     group = "io.floodplain"

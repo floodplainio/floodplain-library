@@ -1111,7 +1111,7 @@ public class StandardFunctionsTest {
 
 		FunctionInterface fi = fff.getInstance(cl, "GetUrlMimeType");
 		fi.reset();
-		fi.insertStringOperand("http://www.dexels.com/index.php");
+		fi.insertStringOperand("http://www.dexels.com");
 
 		Object o = fi.evaluateWithTypeChecking();
 
