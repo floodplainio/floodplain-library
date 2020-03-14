@@ -213,7 +213,7 @@ public class TestBuildTopology {
 	}
 	
 
-	@Test
+	@Test @Ignore
 	public void testGroupBy() throws ParseException, IOException, InterruptedException {
 		Topology topology = runner.parseSinglePipeDefinition(topologyContext, new Topology(),getClass().getClassLoader().getResourceAsStream("totalpayment.rr"));
 		ReplicationTopologyParser.materializeStateStores(runner.topologyConstructor(), topology);

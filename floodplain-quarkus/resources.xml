@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+	<deployment name="test" kafka="kafka:9092" connect="http://connect:8083/connectors">
+		<postgres.source name="dvd" connector.class="io.debezium.connector.postgresql.PostgresConnector" database.hostname="postgres" database.port="5432" database.user="postgres" database.password="mysecretpassword" database.dbname="dvdrental" />
+		<mongodb.sink name="@mongo" connector.class="com.mongodb.kafka.connect.MongoSinkConnector" connection.uri="mongodb://mongo" database="@total:dvdstore" />
+	</deployment>
+</resources>

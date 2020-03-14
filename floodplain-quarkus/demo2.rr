@@ -1,0 +1,22 @@
+|>database(resource='dvd',schema='public',table='staff')
+	->joinRemote(key=ToString([address_id]),
+        |>database(resource='dvd',schema='public',table='address')
+            ->set(last_update=null)
+            ->joinRemote(key=ToString([city_id]),
+                |>database(resource='dvd',schema='public',table='city')
+                    ->set(last_update=null)
+                    ->joinRemote(key=ToString([country_id]),
+                        |>database(resource='dvd',schema='public',table='country')
+                    )
+                    ->set(countryname=[@country])
+                    ->set(city_id=null)
+                )
+            ->set(cityname=[@city],countryname=[@countryname])
+            )
+	->set(address=[@])
+	->set(address_id=null)
+    ->sink(connector='@mongo',collection='staff', '@STAFF')
+
+
+
+

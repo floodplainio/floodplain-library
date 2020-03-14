@@ -14,7 +14,9 @@ pluginManagement {
         google()
     }
     plugins {
-	  id 'com.github.johnrengelman.shadow' version '5.2.0'
+        id 'org.jetbrains.kotlin.jvm' version "1.3.41"
+        id "org.jetbrains.kotlin.plugin.allopen" version "1.3.41"
+	    id 'com.github.johnrengelman.shadow' version '5.2.0'
     }
 }
 
@@ -41,6 +43,7 @@ include 'immutable-api',
 'floodplain-reactive',
 'floodplain-function',
 'floodplain-reactive-topology',
+'floodplain-quarkus',
 'kafka-converter'
 
 

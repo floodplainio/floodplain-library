@@ -37,6 +37,23 @@ dependencies {
     testCompile dependencies.jUnit
  }
 
+javacc {
+        // configuration container for all javacc configurations
+        configs {
+            template {
+                inputFile = file('javacc/tmlc.jjt')
+                outputDir = file('src/main/java')
+                packageName = 'com.dexels.navajo.parser.compiled'
+                lookahead = '2'
+                jjtree {
+                    nodePackage = 'com.dexels.navajo.parser.compiled'
+                }
+            }
+        }
+
+
+}
+
 
 
 
