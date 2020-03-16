@@ -1,10 +1,10 @@
 package com.dexels.navajo.document;
 
+import com.dexels.navajo.document.typecheck.TypeChecker;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.dexels.navajo.document.typecheck.TypeChecker;
 
 /**
  * <p>Title: </p>

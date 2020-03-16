@@ -1,7 +1,6 @@
 package com.dexels.kafka.streams.base;
 
 import com.dexels.kafka.streams.api.StreamConfiguration;
-import com.dexels.kafka.streams.processor.generic.GenericProcessorBuilder;
 import com.dexels.kafka.streams.transformer.custom.*;
 import com.dexels.kafka.streams.xml.parser.XMLParseException;
 import com.dexels.replication.transformer.api.MessageTransformer;
@@ -18,7 +17,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.inject.Named;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;

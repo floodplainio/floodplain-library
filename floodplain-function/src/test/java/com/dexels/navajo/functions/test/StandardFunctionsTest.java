@@ -1,53 +1,28 @@
 package com.dexels.navajo.functions.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-
+import com.dexels.navajo.document.*;
+import com.dexels.navajo.document.types.*;
+import com.dexels.navajo.expression.api.FunctionInterface;
 import com.dexels.navajo.expression.api.StatefulFunctionInterface;
+import com.dexels.navajo.expression.api.TMLExpressionException;
+import com.dexels.navajo.functions.*;
+import com.dexels.navajo.functions.util.FunctionFactoryFactory;
+import com.dexels.navajo.functions.util.FunctionFactoryInterface;
+import com.dexels.navajo.parser.Expression;
+import com.dexels.navajo.script.api.SystemException;
 import org.dexels.utils.Base64;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.dexels.navajo.document.Header;
-import com.dexels.navajo.document.Message;
-import com.dexels.navajo.document.Navajo;
-import com.dexels.navajo.document.NavajoFactory;
-import com.dexels.navajo.document.Operand;
-import com.dexels.navajo.document.Property;
-import com.dexels.navajo.document.types.Binary;
-import com.dexels.navajo.document.types.ClockTime;
-import com.dexels.navajo.document.types.Memo;
-import com.dexels.navajo.document.types.Money;
-import com.dexels.navajo.document.types.Percentage;
-import com.dexels.navajo.document.types.StopwatchTime;
-import com.dexels.navajo.expression.api.FunctionInterface;
-import com.dexels.navajo.expression.api.TMLExpressionException;
-import com.dexels.navajo.functions.CapString;
-import com.dexels.navajo.functions.CheckFloat;
-import com.dexels.navajo.functions.CheckInteger;
-import com.dexels.navajo.functions.CreateExpression;
-import com.dexels.navajo.functions.DateTime;
-import com.dexels.navajo.functions.ToPercentage;
-import com.dexels.navajo.functions.ValidatePhoneNumber;
-import com.dexels.navajo.functions.WeekDay;
-import com.dexels.navajo.functions.util.FunctionFactoryFactory;
-import com.dexels.navajo.functions.util.FunctionFactoryInterface;
-import com.dexels.navajo.parser.Expression;
-import com.dexels.navajo.script.api.SystemException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
+import java.util.*;
+
+import static org.junit.Assert.*;
 
 @SuppressWarnings("unused")
 public class StandardFunctionsTest {

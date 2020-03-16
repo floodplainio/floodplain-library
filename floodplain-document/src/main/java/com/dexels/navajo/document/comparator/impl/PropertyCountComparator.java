@@ -1,8 +1,8 @@
 package com.dexels.navajo.document.comparator.impl;
 
-import java.util.Comparator;
-
 import com.dexels.navajo.document.Message;
+
+import java.util.Comparator;
 
 class PropertyCountComparator implements Comparator<Message> {
 

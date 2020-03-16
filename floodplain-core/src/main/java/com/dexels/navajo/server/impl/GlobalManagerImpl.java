@@ -1,21 +1,15 @@
 package com.dexels.navajo.server.impl;
 
+import com.dexels.navajo.document.*;
+import com.dexels.navajo.server.global.GlobalManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.dexels.navajo.document.Header;
-import com.dexels.navajo.document.Message;
-import com.dexels.navajo.document.Navajo;
-import com.dexels.navajo.document.NavajoException;
-import com.dexels.navajo.document.NavajoFactory;
-import com.dexels.navajo.document.Property;
-import com.dexels.navajo.server.global.GlobalManager;
 
 public class GlobalManagerImpl implements GlobalManager {
 

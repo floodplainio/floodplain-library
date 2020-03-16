@@ -2,24 +2,20 @@
 /* JavaCCOptions:MULTI=true,NODE_USES_PARSER=false,VISITOR=false,TRACK_TOKENS=false,NODE_PREFIX=AST,NODE_EXTENDS=,NODE_FACTORY=,SUPPORT_CLASS_VISIBILITY_PUBLIC=true */
 package com.dexels.navajo.parser.compiled;
 
+import com.dexels.immutable.api.ImmutableMessage;
+import com.dexels.navajo.document.*;
+import com.dexels.navajo.expression.api.ContextExpression;
+import com.dexels.navajo.expression.api.FunctionClassification;
+import com.dexels.navajo.expression.api.TipiLink;
+import com.dexels.navajo.script.api.Access;
+import com.dexels.navajo.script.api.MappableTreeNode;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
-
-import com.dexels.immutable.api.ImmutableMessage;
-import com.dexels.navajo.document.Message;
-import com.dexels.navajo.document.Navajo;
-import com.dexels.navajo.document.Operand;
-import com.dexels.navajo.document.Property;
-import com.dexels.navajo.document.Selection;
-import com.dexels.navajo.expression.api.ContextExpression;
-import com.dexels.navajo.expression.api.FunctionClassification;
-import com.dexels.navajo.expression.api.TipiLink;
-import com.dexels.navajo.script.api.Access;
-import com.dexels.navajo.script.api.MappableTreeNode;
 
 public abstract class SimpleNode implements Node {
     protected Node parent;

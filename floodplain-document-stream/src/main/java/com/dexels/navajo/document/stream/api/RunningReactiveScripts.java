@@ -1,9 +1,9 @@
 package com.dexels.navajo.document.stream.api;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import java.util.Collection;
 import java.util.List;
-
-import com.fasterxml.jackson.databind.JsonNode;
 
 public interface RunningReactiveScripts {
 

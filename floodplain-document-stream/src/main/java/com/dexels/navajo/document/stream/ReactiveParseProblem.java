@@ -1,8 +1,8 @@
 package com.dexels.navajo.document.stream;
 
-import java.util.Optional;
-
 import com.dexels.navajo.document.nanoimpl.XMLElement;
+
+import java.util.Optional;
 
 public class ReactiveParseProblem {
 

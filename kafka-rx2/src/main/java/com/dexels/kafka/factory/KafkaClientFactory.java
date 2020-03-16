@@ -1,15 +1,14 @@
 package com.dexels.kafka.factory;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
-import org.osgi.annotation.versioning.ProviderType;
-
 import com.dexels.kafka.impl.KafkaTopicPublisher;
 import com.dexels.kafka.impl.KafkaTopicSubscriber;
 import com.dexels.pubsub.rx2.api.PersistentPublisher;
 import com.dexels.pubsub.rx2.api.PersistentSubscriber;
+import org.osgi.annotation.versioning.ProviderType;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 @ProviderType
 public class KafkaClientFactory {

@@ -1,13 +1,13 @@
 package com.dexels.navajo.reactive.source.ndjson;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
 import com.dexels.navajo.document.stream.DataItem.Type;
 import com.dexels.navajo.reactive.api.ReactiveParameters;
 import com.dexels.navajo.reactive.api.ReactiveSource;
 import com.dexels.navajo.reactive.api.ReactiveSourceFactory;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 // TODO Implement? Delete?
 public class NDJsonSourceFactory implements ReactiveSourceFactory {

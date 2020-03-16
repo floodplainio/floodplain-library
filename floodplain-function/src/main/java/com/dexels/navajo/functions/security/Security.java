@@ -1,14 +1,12 @@
 package com.dexels.navajo.functions.security;
 
-import java.nio.charset.Charset;
-import java.security.Key;
+import com.dexels.navajo.document.types.Binary;
+import org.dexels.utils.Base64;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
-
-import org.dexels.utils.Base64;
-
-import com.dexels.navajo.document.types.Binary;
+import java.nio.charset.Charset;
+import java.security.Key;
 
 public class Security {
 	private static final String KEY_ALGO = "AES";

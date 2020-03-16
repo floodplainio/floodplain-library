@@ -1,10 +1,10 @@
 package com.dexels.navajo.functions;
 
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
-
 import com.dexels.navajo.expression.api.FunctionInterface;
 import com.dexels.navajo.expression.api.TMLExpressionException;
+
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 
 public class ToPattern extends FunctionInterface {

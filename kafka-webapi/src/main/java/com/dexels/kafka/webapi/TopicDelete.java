@@ -1,9 +1,9 @@
 package com.dexels.kafka.webapi;
 
+import io.reactivex.functions.Predicate;
+
 import java.io.IOException;
 import java.util.List;
-
-import io.reactivex.functions.Predicate;
 
 public class TopicDelete {
 	public static void deleteTopics(String bootstrap, String path, String generation, String tenant, String deployment) throws IOException {

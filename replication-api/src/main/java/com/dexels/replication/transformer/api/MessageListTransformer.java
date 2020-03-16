@@ -1,8 +1,8 @@
 package com.dexels.replication.transformer.api;
 
-import java.util.List;
-
 import com.dexels.replication.api.ReplicationMessage;
+
+import java.util.List;
 
 // TODO not used, remove?
 public interface MessageListTransformer {

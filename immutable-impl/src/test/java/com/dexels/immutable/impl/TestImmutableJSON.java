@@ -1,20 +1,18 @@
 package com.dexels.immutable.impl;
 
-import java.awt.image.ReplicateScaleFilter;
-import java.io.IOException;
-import java.util.Optional;
-
+import com.dexels.immutable.api.ImmutableMessage;
+import com.dexels.immutable.api.ImmutableMessage.ValueType;
+import com.dexels.immutable.api.ImmutableMessageParser;
+import com.dexels.immutable.api.ImmutableTypeParser;
+import com.dexels.immutable.factory.ImmutableFactory;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dexels.immutable.api.ImmutableMessage;
-import com.dexels.immutable.api.ImmutableMessageParser;
-import com.dexels.immutable.api.ImmutableTypeParser;
-import com.dexels.immutable.api.ImmutableMessage.ValueType;
-import com.dexels.immutable.factory.ImmutableFactory;
+import java.io.IOException;
+import java.util.Optional;
 
 public class TestImmutableJSON {
 	

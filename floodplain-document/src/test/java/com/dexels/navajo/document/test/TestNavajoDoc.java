@@ -1,12 +1,11 @@
 package com.dexels.navajo.document.test;
 
-import org.junit.Assert;
-import org.junit.Test;
-
 import com.dexels.navajo.document.Message;
 import com.dexels.navajo.document.Navajo;
 import com.dexels.navajo.document.NavajoFactory;
 import com.dexels.navajo.document.Property;
+import org.junit.Assert;
+import org.junit.Test;
 
 public class TestNavajoDoc {
 	@Test

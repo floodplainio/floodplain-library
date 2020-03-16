@@ -1,10 +1,10 @@
 package com.dexels.navajo.document.stream.api;
 
+import com.dexels.navajo.document.stream.ReactiveScript;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;
-
-import com.dexels.navajo.document.stream.ReactiveScript;
 
 public interface ReactiveScriptRunner {
 	public ReactiveScript build(String service, boolean debug) throws IOException;

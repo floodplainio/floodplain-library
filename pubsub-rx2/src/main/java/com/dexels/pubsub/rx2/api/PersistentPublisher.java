@@ -1,12 +1,12 @@
 package com.dexels.pubsub.rx2.api;
 
-import java.util.List;
-import java.util.Map;
-
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
+
+import java.util.List;
+import java.util.Map;
 
 public interface PersistentPublisher extends TopicPublisher {
 	public Observable<String> listConsumerGroups();

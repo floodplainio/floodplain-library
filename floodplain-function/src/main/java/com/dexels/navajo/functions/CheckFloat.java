@@ -1,7 +1,5 @@
 package com.dexels.navajo.functions;
 
-import com.dexels.navajo.document.Message;
-import com.dexels.navajo.document.Property;
 import com.dexels.navajo.expression.api.FunctionInterface;
 import com.dexels.navajo.expression.api.TMLExpressionException;
 

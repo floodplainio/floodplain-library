@@ -39,15 +39,12 @@ package org.dexels.utils;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.lang.reflect.UndeclaredThrowableException;
 
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
+
+import java.io.*;
+import java.lang.reflect.UndeclaredThrowableException;
 
 
 /** Performs Base64 encoding and/or decoding. This is an on-the-fly decoder: Unlike,

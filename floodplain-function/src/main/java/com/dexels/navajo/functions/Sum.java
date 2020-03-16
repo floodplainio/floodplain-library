@@ -10,12 +10,12 @@ package com.dexels.navajo.functions;
  * @version $Id$
  */
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.dexels.navajo.expression.api.FunctionInterface;
 import com.dexels.navajo.expression.api.TMLExpressionException;
 import com.dexels.navajo.parser.Utils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public final class Sum extends FunctionInterface {

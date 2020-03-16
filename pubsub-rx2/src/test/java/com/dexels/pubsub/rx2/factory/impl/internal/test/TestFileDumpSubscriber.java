@@ -1,16 +1,14 @@
 package com.dexels.pubsub.rx2.factory.impl.internal.test;
 
-import java.io.FileNotFoundException;
-import java.io.InputStreamReader;
-
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.Ignore;
-
 import com.dexels.pubsub.rx2.factory.PubSubTools;
 import com.dexels.pubsub.rx2.factory.impl.internal.KafkaDumpSubscriber;
-
 import io.reactivex.Flowable;
+import org.junit.Assert;
+import org.junit.Ignore;
+import org.junit.Test;
+
+import java.io.FileNotFoundException;
+import java.io.InputStreamReader;
 
 public class TestFileDumpSubscriber {
 	

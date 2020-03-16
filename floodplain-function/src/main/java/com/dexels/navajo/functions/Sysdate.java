@@ -1,8 +1,8 @@
 package com.dexels.navajo.functions;
 
-import java.util.Date;
-
 import com.dexels.navajo.expression.api.FunctionInterface;
+
+import java.util.Date;
 
 public final class Sysdate extends FunctionInterface {
 

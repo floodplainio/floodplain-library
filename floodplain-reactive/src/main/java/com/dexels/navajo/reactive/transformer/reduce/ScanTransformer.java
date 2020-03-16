@@ -1,8 +1,5 @@
 package com.dexels.navajo.reactive.transformer.reduce;
 
-import java.util.Optional;
-import java.util.function.Function;
-
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.navajo.document.stream.DataItem;
@@ -11,9 +8,11 @@ import com.dexels.navajo.expression.api.ContextExpression;
 import com.dexels.navajo.reactive.api.ReactiveParameters;
 import com.dexels.navajo.reactive.api.ReactiveTransformer;
 import com.dexels.navajo.reactive.api.TransformerMetadata;
-
 import io.reactivex.Flowable;
 import io.reactivex.FlowableTransformer;
+
+import java.util.Optional;
+import java.util.function.Function;
 
 public class ScanTransformer implements ReactiveTransformer {
 

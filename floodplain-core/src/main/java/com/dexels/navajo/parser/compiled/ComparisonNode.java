@@ -2,11 +2,6 @@
 package com.dexels.navajo.parser.compiled;
 
 
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Function;
-
 import com.dexels.navajo.document.Operand;
 import com.dexels.navajo.document.Property;
 import com.dexels.navajo.document.types.ClockTime;
@@ -16,6 +11,11 @@ import com.dexels.navajo.expression.api.ContextExpression;
 import com.dexels.navajo.expression.api.FunctionClassification;
 import com.dexels.navajo.expression.api.TMLExpressionException;
 import com.dexels.navajo.parser.Utils;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
 
 @SuppressWarnings({"rawtypes"})
 

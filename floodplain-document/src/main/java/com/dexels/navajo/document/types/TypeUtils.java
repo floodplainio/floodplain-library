@@ -1,11 +1,11 @@
 package com.dexels.navajo.document.types;
 
-import java.util.List;
-
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.navajo.document.Message;
 import com.dexels.navajo.document.Property;
 import com.dexels.navajo.document.Selection;
+
+import java.util.List;
 
 public class TypeUtils {
 

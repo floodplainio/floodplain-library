@@ -1,15 +1,11 @@
 package com.dexels.navajo.parser.compiled;
 
+import org.junit.Test;
+
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.junit.Test;
-
-import com.dexels.navajo.expression.api.ContextExpression;
-import com.dexels.navajo.expression.api.FunctionClassification;
-import com.dexels.navajo.expression.api.TMLExpressionException;
 
 public class TestParseAdvanced {
 	@Test

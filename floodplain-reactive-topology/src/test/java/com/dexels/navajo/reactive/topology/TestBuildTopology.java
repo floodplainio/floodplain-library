@@ -1,18 +1,5 @@
 package com.dexels.navajo.reactive.topology;
 
-import java.io.IOException;
-import java.nio.file.Paths;
-import java.util.Collection;
-import java.util.Optional;
-
-import org.apache.kafka.clients.admin.AdminClient;
-import org.apache.kafka.streams.KafkaStreams;
-import org.apache.kafka.streams.Topology;
-import org.apache.kafka.streams.state.StreamsMetadata;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-
 import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.kafka.streams.api.StreamConfiguration;
 import com.dexels.kafka.streams.api.TopologyContext;
@@ -22,6 +9,18 @@ import com.dexels.navajo.reactive.CoreReactiveFinder;
 import com.dexels.navajo.reactive.api.Reactive;
 import com.dexels.navajo.reactive.source.topology.TopologyReactiveFinder;
 import com.dexels.navajo.reactive.source.topology.TopologyRunner;
+import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.streams.KafkaStreams;
+import org.apache.kafka.streams.Topology;
+import org.apache.kafka.streams.state.StreamsMetadata;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.Collection;
+import java.util.Optional;
 
 public class TestBuildTopology {
 	

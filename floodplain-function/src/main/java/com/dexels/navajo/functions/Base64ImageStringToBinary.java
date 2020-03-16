@@ -24,17 +24,16 @@
  */
 package com.dexels.navajo.functions;
 
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.Base64;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.dexels.navajo.document.types.Binary;
 import com.dexels.navajo.expression.api.FunctionInterface;
 import com.dexels.navajo.expression.api.TMLExpressionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 public class Base64ImageStringToBinary extends FunctionInterface {
 

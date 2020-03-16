@@ -1,20 +1,14 @@
 package com.dexels.navajo.reactive.api;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Function;
-
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.navajo.document.stream.DataItem;
 import com.dexels.navajo.document.stream.DataItem.Type;
 import com.dexels.navajo.document.stream.api.StreamScriptContext;
-
 import io.reactivex.Flowable;
 import io.reactivex.FlowableTransformer;
+
+import java.util.*;
+import java.util.function.Function;
 
 
 public interface ReactiveMerger extends ParameterValidator {

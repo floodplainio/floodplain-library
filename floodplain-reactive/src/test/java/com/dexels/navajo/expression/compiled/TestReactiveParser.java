@@ -1,29 +1,11 @@
 package com.dexels.navajo.expression.compiled;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringReader;
-import java.util.Optional;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.navajo.document.Message;
 import com.dexels.navajo.document.Navajo;
 import com.dexels.navajo.document.NavajoFactory;
 import com.dexels.navajo.document.stream.ReactiveScript;
-import com.dexels.navajo.parser.compiled.ASTKeyValueNode;
-import com.dexels.navajo.parser.compiled.ASTPipeDefinition;
-import com.dexels.navajo.parser.compiled.ASTReactiveScriptNode;
-import com.dexels.navajo.parser.compiled.CompiledParser;
-import com.dexels.navajo.parser.compiled.Node;
-import com.dexels.navajo.parser.compiled.ParseException;
+import com.dexels.navajo.parser.compiled.*;
 import com.dexels.navajo.reactive.ClasspathReactiveScriptEnvironment;
 import com.dexels.navajo.reactive.CoreReactiveFinder;
 import com.dexels.navajo.reactive.ReactiveScriptEnvironment;
@@ -31,8 +13,19 @@ import com.dexels.navajo.reactive.ReactiveStandalone;
 import com.dexels.navajo.reactive.api.CompiledReactiveScript;
 import com.dexels.navajo.reactive.api.Reactive;
 import com.dexels.navajo.reactive.api.ReactivePipe;
-import com.dexels.navajo.reactive.api.ReactiveTransformer;
 import com.fasterxml.aalto.AsyncByteArrayFeeder;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.util.Optional;
 
 public class TestReactiveParser {
 	

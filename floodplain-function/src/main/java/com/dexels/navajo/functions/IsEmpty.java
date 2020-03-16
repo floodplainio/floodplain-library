@@ -1,10 +1,10 @@
 package com.dexels.navajo.functions;
 
-import java.util.List;
-
 import com.dexels.navajo.document.types.NavajoType;
 import com.dexels.navajo.expression.api.FunctionInterface;
 import com.dexels.navajo.expression.api.TMLExpressionException;
+
+import java.util.List;
 
 public class IsEmpty extends FunctionInterface {
 

@@ -1,11 +1,10 @@
 package com.dexels.navajo.reactive.api;
 
+import com.dexels.navajo.document.stream.DataItem.Type;
+import io.reactivex.functions.BiFunction;
+
 import java.util.Set;
 import java.util.function.Function;
-
-import com.dexels.navajo.document.stream.DataItem.Type;
-
-import io.reactivex.functions.BiFunction;
 
 public class ReactiveBuildContext {
 

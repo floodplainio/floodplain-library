@@ -1,11 +1,7 @@
 package com.dexels.navajo.document.test;
-import org.junit.Test;
 
-import com.dexels.navajo.document.Message;
-import com.dexels.navajo.document.Method;
-import com.dexels.navajo.document.Navajo;
-import com.dexels.navajo.document.NavajoFactory;
-import com.dexels.navajo.document.Operation;
+import com.dexels.navajo.document.*;
+import org.junit.Test;
 
 
 public class TestOperation {

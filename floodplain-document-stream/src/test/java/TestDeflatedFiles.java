@@ -1,11 +1,10 @@
+import com.dexels.navajo.document.stream.StreamCompress;
+import com.github.davidmoten.rx2.Bytes;
+import org.junit.Test;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.InflaterInputStream;
-
-import org.junit.Test;
-
-import com.dexels.navajo.document.stream.StreamCompress;
-import com.github.davidmoten.rx2.Bytes;
 
 public class TestDeflatedFiles {
 

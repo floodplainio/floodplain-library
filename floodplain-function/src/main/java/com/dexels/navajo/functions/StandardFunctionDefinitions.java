@@ -1,11 +1,11 @@
 package com.dexels.navajo.functions;
 
+import navajo.ExtensionDefinition;
+
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
-
-import navajo.ExtensionDefinition;
 
 
 

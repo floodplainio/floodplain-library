@@ -1,13 +1,11 @@
 package com.dexels.navajo.document.stream.json;
 
-import org.junit.Assert;
-import org.junit.Test;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.github.davidmoten.rx2.Bytes;
-
 import io.reactivex.Flowable;
+import org.junit.Assert;
+import org.junit.Test;
 
 public class JSONObservableTest {
 

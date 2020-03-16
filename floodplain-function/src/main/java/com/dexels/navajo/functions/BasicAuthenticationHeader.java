@@ -4,12 +4,11 @@
  */
 package com.dexels.navajo.functions;
 
-import java.nio.charset.Charset;
-
-import org.dexels.utils.Base64;
-
 import com.dexels.navajo.expression.api.FunctionInterface;
 import com.dexels.navajo.expression.api.TMLExpressionException;
+import org.dexels.utils.Base64;
+
+import java.nio.charset.Charset;
 
 /**
  * @author cbrouwer

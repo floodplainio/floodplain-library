@@ -1,9 +1,9 @@
 package com.dexels.navajo.script.api;
 
+import com.dexels.navajo.document.Navajo;
+
 import java.io.IOException;
 import java.util.Set;
-
-import com.dexels.navajo.document.Navajo;
 
 public interface TmlRunnable extends Runnable {
 

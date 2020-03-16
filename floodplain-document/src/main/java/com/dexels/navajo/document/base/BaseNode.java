@@ -8,21 +8,16 @@ package com.dexels.navajo.document.base;
  * @author Frank Lyaruu
  * @version 1.0
  */
+
+import com.dexels.navajo.document.Navajo;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.StringTokenizer;
-
-import com.dexels.navajo.document.Navajo;
 
 public abstract class BaseNode implements java.io.Serializable{
   /**

@@ -1,14 +1,4 @@
 package com.dexels.navajo.document.test;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.Date;
-
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.dexels.navajo.document.Message;
 import com.dexels.navajo.document.Navajo;
@@ -16,12 +6,17 @@ import com.dexels.navajo.document.NavajoFactory;
 import com.dexels.navajo.document.Property;
 import com.dexels.navajo.document.json.JSONTML;
 import com.dexels.navajo.document.json.JSONTMLFactory;
-import com.dexels.navajo.document.types.Binary;
-import com.dexels.navajo.document.types.ClockTime;
-import com.dexels.navajo.document.types.Coordinate;
-import com.dexels.navajo.document.types.Memo;
-import com.dexels.navajo.document.types.Money;
-import com.dexels.navajo.document.types.Percentage;
+import com.dexels.navajo.document.types.*;
+import org.junit.Assert;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.Date;
 
 public class TestTMLJson {
 	

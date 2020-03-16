@@ -1,20 +1,11 @@
 package com.dexels.navajo.document.test;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-
+import com.dexels.navajo.document.*;
+import com.dexels.navajo.document.base.BaseMessageImpl;
+import com.dexels.navajo.document.base.BaseNavajoImpl;
+import com.dexels.navajo.document.base.BasePropertyImpl;
+import com.dexels.navajo.document.base.BaseSelectionImpl;
+import com.dexels.navajo.document.types.*;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -22,20 +13,12 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dexels.navajo.document.Message;
-import com.dexels.navajo.document.Navajo;
-import com.dexels.navajo.document.NavajoFactory;
-import com.dexels.navajo.document.Property;
-import com.dexels.navajo.document.Selection;
-import com.dexels.navajo.document.base.BaseMessageImpl;
-import com.dexels.navajo.document.base.BaseNavajoImpl;
-import com.dexels.navajo.document.base.BasePropertyImpl;
-import com.dexels.navajo.document.base.BaseSelectionImpl;
-import com.dexels.navajo.document.types.Binary;
-import com.dexels.navajo.document.types.ClockTime;
-import com.dexels.navajo.document.types.Money;
-import com.dexels.navajo.document.types.Percentage;
-import com.dexels.navajo.document.types.StopwatchTime;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+import static org.junit.Assert.*;
 
 public class TestProperty {
 

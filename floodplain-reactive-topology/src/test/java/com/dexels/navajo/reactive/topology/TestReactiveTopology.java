@@ -1,13 +1,5 @@
 package com.dexels.navajo.reactive.topology;
 
-import java.io.IOException;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-
 import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.navajo.parser.compiled.ParseException;
 import com.dexels.navajo.reactive.CoreReactiveFinder;
@@ -17,6 +9,13 @@ import com.dexels.navajo.reactive.api.Reactive;
 import com.dexels.navajo.reactive.api.ReactivePipe;
 import com.dexels.navajo.reactive.api.ReactiveTransformer;
 import com.dexels.navajo.reactive.source.topology.TopologyReactiveFinder;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+
+import java.io.IOException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class TestReactiveTopology {
 	

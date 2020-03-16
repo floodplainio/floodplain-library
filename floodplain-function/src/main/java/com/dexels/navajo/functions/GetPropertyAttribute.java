@@ -2,7 +2,6 @@ package com.dexels.navajo.functions;
 
 import com.dexels.navajo.document.NavajoException;
 import com.dexels.navajo.document.Property;
-import com.dexels.navajo.expression.api.FunctionInterface;
 import com.dexels.navajo.expression.api.StatefulFunctionInterface;
 import com.dexels.navajo.expression.api.TMLExpressionException;
 

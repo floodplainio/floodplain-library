@@ -1,17 +1,11 @@
 package com.dexels.navajo.document.base;
 
+import com.dexels.navajo.document.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.dexels.navajo.document.ExpressionEvaluator;
-import com.dexels.navajo.document.Message;
-import com.dexels.navajo.document.Method;
-import com.dexels.navajo.document.Navajo;
-import com.dexels.navajo.document.NavajoFactory;
-import com.dexels.navajo.document.Operand;
-import com.dexels.navajo.document.Required;
 
 public class BaseMethodImpl extends BaseNode implements Method {
     private static final long serialVersionUID = 4307457202134807432L;

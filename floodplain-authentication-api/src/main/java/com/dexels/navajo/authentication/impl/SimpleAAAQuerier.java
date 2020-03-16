@@ -1,13 +1,13 @@
 package com.dexels.navajo.authentication.impl;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.dexels.navajo.authentication.api.AAAQuerier;
 import com.dexels.navajo.authentication.api.AuthenticationResult;
 import com.dexels.navajo.authentication.api.AuthenticationType;
 import com.dexels.navajo.script.api.Access;
 import com.dexels.navajo.script.api.AuthorizationException;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class SimpleAAAQuerier implements AAAQuerier {
 

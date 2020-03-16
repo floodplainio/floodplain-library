@@ -1,51 +1,19 @@
 package com.dexels.navajo.document.base;
 
+import com.dexels.immutable.api.customtypes.CoordinateType;
+import com.dexels.navajo.document.*;
+import com.dexels.navajo.document.types.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringReader;
-import java.io.Writer;
+import java.io.*;
 import java.net.URL;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.StringTokenizer;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.dexels.immutable.api.customtypes.CoordinateType;
-import com.dexels.navajo.document.DocumentPropertyChangeEvent;
-import com.dexels.navajo.document.ExpressionChangedException;
-import com.dexels.navajo.document.ExpressionTag;
-import com.dexels.navajo.document.Message;
-import com.dexels.navajo.document.Navajo;
-import com.dexels.navajo.document.NavajoException;
-import com.dexels.navajo.document.NavajoFactory;
-import com.dexels.navajo.document.Operand;
-import com.dexels.navajo.document.Property;
-import com.dexels.navajo.document.PropertyTypeChecker;
-import com.dexels.navajo.document.PropertyTypeException;
-import com.dexels.navajo.document.Selection;
-import com.dexels.navajo.document.types.Binary;
-import com.dexels.navajo.document.types.BinaryDigest;
-import com.dexels.navajo.document.types.ClockTime;
-import com.dexels.navajo.document.types.Coordinate;
-import com.dexels.navajo.document.types.Memo;
-import com.dexels.navajo.document.types.Money;
-import com.dexels.navajo.document.types.NavajoExpression;
-import com.dexels.navajo.document.types.Percentage;
-import com.dexels.navajo.document.types.StopwatchTime;
+import java.util.*;
 
 /**
  * <p>

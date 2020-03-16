@@ -1,10 +1,10 @@
 package com.dexels.replication.api;
 
+import com.dexels.pubsub.rx2.api.PubSubMessage;
+
 import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
-
-import com.dexels.pubsub.rx2.api.PubSubMessage;
 
 public interface ReplicationMessageParser {
 	@Deprecated

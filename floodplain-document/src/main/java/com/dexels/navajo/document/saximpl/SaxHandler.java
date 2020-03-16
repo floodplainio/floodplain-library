@@ -7,37 +7,18 @@
 package com.dexels.navajo.document.saximpl;
 
 
-import java.io.EOFException;
-import java.io.IOException;
-import java.io.Reader;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
+import com.dexels.navajo.document.*;
+import com.dexels.navajo.document.base.*;
+import com.dexels.navajo.document.saximpl.qdxml.DocHandler;
+import com.dexels.navajo.document.types.Binary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dexels.navajo.document.Message;
-import com.dexels.navajo.document.Method;
-import com.dexels.navajo.document.Navajo;
-import com.dexels.navajo.document.NavajoException;
-import com.dexels.navajo.document.NavajoFactory;
-import com.dexels.navajo.document.Property;
-import com.dexels.navajo.document.Selection;
-import com.dexels.navajo.document.base.BaseHeaderImpl;
-import com.dexels.navajo.document.base.BaseMessageImpl;
-import com.dexels.navajo.document.base.BaseNode;
-import com.dexels.navajo.document.base.BaseObjectImpl;
-import com.dexels.navajo.document.base.BasePropertyImpl;
-import com.dexels.navajo.document.base.BaseSelectionImpl;
-import com.dexels.navajo.document.base.BaseTransactionImpl;
-import com.dexels.navajo.document.saximpl.qdxml.DocHandler;
-import com.dexels.navajo.document.types.Binary;
+import java.io.EOFException;
+import java.io.IOException;
+import java.io.Reader;
+import java.util.*;
+import java.util.Map.Entry;
 
 public final class SaxHandler implements DocHandler {
 

@@ -1,17 +1,15 @@
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Optional;
-
-import org.junit.Assert;
-import org.junit.Test;
-
 import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.navajo.document.Navajo;
 import com.dexels.navajo.document.NavajoFactory;
 import com.dexels.navajo.document.stream.StreamDocument;
-
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Single;
+import org.junit.Assert;
+import org.junit.Test;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Optional;
 
 public class TestGatherEvents {
 

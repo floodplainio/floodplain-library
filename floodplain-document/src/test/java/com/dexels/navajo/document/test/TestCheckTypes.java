@@ -1,13 +1,13 @@
 package com.dexels.navajo.document.test;
-import java.util.Map;
-import java.util.Set;
-
-import org.junit.Test;
 
 import com.dexels.navajo.document.Message;
 import com.dexels.navajo.document.Navajo;
 import com.dexels.navajo.document.NavajoFactory;
 import com.dexels.navajo.document.Property;
+import org.junit.Test;
+
+import java.util.Map;
+import java.util.Set;
 
 
 public class TestCheckTypes {

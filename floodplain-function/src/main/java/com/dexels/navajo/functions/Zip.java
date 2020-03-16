@@ -24,14 +24,14 @@
  */
 package com.dexels.navajo.functions;
 
+import com.dexels.navajo.document.types.Binary;
+import com.dexels.navajo.expression.api.FunctionInterface;
+import com.dexels.navajo.expression.api.TMLExpressionException;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-
-import com.dexels.navajo.document.types.Binary;
-import com.dexels.navajo.expression.api.FunctionInterface;
-import com.dexels.navajo.expression.api.TMLExpressionException;
 
 public class Zip extends FunctionInterface {
 

@@ -1,12 +1,11 @@
 package com.dexels.navajo.document.typecheck;
 
-import java.util.regex.Pattern;
-
+import com.dexels.navajo.document.Property;
+import com.dexels.navajo.document.PropertyTypeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dexels.navajo.document.Property;
-import com.dexels.navajo.document.PropertyTypeException;
+import java.util.regex.Pattern;
 
 
 /**

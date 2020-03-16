@@ -1,26 +1,20 @@
 package com.dexels.pubsub.rx2.factory.impl.internal;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.Reader;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.BiFunction;
-
+import com.dexels.pubsub.rx2.api.PersistentSubscriber;
+import com.dexels.pubsub.rx2.api.PubSubMessage;
+import com.dexels.pubsub.rx2.factory.impl.BasePubSubMessage;
+import io.reactivex.Flowable;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dexels.pubsub.rx2.api.PersistentSubscriber;
-import com.dexels.pubsub.rx2.api.PubSubMessage;
-import com.dexels.pubsub.rx2.factory.impl.BasePubSubMessage;
-
-import io.reactivex.Flowable;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BiFunction;
 
 public class KafkaDumpSubscriber implements PersistentSubscriber {
 

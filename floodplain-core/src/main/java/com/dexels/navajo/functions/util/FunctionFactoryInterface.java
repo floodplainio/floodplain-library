@@ -1,22 +1,15 @@
 package com.dexels.navajo.functions.util;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import com.dexels.navajo.expression.api.FunctionDefinition;
 import com.dexels.navajo.expression.api.FunctionInterface;
+import com.dexels.navajo.expression.api.TMLExpressionException;
+import com.dexels.navajo.script.api.UserException;
+import navajo.ExtensionDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dexels.navajo.expression.api.FunctionDefinition;
-import com.dexels.navajo.expression.api.StatefulFunctionInterface;
-import com.dexels.navajo.expression.api.TMLExpressionException;
-import com.dexels.navajo.script.api.UserException;
-
-import navajo.ExtensionDefinition;
+import java.io.Serializable;
+import java.util.*;
 
 public abstract class FunctionFactoryInterface implements Serializable {
 

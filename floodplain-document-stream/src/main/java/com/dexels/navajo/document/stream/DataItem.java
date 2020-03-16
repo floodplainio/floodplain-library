@@ -1,13 +1,11 @@
 package com.dexels.navajo.document.stream;
 
-import java.util.List;
-
-
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.navajo.document.stream.events.NavajoStreamEvent;
-
 import io.reactivex.Flowable;
+
+import java.util.List;
 
 public class DataItem {
 

@@ -2,12 +2,12 @@
 
 package com.dexels.navajo.parser.compiled;
 
+import com.dexels.navajo.expression.api.ContextExpression;
+import com.dexels.navajo.expression.api.FunctionClassification;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
-
-import com.dexels.navajo.expression.api.ContextExpression;
-import com.dexels.navajo.expression.api.FunctionClassification;
 
 final class ASTExpressionNode extends SimpleNode {
     ASTExpressionNode(int id) {

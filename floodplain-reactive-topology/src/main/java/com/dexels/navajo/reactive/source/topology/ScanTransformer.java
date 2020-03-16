@@ -1,13 +1,6 @@
 package com.dexels.navajo.reactive.source.topology;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Stack;
-
-import org.apache.kafka.streams.Topology;
-
 import com.dexels.immutable.api.ImmutableMessage;
-import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.kafka.streams.api.TopologyContext;
 import com.dexels.kafka.streams.remotejoin.ReplicationTopologyParser;
 import com.dexels.kafka.streams.remotejoin.TopologyConstructor;
@@ -16,13 +9,16 @@ import com.dexels.navajo.document.stream.api.StreamScriptContext;
 import com.dexels.navajo.expression.api.ContextExpression;
 import com.dexels.navajo.reactive.api.ReactiveParameters;
 import com.dexels.navajo.reactive.api.ReactiveParseException;
-import com.dexels.navajo.reactive.api.ReactiveResolvedParameters;
 import com.dexels.navajo.reactive.api.ReactiveTransformer;
 import com.dexels.navajo.reactive.api.TransformerMetadata;
 import com.dexels.navajo.reactive.source.topology.api.TopologyPipeComponent;
-
 import io.reactivex.Flowable;
 import io.reactivex.FlowableTransformer;
+import org.apache.kafka.streams.Topology;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.Stack;
 
 public class ScanTransformer implements ReactiveTransformer,TopologyPipeComponent {
 

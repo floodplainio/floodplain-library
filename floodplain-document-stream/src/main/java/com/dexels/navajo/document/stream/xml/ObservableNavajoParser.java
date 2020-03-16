@@ -1,20 +1,17 @@
 package com.dexels.navajo.document.stream.xml;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
 import com.dexels.navajo.document.stream.NavajoStreamHandler;
 import com.dexels.navajo.document.stream.api.Method;
 import com.dexels.navajo.document.stream.api.Msg;
 import com.dexels.navajo.document.stream.api.NavajoHead;
 import com.dexels.navajo.document.stream.api.Prop;
 import com.dexels.navajo.document.stream.events.Events;
-//import com.dexels.navajo.document.stream.events.Events;
 import com.dexels.navajo.document.stream.events.NavajoStreamEvent;
 import com.dexels.navajo.document.stream.impl.StreamSaxHandler;
+
+import java.util.*;
+
+//import com.dexels.navajo.document.stream.events.Events;
 
 
 public class ObservableNavajoParser  {

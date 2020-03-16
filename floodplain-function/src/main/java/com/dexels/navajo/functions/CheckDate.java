@@ -1,8 +1,8 @@
 package com.dexels.navajo.functions;
 
-import java.util.Calendar;
-
 import com.dexels.navajo.expression.api.FunctionInterface;
+
+import java.util.Calendar;
 
 /**
  * <p>

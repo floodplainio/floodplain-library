@@ -1,11 +1,10 @@
 package com.dexels.navajo.functions;
 
-import java.util.Locale;
-
 import com.dexels.navajo.document.types.ClockTime;
-import com.dexels.navajo.expression.api.FunctionInterface;
 import com.dexels.navajo.expression.api.StatefulFunctionInterface;
 import com.dexels.navajo.expression.api.TMLExpressionException;
+
+import java.util.Locale;
 
 /**
  * Title: Navajo Description: Copyright: Copyright (c) 2002 Company: Dexels

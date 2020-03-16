@@ -1,9 +1,10 @@
 package com.dexels.navajo.document.base;
+
+import com.dexels.navajo.document.Navajo;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.dexels.navajo.document.Navajo;
 
 public class BaseTransactionImpl extends BaseNode {
 	private static final long serialVersionUID = -6325965122672286543L;

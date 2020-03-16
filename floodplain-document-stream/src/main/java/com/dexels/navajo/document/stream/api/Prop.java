@@ -1,21 +1,16 @@
 package com.dexels.navajo.document.stream.api;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
+import com.dexels.navajo.document.Property;
+import com.dexels.navajo.document.stream.NavajoStreamSerializer;
+import com.dexels.navajo.document.types.Binary;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dexels.navajo.document.Property;
-import com.dexels.navajo.document.stream.NavajoStreamSerializer;
-import com.dexels.navajo.document.types.Binary;
+import java.io.File;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.*;
 
 public class Prop {
 	private final String name;

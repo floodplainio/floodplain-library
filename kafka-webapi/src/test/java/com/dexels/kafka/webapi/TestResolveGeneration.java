@@ -1,14 +1,13 @@
 package com.dexels.kafka.webapi;
 
-import static org.junit.Assert.*;
-
-import java.util.Optional;
-
+import com.dexels.kafka.streams.api.CoreOperators;
+import com.dexels.kafka.streams.api.TopologyContext;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.dexels.kafka.streams.api.CoreOperators;
-import com.dexels.kafka.streams.api.TopologyContext;
+import java.util.Optional;
+
+import static org.junit.Assert.assertEquals;
 
 
 public class TestResolveGeneration {

@@ -1,9 +1,9 @@
 package com.dexels.navajo.functions;
 
-import java.text.ParseException;
-
 import com.dexels.navajo.expression.api.FunctionInterface;
 import com.dexels.navajo.expression.api.TMLExpressionException;
+
+import java.text.ParseException;
 
 public final class Trunc extends FunctionInterface {
 

@@ -1,13 +1,12 @@
 package com.dexels.navajo.reactive.source.topology;
 
-import org.apache.kafka.streams.processor.AbstractProcessor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.replication.api.ReplicationMessage;
 import com.dexels.replication.factory.ReplicationFactory;
+import org.apache.kafka.streams.processor.AbstractProcessor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LogProcessor extends AbstractProcessor<String, ReplicationMessage> {
 

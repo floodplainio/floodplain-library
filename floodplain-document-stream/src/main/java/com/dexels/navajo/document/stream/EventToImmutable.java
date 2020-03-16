@@ -1,14 +1,12 @@
 package com.dexels.navajo.document.stream;
 
-import java.util.Optional;
-
-import org.reactivestreams.Publisher;
-
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.navajo.document.stream.events.NavajoStreamEvent;
-
 import io.reactivex.Flowable;
 import io.reactivex.FlowableTransformer;
+import org.reactivestreams.Publisher;
+
+import java.util.Optional;
 
 public class EventToImmutable implements FlowableTransformer<NavajoStreamEvent,ImmutableMessage> {
 

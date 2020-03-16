@@ -1,21 +1,19 @@
 package com.dexels.navajo.functions.util;
 
+import com.dexels.navajo.document.nanoimpl.CaseSensitiveXMLElement;
+import com.dexels.navajo.document.nanoimpl.XMLElement;
+import com.dexels.navajo.expression.api.FunctionDefinition;
+import navajo.ExtensionDefinition;
+import navajocore.Version;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.dexels.navajo.document.nanoimpl.CaseSensitiveXMLElement;
-import com.dexels.navajo.document.nanoimpl.XMLElement;
-import com.dexels.navajo.expression.api.FunctionDefinition;
-
-import navajo.ExtensionDefinition;
-import navajocore.Version;
 
 public class JarFunctionFactory extends FunctionFactoryInterface implements Serializable {
 

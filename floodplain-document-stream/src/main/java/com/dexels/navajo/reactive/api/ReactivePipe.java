@@ -1,18 +1,16 @@
 package com.dexels.navajo.reactive.api;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Function;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.navajo.document.stream.DataItem;
 import com.dexels.navajo.document.stream.DataItem.Type;
 import com.dexels.navajo.document.stream.api.StreamScriptContext;
-
 import io.reactivex.Flowable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
 
 public class ReactivePipe implements ReactiveSource {
 	public final ReactiveSource source;

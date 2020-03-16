@@ -1,13 +1,5 @@
 package com.dexels.navajo.reactive.transformer.csv;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-
 import com.dexels.navajo.document.Property;
 import com.dexels.navajo.document.stream.DataItem.Type;
 import com.dexels.navajo.document.stream.ReactiveParseProblem;
@@ -15,6 +7,8 @@ import com.dexels.navajo.reactive.api.ReactiveParameters;
 import com.dexels.navajo.reactive.api.ReactiveTransformer;
 import com.dexels.navajo.reactive.api.ReactiveTransformerFactory;
 import com.dexels.navajo.reactive.api.TransformerMetadata;
+
+import java.util.*;
 
 public class CSVTransformerFactory implements ReactiveTransformerFactory, TransformerMetadata {
 

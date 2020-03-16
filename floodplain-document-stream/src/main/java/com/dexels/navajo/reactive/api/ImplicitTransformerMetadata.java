@@ -1,12 +1,8 @@
 package com.dexels.navajo.reactive.api;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-
 import com.dexels.navajo.document.stream.DataItem.Type;
+
+import java.util.*;
 
 public class ImplicitTransformerMetadata implements TransformerMetadata {
 

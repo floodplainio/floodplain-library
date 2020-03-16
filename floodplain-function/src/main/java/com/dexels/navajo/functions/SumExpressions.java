@@ -4,20 +4,19 @@
  */
 package com.dexels.navajo.functions;
 
-import java.util.List;
-
 import com.dexels.navajo.document.Message;
 import com.dexels.navajo.document.Navajo;
 import com.dexels.navajo.document.NavajoException;
 import com.dexels.navajo.document.Operand;
 import com.dexels.navajo.document.types.Money;
 import com.dexels.navajo.document.types.Percentage;
-import com.dexels.navajo.expression.api.FunctionInterface;
 import com.dexels.navajo.expression.api.StatefulFunctionInterface;
 import com.dexels.navajo.expression.api.TMLExpressionException;
 import com.dexels.navajo.parser.Condition;
 import com.dexels.navajo.parser.Expression;
 import com.dexels.navajo.script.api.SystemException;
+
+import java.util.List;
 
 /**
  * @author arjen

@@ -1,10 +1,10 @@
 package com.dexels.navajo.document.base;
 
+import com.dexels.navajo.document.Navajo;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.dexels.navajo.document.Navajo;
 
 /**
  * <p>Title: ShellApplet</p>

@@ -1,10 +1,5 @@
 package com.dexels.navajo.reactive.source.topology;
 
-import java.util.Optional;
-import java.util.Stack;
-
-import org.apache.kafka.streams.Topology;
-
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.kafka.streams.api.TopologyContext;
@@ -19,8 +14,11 @@ import com.dexels.navajo.reactive.api.ReactiveResolvedParameters;
 import com.dexels.navajo.reactive.api.ReactiveSource;
 import com.dexels.navajo.reactive.api.SourceMetadata;
 import com.dexels.navajo.reactive.source.topology.api.TopologyPipeComponent;
-
 import io.reactivex.Flowable;
+import org.apache.kafka.streams.Topology;
+
+import java.util.Optional;
+import java.util.Stack;
 
 public class TopicSource implements ReactiveSource,TopologyPipeComponent {
 

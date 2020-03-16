@@ -1,9 +1,9 @@
 package com.dexels.navajo.functions;
 
+import com.dexels.navajo.expression.api.FunctionInterface;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import com.dexels.navajo.expression.api.FunctionInterface;
 
 public final class ToListAll extends FunctionInterface {
     

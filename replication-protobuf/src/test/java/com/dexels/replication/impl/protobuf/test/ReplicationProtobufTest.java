@@ -1,19 +1,5 @@
 package com.dexels.replication.impl.protobuf.test;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.replication.api.ReplicationMessage;
@@ -24,6 +10,14 @@ import com.dexels.replication.impl.protobuf.generated.Replication;
 import com.dexels.replication.impl.protobuf.generated.Replication.ReplicationMessageProtobuf;
 import com.dexels.replication.impl.protobuf.impl.ProtobufReplicationMessageParser;
 import com.google.protobuf.ByteString;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
 
 
 public class ReplicationProtobufTest {

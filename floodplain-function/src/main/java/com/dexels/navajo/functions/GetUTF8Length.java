@@ -1,13 +1,12 @@
 package com.dexels.navajo.functions;
 
 
-import java.io.UnsupportedEncodingException;
-
+import com.dexels.navajo.expression.api.FunctionInterface;
+import com.dexels.navajo.expression.api.TMLExpressionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dexels.navajo.expression.api.FunctionInterface;
-import com.dexels.navajo.expression.api.TMLExpressionException;
+import java.io.UnsupportedEncodingException;
 
 
 /**

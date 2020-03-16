@@ -1,16 +1,9 @@
 package com.dexels.navajo.document.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
-import java.io.StringWriter;
-import java.util.List;
-import java.util.Map;
-
+import com.dexels.navajo.document.Message;
+import com.dexels.navajo.document.Navajo;
+import com.dexels.navajo.document.NavajoFactory;
+import com.dexels.navajo.document.Property;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -18,10 +11,11 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dexels.navajo.document.Message;
-import com.dexels.navajo.document.Navajo;
-import com.dexels.navajo.document.NavajoFactory;
-import com.dexels.navajo.document.Property;
+import java.io.StringWriter;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.*;
 
 public class TestMessage {
 

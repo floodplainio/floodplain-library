@@ -1,15 +1,14 @@
 package com.dexels.http.reactive.http;
 
-import java.util.Optional;
-import java.util.function.Function;
-
+import io.reactivex.Flowable;
+import io.reactivex.FlowableTransformer;
 import org.eclipse.jetty.client.api.Request;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.reactivex.Flowable;
-import io.reactivex.FlowableTransformer;
+import java.util.Optional;
+import java.util.function.Function;
 
 public class HttpInsertTransformer implements FlowableTransformer<Flowable<byte[]>,ReactiveReply> {
 

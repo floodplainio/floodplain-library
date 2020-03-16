@@ -1,10 +1,10 @@
 package com.dexels.navajo.document.types;
 
+import com.dexels.navajo.document.NavajoException;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.dexels.navajo.document.NavajoException;
 
 public class Coordinate extends NavajoType implements Serializable {
 

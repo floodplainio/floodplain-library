@@ -1,10 +1,10 @@
 package com.dexels.navajo.expression.compiled;
 
-import java.util.Map;
-
 import com.dexels.navajo.document.Operand;
 import com.dexels.navajo.expression.api.FunctionInterface;
 import com.dexels.navajo.expression.api.TMLExpressionException;
+
+import java.util.Map;
 
 public class AddTestFunction extends FunctionInterface {
 

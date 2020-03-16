@@ -8,24 +8,15 @@
  */
 package com.dexels.navajo.parser;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.StringTokenizer;
-
 import com.dexels.immutable.api.ImmutableMessage;
-import com.dexels.navajo.document.Message;
-import com.dexels.navajo.document.Navajo;
-import com.dexels.navajo.document.NavajoException;
-import com.dexels.navajo.document.Operand;
-import com.dexels.navajo.document.Property;
-import com.dexels.navajo.document.Selection;
+import com.dexels.navajo.document.*;
 import com.dexels.navajo.expression.api.TMLExpressionException;
 import com.dexels.navajo.expression.api.TipiLink;
 import com.dexels.navajo.parser.compiled.api.CachedExpressionEvaluator;
 import com.dexels.navajo.script.api.MappableTreeNode;
 import com.dexels.navajo.script.api.SystemException;
+
+import java.util.*;
 
 public final class Expression {
 	public static final String ACCESS = "ACCESS";

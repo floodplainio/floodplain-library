@@ -1,11 +1,11 @@
 package com.dexels.navajo.functions;
 
 
-import java.util.Calendar;
-
 import com.dexels.navajo.document.types.ClockTime;
 import com.dexels.navajo.expression.api.FunctionInterface;
 import com.dexels.navajo.expression.api.TMLExpressionException;
+
+import java.util.Calendar;
 
 
 /**

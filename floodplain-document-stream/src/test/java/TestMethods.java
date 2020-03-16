@@ -1,14 +1,12 @@
-import java.io.IOException;
-import java.io.InputStream;
-
-import org.junit.Assert;
-import org.junit.Test;
-
 import com.dexels.navajo.document.Navajo;
 import com.dexels.navajo.document.NavajoFactory;
 import com.dexels.navajo.document.stream.StreamDocument;
-
 import io.reactivex.Single;
+import org.junit.Assert;
+import org.junit.Test;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 public class TestMethods {
 

@@ -1,14 +1,13 @@
 package com.dexels.navajo.functions;
 
+import com.dexels.navajo.expression.api.FunctionInterface;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Date;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.dexels.navajo.expression.api.FunctionInterface;
 
 /*
  * Some utility functions for URLs

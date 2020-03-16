@@ -1,34 +1,24 @@
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.zip.GZIPInputStream;
-
+import com.dexels.navajo.document.stream.StreamCompress;
+import com.dexels.navajo.document.stream.StreamDocument;
+import com.dexels.navajo.document.stream.xml.XML;
+import com.dexels.navajo.document.stream.xml.XMLEvent;
+import com.github.davidmoten.rx2.Bytes;
+import io.reactivex.Flowable;
+import io.reactivex.Observable;
+import io.reactivex.disposables.Disposable;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
-import com.dexels.navajo.document.stream.StreamCompress;
-import com.dexels.navajo.document.stream.StreamDocument;
-import com.dexels.navajo.document.stream.xml.XML;
-import com.dexels.navajo.document.stream.xml.XMLEvent;
-import com.github.davidmoten.rx2.Bytes;
-
-import io.reactivex.Flowable;
-import io.reactivex.Observable;
-import io.reactivex.disposables.Disposable;
+import java.io.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.zip.GZIPInputStream;
 
 public class TestRx {
 	

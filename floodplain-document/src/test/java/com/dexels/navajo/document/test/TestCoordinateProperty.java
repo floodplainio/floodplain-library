@@ -1,13 +1,11 @@
 package com.dexels.navajo.document.test;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
+import com.dexels.navajo.document.types.Coordinate;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dexels.navajo.document.types.Coordinate;
+import static org.junit.Assert.*;
 
 public class TestCoordinateProperty {
 

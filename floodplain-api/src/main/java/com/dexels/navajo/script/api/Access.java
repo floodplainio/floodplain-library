@@ -25,6 +25,11 @@
 
 package com.dexels.navajo.script.api;
 
+import com.dexels.navajo.document.*;
+import com.dexels.navajo.document.types.Binary;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -33,18 +38,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.dexels.navajo.document.Header;
-import com.dexels.navajo.document.Message;
-import com.dexels.navajo.document.Navajo;
-import com.dexels.navajo.document.NavajoException;
-import com.dexels.navajo.document.NavajoFactory;
-import com.dexels.navajo.document.Operation;
-import com.dexels.navajo.document.Selection;
-import com.dexels.navajo.document.types.Binary;
 
 /**
  * An Access object is created for each web service access to the Navajo server.

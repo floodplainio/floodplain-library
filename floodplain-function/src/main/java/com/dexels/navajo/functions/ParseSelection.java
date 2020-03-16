@@ -24,13 +24,13 @@
  */
 package com.dexels.navajo.functions;
 
-import java.util.StringTokenizer;
-
 import com.dexels.navajo.document.Navajo;
 import com.dexels.navajo.document.NavajoFactory;
 import com.dexels.navajo.document.Selection;
 import com.dexels.navajo.expression.api.FunctionInterface;
 import com.dexels.navajo.expression.api.TMLExpressionException;
+
+import java.util.StringTokenizer;
 
 public class ParseSelection extends FunctionInterface {
 

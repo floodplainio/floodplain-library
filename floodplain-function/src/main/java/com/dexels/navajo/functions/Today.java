@@ -1,9 +1,9 @@
 package com.dexels.navajo.functions;
 
+import com.dexels.navajo.expression.api.FunctionInterface;
+
 import java.util.Calendar;
 import java.util.Date;
-
-import com.dexels.navajo.expression.api.FunctionInterface;
 
 public final class Today extends FunctionInterface {
 

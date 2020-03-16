@@ -1,10 +1,9 @@
 package com.dexels.navajo.document.typecheck;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.dexels.navajo.document.Property;
 import com.dexels.navajo.document.PropertyTypeException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>Title: </p>

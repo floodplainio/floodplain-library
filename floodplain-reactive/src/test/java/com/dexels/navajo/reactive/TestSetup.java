@@ -1,8 +1,5 @@
 package com.dexels.navajo.reactive;
 
-import java.util.Collections;
-import java.util.Optional;
-
 import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.navajo.document.NavajoFactory;
 import com.dexels.navajo.document.stream.api.ReactiveScriptRunner;
@@ -16,16 +13,15 @@ import com.dexels.navajo.reactive.transformer.call.CallTransformerFactory;
 import com.dexels.navajo.reactive.transformer.csv.CSVTransformerFactory;
 import com.dexels.navajo.reactive.transformer.filestore.FileStoreTransformerFactory;
 import com.dexels.navajo.reactive.transformer.mergesingle.MergeSingleTransformerFactory;
-import com.dexels.navajo.reactive.transformer.other.FilterTransformerFactory;
-import com.dexels.navajo.reactive.transformer.other.FlattenEventStreamFactory;
-import com.dexels.navajo.reactive.transformer.other.IntervalTransformerFactory;
-import com.dexels.navajo.reactive.transformer.other.SkipTransformerFactory;
-import com.dexels.navajo.reactive.transformer.other.TakeTransformerFactory;
+import com.dexels.navajo.reactive.transformer.other.*;
 import com.dexels.navajo.reactive.transformer.parseevents.ParseEventStreamFactory;
 import com.dexels.navajo.reactive.transformer.reduce.ReduceTransformerFactory;
 import com.dexels.navajo.reactive.transformer.stream.StreamMessageTransformerFactory;
 import com.dexels.replication.factory.ReplicationFactory;
 import com.dexels.replication.impl.json.JSONReplicationMessageParserImpl;
+
+import java.util.Collections;
+import java.util.Optional;
 
 public class TestSetup {
 	

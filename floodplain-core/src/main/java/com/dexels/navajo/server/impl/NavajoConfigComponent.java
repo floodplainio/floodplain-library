@@ -1,16 +1,9 @@
 package com.dexels.navajo.server.impl;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
-import java.io.Writer;
-import java.util.Date;
-import java.util.Dictionary;
-import java.util.HashMap;
-import java.util.Map;
-
+import com.dexels.navajo.document.Navajo;
+import com.dexels.navajo.script.api.NavajoClassSupplier;
+import com.dexels.navajo.server.NavajoConfigInterface;
+import com.dexels.navajo.server.NavajoIOConfig;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.cm.Configuration;
@@ -18,10 +11,10 @@ import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dexels.navajo.document.Navajo;
-import com.dexels.navajo.script.api.NavajoClassSupplier;
-import com.dexels.navajo.server.NavajoConfigInterface;
-import com.dexels.navajo.server.NavajoIOConfig;
+import java.io.*;
+import java.util.Dictionary;
+import java.util.HashMap;
+import java.util.Map;
 
 public class NavajoConfigComponent implements NavajoConfigInterface {
 

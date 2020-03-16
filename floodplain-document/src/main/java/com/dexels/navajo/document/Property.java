@@ -1,19 +1,13 @@
 package com.dexels.navajo.document;
 
+import com.dexels.navajo.document.types.*;
+
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.io.Writer;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
-
-import com.dexels.navajo.document.types.Binary;
-import com.dexels.navajo.document.types.ClockTime;
-import com.dexels.navajo.document.types.Coordinate;
-import com.dexels.navajo.document.types.Money;
-import com.dexels.navajo.document.types.NavajoExpression;
-import com.dexels.navajo.document.types.Percentage;
-import com.dexels.navajo.document.types.StopwatchTime;
 
 /**
  * <p>Title: Navajo Product Project</p>

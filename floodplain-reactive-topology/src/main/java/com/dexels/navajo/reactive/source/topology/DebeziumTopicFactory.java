@@ -1,17 +1,12 @@
 package com.dexels.navajo.reactive.source.topology;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
 import com.dexels.navajo.document.Property;
 import com.dexels.navajo.document.stream.DataItem.Type;
 import com.dexels.navajo.reactive.api.ReactiveParameters;
 import com.dexels.navajo.reactive.api.ReactiveSource;
 import com.dexels.navajo.reactive.api.ReactiveSourceFactory;
+
+import java.util.*;
 
 public class DebeziumTopicFactory implements ReactiveSourceFactory {
 

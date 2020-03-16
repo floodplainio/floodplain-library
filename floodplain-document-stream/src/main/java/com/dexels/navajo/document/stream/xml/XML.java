@@ -1,20 +1,17 @@
 package com.dexels.navajo.document.stream.xml;
 
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
-
-import javax.xml.stream.XMLStreamException;
-
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
-
 import com.dexels.navajo.document.stream.impl.SaxXmlFeeder;
 import com.dexels.navajo.document.stream.io.BaseFlowableOperator;
-
 import io.reactivex.Flowable;
 import io.reactivex.FlowableOperator;
 import io.reactivex.internal.util.BackpressureHelper;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
+
+import javax.xml.stream.XMLStreamException;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 public class XML {
 	

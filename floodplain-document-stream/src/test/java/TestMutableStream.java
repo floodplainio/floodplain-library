@@ -1,10 +1,3 @@
-import java.util.List;
-import java.util.Optional;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
 import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.navajo.document.Message;
 import com.dexels.navajo.document.stream.NavajoStreamToMutableMessageStream;
@@ -13,6 +6,12 @@ import com.dexels.navajo.document.stream.api.Msg;
 import com.dexels.navajo.document.stream.events.NavajoStreamEvent.NavajoEventTypes;
 import com.dexels.navajo.document.stream.xml.XML;
 import com.github.davidmoten.rx2.Bytes;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.List;
+import java.util.Optional;
 
 public class TestMutableStream {
 

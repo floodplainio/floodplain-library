@@ -1,16 +1,11 @@
 package com.dexels.navajo.functions;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.dexels.navajo.document.Message;
-import com.dexels.navajo.document.Navajo;
-import com.dexels.navajo.document.NavajoFactory;
-import com.dexels.navajo.document.Property;
-import com.dexels.navajo.document.Selection;
-import com.dexels.navajo.expression.api.FunctionInterface;
+import com.dexels.navajo.document.*;
 import com.dexels.navajo.expression.api.StatefulFunctionInterface;
 import com.dexels.navajo.expression.api.TMLExpressionException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <p>

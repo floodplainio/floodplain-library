@@ -1,12 +1,12 @@
 package com.dexels.navajo.document.stream;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
 import com.dexels.navajo.document.stream.api.Method;
 import com.dexels.navajo.document.stream.api.NavajoHead;
 import com.dexels.navajo.document.stream.api.Prop;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public interface NavajoStreamHandler {
 	public void messageDone(Map<String,String> attributes, List<Prop> properties);

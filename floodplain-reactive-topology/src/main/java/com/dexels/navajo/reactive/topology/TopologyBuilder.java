@@ -1,15 +1,5 @@
 package com.dexels.navajo.reactive.topology;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Optional;
-
-import javax.enterprise.context.ApplicationScoped;
-
-import org.apache.kafka.streams.Topology;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.kafka.streams.api.TopologyContext;
 import com.dexels.kafka.streams.remotejoin.ReplicationTopologyParser;
@@ -17,11 +7,15 @@ import com.dexels.kafka.streams.remotejoin.TopologyConstructor;
 import com.dexels.navajo.document.stream.api.StreamScriptContext;
 import com.dexels.navajo.parser.compiled.ParseException;
 import com.dexels.navajo.reactive.ReactiveStandalone;
-import com.dexels.navajo.reactive.api.CompiledReactiveScript;
-import com.dexels.navajo.reactive.api.ReactivePipe;
-import com.dexels.navajo.reactive.api.ReactiveResolvedParameters;
-import com.dexels.navajo.reactive.api.ReactiveSource;
-import com.dexels.navajo.reactive.api.ReactiveTransformer;
+import com.dexels.navajo.reactive.api.*;
+import org.apache.kafka.streams.Topology;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.enterprise.context.ApplicationScoped;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Optional;
 
 @ApplicationScoped
 public class TopologyBuilder {

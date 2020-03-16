@@ -1,11 +1,11 @@
 package com.dexels.navajo.functions;
 
-import java.util.Iterator;
-
 import com.dexels.navajo.document.Message;
 import com.dexels.navajo.document.Property;
 import com.dexels.navajo.expression.api.FunctionInterface;
 import com.dexels.navajo.expression.api.TMLExpressionException;
+
+import java.util.Iterator;
 
 public class SetAllProperties extends FunctionInterface {
 

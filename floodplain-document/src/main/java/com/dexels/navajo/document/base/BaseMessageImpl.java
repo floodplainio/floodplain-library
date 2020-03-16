@@ -10,6 +10,12 @@ package com.dexels.navajo.document.base;
  * @version 1.0
  */
 
+import com.dexels.navajo.document.*;
+import com.dexels.navajo.document.comparatormanager.ComparatorManager;
+import com.dexels.navajo.document.comparatormanager.ComparatorManagerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
@@ -18,30 +24,8 @@ import java.io.Writer;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.regex.Pattern;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.dexels.navajo.document.ExpressionChangedException;
-import com.dexels.navajo.document.Message;
-import com.dexels.navajo.document.MessageMappable;
-import com.dexels.navajo.document.Navajo;
-import com.dexels.navajo.document.NavajoException;
-import com.dexels.navajo.document.NavajoFactory;
-import com.dexels.navajo.document.Property;
-import com.dexels.navajo.document.comparatormanager.ComparatorManager;
-import com.dexels.navajo.document.comparatormanager.ComparatorManagerFactory;
 
 public class BaseMessageImpl extends BaseNode implements Message, Comparable<Message> {
 

@@ -1,15 +1,14 @@
 package com.dexels.navajo.authentication.impl;
 
-import java.util.Base64;
-import java.util.StringTokenizer;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.dexels.navajo.authentication.api.AAAQuerier;
 import com.dexels.navajo.authentication.api.AuthenticationMethod;
 import com.dexels.navajo.script.api.Access;
 import com.dexels.navajo.script.api.AuthorizationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Base64;
+import java.util.StringTokenizer;
 
 public class BasicAuthenticationMethod implements AuthenticationMethod {
 	private static final Logger logger = LoggerFactory.getLogger(BasicAuthenticationMethod.class);

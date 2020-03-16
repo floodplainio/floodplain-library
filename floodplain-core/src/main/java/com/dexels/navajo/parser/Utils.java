@@ -24,21 +24,16 @@ package com.dexels.navajo.parser;
  * SUCH DAMAGE.
  * ====================================================================
  */
+
+import com.dexels.navajo.document.Property;
+import com.dexels.navajo.document.Selection;
+import com.dexels.navajo.document.types.*;
+import com.dexels.navajo.expression.api.TMLExpressionException;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-
-import com.dexels.navajo.document.Property;
-import com.dexels.navajo.document.Selection;
-import com.dexels.navajo.document.types.Binary;
-import com.dexels.navajo.document.types.ClockTime;
-import com.dexels.navajo.document.types.DatePattern;
-import com.dexels.navajo.document.types.Money;
-import com.dexels.navajo.document.types.NavajoType;
-import com.dexels.navajo.document.types.Percentage;
-import com.dexels.navajo.document.types.StopwatchTime;
-import com.dexels.navajo.expression.api.TMLExpressionException;
 
 public final class Utils extends Exception {
 

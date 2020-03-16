@@ -1,10 +1,9 @@
 package com.dexels.navajo.script.api;
 
-import java.io.IOException;
+import com.dexels.navajo.document.Navajo;
 
 import javax.servlet.ServletRequest;
-
-import com.dexels.navajo.document.Navajo;
+import java.io.IOException;
 
 public interface AsyncRequest {
 

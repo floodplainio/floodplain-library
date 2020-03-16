@@ -1,10 +1,11 @@
 package com.dexels.navajo.functions;
 
-import java.io.Reader;
-import java.io.StringReader;
 import com.dexels.navajo.document.Navajo;
 import com.dexels.navajo.document.json.JSONTMLFactory;
 import com.dexels.navajo.expression.api.FunctionInterface;
+
+import java.io.Reader;
+import java.io.StringReader;
 
 public class JsonToTml extends FunctionInterface {
 

@@ -1,10 +1,10 @@
 package com.dexels.navajo.functions;
 
-import java.text.ParseException;
-import java.util.Calendar;
-
 import com.dexels.navajo.expression.api.FunctionInterface;
 import com.dexels.navajo.expression.api.TMLExpressionException;
+
+import java.text.ParseException;
+import java.util.Calendar;
 
 public class StripTime extends FunctionInterface {
 	public StripTime() {}

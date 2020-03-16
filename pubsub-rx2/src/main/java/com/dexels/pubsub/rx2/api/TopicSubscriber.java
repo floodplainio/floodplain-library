@@ -1,10 +1,10 @@
 package com.dexels.pubsub.rx2.api;
 
+import org.reactivestreams.Publisher;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
-
-import org.reactivestreams.Publisher;
 
 public interface TopicSubscriber {
 	public default Publisher<List<PubSubMessage>> subscribe(List<String> topics, String consumerGroup, Optional<BiFunction<String,Integer, Long>> fromTag, Optional<BiFunction<String, Integer, Long>> toTag, Optional<String> clientId, boolean fromBeginning, Runnable onPartitionsAssigned) {

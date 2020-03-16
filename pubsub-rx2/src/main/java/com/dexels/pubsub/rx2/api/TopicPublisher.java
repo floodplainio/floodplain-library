@@ -1,14 +1,13 @@
 package com.dexels.pubsub.rx2.api;
 
+import io.reactivex.Completable;
+import io.reactivex.Flowable;
+import org.reactivestreams.Subscriber;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
-
-import org.reactivestreams.Subscriber;
-
-import io.reactivex.Completable;
-import io.reactivex.Flowable;
 
 public interface TopicPublisher {
 	@Deprecated

@@ -1,14 +1,14 @@
 package com.dexels.navajo.document.test;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringReader;
-
-import org.junit.Assert;
-import org.junit.Test;
 
 import com.dexels.navajo.document.Message;
 import com.dexels.navajo.document.Navajo;
 import com.dexels.navajo.document.NavajoFactory;
+import org.junit.Assert;
+import org.junit.Test;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
 
 
 public class TestXmlParser {

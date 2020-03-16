@@ -1,9 +1,9 @@
 package com.dexels.navajo.functions;
 
-import java.util.StringTokenizer;
-
 import com.dexels.navajo.expression.api.FunctionInterface;
 import com.dexels.navajo.expression.api.TMLExpressionException;
+
+import java.util.StringTokenizer;
 
 public class KeyValueMap extends FunctionInterface {
 

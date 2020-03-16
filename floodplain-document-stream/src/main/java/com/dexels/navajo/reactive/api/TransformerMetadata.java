@@ -1,9 +1,9 @@
 package com.dexels.navajo.reactive.api;
 
-import java.util.Set;
-
 import com.dexels.navajo.document.stream.DataItem;
 import com.dexels.navajo.document.stream.DataItem.Type;
+
+import java.util.Set;
 
 public interface TransformerMetadata extends ParameterValidator {
 

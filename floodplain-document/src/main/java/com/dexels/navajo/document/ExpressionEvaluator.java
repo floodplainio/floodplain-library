@@ -1,10 +1,10 @@
 package com.dexels.navajo.document;
 
+import com.dexels.immutable.api.ImmutableMessage;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
-import com.dexels.immutable.api.ImmutableMessage;
 
 /**
  * <p>Title: Navajo Product Project</p>

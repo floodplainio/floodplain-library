@@ -1,11 +1,11 @@
 package com.dexels.navajo.document.base;
 
+import com.dexels.navajo.document.Method;
+import com.dexels.navajo.document.Navajo;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import com.dexels.navajo.document.Method;
-import com.dexels.navajo.document.Navajo;
 
 /**
  * <p>Title: ShellApplet</p>

@@ -1,10 +1,10 @@
 package com.dexels.navajo.functions;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-
 import com.dexels.navajo.expression.api.FunctionInterface;
 import com.dexels.navajo.expression.api.TMLExpressionException;
+
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 
 public final class StringFunction extends FunctionInterface {
 

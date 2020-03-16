@@ -5,7 +5,6 @@ import com.dexels.kafka.streams.api.StreamConfiguration;
 import com.dexels.kafka.streams.api.StreamTopologyException;
 import com.dexels.kafka.streams.api.TopologyContext;
 import com.dexels.kafka.streams.processor.generic.GenericProcessor;
-import com.dexels.kafka.streams.processor.generic.GenericProcessorBuilder;
 import com.dexels.kafka.streams.remotejoin.ReplicationTopologyParser;
 import com.dexels.kafka.streams.xml.parser.CaseSensitiveXMLElement;
 import com.dexels.kafka.streams.xml.parser.XMLElement;

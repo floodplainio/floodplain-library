@@ -1,10 +1,9 @@
 package com.dexels.navajo.reactive.source.topology;
 
-import java.util.function.Function;
-
+import com.dexels.replication.api.ReplicationMessage;
 import org.apache.kafka.streams.processor.AbstractProcessor;
 
-import com.dexels.replication.api.ReplicationMessage;
+import java.util.function.Function;
 
 public class FunctionProcessor extends AbstractProcessor<String, ReplicationMessage> {
 

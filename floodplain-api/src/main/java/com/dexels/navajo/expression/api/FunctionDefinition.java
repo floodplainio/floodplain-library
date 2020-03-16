@@ -1,13 +1,12 @@
 package com.dexels.navajo.expression.api;
 
 
-import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
-
+import com.dexels.navajo.document.nanoimpl.XMLElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dexels.navajo.document.nanoimpl.XMLElement;
+import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 
 public final class FunctionDefinition implements Serializable {
 

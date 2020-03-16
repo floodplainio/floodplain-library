@@ -1,7 +1,5 @@
 package com.dexels.navajo.reactive.source.ndjson;
 
-import java.util.Optional;
-
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.navajo.document.stream.DataItem;
 import com.dexels.navajo.document.stream.DataItem.Type;
@@ -9,8 +7,9 @@ import com.dexels.navajo.document.stream.api.StreamScriptContext;
 import com.dexels.navajo.reactive.api.ReactiveParameters;
 import com.dexels.navajo.reactive.api.ReactiveSource;
 import com.dexels.navajo.reactive.api.SourceMetadata;
-
 import io.reactivex.Flowable;
+
+import java.util.Optional;
 
 public class NDJsonSource implements ReactiveSource {
 

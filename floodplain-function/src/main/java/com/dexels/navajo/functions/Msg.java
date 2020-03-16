@@ -1,13 +1,13 @@
 package com.dexels.navajo.functions;
 
-import java.util.Map.Entry;
-import java.util.Set;
-
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.navajo.document.Operand;
 import com.dexels.navajo.expression.api.FunctionInterface;
 import com.dexels.navajo.expression.api.TMLExpressionException;
+
+import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * <p>Title: Navajo Product Project</p>

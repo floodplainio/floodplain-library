@@ -1,8 +1,5 @@
 package io.floodplain.runtime;
 
-import java.io.*;
-import java.util.Optional;
-
 import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.kafka.streams.api.StreamConfiguration;
 import com.dexels.kafka.streams.api.TopologyContext;
@@ -14,6 +11,11 @@ import com.dexels.navajo.reactive.source.topology.TopologyRunner;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Default;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Optional;
 
 @ApplicationScoped @Default
 public class Main {

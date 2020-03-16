@@ -1,32 +1,11 @@
 package com.dexels.navajo.reactive;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
-
-import org.osgi.framework.BundleContext;
-
 import com.dexels.navajo.expression.api.FunctionClassification;
 import com.dexels.navajo.reactive.api.ReactiveFinder;
 import com.dexels.navajo.reactive.api.ReactiveMerger;
 import com.dexels.navajo.reactive.api.ReactiveSourceFactory;
 import com.dexels.navajo.reactive.api.ReactiveTransformerFactory;
-import com.dexels.navajo.reactive.mappers.Delete;
-import com.dexels.navajo.reactive.mappers.DeleteSubMessage;
-import com.dexels.navajo.reactive.mappers.JsonFileAppender;
-import com.dexels.navajo.reactive.mappers.Log;
-import com.dexels.navajo.reactive.mappers.LogState;
-import com.dexels.navajo.reactive.mappers.Rename;
-import com.dexels.navajo.reactive.mappers.ReverseStoreAsSubMessage;
-import com.dexels.navajo.reactive.mappers.SetSingle;
-import com.dexels.navajo.reactive.mappers.SetSingleKeyValue;
-import com.dexels.navajo.reactive.mappers.Store;
-import com.dexels.navajo.reactive.mappers.StoreAsSubMessage;
-import com.dexels.navajo.reactive.mappers.StoreAsSubMessageList;
-import com.dexels.navajo.reactive.mappers.StoreSingle;
-import com.dexels.navajo.reactive.mappers.ToSubMessage;
-import com.dexels.navajo.reactive.mappers.ToSubMessageList;
+import com.dexels.navajo.reactive.mappers.*;
 import com.dexels.navajo.reactive.source.input.InputSourceFactory;
 import com.dexels.navajo.reactive.source.input.TmlInputSourceFactory;
 import com.dexels.navajo.reactive.source.single.SingleSourceFactory;
@@ -36,15 +15,17 @@ import com.dexels.navajo.reactive.transformer.call.PipeTransformerFactory;
 import com.dexels.navajo.reactive.transformer.csv.CSVTransformerFactory;
 import com.dexels.navajo.reactive.transformer.eventstream.EventStreamMessageTransformerFactory;
 import com.dexels.navajo.reactive.transformer.mergesingle.MergeSingleTransformerFactory;
-import com.dexels.navajo.reactive.transformer.other.FilterTransformerFactory;
-import com.dexels.navajo.reactive.transformer.other.FirstTransformerFactory;
-import com.dexels.navajo.reactive.transformer.other.FlattenEventStreamFactory;
-import com.dexels.navajo.reactive.transformer.other.InMessageTransformerFactory;
-import com.dexels.navajo.reactive.transformer.other.TakeTransformerFactory;
+import com.dexels.navajo.reactive.transformer.other.*;
 import com.dexels.navajo.reactive.transformer.parseevents.ParseEventStreamFactory;
 import com.dexels.navajo.reactive.transformer.reduce.ReduceToListTransformerFactory;
 import com.dexels.navajo.reactive.transformer.reduce.ReduceTransformerFactory;
 import com.dexels.navajo.reactive.transformer.stream.StreamMessageTransformerFactory;
+import org.osgi.framework.BundleContext;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
 
 public class CoreReactiveFinder implements ReactiveFinder {
 

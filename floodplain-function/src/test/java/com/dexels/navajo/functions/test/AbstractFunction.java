@@ -1,13 +1,12 @@
 package com.dexels.navajo.functions.test;
 
-import org.junit.Before;
-
 import com.dexels.navajo.document.Message;
 import com.dexels.navajo.document.Navajo;
 import com.dexels.navajo.document.NavajoFactory;
 import com.dexels.navajo.document.Property;
 import com.dexels.navajo.functions.util.FunctionFactoryFactory;
 import com.dexels.navajo.functions.util.FunctionFactoryInterface;
+import org.junit.Before;
 
 public abstract class AbstractFunction  {
 

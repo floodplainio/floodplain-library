@@ -1,16 +1,10 @@
 package com.dexels.navajo.document;
 
+import com.dexels.immutable.api.ImmutableMessage;
+import com.dexels.navajo.document.types.*;
+
 import java.util.Date;
 import java.util.List;
-
-import com.dexels.immutable.api.ImmutableMessage;
-import com.dexels.navajo.document.types.Binary;
-import com.dexels.navajo.document.types.ClockTime;
-import com.dexels.navajo.document.types.DatePattern;
-import com.dexels.navajo.document.types.Money;
-import com.dexels.navajo.document.types.Percentage;
-import com.dexels.navajo.document.types.StopwatchTime;
-import com.dexels.navajo.document.types.TypeUtils;
 
 /**
  * <p>Title: </p>

@@ -1,13 +1,13 @@
 package com.dexels.kafka.converter;
 
+import org.apache.kafka.connect.data.SchemaAndValue;
+import org.junit.Before;
+import org.junit.Test;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
-
-import org.apache.kafka.connect.data.SchemaAndValue;
-import org.junit.Before;
-import org.junit.Test;
 
 public class TestConverter {
 	

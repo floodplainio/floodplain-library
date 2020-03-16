@@ -1,8 +1,5 @@
 package com.dexels.navajo.reactive.transformer.csv;
 
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.navajo.document.Operand;
 import com.dexels.navajo.document.stream.DataItem;
@@ -11,9 +8,11 @@ import com.dexels.navajo.reactive.api.ReactiveParameters;
 import com.dexels.navajo.reactive.api.ReactiveResolvedParameters;
 import com.dexels.navajo.reactive.api.ReactiveTransformer;
 import com.dexels.navajo.reactive.api.TransformerMetadata;
-
 import io.reactivex.FlowableTransformer;
 import io.reactivex.functions.Function;
+
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class CSVTransformer implements ReactiveTransformer {
 

@@ -1,12 +1,11 @@
 package com.dexels.navajo.functions;
 
-import java.io.StringWriter;
-
 import com.dexels.navajo.document.Navajo;
 import com.dexels.navajo.document.NavajoException;
-import com.dexels.navajo.expression.api.FunctionInterface;
 import com.dexels.navajo.expression.api.StatefulFunctionInterface;
 import com.dexels.navajo.expression.api.TMLExpressionException;
+
+import java.io.StringWriter;
 
 public class NavajoRequestToString extends StatefulFunctionInterface {
 

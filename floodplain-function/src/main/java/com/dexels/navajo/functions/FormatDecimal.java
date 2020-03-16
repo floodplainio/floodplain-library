@@ -4,10 +4,10 @@
  */
 package com.dexels.navajo.functions;
 
-import java.text.DecimalFormat;
-
 import com.dexels.navajo.expression.api.FunctionInterface;
 import com.dexels.navajo.expression.api.TMLExpressionException;
+
+import java.text.DecimalFormat;
 
 /**
  * @author matthijs

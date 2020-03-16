@@ -1,11 +1,10 @@
-import org.junit.Assert;
-import org.junit.Test;
-
 import com.dexels.navajo.document.Navajo;
 import com.dexels.navajo.document.NavajoFactory;
 import com.dexels.navajo.document.stream.StreamDocument;
 import com.dexels.replication.api.ReplicationMessage;
 import com.dexels.replication.factory.ReplicationFactory;
+import org.junit.Assert;
+import org.junit.Test;
 
 public class TestTMLReplicationConversion {
 

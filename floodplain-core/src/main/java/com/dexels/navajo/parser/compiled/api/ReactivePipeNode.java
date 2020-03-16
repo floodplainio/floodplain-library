@@ -1,8 +1,5 @@
 package com.dexels.navajo.parser.compiled.api;
 
-import java.util.List;
-import java.util.Optional;
-
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.navajo.document.Message;
 import com.dexels.navajo.document.Navajo;
@@ -15,6 +12,9 @@ import com.dexels.navajo.reactive.api.ReactivePipe;
 import com.dexels.navajo.reactive.api.ReactiveSource;
 import com.dexels.navajo.script.api.Access;
 import com.dexels.navajo.script.api.MappableTreeNode;
+
+import java.util.List;
+import java.util.Optional;
 
 public class ReactivePipeNode implements ContextExpression {
 	private final Operand actual;

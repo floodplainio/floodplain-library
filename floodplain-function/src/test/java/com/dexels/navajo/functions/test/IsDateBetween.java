@@ -1,9 +1,9 @@
 package com.dexels.navajo.functions.test;
 
 
-import static org.junit.Assert.assertTrue;
-
 import org.junit.Test;
+
+import static org.junit.Assert.assertTrue;
 
 /**
  * Generated code for the test suite <b>IsDateBetween</b> located at

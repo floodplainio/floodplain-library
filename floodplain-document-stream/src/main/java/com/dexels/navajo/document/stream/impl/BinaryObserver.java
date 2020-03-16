@@ -1,26 +1,18 @@
 package com.dexels.navajo.document.stream.impl;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.Writer;
-import java.security.DigestOutputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
+import com.dexels.navajo.document.NavajoFactory;
+import com.dexels.navajo.document.types.Binary;
+import io.reactivex.FlowableOperator;
 import org.dexels.utils.Base64;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dexels.navajo.document.NavajoFactory;
-import com.dexels.navajo.document.types.Binary;
-
-import io.reactivex.FlowableOperator;
+import java.io.*;
+import java.security.DigestOutputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 public class BinaryObserver implements FlowableOperator<Binary,String>{
 

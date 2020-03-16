@@ -1,18 +1,12 @@
 package com.dexels.navajo.document.test;
 
-import java.util.List;
-
+import com.dexels.navajo.document.*;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.dexels.navajo.document.Message;
-import com.dexels.navajo.document.Method;
-import com.dexels.navajo.document.Navajo;
-import com.dexels.navajo.document.NavajoFactory;
-import com.dexels.navajo.document.Property;
-import com.dexels.navajo.document.Selection;
+import java.util.List;
 
 public class TestNavajo {
   NavajoDocumentTestFicture navajodocumenttestfictureInst = new NavajoDocumentTestFicture();

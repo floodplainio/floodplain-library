@@ -1,16 +1,15 @@
 package com.dexels.kafka.impl;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Function;
-
+import com.dexels.kafka.factory.KafkaClientFactory;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import com.dexels.kafka.factory.KafkaClientFactory;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
 
 public class TestTagEncoding {
 	private KafkaTopicSubscriber kts;

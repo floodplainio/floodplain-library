@@ -1,43 +1,23 @@
 package com.dexels.navajo.document.stream;
 
-import static com.dexels.navajo.document.stream.events.Events.arrayDone;
-import static com.dexels.navajo.document.stream.events.Events.arrayElementStarted;
-import static com.dexels.navajo.document.stream.events.Events.arrayStarted;
-import static com.dexels.navajo.document.stream.events.Events.done;
-import static com.dexels.navajo.document.stream.events.Events.messageDefinitionStarted;
-import static com.dexels.navajo.document.stream.events.Events.messageStarted;
-
-import java.io.IOException;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.dexels.navajo.document.Header;
-import com.dexels.navajo.document.Message;
-import com.dexels.navajo.document.Navajo;
-import com.dexels.navajo.document.NavajoFactory;
-import com.dexels.navajo.document.Property;
-import com.dexels.navajo.document.Selection;
+import com.dexels.navajo.document.*;
 import com.dexels.navajo.document.stream.api.Method;
-import com.dexels.navajo.document.stream.api.Msg;
-import com.dexels.navajo.document.stream.api.NavajoHead;
-import com.dexels.navajo.document.stream.api.Prop;
+import com.dexels.navajo.document.stream.api.*;
 import com.dexels.navajo.document.stream.api.Prop.Direction;
-import com.dexels.navajo.document.stream.api.Select;
 import com.dexels.navajo.document.stream.events.Events;
 import com.dexels.navajo.document.stream.events.NavajoStreamEvent;
 import com.dexels.navajo.document.types.Binary;
-
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.io.Writer;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static com.dexels.navajo.document.stream.events.Events.*;
 
 public class NavajoDomStreamer {
 

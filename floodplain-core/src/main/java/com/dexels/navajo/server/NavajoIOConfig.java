@@ -1,14 +1,8 @@
 package com.dexels.navajo.server;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
-import java.io.Writer;
-import java.util.Date;
-
 import com.dexels.navajo.document.Navajo;
+
+import java.io.*;
 
 public interface NavajoIOConfig {
 	

@@ -1,12 +1,12 @@
 package com.dexels.navajo.functions;
 
 
-import java.util.List;
-
 import com.dexels.navajo.document.Operand;
 import com.dexels.navajo.expression.api.FunctionInterface;
 import com.dexels.navajo.expression.api.TMLExpressionException;
 import com.dexels.navajo.parser.Expression;
+
+import java.util.List;
 
 
 /**

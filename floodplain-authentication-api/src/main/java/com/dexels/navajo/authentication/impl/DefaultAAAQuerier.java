@@ -1,13 +1,12 @@
 package com.dexels.navajo.authentication.impl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.dexels.navajo.authentication.api.AAAQuerier;
 import com.dexels.navajo.authentication.api.AuthenticationResult;
 import com.dexels.navajo.authentication.api.AuthenticationType;
 import com.dexels.navajo.script.api.Access;
 import com.dexels.navajo.script.api.AuthorizationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DefaultAAAQuerier implements AAAQuerier {
 

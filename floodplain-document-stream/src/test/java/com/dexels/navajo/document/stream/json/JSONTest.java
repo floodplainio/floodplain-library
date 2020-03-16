@@ -1,13 +1,12 @@
 package com.dexels.navajo.document.stream.json;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-
-import org.junit.Test;
-
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.core.json.async.NonBlockingJsonParser;
+import org.junit.Test;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 public class JSONTest {
 

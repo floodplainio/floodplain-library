@@ -1,16 +1,11 @@
 package com.dexels.navajo.functions.test;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStreamReader;
-
+import com.dexels.navajo.document.types.Binary;
+import com.dexels.navajo.functions.security.Security;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.dexels.navajo.document.types.Binary;
-import com.dexels.navajo.functions.security.Security;
+import java.io.*;
 
 public class TestEncryptBinary {
 

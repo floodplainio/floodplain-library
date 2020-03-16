@@ -1,25 +1,23 @@
 package com.dexels.navajo.reactive.topology;
 
+import com.dexels.immutable.factory.ImmutableFactory;
+import com.dexels.kafka.streams.api.StreamConfiguration;
+import com.dexels.kafka.streams.api.TopologyContext;
+import com.dexels.navajo.reactive.CoreReactiveFinder;
+import com.dexels.navajo.reactive.api.Reactive;
+import com.dexels.navajo.reactive.source.topology.TopologyReactiveFinder;
+import com.dexels.navajo.reactive.source.topology.TopologyRunner;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-
-import com.dexels.immutable.factory.ImmutableFactory;
-import com.dexels.kafka.streams.api.StreamConfiguration;
-import com.dexels.kafka.streams.api.TopologyContext;
-import com.dexels.kafka.streams.api.sink.ConnectType;
-import com.dexels.navajo.reactive.CoreReactiveFinder;
-import com.dexels.navajo.reactive.api.Reactive;
-import com.dexels.navajo.reactive.source.topology.TopologyReactiveFinder;
-import com.dexels.navajo.reactive.source.topology.TopologyRunner;
 
 
 public class TestParseConfiguration {

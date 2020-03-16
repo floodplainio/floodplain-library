@@ -1,15 +1,14 @@
 package com.dexels.navajo.document.stream.io;
 
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.Function;
-
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
-
 import io.reactivex.FlowableOperator;
 import io.reactivex.internal.queue.SpscArrayQueue;
 import io.reactivex.internal.util.BackpressureHelper;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
+
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Function;
 
 public abstract class BaseFlowableOperator<R,T> implements FlowableOperator<R,T> {
 

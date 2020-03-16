@@ -1,28 +1,13 @@
 package com.dexels.navajo.parser;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-
+import com.dexels.immutable.api.ImmutableMessage;
+import com.dexels.navajo.document.*;
+import com.dexels.navajo.expression.api.TipiLink;
+import com.dexels.navajo.script.api.MappableTreeNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dexels.immutable.api.ImmutableMessage;
-import com.dexels.navajo.document.ExpressionChangedException;
-import com.dexels.navajo.document.ExpressionEvaluator;
-import com.dexels.navajo.document.Message;
-import com.dexels.navajo.document.Navajo;
-import com.dexels.navajo.document.NavajoException;
-import com.dexels.navajo.document.NavajoFactory;
-import com.dexels.navajo.document.Operand;
-import com.dexels.navajo.document.Property;
-import com.dexels.navajo.document.Selection;
-import com.dexels.navajo.expression.api.TipiLink;
-import com.dexels.navajo.script.api.MappableTreeNode;
+import java.util.*;
 
 /**
  * <p>

@@ -1,9 +1,9 @@
 package com.dexels.navajo.expression.compiled;
 
-import java.util.stream.Collectors;
-
 import com.dexels.navajo.expression.api.FunctionInterface;
 import com.dexels.navajo.expression.api.TMLExpressionException;
+
+import java.util.stream.Collectors;
 
 public class ParameterNamesFunction extends FunctionInterface {
 

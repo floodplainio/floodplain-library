@@ -1,10 +1,10 @@
 package com.dexels.pubsub.rx2.api;
 
 
+import org.reactivestreams.Subscriber;
+
 import java.io.IOException;
 import java.util.function.Consumer;
-
-import org.reactivestreams.Subscriber;
 
 
 /**

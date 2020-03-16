@@ -1,11 +1,10 @@
 package com.dexels.navajo.functions.test;
 
-import static org.junit.Assert.assertEquals;
-
+import com.dexels.navajo.functions.CheckEmail;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.dexels.navajo.functions.CheckEmail;
+import static org.junit.Assert.assertEquals;
 
 public class TestCheckEmail {
     CheckEmail checker = null;

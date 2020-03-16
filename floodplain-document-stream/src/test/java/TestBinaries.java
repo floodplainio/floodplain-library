@@ -1,17 +1,15 @@
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-
-import org.junit.Assert;
-import org.junit.Test;
-
 import com.dexels.navajo.document.NavajoFactory;
 import com.dexels.navajo.document.stream.StreamCompress;
 import com.dexels.navajo.document.stream.StreamDocument;
 import com.dexels.navajo.document.stream.xml.XML;
 import com.dexels.navajo.document.types.Binary;
 import com.github.davidmoten.rx2.Bytes;
-
 import io.reactivex.schedulers.Schedulers;
+import org.junit.Assert;
+import org.junit.Test;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 
 
 public class TestBinaries {

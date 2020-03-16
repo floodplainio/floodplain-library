@@ -1,10 +1,10 @@
 package com.dexels.navajo.reactive.api;
 
+import com.dexels.navajo.document.stream.ReactiveParseProblem;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import com.dexels.navajo.document.stream.ReactiveParseProblem;
 
 public class ReactiveParseException extends RuntimeException {
 

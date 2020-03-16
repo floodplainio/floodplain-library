@@ -1,10 +1,5 @@
 package com.dexels.navajo.functions;
 
-import java.io.StringWriter;
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
 import com.dexels.navajo.document.Message;
 import com.dexels.navajo.document.Navajo;
 import com.dexels.navajo.document.NavajoFactory;
@@ -12,6 +7,11 @@ import com.dexels.navajo.document.Property;
 import com.dexels.navajo.document.types.Binary;
 import com.dexels.navajo.document.types.BinaryDigest;
 import com.dexels.navajo.expression.api.FunctionInterface;
+
+import java.io.StringWriter;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * @author Jarno Posthumus

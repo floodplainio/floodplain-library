@@ -24,15 +24,14 @@
  */
 package com.dexels.navajo.functions;
 
-import java.io.IOException;
-import java.io.StringReader;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.dexels.navajo.document.types.Binary;
 import com.dexels.navajo.expression.api.FunctionInterface;
 import com.dexels.navajo.expression.api.TMLExpressionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.io.StringReader;
 
 @Deprecated
 public class Base64Encode extends FunctionInterface {

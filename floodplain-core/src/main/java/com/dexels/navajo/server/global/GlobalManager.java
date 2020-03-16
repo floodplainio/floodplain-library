@@ -1,9 +1,9 @@
 package com.dexels.navajo.server.global;
 
-import java.util.Map;
-
 import com.dexels.navajo.document.Navajo;
 import com.dexels.navajo.document.NavajoException;
+
+import java.util.Map;
 
 public interface GlobalManager {
 

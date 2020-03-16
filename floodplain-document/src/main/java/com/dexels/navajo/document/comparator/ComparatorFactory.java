@@ -1,8 +1,8 @@
 package com.dexels.navajo.document.comparator;
 
-import java.util.Comparator;
-
 import com.dexels.navajo.document.Message;
+
+import java.util.Comparator;
 
 public interface ComparatorFactory {
 	public Comparator<Message> createComparator();

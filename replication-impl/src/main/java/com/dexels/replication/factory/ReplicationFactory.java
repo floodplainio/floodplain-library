@@ -1,16 +1,12 @@
 package com.dexels.replication.factory;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.replication.api.ReplicationMessage;
 import com.dexels.replication.api.ReplicationMessage.Operation;
 import com.dexels.replication.api.ReplicationMessageParser;
 import com.dexels.replication.impl.ReplicationImmutableMessageImpl;
+
+import java.util.*;
 
 public class ReplicationFactory {
 	private static ReplicationMessageParser instance;

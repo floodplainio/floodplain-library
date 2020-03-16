@@ -1,10 +1,10 @@
 package com.dexels.pubsub.rx2.factory.impl;
 
+import com.dexels.pubsub.rx2.api.PubSubMessage;
+
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
-
-import com.dexels.pubsub.rx2.api.PubSubMessage;
 
 public class BasePubSubMessage implements PubSubMessage {
 

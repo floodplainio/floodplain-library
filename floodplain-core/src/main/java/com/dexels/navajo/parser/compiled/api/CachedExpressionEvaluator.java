@@ -1,17 +1,7 @@
 package com.dexels.navajo.parser.compiled.api;
 
-import java.util.Map;
-import java.util.Optional;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.dexels.immutable.api.ImmutableMessage;
-import com.dexels.navajo.document.ExpressionEvaluator;
-import com.dexels.navajo.document.Message;
-import com.dexels.navajo.document.Navajo;
-import com.dexels.navajo.document.Operand;
-import com.dexels.navajo.document.Selection;
+import com.dexels.navajo.document.*;
 import com.dexels.navajo.expression.api.TMLExpressionException;
 import com.dexels.navajo.expression.api.TipiLink;
 import com.dexels.navajo.mapping.MappingUtils;
@@ -19,6 +9,11 @@ import com.dexels.navajo.parser.DefaultExpressionEvaluator;
 import com.dexels.navajo.parser.Expression;
 import com.dexels.navajo.script.api.Access;
 import com.dexels.navajo.script.api.MappableTreeNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Map;
+import java.util.Optional;
 
 public class CachedExpressionEvaluator extends DefaultExpressionEvaluator implements ExpressionEvaluator {
     private static final Logger logger = LoggerFactory.getLogger(CachedExpressionEvaluator.class);

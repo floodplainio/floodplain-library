@@ -1,14 +1,13 @@
 package com.dexels.navajo.authentication.impl;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.dexels.navajo.authentication.api.AuthenticationMethod;
 import com.dexels.navajo.authentication.api.AuthenticationMethodBuilder;
 import com.dexels.navajo.script.api.AuthorizationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class AuthenticationMethodBuilderImpl implements AuthenticationMethodBuilder {
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationMethodBuilderImpl.class);

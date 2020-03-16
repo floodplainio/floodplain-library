@@ -1,24 +1,24 @@
 package com.dexels.navajo.functions;
 
 
+import com.dexels.navajo.expression.api.FunctionInterface;
+import com.dexels.navajo.expression.api.TMLExpressionException;
+import com.dexels.navajo.parser.Utils;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Title:        Navajo
  * Description:
  * Copyright:    Copyright (c) 2001
  * Company:      Dexels
+ *
  * @author Arjen Schoneveld en Martin Bergman
  * @version $Id$
  */
-
-import java.util.List;
-
-import com.dexels.navajo.expression.api.FunctionInterface;
-import com.dexels.navajo.expression.api.TMLExpressionException;
-import com.dexels.navajo.parser.Utils;
 
 
 public final class Min extends FunctionInterface {

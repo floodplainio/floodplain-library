@@ -1,18 +1,13 @@
 package com.dexels.navajo.reactive.transformer.mergestream;
 
-import java.util.Optional;
-
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.navajo.document.stream.DataItem;
 import com.dexels.navajo.document.stream.api.StreamScriptContext;
-import com.dexels.navajo.reactive.api.ReactiveParameters;
-import com.dexels.navajo.reactive.api.ReactiveResolvedParameters;
-import com.dexels.navajo.reactive.api.ReactiveSource;
-import com.dexels.navajo.reactive.api.ReactiveTransformer;
-import com.dexels.navajo.reactive.api.TransformerMetadata;
-
+import com.dexels.navajo.reactive.api.*;
 import io.reactivex.FlowableTransformer;
+
+import java.util.Optional;
 
 public class FlatMapTransformer implements ReactiveTransformer {
 

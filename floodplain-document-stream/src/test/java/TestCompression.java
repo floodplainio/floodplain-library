@@ -1,14 +1,12 @@
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.zip.CRC32;
-
+import com.dexels.navajo.document.stream.StreamCompress;
+import com.github.davidmoten.rx2.Bytes;
+import io.reactivex.schedulers.Schedulers;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import com.dexels.navajo.document.stream.StreamCompress;
-import com.github.davidmoten.rx2.Bytes;
-
-import io.reactivex.schedulers.Schedulers;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.zip.CRC32;
 
 public class TestCompression {
 

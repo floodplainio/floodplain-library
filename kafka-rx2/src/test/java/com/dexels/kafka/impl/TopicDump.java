@@ -1,5 +1,17 @@
 package com.dexels.kafka.impl;
 
+import com.dexels.kafka.factory.KafkaClientFactory;
+import com.dexels.replication.api.ReplicationMessage;
+import com.dexels.replication.api.ReplicationMessageParser;
+import com.dexels.replication.impl.json.JSONReplicationMessageParserImpl;
+import com.dexels.replication.impl.protobuf.FallbackReplicationMessageParser;
+import io.reactivex.Flowable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Function;
+import io.reactivex.functions.Predicate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -9,20 +21,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.dexels.kafka.factory.KafkaClientFactory;
-import com.dexels.replication.api.ReplicationMessage;
-import com.dexels.replication.api.ReplicationMessageParser;
-import com.dexels.replication.impl.json.JSONReplicationMessageParserImpl;
-import com.dexels.replication.impl.protobuf.FallbackReplicationMessageParser;
-
-import io.reactivex.Flowable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Function;
-import io.reactivex.functions.Predicate;
 
 public class TopicDump {
 	

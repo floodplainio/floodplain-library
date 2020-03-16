@@ -1,15 +1,6 @@
 package com.dexels.navajo.document.stream.impl;
 
 
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Stack;
-
-import org.apache.commons.lang.StringEscapeUtils;
-
 import com.dexels.navajo.document.Message;
 import com.dexels.navajo.document.Navajo;
 import com.dexels.navajo.document.NavajoException;
@@ -20,6 +11,9 @@ import com.dexels.navajo.document.stream.api.NavajoHead;
 import com.dexels.navajo.document.stream.api.Prop;
 import com.dexels.navajo.document.stream.api.Select;
 import com.dexels.navajo.document.stream.xml.XmlInputHandler;
+import org.apache.commons.lang.StringEscapeUtils;
+
+import java.util.*;
 
 public final class StreamSaxHandler implements XmlInputHandler {
 

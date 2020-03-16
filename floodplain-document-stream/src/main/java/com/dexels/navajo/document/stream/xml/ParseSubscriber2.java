@@ -1,16 +1,13 @@
 package com.dexels.navajo.document.stream.xml;
 
-import java.util.concurrent.atomic.AtomicLong;
-
-import javax.xml.stream.XMLStreamException;
-
+import com.dexels.navajo.document.stream.impl.SaxXmlFeeder;
+import io.reactivex.FlowableSubscriber;
+import io.reactivex.internal.util.BackpressureHelper;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
-import com.dexels.navajo.document.stream.impl.SaxXmlFeeder;
-
-import io.reactivex.FlowableSubscriber;
-import io.reactivex.internal.util.BackpressureHelper;
+import javax.xml.stream.XMLStreamException;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class ParseSubscriber2 implements Subscription, FlowableSubscriber<byte[]> {
 

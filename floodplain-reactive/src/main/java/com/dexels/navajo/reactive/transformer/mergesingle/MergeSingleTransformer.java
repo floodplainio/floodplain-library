@@ -1,27 +1,20 @@
 package com.dexels.navajo.reactive.transformer.mergesingle;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.navajo.document.Operand;
 import com.dexels.navajo.document.stream.DataItem;
 import com.dexels.navajo.document.stream.ReactiveParseProblem;
 import com.dexels.navajo.document.stream.api.StreamScriptContext;
-import com.dexels.navajo.reactive.api.Reactive;
-import com.dexels.navajo.reactive.api.ReactiveParameters;
-import com.dexels.navajo.reactive.api.ReactivePipe;
-import com.dexels.navajo.reactive.api.ReactiveResolvedParameters;
-import com.dexels.navajo.reactive.api.ReactiveTransformer;
-import com.dexels.navajo.reactive.api.TransformerMetadata;
-
+import com.dexels.navajo.reactive.api.*;
 import io.reactivex.FlowableTransformer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class MergeSingleTransformer implements ReactiveTransformer {
 

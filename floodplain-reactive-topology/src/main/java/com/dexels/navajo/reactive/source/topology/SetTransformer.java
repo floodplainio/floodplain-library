@@ -1,17 +1,5 @@
 package com.dexels.navajo.reactive.source.topology;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.Stack;
-import java.util.function.Function;
-
-import org.apache.kafka.streams.Topology;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.kafka.streams.api.TopologyContext;
@@ -20,17 +8,19 @@ import com.dexels.kafka.streams.remotejoin.TopologyConstructor;
 import com.dexels.navajo.document.Operand;
 import com.dexels.navajo.document.stream.DataItem;
 import com.dexels.navajo.document.stream.api.StreamScriptContext;
-import com.dexels.navajo.reactive.api.ReactiveParameters;
-import com.dexels.navajo.reactive.api.ReactiveParseException;
-import com.dexels.navajo.reactive.api.ReactiveResolvedParameters;
-import com.dexels.navajo.reactive.api.ReactiveTransformer;
-import com.dexels.navajo.reactive.api.TransformerMetadata;
+import com.dexels.navajo.reactive.api.*;
 import com.dexels.navajo.reactive.source.topology.api.TopologyPipeComponent;
 import com.dexels.replication.api.ReplicationMessage;
 import com.dexels.replication.factory.ReplicationFactory;
-
 import io.reactivex.Flowable;
 import io.reactivex.FlowableTransformer;
+import org.apache.kafka.streams.Topology;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.function.Function;
 
 public class SetTransformer implements ReactiveTransformer, TopologyPipeComponent {
 

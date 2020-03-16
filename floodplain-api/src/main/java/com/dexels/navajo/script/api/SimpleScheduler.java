@@ -1,11 +1,10 @@
 package com.dexels.navajo.script.api;
 
-import java.io.IOException;
-
+import com.dexels.navajo.document.Navajo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dexels.navajo.document.Navajo;
+import java.io.IOException;
 
 public class SimpleScheduler implements Scheduler {
     private static final Logger logger = LoggerFactory.getLogger(SimpleScheduler.class);

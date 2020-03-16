@@ -1,16 +1,11 @@
 package com.dexels.navajo.document.base;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.dexels.navajo.document.Message;
 import com.dexels.navajo.document.Navajo;
 import com.dexels.navajo.document.NavajoFactory;
 import com.dexels.navajo.document.Operation;
+
+import java.util.*;
 
 public class BaseOperationImpl extends BaseNode implements Operation {
 

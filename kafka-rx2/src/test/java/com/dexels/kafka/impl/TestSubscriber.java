@@ -1,15 +1,11 @@
 package com.dexels.kafka.impl;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicLong;
-
+import com.dexels.kafka.factory.KafkaClientFactory;
+import com.dexels.replication.api.ReplicationMessage;
+import com.dexels.replication.api.ReplicationMessageParser;
+import com.dexels.replication.impl.json.JSONReplicationMessageParserImpl;
+import com.dexels.replication.impl.protobuf.FallbackReplicationMessageParser;
+import io.reactivex.Flowable;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -17,13 +13,10 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dexels.kafka.factory.KafkaClientFactory;
-import com.dexels.replication.api.ReplicationMessage;
-import com.dexels.replication.api.ReplicationMessageParser;
-import com.dexels.replication.impl.json.JSONReplicationMessageParserImpl;
-import com.dexels.replication.impl.protobuf.FallbackReplicationMessageParser;
-
-import io.reactivex.Flowable;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class TestSubscriber {
 	private KafkaTopicSubscriber kts;

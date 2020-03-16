@@ -1,11 +1,5 @@
 package com.dexels.navajo.reactive.source.topology;
 
-import java.util.Optional;
-import java.util.Stack;
-import java.util.function.Function;
-
-import org.apache.kafka.streams.Topology;
-
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.kafka.streams.api.TopologyContext;
 import com.dexels.kafka.streams.remotejoin.ReplicationTopologyParser;
@@ -19,9 +13,13 @@ import com.dexels.navajo.reactive.api.ReactiveTransformer;
 import com.dexels.navajo.reactive.api.TransformerMetadata;
 import com.dexels.navajo.reactive.source.topology.api.TopologyPipeComponent;
 import com.dexels.replication.api.ReplicationMessage;
-
 import io.reactivex.Flowable;
 import io.reactivex.FlowableTransformer;
+import org.apache.kafka.streams.Topology;
+
+import java.util.Optional;
+import java.util.Stack;
+import java.util.function.Function;
 
 public class RowNumberTransformer implements ReactiveTransformer,TopologyPipeComponent {
 

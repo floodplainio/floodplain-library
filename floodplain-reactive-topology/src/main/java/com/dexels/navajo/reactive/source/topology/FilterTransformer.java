@@ -1,13 +1,5 @@
 package com.dexels.navajo.reactive.source.topology;
 
-import java.util.Optional;
-import java.util.Stack;
-
-import org.apache.kafka.streams.Topology;
-import org.apache.kafka.streams.processor.ProcessorSupplier;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.kafka.streams.api.TopologyContext;
 import com.dexels.kafka.streams.remotejoin.ReplicationTopologyParser;
@@ -20,9 +12,15 @@ import com.dexels.navajo.reactive.api.ReactiveTransformer;
 import com.dexels.navajo.reactive.api.TransformerMetadata;
 import com.dexels.navajo.reactive.source.topology.api.TopologyPipeComponent;
 import com.dexels.replication.api.ReplicationMessage;
-
 import io.reactivex.Flowable;
 import io.reactivex.FlowableTransformer;
+import org.apache.kafka.streams.Topology;
+import org.apache.kafka.streams.processor.ProcessorSupplier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Optional;
+import java.util.Stack;
 
 public class FilterTransformer implements ReactiveTransformer,TopologyPipeComponent {
 

@@ -1,7 +1,6 @@
 package com.dexels.navajo.version;
 
 
-import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;

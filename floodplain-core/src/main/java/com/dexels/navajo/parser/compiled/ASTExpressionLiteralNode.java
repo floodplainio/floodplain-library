@@ -2,13 +2,13 @@
 
 package com.dexels.navajo.parser.compiled;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Function;
-
 import com.dexels.navajo.expression.api.ContextExpression;
 import com.dexels.navajo.expression.api.FunctionClassification;
 import com.dexels.navajo.parser.compiled.api.ExpressionCache;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
 
 final class ASTExpressionLiteralNode extends SimpleNode {
 

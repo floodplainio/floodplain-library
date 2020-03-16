@@ -1,15 +1,11 @@
 package com.dexels.navajo.document.stream.events;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
 import com.dexels.navajo.document.stream.api.Method;
 import com.dexels.navajo.document.stream.api.Msg;
 import com.dexels.navajo.document.stream.api.NavajoHead;
 import com.dexels.navajo.document.stream.events.NavajoStreamEvent.NavajoEventTypes;
+
+import java.util.*;
 
 public class Events {
 

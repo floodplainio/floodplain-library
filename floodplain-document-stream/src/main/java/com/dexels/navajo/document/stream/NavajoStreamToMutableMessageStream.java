@@ -1,12 +1,5 @@
 package com.dexels.navajo.document.stream;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Stack;
-
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
-
 import com.dexels.navajo.document.Message;
 import com.dexels.navajo.document.NavajoFactory;
 import com.dexels.navajo.document.Property;
@@ -16,10 +9,15 @@ import com.dexels.navajo.document.stream.api.Prop;
 import com.dexels.navajo.document.stream.api.Select;
 import com.dexels.navajo.document.stream.events.NavajoStreamEvent;
 import com.dexels.navajo.document.stream.io.BaseFlowableOperator;
-
 import io.reactivex.Flowable;
 import io.reactivex.FlowableOperator;
 import io.reactivex.internal.util.BackpressureHelper;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.Stack;
 
 //return new BaseFlowableOperator<Flowable<XMLEvent>, byte[]>(queueSize) {
 //	

@@ -1,13 +1,13 @@
 package com.dexels.pubsub.rx2.factory;
 
-import java.io.Reader;
-import java.util.Collections;
-import java.util.Optional;
-
 import com.dexels.pubsub.rx2.api.PubSubMessage;
 import com.dexels.pubsub.rx2.api.TopicSubscriber;
 import com.dexels.pubsub.rx2.factory.impl.BasePubSubMessage;
 import com.dexels.pubsub.rx2.factory.impl.internal.KafkaDumpSubscriber;
+
+import java.io.Reader;
+import java.util.Collections;
+import java.util.Optional;
 
 public class PubSubTools {
 	public static PubSubMessage withTopic(PubSubMessage base, Optional<String> topic) {

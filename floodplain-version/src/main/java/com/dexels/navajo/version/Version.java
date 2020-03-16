@@ -1,11 +1,9 @@
 package com.dexels.navajo.version;
 
-import java.lang.management.ManagementFactory;
-
-import javax.management.MBeanServer;
-
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
+
+import javax.management.MBeanServer;
 
 public class Version extends AbstractVersion {
 	private ServiceRegistration<MBeanServer> registration = null;

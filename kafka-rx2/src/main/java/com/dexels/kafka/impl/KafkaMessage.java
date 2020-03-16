@@ -1,16 +1,15 @@
 package com.dexels.kafka.impl;
 
+import com.dexels.pubsub.rx2.api.PubSubMessage;
+import com.dexels.pubsub.rx2.factory.PubSubTools;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.common.TopicPartition;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiConsumer;
-
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.common.TopicPartition;
-
-import com.dexels.pubsub.rx2.api.PubSubMessage;
-import com.dexels.pubsub.rx2.factory.PubSubTools;
 
 public class KafkaMessage implements PubSubMessage {
 

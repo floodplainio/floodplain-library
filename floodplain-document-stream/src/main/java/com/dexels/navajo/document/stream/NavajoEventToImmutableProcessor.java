@@ -1,15 +1,11 @@
 package com.dexels.navajo.document.stream;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Stack;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.navajo.document.stream.api.Msg;
 import com.dexels.navajo.document.stream.events.NavajoStreamEvent;
+
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class NavajoEventToImmutableProcessor {
 

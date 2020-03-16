@@ -4,14 +4,14 @@
  */
 package com.dexels.navajo.functions;
 
-import java.util.List;
-
 import com.dexels.navajo.document.Message;
 import com.dexels.navajo.document.Property;
 import com.dexels.navajo.document.types.Money;
 import com.dexels.navajo.document.types.Percentage;
 import com.dexels.navajo.expression.api.FunctionInterface;
 import com.dexels.navajo.expression.api.TMLExpressionException;
+
+import java.util.List;
 
 /**
  * @author arjen

@@ -1,21 +1,15 @@
 package com.dexels.navajo.document.metadata;
 
-import java.awt.Desktop;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.dexels.navajo.document.BinaryOpener;
 import com.dexels.navajo.document.Message;
 import com.dexels.navajo.document.types.Binary;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.awt.*;
+import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 public class GenericBinaryOpener implements BinaryOpener {
 

@@ -2,15 +2,15 @@
 
 package com.dexels.navajo.parser.compiled;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Function;
-
 import com.dexels.navajo.document.Operand;
 import com.dexels.navajo.document.Property;
 import com.dexels.navajo.expression.api.ContextExpression;
 import com.dexels.navajo.expression.api.FunctionClassification;
 import com.dexels.navajo.expression.api.TMLExpressionException;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
 
 final class ASTNotNode extends SimpleNode {
     ASTNotNode(int id) {

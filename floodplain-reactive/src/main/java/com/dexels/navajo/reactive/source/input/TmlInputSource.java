@@ -1,7 +1,5 @@
 package com.dexels.navajo.reactive.source.input;
 
-import java.util.Optional;
-
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.navajo.document.stream.DataItem;
 import com.dexels.navajo.document.stream.DataItem.Type;
@@ -12,10 +10,11 @@ import com.dexels.navajo.reactive.api.ReactiveParameters;
 import com.dexels.navajo.reactive.api.ReactiveResolvedParameters;
 import com.dexels.navajo.reactive.api.ReactiveSource;
 import com.dexels.navajo.reactive.api.SourceMetadata;
-
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
+
+import java.util.Optional;
 
 public class TmlInputSource implements ReactiveSource {
 	

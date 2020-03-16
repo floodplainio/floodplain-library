@@ -1,16 +1,15 @@
 package com.dexels.navajo.document.comparatormanager.impl;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.dexels.navajo.document.Message;
 import com.dexels.navajo.document.comparator.ComparatorFactory;
 import com.dexels.navajo.document.comparatormanager.ComparatorManager;
 import com.dexels.navajo.document.comparatormanager.ComparatorManagerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ComparatorManagerImpl implements ComparatorManager {
 

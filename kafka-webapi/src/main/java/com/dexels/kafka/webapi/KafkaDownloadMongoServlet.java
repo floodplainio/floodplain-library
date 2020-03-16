@@ -1,14 +1,17 @@
 package com.dexels.kafka.webapi;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
+import com.dexels.pubsub.rx2.api.PersistentPublisher;
+import com.dexels.pubsub.rx2.api.PersistentSubscriber;
+import com.dexels.pubsub.rx2.api.TopicPublisher;
+import com.dexels.replication.api.ReplicationMessage;
+import com.dexels.replication.api.ReplicationMessageParser;
+import com.dexels.replication.impl.protobuf.FallbackReplicationMessageParser;
+import io.reactivex.Completable;
+import io.reactivex.Flowable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Action;
+import io.reactivex.functions.Predicate;
+import org.osgi.service.component.annotations.*;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.Servlet;
@@ -16,26 +19,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
-import org.osgi.service.component.annotations.Deactivate;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferencePolicy;
-
-import com.dexels.pubsub.rx2.api.PersistentPublisher;
-import com.dexels.pubsub.rx2.api.PersistentSubscriber;
-import com.dexels.pubsub.rx2.api.TopicPublisher;
-import com.dexels.replication.api.ReplicationMessage;
-import com.dexels.replication.api.ReplicationMessageParser;
-import com.dexels.replication.impl.protobuf.FallbackReplicationMessageParser;
-
-import io.reactivex.Completable;
-import io.reactivex.Flowable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Action;
-import io.reactivex.functions.Predicate;
+import java.io.IOException;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Component(configurationPolicy=ConfigurationPolicy.IGNORE,  name="dexels.kafka.mongo.servlet",property={"servlet-name=dexels.kafka.servlet","alias=/kafkamongo","asyncSupported.Boolean=true"},immediate=true,service = { Servlet.class})
 public class KafkaDownloadMongoServlet extends HttpServlet {

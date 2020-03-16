@@ -1,9 +1,9 @@
 package com.dexels.navajo.reactive.api;
 
+import com.dexels.navajo.expression.api.FunctionClassification;
+
 import java.util.Set;
 import java.util.function.Function;
-
-import com.dexels.navajo.expression.api.FunctionClassification;
 
 public interface ReactiveFinder {
 

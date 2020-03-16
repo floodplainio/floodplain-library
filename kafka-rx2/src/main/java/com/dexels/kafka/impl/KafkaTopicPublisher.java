@@ -1,31 +1,16 @@
 package com.dexels.kafka.impl;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Properties;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-
-
-import org.apache.kafka.clients.admin.AdminClient;
-import org.apache.kafka.clients.admin.ConsumerGroupDescription;
-import org.apache.kafka.clients.admin.ConsumerGroupListing;
-import org.apache.kafka.clients.admin.CreateTopicsResult;
-import org.apache.kafka.clients.admin.DeleteTopicsResult;
-import org.apache.kafka.clients.admin.DescribeTopicsOptions;
-import org.apache.kafka.clients.admin.ListTopicsOptions;
-import org.apache.kafka.clients.admin.NewTopic;
-import org.apache.kafka.clients.admin.TopicDescription;
+import com.dexels.kafka.api.KafkaTopicPublisherConfiguration;
+import com.dexels.pubsub.rx2.api.MessagePublisher;
+import com.dexels.pubsub.rx2.api.PersistentPublisher;
+import com.dexels.pubsub.rx2.api.PubSubMessage;
+import com.dexels.pubsub.rx2.api.TopicPublisher;
+import io.reactivex.Completable;
+import io.reactivex.Flowable;
+import io.reactivex.Observable;
+import io.reactivex.Single;
+import io.reactivex.subscribers.DisposableSubscriber;
+import org.apache.kafka.clients.admin.*;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -41,17 +26,12 @@ import org.reactivestreams.Subscriber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dexels.kafka.api.KafkaTopicPublisherConfiguration;
-import com.dexels.pubsub.rx2.api.MessagePublisher;
-import com.dexels.pubsub.rx2.api.PersistentPublisher;
-import com.dexels.pubsub.rx2.api.PubSubMessage;
-import com.dexels.pubsub.rx2.api.TopicPublisher;
-
-import io.reactivex.Completable;
-import io.reactivex.Flowable;
-import io.reactivex.Observable;
-import io.reactivex.Single;
-import io.reactivex.subscribers.DisposableSubscriber;
+import java.io.IOException;
+import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 
 @Component(name="navajo.resource.kafkatopicpublisher", configurationPolicy=ConfigurationPolicy.REQUIRE, immediate=true)

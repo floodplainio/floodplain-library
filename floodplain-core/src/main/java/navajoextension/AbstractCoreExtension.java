@@ -1,22 +1,19 @@
 package navajoextension;
 
-import java.util.Dictionary;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Set;
-
+import com.dexels.navajo.expression.api.FunctionDefinition;
+import com.dexels.navajo.expression.api.FunctionInterface;
+import com.dexels.navajo.functions.util.FunctionFactoryFactory;
+import com.dexels.navajo.functions.util.FunctionFactoryInterface;
+import navajo.ExtensionDefinition;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dexels.navajo.expression.api.FunctionDefinition;
-import com.dexels.navajo.expression.api.StatefulFunctionInterface;
-import com.dexels.navajo.expression.api.FunctionInterface;
-import com.dexels.navajo.functions.util.FunctionFactoryFactory;
-import com.dexels.navajo.functions.util.FunctionFactoryInterface;
-
-import navajo.ExtensionDefinition;
+import java.util.Dictionary;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Set;
 
 public class AbstractCoreExtension extends com.dexels.navajo.version.AbstractVersion {
 	

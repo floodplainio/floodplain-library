@@ -1,13 +1,13 @@
 package com.dexels.replication.api;
 
+import com.dexels.immutable.api.ImmutableMessage;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-
-import com.dexels.immutable.api.ImmutableMessage;
 
 public interface ReplicationMessage {
 	

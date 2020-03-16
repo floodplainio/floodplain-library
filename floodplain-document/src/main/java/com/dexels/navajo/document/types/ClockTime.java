@@ -1,5 +1,9 @@
 package com.dexels.navajo.document.types;
 
+import com.dexels.navajo.document.Property;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -7,11 +11,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.StringTokenizer;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.dexels.navajo.document.Property;
 
 /**
  * <p>Title: ClockTime class </p>

@@ -1,12 +1,11 @@
 package com.dexels.navajo.functions.test;
 
-import static org.junit.Assert.assertEquals;
+import com.dexels.navajo.document.types.ClockTime;
+import org.junit.Test;
 
 import java.util.Date;
 
-import org.junit.Test;
-
-import com.dexels.navajo.document.types.ClockTime;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Code for the test suite <b>DateAppendClockTime</b> located at

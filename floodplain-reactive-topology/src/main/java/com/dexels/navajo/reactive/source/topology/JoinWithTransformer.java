@@ -1,16 +1,7 @@
 package com.dexels.navajo.reactive.source.topology;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Stack;
-import java.util.function.BiFunction;
-
-import org.apache.kafka.streams.Topology;
-import org.apache.kafka.streams.kstream.Predicate;
-
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.immutable.factory.ImmutableFactory;
-import com.dexels.kafka.streams.api.CoreOperators;
 import com.dexels.kafka.streams.api.TopologyContext;
 import com.dexels.kafka.streams.base.Filters;
 import com.dexels.kafka.streams.remotejoin.ReplicationTopologyParser;
@@ -19,18 +10,18 @@ import com.dexels.kafka.streams.remotejoin.TopologyDefinitionException;
 import com.dexels.navajo.document.Operand;
 import com.dexels.navajo.document.stream.DataItem;
 import com.dexels.navajo.document.stream.api.StreamScriptContext;
-import com.dexels.navajo.reactive.api.ReactiveParameters;
-import com.dexels.navajo.reactive.api.ReactiveParseException;
-import com.dexels.navajo.reactive.api.ReactivePipe;
-import com.dexels.navajo.reactive.api.ReactiveResolvedParameters;
-import com.dexels.navajo.reactive.api.ReactiveTransformer;
-import com.dexels.navajo.reactive.api.TransformerMetadata;
+import com.dexels.navajo.reactive.api.*;
 import com.dexels.navajo.reactive.source.topology.api.TopologyPipeComponent;
 import com.dexels.navajo.reactive.topology.ReactivePipeParser;
 import com.dexels.replication.api.ReplicationMessage;
-
 import io.reactivex.Flowable;
 import io.reactivex.FlowableTransformer;
+import org.apache.kafka.streams.Topology;
+import org.apache.kafka.streams.kstream.Predicate;
+
+import java.util.Optional;
+import java.util.Stack;
+import java.util.function.BiFunction;
 
 public class JoinWithTransformer implements ReactiveTransformer ,TopologyPipeComponent{
 

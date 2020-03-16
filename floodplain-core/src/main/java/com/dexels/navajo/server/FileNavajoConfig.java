@@ -1,24 +1,12 @@
 package com.dexels.navajo.server;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
-import java.io.Writer;
-import java.net.URL;
-import java.util.Date;
-
+import com.dexels.navajo.document.Navajo;
+import com.dexels.navajo.document.NavajoFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dexels.navajo.document.Navajo;
-import com.dexels.navajo.document.NavajoException;
-import com.dexels.navajo.document.NavajoFactory;
+import java.io.*;
+import java.net.URL;
 
 public abstract class FileNavajoConfig implements NavajoIOConfig {
 

@@ -1,10 +1,14 @@
 package com.dexels.navajo.document.stream;
 
-import java.io.ByteArrayInputStream;
-import java.io.EOFException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import com.dexels.navajo.document.stream.io.BaseFlowableOperator;
+import io.reactivex.Flowable;
+import io.reactivex.FlowableOperator;
+import io.reactivex.FlowableTransformer;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
+
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
@@ -14,22 +18,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
-import java.util.zip.CRC32;
-import java.util.zip.CheckedInputStream;
-import java.util.zip.DataFormatException;
-import java.util.zip.Deflater;
-import java.util.zip.Inflater;
-import java.util.zip.ZipException;
-
-import org.reactivestreams.Publisher;
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
-
-import com.dexels.navajo.document.stream.io.BaseFlowableOperator;
-
-import io.reactivex.Flowable;
-import io.reactivex.FlowableOperator;
-import io.reactivex.FlowableTransformer;
+import java.util.zip.*;
 
 public class StreamCompress {
 

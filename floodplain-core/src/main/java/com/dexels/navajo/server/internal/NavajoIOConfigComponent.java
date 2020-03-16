@@ -1,13 +1,12 @@
 package com.dexels.navajo.server.internal;
 
-import java.io.File;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.dexels.navajo.server.FileNavajoConfig;
 import com.dexels.navajo.server.NavajoIOConfig;
 import com.dexels.navajo.server.api.NavajoServerContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
 
 public class NavajoIOConfigComponent extends FileNavajoConfig implements NavajoIOConfig {
 

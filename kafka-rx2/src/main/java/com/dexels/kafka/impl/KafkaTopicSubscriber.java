@@ -1,36 +1,11 @@
 package com.dexels.kafka.impl;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Properties;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-
-import org.apache.kafka.clients.consumer.CommitFailedException;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.consumer.ConsumerRebalanceListener;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.clients.consumer.ConsumerRecords;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.clients.consumer.OffsetAndMetadata;
+import com.dexels.kafka.api.KafkaTopicSubscriberConfiguration;
+import com.dexels.kafka.api.OffsetQuery;
+import com.dexels.pubsub.rx2.api.PersistentSubscriber;
+import com.dexels.pubsub.rx2.api.PubSubMessage;
+import com.dexels.pubsub.rx2.api.TopicSubscriber;
+import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.common.PartitionInfo;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.InterruptException;
@@ -47,11 +22,18 @@ import org.reactivestreams.Subscription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dexels.kafka.api.KafkaTopicSubscriberConfiguration;
-import com.dexels.kafka.api.OffsetQuery;
-import com.dexels.pubsub.rx2.api.PersistentSubscriber;
-import com.dexels.pubsub.rx2.api.PubSubMessage;
-import com.dexels.pubsub.rx2.api.TopicSubscriber;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.time.Duration;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Component(name = "navajo.resource.kafkatopicsubscriber", configurationPolicy = ConfigurationPolicy.REQUIRE, immediate = true, property={"event.topics=navajo/shutdown"})
 @ApplicationScoped

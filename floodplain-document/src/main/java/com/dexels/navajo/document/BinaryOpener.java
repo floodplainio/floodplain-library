@@ -1,8 +1,8 @@
 package com.dexels.navajo.document;
 
-import java.io.File;
-
 import com.dexels.navajo.document.types.Binary;
+
+import java.io.File;
 
 public interface BinaryOpener {
 
