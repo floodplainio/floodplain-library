@@ -9,7 +9,6 @@ import com.dexels.navajo.reactive.api.ReactiveFinder;
 import com.dexels.navajo.reactive.source.single.SingleSourceFactory;
 import com.dexels.navajo.reactive.source.test.EventStreamSourceFactory;
 import com.dexels.navajo.reactive.stored.InputStreamSourceFactory;
-import com.dexels.navajo.reactive.transformer.call.CallTransformerFactory;
 import com.dexels.navajo.reactive.transformer.csv.CSVTransformerFactory;
 import com.dexels.navajo.reactive.transformer.filestore.FileStoreTransformerFactory;
 import com.dexels.navajo.reactive.transformer.mergesingle.MergeSingleTransformerFactory;
@@ -37,7 +36,6 @@ public class TestSetup {
 		finder.addReactiveTransformerFactory(new CSVTransformerFactory(),"csv");
 		finder.addReactiveTransformerFactory(new FileStoreTransformerFactory(),"filestore");
 		finder.addReactiveTransformerFactory(new MergeSingleTransformerFactory(),"mergeSingle");
-		finder.addReactiveTransformerFactory(new CallTransformerFactory(),"call");
 		finder.addReactiveTransformerFactory(new StreamMessageTransformerFactory(),"stream");
 		finder.addReactiveTransformerFactory(new ReduceTransformerFactory(),"reduce");
 		finder.addReactiveTransformerFactory(new FilterTransformerFactory(),"filter");
@@ -57,7 +55,7 @@ public class TestSetup {
 				, NavajoFactory.getInstance().createNavajo()
 				, Collections.emptyMap()
 				, Optional.empty()
-				, runner,Collections.emptyList(), Optional.empty(),Optional.empty());
+				, Optional.of("test"),Collections.emptyList(), Optional.empty(),Optional.empty());
 	}
 	
 }

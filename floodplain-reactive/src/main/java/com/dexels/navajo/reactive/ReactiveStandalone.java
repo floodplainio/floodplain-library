@@ -36,83 +36,9 @@ public class ReactiveStandalone {
 		}
 	}
 
-	public static Flowable<DataItem> runStream(ReactiveScriptEnvironment resolver, String service) throws IOException {
-		ReactiveScript compiledScript = resolver.compiledScript(service);
-		StreamScriptContext context = new StreamScriptContext("tenant","service","deployment")
-				.withRunner(resolver)
-				.withInputNavajo(NavajoFactory.getInstance().createNavajo());
-		return compiledScript.execute(context)
-				.flatMap(e->e);
 
-	}
-	public static Navajo runBlockingEmpty(ReactiveScriptEnvironment resolver, String service) throws ParseException, IOException {
-		StreamScriptContext context = new StreamScriptContext("tenant","service","deployment")
-				.withRunner(resolver)
-				.withInputNavajo(NavajoFactory.getInstance().createNavajo());
-		ReactiveScript compiledScript = resolver.compiledScript(service);
-		Flowable<Flowable<DataItem>> execute = compiledScript.execute(context);
-		switch(compiledScript.dataType()) {
-		case ANY:
-			break;
-		case DATA:
-			break;
-		case EMPTY:
-			break;
-		case EVENT:
-			return execute
-					.flatMap(e->e)
-					.map(e->e.event())
-					.compose(StreamDocument.inNavajo("service", Optional.empty(), Optional.empty(),compiledScript.methods()))
-					.toObservable()
-					.compose(StreamDocument.domStreamCollector())
-					.blockingFirst();
-		case EVENTSTREAM:
-			return execute
-					.flatMap(e->e)
-					.concatMap(e->e.eventStream())
-					.compose(StreamDocument.inNavajo("service", Optional.empty(), Optional.empty(),compiledScript.methods()))
-					.toObservable()
-					.compose(StreamDocument.domStreamCollector())
-					.blockingFirst();
-		case MESSAGE:
-			return execute
-					.concatMap(e->e)
-					.map(e->e.message())
-					.compose(StreamDocument.toMessageEvent("Item",true))
-					.compose(StreamDocument.inNavajo("service", Optional.empty(), Optional.empty(),compiledScript.methods()))
-					.toObservable()
-					.compose(StreamDocument.domStreamCollector())
-					.blockingFirst();
-					
-		case MSGLIST:
-			break;
-		case MSGSTREAM:
-			break;
-		case SINGLEMESSAGE:
-			break;
-		default:
-			break;
-		
-		}
-		return execute
-			.flatMap(e->e)
-			.map(e->e.event())
-			.compose(StreamDocument.inNavajo("service", Optional.empty(), Optional.empty(),compiledScript.methods()))
-			.toObservable()
-			.compose(StreamDocument.domStreamCollector())
-			.blockingFirst();
-//		return runBlockingEmpty(new ByteArrayInputStream(inExpression.getBytes()),binaryMime);
-	}
-	public static Navajo runBlockingEmpty(String inExpression) throws ParseException, IOException {
-		return runBlockingEmpty(new ByteArrayInputStream(inExpression.getBytes()));
-	}
 	public static Navajo runBlockingEmpty(InputStream inExpression) throws ParseException, IOException {
 		return runBlockingInput(inExpression, NavajoFactory.getInstance().createNavajo());
-	}
-
-	public static Navajo runBlockingStream(InputStream inExpression, Flowable<DataItem> input) throws ParseException, IOException {
-		StreamScriptContext context = new StreamScriptContext("tenant","service","deployment").withInput(input);
-		return runContext(inExpression, context);
 	}
 
 	public static Navajo runBlockingInput(InputStream inExpression, Navajo input) throws ParseException, IOException {

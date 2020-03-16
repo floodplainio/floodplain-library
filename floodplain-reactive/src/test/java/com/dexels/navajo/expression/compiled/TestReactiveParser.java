@@ -6,9 +6,7 @@ import com.dexels.navajo.document.Navajo;
 import com.dexels.navajo.document.NavajoFactory;
 import com.dexels.navajo.document.stream.ReactiveScript;
 import com.dexels.navajo.parser.compiled.*;
-import com.dexels.navajo.reactive.ClasspathReactiveScriptEnvironment;
 import com.dexels.navajo.reactive.CoreReactiveFinder;
-import com.dexels.navajo.reactive.ReactiveScriptEnvironment;
 import com.dexels.navajo.reactive.ReactiveStandalone;
 import com.dexels.navajo.reactive.api.CompiledReactiveScript;
 import com.dexels.navajo.reactive.api.Reactive;
@@ -54,65 +52,11 @@ public class TestReactiveParser {
 		}
 		System.err.println("def: "+def);
 	}
-	@Test
-	public void testFilter() throws ParseException, IOException {
-		ReactiveScriptEnvironment rse = new ClasspathReactiveScriptEnvironment(TestReactiveParser.class);
-		Navajo n =  ReactiveStandalone.runBlockingEmpty(rse,"filter");
-		int size = n.getMessage("Blem").getArraySize();
-		logger.info("size: {}",size);
-		n.write(System.err);
-		Assert.assertEquals(2, size);
-	}
-	
-	@Test
-	public void testFilterNamedPartial() throws ParseException, IOException {
-		ReactiveScriptEnvironment rse = new ClasspathReactiveScriptEnvironment(TestReactiveParser.class);
-		Navajo n =  ReactiveStandalone.runBlockingEmpty(rse,"filternamed");
-		int size = n.getMessage("Blem").getArraySize();
-		logger.info("size: {}",size);
-		n.write(System.err);
-		Assert.assertEquals(5, size);
-	}
-	
-	@Test @Ignore
-	public void testFilterNamedPartialExtended() throws ParseException, IOException {
-		ReactiveScriptEnvironment rse = new ClasspathReactiveScriptEnvironment(TestReactiveParser.class);
-		Navajo n =  ReactiveStandalone.runBlockingEmpty(rse,"filternamedextended");
-		int size = n.getMessage("Blem").getArraySize();
-		logger.info("size: {}",size);
-		n.write(System.err);
-		Assert.assertEquals(5, size);
-	}
-	
-	
-	@Test
-	public void testPipe() throws ParseException, IOException {
-			ReactiveScriptEnvironment rse = new ClasspathReactiveScriptEnvironment(TestReactiveParser.class);
-			
-			Navajo n =  ReactiveStandalone.runBlockingEmpty(rse,"pipe");
-			n.write(System.err);
-			int size = n.getMessage("Item").getArraySize();
-			logger.info("size: {}",size);
-			n.write(System.err);
-			Assert.assertEquals(5, size);
-	}
-	
+
 	@Test @Ignore
 	public void testPipePartial() throws ParseException, IOException {
 		CompiledReactiveScript rs = ReactiveStandalone.compileReactiveScript(TestReactiveParser.class.getResourceAsStream("pipewithpartials.rr"));
 		Optional<ReactivePipe> foundPipe = rs.pipes.stream().findFirst();
-	}
-	
-	@Test
-	public void testPipeParser() throws ParseException, IOException {
-			CompiledReactiveScript rs = ReactiveStandalone.compileReactiveScript(TestReactiveParser.class.getResourceAsStream("pipe.rr"));
-			Optional<ReactivePipe> foundPipe = rs.pipes.stream().findFirst();
-			Assert.assertTrue(foundPipe.isPresent());
-			if(foundPipe.isPresent()) {
-				int size = foundPipe.get().transformers.size();
-				logger.info("size: {}",size);
-				Assert.assertEquals(2, size);
-			}
 	}
 	
 	@Test
@@ -250,31 +194,6 @@ public class TestReactiveParser {
 		
 	}
 
-	@Test
-	public void testTypeCheck() throws ParseException, IOException {
-		ReactiveStandalone.compileReactiveScript(getClass().getResourceAsStream("testtypecheck.rr")).typecheck();
-	}
-
-	@Test
-	public void testCSV( ) throws ParseException, IOException {
-		ReactiveScriptEnvironment rse = new ClasspathReactiveScriptEnvironment(TestReactiveParser.class);
-		ReactiveScript compiledScript = rse.compiledScript("csv");
-		Assert.assertTrue(compiledScript.binaryMimeType().isPresent());
-		Assert.assertEquals("text/csv",compiledScript.binaryMimeType().get());
-		byte[] n = ReactiveStandalone.runStream(rse,"csv")
-				.map(e->e.data())
-				.reduce(new ByteArrayOutputStream(),(str,b)->{
-					str.write(b);
-					return str;
-				})
-				.map(e->e.toByteArray())
-				.blockingGet();
-
-		String resultString = new String(n);
-		System.err.println(resultString);
-		Assert.assertTrue(n.length>40);
-	}
-	
 	@Test
 	public void testMoreStreamsBasic() throws ParseException, IOException {
 		CompiledParser cp = new CompiledParser(getClass().getResourceAsStream("morestreams.rr"));

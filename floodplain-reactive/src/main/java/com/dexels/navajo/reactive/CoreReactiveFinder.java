@@ -10,8 +10,6 @@ import com.dexels.navajo.reactive.source.input.InputSourceFactory;
 import com.dexels.navajo.reactive.source.input.TmlInputSourceFactory;
 import com.dexels.navajo.reactive.source.single.SingleSourceFactory;
 import com.dexels.navajo.reactive.source.test.EventStreamSourceFactory;
-import com.dexels.navajo.reactive.transformer.call.CallTransformerFactory;
-import com.dexels.navajo.reactive.transformer.call.PipeTransformerFactory;
 import com.dexels.navajo.reactive.transformer.csv.CSVTransformerFactory;
 import com.dexels.navajo.reactive.transformer.eventstream.EventStreamMessageTransformerFactory;
 import com.dexels.navajo.reactive.transformer.mergesingle.MergeSingleTransformerFactory;
@@ -66,9 +64,6 @@ public class CoreReactiveFinder implements ReactiveFinder {
 		addReactiveTransformerFactory(new MergeSingleTransformerFactory(),"join");
 		addReactiveTransformerFactory(new FirstTransformerFactory(),"first");
 		addReactiveTransformerFactory(new FlattenEventStreamFactory(),"flatten");
-		addReactiveTransformerFactory(new CallTransformerFactory(),"call");
-		addReactiveTransformerFactory(new CallTransformerFactory(),"callLocal");
-		addReactiveTransformerFactory(new PipeTransformerFactory(),"pipe");
 		addReactiveTransformerFactory(new EventStreamMessageTransformerFactory(),"tmlstream");
 		addReactiveTransformerFactory(new InMessageTransformerFactory(),"inmessage");
 		addReactiveTransformerFactory(new CSVTransformerFactory(),"csv");
