@@ -56,14 +56,14 @@ shadowJar {
     }
 }
 
-publishing {
-    publications {
-        shadow(MavenPublication) {
-            from components.java
-            artifact shadowJar
-            groupId = "io.floodplain"
-            artifactId = "topology-shadow"
-            version = rootProject.ext.floodplain_version
-        }
-    }
-}
+//publishing {
+//    publications {
+//        shadow(MavenPublication) {
+//            from components.java
+//            artifact shadowJar
+//            groupId = "io.floodplain"
+//            artifactId = "topology-shadow"
+//            version = rootProject.ext.floodplain_version
+//        }
+//    }
+//}

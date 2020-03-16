@@ -11,9 +11,27 @@ dependencies {
     implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
     implementation 'io.quarkus:quarkus-resteasy'
     implementation project(':floodplain-reactive-topology')
+    implementation project(':floodplain-reactive')
     implementation project(':floodplain-document-stream')
+    implementation project(':floodplain-document')
+    implementation project(':floodplain-authentication-api')
+    implementation project(':floodplain-core')
+    implementation project(':floodplain-function')
+    implementation project(':config-runtime')
+    implementation project(':floodplain-version')
+    implementation project(':immutable-api')
+    implementation project(':immutable-impl')
+    implementation project(':replication-api')
+    implementation project(':replication-impl')
+    implementation project(':replication-json')
+    implementation project(':replication-protobuf')
+    implementation project(':streams-api')
+    implementation project(':streams')
+    implementation project(':kafka-rx2')
+    implementation project(':pubsub-rx2')
+    implementation project(':kafka-converter')
+    implementation project(':floodplain-api')
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
-
     testImplementation 'io.quarkus:quarkus-junit5'
     testImplementation 'io.rest-assured:rest-assured'
 }

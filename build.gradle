@@ -1,7 +1,3 @@
-buildscript {
-    repositories {
-    }
-}
 plugins {
   id "com.intershop.gradle.javacc" version "4.0.0"
   id 'eclipse'
