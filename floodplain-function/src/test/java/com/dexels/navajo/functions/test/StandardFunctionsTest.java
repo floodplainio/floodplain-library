@@ -351,29 +351,6 @@ public class StandardFunctionsTest {
 
 	}
 
-	@Test
-	public void testToSecureImage() {
-
-		FunctionInterface fi = fff.getInstance(cl, "ToSecureImage");
-		fi.reset();
-		fi.insertStringOperand("SECURE");
-		Object o = fi.evaluateWithTypeChecking();
-		assertNotNull(o);
-		assertEquals(Binary.class, o.getClass());
-
-		fi.reset();
-		fi.insertOperand(Operand.NULL);
-		o = fi.evaluateWithTypeChecking();
-		assertNull(o);
-
-		System.err.println(System.currentTimeMillis());
-		long l = (Long.parseLong("1234567890000") - System
-				.currentTimeMillis());
-		Calendar c = Calendar.getInstance();
-		c.add(Calendar.MILLISECOND, (int) l);
-		System.err.println(SimpleDateFormat.getInstance().format(c.getTime()));
-
-	}
 
 	@Test
 	public void testToPercentage() {
@@ -761,36 +738,6 @@ public class StandardFunctionsTest {
 		fi.insertMessageOperand(createTestNavajo().getMessage("Aap"));
 		fi.insertStringOperand("Noot");
 		fi.insertIntegerOperand(Integer.valueOf(2));
-
-		Object o = fi.evaluateWithTypeChecking();
-
-		assertNull(o);
-
-	}
-
-	@Test
-	public void testScaleImageMin() {
-
-		FunctionInterface fi = fff.getInstance(cl, "ScaleImageMin");
-		fi.reset();
-		fi.insertOperand(Operand.NULL);
-		fi.insertIntegerOperand(10);
-		fi.insertIntegerOperand(10);
-
-		Object o = fi.evaluateWithTypeChecking();
-
-		assertNull(o);
-
-	}
-
-	@Test
-	public void testScaleImageFree() {
-
-		FunctionInterface fi = fff.getInstance(cl, "ScaleImageFree");
-		fi.reset();
-		fi.insertOperand(Operand.NULL);
-		fi.insertIntegerOperand(10);
-		fi.insertIntegerOperand(10);
 
 		Object o = fi.evaluateWithTypeChecking();
 

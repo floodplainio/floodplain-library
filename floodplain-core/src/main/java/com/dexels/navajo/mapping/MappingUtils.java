@@ -9,42 +9,20 @@ package com.dexels.navajo.mapping;
  * @version $Id$
  */
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.dexels.navajo.document.Message;
 import com.dexels.navajo.document.Navajo;
 import com.dexels.navajo.document.NavajoException;
-import com.dexels.navajo.document.NavajoFactory;
-import com.dexels.navajo.document.Property;
-import com.dexels.navajo.document.Selection;
-import com.dexels.navajo.document.types.Binary;
-import com.dexels.navajo.document.types.NavajoExpression;
 import com.dexels.navajo.document.types.TypeUtils;
-import com.dexels.navajo.expression.api.TMLExpressionException;
-import com.dexels.navajo.parser.Condition;
-import com.dexels.navajo.script.api.Access;
-import com.dexels.navajo.script.api.Mappable;
-import com.dexels.navajo.script.api.MappableException;
 import com.dexels.navajo.script.api.MappableTreeNode;
 import com.dexels.navajo.script.api.MappingException;
-import com.dexels.navajo.script.api.SystemException;
 import com.dexels.navajo.script.api.UserException;
-import com.dexels.navajo.server.DispatcherFactory;
-import com.dexels.navajo.server.DispatcherInterface;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public final class MappingUtils {

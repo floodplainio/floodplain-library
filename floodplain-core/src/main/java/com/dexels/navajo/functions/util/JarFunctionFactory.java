@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import com.dexels.navajo.document.nanoimpl.CaseSensitiveXMLElement;
 import com.dexels.navajo.document.nanoimpl.XMLElement;
 import com.dexels.navajo.expression.api.FunctionDefinition;
-import com.dexels.navajo.server.DispatcherFactory;
 
 import navajo.ExtensionDefinition;
 import navajocore.Version;
@@ -89,14 +88,8 @@ public class JarFunctionFactory extends FunctionFactoryInterface implements Seri
 			fuds = new HashMap<>();
 			setDefaultConfig(fuds);
 		}
-		ClassLoader myClassLoader = null;
-		if ( DispatcherFactory.getInstance() != null ) {
-			myClassLoader = DispatcherFactory.getInstance().getNavajoConfig().getClassloader();
-		} else {
-			myClassLoader = getClass().getClassLoader();
-		}
-		
-		
+		ClassLoader myClassLoader = getClass().getClassLoader();
+
 		try {
 			Iterator<?> iter = java.util.ServiceLoader.load(Class.forName("navajo.ExtensionDefinition", true, myClassLoader), myClassLoader).iterator();
 			while(iter.hasNext()) {
