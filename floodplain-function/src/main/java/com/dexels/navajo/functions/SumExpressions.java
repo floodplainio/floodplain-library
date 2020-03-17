@@ -8,8 +8,6 @@ import com.dexels.navajo.document.Message;
 import com.dexels.navajo.document.Navajo;
 import com.dexels.navajo.document.NavajoException;
 import com.dexels.navajo.document.Operand;
-import com.dexels.navajo.document.types.Money;
-import com.dexels.navajo.document.types.Percentage;
 import com.dexels.navajo.expression.api.StatefulFunctionInterface;
 import com.dexels.navajo.expression.api.TMLExpressionException;
 import com.dexels.navajo.parser.Condition;
@@ -101,13 +99,6 @@ public class SumExpressions extends StatefulFunctionInterface {
 		      }
 		      if (sumType.equals("int")) {
 		        return Integer.valueOf( (int) sum);
-		      }
-		      else if (sumType.equals("money")) {
-		        return new Money(sum);
-
-		      }
-		      else if (sumType.equals("percentage")) {
-		        return new Percentage(sum);
 		      }
 		      else {
 		        return Double.valueOf(sum);

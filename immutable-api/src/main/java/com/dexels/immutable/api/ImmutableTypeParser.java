@@ -14,8 +14,6 @@ public class ImmutableTypeParser {
 			return "binary";
 		case BOOLEAN:
 			return "boolean";
-		case CLOCKTIME:
-			return "clocktime";
 		case COORDINATE:
 			return "coordinate";
 		case DATE:
@@ -34,8 +32,6 @@ public class ImmutableTypeParser {
 			return "memo";
 		case MONEY:
 			return "money";
-		case PERCENTAGE:
-			return "percentage";
 		case STOPWATCHTIME:
 			return "stopwatchtype";
 		case IMMUTABLE:
@@ -54,8 +50,6 @@ public class ImmutableTypeParser {
 			return ValueType.MEMO;
 		case "money":
 			return ValueType.MONEY;
-		case "percentage":
-			return ValueType.PERCENTAGE;
 		case "stopwatchtime":
 			return ValueType.STOPWATCHTIME;
 		case "string":
@@ -75,8 +69,6 @@ public class ImmutableTypeParser {
 		case "date":
 		case "timestamp":
 			return ValueType.DATE;
-		case "clocktime":
-			return ValueType.CLOCKTIME;
 		case "list":
 			return ValueType.LIST;
 		case "binary":

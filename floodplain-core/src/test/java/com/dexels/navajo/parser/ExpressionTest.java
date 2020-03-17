@@ -3,7 +3,6 @@ package com.dexels.navajo.parser;
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.navajo.document.*;
-import com.dexels.navajo.document.types.Money;
 import com.dexels.navajo.expression.api.TMLExpressionException;
 import com.dexels.navajo.expression.api.TipiLink;
 import com.dexels.navajo.parser.compiled.api.CachedExpressionEvaluator;
@@ -84,8 +83,8 @@ public class ExpressionTest {
 		Operand o = ee.evaluate("1+1", null, null,null);
 		assertEquals(2, o.value);
 
-		o = ee.evaluate("TODAY + 0#0#2#0#0#0", null, null,null);
-		System.err.println(o.value);
+//		o = ee.evaluate("TODAY + 0#0#2#0#0#0", null, null,null);
+//		System.err.println(o.value);
 
 		Navajo testDoc = NavajoFactory.getInstance().createNavajo();
 		Message m = NavajoFactory.getInstance().createMessage(testDoc, "MyTop");
@@ -115,12 +114,6 @@ public class ExpressionTest {
 
 		assertEquals("hallo:aap2", o.value);
 
-	}
-
-	@Test
-	public void testExpressionMoney() throws Exception {
-		boolean eq = Utils.equals(new Money(), null,"<unknown>");
-		assertTrue(eq);
 	}
 
 	@Test

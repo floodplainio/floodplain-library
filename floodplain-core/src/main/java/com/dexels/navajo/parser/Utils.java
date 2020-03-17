@@ -138,11 +138,6 @@ public final class Utils extends Exception {
 			return ((Integer) o).intValue();
 		else if (o instanceof Double)
 			return ((Double) o).doubleValue();
-		else if (o instanceof Money)
-			return ((Money) o).doubleValue();
-		else if (o instanceof Percentage)
-			return ((Percentage) o).doubleValue();
-
 		else if (o == null) {
 			return 0d;
 		}
@@ -160,10 +155,6 @@ public final class Utils extends Exception {
 			return o + "";
 		else if (o instanceof java.util.Date)
 			return new SimpleDateFormat(Property.DATE_FORMAT1).format(o);
-		else if (o instanceof Money)
-			return ((Money) o).doubleValue() + "";
-		else if (o instanceof Percentage)
-			return ((Percentage) o).doubleValue() + "";
 		else if (o instanceof ClockTime)
 			return ((ClockTime) o).toString();
 		else if (o instanceof Selection)
@@ -196,26 +187,7 @@ public final class Utils extends Exception {
 			return Double.valueOf(((Integer) a).intValue() - ((Double) b).doubleValue());
 		} else if (a instanceof Double && b instanceof Double) {
 			return Double.valueOf(((Double) a).doubleValue() - ((Double) b).doubleValue());
-		} else if ((a instanceof Money || b instanceof Money)) {
-			if (!(a instanceof Money || a instanceof Integer || a instanceof Double))
-				throw new TMLExpressionException("Invalid argument for operation: " + a.getClass());
-			if (!(b instanceof Money || b instanceof Integer || b instanceof Double))
-				throw new TMLExpressionException("Invalid argument for operation: " + b.getClass());
-			Money arg1 = (a instanceof Money ? (Money) a : new Money(a));
-			Money arg2 = (b instanceof Money ? (Money) b : new Money(b));
-			return new Money(arg1.doubleValue() - arg2.doubleValue());
 		}
-
-		else if ((a instanceof Percentage || b instanceof Percentage)) {
-			if (!(a instanceof Percentage || a instanceof Integer || a instanceof Double))
-				throw new TMLExpressionException("Invalid argument for operation: " + a.getClass());
-			if (!(b instanceof Percentage || b instanceof Integer || b instanceof Double))
-				throw new TMLExpressionException("Invalid argument for operation: " + b.getClass());
-			Percentage arg1 = (a instanceof Percentage ? (Percentage) a : new Percentage(a));
-			Percentage arg2 = (b instanceof Percentage ? (Percentage) b : new Percentage(b));
-			return new Percentage(arg1.doubleValue() - arg2.doubleValue());
-		}
-
 		if (a instanceof Date && b instanceof Date) {
 			// Correct dates for daylight savings time.
 			Calendar ca = Calendar.getInstance();
@@ -228,23 +200,6 @@ public final class Utils extends Exception {
 
 			return Integer.valueOf((int) ((ca.getTimeInMillis() - cb.getTimeInMillis()) / (double) MILLIS_IN_DAY));
 		}
-
-		if ((a instanceof DatePattern || a instanceof Date) && (b instanceof DatePattern || b instanceof Date)) {
-			DatePattern dp1 = null;
-			DatePattern dp2 = null;
-
-			if (a instanceof Date)
-				dp1 = DatePattern.parseDatePattern((Date) a);
-			else
-				dp1 = (DatePattern) a;
-			if (b instanceof Date)
-				dp2 = DatePattern.parseDatePattern((Date) b);
-			else
-				dp2 = (DatePattern) b;
-			dp1.subtract(dp2);
-			return dp1.getDate();
-		}
-
 		if ((a instanceof ClockTime || a instanceof Date || a instanceof StopwatchTime)
 				&& (b instanceof ClockTime || b instanceof Date || b instanceof StopwatchTime)) {
 			long myMillis = (a instanceof ClockTime ? ((ClockTime) a).dateValue().getTime()
@@ -291,51 +246,6 @@ public final class Utils extends Exception {
 			return Double.valueOf(((Integer) a).intValue() + ((Double) b).doubleValue());
 		} else if (a instanceof Double && b instanceof Double) {
 			return Double.valueOf(((Double) a).doubleValue() + ((Double) b).doubleValue());
-		} else if ((a instanceof DatePattern || a instanceof Date) && (b instanceof DatePattern || b instanceof Date)) {
-			DatePattern dp1 = null;
-			DatePattern dp2 = null;
-
-			if (a instanceof Date)
-				dp1 = DatePattern.parseDatePattern((Date) a);
-			else
-				dp1 = (DatePattern) a;
-			if (b instanceof Date)
-				dp2 = DatePattern.parseDatePattern((Date) b);
-			else
-				dp2 = (DatePattern) b;
-			dp1.add(dp2);
-			return dp1.getDate();
-		} else if ((a instanceof Money || b instanceof Money)) {
-			if (!(a instanceof Money || a instanceof Integer || a instanceof Double))
-				throw new TMLExpressionException("Invalid argument for operation: " + a.getClass()+" expression: "+expression);
-			if (!(b instanceof Money || b instanceof Integer || b instanceof Double))
-				throw new TMLExpressionException("Invalid argument for operation: " + b.getClass()+" expression: "+expression);
-			Money arg1 = (a instanceof Money ? (Money) a : new Money(a));
-			Money arg2 = (b instanceof Money ? (Money) b : new Money(b));
-			return new Money(arg1.doubleValue() + arg2.doubleValue());
-		} else if ((a instanceof Percentage || b instanceof Percentage)) {
-			if (!(a instanceof Percentage || a instanceof Integer || a instanceof Double))
-				throw new TMLExpressionException("Invalid argument for operation: " + a.getClass()+" expression: "+expression);
-			if (!(b instanceof Percentage || b instanceof Integer || b instanceof Double))
-				throw new TMLExpressionException("Invalid argument for operation: " + b.getClass()+" expression: "+expression);
-			Percentage arg1 = (a instanceof Percentage ? (Percentage) a : new Percentage(a));
-			Percentage arg2 = (b instanceof Percentage ? (Percentage) b : new Percentage(b));
-			return new Percentage(arg1.doubleValue() + arg2.doubleValue());
-		} else if ((a instanceof ClockTime && b instanceof DatePattern)) {
-			DatePattern dp1 = DatePattern.parseDatePattern(((ClockTime) a).dateValue());
-			DatePattern dp2 = (DatePattern) b;
-			dp1.add(dp2);
-			return new ClockTime(dp1.getDate());
-		} else if ((b instanceof ClockTime && a instanceof DatePattern)) {
-			DatePattern dp1 = DatePattern.parseDatePattern(((ClockTime) b).dateValue());
-			DatePattern dp2 = (DatePattern) a;
-			dp1.add(dp2);
-			return new ClockTime(dp1.getDate());
-		} else if ((a instanceof ClockTime && b instanceof ClockTime)) {
-			DatePattern dp1 = DatePattern.parseDatePattern(((ClockTime) a).dateValue());
-			DatePattern dp2 = DatePattern.parseDatePattern(((ClockTime) b).dateValue());
-			dp1.add(dp2);
-			return new ClockTime(dp1.getDate());
 		} else if ((a instanceof Boolean && b instanceof Boolean)) {
 			Boolean ba = (Boolean) a;
 			Boolean bb = (Boolean) b;
@@ -390,10 +300,6 @@ public final class Utils extends Exception {
 			return (sA.equals(sB));
 		} else if (a instanceof Date) {
 			return Utils.compareDates(a, b, "==");
-		} else if (a instanceof Money && b instanceof Money) {
-			return (((Money) a).doubleValue() == ((Money) b).doubleValue());
-		} else if (a instanceof Percentage && b instanceof Percentage) {
-			return (((Percentage) a).doubleValue() == ((Percentage) b).doubleValue());
 		} else if (a instanceof ClockTime && b instanceof ClockTime) {
 			return Utils.compareDates(a, b, "==");
 		} else if (a instanceof Binary && b instanceof Binary) {

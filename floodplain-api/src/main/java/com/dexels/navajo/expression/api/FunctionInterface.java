@@ -346,11 +346,6 @@ public abstract class FunctionInterface {
         insertOperand(Operand.ofProperty(property));
     }
 
-    public void insertMoneyOperand(Money money) {
-        insertOperand(Operand.ofMoney(money));
-
-    }
-
     public void insertLongOperand(long value) {
         insertOperand(Operand.ofLong(value));
     }

@@ -192,9 +192,9 @@ public abstract class NavajoFactory {
 	 * Sets the subtype for all the new properties of this type, unless defined
 	 * otherwise.
 	 * 
-	 * @param String
+	 * @param
 	 *            type
-	 * @param String
+	 * @param
 	 *            subtype todo: Change this into something like
 	 *            addDefaultSubType(String type,String key, String value)
 	 */
@@ -241,8 +241,7 @@ public abstract class NavajoFactory {
 	 * classes: MEMO_PROPERTY, DATE_PATTERN_PROPERTY, PASSWORD_PROPERTY,
 	 * TIPI_PROPERTY
 	 * 
-	 * @param String
-	 *            className
+	 * @param className
 	 * @return String propertyType
 	 */
 	public String getPropertyType(String className) {
@@ -405,7 +404,7 @@ public abstract class NavajoFactory {
 	 *            String
 	 * @param rpcPassword
 	 *            String
-	 * @param expiration_interval
+	 * @param expirationinterval
 	 *            long
 	 * @return Header
 	 */

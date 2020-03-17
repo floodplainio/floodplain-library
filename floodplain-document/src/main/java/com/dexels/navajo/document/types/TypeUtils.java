@@ -34,10 +34,6 @@ public class TypeUtils {
             return Property.BOOLEAN_PROPERTY;
         else if (o.getClass().getName().startsWith("[Ljava.util.Vector"))
             return Property.POINTS_PROPERTY;
-        else if (o instanceof Money)
-            return Property.MONEY_PROPERTY;
-        else if (o instanceof Percentage)
-            return Property.PERCENTAGE_PROPERTY;
         else if (o instanceof ClockTime)
             return Property.CLOCKTIME_PROPERTY;
         else if (o instanceof StopwatchTime)

@@ -14,9 +14,7 @@
     <type name="date" type="java.util.Date"/>
     <type name="clocktime" type="com.dexels.navajo.document.types.ClockTime"/>
     <type name="binary" type="com.dexels.navajo.document.types.Binary"/>
-    <type name="money" type="com.dexels.navajo.document.types.Money"/>
     <type name="memo" type="com.dexels.navajo.document.types.Memo"/>
-    <type name="percentage" type="com.dexels.navajo.document.types.Percentage"/>
     <type name="stopwatchtime" type="com.dexels.navajo.document.types.StopwatchTime"/>
     <type name="coordinate" type="com.dexels.navajo.document.types.Coordinate"/>
     <type name="any" type="java.lang.Object"/>

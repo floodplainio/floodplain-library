@@ -327,53 +327,9 @@ public class StandardFunctionsTest {
 	}
 
 
-	@Test
-	public void testToPercentage() {
 
-		FunctionInterface fi = fff.getInstance(cl, "ToPercentage");
-		fi.reset();
-		fi.insertStringOperand("80");
-		Object o = fi.evaluateWithTypeChecking();
-		assertNotNull(o);
-		assertEquals(Percentage.class, o.getClass());
 
-		fi.reset();
-		fi.insertIntegerOperand(Integer.valueOf(80));
-		o = fi.evaluateWithTypeChecking();
-		assertNotNull(o);
-		assertEquals(Percentage.class, o.getClass());
 
-		fi.reset();
-		fi.insertFloatOperand(Double.valueOf(80));
-		o = fi.evaluateWithTypeChecking();
-		assertNotNull(o);
-		assertEquals(Percentage.class, o.getClass());
-
-	}
-
-	@Test
-	public void testToMoney() {
-
-		FunctionInterface fi = fff.getInstance(cl, "ToMoney");
-		fi.reset();
-		fi.insertStringOperand("80");
-		Object o = fi.evaluateWithTypeChecking();
-		assertNotNull(o);
-		assertEquals(Money.class, o.getClass());
-
-		fi.reset();
-		fi.insertIntegerOperand(Integer.valueOf(80));
-		o = fi.evaluateWithTypeChecking();
-		assertNotNull(o);
-		assertEquals(Money.class, o.getClass());
-
-		fi.reset();
-		fi.insertFloatOperand(Double.valueOf(80));
-		o = fi.evaluateWithTypeChecking();
-		assertNotNull(o);
-		assertEquals(Money.class, o.getClass());
-
-	}
 
 	@Test
 	public void testToMilliseconds() {
@@ -1253,20 +1209,7 @@ public class StandardFunctionsTest {
 
 	}
 
-	@Test
-	public void testGetCents() {
 
-		FunctionInterface fi = fff.getInstance(cl, "GetCents");
-		fi.reset();
-//		fi.setInMessage(createTestNavajo());
-		Navajo doc = createTestNavajo();
-		fi.insertMoneyOperand(new Money(100.50));
-
-		Object o = fi.evaluateWithTypeChecking();
-
-		assertNotNull(o);
-
-	}
 
 	@Test
 	public void testFormatStringList() {
@@ -1976,15 +1919,7 @@ public class StandardFunctionsTest {
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
 	}
 	
-	@Test
-	public void testNullToPercentage() {
-		ToPercentage toPerc = new ToPercentage();
-		toPerc.reset();
-		toPerc.insertStringOperand(null);
-		Object result = toPerc.evaluate();
-		System.err.println("Result: "+result);
-	}
-	
+
 
 	@Test
 	public void testDateTime() {

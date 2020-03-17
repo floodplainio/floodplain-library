@@ -2,8 +2,6 @@
 package com.dexels.navajo.parser.compiled;
 
 import com.dexels.navajo.document.Operand;
-import com.dexels.navajo.document.types.Money;
-import com.dexels.navajo.document.types.Percentage;
 import com.dexels.navajo.expression.api.ContextExpression;
 import com.dexels.navajo.expression.api.FunctionClassification;
 import com.dexels.navajo.expression.api.TMLExpressionException;
@@ -27,10 +25,6 @@ final class ASTNegativeNode extends SimpleNode {
             return Operand.ofInteger(0 - ((Integer) a).intValue());
         else if (a instanceof Double)
             return Operand.ofFloat(0 - ((Double) a).doubleValue());
-        else if (a instanceof Money)
-          return Operand.ofMoney(new Money(0 - ((Money) a).doubleValue()));
-        else if (a instanceof Percentage)
-          return Operand.ofPercentage(new Percentage( new Percentage(0 - ((Percentage) a).doubleValue())));
         else
           throw new TMLExpressionException("Illegal type encountered before negation");
     }

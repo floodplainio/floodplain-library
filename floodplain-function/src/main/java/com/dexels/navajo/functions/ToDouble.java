@@ -1,7 +1,6 @@
 package com.dexels.navajo.functions;
 
 
-import com.dexels.navajo.document.types.Money;
 import com.dexels.navajo.expression.api.FunctionInterface;
 
 
@@ -14,9 +13,6 @@ public final class ToDouble extends FunctionInterface {
 		Object o = this.getOperands().get(0);
         if (o==null) {
           return Double.valueOf(0);
-        }
-        if(o instanceof Money) {
-      	  return ((Money)o).doubleValue();
         }
         return Double.valueOf(o+"");
     }

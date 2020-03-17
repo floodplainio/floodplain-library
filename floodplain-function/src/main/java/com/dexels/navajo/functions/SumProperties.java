@@ -1,8 +1,6 @@
 package com.dexels.navajo.functions;
 
 import com.dexels.navajo.document.*;
-import com.dexels.navajo.document.types.Money;
-import com.dexels.navajo.document.types.Percentage;
 import com.dexels.navajo.expression.api.StatefulFunctionInterface;
 import com.dexels.navajo.expression.api.TMLExpressionException;
 import com.dexels.navajo.parser.Condition;
@@ -82,8 +80,7 @@ public Object evaluate() throws com.dexels.navajo.expression.api.TMLExpressionEx
             }
             if ( 
                 ! (o instanceof Integer || o instanceof Double ||
-                   o instanceof Float || o instanceof Money ||
-                   o instanceof Percentage || o instanceof Boolean || o instanceof String)) {
+                   o instanceof Float || o instanceof Boolean || o instanceof String)) {
               throw new TMLExpressionException(this,
                   "Only numbers are supported a sum. Not: " +
                                                (o.getClass().toString())+" value: "+o);
@@ -115,18 +112,8 @@ public Object evaluate() throws com.dexels.navajo.expression.api.TMLExpressionEx
               sum += ( (Float) o).doubleValue();
 //              }
             }
-            else if (o instanceof Money) {
-//              if (!Double.valueOf(((Money)o).doubleValue()).equals(Double.valueOf(Float.NaN))) {
-              sumType = "money";
-              sum += ( (Money) o).doubleValue();
-//              }
-            }
-            else if (o instanceof Percentage) {
-//              if (!Double.valueOf(((Money)o).doubleValue()).equals(Double.valueOf(Float.NaN))) {
-              sumType = "percentage";
-              sum += ( (Percentage) o).doubleValue();
-//              }
-            } else if (o instanceof Boolean) {
+            else
+            if (o instanceof Boolean) {
               sumType = "int";
               sum += ( (Boolean) o).booleanValue() ? 1 : 0;
             }
@@ -140,13 +127,6 @@ public Object evaluate() throws com.dexels.navajo.expression.api.TMLExpressionEx
       }
       if (sumType.equals("int")) {
         return Integer.valueOf( (int) sum);
-      }
-      else if (sumType.equals("money")) {
-        return new Money(sum);
-
-      }
-      else if (sumType.equals("percentage")) {
-        return new Percentage(sum);
       }
       else {
         return Double.valueOf(sum);

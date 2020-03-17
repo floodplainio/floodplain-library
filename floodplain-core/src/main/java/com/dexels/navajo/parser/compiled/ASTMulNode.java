@@ -2,8 +2,6 @@
 package com.dexels.navajo.parser.compiled;
 
 import com.dexels.navajo.document.Operand;
-import com.dexels.navajo.document.types.Money;
-import com.dexels.navajo.document.types.Percentage;
 import com.dexels.navajo.expression.api.ContextExpression;
 import com.dexels.navajo.expression.api.FunctionClassification;
 import com.dexels.navajo.expression.api.TMLExpressionException;
@@ -41,10 +39,6 @@ final class ASTMulNode extends SimpleNode {
 			return Operand.ofFloat(((Double) b).doubleValue() * ((Integer) a).intValue());
 		else if (a instanceof Double && b instanceof Double)
 			return Operand.ofFloat(((Double) b).doubleValue() * ((Double) a).doubleValue());
-		else if (a instanceof Money || b instanceof Money)
-			return Operand.ofMoney(new Money(Utils.getDoubleValue(a) * Utils.getDoubleValue(b)));
-		else if (a instanceof Percentage || b instanceof Percentage)
-			return Operand.ofPercentage(new Percentage(Utils.getDoubleValue(a) * Utils.getDoubleValue(b)));
 		else
 			return Operand.NULL;
 	}

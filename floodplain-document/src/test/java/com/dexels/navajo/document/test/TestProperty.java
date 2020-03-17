@@ -115,13 +115,6 @@ public class TestProperty {
 		String expected = new String(b1.getData());
 		assertEquals("Mooie array", expected);
 
-		// Money
-		p1.setAnyValue(new Money(5000));
-		assertEquals("money", p1.getType());
-
-		assertEquals("5000.00", p1.getValue());
-		assertTrue(p1.getTypedValue().equals(new Money(5000)));
-
 		// ClockTime
 		Date d1 = new java.util.Date();
 		ClockTime ct = new ClockTime(d1);
@@ -140,14 +133,6 @@ public class TestProperty {
 		logger.info("FORM: {} val: {}",format, p1.getValue());
 		assertEquals(format, p1.getValue());
 		assertTrue(p1.getTypedValue().equals(new StopwatchTime(format)));
-
-		// Percentage
-		Percentage p = new Percentage(50);
-		p1.setAnyValue(p);
-		assertEquals("percentage", p1.getType());
-		assertEquals("50.0", p1.getValue());
-		assertTrue(p1.getTypedValue().equals(new Percentage(50)));
-
 	}
 
 	@Test
@@ -724,13 +709,6 @@ public class TestProperty {
 	}
 
 	@Test
-	public void tesNullMoneyEquals() {
-		Money m = new Money();
-		Money mm = new Money();
-		Assert.assertEquals(m, mm);
-	}
-
-	@Test
 	public void tesSelectionEqualsUpdateFix() {
 		BaseNavajoImpl n = new BaseNavajoImpl(NavajoFactory.getInstance());
 		BasePropertyImpl p1 = new BasePropertyImpl(n, "Noot");
@@ -748,66 +726,8 @@ public class TestProperty {
 
 	}
 
-	@Test
-	public void tesMoneyFormat() {
-		Money m = new Money(10);
-		logger.info("Country: {}", Locale.getDefault().getCountry());
-		logger.info("m: {} :: {}", m.toTmlString(), m.editingString());
-		Assert.assertEquals(m.toTmlString(), "10.00");
-		Assert.assertEquals(m.editingString(), "10");
 
-		m = new Money("10.000");
-		Assert.assertEquals(m.doubleValue(), 10000d,0.1);
-		m = new Money("10.000,00");
-		Assert.assertEquals(m.doubleValue(), 10000d,0.1);
-		m = new Money("5,00");
-		Assert.assertEquals(m.doubleValue(), 5d,0.1);
 
-	}
-
-	@Test
-	public void tesMoneyProperty() {
-		BaseNavajoImpl n = new BaseNavajoImpl(NavajoFactory.getInstance());
-		BaseMessageImpl m = new BaseMessageImpl(n, "Aap");
-		n.addMessage(m);
-		BasePropertyImpl p1 = new BasePropertyImpl(n, "Noot");
-		m.addProperty(p1);
-		p1.setType(Property.MONEY_PROPERTY);
-		p1.setValue("10.30");
-		StringWriter sw = new StringWriter();
-		n.write(sw);
-		StringReader sr = new StringReader(sw.toString());
-		Navajo n2 = NavajoFactory.getInstance().createNavajo(sr);
-		Property p2 = n2.getProperty("Aap/Noot");
-		Money mon = (Money) p2.getTypedValue();
-
-		logger.info("m: " + mon.toTmlString() + " :: " + mon.editingString()
-				+ " :: " + mon.toString());
-		Assert.assertEquals(mon.toTmlString(), "10.30");
-		Assert.assertEquals(mon.doubleValue(), 10.30d,0.1);
-
-	}
-
-	@Test
-	public void tesMoneyParseTml() {
-
-		double d = 10.30;
-		Money m = new Money("10.30");
-		// Strange test, but does no harm
-		logger.info(":: {}", m.doubleValue());
-		Assert.assertNotSame(d, m.doubleValue());
-
-	}
-
-	@Test
-	public void tesMoneyParsePresentation() {
-
-		double d = 1300.50;
-		Money m = new Money("1.300,50");
-		logger.info(":: {}", m.doubleValue());
-		Assert.assertEquals(d, m.doubleValue(),0.1);
-
-	}
 
 	@Test
 	public void tesExpression() {

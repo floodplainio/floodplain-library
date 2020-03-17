@@ -136,22 +136,6 @@ public class TestTMLJson {
     }
 
     @Test
-    public void testMoney() throws Exception {
-        Navajo n = NavajoFactory.getInstance().createNavajo(getClass().getResourceAsStream("message2.xml"));
-        JSONTML json = JSONTMLFactory.getInstance();
-
-        Property moneyProp = NavajoFactory.getInstance().createProperty(n, "moneyProp", "", "", "");
-        moneyProp.setAnyValue(new Money("32.22"));
-        n.getMessage("SimpleMessage").addProperty(moneyProp);
-
-        Writer sw = new StringWriter();
-        json.format(n, sw, true);
-
-        String result = sw.toString();
-        Assert.assertEquals("{\n  \"moneyProp\" : 3222.0\n}", result);
-    }
-
-    @Test
     public void testClockTime() throws Exception {
         Navajo n = NavajoFactory.getInstance().createNavajo(getClass().getResourceAsStream("message2.xml"));
         JSONTML json = JSONTMLFactory.getInstance();
@@ -165,22 +149,6 @@ public class TestTMLJson {
 
         String result = sw.toString();
         Assert.assertEquals("{\n  \"clockTimeProp\" : \"11:12:00\"\n}", result);
-    }
-
-    @Test
-    public void testPercentage() throws Exception {
-        Navajo n = NavajoFactory.getInstance().createNavajo(getClass().getResourceAsStream("message2.xml"));
-        JSONTML json = JSONTMLFactory.getInstance();
-
-        Property prop = NavajoFactory.getInstance().createProperty(n, "percentageProp", "", "", "");
-        prop.setAnyValue(new Percentage("43"));
-        n.getMessage("SimpleMessage").addProperty(prop);
-
-        Writer sw = new StringWriter();
-        json.format(n, sw, true);
-
-        String result = sw.toString();
-        Assert.assertEquals("{\n  \"percentageProp\" : 43.0\n}", result);
     }
 
     @Test

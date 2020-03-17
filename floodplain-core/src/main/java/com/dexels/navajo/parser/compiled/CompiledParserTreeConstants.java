@@ -26,17 +26,16 @@ public interface CompiledParserTreeConstants
   public int JJTTODAYNODE = 20;
   public int JJTTRUENODE = 21;
   public int JJTFALSENODE = 22;
-  public int JJTDATEPATTERNNODE = 23;
-  public int JJTFORALLNODE = 24;
-  public int JJTFUNCTIONNODE = 25;
-  public int JJTFLOATCONSTANTNODE = 26;
-  public int JJTINTEGERCONSTANTNODE = 27;
-  public int JJTSTRINGCONSTANTNODE = 28;
-  public int JJTEXPRESSIONLITERALNODE = 29;
-  public int JJTTMLNODE = 30;
-  public int JJTTIPINODE = 31;
-  public int JJTMAPPABLENODE = 32;
-  public int JJTKEYVALUENODE = 33;
+  public int JJTFORALLNODE = 23;
+  public int JJTFUNCTIONNODE = 24;
+  public int JJTFLOATCONSTANTNODE = 25;
+  public int JJTINTEGERCONSTANTNODE = 26;
+  public int JJTSTRINGCONSTANTNODE = 27;
+  public int JJTEXPRESSIONLITERALNODE = 28;
+  public int JJTTMLNODE = 29;
+  public int JJTTIPINODE = 30;
+  public int JJTMAPPABLENODE = 31;
+  public int JJTKEYVALUENODE = 32;
 
 
   public String[] jjtNodeName = {
@@ -63,7 +62,6 @@ public interface CompiledParserTreeConstants
     "TodayNode",
     "TrueNode",
     "FalseNode",
-    "DatePatternNode",
     "ForAllNode",
     "FunctionNode",
     "FloatConstantNode",
@@ -76,4 +74,4 @@ public interface CompiledParserTreeConstants
     "KeyValueNode",
   };
 }
-/* JavaCC - OriginalChecksum=c11f425e3130d03ef8ca9d098cf87cca (do not edit this line) */
+/* JavaCC - OriginalChecksum=30168b309e1b8f4c5b8c779e7de71a8c (do not edit this line) */

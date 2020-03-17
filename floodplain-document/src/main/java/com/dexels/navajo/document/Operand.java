@@ -63,10 +63,6 @@ public class Operand {
 	  return new Operand(value,Property.FLOAT_PROPERTY);
   }
 
-public static Operand ofDatePattern(DatePattern value) {
-	return new Operand(value,Property.DATE_PATTERN_PROPERTY);
-}
-
 public static Operand ofDynamic(Object o) {
 	if(o==null) {
 		return NULL;
@@ -99,14 +95,6 @@ public static Operand ofCustom(Object value, String type) {
 
 public static Operand ofDate(Date value) {
 	return new Operand(value,Property.DATE_PROPERTY);
-}
-
-public static Operand ofMoney(Money value) {
-	return new Operand(value,Property.MONEY_PROPERTY);
-}
-
-public static Operand ofPercentage(Percentage value) {
-	return  new Operand(value,Property.PERCENTAGE_PROPERTY);
 }
 
 public boolean booleanValue() {

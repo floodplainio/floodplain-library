@@ -247,7 +247,7 @@ void PrimaryExpression() #void:
 {
 }
 {
-  LOOKAHEAD(Literal()"#") DatePatternLiteral() | Literal() | "(" Expression() ")"
+  Literal() | "(" Expression() ")"
 }
 
 void AdditiveExpression() #void:
@@ -285,12 +285,6 @@ void Literal() #void:
   ForAllLiteral() | ListExpression() | FloatLiteral() | IntegerLiteral() | <NULL> #NullNode | <TODAY> #TodayNode | <TRUE> #TrueNode | <FALSE> #FalseNode |
   FunctionLiteral() | StringLiteral() |
   ExistsTmlLiteral() | TmlLiteral() | TipiLiteral() | "$" MappableLiteral()
-}
-
-void DatePatternLiteral() #void:
-{}
-{
-  (Literal()"#"Literal()"#"Literal()"#"Literal()"#"Literal()"#"Literal()) #DatePatternNode
 }
 
 void ForAllLiteral() #void:

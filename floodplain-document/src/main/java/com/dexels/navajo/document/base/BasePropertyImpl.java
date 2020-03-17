@@ -386,10 +386,6 @@ public class BasePropertyImpl extends BaseNode implements Property, Comparable<P
 			setLongValue(((Long) o).longValue(), internal);
 			return;
 		}
-		if (o instanceof Money) {
-			setValue((Money) o, internal);
-			return;
-		}
         if (o instanceof Coordinate) {
             setValue((Coordinate) o, internal);
             return;
@@ -402,10 +398,6 @@ public class BasePropertyImpl extends BaseNode implements Property, Comparable<P
             setValue((Memo) o, internal);
             return;
         }
-		if (o instanceof Percentage) {
-			setValue((Percentage) o, internal);
-			return;
-		}
 		if (o instanceof Boolean) {
 			setValue((Boolean) o, internal);
 			return;
@@ -620,31 +612,7 @@ public class BasePropertyImpl extends BaseNode implements Property, Comparable<P
 				}
 			
 		}
-
-		if (getType().equals(Property.PERCENTAGE_PROPERTY)) {
-			if (getValue() != null) {
-				return new Percentage(getValue());
-			} else {
-				return null;
-			}
-		}
-
-		if (getType().equals(Property.MONEY_PROPERTY)) {
-			if (getValue() == null || "".equals(getValue())) {
-				return new Money((Double) null, getSubType());
-			}
-			String val = getValue();
-			
-			NumberFormat fn = NumberFormat.getNumberInstance(Locale.US);
-			
-			Number parse;
-			try {
-				parse = fn.parse(val);
-			} catch (ParseException e) {
-				return null;
-			}
-			return new Money(parse.doubleValue(), getSubType());
-		} else if (getType().equals(Property.CLOCKTIME_PROPERTY)) {
+		if (getType().equals(Property.CLOCKTIME_PROPERTY)) {
 			if (getValue() == null || getValue().equals("")) {
 				return null;
 			}
@@ -909,29 +877,7 @@ public class BasePropertyImpl extends BaseNode implements Property, Comparable<P
 			setCheckedValue(ne.toString());
 		}
 	}
-	
-	@Override
-	public final void setValue(Money value) {
-		setValue(value, false);
-	}
-	
-	private final void setValue(Money value, Boolean internal) {
-	    Object old = null;
-        if (hasPropertyDataListeners()) {
-            old = getTypedValue();
-        }
-		setType(MONEY_PROPERTY);
 
-		if (value != null) {
-			setCheckedValue(value.toString());
-		} else {
-			myValue = null;
-		}
-		if (hasPropertyDataListeners()) {
-		    firePropertyChanged(PROPERTY_VALUE, old, getTypedValue(), internal);
-		}
-	}
-	
     @Override
     public final void setValue(Coordinate value) {
         setValue(value, false);
@@ -987,27 +933,6 @@ public class BasePropertyImpl extends BaseNode implements Property, Comparable<P
             firePropertyChanged(PROPERTY_VALUE, old, getTypedValue(), internal);
         }
     }
-
-	@Override
-	public final void setValue(Percentage value) {
-		setValue(value, false);
-	}
-	
-	private final void setValue(Percentage value, Boolean internal) {
-	    Object old = null;
-        if (hasPropertyDataListeners()) {
-            old = getTypedValue();
-        }
-		setType(PERCENTAGE_PROPERTY);
-		if (value != null) {
-			setCheckedValue(value.toString());
-		} else {
-			myValue = null;
-		}
-		if (hasPropertyDataListeners()) {
-		    firePropertyChanged(PROPERTY_VALUE, old, getTypedValue(), internal);
-		}
-	}
 
 	@Override
 	public final void setValue(ClockTime value) {

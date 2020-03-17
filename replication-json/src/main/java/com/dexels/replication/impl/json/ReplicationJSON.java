@@ -357,10 +357,8 @@ public class ReplicationJSON {
 				// ignore binaries for now
 				break;
 			case BINARY_DIGEST:
-			case CLOCKTIME:
 			case COORDINATE:
 			case MONEY:
-			case PERCENTAGE:
 			case STOPWATCHTIME:
 				throw new RuntimeException("Whoops, illegal type: "+e.getValue().type);
 			// ignore this one:

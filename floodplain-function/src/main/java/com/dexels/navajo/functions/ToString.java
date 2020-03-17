@@ -1,7 +1,6 @@
 package com.dexels.navajo.functions;
 
 import com.dexels.navajo.document.types.Binary;
-import com.dexels.navajo.document.types.Money;
 import com.dexels.navajo.expression.api.FunctionInterface;
 
 import java.io.StringWriter;
@@ -52,10 +51,6 @@ public final Object evaluate() throws com.dexels.navajo.expression.api.TMLExpres
             w.write(data[i]);
           }
           return w.toString();
-        }
-        if(s instanceof Money) {
-        	Money m = (Money)s;
-        	return m.formattedString();
         }
        return s.toString();
     }

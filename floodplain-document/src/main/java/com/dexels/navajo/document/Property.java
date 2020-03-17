@@ -174,7 +174,7 @@ public interface Property extends java.io.Serializable, Comparable<Property>, Cl
 
   /**
    * Removes a selection from a selection property
-   * @param Selection s
+   * @param s
    */
   public void removeSelection(Selection s);
 
@@ -196,7 +196,7 @@ public interface Property extends java.io.Serializable, Comparable<Property>, Cl
   /**
    * Add a selection option to a "selection" property. If the option name already exists, replace
    * it with the new one. If the property is not a "selection" type, a NavajoException is thrown.
-   *  @param Selection s
+   *  @param s
    * @throws NavajoException
    */
   public void addSelection(Selection s);
@@ -217,7 +217,7 @@ public interface Property extends java.io.Serializable, Comparable<Property>, Cl
 
   /**
    * Set the property name (required). A property name must be unique within a message.
-   * @param String name
+   * @param name
    */
   public void setName(String name);
 
@@ -350,7 +350,7 @@ public interface Property extends java.io.Serializable, Comparable<Property>, Cl
 
   /**
    * Set the type of a property (required).
-   * @param String type
+   * @param type
    */
   public void setType(String type);
 
@@ -386,7 +386,7 @@ public String toString();
    * Does the same as setValue(String) however, it will return the value that
    * was actually set. This can be different than the original paramenter, because
    * the typechecker may have changed the case, truncated, or changed it somehow.
-   * @param String value
+   * @param  v
    * @return String checkedValue
    */
   public String setCheckedValue(String v);
@@ -423,11 +423,7 @@ public String toString();
 
   public void setValue(URL url);
 
-  public void setValue(Money m);
-
-    public void setValue(Coordinate c);
-
-  public void setValue(Percentage value);
+  public void setValue(Coordinate c);
 
   public void setValue(ClockTime ct);
   
@@ -496,7 +492,7 @@ public String toString();
   /**
    * Get the description of a general property. This attribute is not required, hence
    * it could not be present.
-   * @param String description
+   * @return  String description
    */
   public String getDescription();
 
@@ -509,7 +505,7 @@ public String toString();
 
   /**
    * Set the direction of a general property.
-   * @param String direction
+   * @param dir
    */
   public void setDirection(String dir);
 
@@ -524,9 +520,9 @@ public String toString();
   /**
    * Set the cardinality of a "selection" property. If the property is not
    * of type "selection" the attribute is set anyway, however it is ignored.
-   * @param String cardinality
+   * @param cardinality
    */
-  public void setCardinality(String c);
+  public void setCardinality(String cardinality);
 
   /**
    * Get the message object in which this property is located.
@@ -564,9 +560,9 @@ public String toString();
 
   /**
    * Replace the Navajo doc this object is part of with this one.
-   * @param Navajo rootDoc
+   * @param rootDoc
    */
-  public void setRootDoc(Navajo n);
+  public void setRootDoc(Navajo rootDoc);
 
   /**
    * Returns the selected selection. Will return a dummyselection when none is selected, and will throw a NavajoException
@@ -596,7 +592,7 @@ public String toString();
    *  From now on, I think this is the safest accessor, if you are unsure about the type
    * (for example, the result from an operand)
    *  what type you are dealing with. Nano and jaxp are identical.
-   * @param Object value
+   * @param o
    */
   public void setAnyValue(Object o);
   
@@ -605,10 +601,10 @@ public String toString();
    *  From now on, I think this is the safest accessor, if you are unsure about the type
    * (for example, the result from an operand)
    *  what type you are dealing with. Nano and jaxp are identical.
-   * @param Object value
-   * @param Boolean internal if the setValue is internal, no tipi event will be fired for "onValueChanged"
+   * @param value
+   * @param isInternal if the setValue is internal, no tipi event will be fired for "onValueChanged"
    */
-  public void setAnyValue(Object o, Boolean internal);
+  public void setAnyValue(Object value, Boolean isInternal);
   
   public void setUnCheckedStringAsValue(String s);
   

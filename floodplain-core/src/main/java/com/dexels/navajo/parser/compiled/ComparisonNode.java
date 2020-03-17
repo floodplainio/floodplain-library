@@ -5,8 +5,6 @@ package com.dexels.navajo.parser.compiled;
 import com.dexels.navajo.document.Operand;
 import com.dexels.navajo.document.Property;
 import com.dexels.navajo.document.types.ClockTime;
-import com.dexels.navajo.document.types.Money;
-import com.dexels.navajo.document.types.Percentage;
 import com.dexels.navajo.expression.api.ContextExpression;
 import com.dexels.navajo.expression.api.FunctionClassification;
 import com.dexels.navajo.expression.api.TMLExpressionException;
@@ -49,10 +47,6 @@ abstract class ComparisonNode extends SimpleNode {
         	return Utils.compare((Double) a, (Double) b, compOp.getOperator());
         else if (a instanceof Date)
             return Boolean.valueOf(Utils.compareDates(a, b, compOp.getOperator()));
-        else if (a instanceof Money || b instanceof Money)
-        	return Utils.compare(Utils.getDoubleValue(a), Utils.getDoubleValue(b), compOp.getOperator());
-        else if (a instanceof Percentage || b instanceof Percentage)
-        	return Utils.compare(Utils.getDoubleValue(a), Utils.getDoubleValue(b), compOp.getOperator());
         else if (a instanceof ClockTime && b instanceof ClockTime)
            return Boolean.valueOf(Utils.compareDates(a, b, compOp.getOperator()));
         else if (a instanceof String && b instanceof String)

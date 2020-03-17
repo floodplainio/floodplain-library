@@ -440,19 +440,11 @@ public class TestCompiledExpression {
 	public void testDateComparison()
 	{
 		Operand result; 
-		result = Expression.evaluate(" TODAY < ( TODAY + 0#0#1#0#0#0 ) ", null, null, null);
-		Assert.assertTrue((boolean) result.value);
 		result = Expression.evaluate(" TODAY < TODAY ", null, null, null);
 		Assert.assertFalse((boolean) result.value);
-		result = Expression.evaluate(" TODAY <= ( TODAY + 0#0#1#0#0#0 ) ", null, null, null);
-		Assert.assertTrue((boolean) result.value);
 		result = Expression.evaluate(" TODAY <= TODAY ", null, null, null);
 		Assert.assertTrue((boolean) result.value);
-		result = Expression.evaluate(" TODAY > ( TODAY + 0#0#1#0#0#0 ) ", null, null, null);
-		Assert.assertFalse((boolean) result.value);
 		result = Expression.evaluate(" TODAY > TODAY ", null, null, null);
-		Assert.assertFalse((boolean) result.value);
-		result = Expression.evaluate(" TODAY >= ( TODAY + 0#0#1#0#0#0 ) ", null, null, null);
 		Assert.assertFalse((boolean) result.value);
 		result = Expression.evaluate(" TODAY >= TODAY ", null, null, null);
 		Assert.assertTrue((boolean) result.value);

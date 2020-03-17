@@ -6,8 +6,6 @@ package com.dexels.navajo.functions;
 
 import com.dexels.navajo.document.Message;
 import com.dexels.navajo.document.Property;
-import com.dexels.navajo.document.types.Money;
-import com.dexels.navajo.document.types.Percentage;
 import com.dexels.navajo.expression.api.FunctionInterface;
 import com.dexels.navajo.expression.api.TMLExpressionException;
 
@@ -87,23 +85,13 @@ public class SumMessage extends FunctionInterface {
 	        	} else if (o instanceof Double) {
 	        		sum += ((Double) o).doubleValue();
 	        		sumType = "double";
-	        	} else if (o instanceof Money) {
-	        		sum += ((Money) o).doubleValue();
-	        		sumType = "money";
-	        	} else if (o instanceof Percentage) {
-	        		sum += ((Percentage) o).doubleValue();
-	        		sumType = "percentage";
-	        	} 
+	        	}
 	        	else {
 	        		throw new TMLExpressionException(this, "Incompatible type while summing: " + o);
 	        	}
 		      }
 		      if (sumType.equals("int")) {
 		        return Integer.valueOf( (int) sum);
-		      } else if (sumType.equals("money")) {
-		        return new Money(sum);
-		      } else if (sumType.equals("percentage")) {
-		        return new Percentage(sum);
 		      } else {
 		        return Double.valueOf(sum);
 		      }
