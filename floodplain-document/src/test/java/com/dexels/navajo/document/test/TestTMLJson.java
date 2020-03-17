@@ -152,23 +152,6 @@ public class TestTMLJson {
     }
 
     @Test
-    public void testMemo() throws Exception {
-        Navajo n = NavajoFactory.getInstance().createNavajo(getClass().getResourceAsStream("message2.xml"));
-        JSONTML json = JSONTMLFactory.getInstance();
-
-        Property prop = NavajoFactory.getInstance().createProperty(n, "memoProp", "", "", "");
-        prop.setAnyValue(new Memo("This is a memo value"));
-        n.getMessage("SimpleMessage").addProperty(prop);
-
-        Writer sw = new StringWriter();
-        json.format(n, sw, true);
-
-        String result = sw.toString();
-        logger.info(result);
-        Assert.assertEquals("{\n  \"memoProp\" : \"This is a memo value\"\n}", result);
-    }
-
-    @Test
     public void testCoordinate() throws Exception {
         Navajo n = NavajoFactory.getInstance().createNavajo(getClass().getResourceAsStream("message2.xml"));
         JSONTML json = JSONTMLFactory.getInstance();

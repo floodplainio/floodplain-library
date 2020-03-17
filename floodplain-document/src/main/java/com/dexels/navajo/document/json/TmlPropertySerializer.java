@@ -43,12 +43,6 @@ public class TmlPropertySerializer extends StdSerializer<Property> {
             } catch (ClassCastException e) {
                 jg.writeString(value.toString());
             }
-        } else if (property.getType().equals(Property.MONEY_PROPERTY) || property.getType().equals(Property.PERCENTAGE_PROPERTY)) {
-            try {
-                jg.writeNumber(Double.parseDouble(value.toString()));
-            } catch (NumberFormatException e) {
-                jg.writeString(value.toString());
-            }
         } else if (property.getType().equals(Property.COORDINATE_PROPERTY)) {
             jg.writeString(value.toString());
         } else {

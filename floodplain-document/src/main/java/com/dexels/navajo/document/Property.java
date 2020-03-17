@@ -48,20 +48,16 @@ public interface Property extends java.io.Serializable, Comparable<Property>, Cl
   public static final String TIMESTAMP_PROPERTY = "timestamp";
 
   public static final String FLOAT_PROPERTY = "float";
-  public static final String MONEY_PROPERTY = "money";
-  public static final String PERCENTAGE_PROPERTY = "percentage";
   public static final String CLOCKTIME_PROPERTY = "clocktime";
   public static final String EXPRESSION_PROPERTY = "expression";
   public static final String EXPRESSION_LITERAL_PROPERTY = "expressionliteral";
   public static final String URL_PROPERTY = "url";
   public static final String SELECTION_PROPERTY = "selection";
   public static final String LIST_PROPERTY = "list";
-  public static final String MEMO_PROPERTY = "memo";
   public static final String BOOLEAN_PROPERTY = "boolean";
   public static final String POINTS_PROPERTY = "points";
   public static final String DATE_PATTERN_PROPERTY = "date_pattern";
   public static final String PASSWORD_PROPERTY = "password";
-  public static final String TIPI_PROPERTY = "tipi";
   public static final String BINARY_PROPERTY = "binary";
   public static final String BINARY_DIGEST_PROPERTY = "binary_digest";
   public static final String STOPWATCHTIME_PROPERTY = "stopwatchtime";
@@ -76,16 +72,16 @@ public interface Property extends java.io.Serializable, Comparable<Property>, Cl
   // Needless to say, if you add a type, add it here as well.
   public static final String[] VALID_DATA_TYPES = new String[] {
       STRING_PROPERTY, INTEGER_PROPERTY, LONG_PROPERTY, DATE_PROPERTY,
-            FLOAT_PROPERTY, MONEY_PROPERTY, CLOCKTIME_PROPERTY, COORDINATE_PROPERTY,
-      URL_PROPERTY, MEMO_PROPERTY, BOOLEAN_PROPERTY, POINTS_PROPERTY,
+            FLOAT_PROPERTY, CLOCKTIME_PROPERTY, COORDINATE_PROPERTY,
+      URL_PROPERTY, BOOLEAN_PROPERTY, POINTS_PROPERTY,
       DATE_PATTERN_PROPERTY, PASSWORD_PROPERTY,
-      TIPI_PROPERTY, BINARY_PROPERTY, EXPRESSION_PROPERTY, PERCENTAGE_PROPERTY, STOPWATCHTIME_PROPERTY, LIST_PROPERTY
+      BINARY_PROPERTY, EXPRESSION_PROPERTY, STOPWATCHTIME_PROPERTY, LIST_PROPERTY
   };
 
   
   // maybe DATE_PATTERN_PROPERTY?
   public static final String[] STRING_DATA_TYPES = new String[] {
-	  STRING_PROPERTY,MEMO_PROPERTY,PASSWORD_PROPERTY
+	  STRING_PROPERTY,PASSWORD_PROPERTY
   };
   
   //Binary data properties.

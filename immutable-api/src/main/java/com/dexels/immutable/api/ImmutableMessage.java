@@ -21,9 +21,7 @@ public interface ImmutableMessage {
 		    LIST,
 		    BINARY,
 		    COORDINATE,
-		    MONEY,
 		    STOPWATCHTIME,
-		    MEMO,
 		    IMMUTABLE,
 		    UNKNOWN,
 		    ENUM

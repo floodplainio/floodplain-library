@@ -350,18 +350,6 @@ public class StandardFunctionsTest {
 	}
 
 	@Test
-	public void testToMemo() {
-
-		FunctionInterface fi = fff.getInstance(cl, "ToMemo");
-		fi.reset();
-		fi.insertStringOperand("20");
-		Object o = fi.evaluateWithTypeChecking();
-		assertNotNull(o);
-		assertEquals(Memo.class, o.getClass());
-
-	}
-
-	@Test
 	public void testToLower() {
 
 		FunctionInterface fi = fff.getInstance(cl, "ToLower");

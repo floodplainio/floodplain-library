@@ -344,7 +344,6 @@ public class ReplicationJSON {
 			case LONG:
 				node.put(key, (Long)o);
 				break;
-			case MEMO:
 			case STRING:
 				node.put(key, (String)o);
 				break;
@@ -358,7 +357,6 @@ public class ReplicationJSON {
 				break;
 			case BINARY_DIGEST:
 			case COORDINATE:
-			case MONEY:
 			case STOPWATCHTIME:
 				throw new RuntimeException("Whoops, illegal type: "+e.getValue().type);
 			// ignore this one:

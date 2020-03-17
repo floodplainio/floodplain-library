@@ -28,10 +28,6 @@ public class ImmutableTypeParser {
 			return "list";
 		case LONG:
 			return "long";
-		case MEMO:
-			return "memo";
-		case MONEY:
-			return "money";
 		case STOPWATCHTIME:
 			return "stopwatchtype";
 		case IMMUTABLE:
@@ -46,10 +42,6 @@ public class ImmutableTypeParser {
 	}
 	public static ValueType parseType(String type) {
 		switch(type) {
-		case  "memo":
-			return ValueType.MEMO;
-		case "money":
-			return ValueType.MONEY;
 		case "stopwatchtime":
 			return ValueType.STOPWATCHTIME;
 		case "string":

@@ -39,14 +39,10 @@ public class TypeUtils {
         else if (o instanceof StopwatchTime)
             return Property.STOPWATCHTIME_PROPERTY;
         // Added by frank... To enable tipi-expressions, without creating a dep
-        else if (o.getClass().getName().startsWith("com.dexels.navajo.tipi"))
-            return Property.TIPI_PROPERTY;
         else if (o instanceof Message)
             return Message.MSG_DEFINITION;
         else if (o instanceof Binary)
             return Property.BINARY_PROPERTY;
-        else if (o instanceof Memo)
-            return Property.MEMO_PROPERTY;
         else if (o instanceof Selection[]) {
             return Property.SELECTION_PROPERTY;
         } else if (o instanceof Coordinate) {

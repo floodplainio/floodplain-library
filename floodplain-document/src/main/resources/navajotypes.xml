@@ -14,7 +14,6 @@
     <type name="date" type="java.util.Date"/>
     <type name="clocktime" type="com.dexels.navajo.document.types.ClockTime"/>
     <type name="binary" type="com.dexels.navajo.document.types.Binary"/>
-    <type name="memo" type="com.dexels.navajo.document.types.Memo"/>
     <type name="stopwatchtime" type="com.dexels.navajo.document.types.StopwatchTime"/>
     <type name="coordinate" type="com.dexels.navajo.document.types.Coordinate"/>
     <type name="any" type="java.lang.Object"/>
@@ -23,6 +22,4 @@
     <type name="navajo" type="com.dexels.navajo.document.Navajo"/>
     <type name="property" type="com.dexels.navajo.document.Property"/>
     <type name="expressionliteral" type="com.dexels.navajo.document.types.NavajoExpression"/>
-    
-    
 </navajotypes>

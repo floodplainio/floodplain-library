@@ -394,10 +394,6 @@ public class BasePropertyImpl extends BaseNode implements Property, Comparable<P
             setValue((CoordinateType) o, internal);
             return;
         }
-		if (o instanceof Memo) {
-            setValue((Memo) o, internal);
-            return;
-        }
 		if (o instanceof Boolean) {
 			setValue((Boolean) o, internal);
 			return;
@@ -419,10 +415,8 @@ public class BasePropertyImpl extends BaseNode implements Property, Comparable<P
 			return;
 		}
 		Object old = getTypedValue();
-		setType(Property.TIPI_PROPERTY);
 		tipiProperty = o;
 		setCheckedValue("" + o);
-		setType(Property.TIPI_PROPERTY);
 		firePropertyChanged(old, getTypedValue(), internal);
 	}
 
@@ -708,8 +702,6 @@ public class BasePropertyImpl extends BaseNode implements Property, Comparable<P
 			}
 		} else if (getType().equals(Property.SELECTION_PROPERTY)) {
 			return getAllSelectedSelections();
-		} else if (getType().equals(Property.TIPI_PROPERTY)) {
-		    return tipiProperty;
 		} else if (getType().equals(Property.LIST_PROPERTY) ) {
 			if (tipiProperty != null || myValue == null) {
 			    return tipiProperty;
@@ -917,22 +909,6 @@ public class BasePropertyImpl extends BaseNode implements Property, Comparable<P
         }
     }
 
-	private final void setValue(Memo value, Boolean internal) {
-	    Object old = null;
-        if (hasPropertyDataListeners()) {
-            old = getTypedValue();
-        }
-        setType(MEMO_PROPERTY);
-
-        if (value != null) {
-            setCheckedValue(value.toString());
-        } else {
-            myValue = null;
-        }
-        if (hasPropertyDataListeners()) {
-            firePropertyChanged(PROPERTY_VALUE, old, getTypedValue(), internal);
-        }
-    }
 
 	@Override
 	public final void setValue(ClockTime value) {
