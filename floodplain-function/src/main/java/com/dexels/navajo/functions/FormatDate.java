@@ -61,12 +61,6 @@ public final class FormatDate extends StatefulFunctionInterface {
                 final Locale l = new Locale(loc);
                 formatter = new java.text.SimpleDateFormat(format, l);
             }
-        } else if (getAccess() != null && getAccess().getInDoc() != null){
-            String localeheader = getAccess().getInDoc().getHeader().getHeaderAttribute("locale");
-            if (localeheader != null) {
-                final Locale l = new Locale(localeheader);
-                formatter = new java.text.SimpleDateFormat(format, l);
-            }
         }
         
         if (formatter == null) {

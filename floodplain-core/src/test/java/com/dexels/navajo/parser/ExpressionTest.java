@@ -86,33 +86,7 @@ public class ExpressionTest {
 //		o = ee.evaluate("TODAY + 0#0#2#0#0#0", null, null,null);
 //		System.err.println(o.value);
 
-		Navajo testDoc = NavajoFactory.getInstance().createNavajo();
-		Message m = NavajoFactory.getInstance().createMessage(testDoc, "MyTop");
-		testDoc.addMessage(m);
-		Message a = NavajoFactory.getInstance().createMessage(testDoc,
-				"MyArrayMessage", "array");
-		m.addMessage(a);
-		for (int i = 0; i < 5; i++) {
-			Message a1 = NavajoFactory.getInstance().createMessage(testDoc,
-					"MyArrayMessage");
-			a.addMessage(a1);
-			Property p = NavajoFactory.getInstance().createProperty(testDoc,
-					"MyProp", "string", "noot" + i, 0, "", "in");
-			a1.addProperty(p);
-			Property p2 = NavajoFactory.getInstance().createProperty(testDoc,
-					"MyProp2", "string", "aap" + i, 0, "", "in");
-			a1.addProperty(p2);
-		}
 
-		o = ee.evaluate(
-				"'hallo:' + [/MyTop/MyArrayMessage@MyProp=noot1/MyProp2]",
-				testDoc, null,null);
-
-		assertEquals("hallo:aap1", o.value);
-
-		o = ee.evaluate("'hallo:' + [/MyTop/MyArrayMessage@2/MyProp2]", testDoc, null,null);
-
-		assertEquals("hallo:aap2", o.value);
 
 	}
 
@@ -150,110 +124,26 @@ public class ExpressionTest {
 		assertEquals("àáâãäåāăąæßçćĉċčèéêëēĕėęěĝğġģĥħìíîïĩīĭıįĵķĸĺļľŀłñńņňŋòóôöõøōŏőœŕŗřśŝşšţťŧùúûüũůūŭűųŵýÿŷźżžàáâãäåāăąæßçćĉċčèéêëēĕėęěĝğġģĥħìíîïĩīĭıįĵķĸĺļľŀłñńņňŋòóôöõøōŏőœŕŗřśŝşšţťŧùúûüũůūŭűųŵýÿŷźżž", o.value);
 	}
 	
-	
-	@Test
-	public void testSelectionExpressions() throws TMLExpressionException, SystemException {
-		Navajo testDoc = NavajoFactory.getInstance().createNavajo();
-		Message m = NavajoFactory.getInstance().createMessage(testDoc, "MyTop");
-		testDoc.addMessage(m);
-		Property pt = NavajoFactory.getInstance().createProperty(testDoc,
-				"TopProp", "1", "", Property.DIR_IN);
-		Selection s = NavajoFactory.getInstance().createSelection(testDoc, "option1", "value1", true);
-		pt.addSelection(s);
-		m.addProperty(pt);
-		Message a = NavajoFactory.getInstance().createMessage(testDoc,
-				"MyArrayMessage", "array");
-		m.addMessage(a);
-		for (int i = 0; i < 5; i++) {
-			Message a1 = NavajoFactory.getInstance().createMessage(testDoc,
-					"MyArrayMessage");
-			a.addMessage(a1);
-			Property p = NavajoFactory.getInstance().createProperty(testDoc,
-					"MyProp", "string", "noot" + i, 0, "", "in");
-			a1.addProperty(p);
-			Property p2 = NavajoFactory.getInstance().createProperty(testDoc,
-					"MyProp2", "string", "aap" + i, 0, "", "in");
-			a1.addProperty(p2);
-		}
-		
-		Expression.compileExpressions = true;
-		Operand o = Expression.evaluate(
-				"'hallo:' + [TopProp:name]",
-				testDoc,null,m);
 
-		
-//		o = Expression.evaluate(
-//				"'hallo:' + [out:/MyTop/MyArrayMessage@MyProp=noot1/MyProp2]",
-//				testDoc);
-//
-		assertEquals("hallo:option1", o.value);
-		o = Expression.evaluate("[TopProp:value]",testDoc,null,m);
-		assertEquals("value1", o.value);
-	}
-	
-	
-	@Test
-	public void testExpressionWithDocSpec() throws Exception {
-		Expression.compileExpressions = true;
-		Operand o = Expression.evaluate("[custom|/MyTop/MyArrayMessage@2/MyProp2]", testDoc);
-		assertEquals("aap2", o.value);
-	}
 
-	@Test
-	public void testExpressionWithinSelection() throws Exception {
-		Expression.compileExpressions = true;
-		Operand o = Expression.evaluate("[name]", testDoc,null,topMessage,testSelection,null);
-		assertEquals("option1", o.value);
-	}
-
-	@Test
-	public void testExpressionWithDocSpecWithinSelection() throws Exception {
-		Expression.compileExpressions = true;
-		Operand o = Expression.evaluate("[custom|name]", testDoc,null,topMessage,testSelection,null);
-		assertEquals("option1", o.value);
-	}
-
-	// Re-enable if I backport this to non-compiled expressions.
-	@Test @Ignore
-	public void testExpressionWithDocSpecWithoutCompiled() throws Exception {
-		Expression.compileExpressions = false;
-		Operand o = Expression.evaluate("[custom|/MyTop/MyArrayMessage@2/MyProp2]", testDoc);
-		assertEquals("aap2", o.value);
-	}
-
-	@Test
-	public void testExpressionWithinSelectionWithoutCompiled() throws Exception {
-		Expression.compileExpressions = false;
-		Operand o = Expression.evaluate("[name]", testDoc,null,topMessage,testSelection,null);
-		assertEquals("option1", o.value);
-	}
-
-	// Re-enable if I backport this to non-compiled expressions.
-	@Test @Ignore
-	public void testExpressionWithDocSpecWithinSelectionWithoutCompiled() throws Exception {
-		Expression.compileExpressions = false;
-		Operand o = Expression.evaluate("[custom|name]", testDoc,null,topMessage,testSelection,null);
-		assertEquals("option1", o.value);
-	}
-	
 	@Test
 	public void testExpressionWithImmutableMessage() throws Exception {
 		Expression.compileExpressions = true;
-		Operand o = Expression.evaluate("[SomeInteger]", testDoc,(MappableTreeNode)null,topMessage,(Message)null,(Selection)null,(TipiLink)null,Collections.emptyMap() ,Optional.of(immutableMessage),Optional.of(paramMessage));
+		Operand o = Expression.evaluate("[SomeInteger]", null ,Optional.of(immutableMessage),Optional.of(paramMessage));
 		assertEquals(3, o.value);
 	}
 
 	@Test
 	public void testExpressionWithImmutableParamMessage() throws Exception {
 		Expression.compileExpressions = true;
-		Operand o = Expression.evaluate("[@SomeInteger]", testDoc,(MappableTreeNode)null,topMessage,(Message)null,(Selection)null,(TipiLink)null,Collections.emptyMap() ,Optional.of(immutableMessage),Optional.of(paramMessage));
+		Operand o = Expression.evaluate("[@SomeInteger]", null ,Optional.of(immutableMessage),Optional.of(paramMessage));
 		assertEquals(4, o.value);
 	}
 
 	@Test
 	public void testListWithMultipleTypes() throws Exception {
 		Expression.compileExpressions = true;
-		Operand o = Expression.evaluate("{1,'a',2+2}", testDoc);
+		Operand o = Expression.evaluate("{1,'a',2+2}");
 		List<Object> res = (List<Object>) o.value;
 		assertEquals(3, res.size());
 	}
@@ -261,17 +151,9 @@ public class ExpressionTest {
 	@Test
 	public void testListWithSingleElement() throws Exception {
 		Expression.compileExpressions = true;
-		Operand o = Expression.evaluate("{'a'}", testDoc);
+		Operand o = Expression.evaluate("{'a'}");
 		List<Object> res = (List<Object>) o.value;
 		assertEquals(1, res.size());
-	}
-
-	@Test
-	public void testTipiExpression() throws Exception {
-		Expression.compileExpressions = true;
-		Operand o = Expression.evaluate("{tipi:/bla}", null,null,null,e->"chicken",null,Optional.empty());
-		String s = (String) o.value;
-		assertEquals("chicken", s);
 	}
 
 	@Test
@@ -281,7 +163,7 @@ public class ExpressionTest {
 		ImmutableMessage inner = ImmutableFactory.empty().with("innerint", 3, "integer");
 		
 		ImmutableMessage combined = outer.withSubMessage("sub", inner);
-		Operand o = Expression.evaluateImmutable("[sub/innerint]", null, Optional.of(combined), Optional.empty());
+		Operand o = Expression.evaluate("[sub/innerint]", null, Optional.of(combined), Optional.empty());
 		int s = o.integerValue();
 		assertEquals(3, s);
 	}
@@ -293,7 +175,7 @@ public class ExpressionTest {
 		ImmutableMessage inner = ImmutableFactory.empty().with("innerint", 3, "integer");
 		
 		ImmutableMessage combined = outer.withSubMessage("sub", inner);
-		Operand o = Expression.evaluateImmutable("[sub/]", null, Optional.of(combined), Optional.empty());
+		Operand o = Expression.evaluate("[sub/]", null, Optional.of(combined), Optional.empty());
 		ImmutableMessage s = o.immutableMessageValue();
 		assertEquals(3, s.value("innerint").get());
 	}
@@ -305,7 +187,7 @@ public class ExpressionTest {
 		ImmutableMessage inner = ImmutableFactory.empty().with("innerint", 3, "integer");
 		
 		ImmutableMessage combined = outer.withSubMessage("sub", inner);
-		Operand o = Expression.evaluateImmutable("[@sub/]", null, Optional.empty(), Optional.of(combined));
+		Operand o = Expression.evaluate("[@sub/]", null, Optional.empty(), Optional.of(combined));
 		ImmutableMessage s = o.immutableMessageValue();
 		assertEquals(3, s.value("innerint").get());
 	}
@@ -321,7 +203,7 @@ public class ExpressionTest {
 		List<ImmutableMessage> subList = Arrays.asList(inner1,inner2,inner3);
 		ImmutableMessage combined = outer.withSubMessages("sub", subList);
 		ImmutableMessage incoming = ImmutableFactory.empty();
-		Operand o = Expression.evaluateImmutable("[@sub/]", null, Optional.of(incoming), Optional.of(combined));
+		Operand o = Expression.evaluate("[@sub/]", null, Optional.of(incoming), Optional.of(combined));
 		List<ImmutableMessage> s = o.immutableMessageList();
 		assertEquals(3, s.size());
 	}
@@ -331,7 +213,7 @@ public class ExpressionTest {
 	public void testEmptyTML() throws Exception {
 		Expression.compileExpressions = true;
 		ImmutableMessage outer = ImmutableFactory.empty().with("outerint", 1, "integer");
-		Operand o = Expression.evaluateImmutable("[]", null, Optional.of(outer), Optional.empty());
+		Operand o = Expression.evaluate("[]", null, Optional.of(outer), Optional.empty());
 		ImmutableMessage s = o.immutableMessageValue();
 		assertEquals(outer, s);
 	}
@@ -340,7 +222,7 @@ public class ExpressionTest {
 	public void testEmptyTMLJustSlash() throws Exception {
 		Expression.compileExpressions = true;
 		ImmutableMessage outer = ImmutableFactory.empty().with("outerint", 1, "integer");
-		Operand o = Expression.evaluateImmutable("[/]", null, Optional.of(outer), Optional.empty());
+		Operand o = Expression.evaluate("[/]", null, Optional.of(outer), Optional.empty());
 		ImmutableMessage s = o.immutableMessageValue();
 		assertEquals(outer, s);
 	}
@@ -349,7 +231,7 @@ public class ExpressionTest {
 	public void testEmptyTMLParam() throws Exception {
 		Expression.compileExpressions = true;
 		ImmutableMessage outer = ImmutableFactory.empty().with("outerint", 1, "integer");
-		Operand o = Expression.evaluateImmutable("[@]", null, Optional.empty(), Optional.of(outer));
+		Operand o = Expression.evaluate("[@]", null, Optional.empty(), Optional.of(outer));
 		ImmutableMessage s = o.immutableMessageValue();
 		assertEquals(outer, s);
 	}
@@ -358,7 +240,7 @@ public class ExpressionTest {
 	public void testEmptySlashTMLParam() throws Exception {
 		Expression.compileExpressions = true;
 		ImmutableMessage outer = ImmutableFactory.empty().with("outerint", 1, "integer");
-		Operand o = Expression.evaluateImmutable("[/@]", null, Optional.empty(), Optional.of(outer));
+		Operand o = Expression.evaluate("[/@]", null, Optional.empty(), Optional.of(outer));
 		ImmutableMessage s = o.immutableMessageValue();
 		assertEquals(outer, s);
 	}

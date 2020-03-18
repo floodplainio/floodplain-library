@@ -27,50 +27,17 @@ public final class Expression {
 	private Expression() {
 		// no instances
 	}
-	public static final Operand evaluate(String clause, Navajo inMessage, MappableTreeNode o, Selection sel, TipiLink tl, Map<String, Object> params, Optional<ImmutableMessage> immutableMessage) {
-		return evaluate(clause, inMessage, o, null, null, sel, tl, params, immutableMessage, Optional.empty());
+
+	public static final Operand evaluate(String clause) {
+		return evaluate(clause,null,Optional.empty(),Optional.empty());
 	}
 
-	public static final Operand evaluateImmutable(String clause, Navajo in, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
-		return evaluate(clause, in, null, null, null, null, null, null, immutableMessage, paramMessage);
-	}
-	
-	
-	public static final Operand evaluate(String clause, Navajo inMessage, MappableTreeNode o, Message parent,
-			Message paramParent, Selection sel, TipiLink tl, Map<String, Object> params, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
+	public static final Operand evaluate(String clause, MappableTreeNode o, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
 		if (clause.trim().equals("")) {
 			return new Operand(null, "", "");
 		}
-		return evaluator.evaluate(clause, inMessage, o,  parent, paramParent,sel,tl,params,immutableMessage,paramMessage);
+		return evaluator.evaluate(clause,  o,immutableMessage,paramMessage);
 	}
 
-	public static final Operand evaluate(String clause, Navajo inMessage, MappableTreeNode o, Message parent,
-			Message paramParent, Selection sel, TipiLink tl, Map<String, Object> params) {
-		return evaluate(clause, inMessage, o, parent, paramParent, sel, tl, params, Optional.empty(),Optional.empty());
-	}
-	@Deprecated
-	public static final Operand evaluate(String clause, Navajo inMessage, MappableTreeNode o, Message parent,
-			Message paramParent, Selection sel, TipiLink tl) {
-		return evaluate(clause, inMessage, o, parent, paramParent, sel, tl, null);
-	}
-
-	@Deprecated
-	public static final Operand evaluate(String clause, Navajo inMessage, MappableTreeNode o, Message parent,
-			Selection sel, TipiLink tl) {
-		return evaluate(clause, inMessage, o, parent, null, sel, tl, null);
-	}
-
-	public static final Operand evaluate(String clause, Navajo inMessage, MappableTreeNode o, Message parent) {
-		return evaluate(clause, inMessage, o, parent, null, null, null, null);
-	}
-
-	public static final Operand evaluate(String clause, Navajo inMessage, MappableTreeNode o, Message parent,
-			Message parentParam) {
-		return evaluate(clause, inMessage, o, parent, parentParam, null, null, null);
-	}
-
-	public static final Operand evaluate(String clause, Navajo inMessage) throws SystemException {
-		return evaluate(clause, inMessage, null, null, null, null, null, null,Optional.empty(),Optional.empty());
-	}
 
 }

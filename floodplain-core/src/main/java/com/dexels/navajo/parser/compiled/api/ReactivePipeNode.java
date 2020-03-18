@@ -28,7 +28,7 @@ public class ReactivePipeNode implements ContextExpression {
 	}
 
 	@Override
-	public Operand apply(MappableTreeNode mapNode, TipiLink tipiLink, Access access, Optional<ImmutableMessage> immutableMessage,
+	public Operand apply(MappableTreeNode mapNode,Optional<ImmutableMessage> immutableMessage,
 			Optional<ImmutableMessage> paramMessage) {
 		return actual;
 	}

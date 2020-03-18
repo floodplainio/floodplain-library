@@ -72,15 +72,15 @@ public String usage() {
     System.out.println("cct = " + cct.evaluate());
 
     String expr = "ToClockTime('09:00') + ToClockTime('10')";
-    Operand o = Expression.evaluate(expr, null);
+    Operand o = Expression.evaluate(expr);
     System.out.println("9:00 > 10:00 ? " + o.value + ", ToClockTime('25:88') = " + new ClockTime("25:88").toString());
 
     expr = "ToClockTime('9') >= ToClockTime('9')";
-    Operand o2 = Expression.evaluate(expr, null);
+    Operand o2 = Expression.evaluate(expr);
     System.out.println("9:00 >= 9:00 ? " + o2.value);
 
     expr = "ToClockTime('9') < ToClockTime('12')";
-    Operand o3 = Expression.evaluate(expr, null);
+    Operand o3 = Expression.evaluate(expr);
     System.out.println("9:00 < 12:00 ? " + o3.value);
 
 

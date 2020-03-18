@@ -63,7 +63,7 @@ public String usage() {
   public static void main(String [] args) throws Exception {
 
     String expression = "File('/home/arjen/teams.pdf')";
-    Operand o = Expression.evaluate(expression, null);
+    Operand o = Expression.evaluate(expression);
     System.err.println("o = " + o + ", type = " + o.type);
     System.err.println("value = " + o.value);
   }

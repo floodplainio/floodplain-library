@@ -60,7 +60,7 @@ final class ASTMappableNode extends SimpleNode {
 			}
 			
 			@Override
-			public Operand apply(MappableTreeNode mapNode, TipiLink tipiLink, Access access, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
+			public Operand apply(MappableTreeNode mapNode, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
 		        if (mapNode == null) {
 		            throw new TMLExpressionException("No known mapobject resolver");
 		        }
@@ -75,7 +75,7 @@ final class ASTMappableNode extends SimpleNode {
 		        }
 		        for (int i = 0; i < args; i++) {
 		        		List<String> problems = new ArrayList<>();
-		            Operand a = jjtGetChild(i).interpretToLambda(problems, expression,functionClassifier,mapResolver).apply(mapNode, tipiLink, access,immutableMessage,paramMessage);
+		            Operand a = jjtGetChild(i).interpretToLambda(problems, expression,functionClassifier,mapResolver).apply(mapNode,immutableMessage,paramMessage);
 		            if(!problems.isEmpty()) {
 		            		throw new TMLExpressionException(problems,expression);
 		            }

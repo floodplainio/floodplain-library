@@ -32,7 +32,7 @@ final class ASTStringConstantNode extends SimpleNode {
 			}
 			
 			@Override
-			public Operand apply(MappableTreeNode mapNode, TipiLink tipiLink, Access access, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
+			public Operand apply(MappableTreeNode mapNode, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
 		        String s = val.substring(1, val.length() - 1);
 		        String t = s.replaceAll("\\\\'","'");
 		        return Operand.ofString(t);

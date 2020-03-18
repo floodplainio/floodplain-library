@@ -41,25 +41,5 @@ public class TestExpressionPropertiesCompiled {
 		topMessage.addProperty(three);
 		topMessage.addProperty(five);
 	}
-	
-	@Test
-	public void testCompiled() throws TMLExpressionException, SystemException {
-		Operand result = Expression.evaluate("[Two]", testDoc,null,topMessage);
-		Assert.assertEquals(2, result.value);
-		Integer twoValue = (Integer) two.getTypedValue();
-		Assert.assertEquals(2, twoValue.intValue());
-		one.setAnyValue(2);
-		Integer fiveValue =  (Integer) five.getTypedValue();
-		Assert.assertEquals(5, fiveValue.intValue());
-		List<Property> change = testDoc.refreshExpression();
-		twoValue = (Integer) two.getTypedValue();
-		Assert.assertEquals(3, twoValue.intValue());
-		System.err.println("Change: "+change.size());
-		result = Expression.evaluate("[Two]", testDoc,null,topMessage);
-		Assert.assertEquals(3, result.value);
-		fiveValue =  (Integer) five.getTypedValue();
-		Assert.assertEquals(6, fiveValue.intValue());
-		
-	}
 
 }

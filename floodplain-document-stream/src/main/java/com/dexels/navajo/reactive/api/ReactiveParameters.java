@@ -48,8 +48,7 @@ public class ReactiveParameters {
 		return new ContextExpression() {
 
 			@Override
-			public Operand apply(MappableTreeNode mapNode, TipiLink tipiLink, Access access,
-					Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage)
+			public Operand apply(MappableTreeNode mapNode,Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage)
 					throws TMLExpressionException {
 				return value;
 			}

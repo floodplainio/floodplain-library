@@ -56,9 +56,9 @@ public class ExpressionCache {
 	}
 
 	public Operand evaluate(String expression,Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
-		return evaluate(expression,null,null,null, immutableMessage,paramMessage);
+		return evaluate(expression,null,immutableMessage,paramMessage);
 	}
-	public Operand evaluate(String expression,MappableTreeNode mapNode, TipiLink tipiLink, Access access, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
+	public Operand evaluate(String expression,MappableTreeNode mapNode, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
 		Optional<Operand> cachedValue = Optional.ofNullable(expressionValueCache.get(expression));
 		if(cachedValue.isPresent()) {
 			pureHitCount.incrementAndGet();
@@ -71,13 +71,10 @@ public class ExpressionCache {
 				logger.warn("Compile-time type error when compiling expression: {} -> {}",expression,problem)
 			);
 		}
-		return parse.apply(mapNode, tipiLink,access,immutableMessage,paramMessage);
+		return parse.apply(mapNode,immutableMessage,paramMessage);
 		
 	}
-	
-//	public ContextExpression parse(List<String> problems, String expression,Function<String,FunctionClassification> functionClassifier) {
-//		return parse(problems, expression,functionClassifier,true);
-//	}
+
 	public ContextExpression parse(List<String> problems, String expression,Function<String,FunctionClassification> functionClassifier) {
 		return parse(problems, expression,functionClassifier,name->Optional.empty());
 	}
@@ -109,7 +106,7 @@ public class ExpressionCache {
 						}
 						
 						@Override
-						public Operand apply(MappableTreeNode mapNode, TipiLink tipiLink, Access access, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
+						public Operand apply(MappableTreeNode mapNode, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
 							return result;
 						}
 

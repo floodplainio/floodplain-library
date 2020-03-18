@@ -45,10 +45,10 @@ final class ASTListNode extends SimpleNode {
 			}
 			
 			@Override
-			public Operand apply(MappableTreeNode mapNode, TipiLink tipiLink, Access access, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
+			public Operand apply(MappableTreeNode mapNode,Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
 				List<Operand> result = new ArrayList<>();
 				for (ContextExpression contextExpression : exprs) {
-					result.add(contextExpression.apply(mapNode, tipiLink, access,immutableMessage,paramMessage));
+					result.add(contextExpression.apply(mapNode,immutableMessage,paramMessage));
 				}
 				return Operand.ofList(result.stream().map(e->e.value).collect(Collectors.toList()));
 			}

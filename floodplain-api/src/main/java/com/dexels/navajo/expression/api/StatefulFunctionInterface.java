@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings("rawtypes")
 public abstract class StatefulFunctionInterface extends FunctionInterface {
 
-	private Access access;
+//	private Access access;
 
 //	protected Navajo inMessage = null;
 	protected Message currentMessage = null;
@@ -64,21 +64,21 @@ public abstract class StatefulFunctionInterface extends FunctionInterface {
 //		this.inMessage = inMessage;
 //	}
 
-	public void setAccess(Access access) {
-		this.access = access;
-	}
+//	public void setAccess(Access access) {
+//		this.access = access;
+//	}
 
-	public Access getAccess() {
-		return this.access;
-	}
+//	public Access getAccess() {
+//		return this.access;
+//	}
 
-	public String getInstance() {
-		if (this.access == null) {
-			return null;
-		} else {
-			return this.access.getTenant();
-		}
-	}
+//	public String getInstance() {
+//		if (this.access == null) {
+//			return null;
+//		} else {
+//			return this.access.getTenant();
+//		}
+//	}
 
 
 }

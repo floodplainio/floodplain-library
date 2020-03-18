@@ -386,21 +386,6 @@ public class BaseNavajoImpl extends BaseNode implements Navajo {
         return true;
     }
 
-    @Override
-    public synchronized List<Property> refreshExpression() {
-        try {
-
-            Map<Property, List<Property>> depSet = NavajoFactory.getInstance().getExpressionEvaluator()
-                    .createDependencyMap(this);
-            return NavajoFactory.getInstance().getExpressionEvaluator().processRefreshQueue(depSet);
-
-        } catch (NavajoException ex) {
-            logger.error("Error refreshing navajo: ", ex);
-            return null;
-        }
-
-    }
-
     public Object getRef() {
         throw new UnsupportedOperationException("getRef not possible on base type. Override it if you need it");
     }

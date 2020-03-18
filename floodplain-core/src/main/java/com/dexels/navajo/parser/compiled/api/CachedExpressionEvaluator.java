@@ -19,55 +19,17 @@ public class CachedExpressionEvaluator extends DefaultExpressionEvaluator implem
     private static final Logger logger = LoggerFactory.getLogger(CachedExpressionEvaluator.class);
 
 	@Override
-	public Operand evaluate(String clause, Navajo inMessage, Object mappableTreeNode, Message parent, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
+	public Operand evaluate(String clause) {
+		return evaluate(clause,null,Optional.empty(),Optional.empty());
+	}
+
+	@Override
+	public Operand evaluate(String clause,  Object mappableTreeNode, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
 		ExpressionCache ce = ExpressionCache.getInstance();
-		
-		Object val;
-		String type;
 		try {
-			val = ce.evaluate(clause,  (MappableTreeNode)mappableTreeNode, null,null,immutableMessage,paramMessage);
-			type = MappingUtils.determineNavajoType(val);
-			return new Operand(val, type, "");
+			return ce.evaluate(clause,  (MappableTreeNode)mappableTreeNode,immutableMessage,paramMessage);
 		} catch (TMLExpressionException e) {
-		    if (inMessage != null) {
-                // Only log if we have useful context
-                logger.error("TML parsing issue with expression: {} exception", clause, e );
-            }
-            throw new TMLExpressionException("TML parsing issue");
-		}
-	}
-
-	@Override
-	public Operand evaluate(String clause, Navajo inMessage, Object mappableTreeNode, Message parent,
-			Message currentParam, Selection selection, Object tipiLink, Map<String,Object> params, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
-		try {
-			ExpressionCache ce = ExpressionCache.getInstance();
-			Access access = params == null? null : (Access)params.get(Expression.ACCESS);
-			Operand val =ce.evaluate(clause, (MappableTreeNode)mappableTreeNode, (TipiLink) tipiLink, access,immutableMessage,paramMessage);
-			if(val==null) {
-				throw new TMLExpressionException("Clause resolved to null, shouldnt happen:  expression: "+clause);
-			}
-			return val;
-		} catch (TMLExpressionException e) {
-		    if (inMessage != null) {
-		        // Only log if we have useful context
-		        logger.error("TML parsing issue with expression: {} exception", clause, e );
-		    }
-			throw new TMLExpressionException(e.getMessage(), e);
-		}
-	}
-
-	@Override
-	public Operand evaluate(String clause, Navajo inMessage, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
-		try {
-			ExpressionCache ce = ExpressionCache.getInstance();
-			return ce.evaluate(clause, null,null, null, immutableMessage,paramMessage);
-		} catch (TMLExpressionException e) {
-		    if (inMessage != null) {
-                // Only log if we have useful context
-                logger.error("TML parsing issue with expression: {} exception", clause, e );
-            }
-            throw new TMLExpressionException("TML parsing issue");
+            throw new TMLExpressionException("TML parsing issue: "+clause);
 		}
 	}
 

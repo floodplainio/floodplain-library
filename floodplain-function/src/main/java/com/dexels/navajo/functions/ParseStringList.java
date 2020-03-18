@@ -54,7 +54,7 @@ public String usage() {
 
   public static void main(String [] args) throws Exception {
     String expression = "Contains(ParseStringList('CLUBFUNCTION,UNIONFUNCTION,2',','), 'FUNCTION'))";
-    Operand o = Expression.evaluate(expression, null);
+    Operand o = Expression.evaluate(expression);
     System.err.println("o = " + o.value);
   }
 }

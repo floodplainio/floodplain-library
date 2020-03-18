@@ -71,16 +71,4 @@ public final class Size extends FunctionInterface {
         return "This function return the size of a list argument, the length of an array, or the size of an array message.";
     }
 
-    public static void main(String [] args) throws Exception {
-      Navajo n = NavajoFactory.getInstance().createNavajo();
-      Message m = NavajoFactory.getInstance().createMessage(n, "Aap");
-      n.addMessage(m);
-      Property p = NavajoFactory.getInstance().createProperty(n, "Selection", "+", "", "out");
-      m.addProperty(p);
-      Selection s = NavajoFactory.getInstance().createSelection(n, "Aap", "0", false);
-      p.addSelection(s);
-      n.write(System.err);
-      Operand o = Expression.evaluate("GetPropertyType('/Aap/Selection') == 'selection' AND Size([Aap/Selection]) == 0", n);
-      System.err.println("o " + o.value + ", type: " + o.type);
-    }
 }

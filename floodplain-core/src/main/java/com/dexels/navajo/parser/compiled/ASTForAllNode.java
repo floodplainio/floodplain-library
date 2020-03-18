@@ -45,7 +45,7 @@ final class ASTForAllNode extends SimpleNode {
 			}
 			
 			@Override
-			public Operand apply(MappableTreeNode mapNode, TipiLink tipiLink, Access access, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
+			public Operand apply(MappableTreeNode mapNode, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
 				List<String> problems = new ArrayList<>();
 				ContextExpression a = jjtGetChild(0).interpretToLambda(problems,expression,functionClassifier,mapResolver);
 				ContextExpression b = jjtGetChild(1).interpretToLambda(problems,expression,functionClassifier,mapResolver);
@@ -54,7 +54,7 @@ final class ASTForAllNode extends SimpleNode {
 				if(!problems.isEmpty()) {
 					throw new TMLExpressionException(problems,expression);
 				}
-				return interpret(mapNode,tipiLink,access,immutableMessage,paramMessage, a,b);
+				return interpret(mapNode,immutableMessage,paramMessage, a,b);
 			}
 
 			@Override
@@ -76,7 +76,7 @@ final class ASTForAllNode extends SimpleNode {
      * 
      * @return
      */
-    private final Operand interpret(MappableTreeNode mapNode, TipiLink tipiLink, Access access, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage, ContextExpression a,ContextExpression b) {
+    private final Operand interpret(MappableTreeNode mapNode, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage, ContextExpression a,ContextExpression b) {
 
         boolean matchAll = true;
 
@@ -85,7 +85,7 @@ final class ASTForAllNode extends SimpleNode {
         else
             matchAll = false;
 
-        String msgList = (String) a.apply(mapNode, tipiLink, access, immutableMessage,paramMessage).value;
+        String msgList = (String) a.apply(mapNode, immutableMessage,paramMessage).value;
         try {
             List<ImmutableMessage> list = immutableMessage.map(e->e.subMessages(msgList)).orElse(Optional.of(Collections.emptyList())).orElse(Collections.emptyList()); //.orElse(Collections.<ImmutableMessage>emptyList());
 
@@ -94,7 +94,7 @@ final class ASTForAllNode extends SimpleNode {
 
                 // ignore definition messages in the evaluation
 
-                Operand apply = b.apply(mapNode, tipiLink, access, immutableMessage,paramMessage);
+                Operand apply = b.apply(mapNode, immutableMessage,paramMessage);
 				boolean result = (Boolean)apply.value;
 
                 if ((!(result)) && matchAll)

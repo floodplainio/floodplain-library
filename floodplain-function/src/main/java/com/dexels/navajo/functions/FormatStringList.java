@@ -60,7 +60,7 @@ public final class FormatStringList extends FunctionInterface {
 
     public static void main(String args[]) throws Exception {
         String expr = "Contains({'Aap', 'Noot'},'Vuur')";
-        Operand o = Expression.evaluate(expr, null);
+        Operand o = Expression.evaluate(expr);
         System.err.println("o = " + o.value);
     }
 }

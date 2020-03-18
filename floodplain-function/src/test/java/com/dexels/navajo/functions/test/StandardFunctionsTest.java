@@ -943,24 +943,6 @@ public class StandardFunctionsTest {
 		assertEquals("key", o.toString());
 	}
 
-	@Test
-	public void testGetPropertyValue() {
-
-		FunctionInterface fi = fff.getInstance(cl, "GetPropertyValue");
-		fi.reset();
-//		fi.setInMessage(createTestNavajo());
-		Navajo doc = createTestNavajo();
-		fi.insertMessageOperand(doc.getMessage("Single"));
-		fi.insertStringOperand("Selectie");
-
-		Object o = fi.evaluateWithTypeChecking();
-
-		assertNotNull(o);
-		assertEquals("value", o.toString());
-	}
-
-
-
 
 	@Test
 	public void testGetProperty() {
@@ -1114,19 +1096,6 @@ public class StandardFunctionsTest {
 		assertNotNull(o);
 		assertEquals("false", o.toString());
 	}
-
-	@Test
-	public void testFile() {
-
-		FunctionInterface fi = fff.getInstance(cl, "File");
-		fi.reset();
-		fi.insertStringOperand("aap");
-
-		Object o = fi.evaluateWithTypeChecking();
-		assertNull(o);
-
-	}
-
 
 	@Test
 	public void testEuro() {
@@ -1612,7 +1581,7 @@ public class StandardFunctionsTest {
 		    String result = (String) ce.evaluate();
 		    System.err.println("result:");
 		    System.err.println(result);
-		    Operand o = Expression.evaluate(result, null);
+		    Operand o = Expression.evaluate(result);
 		    System.err.println("Evaluated to: ");
 		    System.err.println(o.value);
 		    Assert.assertEquals(2, ((String)o.value).split("\n").length);

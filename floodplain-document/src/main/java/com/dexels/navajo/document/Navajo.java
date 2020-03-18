@@ -29,7 +29,7 @@ public interface Navajo {
     /**
      * Set the errorDescription class property.
      * 
-     * @param String
+     * @param
      *            description
      */
     public void setErrorDescription(String description);
@@ -37,9 +37,9 @@ public interface Navajo {
     /**
      * Set the errorNumber class property.
      * 
-     * @param int errornumber
+     * @param  errornumber
      */
-    public void setErrorNumber(int i);
+    public void setErrorNumber(int errornumber);
 
     /**
      * Get the errorDescription class property.
@@ -69,7 +69,7 @@ public interface Navajo {
      * DEBUGGING: write the current message and action buffers to a file with a
      * specified postfix filename.
      * 
-     * @param String
+     * @param
      *            filename
      */
     public String writeDocument(String filename);
@@ -77,7 +77,7 @@ public interface Navajo {
     /**
      * DEBUGGING: write a specific message (name) to a file (filename).
      * 
-     * @param String
+     * @param
      *            name, String filename
      */
     public void writeMessage(String name, String filename);
@@ -169,7 +169,7 @@ public interface Navajo {
     /**
      * Copies the given Message (referred by name) into the given Navajo
      * 
-     * @param message
+     * @param name
      *            Message
      * @param newDocument
      *            Navajo
@@ -186,7 +186,7 @@ public interface Navajo {
      *            Navajo
      * @return Method the copy
      */
-    public Method copyMethod(String name, Navajo newDocument);
+    public Method copyMethod(String method, Navajo newDocument);
 
     /**
      * Copies the given Method into the given Navajo
@@ -400,13 +400,6 @@ public interface Navajo {
      */
     public boolean isEqual(Navajo o);
 
-    /**
-     * Refresh all expressions in the current Navajo object
-     * 
-     * @throws NavajoException
-     * @return List expression properties
-     */
-    public List<Property> refreshExpression();
 
     public void addPropertyChangeListener(PropertyChangeListener p);
 

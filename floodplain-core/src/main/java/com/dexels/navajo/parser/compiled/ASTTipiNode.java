@@ -36,9 +36,10 @@ public ContextExpression interpretToLambda(List<String> problems, String express
 		}
 		
 		@Override
-		public Operand apply(MappableTreeNode mapNode, TipiLink tipiLink, Access access, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage)  {
+		public Operand apply(MappableTreeNode mapNode, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage)  {
 		      try {
-				return Operand.ofDynamic(tipiLink.evaluateExpression(val),"tipi");
+				return Operand.nullOperand("tipi");
+//				.ofDynamic(tipiLink.evaluateExpression(val),"tipi");
 			} catch (Exception e) {
 				throw new TMLExpressionException("Error evaluating tipiLink: "+val, e);
 			}

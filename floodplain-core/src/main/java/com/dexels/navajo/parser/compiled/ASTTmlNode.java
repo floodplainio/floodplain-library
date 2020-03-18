@@ -51,13 +51,16 @@ final class ASTTmlNode extends SimpleNode {
 			}
 			
 			@Override
-			public Operand apply(MappableTreeNode mapNode, TipiLink tipiLink, Access access, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
-				List<Property> match = null;
+			public Operand apply(MappableTreeNode mapNode,Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
+				List<Property> match = new ArrayList<>();
 				List<Object> resultList = new ArrayList<>();
 		        boolean singleMatch = true;
 		        if(val.equals("[") || val.equals("[/")) {
 		        	return immutableMessage.map(msg->Operand.ofImmutable(msg)).orElse(Operand.NULL);
 		        }
+				if(val.equals("[/@")) {
+					return paramMessage.map(msg->Operand.ofImmutable(msg)).orElse(Operand.NULL);
+				}
 		        String parts[] = val.split("\\|");
 		        String text = parts.length > 1 ? parts[1] : val;
 		        boolean isParam = false;

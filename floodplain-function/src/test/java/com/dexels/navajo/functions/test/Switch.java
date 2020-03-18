@@ -74,10 +74,10 @@ public class Switch extends AbstractFunction {
 		FunctionInterface fi = fff.getInstance(cl, "Switch");
 		fi.reset();
 
-		fi.insertIntegerOperand((Integer) Expression.evaluate("20", null).value);
-		fi.insertIntegerOperand((Integer) Expression.evaluate("10", null).value);
-		fi.insertIntegerOperand((Integer) Expression.evaluate("-10", null).value);
-		fi.insertIntegerOperand((Integer) Expression.evaluate("0", null).value);
+		fi.insertIntegerOperand((Integer) Expression.evaluate("20").value);
+		fi.insertIntegerOperand((Integer) Expression.evaluate("10").value);
+		fi.insertIntegerOperand((Integer) Expression.evaluate("-10").value);
+		fi.insertIntegerOperand((Integer) Expression.evaluate("0").value);
 		Object result = fi.evaluate();
 		assertNotNull(result);
 		assertEquals(result.getClass(), Integer.class);
@@ -85,141 +85,7 @@ public class Switch extends AbstractFunction {
 
 	}
 
-	@Test
-	public void testIntegerSingleHit() throws Exception {
-		FunctionInterface fi = fff.getInstance(cl, "Switch");
-		fi.reset();
-		Navajo n = createTestNavajo();
-//		fi.setInMessage(n);
-		// Switch('/Single/Vuur', 10, -10, 0). If property /Single/Vuur has value 10 it becomes -10 else it becomes 0.
-		fi.insertIntegerOperand((Integer) Expression.evaluate("[/Single/Vuur]", n).value);
-		fi.insertIntegerOperand(10);
-		fi.insertIntegerOperand(-10);
-		fi.insertIntegerOperand(0);
-		Object result = fi.evaluate();
-		assertNotNull(result);
-		assertEquals(result.getClass(), Integer.class);
-		assertEquals(Integer.valueOf(-10), result);
 
-	}
-
-
-	@Test
-	public void testIntegerMultipleHit() throws Exception {
-		FunctionInterface fi = fff.getInstance(cl, "Switch");
-		fi.reset();
-		Navajo n = createTestNavajo();
-//		fi.setInMessage(n);
-		// Switch('/Single/Vuur', 10, -10, 0). If property /Single/Vuur has value 10 it becomes -10 else it becomes 0.
-		fi.insertIntegerOperand((Integer) Expression.evaluate("[/Single/Vuur]", n).value);
-		fi.insertIntegerOperand(20);
-		fi.insertIntegerOperand(-20);
-		fi.insertIntegerOperand(10);
-		fi.insertIntegerOperand(-10);
-		fi.insertIntegerOperand(0);
-		Object result = fi.evaluate();
-		assertNotNull(result);
-		assertEquals(result.getClass(), Integer.class);
-		assertEquals(Integer.valueOf(-10), result);
-
-	}
-
-	@Test
-	public void testIntegerMultipleMiss() throws Exception {
-		FunctionInterface fi = fff.getInstance(cl, "Switch");
-		fi.reset();
-		Navajo n = createTestNavajo();
-//		fi.setInMessage(n);
-		// Switch('/Single/Vuur', 10, -10, 0). If property /Single/Vuur has value 10 it becomes -10 else it becomes 0.
-		fi.insertIntegerOperand((Integer) Expression.evaluate("[/Single/Vuur]", n).value);
-		fi.insertIntegerOperand(20);
-		fi.insertIntegerOperand(-20);
-		fi.insertIntegerOperand(15);
-		fi.insertIntegerOperand(-10);
-		fi.insertIntegerOperand(0);
-		Object result = fi.evaluate();
-		assertNotNull(result);
-		assertEquals(result.getClass(), Integer.class);
-		assertEquals(Integer.valueOf(0), result);
-
-	}
-
-	@Test
-	public void testIntegerMultipleHitInArrayMessage() throws Exception {
-		FunctionInterface fi = fff.getInstance(cl, "Switch");
-		fi.reset();
-		Navajo n = createTestNavajo();
-//		fi.setInMessage(n);
-
-		fi.insertOperand(Operand.ofDynamic(Expression.evaluate("[Noot]", n, null, n.getMessage("Aap").getElements().get(0)).value));
-		fi.insertIntegerOperand(20);
-		fi.insertIntegerOperand(-20);
-		fi.insertIntegerOperand(10);
-		fi.insertIntegerOperand(-10);
-		fi.insertIntegerOperand(0);
-		Object result = fi.evaluate();
-		assertNotNull(result);
-		assertEquals(result.getClass(), Integer.class);
-		assertEquals(Integer.valueOf(-10), result);
-
-	}
-
-	@Test
-	public void testIntegerMultipleMissInArrayMessage() throws Exception {
-		FunctionInterface fi = fff.getInstance(cl, "Switch");
-		fi.reset();
-		Navajo n = createTestNavajo();
-//		fi.setInMessage(n);
-
-		fi.insertOperand(Expression.evaluate("[Noot]", n, null, n.getMessage("Aap").getElements().get(0)));
-		fi.insertIntegerOperand(20);
-		fi.insertIntegerOperand(-20);
-		fi.insertIntegerOperand(15);
-		fi.insertIntegerOperand(-15);
-		fi.insertIntegerOperand(0);
-		Object result = fi.evaluate();
-		assertNotNull(result);
-		assertEquals(result.getClass(), Integer.class);
-		assertEquals(Integer.valueOf(0), result);
-
-	}
-
-	@Test
-	public void testWithUnknownProperty() throws Exception {
-		FunctionInterface fi = fff.getInstance(cl, "Switch");
-		fi.reset();
-		Navajo n = createTestNavajo();
-//		fi.setInMessage(n);
-		try {
-		fi.insertOperand(Expression.evaluate("[/Single/Kibbeling]", n));
-		fi.insertIntegerOperand(20);
-		fi.insertIntegerOperand(-20);
-		fi.insertIntegerOperand(15);
-		fi.insertIntegerOperand(-10);
-		fi.insertIntegerOperand(0);
-
-		Object result = fi.evaluate();
-		} catch (TMLExpressionException tmle) {
-			System.err.println("tmle: "+tmle.getMessage());
-			assertTrue(tmle.getMessage().indexOf("/Single/Kibbeling") != -1);
-		}
-	}
-
-	@Test
-	public void testWithNotEnoughParameters() throws Exception {
-		FunctionInterface fi = fff.getInstance(cl, "Switch");
-		fi.reset();
-		Navajo n = createTestNavajo();
-//		fi.setInMessage(n);
-		fi.insertOperand(Expression.evaluate("[/Single/Vuur]", n));
-		fi.insertIntegerOperand(20);
-		fi.insertIntegerOperand(-20);
-		try {
-		Object result = fi.evaluate();
-		} catch (TMLExpressionException tmle) {
-			assertTrue(tmle.getMessage().indexOf("Not enough") != -1);
-		}
-	}
 
 	@Test
 	public void testWithNotZeroParameters() throws Exception {
@@ -237,39 +103,7 @@ public class Switch extends AbstractFunction {
 
 	}
 
-	@Test
-	public void testWithOnlyPropertyParameter() throws Exception {
-		FunctionInterface fi = fff.getInstance(cl, "Switch");
-		fi.reset();
-		Navajo n = createTestNavajo();
-//		fi.setInMessage(n);
-		fi.insertOperand(Expression.evaluate("[/Single/Vuur]", n));
 
-		try {
-			Object result = fi.evaluate();
-			} catch (TMLExpressionException tmle) {
-				assertTrue(tmle.getMessage().indexOf("Not enough") != -1);
-			}
-
-
-	}
-
-	@Test
-	public void testWithPropertyAndSingleValueParameter() throws Exception {
-		FunctionInterface fi = fff.getInstance(cl, "Switch");
-		fi.reset();
-		Navajo n = createTestNavajo();
-//		fi.setInMessage(n);
-		fi.insertOperand(Expression.evaluate("[/Single/Vuur]", n));
-		fi.insertIntegerOperand(0);
-		
-		try {
-			Object result = fi.evaluate();
-			} catch (TMLExpressionException tmle) {
-				assertTrue(tmle.getMessage().indexOf("Not enough") != -1);
-			}
-	
-	}
 	
 	@Test
 	public void testUnicodeExpressionFunction() throws Exception {

@@ -31,8 +31,8 @@ final class ASTOrNode extends SimpleNode {
 			}
 			
 			@Override
-			public Operand apply(MappableTreeNode mapNode, TipiLink tipiLink, Access access, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
-		        Object a = expA.apply(mapNode,tipiLink,access,immutableMessage,paramMessage).value;
+			public Operand apply(MappableTreeNode mapNode, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
+		        Object a = expA.apply(mapNode,immutableMessage,paramMessage).value;
 		        Boolean ba = (Boolean) a;
 		        if(a==null) {
 		        		ba = Boolean.FALSE;
@@ -40,7 +40,7 @@ final class ASTOrNode extends SimpleNode {
 		        if (ba.booleanValue())
 		            return Operand.ofBoolean(true);
 
-		        Object b = expB.apply(mapNode,tipiLink,access,immutableMessage,paramMessage).value;
+		        Object b = expB.apply(mapNode,immutableMessage,paramMessage).value;
 		        Boolean bb = (Boolean) b;
 		        if(b==null) {
 		        		bb = Boolean.FALSE;

@@ -80,84 +80,22 @@ public class TestCompiledExpression {
 
 	
 	
-	@Test
-	public void testParseExistsCheck() throws ParseException, TMLExpressionException, SystemException {
-		String clause = "?[/TestMessage/TestProperty] AND [/TestMessage/TestProperty] != ''";
-		StringReader sr = new StringReader(clause);
-		CompiledParser cp = new CompiledParser(sr);
-		Object o = Expression.evaluate(clause,input, null, null, null).value;
-		System.err.println("<o>"+o);
-		cp.Expression();
-        Assert.assertEquals(true, o);
-	}
+
+
 	
-	@Test(expected=TMLExpressionException.class)
-	public void testNonExistantTML() throws ParseException, TMLExpressionException, SystemException {
-		String clause = "[/Blib/Blob]";
-		StringReader sr = new StringReader(clause);
-		CompiledParser cp = new CompiledParser(sr);
-		Object o = Expression.evaluate(clause,input, null, null, null).value;
-		cp.Expression();
-        Assert.assertEquals(true, o);
-	}
-	
-	@Test
-	public void testParseExistsCheckNotExisting() throws ParseException, TMLExpressionException, SystemException {
-		String clause = "?[/TestMessage/TestProperty2] AND [/TestMessage/TestProperty2] != ''";
-		StringReader sr = new StringReader(clause);
-		CompiledParser cp = new CompiledParser(sr);
-		Object o = Expression.evaluate(clause,input, null, null, null).value;
-		System.err.println("<o>"+o);
-		cp.Expression();
-        Assert.assertEquals(false, o);
-	}
-	
+
 	@Test
 	public void testMultilineStringLiteral() throws ParseException, TMLExpressionException, SystemException {
 		String clause = "'what is a haiku\n" + 
 				"nothing but words, poetic?\n" + 
 				"this is a haiku'";
-//		StringReader sr = new StringReader(clause);
-//		CompiledParser cp = new CompiledParser(sr);
-		String o = (String) Expression.evaluate(clause,input, null, null, null).value;
+		String o = (String) Expression.evaluate(clause).value;
 		int lines = o.split("\n").length;
 		Assert.assertEquals(3, lines);
 	}
 
-	@SuppressWarnings("unused")
-	@Test @Ignore
 
-	public void parsePerformanceTest() throws TMLExpressionException, SystemException {
-		long before = System.currentTimeMillis();
-		for (int i = 0; i < 100000; i++) {
-			Object o3 = Expression.evaluate("?[/@Param] AND [/@Param] != ''", input);
-		}
-		long now = System.currentTimeMillis();
-		long compiledTime = (now-before);
-		System.err.println("Compiled Parsing: "+compiledTime);
-//		Expression.dumpStats();
-		ExpressionCache.getInstance().printStats();
-		before = System.currentTimeMillis();
-		for (int i = 0; i < 100000; i++) {
-			Object o3 = Expression.evaluate("?[/@Param] AND [/@Param] != ''", input);
-		}
-		now = System.currentTimeMillis();
-		compiledTime = (now-before);
-		System.err.println("Compiled parsing after warm-up: "+compiledTime);
-		ExpressionCache.getInstance().printStats();
-		
 
-		before = System.currentTimeMillis();
-		Expression.compileExpressions = true;
-		for (int i = 0; i < 100000; i++) {
-			Object o3 = Expression.evaluate("?[/@Param] AND [/@Param] != ''", input);
-		}
-		now = System.currentTimeMillis();
-		compiledTime = (now-before);
-		System.err.println("Interpreted Parsing: "+compiledTime);
-		
-	}
-	
 	@Test
 	public void testNamedExpression() throws ParseException {
 		String expression = "aap=1+1";

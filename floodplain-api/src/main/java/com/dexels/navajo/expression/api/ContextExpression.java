@@ -16,11 +16,11 @@ public interface ContextExpression {
 		return apply(Optional.empty(),Optional.empty());
 	}
 	public default Operand apply(Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
-		return apply(null,null,null,immutableMessage,paramMessage);
+		return apply(null,immutableMessage,paramMessage);
 	}
 
 
-	public Operand apply(MappableTreeNode mapNode, TipiLink tipiLink, Access access, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage);
+	public Operand apply(MappableTreeNode mapNode, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage);
 	public boolean isLiteral();
 	public Optional<String> returnType();
 	public String expression();

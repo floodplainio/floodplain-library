@@ -109,31 +109,6 @@ public class BaseMethodImpl extends BaseNode implements Method {
         myRequiredMessages.add(bri);
     }
 
-    /**
-     * Return true if a certain message needs to be included in serialized form
-     * based upon definitions in required.
-     * 
-     * @param message
-     * @return
-     */
-    public final boolean includeMessage(Message message) {
-
-        for (int i = 0; i < myRequiredMessages.size(); i++) {
-            Required req = myRequiredMessages.get(i);
-            if (req.getFilter() != null && !req.getFilter().equals("") && req.getMessage().equals(message.getName())) {
-                ExpressionEvaluator expr = NavajoFactory.getInstance().getExpressionEvaluator();
-                try {
-                    Operand o = expr.evaluate(req.getFilter(), getRootDoc(), null, message, null, null);
-                    if (o.value instanceof Boolean) {
-                        return ((Boolean) o.value).booleanValue();
-                    }
-                } catch (Exception e) {
-                }
-            }
-        }
-
-        return true;
-    }
 
     @Override
     public Map<String, String> getAttributes() {
