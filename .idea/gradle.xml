@@ -14,7 +14,6 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/config-runtime" />
             <option value="$PROJECT_DIR$/floodplain-api" />
-            <option value="$PROJECT_DIR$/floodplain-authentication-api" />
             <option value="$PROJECT_DIR$/floodplain-core" />
             <option value="$PROJECT_DIR$/floodplain-document" />
             <option value="$PROJECT_DIR$/floodplain-document-stream" />

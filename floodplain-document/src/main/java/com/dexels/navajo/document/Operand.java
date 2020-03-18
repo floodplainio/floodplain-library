@@ -9,14 +9,7 @@ import com.dexels.navajo.document.types.TypeUtils;
 import java.util.Date;
 import java.util.List;
 
-/**
- * <p>Title: </p>
- * <p>Description: </p>
- * <p>Copyright: Copyright (c) 2003</p>
- * <p>Company: </p>
- * @author not attributable
- * @version 1.0
- */
+
 
 public class Operand {
 

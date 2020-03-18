@@ -12,27 +12,6 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.*;
 
-/**
- * <p>
- * Title: ShellApplet
- * </p>
- * <p>
- * Description:
- * </p>
- * <p>
- * Part of the Navajo mini client, based on the NanoXML parser
- * </p>
- * <p>
- * Copyright: Copyright (c) 2002
- * </p>
- * <p>
- * Company: Dexels
- * </p>
- * 
- * @author Frank Lyaruu
- * @version 1.0
- */
-
 public class BaseNavajoImpl extends BaseNode implements Navajo {
 
     private static final long serialVersionUID = 7765245678970907997L;

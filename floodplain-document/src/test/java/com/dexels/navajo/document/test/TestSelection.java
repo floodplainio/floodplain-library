@@ -8,26 +8,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-/**
- * This class is used to test the com.dexels.navajo.document.Selection
- * implementation
- * 
- * <p>
- * Title: Navajo Product Project
- * </p>
- * <p>
- * Description: This is the official source for the Navajo server
- * </p>
- * <p>
- * Copyright: Copyright (c) 2002
- * </p>
- * <p>
- * Company: Dexels BV
- * </p>
- * 
- * @author Arjen Schoneveld
- * @version 1.0
- */
 public class TestSelection {
 
 	private NavajoDocumentTestFicture fixture = new NavajoDocumentTestFicture();

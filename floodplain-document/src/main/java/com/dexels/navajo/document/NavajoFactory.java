@@ -12,24 +12,6 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.util.*;
 
-/**
- * <p>
- * Title: Navajo Product Project
- * </p>
- * <p>
- * Description: This is the official source for the Navajo server
- * </p>
- * <p>
- * Copyright: Copyright (c) 2002
- * </p>
- * <p>
- * Company: Dexels BV
- * </p>
- * 
- * @author Arjen Schoneveld
- * @version 1.0
- */
-
 public abstract class NavajoFactory {
 	protected static NavajoFactory impl = null;
 	protected File tempDir = null;
@@ -213,26 +195,26 @@ public abstract class NavajoFactory {
 		return defaultSubTypes.get(type);
 	}
 
-	private ExpressionEvaluator myExpressionEvaluator = null;
-
-	/**
-	 * Get this factory's ExpressionEvaluator object
-	 * 
-	 * @return ExpressionEvaluator
-	 */
-	public ExpressionEvaluator getExpressionEvaluator() {
-		return myExpressionEvaluator;
-	}
-
-	/**
-	 * Set this factory's ExpressionEvaluator object
-	 * 
-	 * @param e
-	 *            ExpressionEvaluator
-	 */
-	public void setExpressionEvaluator(ExpressionEvaluator e) {
-		myExpressionEvaluator = e;
-	}
+//	private ExpressionEvaluator myExpressionEvaluator = null;
+//
+//	/**
+//	 * Get this factory's ExpressionEvaluator object
+//	 *
+//	 * @return ExpressionEvaluator
+//	 */
+//	public ExpressionEvaluator getExpressionEvaluator() {
+//		return myExpressionEvaluator;
+//	}
+//
+//	/**
+//	 * Set this factory's ExpressionEvaluator object
+//	 *
+//	 * @param e
+//	 *            ExpressionEvaluator
+//	 */
+//	public void setExpressionEvaluator(ExpressionEvaluator e) {
+//		myExpressionEvaluator = e;
+//	}
 
 	/**
 	 * Used to convert classnames to property types. E.g. java.lang.String ->

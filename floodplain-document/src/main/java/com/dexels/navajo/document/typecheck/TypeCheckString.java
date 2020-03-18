@@ -8,15 +8,6 @@ import org.slf4j.LoggerFactory;
 import java.util.regex.Pattern;
 
 
-/**
- * <p>Title: </p>
- * <p>Description: </p>
- * <p>Copyright: Copyright (c) 2003</p>
- * <p>Company: </p>
- * @author not attributable
- * @version 1.0
- */
-
 public class TypeCheckString extends TypeChecker {
   
 	private static final Logger logger = LoggerFactory

@@ -1,15 +1,5 @@
 package com.dexels.navajo.document.base;
 
-/**
- * <p>Title: ShellApplet</p>
- * <p>Description: </p>
- * <p>Part of the Navajo mini client, based on the NanoXML parser</p>
- * <p>Copyright: Copyright (c) 2002</p>
- * <p>Company: Dexels </p>
- * @author Frank Lyaruu
- * @version 1.0
- */
-
 import com.dexels.navajo.document.Header;
 import com.dexels.navajo.document.Navajo;
 import com.dexels.navajo.document.NavajoFactory;

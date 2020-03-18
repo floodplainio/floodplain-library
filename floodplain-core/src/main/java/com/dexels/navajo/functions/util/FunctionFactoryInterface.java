@@ -3,7 +3,6 @@ package com.dexels.navajo.functions.util;
 import com.dexels.navajo.expression.api.FunctionDefinition;
 import com.dexels.navajo.expression.api.FunctionInterface;
 import com.dexels.navajo.expression.api.TMLExpressionException;
-import com.dexels.navajo.script.api.UserException;
 import navajo.ExtensionDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,7 +70,6 @@ public abstract class FunctionFactoryInterface implements Serializable {
 	 * 
 	 * @param name
 	 * @return
-	 * @throws UserException
 	 */
 	
 	public final FunctionDefinition getDef(ExtensionDefinition ed, String name) {

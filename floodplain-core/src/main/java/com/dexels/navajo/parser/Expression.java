@@ -18,8 +18,7 @@ public final class Expression {
 	public static final String ACCESS = "ACCESS";
 
 	private static CachedExpressionEvaluator evaluator = new CachedExpressionEvaluator();
-	public static boolean compileExpressions = true; // Enabled by default
-	
+
 	private Expression() {
 		// no instances
 	}

@@ -12,24 +12,11 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.StringTokenizer;
 
-/**
- * <p>Title: ClockTime class </p>
- * <p>Description: Datatype class to represent 24 hour clock times (hours, minutes and seconds) </p>
- * <p>Copyright: Copyright (c) 2003</p>
- * <p>Company: </p>
- * @author not attributable
- * @version 1.0
- */
 
 public final class ClockTime extends NavajoType implements Comparable<ClockTime> {
 
-  /**
-	 * 
-	 */
 	private static final long serialVersionUID = -1867359996556685730L;
     private static final Logger logger = LoggerFactory.getLogger(ClockTime.class);
-
-	public static final String VERSION = "$Id$";
 
 	//Set the fixed year constants.
 	public static final int FIXED_YEAR = 1971;

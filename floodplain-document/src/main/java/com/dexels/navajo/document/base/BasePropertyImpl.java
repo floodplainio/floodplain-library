@@ -13,27 +13,6 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-/**
- * <p>
- * Title: ShellApplet
- * </p>
- * <p>
- * Description:
- * </p>
- * <p>
- * Part of the Navajo mini client, based on the NanoXML parser
- * </p>
- * <p>
- * Copyright: Copyright (c) 2002
- * </p>
- * <p>
- * Company: Dexels
- * </p>
- * c
- * 
- * @author Frank Lyaruu
- * @version 1.0
- */
 
 public class BasePropertyImpl extends BaseNode implements Property, Comparable<Property> {
 	/**
@@ -460,102 +439,17 @@ public class BasePropertyImpl extends BaseNode implements Property, Comparable<P
 		setType(Property.SELECTION_PROPERTY);
 	
 	}
-	
-	public final Object getEvaluatedValue()  {
-		Operand o;
-		// No evaluator present.
-		if (NavajoFactory.getInstance().getExpressionEvaluator() == null) {
-			return null;
-		}
-		try {
-			try {
-				if (!EXPRESSION_PROPERTY.equals(getType())) {
-					throw NavajoFactory.getInstance().createNavajoException("Can only evaluate expression type properties!");
-				}
-				try {
-					o = NavajoFactory.getInstance().getExpressionEvaluator().evaluate(getValue());
-					evaluatedType = o.type;
-					return o.value;
-				} catch (Throwable e) {
-					logger.info("Exception while evaluating property: {} expression: {}",getFullPropertyName(), getValue());
-					return null;
-				}
 
-			} catch (NavajoException ex) {
-				logger.error("Error: ", ex);
-				// sometimes, but
-				// some ui components still want to know the type. This
-				// elaborate construction
-				// will try to retrieve the type from a definition message in an
-				// array message.
-				// This, of course, only works for array message with a
-				// definition message present.
-
-				if (myParent != null) {
-					Message pp = myParent.getArrayParentMessage();
-					if (pp != null && Message.MSG_TYPE_ARRAY.equals(pp.getType())) {
-						Message def = pp.getDefinitionMessage();
-						if (def != null) {
-							Property ppp = def.getProperty(getName());
-							if (ppp != null) {
-								evaluatedType = ppp.getType();
-								return null;
-							}
-						}
-					}
-				}
-				evaluatedType = "string";
-				return null;
-			}
-		} catch (Throwable ex1) {
-			evaluatedType = "string";
-			return null;
-		}
-	}
 
 	@Override
 	public final String getEvaluatedType() {
 		if (!EXPRESSION_PROPERTY.equals(getType())) {
 			return getType();
 		}
-		if (evaluatedType == null) {
-			try {
-				refreshExpression();
-			} catch (ExpressionChangedException e) {
-			    logger.warn("ExpressionChangedException error on getEvaluatedType: {}", e);
-			}
-		}
+
 		return evaluatedType;
 	}
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public final void refreshExpression() throws ExpressionChangedException {
-		if (getType().equals(Property.EXPRESSION_PROPERTY)) {
-			// also sets evaluatedType
-			Object oldEvaluatedValue = evaluatedValue;
-			evaluatedValue = getEvaluatedValue();
-			if (evaluatedValue instanceof ArrayList) {
-				updateExpressionSelections((ArrayList<Selection>) evaluatedValue);
-				firePropertyChanged("selection", "", " ");
-			} else {
-				if (oldEvaluatedValue != null) {
-					if (!oldEvaluatedValue.equals(evaluatedValue)) {
-						firePropertyChanged(PROPERTY_VALUE, oldEvaluatedValue, evaluatedValue);
-						throw new ExpressionChangedException();
-					}
-				}
-				if (evaluatedValue != null) {
-					if (!evaluatedValue.equals(oldEvaluatedValue)) {
-						firePropertyChanged(PROPERTY_VALUE, "" + oldEvaluatedValue, "" + evaluatedValue);
-						throw new ExpressionChangedException();
-					}
-
-				}
-			}
-
-		}
-	}
 
 	private void updateExpressionSelections(List<Selection> list) {
 		removeAllSelections();
@@ -596,13 +490,7 @@ public class BasePropertyImpl extends BaseNode implements Property, Comparable<P
 		}
 		
 		if (getType().equals(EXPRESSION_PROPERTY)) {
-				if (evaluatedValue == null) {
-					evaluatedValue = getEvaluatedValue();
-					return evaluatedValue;
-				} else {
-					return evaluatedValue;
-				}
-			
+			return null;
 		}
 		if (getType().equals(Property.CLOCKTIME_PROPERTY)) {
 			if (getValue() == null || getValue().equals("")) {

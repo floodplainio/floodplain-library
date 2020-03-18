@@ -22,12 +22,10 @@ public class ExpressionTest {
 	private ImmutableMessage immutableMessage;
 	private ImmutableMessage paramMessage;
 
+	ExpressionEvaluator expressionEvaluator = new CachedExpressionEvaluator();
 
 	@Before
 	public void setup() {
-		NavajoFactory.getInstance().setExpressionEvaluator(
-				new CachedExpressionEvaluator());
-		
 		testDoc = NavajoFactory.getInstance().createNavajo();
 		topMessage = NavajoFactory.getInstance().createMessage(testDoc, "MyTop");
 		testDoc.addMessage(topMessage);
@@ -71,13 +69,11 @@ public class ExpressionTest {
 	}
 	@Test
 	public void testExpression() throws Exception {
-		ExpressionEvaluator ee = NavajoFactory.getInstance()
-				.getExpressionEvaluator();
 
-		Operand o = ee.evaluate("1+1");
+		Operand o = expressionEvaluator.evaluate("1+1");
 		assertEquals(2, o.value);
 
-//		o = ee.evaluate("TODAY + 0#0#2#0#0#0", null, null,null);
+//		o = expressionEvaluator.evaluate("TODAY + 0#0#2#0#0#0", null, null,null);
 //		System.err.println(o.value);
 
 
@@ -86,35 +82,25 @@ public class ExpressionTest {
 
 	@Test
 	public void testUnicode() throws Exception {
-		ExpressionEvaluator ee = NavajoFactory.getInstance().getExpressionEvaluator();
-		Operand o = ee.evaluate("'ø'+'æ'");
+		Operand o = expressionEvaluator.evaluate("'ø'+'æ'");
 		assertEquals("øæ", o.value);
 	}
 
 	@Test
 	public void testExpressionNewlineOutside() throws Exception {
-		ExpressionEvaluator ee = NavajoFactory.getInstance()
-				.getExpressionEvaluator();
-
-		Operand o = ee.evaluate("1\n+\n1");
+		Operand o = expressionEvaluator.evaluate("1\n+\n1");
 		assertEquals(2, o.value);
 	}
 
 	@Test
 	public void testExpressionNewline() throws Exception {
-		ExpressionEvaluator ee = NavajoFactory.getInstance()
-				.getExpressionEvaluator();
-
-		Operand o = ee.evaluate("'aap\nnoot'");
+		Operand o = expressionEvaluator.evaluate("'aap\nnoot'");
 		assertEquals("aap\nnoot", o.value);
 	}
 	
 	@Test
 	public void testNonAscii() throws Exception {
-		ExpressionEvaluator ee = NavajoFactory.getInstance()
-				.getExpressionEvaluator();
-
-		Operand o = ee.evaluate("'àáâãäåāăąæßçćĉċčèéêëēĕėęěĝğġģĥħìíîïĩīĭıįĵķĸĺļľŀłñńņňŋòóôöõøōŏőœŕŗřśŝşšţťŧùúûüũůūŭűųŵýÿŷźżž'+'àáâãäåāăąæßçćĉċčèéêëēĕėęěĝğġģĥħìíîïĩīĭıįĵķĸĺļľŀłñńņňŋòóôöõøōŏőœŕŗřśŝşšţťŧùúûüũůūŭűųŵýÿŷźżž'", Optional.empty(),Optional.empty());
+		Operand o = expressionEvaluator.evaluate("'àáâãäåāăąæßçćĉċčèéêëēĕėęěĝğġģĥħìíîïĩīĭıįĵķĸĺļľŀłñńņňŋòóôöõøōŏőœŕŗřśŝşšţťŧùúûüũůūŭűųŵýÿŷźżž'+'àáâãäåāăąæßçćĉċčèéêëēĕėęěĝğġģĥħìíîïĩīĭıįĵķĸĺļľŀłñńņňŋòóôöõøōŏőœŕŗřśŝşšţťŧùúûüũůūŭűųŵýÿŷźżž'", Optional.empty(),Optional.empty());
 		assertEquals("àáâãäåāăąæßçćĉċčèéêëēĕėęěĝğġģĥħìíîïĩīĭıįĵķĸĺļľŀłñńņňŋòóôöõøōŏőœŕŗřśŝşšţťŧùúûüũůūŭűųŵýÿŷźżžàáâãäåāăąæßçćĉċčèéêëēĕėęěĝğġģĥħìíîïĩīĭıįĵķĸĺļľŀłñńņňŋòóôöõøōŏőœŕŗřśŝşšţťŧùúûüũůūŭűųŵýÿŷźżž", o.value);
 	}
 	
@@ -122,21 +108,18 @@ public class ExpressionTest {
 
 	@Test
 	public void testExpressionWithImmutableMessage() throws Exception {
-		Expression.compileExpressions = true;
 		Operand o = Expression.evaluate("[SomeInteger]" ,Optional.of(immutableMessage),Optional.of(paramMessage));
 		assertEquals(3, o.value);
 	}
 
 	@Test
 	public void testExpressionWithImmutableParamMessage() throws Exception {
-		Expression.compileExpressions = true;
 		Operand o = Expression.evaluate("[@SomeInteger]" ,Optional.of(immutableMessage),Optional.of(paramMessage));
 		assertEquals(4, o.value);
 	}
 
 	@Test
 	public void testListWithMultipleTypes() throws Exception {
-		Expression.compileExpressions = true;
 		Operand o = Expression.evaluate("{1,'a',2+2}");
 		List<Object> res = (List<Object>) o.value;
 		assertEquals(3, res.size());
@@ -144,7 +127,6 @@ public class ExpressionTest {
 
 	@Test
 	public void testListWithSingleElement() throws Exception {
-		Expression.compileExpressions = true;
 		Operand o = Expression.evaluate("{'a'}");
 		List<Object> res = (List<Object>) o.value;
 		assertEquals(1, res.size());
@@ -152,7 +134,6 @@ public class ExpressionTest {
 
 	@Test
 	public void testImmutableTMLPath() throws Exception {
-		Expression.compileExpressions = true;
 		ImmutableMessage outer = ImmutableFactory.empty().with("outerint", 1, "integer");
 		ImmutableMessage inner = ImmutableFactory.empty().with("innerint", 3, "integer");
 		
@@ -164,7 +145,6 @@ public class ExpressionTest {
 
 	@Test
 	public void testTrailingTMLPath() throws Exception {
-		Expression.compileExpressions = true;
 		ImmutableMessage outer = ImmutableFactory.empty().with("outerint", 1, "integer");
 		ImmutableMessage inner = ImmutableFactory.empty().with("innerint", 3, "integer");
 		
@@ -176,7 +156,6 @@ public class ExpressionTest {
 
 	@Test
 	public void testTrailingTMLPathParam() throws Exception {
-		Expression.compileExpressions = true;
 		ImmutableMessage outer = ImmutableFactory.empty().with("outerint", 1, "integer");
 		ImmutableMessage inner = ImmutableFactory.empty().with("innerint", 3, "integer");
 		
@@ -188,7 +167,6 @@ public class ExpressionTest {
 
 	@Test
 	public void testTrailingTMLPathParamList() throws Exception {
-		Expression.compileExpressions = true;
 		ImmutableMessage outer = ImmutableFactory.empty().with("outerint", 1, "integer");
 		ImmutableMessage inner1 = ImmutableFactory.empty().with("innerint", 1, "integer");
 		ImmutableMessage inner2 = ImmutableFactory.empty().with("innerint", 2, "integer");
@@ -205,7 +183,6 @@ public class ExpressionTest {
 	
 	@Test
 	public void testEmptyTML() throws Exception {
-		Expression.compileExpressions = true;
 		ImmutableMessage outer = ImmutableFactory.empty().with("outerint", 1, "integer");
 		Operand o = Expression.evaluate("[]", Optional.of(outer), Optional.empty());
 		ImmutableMessage s = o.immutableMessageValue();
@@ -214,7 +191,6 @@ public class ExpressionTest {
 	
 	@Test
 	public void testEmptyTMLJustSlash() throws Exception {
-		Expression.compileExpressions = true;
 		ImmutableMessage outer = ImmutableFactory.empty().with("outerint", 1, "integer");
 		Operand o = Expression.evaluate("[/]", Optional.of(outer), Optional.empty());
 		ImmutableMessage s = o.immutableMessageValue();
@@ -223,7 +199,6 @@ public class ExpressionTest {
 
 	@Test
 	public void testEmptyTMLParam() throws Exception {
-		Expression.compileExpressions = true;
 		ImmutableMessage outer = ImmutableFactory.empty().with("outerint", 1, "integer");
 		Operand o = Expression.evaluate("[@]", Optional.empty(), Optional.of(outer));
 		ImmutableMessage s = o.immutableMessageValue();
@@ -232,7 +207,6 @@ public class ExpressionTest {
 	
 	@Test
 	public void testEmptySlashTMLParam() throws Exception {
-		Expression.compileExpressions = true;
 		ImmutableMessage outer = ImmutableFactory.empty().with("outerint", 1, "integer");
 		Operand o = Expression.evaluate("[/@]", Optional.empty(), Optional.of(outer));
 		ImmutableMessage s = o.immutableMessageValue();

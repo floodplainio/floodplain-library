@@ -18,9 +18,6 @@ public class TestExpressionPropertiesCompiled {
 
 	@Before
 	public void setup() {
-//		NavajoFactory.getInstance().setExpressionEvaluator(new DefaultExpressionEvaluator());
-		NavajoFactory.getInstance().setExpressionEvaluator(new CachedExpressionEvaluator());
-		
 		testDoc = NavajoFactory.getInstance().createNavajo();
 		topMessage = NavajoFactory.getInstance().createMessage(testDoc, "MyTop");
 		testDoc.addMessage(topMessage);

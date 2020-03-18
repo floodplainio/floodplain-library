@@ -6,17 +6,6 @@ import java.io.Writer;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * <p>Title: Navajo Product Project</p>
- * <p>Description: This is the official source for the Navajo server</p>
- * <p>Copyright: Copyright (c) 2002</p>
- * <p>Company: Dexels BV</p>
- * @author Arjen Schoneveld
- * @version $Id$
- *
- * The Header object specifies general control data regarding a Navajo message.
- *
- */
 
 public interface Header extends java.io.Serializable {
 

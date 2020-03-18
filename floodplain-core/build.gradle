@@ -29,7 +29,6 @@ dependencies {
     implementation project(':floodplain-document')
     implementation project(':floodplain-document-stream')
     implementation project(':floodplain-version')
-    implementation project(':floodplain-authentication-api')
     implementation project(':config-runtime')
     compile dependencies.slf4j
     compile dependencies.osgiCompendium

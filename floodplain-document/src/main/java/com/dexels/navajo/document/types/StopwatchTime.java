@@ -7,25 +7,6 @@ import org.slf4j.LoggerFactory;
 import java.util.Calendar;
 import java.util.StringTokenizer;
 
-/**
- * <p>
- * Title: ClockTime class
- * </p>
- * <p>
- * Description: Datatype class to represent 24 hour clock times (hours, minutes
- * and seconds)
- * </p>
- * <p>
- * Copyright: Copyright (c) 2003
- * </p>
- * <p>
- * Company:
- * </p>
- * 
- * @author not attributable
- * @version 1.0
- */
-
 public final class StopwatchTime extends NavajoType implements Comparable<StopwatchTime> {
 
 	private static final long serialVersionUID = -6257975668104174868L;

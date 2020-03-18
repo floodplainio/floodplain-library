@@ -22,29 +22,9 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
-/**
- * <p>
- * Title: Binary
- * </p>
- * <p>
- * Description: Binary datacontainer
- * </p>
- * <p>
- * Copyright: Copyright (c) 2003
- * </p>
- * <p>
- * Company: Dexels BV
- * </p>
- * 
- * @author aphilip
- * @version $Id$
- */
 
 public final class Binary extends NavajoType implements Serializable,Comparable<Binary> {
 
-    /**
-	 * 
-	 */
 	private static final long serialVersionUID = 6392612802747438142L;
 
     private String mimetype = null;

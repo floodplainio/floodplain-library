@@ -29,7 +29,6 @@ public class TestSetup {
 	public static ReactiveFinder setup() {
 		ReplicationFactory.setInstance(new JSONReplicationMessageParserImpl());
 		ReactiveFinder finder = new CoreReactiveFinder();
-		Expression.compileExpressions = true;
 		finder.addReactiveSourceFactory(new SingleSourceFactory(),"single");
 		finder.addReactiveSourceFactory(new InputStreamSourceFactory(),"inputstream");
 		finder.addReactiveSourceFactory(new EventStreamSourceFactory(),"eventstream");

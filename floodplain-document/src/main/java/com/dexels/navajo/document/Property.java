@@ -9,15 +9,6 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
-/**
- * <p>Title: Navajo Product Project</p>
- * <p>Description: This is the official source for the Navajo server</p>
- * <p>Copyright: Copyright (c) 2002</p>
- * <p>Company: Dexels BV</p>
- * @author Arjen Schoneveld
- * @version 1.0
- */
-
 public interface Property extends java.io.Serializable, Comparable<Property>, Cloneable {
 
   public static final String PROPERTY_DEFINITION = "property";
@@ -338,11 +329,6 @@ public interface Property extends java.io.Serializable, Comparable<Property>, Cl
    */
   public String getEvaluatedType();
 
-  /**
-   * Refresh expression
-   * @throws NavajoException
-   */
-  public void refreshExpression() throws ExpressionChangedException;
 
   /**
    * Set the type of a property (required).

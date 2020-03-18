@@ -32,7 +32,6 @@ dependencies {
     implementation project(':floodplain-version')
     implementation project(':floodplain-document-stream')
     implementation project(':floodplain-function')
-    implementation project(':floodplain-authentication-api')
     implementation project(':config-runtime')
     implementation project(':pubsub-rx2')
     implementation project('::streams')

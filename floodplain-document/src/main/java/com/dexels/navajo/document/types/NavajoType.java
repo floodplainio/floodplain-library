@@ -6,15 +6,6 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * <p>Title: </p>
- * <p>Description: </p>
- * <p>Copyright: Copyright (c) 2003</p>
- * <p>Company: </p>
- * @author not attributable
- * @version 1.0
- */
-
 public abstract class NavajoType implements  Serializable {
 	private static final long serialVersionUID = -112880355087638085L;
 	private transient Map<String, String> subTypeMap = null;

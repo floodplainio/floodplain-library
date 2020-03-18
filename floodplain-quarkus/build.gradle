@@ -14,7 +14,6 @@ dependencies {
     implementation project(':floodplain-reactive')
     implementation project(':floodplain-document-stream')
     implementation project(':floodplain-document')
-    implementation project(':floodplain-authentication-api')
     implementation project(':floodplain-core')
     implementation project(':floodplain-function')
     implementation project(':config-runtime')

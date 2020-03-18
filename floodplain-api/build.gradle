@@ -12,8 +12,6 @@ dependencies {
     implementation project(':immutable-api')
     implementation project(':floodplain-document')
     compile dependencies.slf4j
-    compile dependencies.jacksonCore
-    compile dependencies.jacksonDatabind
     compile dependencies.cdiApi
     compile dependencies.servletApi
  }

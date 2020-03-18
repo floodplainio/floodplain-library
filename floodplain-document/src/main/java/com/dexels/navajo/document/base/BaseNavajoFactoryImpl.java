@@ -12,24 +12,6 @@ import java.io.Reader;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 
-/**
- * <p>
- * Title:
- * </p>
- * <p>
- * Description:
- * </p>
- * <p>
- * Copyright: Copyright (c) 2003
- * </p>
- * <p>
- * Company:
- * </p>
- * 
- * @author not attributable
- * @version 1.0
- */
-
 public class BaseNavajoFactoryImpl extends NavajoFactory implements Serializable {
 
 	private static final long serialVersionUID = -4927821415020342916L;

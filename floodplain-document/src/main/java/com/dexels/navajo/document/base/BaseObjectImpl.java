@@ -6,16 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * <p>Title: ShellApplet</p>
- * <p>Description: </p>
- * <p>Part of the Navajo mini client, based on the NanoXML parser</p>
- * <p>Copyright: Copyright (c) 2002</p>
- * <p>Company: Dexels </p>
- * <p>$Id$</p>
- * @author Frank Lyaruu
- * @version $Revision$
- */
 public class BaseObjectImpl extends BaseNode {
 
 	private static final long serialVersionUID = -1937743662725211261L;

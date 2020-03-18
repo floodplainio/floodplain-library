@@ -1,15 +1,5 @@
 package com.dexels.navajo.document.base;
 
-/**
- * <p>Title: ShellApplet</p>
- * <p>Description: </p>
- * <p>Part of the Navajo mini client, based on the NanoXML parser</p>
- * <p>Copyright: Copyright (c) 2002</p>
- * <p>Company: Dexels </p>
- * @author Frank Lyaruu
- * @version 1.0
- */
-
 import com.dexels.navajo.document.*;
 import com.dexels.navajo.document.comparatormanager.ComparatorManager;
 import com.dexels.navajo.document.comparatormanager.ComparatorManagerFactory;
@@ -498,21 +488,6 @@ public class BaseMessageImpl extends BaseNode implements Message, Comparable<Mes
             }
             return props;
         }
-    }
-
-    @Override
-    public void refreshExpression() throws ExpressionChangedException {
-
-        if (messageList != null) {
-            for (int i = 0; i < messageList.size(); i++) {
-                Message current = messageList.get(i);
-                current.refreshExpression();
-            }
-        }
-        for (Property current : getAllProperties()) {
-            current.refreshExpression();
-        }
-
     }
 
     @Override

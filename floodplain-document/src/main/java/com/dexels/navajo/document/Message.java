@@ -6,17 +6,6 @@ import java.io.Writer;
 import java.util.List;
 import java.util.Map;
 
-/**
- * <p>Title: Navajo Product Project</p>
- * <p>Description: This is the official source for the Navajo server</p>
- * <p>Copyright: Copyright (c) 2002</p>
- * <p>Company: Dexels BV</p>
- * @author Arjen Schoneveld
- * @version $Id$
- *
- * A Message object represents the "data holding" structure of a Navajo document.
- * A message contains data, it does not represent data.
- */
 
 public interface Message
     extends java.io.Serializable, java.lang.Comparable<Message> {
@@ -510,11 +499,6 @@ public interface Message
    */
   public boolean isEqual(Message o, String skipProperties);
 
-  /**
-   * refreshes recursively all the properties in this message.
-   * i.e.: Recalculates all expression-type properties
-   */
-  public void refreshExpression() throws ExpressionChangedException;
 
   /**
    * Not in use
