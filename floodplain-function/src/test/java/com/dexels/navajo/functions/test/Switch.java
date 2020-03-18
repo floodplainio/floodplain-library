@@ -107,13 +107,13 @@ public class Switch extends AbstractFunction {
 	
 	@Test
 	public void testUnicodeExpressionFunction() throws Exception {
-		Operand result = Expression.evaluate("Unicode('0x20AC')", null,null,null);
+		Operand result = Expression.evaluate("Unicode('0x20AC')");
 		System.err.println("Result:"+result.value);
 	}	
 	
 	@Test
 	public void testDirectUnicodeExpressionFunction() throws Exception {
-		Operand result = Expression.evaluate("'€2,29'", null,null,null);
+		Operand result = Expression.evaluate("'€2,29'");
 		System.err.println("Result:"+result.value);
 	}	
 	

@@ -10,7 +10,6 @@ import com.dexels.navajo.functions.*;
 import com.dexels.navajo.functions.util.FunctionFactoryFactory;
 import com.dexels.navajo.functions.util.FunctionFactoryInterface;
 import com.dexels.navajo.parser.Expression;
-import com.dexels.navajo.script.api.SystemException;
 import org.dexels.utils.Base64;
 import org.junit.Assert;
 import org.junit.Before;
@@ -1574,7 +1573,7 @@ public class StandardFunctionsTest {
 		  }
 	
 	@Test
-	  public void testCheckUniquenessExtended() throws SystemException {
+	  public void testCheckUniquenessExtended()  {
 		    String expression = "Hallo \n Hoe is het nou?";
 		    CreateExpression ce = new CreateExpression();
 		    ce.reset();

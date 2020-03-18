@@ -15,11 +15,11 @@ public class CachedExpressionEvaluator extends DefaultExpressionEvaluator implem
 
 	@Override
 	public Operand evaluate(String clause) {
-		return evaluate(clause,null,Optional.empty(),Optional.empty());
+		return evaluate(clause,Optional.empty(),Optional.empty());
 	}
 
 	@Override
-	public Operand evaluate(String clause,  Object mappableTreeNode, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
+	public Operand evaluate(String clause, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
 		ExpressionCache ce = ExpressionCache.getInstance();
 		try {
 			return ce.evaluate(clause,immutableMessage,paramMessage);

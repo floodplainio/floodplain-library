@@ -15,5 +15,5 @@ import java.util.Optional;
 
 public interface ExpressionEvaluator {
   public Operand evaluate(String clause);
-  public Operand evaluate(String clause, Object mappableTreeNode, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage);
+  public Operand evaluate(String clause, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage);
 }

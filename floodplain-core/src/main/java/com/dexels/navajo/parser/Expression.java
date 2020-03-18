@@ -11,7 +11,6 @@ package com.dexels.navajo.parser;
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.navajo.document.Operand;
 import com.dexels.navajo.parser.compiled.api.CachedExpressionEvaluator;
-import com.dexels.navajo.script.api.MappableTreeNode;
 
 import java.util.Optional;
 
@@ -26,14 +25,14 @@ public final class Expression {
 	}
 
 	public static final Operand evaluate(String clause) {
-		return evaluate(clause,null,Optional.empty(),Optional.empty());
+		return evaluate(clause,Optional.empty(),Optional.empty());
 	}
 
-	public static final Operand evaluate(String clause, MappableTreeNode o, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
+	public static final Operand evaluate(String clause,Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
 		if (clause.trim().equals("")) {
 			return new Operand(null, "", "");
 		}
-		return evaluator.evaluate(clause,  o,immutableMessage,paramMessage);
+		return evaluator.evaluate(clause, immutableMessage,paramMessage);
 	}
 
 

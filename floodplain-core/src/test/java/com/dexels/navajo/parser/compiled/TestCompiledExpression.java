@@ -8,7 +8,6 @@ import com.dexels.navajo.functions.util.FunctionFactoryFactory;
 import com.dexels.navajo.parser.Expression;
 import com.dexels.navajo.parser.NamedExpression;
 import com.dexels.navajo.parser.compiled.api.ExpressionCache;
-import com.dexels.navajo.script.api.SystemException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -85,7 +84,7 @@ public class TestCompiledExpression {
 	
 
 	@Test
-	public void testMultilineStringLiteral() throws ParseException, TMLExpressionException, SystemException {
+	public void testMultilineStringLiteral() throws TMLExpressionException {
 		String clause = "'what is a haiku\n" + 
 				"nothing but words, poetic?\n" + 
 				"this is a haiku'";
@@ -197,12 +196,12 @@ public class TestCompiledExpression {
 	//	Unicode(hex-string)
 	@Test
 	public void testUnicodeExpression() throws Exception {
-		Operand result = Expression.evaluate("'耀'", null,null,null);
+		Operand result = Expression.evaluate("'耀'");
 		System.err.println("Result:"+result.value);
 	}	
 	@Test
 	public void testUnicodeExpressionEscaped() throws Exception {
-		Operand result = Expression.evaluate("'\u20AC2,29'", null,null,null);
+		Operand result = Expression.evaluate("'\u20AC2,29'");
 		System.err.println("Result:"+result.value);
 	}	
 	
@@ -210,21 +209,21 @@ public class TestCompiledExpression {
 	public void testDoubleComparison()
 	{
 		Operand result; 
-		result = Expression.evaluate(" 1.0 < 1.1 ", null, null, null);
+		result = Expression.evaluate(" 1.0 < 1.1 ");
 		Assert.assertTrue((boolean) result.value);
-		result = Expression.evaluate(" 1.0 < 1.0 ", null, null, null);
+		result = Expression.evaluate(" 1.0 < 1.0 ");
 		Assert.assertFalse((boolean) result.value);
-		result = Expression.evaluate(" 1.0 <= 1.1 ", null, null, null);
+		result = Expression.evaluate(" 1.0 <= 1.1 ");
 		Assert.assertTrue((boolean) result.value);
-		result = Expression.evaluate(" 1.0 <= 1.0 ", null, null, null);
+		result = Expression.evaluate(" 1.0 <= 1.0 ");
 		Assert.assertTrue((boolean) result.value);
-		result = Expression.evaluate(" 1.0 > 1.1 ", null, null, null);
+		result = Expression.evaluate(" 1.0 > 1.1 ");
 		Assert.assertFalse((boolean) result.value);
-		result = Expression.evaluate(" 1.0 > 1.0 ", null, null, null);
+		result = Expression.evaluate(" 1.0 > 1.0 ");
 		Assert.assertFalse((boolean) result.value);
-		result = Expression.evaluate(" 1.0 >= 1.1 ", null, null, null);
+		result = Expression.evaluate(" 1.0 >= 1.1 ");
 		Assert.assertFalse((boolean) result.value);
-		result = Expression.evaluate(" 1.0 >= 1.0 ", null, null, null);
+		result = Expression.evaluate(" 1.0 >= 1.0 ");
 		Assert.assertTrue((boolean) result.value);
 	}
 	
@@ -232,21 +231,21 @@ public class TestCompiledExpression {
 	public void testDoubleIntegerComparison()
 	{
 		Operand result; 
-		result = Expression.evaluate(" 0.9 < 1 ", null, null, null);
+		result = Expression.evaluate(" 0.9 < 1 ");
 		Assert.assertTrue((boolean) result.value);
-		result = Expression.evaluate(" 1.0 < 1 ", null, null, null);
+		result = Expression.evaluate(" 1.0 < 1 ");
 		Assert.assertFalse((boolean) result.value);
-		result = Expression.evaluate(" 0.9 <= 1 ", null, null, null);
+		result = Expression.evaluate(" 0.9 <= 1 ");
 		Assert.assertTrue((boolean) result.value);
-		result = Expression.evaluate(" 1.0 <= 1 ", null, null, null);
+		result = Expression.evaluate(" 1.0 <= 1 ");
 		Assert.assertTrue((boolean) result.value);
-		result = Expression.evaluate(" 0.9 > 1 ", null, null, null);
+		result = Expression.evaluate(" 0.9 > 1 ");
 		Assert.assertFalse((boolean) result.value);
-		result = Expression.evaluate(" 1.0 > 1 ", null, null, null);
+		result = Expression.evaluate(" 1.0 > 1 ");
 		Assert.assertFalse((boolean) result.value);
-		result = Expression.evaluate(" 0.9 >= 1 ", null, null, null);
+		result = Expression.evaluate(" 0.9 >= 1 ");
 		Assert.assertFalse((boolean) result.value);
-		result = Expression.evaluate(" 1.0 >= 1 ", null, null, null);
+		result = Expression.evaluate(" 1.0 >= 1 ");
 		Assert.assertTrue((boolean) result.value);
 	}
 	
@@ -254,21 +253,21 @@ public class TestCompiledExpression {
 	public void testIntegerDoubleComparison()
 	{
 		Operand result; 
-		result = Expression.evaluate(" 1 < 1.1 ", null, null, null);
+		result = Expression.evaluate(" 1 < 1.1 ");
 		Assert.assertTrue((boolean) result.value);
-		result = Expression.evaluate(" 1 < 1.0 ", null, null, null);
+		result = Expression.evaluate(" 1 < 1.0 ");
 		Assert.assertFalse((boolean) result.value);
-		result = Expression.evaluate(" 1 <= 1.1 ", null, null, null);
+		result = Expression.evaluate(" 1 <= 1.1 ");
 		Assert.assertTrue((boolean) result.value);
-		result = Expression.evaluate(" 1 <= 1.0 ", null, null, null);
+		result = Expression.evaluate(" 1 <= 1.0 ");
 		Assert.assertTrue((boolean) result.value);
-		result = Expression.evaluate(" 1 > 1.1 ", null, null, null);
+		result = Expression.evaluate(" 1 > 1.1 ");
 		Assert.assertFalse((boolean) result.value);
-		result = Expression.evaluate(" 1 > 1.0 ", null, null, null);
+		result = Expression.evaluate(" 1 > 1.0 ");
 		Assert.assertFalse((boolean) result.value);
-		result = Expression.evaluate(" 1 >= 1.1 ", null, null, null);
+		result = Expression.evaluate(" 1 >= 1.1 ");
 		Assert.assertFalse((boolean) result.value);
-		result = Expression.evaluate(" 1 >= 1.0 ", null, null, null);
+		result = Expression.evaluate(" 1 >= 1.0 ");
 		Assert.assertTrue((boolean) result.value);
 	}
 	
@@ -276,21 +275,21 @@ public class TestCompiledExpression {
 	public void testIntegerComparison()
 	{
 		Operand result; 
-		result = Expression.evaluate(" 1 < 2 ", null, null, null);
+		result = Expression.evaluate(" 1 < 2 ");
 		Assert.assertTrue((boolean) result.value);
-		result = Expression.evaluate(" 1 < 1 ", null, null, null);
+		result = Expression.evaluate(" 1 < 1 ");
 		Assert.assertFalse((boolean) result.value);
-		result = Expression.evaluate(" 1 <= 2 ", null, null, null);
+		result = Expression.evaluate(" 1 <= 2 ");
 		Assert.assertTrue((boolean) result.value);
-		result = Expression.evaluate(" 1 <= 1 ", null, null, null);
+		result = Expression.evaluate(" 1 <= 1 ");
 		Assert.assertTrue((boolean) result.value);
-		result = Expression.evaluate(" 1 > 2 ", null, null, null);
+		result = Expression.evaluate(" 1 > 2 ");
 		Assert.assertFalse((boolean) result.value);
-		result = Expression.evaluate(" 1 > 1 ", null, null, null);
+		result = Expression.evaluate(" 1 > 1 ");
 		Assert.assertFalse((boolean) result.value);
-		result = Expression.evaluate(" 1 >= 2 ", null, null, null);
+		result = Expression.evaluate(" 1 >= 2 ");
 		Assert.assertFalse((boolean) result.value);
-		result = Expression.evaluate(" 1 >= 1 ", null, null, null);
+		result = Expression.evaluate(" 1 >= 1 ");
 		Assert.assertTrue((boolean) result.value);
 	}
 	
@@ -298,21 +297,21 @@ public class TestCompiledExpression {
 	public void testStringComparison()
 	{
 		Operand result; 
-		result = Expression.evaluate(" '010' < '020' ", null, null, null);
+		result = Expression.evaluate(" '010' < '020' ");
 		Assert.assertTrue((boolean) result.value);
-		result = Expression.evaluate(" '010' < '010' ", null, null, null);
+		result = Expression.evaluate(" '010' < '010' ");
 		Assert.assertFalse((boolean) result.value);
-		result = Expression.evaluate(" '010' <= '020' ", null, null, null);
+		result = Expression.evaluate(" '010' <= '020' ");
 		Assert.assertTrue((boolean) result.value);
-		result = Expression.evaluate(" '010' <= '010' ", null, null, null);
+		result = Expression.evaluate(" '010' <= '010' ");
 		Assert.assertTrue((boolean) result.value);
-		result = Expression.evaluate(" '010' > '020' ", null, null, null);
+		result = Expression.evaluate(" '010' > '020' ");
 		Assert.assertFalse((boolean) result.value);
-		result = Expression.evaluate(" '010' > '010' ", null, null, null);
+		result = Expression.evaluate(" '010' > '010' ");
 		Assert.assertFalse((boolean) result.value);
-		result = Expression.evaluate(" '010' >= '020' ", null, null, null);
+		result = Expression.evaluate(" '010' >= '020' ");
 		Assert.assertFalse((boolean) result.value);
-		result = Expression.evaluate(" '010' >= '010' ", null, null, null);
+		result = Expression.evaluate(" '010' >= '010' ");
 		Assert.assertTrue((boolean) result.value);
 	}
 	
@@ -321,13 +320,13 @@ public class TestCompiledExpression {
 	public void testDateComparison()
 	{
 		Operand result; 
-		result = Expression.evaluate(" TODAY < TODAY ", null, null, null);
+		result = Expression.evaluate(" TODAY < TODAY ");
 		Assert.assertFalse((boolean) result.value);
-		result = Expression.evaluate(" TODAY <= TODAY ", null, null, null);
+		result = Expression.evaluate(" TODAY <= TODAY ");
 		Assert.assertTrue((boolean) result.value);
-		result = Expression.evaluate(" TODAY > TODAY ", null, null, null);
+		result = Expression.evaluate(" TODAY > TODAY ");
 		Assert.assertFalse((boolean) result.value);
-		result = Expression.evaluate(" TODAY >= TODAY ", null, null, null);
+		result = Expression.evaluate(" TODAY >= TODAY ");
 		Assert.assertTrue((boolean) result.value);
 	}
 

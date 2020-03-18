@@ -5,7 +5,6 @@ import com.dexels.navajo.document.ExpressionEvaluator;
 import com.dexels.navajo.document.NavajoException;
 import com.dexels.navajo.document.NavajoFactory;
 import com.dexels.navajo.document.Operand;
-import com.dexels.navajo.script.api.MappableTreeNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,13 +38,13 @@ public class DefaultExpressionEvaluator implements ExpressionEvaluator {
 
 	@Override
 	public Operand evaluate(String clause) {
-		return evaluate(clause,null,Optional.empty(),Optional.empty());
+		return evaluate(clause,Optional.empty(),Optional.empty());
 	}
 
 	@Override
-	public Operand evaluate(String clause,  Object mappableTreeNode, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) throws NavajoException {
+	public Operand evaluate(String clause, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) throws NavajoException {
 		try {
-			return Expression.evaluate(clause, (MappableTreeNode) mappableTreeNode, immutableMessage,paramMessage);
+			return Expression.evaluate(clause, immutableMessage,paramMessage);
 		} catch (Throwable ex) {
 
 			throw NavajoFactory.getInstance()
