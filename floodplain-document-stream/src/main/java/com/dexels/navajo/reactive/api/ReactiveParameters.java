@@ -5,7 +5,6 @@ import com.dexels.navajo.document.Operand;
 import com.dexels.navajo.document.stream.api.StreamScriptContext;
 import com.dexels.navajo.expression.api.ContextExpression;
 import com.dexels.navajo.expression.api.TMLExpressionException;
-import com.dexels.navajo.script.api.MappableTreeNode;
 
 import java.util.*;
 
@@ -43,7 +42,7 @@ public class ReactiveParameters {
 		return new ContextExpression() {
 
 			@Override
-			public Operand apply(MappableTreeNode mapNode,Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage)
+			public Operand apply(Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage)
 					throws TMLExpressionException {
 				return value;
 			}

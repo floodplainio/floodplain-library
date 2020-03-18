@@ -7,7 +7,6 @@ import com.dexels.navajo.document.Operand;
 import com.dexels.navajo.document.Property;
 import com.dexels.navajo.expression.api.ContextExpression;
 import com.dexels.navajo.expression.api.FunctionClassification;
-import com.dexels.navajo.script.api.MappableTreeNode;
 
 import java.util.List;
 import java.util.Optional;
@@ -149,9 +148,9 @@ public abstract class SimpleNode implements Node {
 		Optional<String> returnType = returnTypeResolver.apply(aType, bType);
 		return new ContextExpression() {
 			@Override
-			public Operand apply(MappableTreeNode mapNode, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
-		        Operand a = expA.apply(mapNode,immutableMessage,paramMessage);
-		        Operand b = expB.apply(mapNode,immutableMessage,paramMessage);
+			public Operand apply(Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
+		        Operand a = expA.apply(immutableMessage,paramMessage);
+		        Operand b = expB.apply(immutableMessage,paramMessage);
 				return func.apply(a, b);
 			}
 
@@ -184,8 +183,8 @@ public abstract class SimpleNode implements Node {
 		}
 		return new ContextExpression() {
 			@Override
-			public Operand apply(MappableTreeNode mapNode, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
-				Operand a = expA.apply(mapNode,immutableMessage,paramMessage);
+			public Operand apply(Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
+				Operand a = expA.apply(immutableMessage,paramMessage);
 				return func.apply(a);
 			}
 

@@ -5,7 +5,6 @@ import com.dexels.navajo.document.ExpressionEvaluator;
 import com.dexels.navajo.document.Operand;
 import com.dexels.navajo.expression.api.TMLExpressionException;
 import com.dexels.navajo.parser.DefaultExpressionEvaluator;
-import com.dexels.navajo.script.api.MappableTreeNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +22,7 @@ public class CachedExpressionEvaluator extends DefaultExpressionEvaluator implem
 	public Operand evaluate(String clause,  Object mappableTreeNode, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
 		ExpressionCache ce = ExpressionCache.getInstance();
 		try {
-			return ce.evaluate(clause,  (MappableTreeNode)mappableTreeNode,immutableMessage,paramMessage);
+			return ce.evaluate(clause,immutableMessage,paramMessage);
 		} catch (TMLExpressionException e) {
             throw new TMLExpressionException("TML parsing issue: "+clause);
 		}

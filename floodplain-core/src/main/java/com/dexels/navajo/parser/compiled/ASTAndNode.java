@@ -6,7 +6,6 @@ import com.dexels.navajo.document.Operand;
 import com.dexels.navajo.document.Property;
 import com.dexels.navajo.expression.api.ContextExpression;
 import com.dexels.navajo.expression.api.FunctionClassification;
-import com.dexels.navajo.script.api.MappableTreeNode;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,8 +26,8 @@ final class ASTAndNode extends SimpleNode {
 		checkOrAdd("In AND expression the second expression is not a boolean but a "+expressionB.orElse("<unknown>"), problems, expB.returnType(), Property.BOOLEAN_PROPERTY);
 		return new ContextExpression() {
 			@Override
-			public Operand apply(MappableTreeNode mapNode,Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
-				Operand a = expA.apply(mapNode,immutableMessage,paramMessage);
+			public Operand apply(Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
+				Operand a = expA.apply(immutableMessage,paramMessage);
 				if(a==null) {
 		        	return Operand.ofBoolean(Boolean.FALSE);
 		        }
@@ -36,7 +35,7 @@ final class ASTAndNode extends SimpleNode {
 		        if (!(ba.booleanValue())) {
 	        		return Operand.ofBoolean(Boolean.FALSE);
 				}
-		        Operand b = expB.apply(mapNode,immutableMessage,paramMessage);
+		        Operand b = expB.apply(immutableMessage,paramMessage);
 		        if(b==null) {
 	        		return Operand.ofBoolean(Boolean.FALSE);
 		        }

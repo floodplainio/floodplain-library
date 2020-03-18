@@ -10,7 +10,6 @@ import com.dexels.navajo.parser.NamedExpression;
 import com.dexels.navajo.parser.compiled.api.CacheSubexpression;
 import com.dexels.navajo.parser.compiled.api.ReactiveParseItem;
 import com.dexels.navajo.reactive.api.Reactive;
-import com.dexels.navajo.script.api.MappableTreeNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -109,9 +108,9 @@ final class ASTFunctionNode extends SimpleNode {
 			}
 			
 			@Override
-			public Operand apply(MappableTreeNode mapNode,Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
+			public Operand apply(Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
 				FunctionInterface f = getFunction();
-				Map<String,Operand> resolvedNamed = named.entrySet().stream().collect(Collectors.toMap(e->e.getKey(),e->e.getValue().apply(mapNode,immutableMessage,paramMessage)));
+				Map<String,Operand> resolvedNamed = named.entrySet().stream().collect(Collectors.toMap(e->e.getKey(),e->e.getValue().apply(immutableMessage,paramMessage)));
 				f.setNamedParameter(resolvedNamed);
 				if(f instanceof StatefulFunctionInterface) {
 					StatefulFunctionInterface sfi = (StatefulFunctionInterface)f;
@@ -125,7 +124,7 @@ final class ASTFunctionNode extends SimpleNode {
 				l.stream()
 					.map(e->{
 						try {
-							Operand evaluated = e.apply(mapNode,immutableMessage,paramMessage);
+							Operand evaluated = e.apply(immutableMessage,paramMessage);
 							if(evaluated==null) {
 								logger.warn("Problematic expression returned null object. If you really insist, return an Operand.NULL. Evaluating expression: {}",expression);
 								
@@ -170,7 +169,7 @@ final class ASTFunctionNode extends SimpleNode {
 				}
 				
 				@Override
-				public Operand apply(MappableTreeNode mapNode, Optional<ImmutableMessage> immutableMessage,
+				public Operand apply(Optional<ImmutableMessage> immutableMessage,
 						Optional<ImmutableMessage> paramMessage) {
 					return resolved;
 				}

@@ -14,7 +14,6 @@ import com.dexels.navajo.reactive.source.single.SingleSourceFactory;
 import com.dexels.navajo.reactive.transformer.other.FilterTransformerFactory;
 import com.dexels.navajo.reactive.transformer.other.SkipTransformerFactory;
 import com.dexels.navajo.reactive.transformer.other.TakeTransformerFactory;
-import com.dexels.navajo.script.api.MappableTreeNode;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -112,7 +111,7 @@ public class TestSingle {
 					}
 					
 					@Override
-					public Operand apply(MappableTreeNode mapNode,Optional<ImmutableMessage> immutableMessage,
+					public Operand apply(Optional<ImmutableMessage> immutableMessage,
 							Optional<ImmutableMessage> paramMessage) {
 						if(paramMessage.isPresent()) {
 							ImmutableMessage prm = paramMessage.get();

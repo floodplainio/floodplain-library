@@ -6,7 +6,6 @@ import com.dexels.navajo.document.stream.ReactiveParseProblem;
 import com.dexels.navajo.expression.api.ContextExpression;
 import com.dexels.navajo.parser.compiled.Node;
 import com.dexels.navajo.reactive.api.*;
-import com.dexels.navajo.script.api.MappableTreeNode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +34,7 @@ public class ReactiveParseItem implements ContextExpression {
 	}
 
 	@Override
-	public Operand apply(MappableTreeNode mapNode,Optional<ImmutableMessage> immutableMessage,
+	public Operand apply(Optional<ImmutableMessage> immutableMessage,
 			Optional<ImmutableMessage> paramMessage) {
 		return materializeReactive();
 	}

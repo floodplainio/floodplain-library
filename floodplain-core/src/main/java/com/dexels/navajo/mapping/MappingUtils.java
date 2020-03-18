@@ -13,15 +13,11 @@ import com.dexels.navajo.document.Message;
 import com.dexels.navajo.document.Navajo;
 import com.dexels.navajo.document.NavajoException;
 import com.dexels.navajo.document.types.TypeUtils;
-import com.dexels.navajo.script.api.MappableTreeNode;
 import com.dexels.navajo.script.api.MappingException;
-import com.dexels.navajo.script.api.UserException;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Iterator;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })

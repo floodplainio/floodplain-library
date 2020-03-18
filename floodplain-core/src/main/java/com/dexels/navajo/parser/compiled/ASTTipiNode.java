@@ -7,7 +7,6 @@ import com.dexels.navajo.document.Operand;
 import com.dexels.navajo.expression.api.ContextExpression;
 import com.dexels.navajo.expression.api.FunctionClassification;
 import com.dexels.navajo.expression.api.TMLExpressionException;
-import com.dexels.navajo.script.api.MappableTreeNode;
 
 import java.util.List;
 import java.util.Optional;
@@ -31,7 +30,7 @@ public ContextExpression interpretToLambda(List<String> problems, String express
 		}
 		
 		@Override
-		public Operand apply(MappableTreeNode mapNode, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage)  {
+		public Operand apply(Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage)  {
 		      try {
 				return Operand.nullOperand("tipi");
 //				.ofDynamic(tipiLink.evaluateExpression(val),"tipi");

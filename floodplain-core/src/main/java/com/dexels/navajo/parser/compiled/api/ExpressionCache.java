@@ -8,7 +8,6 @@ import com.dexels.navajo.expression.api.TMLExpressionException;
 import com.dexels.navajo.parser.compiled.CompiledParser;
 import com.dexels.navajo.parser.compiled.Node;
 import com.dexels.navajo.parser.compiled.ParseException;
-import com.dexels.navajo.script.api.MappableTreeNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,9 +50,6 @@ public class ExpressionCache {
 	}
 
 	public Operand evaluate(String expression,Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
-		return evaluate(expression,null,immutableMessage,paramMessage);
-	}
-	public Operand evaluate(String expression,MappableTreeNode mapNode, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
 		Optional<Operand> cachedValue = Optional.ofNullable(expressionValueCache.get(expression));
 		if(cachedValue.isPresent()) {
 			pureHitCount.incrementAndGet();
@@ -66,7 +62,7 @@ public class ExpressionCache {
 				logger.warn("Compile-time type error when compiling expression: {} -> {}",expression,problem)
 			);
 		}
-		return parse.apply(mapNode,immutableMessage,paramMessage);
+		return parse.apply(immutableMessage,paramMessage);
 		
 	}
 
@@ -101,7 +97,7 @@ public class ExpressionCache {
 						}
 						
 						@Override
-						public Operand apply(MappableTreeNode mapNode, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
+						public Operand apply(Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
 							return result;
 						}
 

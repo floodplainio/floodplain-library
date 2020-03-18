@@ -8,7 +8,6 @@ import com.dexels.navajo.document.Operand;
 import com.dexels.navajo.expression.api.ContextExpression;
 import com.dexels.navajo.expression.api.FunctionClassification;
 import com.dexels.navajo.expression.api.TMLExpressionException;
-import com.dexels.navajo.script.api.MappableTreeNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,10 +43,13 @@ final class ASTMappableNode extends SimpleNode {
 			}
 			
 			@Override
-			public Operand apply(MappableTreeNode mapNode, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
-		        if (mapNode == null) {
-		            throw new TMLExpressionException("No known mapobject resolver");
-		        }
+			public Operand apply(Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
+				if(true) {
+					throw new RuntimeException("Not implemented on this");
+				}
+//		        if (mapNode == null) {
+//		            throw new TMLExpressionException("No known mapobject resolver");
+//		        }
 
 		        List objects = null;
 
@@ -59,7 +61,7 @@ final class ASTMappableNode extends SimpleNode {
 		        }
 		        for (int i = 0; i < args; i++) {
 		        		List<String> problems = new ArrayList<>();
-		            Operand a = jjtGetChild(i).interpretToLambda(problems, expression,functionClassifier,mapResolver).apply(mapNode,immutableMessage,paramMessage);
+		            Operand a = jjtGetChild(i).interpretToLambda(problems, expression,functionClassifier,mapResolver).apply(immutableMessage,paramMessage);
 		            if(!problems.isEmpty()) {
 		            		throw new TMLExpressionException(problems,expression);
 		            }

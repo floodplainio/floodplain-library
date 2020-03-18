@@ -9,7 +9,6 @@ import com.dexels.navajo.expression.api.FunctionClassification;
 import com.dexels.navajo.parser.NamedExpression;
 import com.dexels.navajo.parser.compiled.api.ReactivePipeNode;
 import com.dexels.navajo.reactive.api.Reactive;
-import com.dexels.navajo.script.api.MappableTreeNode;
 
 import java.util.*;
 import java.util.function.Function;
@@ -82,7 +81,7 @@ public ContextExpression interpretToLambda(List<String> problems, String origina
 		}
 		
 		@Override
-		public Operand apply(MappableTreeNode mapNode,Optional<ImmutableMessage> immutableMessage,
+		public Operand apply(Optional<ImmutableMessage> immutableMessage,
 				Optional<ImmutableMessage> paramMessage) {
 			return Operand.ofCustom(pipes, Reactive.ReactiveItemType.REACTIVE_SCRIPT.toString());
 		}

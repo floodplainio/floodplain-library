@@ -6,7 +6,6 @@ import com.dexels.navajo.document.Operand;
 import com.dexels.navajo.document.Property;
 import com.dexels.navajo.expression.api.ContextExpression;
 import com.dexels.navajo.expression.api.FunctionClassification;
-import com.dexels.navajo.script.api.MappableTreeNode;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,7 +26,7 @@ final class ASTFalseNode extends SimpleNode {
 			}
 			
 			@Override
-			public Operand apply(MappableTreeNode mapNode, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
+			public Operand apply(Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
 		        return Operand.ofBoolean(false);
 			}
 

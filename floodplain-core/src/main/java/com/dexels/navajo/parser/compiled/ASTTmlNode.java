@@ -9,7 +9,6 @@ import com.dexels.navajo.document.types.NavajoType;
 import com.dexels.navajo.expression.api.ContextExpression;
 import com.dexels.navajo.expression.api.FunctionClassification;
 import com.dexels.navajo.expression.api.TMLExpressionException;
-import com.dexels.navajo.script.api.MappableTreeNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +48,7 @@ final class ASTTmlNode extends SimpleNode {
 			}
 			
 			@Override
-			public Operand apply(MappableTreeNode mapNode,Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
+			public Operand apply(Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
 				List<Property> match = new ArrayList<>();
 				List<Object> resultList = new ArrayList<>();
 		        boolean singleMatch = true;

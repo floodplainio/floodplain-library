@@ -4,7 +4,6 @@ import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.navajo.document.Operand;
 import com.dexels.navajo.expression.api.ContextExpression;
 import com.dexels.navajo.expression.api.TMLExpressionException;
-import com.dexels.navajo.script.api.MappableTreeNode;
 
 import java.util.Optional;
 
@@ -20,9 +19,9 @@ public class NamedExpression implements ContextExpression {
 	}
 
 	@Override
-	public Operand apply(MappableTreeNode mapNode, Optional<ImmutableMessage> immutableMessage,
+	public Operand apply(Optional<ImmutableMessage> immutableMessage,
 			Optional<ImmutableMessage> paramMessage) throws TMLExpressionException {
-		return expression.apply(mapNode,immutableMessage,paramMessage);
+		return expression.apply(immutableMessage,paramMessage);
 	}
 
 	@Override

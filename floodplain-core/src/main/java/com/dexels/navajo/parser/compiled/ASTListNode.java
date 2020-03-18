@@ -8,7 +8,6 @@ import com.dexels.navajo.document.Operand;
 import com.dexels.navajo.document.Property;
 import com.dexels.navajo.expression.api.ContextExpression;
 import com.dexels.navajo.expression.api.FunctionClassification;
-import com.dexels.navajo.script.api.MappableTreeNode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,10 +43,10 @@ final class ASTListNode extends SimpleNode {
 			}
 			
 			@Override
-			public Operand apply(MappableTreeNode mapNode,Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
+			public Operand apply(Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
 				List<Operand> result = new ArrayList<>();
 				for (ContextExpression contextExpression : exprs) {
-					result.add(contextExpression.apply(mapNode,immutableMessage,paramMessage));
+					result.add(contextExpression.apply(immutableMessage,paramMessage));
 				}
 				return Operand.ofList(result.stream().map(e->e.value).collect(Collectors.toList()));
 			}

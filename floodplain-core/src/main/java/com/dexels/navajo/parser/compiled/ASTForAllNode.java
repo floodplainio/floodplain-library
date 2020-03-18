@@ -8,7 +8,6 @@ import com.dexels.navajo.document.Operand;
 import com.dexels.navajo.expression.api.ContextExpression;
 import com.dexels.navajo.expression.api.FunctionClassification;
 import com.dexels.navajo.expression.api.TMLExpressionException;
-import com.dexels.navajo.script.api.MappableTreeNode;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,7 +43,7 @@ final class ASTForAllNode extends SimpleNode {
 			}
 			
 			@Override
-			public Operand apply(MappableTreeNode mapNode, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
+			public Operand apply(Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
 				List<String> problems = new ArrayList<>();
 				ContextExpression a = jjtGetChild(0).interpretToLambda(problems,expression,functionClassifier,mapResolver);
 				ContextExpression b = jjtGetChild(1).interpretToLambda(problems,expression,functionClassifier,mapResolver);
@@ -53,7 +52,7 @@ final class ASTForAllNode extends SimpleNode {
 				if(!problems.isEmpty()) {
 					throw new TMLExpressionException(problems,expression);
 				}
-				return interpret(mapNode,immutableMessage,paramMessage, a,b);
+				return interpret(immutableMessage,paramMessage, a,b);
 			}
 
 			@Override
@@ -75,7 +74,7 @@ final class ASTForAllNode extends SimpleNode {
      * 
      * @return
      */
-    private final Operand interpret(MappableTreeNode mapNode, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage, ContextExpression a,ContextExpression b) {
+    private final Operand interpret(Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage, ContextExpression a,ContextExpression b) {
 
         boolean matchAll = true;
 
@@ -84,7 +83,7 @@ final class ASTForAllNode extends SimpleNode {
         else
             matchAll = false;
 
-        String msgList = (String) a.apply(mapNode, immutableMessage,paramMessage).value;
+        String msgList = (String) a.apply(immutableMessage,paramMessage).value;
         try {
             List<ImmutableMessage> list = immutableMessage.map(e->e.subMessages(msgList)).orElse(Optional.of(Collections.emptyList())).orElse(Collections.emptyList()); //.orElse(Collections.<ImmutableMessage>emptyList());
 
@@ -93,7 +92,7 @@ final class ASTForAllNode extends SimpleNode {
 
                 // ignore definition messages in the evaluation
 
-                Operand apply = b.apply(mapNode, immutableMessage,paramMessage);
+                Operand apply = b.apply(immutableMessage,paramMessage);
 				boolean result = (Boolean)apply.value;
 
                 if ((!(result)) && matchAll)
