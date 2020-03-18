@@ -1,7 +1,10 @@
 package com.dexels.navajo.document;
 
 import com.dexels.immutable.api.ImmutableMessage;
-import com.dexels.navajo.document.types.*;
+import com.dexels.navajo.document.types.Binary;
+import com.dexels.navajo.document.types.ClockTime;
+import com.dexels.navajo.document.types.StopwatchTime;
+import com.dexels.navajo.document.types.TypeUtils;
 
 import java.util.Date;
 import java.util.List;

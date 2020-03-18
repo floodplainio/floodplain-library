@@ -4,7 +4,6 @@ import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.navajo.document.Message;
 import com.dexels.navajo.document.Navajo;
 import com.dexels.navajo.document.NavajoFactory;
-import com.dexels.navajo.document.stream.ReactiveScript;
 import com.dexels.navajo.parser.compiled.*;
 import com.dexels.navajo.reactive.CoreReactiveFinder;
 import com.dexels.navajo.reactive.ReactiveStandalone;
@@ -19,7 +18,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;

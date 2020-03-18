@@ -27,7 +27,10 @@ package com.dexels.navajo.parser;
 
 import com.dexels.navajo.document.Property;
 import com.dexels.navajo.document.Selection;
-import com.dexels.navajo.document.types.*;
+import com.dexels.navajo.document.types.Binary;
+import com.dexels.navajo.document.types.ClockTime;
+import com.dexels.navajo.document.types.NavajoType;
+import com.dexels.navajo.document.types.StopwatchTime;
 import com.dexels.navajo.expression.api.TMLExpressionException;
 
 import java.text.SimpleDateFormat;

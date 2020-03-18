@@ -4,16 +4,10 @@ package com.dexels.navajo.parser.compiled;
 
 
 import com.dexels.immutable.api.ImmutableMessage;
-import com.dexels.navajo.document.Message;
-import com.dexels.navajo.document.Navajo;
 import com.dexels.navajo.document.Operand;
-import com.dexels.navajo.document.Selection;
 import com.dexels.navajo.expression.api.ContextExpression;
 import com.dexels.navajo.expression.api.FunctionClassification;
 import com.dexels.navajo.expression.api.TMLExpressionException;
-import com.dexels.navajo.expression.api.TipiLink;
-import com.dexels.navajo.mapping.MappingUtils;
-import com.dexels.navajo.script.api.Access;
 import com.dexels.navajo.script.api.MappableTreeNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,16 +29,6 @@ final class ASTMappableNode extends SimpleNode {
     ASTMappableNode(int id) {
         super(id);
     }
-    
-	private static Object maybeGetMapAttribute(String text, MappableTreeNode mapNode, Object[] parameterArray) throws Exception {
-		Object oValue = null;
-		try {
-			oValue = MappingUtils.getAttributeValue(mapNode, text, parameterArray);
-		} catch (Exception e2) {
-			throw new TMLExpressionException("Can not resolve attribute value",e2);
-		}
-		return oValue;
-	}
 
 	@Override
 	public ContextExpression interpretToLambda(List<String> problems, String expression, Function<String, FunctionClassification> functionClassifier, Function<String,Optional<Node>> mapResolver) {
@@ -89,7 +73,9 @@ final class ASTMappableNode extends SimpleNode {
 		        }
 
 		        try {
-		        	Object oValue = maybeGetMapAttribute(val,mapNode, parameterArray);
+		        	// TODO remove totally?
+		        	Object oValue = null;
+
 		            if (oValue == null)
 		                return Operand.NULL;
 		            else if (oValue instanceof Float) {

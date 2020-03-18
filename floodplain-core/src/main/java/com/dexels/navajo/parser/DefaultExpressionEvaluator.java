@@ -1,13 +1,15 @@
 package com.dexels.navajo.parser;
 
 import com.dexels.immutable.api.ImmutableMessage;
-import com.dexels.navajo.document.*;
-import com.dexels.navajo.expression.api.TipiLink;
+import com.dexels.navajo.document.ExpressionEvaluator;
+import com.dexels.navajo.document.NavajoException;
+import com.dexels.navajo.document.NavajoFactory;
+import com.dexels.navajo.document.Operand;
 import com.dexels.navajo.script.api.MappableTreeNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.Optional;
 
 /**
  * <p>

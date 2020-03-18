@@ -1,16 +1,11 @@
 package com.dexels.navajo.parser.compiled.api;
 
 import com.dexels.immutable.api.ImmutableMessage;
-import com.dexels.navajo.document.Message;
-import com.dexels.navajo.document.Navajo;
 import com.dexels.navajo.document.Operand;
-import com.dexels.navajo.document.Selection;
 import com.dexels.navajo.document.stream.ReactiveParseProblem;
 import com.dexels.navajo.expression.api.ContextExpression;
-import com.dexels.navajo.expression.api.TipiLink;
 import com.dexels.navajo.parser.compiled.Node;
 import com.dexels.navajo.reactive.api.*;
-import com.dexels.navajo.script.api.Access;
 import com.dexels.navajo.script.api.MappableTreeNode;
 
 import java.util.ArrayList;

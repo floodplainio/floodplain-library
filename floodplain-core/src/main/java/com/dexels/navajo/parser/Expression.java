@@ -9,14 +9,11 @@
 package com.dexels.navajo.parser;
 
 import com.dexels.immutable.api.ImmutableMessage;
-import com.dexels.navajo.document.*;
-import com.dexels.navajo.expression.api.TMLExpressionException;
-import com.dexels.navajo.expression.api.TipiLink;
+import com.dexels.navajo.document.Operand;
 import com.dexels.navajo.parser.compiled.api.CachedExpressionEvaluator;
 import com.dexels.navajo.script.api.MappableTreeNode;
-import com.dexels.navajo.script.api.SystemException;
 
-import java.util.*;
+import java.util.Optional;
 
 public final class Expression {
 	public static final String ACCESS = "ACCESS";

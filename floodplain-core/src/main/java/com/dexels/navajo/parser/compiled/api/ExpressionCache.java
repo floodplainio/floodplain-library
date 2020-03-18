@@ -1,18 +1,13 @@
 package com.dexels.navajo.parser.compiled.api;
 
 import com.dexels.immutable.api.ImmutableMessage;
-import com.dexels.navajo.document.Message;
-import com.dexels.navajo.document.Navajo;
 import com.dexels.navajo.document.Operand;
-import com.dexels.navajo.document.Selection;
 import com.dexels.navajo.expression.api.ContextExpression;
 import com.dexels.navajo.expression.api.FunctionClassification;
 import com.dexels.navajo.expression.api.TMLExpressionException;
-import com.dexels.navajo.expression.api.TipiLink;
 import com.dexels.navajo.parser.compiled.CompiledParser;
 import com.dexels.navajo.parser.compiled.Node;
 import com.dexels.navajo.parser.compiled.ParseException;
-import com.dexels.navajo.script.api.Access;
 import com.dexels.navajo.script.api.MappableTreeNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

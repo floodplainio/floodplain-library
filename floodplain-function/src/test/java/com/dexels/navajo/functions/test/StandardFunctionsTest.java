@@ -1,9 +1,10 @@
 package com.dexels.navajo.functions.test;
 
 import com.dexels.navajo.document.*;
-import com.dexels.navajo.document.types.*;
+import com.dexels.navajo.document.types.Binary;
+import com.dexels.navajo.document.types.ClockTime;
+import com.dexels.navajo.document.types.StopwatchTime;
 import com.dexels.navajo.expression.api.FunctionInterface;
-import com.dexels.navajo.expression.api.StatefulFunctionInterface;
 import com.dexels.navajo.expression.api.TMLExpressionException;
 import com.dexels.navajo.functions.*;
 import com.dexels.navajo.functions.util.FunctionFactoryFactory;

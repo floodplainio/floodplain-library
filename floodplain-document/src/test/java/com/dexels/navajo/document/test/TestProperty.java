@@ -5,7 +5,9 @@ import com.dexels.navajo.document.base.BaseMessageImpl;
 import com.dexels.navajo.document.base.BaseNavajoImpl;
 import com.dexels.navajo.document.base.BasePropertyImpl;
 import com.dexels.navajo.document.base.BaseSelectionImpl;
-import com.dexels.navajo.document.types.*;
+import com.dexels.navajo.document.types.Binary;
+import com.dexels.navajo.document.types.ClockTime;
+import com.dexels.navajo.document.types.StopwatchTime;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -13,8 +15,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.*;
 

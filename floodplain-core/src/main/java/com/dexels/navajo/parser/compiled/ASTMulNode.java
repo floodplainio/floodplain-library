@@ -5,7 +5,6 @@ import com.dexels.navajo.document.Operand;
 import com.dexels.navajo.expression.api.ContextExpression;
 import com.dexels.navajo.expression.api.FunctionClassification;
 import com.dexels.navajo.expression.api.TMLExpressionException;
-import com.dexels.navajo.parser.Utils;
 
 import java.util.List;
 import java.util.Optional;

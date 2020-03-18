@@ -1,11 +1,10 @@
 package com.dexels.navajo.functions;
 
 
-import com.dexels.navajo.document.*;
+import com.dexels.navajo.document.Message;
 import com.dexels.navajo.document.types.Binary;
 import com.dexels.navajo.expression.api.FunctionInterface;
 import com.dexels.navajo.expression.api.TMLExpressionException;
-import com.dexels.navajo.parser.Expression;
 
 import java.util.List;
 

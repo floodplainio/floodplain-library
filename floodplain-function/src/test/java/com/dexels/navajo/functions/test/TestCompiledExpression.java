@@ -2,7 +2,8 @@ package com.dexels.navajo.functions.test;
 
 import com.dexels.config.runtime.RuntimeConfig;
 import com.dexels.immutable.api.ImmutableMessage;
-import com.dexels.navajo.document.*;
+import com.dexels.navajo.document.Operand;
+import com.dexels.navajo.document.Property;
 import com.dexels.navajo.expression.api.ContextExpression;
 import com.dexels.navajo.expression.api.FunctionClassification;
 import com.dexels.navajo.expression.api.TMLExpressionException;

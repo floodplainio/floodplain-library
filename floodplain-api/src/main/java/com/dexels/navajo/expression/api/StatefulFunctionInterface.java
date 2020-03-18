@@ -11,8 +11,6 @@ package com.dexels.navajo.expression.api;
 
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.navajo.document.Message;
-import com.dexels.navajo.document.Navajo;
-import com.dexels.navajo.script.api.Access;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
