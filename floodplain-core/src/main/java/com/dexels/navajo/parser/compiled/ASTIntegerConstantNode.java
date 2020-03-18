@@ -35,8 +35,7 @@ final class ASTIntegerConstantNode extends SimpleNode {
 			}
 			
 			@Override
-			public Operand apply(Navajo doc, Message parentMsg, Message parentParamMsg,
-					Selection parentSel,  MappableTreeNode mapNode, TipiLink tipiLink, Access access, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
+			public Operand apply(MappableTreeNode mapNode, TipiLink tipiLink, Access access, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
 				return interpret();
 			}
 

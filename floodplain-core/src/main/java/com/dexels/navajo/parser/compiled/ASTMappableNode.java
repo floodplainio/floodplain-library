@@ -60,23 +60,11 @@ final class ASTMappableNode extends SimpleNode {
 			}
 			
 			@Override
-			public Operand apply(Navajo doc, Message parentMsg, Message parentParamMsg, Selection parentSel,
-					 MappableTreeNode mapNode, TipiLink tipiLink, Access access, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
+			public Operand apply(MappableTreeNode mapNode, TipiLink tipiLink, Access access, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
 		        if (mapNode == null) {
 		            throw new TMLExpressionException("No known mapobject resolver");
 		        }
 
-//		        MappableTreeNode mapNode = mapNodeResolver.apply(val);
-//				if(mapNode==null) {
-//		            throw new TMLExpressionException("No known mapobject");
-//		        	
-//		        }
-//		        if(mapNode==null) {
-//		        	Node resolvedItem = mapResolver.get().apply(val);
-//		        	System.err.println(">> "+resolvedItem.getClass());
-//		        	resolvedItem.interpretToLambda(problems, expression, functionClassifier, mapResolver);
-//		        	
-//		        }
 		        List objects = null;
 
 		        // Parameter array may contain parameters that are used when calling the get method.
@@ -87,7 +75,7 @@ final class ASTMappableNode extends SimpleNode {
 		        }
 		        for (int i = 0; i < args; i++) {
 		        		List<String> problems = new ArrayList<>();
-		            Operand a = jjtGetChild(i).interpretToLambda(problems, expression,functionClassifier,mapResolver).apply(doc, parentMsg, parentParamMsg, parentSel, mapNode, tipiLink, access,immutableMessage,paramMessage);
+		            Operand a = jjtGetChild(i).interpretToLambda(problems, expression,functionClassifier,mapResolver).apply(mapNode, tipiLink, access,immutableMessage,paramMessage);
 		            if(!problems.isEmpty()) {
 		            		throw new TMLExpressionException(problems,expression);
 		            }
@@ -95,8 +83,6 @@ final class ASTMappableNode extends SimpleNode {
 		                objects.add(a.value);
 		            }
 		        }
-
-//		        List<String> problems
 		        if (objects != null) {
 		            parameterArray = new Object[objects.size()];
 		            parameterArray = objects.toArray(parameterArray);

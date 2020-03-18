@@ -25,10 +25,9 @@ public class NamedExpression implements ContextExpression {
 	}
 
 	@Override
-	public Operand apply(Navajo doc, Message parentMsg, Message parentParamMsg, Selection parentSel,
-			MappableTreeNode mapNode, TipiLink tipiLink, Access access, Optional<ImmutableMessage> immutableMessage,
+	public Operand apply(MappableTreeNode mapNode, TipiLink tipiLink, Access access, Optional<ImmutableMessage> immutableMessage,
 			Optional<ImmutableMessage> paramMessage) throws TMLExpressionException {
-		return expression.apply(doc,parentMsg,parentParamMsg,parentSel,mapNode,tipiLink,access,immutableMessage,paramMessage);
+		return expression.apply(mapNode,tipiLink,access,immutableMessage,paramMessage);
 	}
 
 	@Override

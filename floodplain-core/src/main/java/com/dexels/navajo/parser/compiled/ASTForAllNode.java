@@ -12,6 +12,7 @@ import com.dexels.navajo.script.api.Access;
 import com.dexels.navajo.script.api.MappableTreeNode;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -44,8 +45,7 @@ final class ASTForAllNode extends SimpleNode {
 			}
 			
 			@Override
-			public Operand apply(Navajo doc, Message parentMsg, Message parentParamMsg, Selection parentSel,
-					 MappableTreeNode mapNode, TipiLink tipiLink, Access access, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
+			public Operand apply(MappableTreeNode mapNode, TipiLink tipiLink, Access access, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
 				List<String> problems = new ArrayList<>();
 				ContextExpression a = jjtGetChild(0).interpretToLambda(problems,expression,functionClassifier,mapResolver);
 				ContextExpression b = jjtGetChild(1).interpretToLambda(problems,expression,functionClassifier,mapResolver);
@@ -54,7 +54,7 @@ final class ASTForAllNode extends SimpleNode {
 				if(!problems.isEmpty()) {
 					throw new TMLExpressionException(problems,expression);
 				}
-				return interpret(doc,parentMsg,parentParamMsg,parentSel,mapNode,tipiLink,access,immutableMessage,paramMessage, a,b);
+				return interpret(mapNode,tipiLink,access,immutableMessage,paramMessage, a,b);
 			}
 
 			@Override
@@ -76,8 +76,7 @@ final class ASTForAllNode extends SimpleNode {
      * 
      * @return
      */
-    private final Operand interpret(Navajo doc, Message parentMsg, Message parentParamMsg, Selection parentSel,
-			 MappableTreeNode mapNode, TipiLink tipiLink, Access access, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage, ContextExpression a,ContextExpression b) {
+    private final Operand interpret(MappableTreeNode mapNode, TipiLink tipiLink, Access access, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage, ContextExpression a,ContextExpression b) {
 
         boolean matchAll = true;
 
@@ -86,26 +85,16 @@ final class ASTForAllNode extends SimpleNode {
         else
             matchAll = false;
 
-        String msgList = (String) a.apply(doc, parentMsg, parentParamMsg, parentSel, mapNode, tipiLink, access, immutableMessage,paramMessage).value;
+        String msgList = (String) a.apply(mapNode, tipiLink, access, immutableMessage,paramMessage).value;
         try {
-            List<Message> list = null;
+            List<ImmutableMessage> list = immutableMessage.map(e->e.subMessages(msgList)).orElse(Optional.of(Collections.emptyList())).orElse(Collections.emptyList()); //.orElse(Collections.<ImmutableMessage>emptyList());
 
-            if (parentMsg == null) {
-                list = doc.getMessages(msgList);
-            } else {
-                list = parentMsg.getMessages(msgList);
-            }
 
-            for (int i = 0; i < list.size(); i++) {
-                Object o = list.get(i);
-
-                parentMsg = (Message) o;
+            for(ImmutableMessage o : list) {
 
                 // ignore definition messages in the evaluation
-                if (parentMsg.getType().equals(Message.MSG_TYPE_DEFINITION))
-                    continue;
 
-                Operand apply = b.apply(doc, parentMsg, parentParamMsg, parentSel, mapNode, tipiLink, access, immutableMessage,paramMessage);
+                Operand apply = b.apply(mapNode, tipiLink, access, immutableMessage,paramMessage);
 				boolean result = (Boolean)apply.value;
 
                 if ((!(result)) && matchAll)

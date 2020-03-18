@@ -42,7 +42,7 @@ public class StoreStateProcessor extends AbstractProcessor<String, ReplicationMe
 	@Override
 	public void process(String key, ReplicationMessage inputValue) {
 
-		Optional<String> extracted = keyExtractor.map(e->e.apply(null,Optional.of(inputValue.message()),inputValue.paramMessage())).map(e->(String)e.value);
+		Optional<String> extracted = keyExtractor.map(e->e.apply(Optional.of(inputValue.message()),inputValue.paramMessage())).map(e->(String)e.value);
 
 		//		for (int i = 0; i < 50; i++) {
 //			lookupStore.put(""+i, ImmutableFactory.empty().with("number", i, "integer").with("aap","noot", "string"));

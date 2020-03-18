@@ -38,8 +38,8 @@ public class ReduceTransformer implements ReactiveTransformer {
 		}
 		ContextExpression seed = parameters.unnamed.get(0);
 		ContextExpression reducer = parameters.unnamed.get(1);
-		seedFunction = (Function<StreamScriptContext,Function<DataItem,DataItem>>) seed.apply(null, Optional.empty(),  Optional.empty()).value;
-		reduceFunction = (Function<StreamScriptContext,Function<DataItem,DataItem>>) reducer.apply(null,  Optional.empty(),  Optional.empty()).value;
+		seedFunction = (Function<StreamScriptContext,Function<DataItem,DataItem>>) seed.apply(Optional.empty(),  Optional.empty()).value;
+		reduceFunction = (Function<StreamScriptContext,Function<DataItem,DataItem>>) reducer.apply(Optional.empty(),  Optional.empty()).value;
 
 	}
 	@Override

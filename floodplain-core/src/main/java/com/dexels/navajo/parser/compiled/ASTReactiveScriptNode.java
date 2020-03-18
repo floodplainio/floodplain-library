@@ -87,8 +87,7 @@ public ContextExpression interpretToLambda(List<String> problems, String origina
 		}
 		
 		@Override
-		public Operand apply(Navajo doc, Message parentMsg, Message parentParamMsg, Selection parentSel,
-				MappableTreeNode mapNode, TipiLink tipiLink, Access access, Optional<ImmutableMessage> immutableMessage,
+		public Operand apply(MappableTreeNode mapNode, TipiLink tipiLink, Access access, Optional<ImmutableMessage> immutableMessage,
 				Optional<ImmutableMessage> paramMessage) {
 			return Operand.ofCustom(pipes, Reactive.ReactiveItemType.REACTIVE_SCRIPT.toString());
 		}

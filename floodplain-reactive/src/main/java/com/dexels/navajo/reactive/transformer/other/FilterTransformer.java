@@ -27,7 +27,7 @@ public class FilterTransformer implements ReactiveTransformer {
 		return flow->{
 			for (ContextExpression unnamed  : parameters.unnamed) {
 				flow = flow.filter(item->{
-					Operand result = unnamed.apply(null, Optional.of(item.message()),Optional.of(item.stateMessage()));
+					Operand result = unnamed.apply(Optional.of(item.message()),Optional.of(item.stateMessage()));
 					return result.booleanValue();
 				});
 			}

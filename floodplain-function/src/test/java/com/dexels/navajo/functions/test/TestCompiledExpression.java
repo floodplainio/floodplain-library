@@ -19,31 +19,19 @@ import java.util.Optional;
 
 public class TestCompiledExpression {
 
-	private Navajo input;
+//	private Navajo input;
 	
 	
 
 	@Before
 	public void setup() {
-		input = NavajoFactory.getInstance().createNavajo();
-		input.addMessage(NavajoFactory.getInstance().createMessage(input,"TestMessage")).addProperty(NavajoFactory.getInstance().createProperty(input, "TestProperty", Property.STRING_PROPERTY, "TestValue", 99, "TestDescription", Property.DIR_OUT));
-		Message createMessage = NavajoFactory.getInstance().createMessage(input,"TestArrayMessageMessage",Message.MSG_TYPE_ARRAY);
-		input.addMessage(createMessage);
-		Message element1 = NavajoFactory.getInstance().createMessage(input, "TestArrayMessageMessage", Message.MSG_TYPE_ARRAY_ELEMENT);
-		element1.addProperty(NavajoFactory.getInstance().createProperty(input,"Property",Property.STRING_PROPERTY,"Prop",99,"",Property.DIR_IN));
-		Message element2 = NavajoFactory.getInstance().createMessage(input, "TestArrayMessageMessage", Message.MSG_TYPE_ARRAY_ELEMENT);
-		Message params = NavajoFactory.getInstance().createMessage(input, "__parms__");
-		params.addProperty(NavajoFactory.getInstance().createProperty(input,"Param",Property.STRING_PROPERTY,"SomeParam",99,"",Property.DIR_IN));
-		input.addMessage(params);
-		//		element2.addProperty(NavajoFactory.getInstance().createProperty(input,"Property",Property.STRING_PROPERTY,"Prop2",99,"",Property.DIR_IN));
-		createMessage.addElement(element1);
-		createMessage.addElement(element2);
+
 	}
 
 	@Test
 	public void parseFunction() throws TMLExpressionException {
 
-		Operand o = ExpressionCache.getInstance().evaluate("ToUpper('ble')", input,(Message)null, (Message)null, (Selection)null, null, null,null,Optional.<ImmutableMessage>empty(),Optional.<ImmutableMessage>empty());
+		Operand o = ExpressionCache.getInstance().evaluate("ToUpper('ble')",Optional.<ImmutableMessage>empty(),Optional.<ImmutableMessage>empty());
 		System.err.println(": "+o);
 		Assert.assertEquals("BLE", o.value);
 	}
@@ -116,29 +104,10 @@ public class TestCompiledExpression {
 		ContextExpression cemb = ce.parse(problems,embeddedExpression,name->FunctionClassification.DEFAULT);
 		System.err.println("Problems: "+problems);
 		Assert.assertEquals(0, problems.size());
-		Operand result =  cemb.apply(input,Optional.empty(),Optional.empty());
+		Operand result =  cemb.apply(Optional.empty(),Optional.empty());
 		System.err.println("Result: "+result.type+" value: "+result.value);
 		
 	}
-	
 
-	@Test
-	public void testForall() throws TMLExpressionException {
-		List<String> problems = new ArrayList<>();
-		ExpressionCache ce = ExpressionCache.getInstance();
-		String extBackup ="FORALL( '/TestArrayMessageMessage', `! ?[Delete] OR ! [Delete] OR [/__globals__/ApplicationInstance] != 'TENANT' OR ! StringFunction( 'matches', [ChargeCodeId], '.*[-]+7[0-9][A-z]*$' )` )";
-
-		String ext ="FORALL( '/Msg', `!StringFunction( 'matches', [ChargeCodeId], '.*[-]+7[0-9][A-z]*$' )` )";
-//		String expression = "FORALL( '/Charges' , `! ?[Delete] OR ! [Delete]  OR [/__globals__/ApplicationInstance] != 'SOMETENANT' OR [SomeProperty] == 'SOMESTRING' `)";
-//		ce.parse(problems, expression, mode, allowLiteralResolve)
-
-		ContextExpression cx = ce.parse(problems,ext,name->FunctionClassification.DEFAULT);
-		System.err.println("Problems: "+problems);
-		Assert.assertEquals(0, problems.size());
-		Operand result =  cx.apply(input,Optional.empty(),Optional.empty());
-		System.err.println("Result: "+result.type+" value: "+result.value);
-//		Operand result = Expression.evaluate(expression, testDoc,null,topMessage);
-		
-	}
 
 }

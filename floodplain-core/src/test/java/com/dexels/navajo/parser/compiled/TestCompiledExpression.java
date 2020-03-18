@@ -61,46 +61,8 @@ public class TestCompiledExpression {
 
 	}
 
-	@Test
-	public void testParseTml() throws ParseException, TMLExpressionException {
-		String expression = "[/TestMessage/TestProperty]";
-		StringReader sr = new StringReader(expression);
-		CompiledParser cp = new CompiledParser(sr);
-		cp.Expression();
-		List<String> problems = new ArrayList<>();
-        ContextExpression ss = cp.getJJTree().rootNode().interpretToLambda(problems,sr.toString(),fn->FunctionClassification.DEFAULT,name->Optional.empty());
-        if(!problems.isEmpty()) {
-    			throw new TMLExpressionException(problems,expression);
-        }
-        
-        System.err.println("tml: "+ss.isLiteral());
-        System.err.println("TMLVALUE: "+ss.apply(input,Optional.empty(),Optional.empty()).value);
-        Assert.assertEquals("TestValue", ss.apply(input,Optional.empty(),Optional.empty()).value);
-        Assert.assertFalse(ss.isLiteral());
-	}
-	
-	@Test
-	public void testParseTmlComplex() throws ParseException, TMLExpressionException {
-		String expression = "[TestArrayMessageMessage@Property=Prop2/Property]";
-		StringReader sr = new StringReader(expression);
-		CompiledParser cp = new CompiledParser(sr);
-		cp.Expression();
-		List<String> problems = new ArrayList<>();
-        ContextExpression ss = cp.getJJTree().rootNode().interpretToLambda(problems,sr.toString(),fn->FunctionClassification.DEFAULT,name->Optional.empty());
-        if(!problems.isEmpty()) {
-    			throw new TMLExpressionException(problems,expression);
-        }
-        
-        Navajo copy = NavajoFactory.getInstance().createNavajo();
-        Message rootMessage = NavajoFactory.getInstance().createMessage(copy, "TopMessage");
-        copy.addMessage(rootMessage);
-        rootMessage.addMessage(input.getMessage("TestArrayMessageMessage"));
-        System.err.println("tml: "+ss.isLiteral());
-        Object value = ss.apply(copy,rootMessage,null,null,null,null,null, Optional.empty(),Optional.empty()).value;
-		System.err.println("TMLVALUE: "+value.getClass());
-        Assert.assertEquals("Prop2", value);
-        Assert.assertFalse(ss.isLiteral());
-	}
+
+
 
 	@Test @Ignore
 	public void testParseTmlConditionalComplex() throws ParseException, TMLExpressionException {
@@ -160,25 +122,6 @@ public class TestCompiledExpression {
 		String o = (String) Expression.evaluate(clause,input, null, null, null).value;
 		int lines = o.split("\n").length;
 		Assert.assertEquals(3, lines);
-	}
-	
-	@Test
-	public void parseExpressionLiteral() throws ParseException, TMLExpressionException {
-		Operand o = ExpressionCache.getInstance().evaluate("FORALL( '/TestArrayMessageMessage', `?[Property]`)", input, null, null, null, null, null,null,Optional.empty(),Optional.empty());
-        System.err.println("ss: "+o);
-//        System.err.println("Result: "+ss.apply(input, null, null, null, null, null, null,null));
-	}
-	@Test
-	public void parseExpressionWithParam() throws ParseException, TMLExpressionException {
-//		Object o = CachedExpression.getInstance().evaluate("?[/@ClubId] AND Trim([/@ClubId]) != ''", input, null, null, null, null, null, null,null);
-		Object o = ExpressionCache.getInstance().evaluate("?[/@Param]", input, null, null, null, null, null,null,Optional.empty(),Optional.empty()).value;
-		Assert.assertEquals(true, o);
-		Object o2 = ExpressionCache.getInstance().evaluate("?[/@Paramzz]", input, null, null, null, null, null,null,Optional.empty(),Optional.empty()).value;
-		Assert.assertFalse((Boolean)o2);
-		Object o3 = ExpressionCache.getInstance().evaluate("?[/@Param] AND [/@Param] != ''", input, null, null, null, null, null,null,Optional.empty(),Optional.empty()).value;
-		Assert.assertTrue((Boolean)o3);
-		System.err.println("ss: "+o3);
-//        System.err.println("Result: "+ss.apply(input, null, null, null, null, null, null,null));
 	}
 
 	@SuppressWarnings("unused")

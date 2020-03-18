@@ -113,22 +113,23 @@ final class ASTFunctionNode extends SimpleNode {
 			}
 			
 			@Override
-			public Operand apply(Navajo doc, Message parentMsg, Message parentParamMsg, Selection parentSel,
-					 MappableTreeNode mapNode, TipiLink tipiLink, Access access, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
+			public Operand apply(MappableTreeNode mapNode, TipiLink tipiLink, Access access, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
 				FunctionInterface f = getFunction();
-				Map<String,Operand> resolvedNamed = named.entrySet().stream().collect(Collectors.toMap(e->e.getKey(),e->e.getValue().apply(doc, parentMsg, parentParamMsg, parentSel, mapNode,tipiLink, access,immutableMessage,paramMessage)));
+				Map<String,Operand> resolvedNamed = named.entrySet().stream().collect(Collectors.toMap(e->e.getKey(),e->e.getValue().apply(mapNode,tipiLink, access,immutableMessage,paramMessage)));
 				f.setNamedParameter(resolvedNamed);
 				if(f instanceof StatefulFunctionInterface) {
 					StatefulFunctionInterface sfi = (StatefulFunctionInterface)f;
-					sfi.setInMessage(doc);
-					sfi.setCurrentMessage(parentMsg);
+					immutableMessage.ifPresent(sfi::setInputMessage);
+					paramMessage.ifPresent(sfi::setParamMessage);
+//					sfi.setInMessage(doc);
+//					sfi.setCurrentMessage(parentMsg);
 					sfi.setAccess(access);
 				}
 				f.reset();
 				l.stream()
 					.map(e->{
 						try {
-							Operand evaluated = e.apply(doc, parentMsg, parentParamMsg, parentSel, mapNode,tipiLink, access,immutableMessage,paramMessage);
+							Operand evaluated = e.apply(mapNode,tipiLink, access,immutableMessage,paramMessage);
 							if(evaluated==null) {
 								logger.warn("Problematic expression returned null object. If you really insist, return an Operand.NULL. Evaluating expression: {}",expression);
 								
@@ -173,8 +174,7 @@ final class ASTFunctionNode extends SimpleNode {
 				}
 				
 				@Override
-				public Operand apply(Navajo doc, Message parentMsg, Message parentParamMsg, Selection parentSel,
-						MappableTreeNode mapNode, TipiLink tipiLink, Access access, Optional<ImmutableMessage> immutableMessage,
+				public Operand apply(MappableTreeNode mapNode, TipiLink tipiLink, Access access, Optional<ImmutableMessage> immutableMessage,
 						Optional<ImmutableMessage> paramMessage) {
 					return resolved;
 				}

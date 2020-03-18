@@ -150,10 +150,9 @@ public abstract class SimpleNode implements Node {
 		Optional<String> returnType = returnTypeResolver.apply(aType, bType);
 		return new ContextExpression() {
 			@Override
-			public Operand apply(Navajo doc, Message parentMsg, Message parentParamMsg, Selection parentSel,
-					 MappableTreeNode mapNode, TipiLink tipiLink, Access access, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
-		        Operand a = expA.apply(doc, parentMsg, parentParamMsg, parentSel, mapNode,tipiLink,access,immutableMessage,paramMessage);
-		        Operand b = expB.apply(doc, parentMsg, parentParamMsg, parentSel, mapNode,tipiLink,access,immutableMessage,paramMessage);
+			public Operand apply(MappableTreeNode mapNode, TipiLink tipiLink, Access access, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
+		        Operand a = expA.apply(mapNode,tipiLink,access,immutableMessage,paramMessage);
+		        Operand b = expB.apply(mapNode,tipiLink,access,immutableMessage,paramMessage);
 				return func.apply(a, b);
 			}
 
@@ -186,9 +185,8 @@ public abstract class SimpleNode implements Node {
 		}
 		return new ContextExpression() {
 			@Override
-			public Operand apply(Navajo doc, Message parentMsg, Message parentParamMsg, Selection parentSel,
-					 MappableTreeNode mapNode, TipiLink tipiLink, Access access, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
-				Operand a = expA.apply(doc, parentMsg, parentParamMsg, parentSel, mapNode, tipiLink, access,immutableMessage,paramMessage);
+			public Operand apply(MappableTreeNode mapNode, TipiLink tipiLink, Access access, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
+				Operand a = expA.apply(mapNode, tipiLink, access,immutableMessage,paramMessage);
 				return func.apply(a);
 			}
 

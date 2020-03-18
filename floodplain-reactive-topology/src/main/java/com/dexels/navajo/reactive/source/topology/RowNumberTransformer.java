@@ -53,7 +53,7 @@ public class RowNumberTransformer implements ReactiveTransformer,TopologyPipeCom
 //		StreamScriptContext context =new StreamScriptContext(topologyContext.tenant.orElse(TopologyContext.DEFAULT_TENANT), topologyContext.instance, topologyContext.deployment);
 		ContextExpression keyExtract  = parameters.named.get("key");
 		Function<ReplicationMessage,String> keyExtractor = msg->{
-			return keyExtract.apply(null, Optional.of(msg.message()), msg.paramMessage()).stringValue();
+			return keyExtract.apply(Optional.of(msg.message()), msg.paramMessage()).stringValue();
 		};
 //		ReactiveResolvedParameters resolved = parameters.resolve(context, Optional.empty(), ImmutableFactory.empty(), metadata);
 		addGroupTransformer(transformerNames, pipeId, topology, topologyContext, topologyConstructor, keyExtractor,metadata.name());

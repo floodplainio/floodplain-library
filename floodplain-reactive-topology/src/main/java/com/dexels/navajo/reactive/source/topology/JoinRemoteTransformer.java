@@ -53,7 +53,7 @@ public class JoinRemoteTransformer implements ReactiveTransformer ,TopologyPipeC
 			TopologyContext topologyContext, TopologyConstructor topologyConstructor, ImmutableMessage stateMessage) {
 		StreamScriptContext context =new StreamScriptContext(topologyContext.tenant.orElse(TopologyContext.DEFAULT_TENANT), topologyContext.instance, topologyContext.deployment);
 		ContextExpression keyExtract  = parameters.named.get("key");
-		Function<ReplicationMessage,String> keyExtractor = msg->keyExtract.apply(null, Optional.of(msg.message()), msg.paramMessage()).stringValue();
+		Function<ReplicationMessage,String> keyExtractor = msg->keyExtract.apply(Optional.of(msg.message()), msg.paramMessage()).stringValue();
 		
 		GroupTransformer.addGroupTransformer(transformerNames,pipeId,topology,topologyContext,topologyConstructor,keyExtractor,metadata.name());
 		

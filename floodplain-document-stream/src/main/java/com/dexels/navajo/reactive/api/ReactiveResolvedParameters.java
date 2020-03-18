@@ -179,7 +179,7 @@ public class ReactiveResolvedParameters {
 		
 		List<? extends Operand> resolved = unnamed.stream()
 				.map(e->{
-					Operand value = e.apply(this.resolvedInput, this.currentMessage, Optional.of(this.paramMessage));
+					Operand value = e.apply(this.currentMessage, Optional.of(this.paramMessage));
 					if(value==null) {
 						throw new NullPointerException("Unnamed expression resolved to null");
 					}
@@ -220,7 +220,7 @@ public class ReactiveResolvedParameters {
 		try {
 			// TODO move this to constructor or something
 			Navajo in = this.resolvedInput!=null ? this.resolvedInput : inputFlowable.isPresent() ? null : resolvedInput;
-			applied = function.apply(in, currentMessage,Optional.of(paramMessage));
+			applied = function.apply(currentMessage,Optional.of(paramMessage));
 			resolvedNamed.put(key, applied);
 			if(expectedType.isPresent()) {
 				resolvedTypes.put(key, expectedType.get());
@@ -236,7 +236,7 @@ public class ReactiveResolvedParameters {
 		try {
 			// TODO move this to constructor or something
 			Navajo in = this.resolvedInput!=null ? this.resolvedInput : inputFlowable.isPresent() ? null : resolvedInput;
-			applied = function.apply(in, currentMessage,Optional.of(paramMessage));
+			applied = function.apply(currentMessage,Optional.of(paramMessage));
 			resolvedStateNamed.put(key, applied);
 			if(expectedType.isPresent()) {
 				resolvedStateTypes.put(key, expectedType.get());

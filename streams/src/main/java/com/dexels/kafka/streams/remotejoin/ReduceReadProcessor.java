@@ -44,9 +44,9 @@ public class ReduceReadProcessor extends AbstractProcessor<String, ReplicationMe
 			if(inputValue==null || inputValue.operation()==Operation.DELETE) {
 				throw new RuntimeException("Issue: Deleting (?) a message that isn't there. Is this bad?");
 			}
-			extracted = keyExtractor.map(e->e.apply(null,Optional.of(inputValue.message()),inputValue.paramMessage())).map(e->(String)e.value);
+			extracted = keyExtractor.map(e->e.apply(Optional.of(inputValue.message()),inputValue.paramMessage())).map(e->(String)e.value);
 		} else {
-			extracted = keyExtractor.map(e->e.apply(null,Optional.of(stored.message()),stored.paramMessage())).map(e->(String)e.value);
+			extracted = keyExtractor.map(e->e.apply(Optional.of(stored.message()),stored.paramMessage())).map(e->(String)e.value);
 			
 		}
 //		Optional<String> extracted = keyExtractor.map(e->e.apply(null,Optional.of(stored.message()),stored.paramMessage())).map(e->(String)e.value);

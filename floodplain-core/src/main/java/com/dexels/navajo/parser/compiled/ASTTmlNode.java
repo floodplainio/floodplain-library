@@ -51,31 +51,17 @@ final class ASTTmlNode extends SimpleNode {
 			}
 			
 			@Override
-			public Operand apply(Navajo doc, Message parentMsg, Message parentParamMsg, Selection parentSel,
-					MappableTreeNode mapNode, TipiLink tipiLink, Access access, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
+			public Operand apply(MappableTreeNode mapNode, TipiLink tipiLink, Access access, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
 				List<Property> match = null;
 				List<Object> resultList = new ArrayList<>();
 		        boolean singleMatch = true;
 		        if(val.equals("[") || val.equals("[/")) {
-		        	return immutableMessage.map(msg->Operand.ofImmutable(msg)).orElse(parentMsg!=null?Operand.ofMessage(parentMsg) : Operand.NULL);
+		        	return immutableMessage.map(msg->Operand.ofImmutable(msg)).orElse(Operand.NULL);
 		        }
 		        String parts[] = val.split("\\|");
 		        String text = parts.length > 1 ? parts[1] : val;
 		        boolean isParam = false;
 		        Property prop = null;
-				if (parentSel != null) {
-					String dum = text;
-					if (dum.length() > 1 && dum.startsWith("[")) {
-						dum = dum.substring(1, dum.length());
-					}
-					if (dum.equals("name") || selectionOption.equals("name")) {
-						return Operand.ofString(parentSel.getName());
-					} else if (dum.equals("value") || selectionOption.equals("value")) {
-						return Operand.ofString(parentSel.getValue());
-					} else if (dum.equals("selected") || selectionOption.equals("selected")) {
-						return Operand.ofBoolean(parentSel.isSelected());
-					}
-				}
 
 		        if (!exists) {
 					if(text.startsWith("[")) {
@@ -91,23 +77,7 @@ final class ASTTmlNode extends SimpleNode {
 		        		text = text.substring(1);
 		        }
 		        
-		        if (text.startsWith("/@") ) { // Absolute param property, exclude the '[/@]' expression
-	        		isParam = true;
-		        	if(!text.equals("/@")) {
-		        		parentParamMsg = doc.getMessage("__parms__");
-		        		text = text.substring(2);
-		        	}
-		        }
-		        if (text.contains("__globals__")) { // Absolute globals property.
-		            parentMsg = doc.getMessage("__globals__");
-		            int length = "__globals__".length();
-		            if (text.startsWith("/")) {
-		                length += 1;
-		            }
-		            length += 1; // trailing /
-		            text = text.substring(length);
-		        }
-		    
+
 		        if (isRegularExpression(text))
 		            singleMatch = false;
 		        else
@@ -123,52 +93,14 @@ final class ASTTmlNode extends SimpleNode {
 		        			return parseImmutablePath(text, rm);
 		        			
 		        		}
-		            if (parentMsg == null && !isParam) {
-		                if (text.indexOf(Navajo.MESSAGE_SEPARATOR) != -1) {
-		                	if(doc==null) {
-		                		throw new NullPointerException("Can't evaluate TML node: No parent message and no document found.");
-		                	}
-		                	match = doc.getProperties(text);
-		                    if (match.size() > 1) {
-		                      singleMatch = false;
-		                    }
-		                }
-		                else {
-		                   throw new TMLExpressionException("No parent message present for property: " + text+" -> "+ImmutableFactory.getInstance().describe(immutableMessage.orElse(ImmutableFactory.empty())));
-		                }
-		            } else if (parentParamMsg == null && isParam) {
-		            	parentParamMsg = doc.getMessage("__parms__");
-		            	 if (text.indexOf(Navajo.MESSAGE_SEPARATOR) != -1) {
-		                    match = doc.getProperties(text);
-		                    if (match.size() > 1) {
-		                       singleMatch = false;
-		                    }  
-		                }
-		                else
-		                    throw new TMLExpressionException("No parent message present for param: " + text);
-		            } else {
-		                if (text.indexOf(Navajo.MESSAGE_SEPARATOR) != -1) {
-		                  match = (!isParam ? parentMsg.getProperties(text) : parentParamMsg.getProperties(text));
-		                  if (match.size() > 1)
-		                    singleMatch = false;
 
-		                }
-		                else {
-		                    match = new ArrayList<>();
-		                    match.add((!isParam ? parentMsg.getProperty(text) : parentParamMsg.getProperty(text)));
-		                }
-		            }
 		        } catch (NavajoException te) {
 		            throw new TMLExpressionException(te.getMessage(),te);
 		        }
 		         for (int j = 0; j < match.size(); j++) {
 		            prop = (Property) match.get(j);
 		              if (!exists && (prop == null))
-		            	  if (parentMsg!=null) {
-		                      throw new TMLExpressionException("TML property does not exist: " + text+" parent message: "+parentMsg.getFullMessageName());
-						} else {
 			                throw new TMLExpressionException("TML property does not exist: " + text+" exists? "+exists);
-						}
 		            else if (exists) { // Check for existence and datatype validity.
 		                if (prop != null) {
 		                    // Check type. If integer, float or date type and if is empty
