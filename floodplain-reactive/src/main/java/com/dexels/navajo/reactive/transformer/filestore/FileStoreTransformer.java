@@ -1,6 +1,7 @@
 package com.dexels.navajo.reactive.transformer.filestore;
 
 import com.dexels.immutable.api.ImmutableMessage;
+import com.dexels.immutable.api.ImmutableMessage.ValueType;
 import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.navajo.document.stream.DataItem;
 import com.dexels.navajo.document.stream.api.StreamScriptContext;
@@ -64,14 +65,14 @@ public class FileStoreTransformer implements ReactiveTransformer {
 						@Override
 						public void onComplete() {
 							Map<String,Object> values = new HashMap<>();
-							Map<String,String> types = new HashMap<>();
+							Map<String, ValueType> types = new HashMap<>();
 							values.put("Ok", true);
-							types.put("Ok", "boolean");
+							types.put("Ok", ValueType.BOOLEAN);
 							// TODO create 'withTyped'?
 							values.put("Size", sizeCounter.get());
-							types.put("Size", "long");
+							types.put("Size", ValueType.LONG);
 							values.put("Path", path);
-							types.put("Path", "string");
+							types.put("Path", ValueType.STRING);
 							try {
 								output.close();
 							} catch (IOException e) {

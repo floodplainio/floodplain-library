@@ -2,7 +2,7 @@ package com.dexels.navajo.functions.test;
 
 import com.dexels.config.runtime.RuntimeConfig;
 import com.dexels.immutable.api.ImmutableMessage;
-import com.dexels.navajo.document.Operand;
+import com.dexels.navajo.document.operand.Operand;
 import com.dexels.navajo.document.Property;
 import com.dexels.navajo.expression.api.ContextExpression;
 import com.dexels.navajo.expression.api.FunctionClassification;
@@ -58,7 +58,7 @@ public class TestCompiledExpression {
 		List<String> problems = new ArrayList<>();
 		ContextExpression o = ExpressionCache.getInstance().parse(problems,"ToUpper(ToLower('Bob'))",name->FunctionClassification.DEFAULT);
 		System.err.println("problems: "+problems);
-		System.err.println("returntype: "+o.returnType().orElse("<unknown>"));
+		System.err.println("returntype: "+o.returnType().map(ImmutableMessage.ValueType::name).orElse("<unknown>"));
 		Assert.assertTrue("Expected a return type here", o.returnType().isPresent());
 		Assert.assertEquals("string", o.returnType().get());
 		System.err.println("immutable: "+o.isLiteral());

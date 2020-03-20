@@ -1,6 +1,6 @@
 package com.dexels.navajo.reactive.source.topology;
 
-import com.dexels.navajo.document.Operand;
+import com.dexels.navajo.document.operand.Operand;
 import com.dexels.navajo.expression.api.ContextExpression;
 import com.dexels.replication.api.ReplicationMessage;
 import org.apache.kafka.streams.processor.AbstractProcessor;

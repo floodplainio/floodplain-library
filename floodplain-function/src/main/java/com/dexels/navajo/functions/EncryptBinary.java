@@ -30,13 +30,4 @@ public class EncryptBinary extends FunctionInterface {
 		return result;
 	}
 
-	public static void main(String [] args) throws Exception {
-		
-		EncryptBinary e = new EncryptBinary();
-		e.reset();
-		e.insertStringOperand("BBFW06E");
-		e.insertBinaryOperand(new Binary("Apenoot".getBytes()));
-		String result = (String) e.evaluate();
-		System.err.println("result: " + result);
-	}
 }

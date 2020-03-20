@@ -1,5 +1,6 @@
 package com.dexels.kafka.streams.remotejoin;
 
+import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.replication.api.ReplicationMessage;
 import com.dexels.replication.factory.ReplicationFactory;
 import org.apache.kafka.streams.processor.AbstractProcessor;
@@ -45,12 +46,12 @@ public class RowNumberProcessor extends AbstractProcessor<String, ReplicationMes
 		if(existing==null) {
 			// 1 based
 			row =this.lookupStore.approximateNumEntries()+1;
-			this.lookupStore.put(key,ReplicationFactory.empty().with("row", row, "long"));
+			this.lookupStore.put(key,ReplicationFactory.empty().with("row", row, ImmutableMessage.ValueType.LONG));
 		} else {
 			row = (long) existing.columnValue("row");
 //			this.lookupStore.put(key,ReplicationFactory.empty().with("row", row, "long"));
 		}
-		context().forward(key,incoming.with("_row", row, "long"));
+		context().forward(key,incoming.with("_row", row, ImmutableMessage.ValueType.LONG));
 	}
 
 }

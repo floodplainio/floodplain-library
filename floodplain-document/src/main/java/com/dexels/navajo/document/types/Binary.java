@@ -35,8 +35,11 @@ public final class Binary extends NavajoType implements Serializable,Comparable<
     private String extension = null;
     
     private byte[] inMemory = null;
-    
-    public static final String MSEXCEL = "application/msexcel";
+
+	public static final int PUSHBACK_SIZE = 2000;
+
+
+	public static final String MSEXCEL = "application/msexcel";
 
     public static final String MSWORD = "application/msword";
 

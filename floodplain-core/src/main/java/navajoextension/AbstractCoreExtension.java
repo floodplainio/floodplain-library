@@ -1,5 +1,7 @@
 package navajoextension;
 
+import com.dexels.immutable.api.ImmutableMessage;
+import com.dexels.immutable.api.ImmutableMessage.ValueType;
 import com.dexels.navajo.expression.api.FunctionDefinition;
 import com.dexels.navajo.expression.api.FunctionInterface;
 import com.dexels.navajo.functions.util.FunctionFactoryFactory;
@@ -74,7 +76,7 @@ public class AbstractCoreExtension extends com.dexels.navajo.version.AbstractVer
 			props.put("input", inputParams);
 		}
 
-		final String[] resultParam = fd.getResultParam();
+		final ValueType[] resultParam = fd.getResultParam();
 		if(resultParam!=null) {
 			props.put("output", resultParam);
 		}

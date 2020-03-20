@@ -1,6 +1,7 @@
 package com.dexels.navajo.document;
 
 import com.dexels.immutable.api.ImmutableMessage;
+import com.dexels.navajo.document.operand.Operand;
 
 import java.util.Optional;
 

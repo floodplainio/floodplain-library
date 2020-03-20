@@ -1,7 +1,7 @@
 package com.dexels.navajo.reactive.mappers;
 
 import com.dexels.immutable.api.ImmutableMessage;
-import com.dexels.navajo.document.Operand;
+import com.dexels.navajo.document.operand.Operand;
 import com.dexels.navajo.document.stream.DataItem;
 import com.dexels.navajo.document.stream.api.StreamScriptContext;
 import com.dexels.navajo.reactive.api.ReactiveMerger;

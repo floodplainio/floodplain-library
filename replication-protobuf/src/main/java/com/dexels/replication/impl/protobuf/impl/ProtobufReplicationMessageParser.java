@@ -58,50 +58,50 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
 	}
 
 
-	private static String serializeValue(String type, Object val, SimpleDateFormat dateFormat, SimpleDateFormat clocktimeFormat) {
+	private static String serializeValue(ValueType type, Object val, SimpleDateFormat dateFormat, SimpleDateFormat clocktimeFormat) {
 		if(val==null) {
 			return null;
 		}
 		switch (type) {
-			case "string":
+			case STRING:
 				return (String)val;
-			case "integer":
+			case INTEGER:
 				return Integer.toString((Integer)val);
-			case "long":
+			case LONG:
 				return Long.toString((Long)val);
-			case "double":
+			case DOUBLE:
 				return Double.toString((Double)val);
-			case "float":
+			case FLOAT:
 				if(val instanceof Float) {
 					return Float.toString((Float)val);
 				}
 				if(val instanceof Double) {
 					return Double.toString((Double)val);
 				}
-			case "boolean":
+			case BOOLEAN:
 				return Boolean.toString((Boolean)val);
-			case "binary_digest":
+			case BINARY_DIGEST:
 				return (String) val;
-			case "binary":
+			case BINARY:
 
 				System.err.println("Binary type: "+val.getClass());
 				return  (String)val;
-			case "date":
+			case DATE:
 				if(val instanceof String) {
 					return (String) val;
 				}
 				return dateFormat.format((Date)val);
-			case "clocktime":
+			case CLOCKTIME:
 				if(val instanceof String) {
 					return (String) val;
 				}
 				return clocktimeFormat.format((Date)val);
-			case "list":
+			case LIST:
 				List<String> v = (List<String>)val;
 				return v.stream().collect(Collectors.joining(","));
-			case "coordinate":
+			case COORDINATE:
 				return val.toString();
-			case "enum":
+			case ENUM:
 				return val.toString();
 			default:
 				throw new UnsupportedOperationException("Unknown type: "+type);
@@ -159,19 +159,96 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
 			return null;
 		}	
 	}
+
+	private static ValueProtobuf.ValueType parseType(ImmutableMessage.ValueType type) {
+		switch (type) {
+			case STRING:
+				return ValueType.STRING;
+			case INTEGER:
+				return ValueType.INTEGER;
+			case LONG:
+				return ValueType.LONG;
+			case DOUBLE:
+				return ValueType.DOUBLE;
+			case FLOAT:
+				return ValueType.FLOAT;
+			case BOOLEAN:
+				return ValueType.BOOLEAN;
+			case BINARY_DIGEST:
+				return ValueType.BINARY_DIGEST;
+			case DATE:
+				return ValueType.DATE;
+			case LIST:
+				return ValueType.LIST;
+			case BINARY:
+				return ValueType.BINARY;
+			case COORDINATE:
+				return ValueType.COORDINATE;
+			case CLOCKTIME:
+				return ValueType.CLOCKTIME;
+			case ENUM:
+				return ValueType.ENUM;
+			case STOPWATCHTIME:
+			case IMMUTABLE:
+			case UNKNOWN:
+			case IMMUTABLELIST:
+			case POINT:
+			case REACTIVE:
+			case REACTIVESCRIPT:
+			case REACTIVEPIPE:
+			case REACTIVEPARTIALPIPE:
+			case MAPPER:
+				return ValueType.UNRECOGNIZED;
+		}
+		return ValueType.UNRECOGNIZED;
+	}
+	public static ImmutableMessage.ValueType convertType(ValueType type) {
+		switch (type) {
+
+			case STRING:
+				return ImmutableMessage.ValueType.STRING;
+			case INTEGER:
+				return ImmutableMessage.ValueType.INTEGER;
+			case LONG:
+				return ImmutableMessage.ValueType.LONG;
+			case DOUBLE:
+				return ImmutableMessage.ValueType.DOUBLE;
+			case FLOAT:
+				return ImmutableMessage.ValueType.FLOAT;
+			case BOOLEAN:
+				return ImmutableMessage.ValueType.BOOLEAN;
+			case BINARY_DIGEST:
+				return ImmutableMessage.ValueType.BINARY_DIGEST;
+			case DATE:
+				return ImmutableMessage.ValueType.DATE;
+			case CLOCKTIME:
+				return ImmutableMessage.ValueType.CLOCKTIME;
+			case LIST:
+				return ImmutableMessage.ValueType.LIST;
+			case BINARY:
+				return ImmutableMessage.ValueType.BINARY;
+			case COORDINATE:
+				return ImmutableMessage.ValueType.COORDINATE;
+			case ENUM:
+				return ImmutableMessage.ValueType.ENUM;
+			case UNRECOGNIZED:
+				return ImmutableMessage.ValueType.UNKNOWN;
+		}
+		return ImmutableMessage.ValueType.UNKNOWN;
+	}
 	public static ImmutableMessage parseImmutableMessage(ReplicationMessageProtobuf source, SimpleDateFormat dataFormat, SimpleDateFormat clockTimeFormat) {
 		return parseImmutableMessage(source,true,dataFormat,clockTimeFormat);
 	}
 	public static ImmutableMessage parseImmutableMessage(ReplicationMessageProtobuf source,boolean checkMagic, SimpleDateFormat dateFormat, SimpleDateFormat clockTimeFormat ) {
 		Map<String,Object> values = new HashMap<>();
-		Map<String,String> types = new HashMap<>();
+		Map<String,ImmutableMessage.ValueType> types = new HashMap<>();
 
 		if(checkMagic && ProtobufReplicationMessageParser.MAGIC != source.getMagic()) {
 			throw new IllegalArgumentException("Bad magic: "+source.getMagic());
 		}
 		
 		for (Entry<String, ValueProtobuf> b :  source.getValuesMap().entrySet()) {
-			types.put(b.getKey(), b.getValue().getType().name().toLowerCase());
+			types.put(b.getKey(), convertType(b.getValue().getType()));
 			values.put(b.getKey(), protobufValue( b.getValue(),dateFormat,clockTimeFormat));
 		}
 		Map<String,ImmutableMessage> submessage = new HashMap<>();
@@ -188,13 +265,13 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
 	}
 	public static ReplicationMessage parse(Optional<String> topicSrc, ReplicationMessageProtobuf source, Optional<Runnable> commitAction, SimpleDateFormat dateFormat, SimpleDateFormat clockTimeFormat) {
 		Map<String,Object> values = new HashMap<>();
-		Map<String,String> types = new HashMap<>();
+		Map<String, ImmutableMessage.ValueType> types = new HashMap<>();
 
 		if(ProtobufReplicationMessageParser.MAGIC != source.getMagic()) {
 			throw new IllegalArgumentException("Bad magic");
 		}
 		for (Entry<String, ValueProtobuf> b :  source.getValuesMap().entrySet()) {
-			types.put(b.getKey(), b.getValue().getType().name().toLowerCase());
+			types.put(b.getKey(), convertType(b.getValue().getType()));
 			values.put(b.getKey(), protobufValue( b.getValue(),dateFormat,clockTimeFormat));
 		}
 		Map<String,ImmutableMessage> submessage = new HashMap<>();
@@ -227,39 +304,7 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
 		return toProto(m).toString();
 	}
 	
-	private static ValueProtobuf.ValueType parseType(String type) {
-		switch (type) {
-		case "string":
-			return ValueProtobuf.ValueType.STRING;
-		case "integer":
-			return ValueProtobuf.ValueType.INTEGER;
-		case "long":
-			return ValueProtobuf.ValueType.LONG;
-		case "double":
-			return ValueProtobuf.ValueType.DOUBLE;
-		case "float":
-			return ValueProtobuf.ValueType.FLOAT;
-		case "boolean":
-			return ValueProtobuf.ValueType.BOOLEAN;
-		case "binary_digest":
-			return ValueProtobuf.ValueType.BINARY_DIGEST;
-		case "binary":
-			return ValueProtobuf.ValueType.BINARY;
-		case "date":
-			return ValueProtobuf.ValueType.DATE;
-		case "clocktime":
-			return ValueProtobuf.ValueType.CLOCKTIME;
-		case "list":
-			return ValueProtobuf.ValueType.LIST;
-        case "coordinate":
-            return ValueProtobuf.ValueType.COORDINATE;
-        case "enum":
-            return ValueProtobuf.ValueType.ENUM;
-		default: 
-		    return ValueType.UNRECOGNIZED;
-			
-		}
-	}
+
 	private static ReplicationMessageProtobuf toProto(ReplicationMessage msg) {
 		return toProto(msg.message(),msg.transactionId(),msg.operation(), msg.timestamp(),msg.primaryKeys(),msg.paramMessage());
 	}	
@@ -274,7 +319,7 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
 			.stream()
 			.map(e->{
 				final Object value = msg.columnValue(e.getKey());
-				final String type = msg.types().getOrDefault(e.getKey(),"string");
+				final ImmutableMessage.ValueType type = msg.types().getOrDefault(e.getKey(),ImmutableMessage.ValueType.STRING);
 				ValueType parseType = parseType(type);
 
 				if (parseType == ValueType.UNRECOGNIZED) {
@@ -302,7 +347,7 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
 						
 					}
 				} else {
-					final String serializeValue = serializeValue(type,value,dataFormat,clockTimeFormat);
+					final String serializeValue = serializeValue(parseType(type),value,dataFormat,clockTimeFormat);
 					if (serializeValue==null) {
 						return new ValueTuple(e.getKey(),ValueProtobuf.newBuilder()
 								.setType(parseType)
@@ -449,10 +494,10 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
 					.withPartition(data.partition())
 					.withOffset(data.offset())
 					.withSource(data.topic())
-					.with("_kafkapartition", data.partition().orElse(-1), "integer")
-					.with("_kafkaoffset", data.offset().orElse(-1L), "long")
-					.with("_kafkakey", data.key(), "string")
-					.with("_kafkatopic",data.topic().orElse(null),"string");
+					.with("_kafkapartition", data.partition().orElse(-1), ImmutableMessage.ValueType.INTEGER)
+					.with("_kafkaoffset", data.offset().orElse(-1L), ImmutableMessage.ValueType.LONG)
+					.with("_kafkakey", data.key(), ImmutableMessage.ValueType.STRING)
+					.with("_kafkatopic",data.topic().orElse(null), ImmutableMessage.ValueType.STRING);
 		}
 		return initial;
 	}

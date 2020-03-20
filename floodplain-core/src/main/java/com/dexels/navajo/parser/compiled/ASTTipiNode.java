@@ -3,7 +3,7 @@
 package com.dexels.navajo.parser.compiled;
 
 import com.dexels.immutable.api.ImmutableMessage;
-import com.dexels.navajo.document.Operand;
+import com.dexels.navajo.document.operand.Operand;
 import com.dexels.navajo.expression.api.ContextExpression;
 import com.dexels.navajo.expression.api.FunctionClassification;
 import com.dexels.navajo.expression.api.TMLExpressionException;
@@ -32,7 +32,7 @@ public ContextExpression interpretToLambda(List<String> problems, String express
 		@Override
 		public Operand apply(Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage)  {
 		      try {
-				return Operand.nullOperand("tipi");
+				return Operand.nullOperand(ImmutableMessage.ValueType.UNKNOWN);
 //				.ofDynamic(tipiLink.evaluateExpression(val),"tipi");
 			} catch (Exception e) {
 				throw new TMLExpressionException("Error evaluating tipiLink: "+val, e);
@@ -40,7 +40,7 @@ public ContextExpression interpretToLambda(List<String> problems, String express
 		}
 
 		@Override
-		public Optional<String> returnType() {
+		public Optional<ImmutableMessage.ValueType> returnType() {
 			return Optional.empty();
 		}
 		

@@ -65,32 +65,5 @@ public class MD5Sum extends FunctionInterface {
 		return "Get the MD5Sum of supplied Binary object.";
 	}
 
-	@SuppressWarnings("deprecation")
-	public static void main(String args[]) throws Exception {
 
-		String b = "Kroket";
-		MD5Sum fsc = new MD5Sum();
-		fsc.reset();
-		fsc.insertStringOperand(b);
-		Object o = fsc.evaluate();
-		System.err.println("o  = " + o);
-
-		Navajo nf = NavajoFactory.getInstance().createNavajo();
-		Message m = NavajoFactory.getInstance().createMessage(nf, "Aap");
-		nf.addMessage(m);
-		Property p = NavajoFactory.getInstance().createProperty(nf, "Noot", "string", "nene", 0, "", "in");
-		m.addProperty(p);
-		nf.write(System.err);
-		
-		fsc.reset();
-		fsc.insertMessageOperand(m);
-		Object mo = fsc.evaluate();
-		System.err.println("mo  = " + mo);
-		
-		// 42a03618fd3a5e1cecfbbd13906081a4 (Kibbeling)
-		// 1d3183a7b9b18f9777649b6a8f9057e3 (Kibbeling with secret key).
-		// ab84d2d19db5d5a2cd9f6a96a260caa3 (Kroket).
-		// 2035c3091f6970164c04b7ce279d45b1 (Message).
-		
-	}
 }

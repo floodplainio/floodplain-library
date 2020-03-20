@@ -1,6 +1,7 @@
 package com.dexels.replication.api;
 
 import com.dexels.immutable.api.ImmutableMessage;
+import com.dexels.immutable.api.ImmutableMessage.ValueType;
 
 import java.util.List;
 import java.util.Map;
@@ -23,7 +24,7 @@ public interface ReplicationMessage {
 	public List<String> primaryKeys();
 	public Set<String> columnNames();
 	public Object columnValue(String name);
-	public String columnType(String name);
+	public ValueType columnType(String name);
 	public boolean equals(Object o);
 	public enum Operation {
 		INSERT, UPDATE, DELETE, NONE, COMMIT, MERGE, INITIAL
@@ -41,7 +42,7 @@ public interface ReplicationMessage {
 	public boolean equalsToMessage(ReplicationMessage c);
 	public boolean equalsByKey(ReplicationMessage c);
 	public byte[] toBytes(ReplicationMessageParser c);
-	public Map<String, String> types();
+	public Map<String, ValueType> types();
 	
 	public Optional<List<ImmutableMessage>> subMessages(String field);
 	public Optional<ImmutableMessage> subMessage(String field);
@@ -58,7 +59,7 @@ public interface ReplicationMessage {
 	public Set<String> subMessageNames();
 	public ReplicationMessage without(String columnName);
 	public ReplicationMessage without(List<String> columns);
-	public ReplicationMessage with(String key, Object value, String type);
+	public ReplicationMessage with(String key, Object value, ValueType type);
 	public ReplicationMessage withOnlyColumns(List<String> columns);
 	public ReplicationMessage withOnlySubMessages(List<String> subMessages);
 	public ReplicationMessage rename(String columnName, String newName);

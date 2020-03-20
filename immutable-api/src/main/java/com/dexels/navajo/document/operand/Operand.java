@@ -1,10 +1,8 @@
-package com.dexels.navajo.document;
+package com.dexels.navajo.document.operand;
 
 import com.dexels.immutable.api.ImmutableMessage;
-import com.dexels.navajo.document.types.Binary;
-import com.dexels.navajo.document.types.ClockTime;
-import com.dexels.navajo.document.types.StopwatchTime;
-import com.dexels.navajo.document.types.TypeUtils;
+import com.dexels.immutable.api.ImmutableMessage.ValueType;
+import com.dexels.immutable.api.ImmutableTypeParser;
 
 import java.util.Date;
 import java.util.List;
@@ -13,8 +11,7 @@ import java.util.List;
 
 public class Operand {
 
-  public final String type;
-  public final String option;
+  public final ValueType type;
   public final Object value;
 
   /**
@@ -25,39 +22,37 @@ public class Operand {
    *
    * @param value
    * @param type
-   * @param option
    */
-  public Operand(Object value, String type, String option) {
+  public Operand(Object value, ValueType type) {
 	  if(value instanceof Operand) {
-		  throw new NavajoException("Should not embed Operands in other Operands");
+		  throw new RuntimeException("Should not embed Operands in other Operands");
 	  }
       this.value = value;
       this.type = type;
-      this.option = option;
   }
 
-  public Operand(Object value, String type) {
-	  this(value,type,null);
-  }
-
-  public static final Operand FALSE = new Operand(false,Property.BOOLEAN_PROPERTY);
-  public static final Operand TRUE = new Operand(true,Property.BOOLEAN_PROPERTY);
-  public static final Operand NULL = new Operand(null,"object");
+  public static final Operand FALSE = new Operand(false, ValueType.BOOLEAN);
+  public static final Operand TRUE = new Operand(true, ValueType.BOOLEAN);
+  public static final Operand NULL = new Operand(null, ValueType.UNKNOWN);
   public static Operand ofBoolean(boolean b) {
 	  return b ? TRUE : FALSE;
   }
  
   public static Operand ofString(String string) {
-	  return new Operand(string,Property.STRING_PROPERTY);
+	  return new Operand(string,ValueType.STRING);
   }
 
   public static Operand ofInteger(Integer value) {
-	  return new Operand(value,Property.INTEGER_PROPERTY);
+	  return new Operand(value,ValueType.INTEGER);
   }
 
   public static Operand ofFloat(Double value) {
-	  return new Operand(value,Property.FLOAT_PROPERTY);
+	  return new Operand(value,ValueType.DOUBLE);
   }
+
+  public static Operand ofClockTime(ClockTime value) {
+		return new Operand(value,ValueType.CLOCKTIME);
+	}
 
 public static Operand ofDynamic(Object o) {
 	if(o==null) {
@@ -66,7 +61,7 @@ public static Operand ofDynamic(Object o) {
 	return new Operand(o,TypeUtils.determineNavajoType(o));
 }
 
-public static Operand ofDynamic(Object o, String defaultType) {
+public static Operand ofDynamic(Object o, ValueType defaultType) {
 	if(o==null) {
 		return NULL;
 	}
@@ -74,24 +69,29 @@ public static Operand ofDynamic(Object o, String defaultType) {
 }
 
 public static Operand ofList(List<? extends Object> result) {
-	return new Operand(result,Property.LIST_PROPERTY);
+	return new Operand(result,ValueType.LIST);
 }
 
 public static Operand ofLong(long longValue) {
-	return new Operand(longValue,Property.LONG_PROPERTY);
+	return new Operand(longValue,ValueType.LONG);
 }
 
-public static Operand nullOperand(String type) {
+public static Operand nullOperand(ValueType type) {
 	return new Operand(null,type);
 }
 
-public static Operand ofCustom(Object value, String type) {
+public static Operand ofCustom(Object value, ValueType type) {
 	return new Operand(value,type);
 }
 
 public static Operand ofDate(Date value) {
-	return new Operand(value,Property.DATE_PROPERTY);
+	return new Operand(value,ValueType.DATE);
 }
+
+public static Operand ofStopwatchTime(StopwatchTime value) {
+		return new Operand(value,ValueType.CLOCKTIME);
+	}
+
 
 public boolean booleanValue() {
 	if(value instanceof Boolean) {
@@ -129,41 +129,19 @@ public List<ImmutableMessage> immutableMessageList() {
 	throw new ClassCastException("Operand does not have the required immutablemessage type but: "+type);
 }
 
-
+//
 public static Operand ofBinary(Binary o) {
-	return new Operand(o,Property.BINARY_PROPERTY);
+	return new Operand(o,ValueType.BINARY);
 }
 
-public static Operand ofStopwatchTime(StopwatchTime stopwatchTime) {
-	return new Operand(stopwatchTime,Property.STOPWATCHTIME_PROPERTY);
-}
 
-public static Operand ofClockTime(ClockTime clockTime) {
-	return new Operand(clockTime,Property.CLOCKTIME_PROPERTY);
-}
-
-public static Operand ofMessage(Message message) {
-	return new Operand(message,"message");
-}
-
-public static Operand ofNavajo(Navajo createTestNavajo) {
-	return new Operand(createTestNavajo,"navajo");
-}
-
-public static Operand ofSelectionList(List<Selection> allSelectedSelections) {
-	return new Operand(allSelectedSelections,Property.SELECTION_PROPERTY);
-}
-
-public static Operand ofProperty(Property property) {
-	return new Operand(property,"property");
-}
 
 public static Operand ofImmutable(ImmutableMessage rm) {
-	return new Operand(rm,"immutable");
+	return new Operand(rm,ValueType.IMMUTABLE);
 }
 
 public static Operand ofImmutableList(List<ImmutableMessage> rm) {
-	return new Operand(rm,"immutableList");
+	return new Operand(rm,ValueType.IMMUTABLELIST);
 }
 
 public String toString() {

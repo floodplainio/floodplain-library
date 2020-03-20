@@ -3,6 +3,7 @@ package com.dexels.navajo.parser;
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.navajo.document.*;
+import com.dexels.navajo.document.operand.Operand;
 import com.dexels.navajo.parser.compiled.api.CachedExpressionEvaluator;
 import com.dexels.replication.api.ReplicationMessage.Operation;
 import com.dexels.replication.factory.ReplicationFactory;
@@ -11,6 +12,7 @@ import org.junit.Test;
 
 import java.util.*;
 
+import static com.dexels.immutable.api.ImmutableMessage.*;
 import static org.junit.Assert.assertEquals;
 
 @SuppressWarnings("unchecked")
@@ -50,19 +52,19 @@ public class ExpressionTest {
 		}
 		
 		Map<String,Object> values = new HashMap<>();
-		Map<String,String> types = new HashMap<>();
+		Map<String, ValueType> types = new HashMap<>();
 		values.put("SomeString", "Tralala");
-		types.put("SomeString", "string");
+		types.put("SomeString", ValueType.STRING);
 		values.put("SomeInteger", 3);
-		types.put("SomeInteger", "integer");
+		types.put("SomeInteger", ValueType.INTEGER);
 		immutableMessage = ReplicationFactory.createReplicationMessage(Optional.empty(),Optional.empty(),Optional.empty(), null, 0, Operation.NONE, Collections.emptyList(), types, values, Collections.emptyMap(), Collections.emptyMap(),Optional.empty(),Optional.empty()).message();
 		
 		Map<String,Object> valueparams = new HashMap<>();
-		Map<String,String> typeparams = new HashMap<>();
+		Map<String,ValueType> typeparams = new HashMap<>();
 		valueparams.put("SomeString", "Tralala2");
-		typeparams.put("SomeString", "string");
+		typeparams.put("SomeString", ValueType.STRING);
 		valueparams.put("SomeInteger", 4);
-		typeparams.put("SomeInteger", "integer");
+		typeparams.put("SomeInteger", ValueType.INTEGER);
 		paramMessage = ReplicationFactory.createReplicationMessage(Optional.empty(),Optional.empty(),Optional.empty(),null, 0, Operation.NONE, Collections.emptyList(), typeparams, valueparams, Collections.emptyMap(), Collections.emptyMap(),Optional.empty(),Optional.empty()).message();
 
 
@@ -134,8 +136,8 @@ public class ExpressionTest {
 
 	@Test
 	public void testImmutableTMLPath() throws Exception {
-		ImmutableMessage outer = ImmutableFactory.empty().with("outerint", 1, "integer");
-		ImmutableMessage inner = ImmutableFactory.empty().with("innerint", 3, "integer");
+		ImmutableMessage outer = ImmutableFactory.empty().with("outerint", 1, ValueType.INTEGER);
+		ImmutableMessage inner = ImmutableFactory.empty().with("innerint", 3, ValueType.INTEGER);
 		
 		ImmutableMessage combined = outer.withSubMessage("sub", inner);
 		Operand o = Expression.evaluate("[sub/innerint]", Optional.of(combined), Optional.empty());
@@ -145,8 +147,8 @@ public class ExpressionTest {
 
 	@Test
 	public void testTrailingTMLPath() throws Exception {
-		ImmutableMessage outer = ImmutableFactory.empty().with("outerint", 1, "integer");
-		ImmutableMessage inner = ImmutableFactory.empty().with("innerint", 3, "integer");
+		ImmutableMessage outer = ImmutableFactory.empty().with("outerint", 1, ValueType.INTEGER);
+		ImmutableMessage inner = ImmutableFactory.empty().with("innerint", 3, ValueType.INTEGER);
 		
 		ImmutableMessage combined = outer.withSubMessage("sub", inner);
 		Operand o = Expression.evaluate("[sub/]", Optional.of(combined), Optional.empty());
@@ -156,8 +158,8 @@ public class ExpressionTest {
 
 	@Test
 	public void testTrailingTMLPathParam() throws Exception {
-		ImmutableMessage outer = ImmutableFactory.empty().with("outerint", 1, "integer");
-		ImmutableMessage inner = ImmutableFactory.empty().with("innerint", 3, "integer");
+		ImmutableMessage outer = ImmutableFactory.empty().with("outerint", 1, ValueType.INTEGER);
+		ImmutableMessage inner = ImmutableFactory.empty().with("innerint", 3, ValueType.INTEGER);
 		
 		ImmutableMessage combined = outer.withSubMessage("sub", inner);
 		Operand o = Expression.evaluate("[@sub/]", Optional.empty(), Optional.of(combined));
@@ -167,10 +169,10 @@ public class ExpressionTest {
 
 	@Test
 	public void testTrailingTMLPathParamList() throws Exception {
-		ImmutableMessage outer = ImmutableFactory.empty().with("outerint", 1, "integer");
-		ImmutableMessage inner1 = ImmutableFactory.empty().with("innerint", 1, "integer");
-		ImmutableMessage inner2 = ImmutableFactory.empty().with("innerint", 2, "integer");
-		ImmutableMessage inner3 = ImmutableFactory.empty().with("innerint", 3, "integer");
+		ImmutableMessage outer = ImmutableFactory.empty().with("outerint", 1, ValueType.INTEGER);
+		ImmutableMessage inner1 = ImmutableFactory.empty().with("innerint", 1, ValueType.INTEGER);
+		ImmutableMessage inner2 = ImmutableFactory.empty().with("innerint", 2, ValueType.INTEGER);
+		ImmutableMessage inner3 = ImmutableFactory.empty().with("innerint", 3, ValueType.INTEGER);
 		
 		List<ImmutableMessage> subList = Arrays.asList(inner1,inner2,inner3);
 		ImmutableMessage combined = outer.withSubMessages("sub", subList);
@@ -183,7 +185,7 @@ public class ExpressionTest {
 	
 	@Test
 	public void testEmptyTML() throws Exception {
-		ImmutableMessage outer = ImmutableFactory.empty().with("outerint", 1, "integer");
+		ImmutableMessage outer = ImmutableFactory.empty().with("outerint", 1, ValueType.INTEGER);
 		Operand o = Expression.evaluate("[]", Optional.of(outer), Optional.empty());
 		ImmutableMessage s = o.immutableMessageValue();
 		assertEquals(outer, s);
@@ -191,7 +193,7 @@ public class ExpressionTest {
 	
 	@Test
 	public void testEmptyTMLJustSlash() throws Exception {
-		ImmutableMessage outer = ImmutableFactory.empty().with("outerint", 1, "integer");
+		ImmutableMessage outer = ImmutableFactory.empty().with("outerint", 1, ValueType.INTEGER);
 		Operand o = Expression.evaluate("[/]", Optional.of(outer), Optional.empty());
 		ImmutableMessage s = o.immutableMessageValue();
 		assertEquals(outer, s);
@@ -199,7 +201,7 @@ public class ExpressionTest {
 
 	@Test
 	public void testEmptyTMLParam() throws Exception {
-		ImmutableMessage outer = ImmutableFactory.empty().with("outerint", 1, "integer");
+		ImmutableMessage outer = ImmutableFactory.empty().with("outerint", 1, ValueType.INTEGER);
 		Operand o = Expression.evaluate("[@]", Optional.empty(), Optional.of(outer));
 		ImmutableMessage s = o.immutableMessageValue();
 		assertEquals(outer, s);
@@ -207,7 +209,7 @@ public class ExpressionTest {
 	
 	@Test
 	public void testEmptySlashTMLParam() throws Exception {
-		ImmutableMessage outer = ImmutableFactory.empty().with("outerint", 1, "integer");
+		ImmutableMessage outer = ImmutableFactory.empty().with("outerint", 1, ValueType.INTEGER);
 		Operand o = Expression.evaluate("[/@]", Optional.empty(), Optional.of(outer));
 		ImmutableMessage s = o.immutableMessageValue();
 		assertEquals(outer, s);

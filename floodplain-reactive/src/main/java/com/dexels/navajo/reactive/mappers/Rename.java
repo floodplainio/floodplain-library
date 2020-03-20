@@ -1,5 +1,6 @@
 package com.dexels.navajo.reactive.mappers;
 
+import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.navajo.document.Property;
 import com.dexels.navajo.document.stream.DataItem;
 import com.dexels.navajo.document.stream.api.StreamScriptContext;
@@ -9,6 +10,8 @@ import com.dexels.navajo.reactive.api.ReactiveResolvedParameters;
 
 import java.util.*;
 import java.util.function.Function;
+
+import static com.dexels.immutable.api.ImmutableMessage.*;
 
 
 public class Rename implements ReactiveMerger {
@@ -26,7 +29,7 @@ public class Rename implements ReactiveMerger {
 			}
 			String fromKey = parms.paramString("from");
 			Object oldValue = item.message().value(fromKey).orElse(null);
-			String oldType = item.message().columnType(fromKey);
+			ValueType oldType = item.message().columnType(fromKey);
 			
 			return DataItem.of(item.message().without(fromKey ).with(parms.paramString("to"),oldValue, oldType));
 		};

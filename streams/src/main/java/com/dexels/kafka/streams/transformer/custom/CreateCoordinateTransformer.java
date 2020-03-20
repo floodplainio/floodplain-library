@@ -1,5 +1,6 @@
 package com.dexels.kafka.streams.transformer.custom;
 
+import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.immutable.api.customtypes.CoordinateType;
 import com.dexels.replication.api.ReplicationMessage;
 import com.dexels.replication.transformer.api.MessageTransformer;
@@ -28,7 +29,7 @@ public class CreateCoordinateTransformer implements MessageTransformer {
 
         try {
             CoordinateType coor = new CoordinateType(val1, val2);
-            return msg.with(to, coor, "coordinate");
+            return msg.with(to, coor,ImmutableMessage.ValueType.COORDINATE);
         } catch (Throwable e) {
             logger.warn("Error in transformer - skipping. Val1: {} val2: {}", val1, val2, e);
         }

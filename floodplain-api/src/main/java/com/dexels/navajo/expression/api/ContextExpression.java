@@ -1,7 +1,8 @@
 package com.dexels.navajo.expression.api;
 
 import com.dexels.immutable.api.ImmutableMessage;
-import com.dexels.navajo.document.Operand;
+import com.dexels.immutable.api.ImmutableMessage.ValueType;
+import com.dexels.navajo.document.operand.Operand;
 
 import java.util.Optional;
 
@@ -17,7 +18,7 @@ public interface ContextExpression {
 
 	public Operand apply(Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage);
 	public boolean isLiteral();
-	public Optional<String> returnType();
+	public Optional<ValueType> returnType();
 	public String expression();
 
 }

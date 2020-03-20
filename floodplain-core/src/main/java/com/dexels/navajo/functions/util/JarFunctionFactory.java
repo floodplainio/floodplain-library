@@ -72,7 +72,6 @@ public class JarFunctionFactory extends FunctionFactoryInterface implements Seri
 		}
 		if ( name != null ) {
 			FunctionDefinition functionDefinition = new FunctionDefinition(object, description, inputParams, resultParam);
-			functionDefinition.setXmlElement(element);
 			fuds.put(name, functionDefinition);
 			return functionDefinition;
 		}

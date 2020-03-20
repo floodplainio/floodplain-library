@@ -1,9 +1,13 @@
 package com.dexels.navajo.functions.test;
 
-import com.dexels.navajo.document.*;
-import com.dexels.navajo.document.types.Binary;
-import com.dexels.navajo.document.types.ClockTime;
-import com.dexels.navajo.document.types.StopwatchTime;
+import com.dexels.navajo.document.Message;
+import com.dexels.navajo.document.Navajo;
+import com.dexels.navajo.document.NavajoFactory;
+import com.dexels.navajo.document.Property;
+import com.dexels.navajo.document.operand.Binary;
+import com.dexels.navajo.document.operand.ClockTime;
+import com.dexels.navajo.document.operand.Operand;
+import com.dexels.navajo.document.operand.StopwatchTime;
 import com.dexels.navajo.expression.api.FunctionInterface;
 import com.dexels.navajo.expression.api.TMLExpressionException;
 import com.dexels.navajo.functions.*;
@@ -387,28 +391,6 @@ public class StandardFunctionsTest {
 		assertNotNull(o);
 
 	}
-
-	@Test
-	public void testSumMessage() {
-
-		FunctionInterface fi = fff.getInstance(cl, "SumMessage");
-		Navajo doc = createTestNavajo();
-//		fi.setInMessage(doc);
-
-		fi.reset();
-		fi.insertMessageOperand(doc.getMessage("Aap"));
-		fi.insertStringOperand("Noot");
-
-		Object o = fi.evaluateWithTypeChecking();
-
-		assertNotNull(o);
-		assertEquals(Integer.class, o.getClass());
-		assertEquals("10", o.toString());
-
-	}
-
-
-
 	@Test
 	public void testSum() {
 
@@ -553,15 +535,6 @@ public class StandardFunctionsTest {
 		assertEquals(Integer.class, o.getClass());
 		assertEquals("4", o.toString());
 
-		fi.reset();
-		fi.insertMessageOperand(createTestNavajo().getMessage("Aap"));
-
-		o = fi.evaluateWithTypeChecking();
-
-		assertNotNull(o);
-		assertEquals(Integer.class, o.getClass());
-		assertEquals("1", o.toString());
-
 		ArrayList<Integer> list = new ArrayList<Integer>();
 		list.add(Integer.valueOf(10));
 		list.add(Integer.valueOf(10));
@@ -573,22 +546,6 @@ public class StandardFunctionsTest {
 		assertNotNull(o);
 		assertEquals(Integer.class, o.getClass());
 		assertEquals("2", o.toString());
-
-	}
-
-	@Test
-	public void testSetAllProperties() {
-
-		FunctionInterface fi = fff.getInstance(cl, "SetAllProperties");
-		fi.reset();
-//		fi.setInMessage(createTestNavajo());
-		fi.insertMessageOperand(createTestNavajo().getMessage("Aap"));
-		fi.insertStringOperand("Noot");
-		fi.insertIntegerOperand(Integer.valueOf(2));
-
-		Object o = fi.evaluateWithTypeChecking();
-
-		assertNull(o);
 
 	}
 
@@ -798,21 +755,6 @@ public class StandardFunctionsTest {
 	}
 
 	@Test
-	public void testMergeNavajo() {
-
-		FunctionInterface fi = fff.getInstance(cl, "MergeNavajo");
-		fi.reset();
-		fi.insertNavajoOperand(createTestNavajo());
-		fi.insertNavajoOperand(createTestNavajo());
-
-		Object o = fi.evaluateWithTypeChecking();
-
-		assertNotNull(o);
-		assertTrue(Navajo.class.isInstance(o));
-
-	}
-
-	@Test
 	public void testIsNull() {
 
 		FunctionInterface fi = fff.getInstance(cl, "IsNull");
@@ -914,53 +856,6 @@ public class StandardFunctionsTest {
 	}
 
 	@Test
-	public void testGetSelectedValue() {
-
-		FunctionInterface fi = fff.getInstance(cl, "GetSelectedValue");
-		fi.reset();
-		Navajo doc = createTestNavajo();
-		fi.insertSelectionListOperand(doc.getProperty("/Single/Selectie")
-				.getAllSelectedSelections());
-
-		Object o = fi.evaluateWithTypeChecking();
-
-		assertNotNull(o);
-		assertEquals("value", o.toString());
-	}
-
-	@Test
-	public void testGetSelectedName() {
-
-		FunctionInterface fi = fff.getInstance(cl, "GetSelectedName");
-		fi.reset();
-		Navajo doc = createTestNavajo();
-		fi.insertSelectionListOperand(doc.getProperty("/Single/Selectie")
-				.getAllSelectedSelections());
-
-		Object o = fi.evaluateWithTypeChecking();
-
-		assertNotNull(o);
-		assertEquals("key", o.toString());
-	}
-
-
-	@Test
-	public void testGetProperty() {
-
-		FunctionInterface fi = fff.getInstance(cl, "GetProperty");
-		fi.reset();
-//		fi.setInMessage(createTestNavajo());
-		Navajo doc = createTestNavajo();
-		fi.insertMessageOperand(doc.getMessage("Single"));
-		fi.insertStringOperand("Selectie");
-
-		Object o = fi.evaluateWithTypeChecking();
-
-		assertNotNull(o);
-		assertTrue(Property.class.isInstance(o));
-	}
-
-	@Test
 	public void testGetMimeType() {
 
 		FunctionInterface fi = fff.getInstance(cl, "GetMimeType");
@@ -1001,24 +896,6 @@ public class StandardFunctionsTest {
 		assertNull(o);
 
 	}
-
-	@Test
-	public void testGetDescription() {
-
-		FunctionInterface fi = fff.getInstance(cl, "GetDescription");
-		fi.reset();
-//		fi.setInMessage(createTestNavajo());
-		Navajo doc = createTestNavajo();
-		fi.insertPropertyOperand(doc.getProperty("/Single/Selectie"));
-
-		Object o = fi.evaluateWithTypeChecking();
-
-		assertNotNull(o);
-		assertEquals("", o.toString());
-	}
-
-
-
 
 	@Test
 	public void testFormatStringList() {
@@ -1357,19 +1234,6 @@ public class StandardFunctionsTest {
 		assertTrue(Arrays.equals(returned, bytes));
 	}
 
-	@Test
-	public void testAppendArray() {
-		FunctionInterface fi = fff.getInstance(cl, "AppendArray");
-		fi.reset();
-//		fi.setInMessage(createTestNavajo());
-		fi.insertMessageOperand(createTestNavajo().getMessage("Aap"));
-		fi.insertMessageOperand(createTestNavajo().getMessage("Aap"));
-
-		try {
-			Object o = fi.evaluateWithTypeChecking();
-		} catch (Exception e) {
-		}
-	}
 
 	@Test
 	public void testAge() {

@@ -1,5 +1,6 @@
 package com.dexels.navajo.document.stream;
 
+import com.dexels.immutable.api.ImmutableTypeParser;
 import com.dexels.navajo.document.Message;
 import com.dexels.navajo.document.NavajoFactory;
 import com.dexels.navajo.document.Property;
@@ -188,12 +189,13 @@ public class NavajoStreamToMutableMessageStream  extends BaseFlowableOperator<Fl
 				result.addSelection(sel);
 			}
 		} else {
-			result = NavajoFactory.getInstance().createProperty(null, p.name(), p.type()==null?Property.STRING_PROPERTY:p.type(), null, p.length(), p.description(), p.direction().orElse(null));
+			String tmlPropertyType = ImmutableTypeParser.typeName(p.type());
+			result = NavajoFactory.getInstance().createProperty(null, p.name(), tmlPropertyType, null, p.length(), p.description(), p.direction().orElse(null));
 			if(p.value()!=null) {
 				result.setAnyValue(p.value());
 			}
 			if(p.type()!=null) {
-				result.setType(p.type());
+				result.setType(tmlPropertyType);
 			}
 		}
 		return result;

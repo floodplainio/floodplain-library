@@ -1,5 +1,6 @@
 package com.dexels.replication.impl.json;
 
+import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.pubsub.rx2.api.PubSubMessage;
 import com.dexels.replication.api.ReplicationMessage;
 import com.dexels.replication.api.ReplicationMessage.Operation;
@@ -21,6 +22,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+
+import static com.dexels.immutable.api.ImmutableMessage.*;
 
 //@Component(name="dexels.replication.parser.json", enabled=false)
 @Named("json") @ApplicationScoped
@@ -172,10 +175,10 @@ public class JSONReplicationMessageParserImpl implements ReplicationMessageParse
 					.withPartition(data.partition())
 					.withOffset(data.offset())
 					.withSource(data.topic())
-					.with("_kafkapartition", data.partition().orElse(-1), "integer")
-					.with("_kafkaoffset", data.offset().orElse(-1L), "long")
-					.with("_kafkakey", data.key(), "string")
-					.with("_kafkatopic",data.topic().orElse(null),"string");
+					.with("_kafkapartition", data.partition().orElse(-1), ValueType.INTEGER)
+					.with("_kafkaoffset", data.offset().orElse(-1L), ValueType.LONG)
+					.with("_kafkakey", data.key(), ValueType.STRING)
+					.with("_kafkatopic",data.topic().orElse(null),ValueType.STRING);
 		} else {
 			return result;
 		}

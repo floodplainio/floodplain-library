@@ -53,21 +53,4 @@ public class IsValidXMLFile extends FunctionInterface {
 		return "IsValidXMLFile(binary), returns true or false";
 	}
 
-	public static void main(String [] args) throws Exception {
-	
-//		FileInputStream fs = new FileInputStream((new File("c:/users/erik/appdata/local/temp/_aaacamt.xml")));
-		FileInputStream fs = new FileInputStream((new File("/home/chris/camt.xml")));
-		Binary b = new Binary(fs);
-		fs.close();
-		
-		IsValidXMLFile i = new IsValidXMLFile();
-		i.reset();
-		i.insertBinaryOperand(b);
-		Object o = i.evaluate();
-	
-		System.err.println("result valid xml file = " + o);
-		
-		
-	}
-
 }

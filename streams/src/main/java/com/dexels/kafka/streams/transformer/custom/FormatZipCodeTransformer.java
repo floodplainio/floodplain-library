@@ -1,5 +1,6 @@
 package com.dexels.kafka.streams.transformer.custom;
 
+import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.replication.api.ReplicationMessage;
 import com.dexels.replication.transformer.api.MessageTransformer;
 
@@ -15,7 +16,7 @@ public class FormatZipCodeTransformer implements MessageTransformer {
         if (value != null) {
             value = value.replace(" ", "").trim();
         }
-        return msg.with(field, value, "string");
+        return msg.with(field, value, ImmutableMessage.ValueType.STRING);
     }
 
 }

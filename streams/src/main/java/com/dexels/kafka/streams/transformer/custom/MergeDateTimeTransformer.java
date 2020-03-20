@@ -1,5 +1,6 @@
 package com.dexels.kafka.streams.transformer.custom;
 
+import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.replication.api.ReplicationMessage;
 import com.dexels.replication.transformer.api.MessageTransformer;
 
@@ -38,7 +39,7 @@ public class MergeDateTimeTransformer implements MessageTransformer {
         cal.set(Calendar.MINUTE, cal2.get(Calendar.MINUTE));
         cal.set(Calendar.SECOND, cal2.get(Calendar.SECOND));
 
-        return msg.with(to, cal.getTime(), "date");
+        return msg.with(to, cal.getTime(), ImmutableMessage.ValueType.DATE);
 
     }
 

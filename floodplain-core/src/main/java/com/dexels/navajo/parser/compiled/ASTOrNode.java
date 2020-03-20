@@ -2,7 +2,9 @@
 package com.dexels.navajo.parser.compiled;
 
 import com.dexels.immutable.api.ImmutableMessage;
-import com.dexels.navajo.document.Operand;
+import com.dexels.immutable.api.ImmutableMessage.ValueType;
+import com.dexels.immutable.api.ImmutableTypeParser;
+import com.dexels.navajo.document.operand.Operand;
 import com.dexels.navajo.document.Property;
 import com.dexels.navajo.expression.api.ContextExpression;
 import com.dexels.navajo.expression.api.FunctionClassification;
@@ -18,9 +20,9 @@ final class ASTOrNode extends SimpleNode {
 	@Override
 	public ContextExpression interpretToLambda(List<String> problems, String expression, Function<String, FunctionClassification> functionClassifier, Function<String,Optional<Node>> mapResolver) {
 		ContextExpression expA = jjtGetChild(0).interpretToLambda(problems,expression,functionClassifier,mapResolver);
-		checkOrAdd("Or expression failed, first expression is not a boolean but a "+expA.returnType().orElse("<unknown>"), problems, expA.returnType(), Property.BOOLEAN_PROPERTY);
+		checkOrAdd("Or expression failed, first expression is not a boolean but a "+expA.returnType().map(ImmutableTypeParser::typeName).orElse("<unknown>"), problems, expA.returnType(), ValueType.BOOLEAN);
 		ContextExpression expB = jjtGetChild(1).interpretToLambda(problems,expression,functionClassifier,mapResolver);
-		checkOrAdd("Or expression failed, second expression is not a boolean but a "+expB.returnType().orElse("<unknown>"), problems, expB.returnType(), Property.BOOLEAN_PROPERTY);
+		checkOrAdd("Or expression failed, second expression is not a boolean but a "+expB.returnType().map(ImmutableTypeParser::typeName).orElse("<unknown>"), problems, expB.returnType(), ValueType.BOOLEAN);
 		return new ContextExpression() {
 			
 			@Override
@@ -48,8 +50,8 @@ final class ASTOrNode extends SimpleNode {
 			}
 
 			@Override
-			public Optional<String> returnType() {
-				return Optional.of(Property.BOOLEAN_PROPERTY);
+			public Optional<ValueType> returnType() {
+				return Optional.of(ValueType.BOOLEAN);
 			}
 			
 			@Override

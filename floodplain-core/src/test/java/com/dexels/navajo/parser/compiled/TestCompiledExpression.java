@@ -1,6 +1,7 @@
 package com.dexels.navajo.parser.compiled;
 
 import com.dexels.navajo.document.*;
+import com.dexels.navajo.document.operand.Operand;
 import com.dexels.navajo.expression.api.*;
 import com.dexels.navajo.expression.compiled.AddTestFunction;
 import com.dexels.navajo.expression.compiled.ParameterNamesFunction;

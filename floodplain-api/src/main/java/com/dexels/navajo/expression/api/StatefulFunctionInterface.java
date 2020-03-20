@@ -10,7 +10,6 @@ package com.dexels.navajo.expression.api;
  */
 
 import com.dexels.immutable.api.ImmutableMessage;
-import com.dexels.navajo.document.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +19,7 @@ public abstract class StatefulFunctionInterface extends FunctionInterface {
 //	private Access access;
 
 //	protected Navajo inMessage = null;
-	protected Message currentMessage = null;
+//	protected Message currentMessage = null;
 
 	
 	private static final Logger logger = LoggerFactory.getLogger(StatefulFunctionInterface.class);

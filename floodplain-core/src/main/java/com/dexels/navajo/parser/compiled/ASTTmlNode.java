@@ -2,8 +2,10 @@
 package com.dexels.navajo.parser.compiled;
 
 import com.dexels.immutable.api.ImmutableMessage;
+import com.dexels.immutable.api.ImmutableMessage.ValueType;
 import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.navajo.document.*;
+import com.dexels.navajo.document.operand.Operand;
 import com.dexels.navajo.document.types.ClockTime;
 import com.dexels.navajo.document.types.NavajoType;
 import com.dexels.navajo.expression.api.ContextExpression;
@@ -313,7 +315,7 @@ final class ASTTmlNode extends SimpleNode {
 					}
 					return null;
 				}
-				String type = rm.columnType(path.get(0));
+				ValueType type = rm.columnType(path.get(0));
 				if(type!=null) {
 					return Operand.ofCustom(rm.value(path.get(0)).orElse(null), type);
 				}
@@ -322,7 +324,7 @@ final class ASTTmlNode extends SimpleNode {
 
 			
 			@Override
-			public Optional<String> returnType() {
+			public Optional<ValueType> returnType() {
 				return Optional.empty();
 			}
 			

@@ -82,7 +82,7 @@ public class NeoInsertTransformer implements FlowableTransformer<List<Replicatio
 	private static ObjectNode insertStatement(ReplicationMessage message, String labels) throws IOException {
 		String key = message.combinedKey();
 		String statement = "CREATE (n:${label} $props) RETURN n";
-		final ObjectNode json = ImmutableJSON.json(message.message().with("key", key, ImmutableMessage.ValueType.STRING.name()));
+		final ObjectNode json = ImmutableJSON.json(message.message().with("key", key, ImmutableMessage.ValueType.STRING));
 		
 		StringSubstitutor sub = new StringSubstitutor(res->{
 			switch(res) {
@@ -129,7 +129,7 @@ public class NeoInsertTransformer implements FlowableTransformer<List<Replicatio
 		StringSubstitutor sub = new StringSubstitutor(inlineparams);
 		
 		String statement = "MATCH (f:${sourcelabel}),(a:${destinationlabel}) WHERE f.${sourcekey} = $sourcekey AND a.${destinationkey} = $destinationkey CREATE (f)-[r:${relationlabel} {props} ]->(a) RETURN r";
-		final ObjectNode json = ImmutableJSON.json(message.message().with("key", key, ImmutableMessage.ValueType.STRING.name()));
+		final ObjectNode json = ImmutableJSON.json(message.message().with("key", key, ImmutableMessage.ValueType.STRING));
 		
 		ObjectNode statementNode = objectMapper.createObjectNode();
 		final String replacedStatement = sub.replace(statement);
@@ -145,8 +145,7 @@ public class NeoInsertTransformer implements FlowableTransformer<List<Replicatio
 	}
 	
 	private void putValue(ObjectNode node, ReplicationMessage message, String name, String paramName) {
-		String type = message.columnType(name);
-		ImmutableMessage.ValueType tp = ImmutableMessage. ValueType.valueOf(type.toUpperCase());
+		ImmutableMessage.ValueType tp = message.columnType(name);
 		switch(tp) {
 			case STRING:
 				node.put(paramName, (String)message.columnValue(name));

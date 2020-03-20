@@ -4,7 +4,7 @@ package com.dexels.navajo.parser.compiled;
 
 
 import com.dexels.immutable.api.ImmutableMessage;
-import com.dexels.navajo.document.Operand;
+import com.dexels.navajo.document.operand.Operand;
 import com.dexels.navajo.document.Property;
 import com.dexels.navajo.expression.api.ContextExpression;
 import com.dexels.navajo.expression.api.FunctionClassification;
@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import static com.dexels.immutable.api.ImmutableMessage.*;
 
 final class ASTListNode extends SimpleNode {
 
@@ -52,8 +54,8 @@ final class ASTListNode extends SimpleNode {
 			}
 
 			@Override
-			public Optional<String> returnType() {
-				return Optional.of(Property.LIST_PROPERTY);
+			public Optional<ValueType> returnType() {
+				return Optional.of(ValueType.LIST);
 			}
 			
 			@Override

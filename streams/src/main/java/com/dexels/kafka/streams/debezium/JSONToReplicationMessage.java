@@ -1,6 +1,8 @@
 package com.dexels.kafka.streams.debezium;
 
 import com.dexels.immutable.api.ImmutableMessage;
+import com.dexels.immutable.api.ImmutableMessage.ValueType;
+import com.dexels.immutable.api.ImmutableTypeParser;
 import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.kafka.streams.api.CoreOperators;
 import com.dexels.kafka.streams.api.TopologyContext;
@@ -52,17 +54,17 @@ public class JSONToReplicationMessage {
 			
 			if(!valuenode.has("payload") || valuenode.get("payload").isNull()) {
 				ReplicationMessage replMsg = ReplicationFactory.empty().withOperation(Operation.DELETE);
-				final ReplicationMessage converted = appendTenant ? replMsg.with("_tenant", key.tenant, "string") : replMsg;
-				final ReplicationMessage convertedWTable = appendTable ? converted.with("_tenant", key.tenant, "string") : converted;
+				final ReplicationMessage converted = appendTenant ? replMsg.with("_tenant", key.tenant, ValueType.STRING) : replMsg;
+				final ReplicationMessage convertedWTable = appendTable ? converted.with("_tenant", key.tenant, ValueType.STRING) : converted;
 				return PubSubTools.create(key.combinedKey,  ReplicationFactory.getInstance().serialize(convertedWTable), msg.timestamp(), Optional.empty());
 			}
 			final ReplicationMessage convOptional = convertToReplication(false,valuenode,key.table);
 			ReplicationMessage conv = convOptional.withPrimaryKeys(key.fields);
 			if(appendTable) {
-				conv = conv.with("_table", key.table, "string");
+				conv = conv.with("_table", key.table, ImmutableMessage.ValueType.STRING);
 				
 			}
-			final ReplicationMessage converted = appendTenant ? conv.with("_tenant", key.tenant, "string") : conv;
+			final ReplicationMessage converted = appendTenant ? conv.with("_tenant", key.tenant, ImmutableMessage.ValueType.STRING) : conv;
 			byte[] serialized = ReplicationFactory.getInstance().serialize(converted);
 			
 //			logger.info("Forwarding to: {}",context.topicName(key.table));
@@ -80,7 +82,7 @@ public class JSONToReplicationMessage {
 	public static ImmutableMessage convert(ObjectNode node, Consumer<String> callbackFieldList,boolean isKey, Optional<Operation> o, String table) {
 		if(!isKey && o.isPresent() && o.get().equals(Operation.DELETE)) {
 //			System.err.println("DELETE DETECTED!");
-			return ImmutableFactory.empty().with("table", table, "string");
+			return ImmutableFactory.empty().with("table", table, ImmutableMessage.ValueType.STRING);
 		}
 		try {
 			JsonNode payLoad = node.get("payload");
@@ -95,8 +97,8 @@ public class JSONToReplicationMessage {
 				fields = firstFields.isPresent() ? (ArrayNode)firstFields.get().get("fields") : fields;
 			}
 
-			Map<String,String> types = new HashMap<>();
-			Map<String,String> typeNames = new HashMap<>();
+			Map<String,ValueType> types = new HashMap<>();
+			Map<String,ValueType> typeNames = new HashMap<>();
 			Map<String,Object> jsonValues = new HashMap<>();
 
 			fields.forEach(e->{
@@ -106,11 +108,11 @@ public class JSONToReplicationMessage {
 				Optional<String> typeName = name==null?Optional.empty():Optional.of(name.asText());
 				Optional<JsonNode> typeParameters = Optional.ofNullable(e.get("parameters"));
 				if(typeName.isPresent()) {
-					typeNames.put(field, typeName.get());
+					typeNames.put(field, ImmutableTypeParser.parseType(typeName.get()) );
 				}
 				String rawType = e.get("type").asText();
 				String type = resolveType(rawType,typeName,typeParameters);
-				types.put(field, type);
+				types.put(field, ImmutableTypeParser.parseType(typeName.get()));
 				boolean hasAfter = payload.get().has("after");
 				boolean reallyHasAfter = hasAfter && !payload.get().get("after").isNull();
 				final Optional<ObjectNode> after = reallyHasAfter ? Optional.ofNullable((ObjectNode)payload.get().get("after")) : Optional.empty();

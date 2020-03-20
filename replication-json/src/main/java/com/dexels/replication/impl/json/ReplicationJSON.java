@@ -2,6 +2,7 @@ package com.dexels.replication.impl.json;
 
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.immutable.api.ImmutableMessage.TypedData;
+import com.dexels.immutable.api.ImmutableTypeParser;
 import com.dexels.immutable.api.customtypes.CoordinateType;
 import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.replication.api.ReplicationMessage;
@@ -25,6 +26,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map.Entry;
+
+import static com.dexels.immutable.api.ImmutableMessage.*;
 
 public class ReplicationJSON {
 	
@@ -92,7 +95,7 @@ public class ReplicationJSON {
 		return objectMapper.readTree(stream);
 	}
 	
-	static void resolveValue(ObjectMapper objectMapper, ObjectNode m, String key, String type, Object value,boolean includeNullValues) {
+	static void resolveValue(ObjectMapper objectMapper, ObjectNode m, String key, ValueType type, Object value,boolean includeNullValues) {
 		if(value==null ) {
 			if(includeNullValues) {
 				m.putNull(key);
@@ -103,32 +106,32 @@ public class ReplicationJSON {
 			logger.info("Null type for key: "+key);
 		}
 		switch (type) {
-			case "string":
+			case STRING:
 				m.put("Value", (String)value);
 				return;
-			case "integer":
+			case INTEGER:
 				m.put("Value", (Integer)value);
 				return;
-			case "long":
+			case LONG:
 				m.put("Value", (Long)value);
 				return;
-			case "double":
+			case DOUBLE:
 				m.put("Value", (Double)value);
 				return;
-			case "float":
+			case FLOAT:
 				if (value instanceof Float) {
 					m.put("Value", (Float)value);
 				} else {
 					m.put("Value", (Double)value);
 				}
 				return;
-			case "boolean":
+			case BOOLEAN:
 				m.put("Value", (Boolean)value);
 				return;
-			case "binary_digest":
+			case BINARY_DIGEST:
 				m.put("Value", (String)value);
 				return;
-			case "date":
+			case DATE:
 				if(value instanceof String) {
 					m.put("Value", (String)value);
 				} else {
@@ -136,7 +139,7 @@ public class ReplicationJSON {
 					m.put("Value", t);
 				}
 				return;
-			case "clocktime":
+			case CLOCKTIME:
 				if(value instanceof String) {
 					m.put("Value", (String)value);
 				} else {
@@ -145,19 +148,19 @@ public class ReplicationJSON {
 				}
 				
                 return;
-			case "list":
+			case LIST:
 	            ArrayNode arrayNode = m.putArray("Value");
 	            @SuppressWarnings("rawtypes") 
 	            ArrayNode valueToTree = objectMapper.valueToTree((List)value);
 	            arrayNode.addAll(valueToTree);
 	            break;
-			case "binary":
+			case BINARY:
 				m.put("Value",Base64.getEncoder().encodeToString((byte[])value));
 				break;
-			case "coordinate":
+			case COORDINATE:
 			    m.put("Value", ((CoordinateType)value).toString());
 			    break;
-			case "enum":
+			case ENUM:
 			    m.put("Value", (String)value);
 			    break;
 			default:
@@ -168,7 +171,7 @@ public class ReplicationJSON {
 	
 
 	
-	public static Object resolveValue(String type, JsonNode jsonNode) {
+	public static Object resolveValue(ValueType type, JsonNode jsonNode) {
 		if(jsonNode == null) {
 			return null;
 		}
@@ -177,23 +180,22 @@ public class ReplicationJSON {
 		}
 		
 		switch (type) {
-			case "string":
+			case STRING:
+			case BINARY_DIGEST:
+			case ENUM:
 				return jsonNode.asText();
-			case "integer":
+			case INTEGER:
 				return jsonNode.asInt();
-			case "long":
+			case LONG:
 				return jsonNode.asLong();
-			case "double":
+			case DOUBLE:
+			case FLOAT:
 				return jsonNode.asDouble();
-			case "float":
-				return jsonNode.asDouble();
-			case "boolean":
+			case BOOLEAN:
 				return jsonNode.asBoolean();
-			case "binary_digest":
-				return jsonNode.asText();
-			case "binary":
+			case BINARY:
 				return jsonNode.isNull() ? new byte[]{} : Base64.getDecoder().decode(jsonNode.asText());
-			case "list":
+			case LIST:
 			    ArrayNode node = ((ArrayNode) jsonNode);
 			    List<Object> result = new ArrayList<>();
 			    for (final JsonNode objNode : node) {
@@ -206,7 +208,7 @@ public class ReplicationJSON {
 			        }
 			    }
 			    return result;
-			case "date":
+			case DATE:
 				//"2011-10-03 15:01:06.00"
 				try {
 					return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SS").parse(jsonNode.asText());
@@ -214,7 +216,7 @@ public class ReplicationJSON {
 				    logger.warn("Cannot parse date {} = returning null", jsonNode.asText());
 					return null;
 				}
-			case "clocktime":
+			case CLOCKTIME:
                 //"15:01:06"
                 try {
                     return new SimpleDateFormat("HH:mm:ss").parse(jsonNode.asText());
@@ -223,17 +225,15 @@ public class ReplicationJSON {
 
                     return null;
                 }
-        case "coordinate":
-            try {
-                return new CoordinateType(jsonNode.asText());
-            } catch (Exception e) {
-                logger.warn("Cannot parse coordinate {} = returning null", jsonNode.asText());
+			case COORDINATE:
+				try {
+					return new CoordinateType(jsonNode.asText());
+				} catch (Exception e) {
+					logger.warn("Cannot parse coordinate {} = returning null", jsonNode.asText());
 
-                return null;
-            }
-        case "enum":
-        	return jsonNode.asText();
-        default:
+					return null;
+				}
+       default:
 			    logger.warn("Unsupported type {}", type);
 				break;
 		}
@@ -380,12 +380,12 @@ public class ReplicationJSON {
 	private static void appendImmutable(ObjectNode node, ImmutableMessage immutable, boolean includeNullValues) {
 		ObjectNode columns = objectMapper.createObjectNode();
 		node.set("Columns",columns);
-		final Map<String, String> types = immutable.types();
+		final Map<String, ValueType> types = immutable.types();
 		for (Entry<String,Object> e : immutable.values().entrySet()) {
 			ObjectNode m = objectMapper.createObjectNode();
 			final String key = e.getKey();
-			final String type = types.get(key);
-			m.put("Type", type);
+			final ValueType type = types.get(key);
+			m.put("Type", ImmutableTypeParser.typeName(type));
 			ReplicationJSON.resolveValue(objectMapper, m,key,type,e.getValue(),includeNullValues);
 			columns.set(e.getKey(), m);
 		}
@@ -461,7 +461,7 @@ public class ReplicationJSON {
 	private static ImmutableMessage parseImmutable(ObjectNode node) {
 		ObjectNode val = (ObjectNode) node.get("Columns");
 		Map<String,Object> localvalues = new HashMap<>();
-		Map<String,String> localtypes = new HashMap<>();
+		Map<String,ValueType> localtypes = new HashMap<>();
 		if(val!=null) {
 			Iterator<Entry<String, JsonNode>> it = val.fields();
 			while (it.hasNext()) {
@@ -476,13 +476,13 @@ public class ReplicationJSON {
 						logger.error("Error: ", e1);
 					}
 				}
-				String type = typeObject.asText();
+				ValueType type = ImmutableTypeParser.parseType(typeObject.asText());
 				Object value = ReplicationJSON.resolveValue(type,column.get("Value"));
 				localvalues.put(name, value);
 				localtypes.put(name, type);
 			}
 		}
-		Map<String,String> types = Collections.unmodifiableMap(localtypes);
+		Map<String,ValueType> types = Collections.unmodifiableMap(localtypes);
 		Map<String,Object> values = Collections.unmodifiableMap(localvalues);
 		ObjectNode subMessage = (ObjectNode) node.get("SubMessage");
 

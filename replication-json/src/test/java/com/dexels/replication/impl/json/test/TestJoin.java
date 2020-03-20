@@ -209,7 +209,7 @@ public class TestJoin {
 	public void testToFlatMapWithParam() {
 		InputStream stream = TestJoin.class.getClassLoader().getResourceAsStream("submessage.json");
 		ReplicationMessage repl = ReplicationFactory.getInstance().parseStream(stream);
-		ReplicationMessage replWithParam = repl.withParamMessage(ImmutableFactory.empty().with("key", "value", ImmutableMessage.ValueType.STRING.toString()));
+		ReplicationMessage replWithParam = repl.withParamMessage(ImmutableFactory.empty().with("key", "value", ImmutableMessage.ValueType.STRING));
 		Map<String, Object> ss = replWithParam.flatValueMap(true, Collections.emptySet(), "");
 		System.err.println("Entry: " + ss.keySet());
 		Assert.assertEquals(45, ss.size());
@@ -257,10 +257,10 @@ public class TestJoin {
 	
 	@Test
 	public void testNull() {
-		Map<String, String> types = new HashMap<>();
+		Map<String, ImmutableMessage.ValueType> types = new HashMap<>();
 		Map<String, Object> values = new HashMap<>();
-		types.put("Key", "integer");
-		types.put("NullString", "string");
+		types.put("Key", ImmutableMessage.ValueType.INTEGER);
+		types.put("NullString", ImmutableMessage.ValueType.STRING);
 		values.put("Key", 1);
 		values.put("NullString", null);
 		ReplicationMessage rms = ReplicationFactory.createReplicationMessage(Optional.empty(), Optional.empty(),

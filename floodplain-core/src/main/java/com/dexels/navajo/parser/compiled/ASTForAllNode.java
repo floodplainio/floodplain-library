@@ -3,8 +3,9 @@
 package com.dexels.navajo.parser.compiled;
 
 import com.dexels.immutable.api.ImmutableMessage;
+import com.dexels.immutable.api.ImmutableMessage.ValueType;
 import com.dexels.navajo.document.NavajoException;
-import com.dexels.navajo.document.Operand;
+import com.dexels.navajo.document.operand.Operand;
 import com.dexels.navajo.expression.api.ContextExpression;
 import com.dexels.navajo.expression.api.FunctionClassification;
 import com.dexels.navajo.expression.api.TMLExpressionException;
@@ -56,7 +57,7 @@ final class ASTForAllNode extends SimpleNode {
 			}
 
 			@Override
-			public Optional<String> returnType() {
+			public Optional<ValueType> returnType() {
 				return Optional.empty();
 			}
 			

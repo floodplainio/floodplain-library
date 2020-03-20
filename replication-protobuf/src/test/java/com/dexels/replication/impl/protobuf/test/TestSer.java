@@ -1,5 +1,6 @@
 package com.dexels.replication.impl.protobuf.test;
 
+import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.replication.api.ReplicationMessage;
 import com.dexels.replication.api.ReplicationMessageParser;
 import com.dexels.replication.factory.ReplicationFactory;
@@ -36,7 +37,7 @@ public class TestSer {
 	}
 
 	private byte[] testSerialization(final ReplicationMessageParser parser, byte[] payload) {
-		ReplicationMessage r = ReplicationFactory.empty().with("binary", payload, "binary");
+		ReplicationMessage r = ReplicationFactory.empty().with("binary", payload, ImmutableMessage.ValueType.BINARY);
 		byte[] encoded = r.toBytes(parser);
 		ReplicationMessage s = parser.parseBytes(Optional.of("binary"),encoded);
 		final byte[] deserialized = (byte[]) s.columnValue("binary");

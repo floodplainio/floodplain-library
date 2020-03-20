@@ -2,7 +2,8 @@
 package com.dexels.navajo.parser.compiled;
 
 
-import com.dexels.navajo.document.Operand;
+import com.dexels.immutable.api.ImmutableMessage;
+import com.dexels.navajo.document.operand.Operand;
 import com.dexels.navajo.document.Property;
 import com.dexels.navajo.document.types.ClockTime;
 import com.dexels.navajo.expression.api.ContextExpression;
@@ -15,6 +16,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
+import static com.dexels.immutable.api.ImmutableMessage.ValueType.*;
+
 @SuppressWarnings({"rawtypes"})
 
 abstract class ComparisonNode extends SimpleNode {
@@ -24,7 +27,7 @@ abstract class ComparisonNode extends SimpleNode {
     }
 	@Override
 	public ContextExpression interpretToLambda(List<String> problems, String expression, Function<String, FunctionClassification> functionClassifier, Function<String,Optional<Node>> mapResolver) {
-		return lazyBiFunction(problems,expression,(a,b)->interpret(a, b,expression),(a,b)->true,(a,b)->Optional.of(Property.BOOLEAN_PROPERTY),functionClassifier,mapResolver);
+		return lazyBiFunction(problems,expression,(a,b)->interpret(a, b,expression),(a,b)->true,(a,b)->Optional.of(BOOLEAN),functionClassifier,mapResolver);
 	}
 	
 	protected abstract ComparisonOperator getComparisonOperator();

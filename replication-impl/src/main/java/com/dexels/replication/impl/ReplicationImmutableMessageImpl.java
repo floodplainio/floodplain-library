@@ -13,6 +13,8 @@ import java.util.Map.Entry;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static com.dexels.immutable.api.ImmutableMessage.*;
+
 public class ReplicationImmutableMessageImpl implements ReplicationMessage {
 
 	private final static Logger logger = LoggerFactory.getLogger(ReplicationImmutableMessageImpl.class);
@@ -32,7 +34,7 @@ public class ReplicationImmutableMessageImpl implements ReplicationMessage {
 
 
 
-	public ReplicationImmutableMessageImpl(Optional<String> source, Optional<Integer> partition, Optional<Long> offset, String transactionId, Operation operation, long timestamp, Map<String,Object> values, Map<String,String> types,Map<String,ImmutableMessage> submessage, Map<String,List<ImmutableMessage>> submessages, List<String> primaryKeys, Optional<Runnable> commitAction, Optional<ImmutableMessage> paramMessage) {
+	public ReplicationImmutableMessageImpl(Optional<String> source, Optional<Integer> partition, Optional<Long> offset, String transactionId, Operation operation, long timestamp, Map<String,Object> values, Map<String, ValueType> types, Map<String,ImmutableMessage> submessage, Map<String,List<ImmutableMessage>> submessages, List<String> primaryKeys, Optional<Runnable> commitAction, Optional<ImmutableMessage> paramMessage) {
 		this.immutableMessage = ImmutableFactory.create(values, types, submessage, submessages);
 		this.transactionId = transactionId;
 		this.timestamp = timestamp;
@@ -155,29 +157,29 @@ public class ReplicationImmutableMessageImpl implements ReplicationMessage {
 
 
 
-	private Map<String,String> resolveTypesFromValues(Map<String, Object> values) {
-		Map<String,String> t = new HashMap<>();
+	private Map<String, ValueType> resolveTypesFromValues(Map<String, Object> values) {
+		Map<String, ValueType> t = new HashMap<>();
 		for (Entry<String,Object> e : values.entrySet()) {
 			Object val = e.getValue();
 			if(val==null) {
 //				t.put(e.getKey(), "unknown");
 			} else if(val instanceof Long) {
-				t.put(e.getKey(), "long");
+				t.put(e.getKey(), ValueType.LONG);
 			} else if(val instanceof Double) {
-				t.put(e.getKey(), "double");
+				t.put(e.getKey(), ValueType.DOUBLE);
 			} else if(val instanceof Integer) {
-				t.put(e.getKey(), "integer");
+				t.put(e.getKey(), ValueType.INTEGER);
 			} else if(val instanceof Float) {
-				t.put(e.getKey(), "float");
+				t.put(e.getKey(), ValueType.FLOAT);
 			} else if(val instanceof Date) {
-				t.put(e.getKey(), "date");
+				t.put(e.getKey(), ValueType.DATE);
 			} else if(val instanceof Boolean) {
-				t.put(e.getKey(), "boolean");
+				t.put(e.getKey(), ValueType.BOOLEAN);
 			} else if(val instanceof String) {
-				t.put(e.getKey(), "string");
+				t.put(e.getKey(), ValueType.STRING);
 			} else {
 				logger.warn("Unknown type::: {}",val.getClass());
-				t.put(e.getKey(), "string");
+				t.put(e.getKey(),ValueType.STRING);
 				
 			}
 		}
@@ -195,7 +197,7 @@ public class ReplicationImmutableMessageImpl implements ReplicationMessage {
 //	}
 
 	@Override
-	public Map<String,String> types() {
+	public Map<String,ValueType> types() {
 		return message().types();
 	}
  	
@@ -258,7 +260,7 @@ public class ReplicationImmutableMessageImpl implements ReplicationMessage {
 	}
 
 	@Override
-	public String columnType(String name) {
+	public ValueType columnType(String name) {
 		return message().columnType(name);
 	}
 
@@ -325,7 +327,7 @@ public class ReplicationImmutableMessageImpl implements ReplicationMessage {
 	}
 
 	@Override
-	public ReplicationMessage with(String key, Object value, String type) {
+	public ReplicationMessage with(String key, Object value, ValueType type) {
 		return withImmutableMessage(message().with(key, value, type));
 	}
 	

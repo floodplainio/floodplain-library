@@ -1,12 +1,16 @@
 package com.dexels.navajo.expression.api;
 
 
-import com.dexels.navajo.document.nanoimpl.XMLElement;
+import com.dexels.immutable.api.ImmutableMessage;
+import com.dexels.immutable.api.ImmutableMessage.ValueType;
+import com.dexels.immutable.api.ImmutableMessageParser;
+import com.dexels.immutable.api.ImmutableTypeParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
 
 public final class FunctionDefinition implements Serializable {
 
@@ -18,8 +22,7 @@ public final class FunctionDefinition implements Serializable {
 	private final String object;
 	private final String description;
 	private final String [][] inputParams;
-	private final String [] resultParam;
-	private XMLElement xmlElement;
+	private final ValueType [] resultParam;
 	private Class<? extends FunctionInterface> functionClass;
 	
 	public FunctionDefinition(final String object, final String description, final String inputParams, final String resultParam) {
@@ -35,7 +38,9 @@ public final class FunctionDefinition implements Serializable {
 			this.inputParams =  null;
 		}
 		if ( resultParam != null && !resultParam.equals("") ) {
-			this.resultParam = resultParam.split("\\|");
+			String[] res = resultParam.split("\\|");
+
+			this.resultParam = Arrays.asList(res).stream().map(ImmutableTypeParser::parseType).toArray(ValueType[]::new);
 		} else {
 			this.resultParam = null;
 		}
@@ -53,7 +58,7 @@ public final class FunctionDefinition implements Serializable {
 		return inputParams;
 	}
 
-	public final String [] getResultParam() {
+	public final ValueType[] getResultParam() {
 		return resultParam;
 	}
 
@@ -64,15 +69,6 @@ public final class FunctionDefinition implements Serializable {
 	
 	public static void main(String [] args) throws Exception {
 		
-	}
-
-	public void setXmlElement(XMLElement f) {
-		this.xmlElement = f;
-		
-	}
-
-	public XMLElement getXmlElement() {
-		return xmlElement;
 	}
 
 	public Class<? extends FunctionInterface> getFunctionClass() {

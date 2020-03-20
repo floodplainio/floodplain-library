@@ -1,6 +1,8 @@
 package com.dexels.immutable.json;
 
 import com.dexels.immutable.api.ImmutableMessage;
+import com.dexels.immutable.api.ImmutableMessage.ValueType;
+import com.dexels.immutable.api.ImmutableTypeParser;
 import com.dexels.immutable.factory.ImmutableFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -28,7 +30,7 @@ public class ImmutableJSON {
 	}
 	public static ObjectNode flatJson(ImmutableMessage msg) throws IOException {
 		ObjectNode node = objectMapper.createObjectNode();
-		msg.toTypedDataMap().entrySet().forEach(e->resolveValue(objectMapper,node,e.getKey(), e.getValue().type.name().toLowerCase(),Optional.ofNullable(e.getValue().value),false));
+		msg.toTypedDataMap().entrySet().forEach(e->resolveValue(objectMapper,node,e.getKey(), e.getValue().type,Optional.ofNullable(e.getValue().value),false));
 		for (Entry<String,ImmutableMessage> e : msg.subMessageMap().entrySet()) {
 			flatJson(e.getValue(), node, e.getKey());
 		}
@@ -37,7 +39,7 @@ public class ImmutableJSON {
 
 	
 	public static ObjectNode flatJson(ImmutableMessage msg, ObjectNode node, String prefix) throws IOException {
-		msg.toTypedDataMap().entrySet().forEach(e->resolveValue(objectMapper,node,prefix+"_"+e.getKey(), e.getValue().type.name().toLowerCase(),Optional.ofNullable(e.getValue().value),false));
+		msg.toTypedDataMap().entrySet().forEach(e->resolveValue(objectMapper,node,prefix+"_"+e.getKey(), e.getValue().type,Optional.ofNullable(e.getValue().value),false));
 		for (Entry<String,ImmutableMessage> e : msg.subMessageMap().entrySet()) {
 			flatJson(e.getValue(), node, prefix+"_"+e.getKey());
 		}
@@ -46,7 +48,7 @@ public class ImmutableJSON {
 	
 	public static ObjectNode json(ImmutableMessage msg) throws IOException {
 		ObjectNode node = objectMapper.createObjectNode();
-		msg.toTypedDataMap().entrySet().forEach(e->resolveValue(objectMapper,node,e.getKey(), e.getValue().type.name().toLowerCase(),Optional.ofNullable(e.getValue().value),false));
+		msg.toTypedDataMap().entrySet().forEach(e->resolveValue(objectMapper,node,e.getKey(), e.getValue().type,Optional.ofNullable(e.getValue().value),false));
 		for (Entry<String,List<ImmutableMessage>> e : msg.subMessageListMap().entrySet()) {
 
 			String key = e.getKey();
@@ -90,8 +92,8 @@ public class ImmutableJSON {
 	public static ObjectNode toJSON(ImmutableMessage msg, boolean includeNullValues, boolean includeTypes) {
 		ObjectNode result = objectMapper.createObjectNode();
 		msg.columnNames().forEach(column->{
-			String type = msg.columnType(column);
-			result.put(column+".type", type);
+			ValueType type = msg.columnType(column);
+			result.put(column+".type", ImmutableTypeParser.typeName(type));
 			resolveValue(objectMapper, result,column,type,msg.value(column),includeNullValues);
 		});
 		msg.subMessageListMap().entrySet().forEach(e->{
@@ -108,7 +110,7 @@ public class ImmutableJSON {
 	}
 
 
-	private static void resolveValue(ObjectMapper objectMapper, ObjectNode m, String key, String type, Optional<Object> maybeValue,boolean includeNullValues) {
+	private static void resolveValue(ObjectMapper objectMapper, ObjectNode m, String key, ValueType type, Optional<Object> maybeValue,boolean includeNullValues) {
 		if(!maybeValue.isPresent() ) {
 			if(includeNullValues) {
 				m.putNull(key);
@@ -121,24 +123,26 @@ public class ImmutableJSON {
 		}
 		Object value = maybeValue.get();
 		switch (type) {
-			case "string":
-			case "binary_digest":
+			case STRING:
+			case BINARY_DIGEST:
 				m.put(key, (String)value);
 				return;
-			case "integer":
+			case INTEGER:
 				m.put(key, (Integer)value);
 				return;
-			case "long":
+			case LONG:
 				m.put(key, (Long)value);
 				return;
-			case "double":
-			case "float":
+			case DOUBLE:
 				m.put(key, (Double)value);
 				return;
-			case "boolean":
+			case FLOAT:
+				m.put(key, (Float) value);
+				return;
+			case BOOLEAN:
 				m.put(key, (Boolean)value);
 				return;
-			case "date":
+			case DATE:
 				if(value instanceof String) {
 					m.put(key, (String)value);
 				} else {
@@ -146,7 +150,7 @@ public class ImmutableJSON {
 					m.put(key, t);
 				}
 				return;
-			case "clocktime":
+			case CLOCKTIME:
 				if(value instanceof String) {
 					m.put(key, (String)value);
 				} else {
@@ -155,7 +159,7 @@ public class ImmutableJSON {
 				}
 				
                 return;
-			case "list":
+			case LIST:
 				if(value instanceof List) {
 		            ArrayNode arrayNode = m.putArray(key);
 		            @SuppressWarnings("rawtypes") 
@@ -175,7 +179,7 @@ public class ImmutableJSON {
 	
 
 	
-	private static Object resolveValue(String type, JsonNode jsonNode) {
+	private static Object resolveValue(ValueType type, JsonNode jsonNode) {
 		if(jsonNode == null) {
 			return null;
 		}
@@ -184,21 +188,19 @@ public class ImmutableJSON {
 		}
 		
 		switch (type) {
-			case "string":
+			case STRING:
+			case BINARY_DIGEST:
 				return jsonNode.asText();
-			case "integer":
+			case INTEGER:
 				return jsonNode.asInt();
-			case "long":
+			case LONG:
 				return jsonNode.asLong();
-			case "double":
+			case DOUBLE:
+			case FLOAT:
 				return jsonNode.asDouble();
-			case "float":
-				return jsonNode.asDouble();
-			case "boolean":
+			case BOOLEAN:
 				return jsonNode.asBoolean();
-			case "binary_digest":
-				return jsonNode.asText();
-			case "list":
+			case LIST:
 			    ArrayNode node = ((ArrayNode) jsonNode);
 			    List<Object> result = new ArrayList<>();
 			    for (final JsonNode objNode : node) {
@@ -211,7 +213,7 @@ public class ImmutableJSON {
 			        }
 			    }
 			    return result;
-			case "date":
+			case DATE:
 				//"2011-10-03 15:01:06.00"
 				try {
 					return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SS").parse(jsonNode.asText());
@@ -219,7 +221,7 @@ public class ImmutableJSON {
 				    logger.warn("Cannot parse date {} = returning null", jsonNode.asText());
 					return null;
 				}
-			case "clocktime":
+			case CLOCKTIME:
                 //"15:01:06"
                 try {
                     return new SimpleDateFormat("HH:mm:ss").parse(jsonNode.asText());
@@ -237,7 +239,7 @@ public class ImmutableJSON {
 
 	public static ImmutableMessage parseJSON(ObjectNode node) {
 		Map<String,JsonNode> localvalues = new HashMap<>();
-		Map<String,String> localtypes = new HashMap<>();
+		Map<String,ValueType> localtypes = new HashMap<>();
 		Map<String,ImmutableMessage> subMessageMap = new HashMap<>();
 		Map<String,List<ImmutableMessage>> subMessageListMap = new HashMap<>();
 		
@@ -260,8 +262,8 @@ public class ImmutableJSON {
 			} else {
 				String name = e.getKey();
 				if(name.endsWith(".type")) {
-					String type = name.substring(0, name.length() - ".type".length());
-					localtypes.put(type, e.getValue().asText());
+					String columnName = name.substring(0, name.length() - ".type".length());
+					localtypes.put(columnName, ImmutableTypeParser.parseType(e.getValue().asText()));
 				} else {
 					localvalues.put(e.getKey(), e.getValue());
 				}

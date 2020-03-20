@@ -1,6 +1,7 @@
 package com.dexels.navajo.reactive.source.single;
 
 import com.dexels.immutable.api.ImmutableMessage;
+import com.dexels.immutable.api.ImmutableMessage.ValueType;
 import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.navajo.document.stream.DataItem;
 import com.dexels.navajo.document.stream.DataItem.Type;
@@ -50,7 +51,7 @@ public class SingleSource implements ReactiveSource {
 		try {
 
 			Flowable<Long> f = delay > 0 ? Flowable.interval(delay, TimeUnit.MILLISECONDS).take(count) : Flowable.rangeLong(0, count);
-			Flowable<DataItem> flow = f.map(i->DataItem.of(ImmutableFactory.empty(),ImmutableFactory.empty().with("index", i.intValue(), "integer")));
+			Flowable<DataItem> flow = f.map(i->DataItem.of(ImmutableFactory.empty(),ImmutableFactory.empty().with("index", i.intValue(), ValueType.INTEGER)));
 			
 			if(debug) {
 				flow = flow.doOnNext(di->logger.info("Item: "+ImmutableFactory.getInstance().describe(di.message())));

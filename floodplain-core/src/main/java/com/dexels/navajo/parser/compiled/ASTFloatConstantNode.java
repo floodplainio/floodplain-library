@@ -2,7 +2,7 @@
 package com.dexels.navajo.parser.compiled;
 
 import com.dexels.immutable.api.ImmutableMessage;
-import com.dexels.navajo.document.Operand;
+import com.dexels.navajo.document.operand.Operand;
 import com.dexels.navajo.document.Property;
 import com.dexels.navajo.expression.api.ContextExpression;
 import com.dexels.navajo.expression.api.FunctionClassification;
@@ -34,8 +34,8 @@ final class ASTFloatConstantNode extends SimpleNode {
 			}
 
 			@Override
-			public Optional<String> returnType() {
-				return Optional.of(Property.FLOAT_PROPERTY);
+			public Optional<ImmutableMessage.ValueType> returnType() {
+				return Optional.of(ImmutableMessage.ValueType.FLOAT);
 			}
 			
 			@Override

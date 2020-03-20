@@ -2,7 +2,7 @@ package com.dexels.navajo.parser.compiled.api;
 
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.navajo.document.ExpressionEvaluator;
-import com.dexels.navajo.document.Operand;
+import com.dexels.navajo.document.operand.Operand;
 import com.dexels.navajo.expression.api.TMLExpressionException;
 import com.dexels.navajo.parser.DefaultExpressionEvaluator;
 import org.slf4j.Logger;

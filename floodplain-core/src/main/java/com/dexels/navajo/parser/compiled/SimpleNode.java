@@ -3,7 +3,8 @@
 package com.dexels.navajo.parser.compiled;
 
 import com.dexels.immutable.api.ImmutableMessage;
-import com.dexels.navajo.document.Operand;
+import com.dexels.immutable.api.ImmutableMessage.ValueType;
+import com.dexels.navajo.document.operand.Operand;
 import com.dexels.navajo.document.Property;
 import com.dexels.navajo.expression.api.ContextExpression;
 import com.dexels.navajo.expression.api.FunctionClassification;
@@ -104,7 +105,7 @@ public abstract class SimpleNode implements Node {
     /** Stack for calculations. */
     // protected static Object[] stack = new Object[1024];
     // protected static int top = -1;
-    protected BiFunction<Optional<String>, Optional<String>, Boolean> emptyOrType(String type) {
+    protected BiFunction<Optional<ValueType>, Optional<ValueType>, Boolean> emptyOrType(ValueType type) {
 		return (a,b)->{
 			if(!a.isPresent() || !b.isPresent()) {
 				return true;
@@ -113,10 +114,10 @@ public abstract class SimpleNode implements Node {
 		};
     }
 
-    protected boolean matchesType(Optional<String> encountered, String match) {
+    protected boolean matchesType(Optional<ValueType> encountered, ValueType match) {
     		return equalOrEmptyTypes().apply(encountered, Optional.of(match));
     }
-    protected BiFunction<Optional<String>, Optional<String>, Boolean> equalOrEmptyTypes() {
+    protected BiFunction<Optional<ValueType>, Optional<ValueType>, Boolean> equalOrEmptyTypes() {
     		return (a,b)->{
             if (a == null || b == null) {
                 return true;
@@ -135,17 +136,17 @@ public abstract class SimpleNode implements Node {
     		return lazyBiFunction(problems,expression, func, (a,b)->true, (a,b)->Optional.empty(),functionClassifier,mapResolver);
 	}
     
-    public ContextExpression lazyBiFunction(List<String> problems, String expression, BinaryOperator<Operand> func, BiFunction<Optional<String>, Optional<String>, Boolean> acceptTypes,  BiFunction<Optional<String>, Optional<String>, Optional<String>> returnTypeResolver, Function<String, FunctionClassification> functionClassifier, Function<String,Optional<Node>> mapResolver) {
+    public ContextExpression lazyBiFunction(List<String> problems, String expression, BinaryOperator<Operand> func, BiFunction<Optional<ValueType>, Optional<ValueType>, Boolean> acceptTypes,  BiFunction<Optional<ValueType>, Optional<ValueType>, Optional<ValueType>> returnTypeResolver, Function<String, FunctionClassification> functionClassifier, Function<String,Optional<Node>> mapResolver) {
 		ContextExpression expA = jjtGetChild(0).interpretToLambda(problems,expression,functionClassifier,mapResolver);
 		ContextExpression expB = jjtGetChild(1).interpretToLambda(problems,expression,functionClassifier,mapResolver);
-		Optional<String> aType = expA.returnType();
-		Optional<String> bType = expB.returnType();
+		Optional<ValueType> aType = expA.returnType();
+		Optional<ValueType> bType = expB.returnType();
 		boolean inputTypesValid = acceptTypes.apply(aType, bType);
 		
 		if(!inputTypesValid) {
-			problems.add("Invalid input types in node: "+aType.orElse("unknown")+" and "+bType.orElse("unknown")+" in node type: "+this.getClass());
+			problems.add("Invalid input types in node: "+aType.map(Enum::name).orElse("unknown")+" and "+bType.map(Enum::name).orElse("unknown")+" in node type: "+this.getClass());
 		}
-		Optional<String> returnType = returnTypeResolver.apply(aType, bType);
+		Optional<ValueType> returnType = returnTypeResolver.apply(aType, bType);
 		return new ContextExpression() {
 			@Override
 			public Operand apply(Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
@@ -160,7 +161,7 @@ public abstract class SimpleNode implements Node {
 			}
 
 			@Override
-			public Optional<String> returnType() {
+			public Optional<ValueType> returnType() {
 				return returnType;
 			}
 			
@@ -171,11 +172,11 @@ public abstract class SimpleNode implements Node {
 		};
 	}
 	
-	public ContextExpression lazyFunction(List<String> problems, String expression, UnaryOperator<Operand> func, Optional<String> requiredReturnType, Function<String, FunctionClassification> functionClassifier, Function<String,Optional<Node>> mapResolver) {
+	public ContextExpression lazyFunction(List<String> problems, String expression, UnaryOperator<Operand> func, Optional<ValueType> requiredReturnType, Function<String, FunctionClassification> functionClassifier, Function<String,Optional<Node>> mapResolver) {
 		ContextExpression expA = jjtGetChild(0).interpretToLambda(problems,expression,functionClassifier,mapResolver);
 		if(requiredReturnType.isPresent() && expA.returnType().isPresent()) {
-			String expectedType = requiredReturnType.get();
-			String foundType = expA.returnType().get();
+			ValueType expectedType = requiredReturnType.get();
+			ValueType foundType = expA.returnType().get();
 			if(!expectedType.equals(foundType)) {
 				problems.add("Error (static) type checking. Type: "+foundType+" does not match expected type: "+expectedType);
 			}
@@ -194,7 +195,7 @@ public abstract class SimpleNode implements Node {
 			}
 
 			@Override
-			public Optional<String> returnType() {
+			public Optional<ValueType> returnType() {
 				return requiredReturnType;
 			}
 			
@@ -206,7 +207,7 @@ public abstract class SimpleNode implements Node {
 		};
 	}
 	
-    protected void checkOrAdd(String message, List<String> problems, Optional<String> encounteredType, String requiredType) {
+    protected void checkOrAdd(String message, List<String> problems, Optional<ValueType> encounteredType, ValueType requiredType) {
     		if(!matchesType(encounteredType, requiredType)) {
     			problems.add(message);
     		}

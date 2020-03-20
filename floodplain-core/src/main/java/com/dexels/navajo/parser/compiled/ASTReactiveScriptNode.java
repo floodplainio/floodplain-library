@@ -3,7 +3,7 @@
 package com.dexels.navajo.parser.compiled;
 
 import com.dexels.immutable.api.ImmutableMessage;
-import com.dexels.navajo.document.Operand;
+import com.dexels.navajo.document.operand.Operand;
 import com.dexels.navajo.expression.api.ContextExpression;
 import com.dexels.navajo.expression.api.FunctionClassification;
 import com.dexels.navajo.parser.NamedExpression;
@@ -13,6 +13,8 @@ import com.dexels.navajo.reactive.api.Reactive;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import static com.dexels.immutable.api.ImmutableMessage.*;
 
 public class ASTReactiveScriptNode extends SimpleNode {
   public int args = 0;
@@ -66,8 +68,8 @@ public ContextExpression interpretToLambda(List<String> problems, String origina
 	return new ContextExpression() {
 		
 		@Override
-		public Optional<String> returnType() {
-			return Optional.of(Reactive.ReactiveItemType.REACTIVE_SCRIPT.toString());
+		public Optional<ValueType> returnType() {
+			return Optional.of(ValueType.REACTIVESCRIPT);
 		}
 		
 		@Override
@@ -83,7 +85,7 @@ public ContextExpression interpretToLambda(List<String> problems, String origina
 		@Override
 		public Operand apply(Optional<ImmutableMessage> immutableMessage,
 				Optional<ImmutableMessage> paramMessage) {
-			return Operand.ofCustom(pipes, Reactive.ReactiveItemType.REACTIVE_SCRIPT.toString());
+			return Operand.ofCustom(pipes, ValueType.REACTIVESCRIPT);
 		}
 	};
 }

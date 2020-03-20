@@ -3,7 +3,8 @@ package com.dexels.navajo.parser.compiled;
 
 import com.dexels.config.runtime.RuntimeConfig;
 import com.dexels.immutable.api.ImmutableMessage;
-import com.dexels.navajo.document.Operand;
+import com.dexels.immutable.api.ImmutableMessage.ValueType;
+import com.dexels.navajo.document.operand.Operand;
 import com.dexels.navajo.expression.api.*;
 import com.dexels.navajo.functions.util.FunctionFactoryFactory;
 import com.dexels.navajo.parser.NamedExpression;
@@ -139,7 +140,7 @@ final class ASTFunctionNode extends SimpleNode {
 			}
 
 			@Override
-			public Optional<String> returnType() {
+			public Optional<ValueType> returnType() {
 				return typeCheckInstance.getReturnType();
 			}
 			@Override
@@ -148,13 +149,13 @@ final class ASTFunctionNode extends SimpleNode {
 			}
 		};
 		if(isImmutable && CacheSubexpression.getCacheSubExpression()) {
-			Optional<String> returnType = dynamic.returnType();
+			Optional<ValueType> returnType = dynamic.returnType();
 			String immutablExpression = dynamic.expression();
 			Operand resolved = dynamic.apply();
 			return new ContextExpression() {
 				
 				@Override
-				public Optional<String> returnType() {
+				public Optional<ValueType> returnType() {
 					return returnType;
 				}
 				

@@ -1,7 +1,9 @@
 package com.dexels.navajo.expression.api;
 
-import com.dexels.navajo.document.*;
-import com.dexels.navajo.document.types.*;
+import com.dexels.immutable.api.ImmutableMessage;
+//import com.dexels.navajo.document.NavajoFactory;
+import com.dexels.immutable.api.ImmutableMessage.ValueType;
+import com.dexels.navajo.document.operand.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,7 +19,7 @@ public abstract class FunctionInterface {
     protected FunctionDefinition myFunctionDefinition = null;
     protected static final HashSet<Class<? extends FunctionInterface>> initialized = new HashSet<>();
     protected static final Map<Class<? extends FunctionInterface>, Class[][]> types = new HashMap<>();
-    protected static final Map<Class<? extends FunctionInterface>, String> returnType = new HashMap<>();
+    protected static final Map<Class<? extends FunctionInterface>, ValueType> returnType = new HashMap<>();
     private Class[][] myinputtypes;
 
 
@@ -36,7 +38,7 @@ public abstract class FunctionInterface {
 
     private Map<String, Operand> namedParameters;
 
-    private final Optional<String> getMyReturnType() {
+    private final Optional<ValueType> getMyReturnType() {
         return Optional.ofNullable(returnType.get(this.getClass()));
     }
 
@@ -48,7 +50,7 @@ public abstract class FunctionInterface {
         if (c == null) {
             return "unknown";
         }
-        NavajoFactory nf = NavajoFactory.getInstance();
+        TypeReader nf = TypeReader.getInstance();
 
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < c.length; i++) {
@@ -85,66 +87,9 @@ public abstract class FunctionInterface {
     }
 
 
-    private final void checkTypes() {
-
-        Class[][] mytypes = null;
-        if (myinputtypes != null) {
-            mytypes = myinputtypes;
-        } else {
-            mytypes = types.get(this.getClass());
-        }
-
-        if (mytypes != null) {
-            StringBuilder msg = new StringBuilder();
-
-            for (int paramIndex = 0; paramIndex < mytypes.length; paramIndex++) {
-
-
-                Class[] possibleParameters = mytypes[paramIndex];
-
-
-
-                boolean correct = false;
-                Class passedParam = null;
-                for (int possParam = 0; possParam < possibleParameters.length; possParam++) {
-
-                    Class p = possibleParameters[possParam];
-                    boolean notpresent = false;
-
-                    try {
-                        Object o = operand(paramIndex).value;
-                        passedParam = (o != null ? o.getClass() : null);
-                    } catch (Exception e) {
-                        passedParam = null;
-                        notpresent = true;
-                    }
-                    if ((!notpresent && passedParam == null) || // Passedparam could be present but NULL.
-                            (notpresent && p == null && passedParam == null) || // Passedparam could not be present but
-                            // expected could be empty.
-                            (p != null && p.equals(Set.class)) || // Expected could not be empty and p could be set
-                            // (=...)
-                            (p != null && passedParam != null && p.isAssignableFrom(passedParam))) { // Expected is
-                        // assignable
-                        // from
-                        // passedparam.
-                        correct = true;
-                    }
-                }
-                if (!correct) {
-                    NavajoFactory nf = NavajoFactory.getInstance();
-                    msg.append("Parameter " + (paramIndex + 1) + " has type "
-                            + (passedParam != null ? nf.getNavajoType(passedParam) : "empty") + ", expected: "
-                            + genPipedParamMsg(possibleParameters) + "\n");
-                }
-            }
-            if (!msg.toString().equals("")) {
-                throw new TMLExpressionException(this, msg.toString(), null);
-            }
-        }
-    }
-
     // Legacy
-    public final void setTypes(String[][] navajotypes, String[] navajoReturnType) {
+    // TODO navajotypes should be enums, but unsure if this method is still needed at all
+    public final void setTypes(String[][] navajotypes, ValueType[] navajoReturnType) {
         if (initialized.contains(this.getClass())) {
             return;
         }
@@ -162,7 +107,7 @@ public abstract class FunctionInterface {
 
             if (navajoReturnType != null) {
                 // Set returntype.
-                Optional<String> myreturnType = loadReturnType(navajoReturnType);
+                Optional<ValueType> myreturnType = loadReturnType(navajoReturnType);
                 if(myreturnType.isPresent()) {
                     returnType.put(this.getClass(), myreturnType.get());
                 }
@@ -173,7 +118,7 @@ public abstract class FunctionInterface {
         }
     }
 
-    private Optional<String> loadReturnType(String[] navajoReturnType) {
+    private Optional<ValueType> loadReturnType(ValueType[] navajoReturnType) {
         if(navajoReturnType==null) {
             return Optional.empty();
         }
@@ -186,7 +131,7 @@ public abstract class FunctionInterface {
     private Class[][] loadInputTypes(String[][] navajotypes) {
         // Convert navajo types to Java classes.
 
-        NavajoFactory nf = NavajoFactory.getInstance();
+        TypeReader nf = TypeReader.getInstance();
         Class[][] mytypes = new Class[navajotypes.length][];
         boolean hasEmptyOptions = false;
         boolean hasMultipleOptions = false;
@@ -224,10 +169,6 @@ public abstract class FunctionInterface {
     }
 
 
-    public Class[][] getTypes() {
-        return types.get(this.getClass());
-    }
-
     public final void reset() {
         operandList = new ArrayList<>();
     }
@@ -261,7 +202,7 @@ public abstract class FunctionInterface {
 
     public Operand evaluateWithTypeCheckingOperand() {
         Object o = evaluate();
-        String type = TypeUtils.determineNavajoType(o);
+        ValueType type = TypeUtils.determineNavajoType(o);
         return new Operand(o,type);
     }
 
@@ -289,9 +230,6 @@ public abstract class FunctionInterface {
         return (Boolean) operandWithType(index, "boolean");
     }
 
-    public Property getPropertyOperand(int index) {
-        return (Property) operandWithType(index, "property");
-    }
 
     public Binary getBinaryOperand(int index) {
         return (Binary) operandWithType(index, "binary");
@@ -322,10 +260,6 @@ public abstract class FunctionInterface {
         insertOperand(Operand.ofClockTime(clockTime));
     }
 
-    public void insertMessageOperand(Message message) {
-        insertOperand(Operand.ofMessage(message));
-    }
-
     public void insertBooleanOperand(boolean b) {
         insertOperand(Operand.ofBoolean(b));
     }
@@ -334,22 +268,9 @@ public abstract class FunctionInterface {
         insertOperand(Operand.ofList(list));
     }
 
-    public void insertNavajoOperand(Navajo createTestNavajo) {
-        insertOperand(Operand.ofNavajo(createTestNavajo));
-    }
-
-    public void insertSelectionListOperand(List<Selection> allSelectedSelections) {
-        insertOperand(Operand.ofSelectionList(allSelectedSelections));
-    }
-
-    public void insertPropertyOperand(Property property) {
-        insertOperand(Operand.ofProperty(property));
-    }
-
     public void insertLongOperand(long value) {
         insertOperand(Operand.ofLong(value));
     }
-
 
     public void insertDynamicOperand(Object value) {
         insertOperand(Operand.ofDynamic(value));
@@ -384,8 +305,8 @@ public abstract class FunctionInterface {
             return operandList.get(index);
     }
 
-    public Optional<String> getReturnType() {
-        String type = returnType.get(this.getClass());
+    public Optional<ValueType> getReturnType() {
+        ValueType type = returnType.get(this.getClass());
         if(type==null || type.equals("any")) {
             return Optional.empty();
         }
@@ -434,12 +355,12 @@ public abstract class FunctionInterface {
         int argumentNumber = 0;
         List<String> problems = new ArrayList<>();
         for (ContextExpression contextExpression : l) {
-            Optional<String> foundReturnType = contextExpression.returnType();
+            Optional<ValueType> foundReturnType = contextExpression.returnType();
             if(!foundReturnType.isPresent()) {
                 continue;
             }
             // TODO fix alternatives
-            String rt = foundReturnType.get();
+            ValueType rt = foundReturnType.get();
             boolean isCompatible = isCompatible(rt,alternatives[argumentNumber]);
             if(!isCompatible) {
                 problems.add("Argument # "+argumentNumber+" of type: "+alternatives[argumentNumber]+" is incompatible with: "+rt);
@@ -449,7 +370,7 @@ public abstract class FunctionInterface {
         return problems;
     }
 
-    private boolean isCompatible(String rt, String inputType) {
+    private boolean isCompatible(ValueType rt, String inputType) {
         if(rt==null || inputType==null) {
             return true;
         }

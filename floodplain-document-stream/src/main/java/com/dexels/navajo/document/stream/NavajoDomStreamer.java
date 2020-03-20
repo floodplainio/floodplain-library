@@ -1,5 +1,6 @@
 package com.dexels.navajo.document.stream;
 
+import com.dexels.immutable.api.ImmutableTypeParser;
 import com.dexels.navajo.document.*;
 import com.dexels.navajo.document.stream.api.Method;
 import com.dexels.navajo.document.stream.api.*;
@@ -176,7 +177,7 @@ public class NavajoDomStreamer {
 			value = tmlProperty.getValue();
 		}
 		Optional<Direction> direction = "in".equals(tmlProperty.getDirection())?Optional.of(Direction.IN):"out".equals(tmlProperty.getDirection())?Optional.of(Direction.OUT):Optional.empty();
-		return Prop.create(tmlProperty.getName(),value,tmlProperty.getType(),selections,direction, tmlProperty.getDescription(),tmlProperty.getLength(),tmlProperty.getSubType(),Optional.ofNullable(tmlProperty.getCardinality()),binary);
+		return Prop.create(tmlProperty.getName(),value, ImmutableTypeParser.parseType(tmlProperty.getType()),selections,direction, tmlProperty.getDescription(),tmlProperty.getLength(),tmlProperty.getSubType(),Optional.ofNullable(tmlProperty.getCardinality()),binary);
 	}
 	
 	 private static List<Select> selectFromTml(List<Selection> in) {

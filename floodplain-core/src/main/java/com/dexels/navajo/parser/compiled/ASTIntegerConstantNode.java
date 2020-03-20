@@ -2,7 +2,7 @@
 package com.dexels.navajo.parser.compiled;
 
 import com.dexels.immutable.api.ImmutableMessage;
-import com.dexels.navajo.document.Operand;
+import com.dexels.navajo.document.operand.Operand;
 import com.dexels.navajo.document.Property;
 import com.dexels.navajo.expression.api.ContextExpression;
 import com.dexels.navajo.expression.api.FunctionClassification;
@@ -38,8 +38,8 @@ final class ASTIntegerConstantNode extends SimpleNode {
 			}
 
 			@Override
-			public Optional<String> returnType() {
-				return Optional.of(Property.INTEGER_PROPERTY);
+			public Optional<ImmutableMessage.ValueType> returnType() {
+				return Optional.of(ImmutableMessage.ValueType.INTEGER);
 			}
 			
 			@Override

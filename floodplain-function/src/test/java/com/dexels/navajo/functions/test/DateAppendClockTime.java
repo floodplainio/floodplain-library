@@ -1,6 +1,6 @@
 package com.dexels.navajo.functions.test;
 
-import com.dexels.navajo.document.types.ClockTime;
+import com.dexels.navajo.document.operand.ClockTime;
 import org.junit.Test;
 
 import java.util.Date;

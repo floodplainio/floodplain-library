@@ -1,7 +1,7 @@
 package com.dexels.navajo.parser;
 
 import com.dexels.immutable.api.ImmutableMessage;
-import com.dexels.navajo.document.Operand;
+import com.dexels.navajo.document.operand.Operand;
 import com.dexels.navajo.expression.api.ContextExpression;
 import com.dexels.navajo.expression.api.TMLExpressionException;
 
@@ -30,7 +30,7 @@ public class NamedExpression implements ContextExpression {
 	}
 
 	@Override
-	public Optional<String> returnType() {
+	public Optional<ImmutableMessage.ValueType> returnType() {
 		return expression.returnType();
 	}
 

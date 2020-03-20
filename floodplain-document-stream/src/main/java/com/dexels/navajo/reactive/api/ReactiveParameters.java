@@ -1,7 +1,8 @@
 package com.dexels.navajo.reactive.api;
 
 import com.dexels.immutable.api.ImmutableMessage;
-import com.dexels.navajo.document.Operand;
+import com.dexels.immutable.api.ImmutableMessage.ValueType;
+import com.dexels.navajo.document.operand.Operand;
 import com.dexels.navajo.document.stream.api.StreamScriptContext;
 import com.dexels.navajo.expression.api.ContextExpression;
 import com.dexels.navajo.expression.api.TMLExpressionException;
@@ -34,7 +35,7 @@ public class ReactiveParameters {
 		return new ReactiveResolvedParameters(context, Collections.emptyMap(),unnamed, namedState,currentMessage, paramMessage, validator);
 	}
 
-	public ReactiveParameters withConstant(String key, Object value, String type) {
+	public ReactiveParameters withConstant(String key, Object value, ValueType type) {
 		return withExpression(key, constantExpression( Operand.ofCustom(value, type)));
 	}
 
@@ -53,7 +54,7 @@ public class ReactiveParameters {
 			}
 
 			@Override
-			public Optional<String> returnType() {
+			public Optional<ValueType> returnType() {
 				return Optional.of(value.type);
 			}
 

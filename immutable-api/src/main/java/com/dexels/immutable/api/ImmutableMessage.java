@@ -21,11 +21,19 @@ public interface ImmutableMessage {
 		    LIST,
 		    BINARY,
 		    COORDINATE,
+		  	CLOCKTIME,
 		    STOPWATCHTIME,
 		    IMMUTABLE,
 		    UNKNOWN,
-		    ENUM
-		  }
+		    IMMUTABLELIST,
+		  	POINT,
+	  	    REACTIVE,
+		  	REACTIVESCRIPT,
+		    REACTIVEPIPE,
+		    REACTIVEPARTIALPIPE,
+		  	MAPPER,
+		    ENUM;
+	  }
 	public Set<String> columnNames();
 	/**
 	 * Use value(name) instead
@@ -34,12 +42,12 @@ public interface ImmutableMessage {
 	 */
 	@Deprecated
 	public Object columnValue(String name);
-	public String columnType(String name);
+	public ValueType columnType(String name);
 	public byte[] toBytes(ImmutableMessageParser c);
 	default public Optional<Object> value(String name) {
 		return Optional.ofNullable(columnValue(name));
 	}
-	public Map<String, String> types();
+	public Map<String, ValueType> types();
 	public Set<String> subMessageListNames();
 	public Set<String> subMessageNames();
 	public Map<String, Object> values();
@@ -69,14 +77,14 @@ public interface ImmutableMessage {
 	public ImmutableMessage withoutSubMessage(String field);
 	public ImmutableMessage without(String columnName);
 	public ImmutableMessage without(List<String> columns);
-	public ImmutableMessage with(String key, Object value, String type);
+	public ImmutableMessage with(String key, Object value, ValueType type);
 	public ImmutableMessage withOnlyColumns(List<String> columns);
 	public ImmutableMessage withOnlySubMessages(List<String> subMessages);
 	public ImmutableMessage rename(String columnName, String newName);
 	Map<String, Object> flatValueMap(String prefix, Trifunction processType);
 
 	public static interface Trifunction {
-		Object apply(String key, String type, Object value);
+		Object apply(String key, ValueType type, Object value);
 	}
 	
 	public class TypedData {

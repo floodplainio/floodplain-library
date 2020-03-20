@@ -1,6 +1,7 @@
 package com.dexels.navajo.functions.test;
 
 import com.dexels.navajo.document.*;
+import com.dexels.navajo.document.operand.Operand;
 import com.dexels.navajo.expression.api.FunctionInterface;
 import com.dexels.navajo.expression.api.TMLExpressionException;
 import com.dexels.navajo.functions.util.FunctionFactoryFactory;

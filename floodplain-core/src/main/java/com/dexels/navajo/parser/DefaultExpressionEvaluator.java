@@ -4,7 +4,7 @@ import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.navajo.document.ExpressionEvaluator;
 import com.dexels.navajo.document.NavajoException;
 import com.dexels.navajo.document.NavajoFactory;
-import com.dexels.navajo.document.Operand;
+import com.dexels.navajo.document.operand.Operand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

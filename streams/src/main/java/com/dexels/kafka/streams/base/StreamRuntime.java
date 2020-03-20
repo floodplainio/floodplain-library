@@ -1,5 +1,6 @@
 package com.dexels.kafka.streams.base;
 
+import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.kafka.streams.api.StreamConfiguration;
 import com.dexels.kafka.streams.transformer.custom.*;
 import com.dexels.kafka.streams.xml.parser.XMLParseException;
@@ -68,11 +69,11 @@ public class StreamRuntime {
 		transformerRegistry.put("teamname", new TeamName());
 		transformerRegistry.put("mergedatetime", new MergeDateTimeTransformer());
         transformerRegistry.put("createcoordinate", new CreateCoordinateTransformer());
-		transformerRegistry.put("fieldtoupper", (params,msg)->msg.with(params.get("field"), ((String)(msg.columnValue(params.get("field")))).toString().toUpperCase(),"string"));
-		transformerRegistry.put("fieldtolower", (params,msg)->msg.with(params.get("field"), ((String)(msg.columnValue(params.get("field")))).toString().toLowerCase(),"string"));
+		transformerRegistry.put("fieldtoupper", (params,msg)->msg.with(params.get("field"), ((String)(msg.columnValue(params.get("field")))).toString().toUpperCase(), ImmutableMessage.ValueType.STRING));
+		transformerRegistry.put("fieldtolower", (params,msg)->msg.with(params.get("field"), ((String)(msg.columnValue(params.get("field")))).toString().toLowerCase(), ImmutableMessage.ValueType.STRING));
 		transformerRegistry.put("emailtolower", (params,msg)->{
 				if("EMAIL".equals(msg.columnValue("typeofcommunication"))) {
-					return msg.with("communicationdata", ((String)msg.columnValue("communicationdata")).toLowerCase() , "string");
+					return msg.with("communicationdata", ((String)msg.columnValue("communicationdata")).toLowerCase() , ImmutableMessage.ValueType.STRING);
 				} else {
 					return msg;
 				}});

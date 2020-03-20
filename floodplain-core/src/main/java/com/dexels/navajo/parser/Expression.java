@@ -9,7 +9,7 @@
 package com.dexels.navajo.parser;
 
 import com.dexels.immutable.api.ImmutableMessage;
-import com.dexels.navajo.document.Operand;
+import com.dexels.navajo.document.operand.Operand;
 import com.dexels.navajo.parser.compiled.api.CachedExpressionEvaluator;
 
 import java.util.Optional;
@@ -29,7 +29,7 @@ public final class Expression {
 
 	public static final Operand evaluate(String clause,Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
 		if (clause.trim().equals("")) {
-			return new Operand(null, "", "");
+			return new Operand(null, ImmutableMessage.ValueType.UNKNOWN);
 		}
 		return evaluator.evaluate(clause, immutableMessage,paramMessage);
 	}

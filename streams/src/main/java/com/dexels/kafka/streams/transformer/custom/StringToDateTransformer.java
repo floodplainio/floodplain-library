@@ -1,5 +1,6 @@
 package com.dexels.kafka.streams.transformer.custom;
 
+import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.replication.api.ReplicationMessage;
 import com.dexels.replication.transformer.api.MessageTransformer;
 import org.slf4j.Logger;
@@ -24,14 +25,14 @@ public class StringToDateTransformer implements MessageTransformer {
 		    Calendar c = Calendar.getInstance();
 		    c.setTime((Date) valueObj);
 		    if( c.get(Calendar.YEAR)==9999) {
-		        return msg.with(field, null, "date");
+		        return msg.with(field, null, ImmutableMessage.ValueType.DATE);
 		    }
 		    return msg;
         }
 		
 		String value = (String) valueObj;
 		if(value == null || value.trim().equals("") || value.equals("9999-12-31")) {
-		    return msg.with(field, null, "date");
+		    return msg.with(field, null, ImmutableMessage.ValueType.DATE);
 		}
 		
 		SimpleDateFormat formatter;
@@ -43,7 +44,7 @@ public class StringToDateTransformer implements MessageTransformer {
             logger.error("Parse exception in date {} (format {})", value, format, e);
         }
          
-		return msg.with(field, parsed, "date");
+		return msg.with(field, parsed, ImmutableMessage.ValueType.DATE);
 		
 	}
 

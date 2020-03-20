@@ -5,7 +5,7 @@ import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.kafka.streams.api.TopologyContext;
 import com.dexels.kafka.streams.remotejoin.ReplicationTopologyParser;
 import com.dexels.kafka.streams.remotejoin.TopologyConstructor;
-import com.dexels.navajo.document.Operand;
+import com.dexels.navajo.document.operand.Operand;
 import com.dexels.navajo.document.stream.DataItem;
 import com.dexels.navajo.document.stream.api.StreamScriptContext;
 import com.dexels.navajo.reactive.api.*;

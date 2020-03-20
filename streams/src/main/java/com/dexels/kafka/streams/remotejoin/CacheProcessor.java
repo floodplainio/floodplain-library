@@ -1,5 +1,6 @@
 package com.dexels.kafka.streams.remotejoin;
 
+import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.replication.api.ReplicationMessage;
 import com.dexels.replication.api.ReplicationMessage.Operation;
 import org.apache.kafka.streams.KeyValue;
@@ -116,7 +117,7 @@ public class CacheProcessor extends AbstractProcessor<String, ReplicationMessage
                     cache.put(key, new CacheEntry(message));
                 }
             } else {
-                lookupStore.put(key, message.with(CACHED_AT_KEY, System.currentTimeMillis(), "long"));
+                lookupStore.put(key, message.with(CACHED_AT_KEY, System.currentTimeMillis(), ImmutableMessage.ValueType.LONG));
             }
         }
     }

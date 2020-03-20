@@ -1,7 +1,7 @@
 package com.dexels.navajo.parser.compiled.api;
 
 import com.dexels.immutable.api.ImmutableMessage;
-import com.dexels.navajo.document.Operand;
+import com.dexels.navajo.document.operand.Operand;
 import com.dexels.navajo.expression.api.ContextExpression;
 import com.dexels.navajo.reactive.api.Reactive;
 import com.dexels.navajo.reactive.api.ReactivePipe;
@@ -15,9 +15,9 @@ public class ReactivePipeNode implements ContextExpression {
 
 	public ReactivePipeNode(Optional<ReactiveSource> source, List<Object> transformers) {
 		this.actual = source.isPresent() ? 
-			new Operand(new ReactivePipe(source.get(), transformers),Reactive.ReactiveItemType.REACTIVE_PIPE.toString()) 
+			new Operand(new ReactivePipe(source.get(), transformers),ImmutableMessage.ValueType.REACTIVEPIPE)
 				:
-				new Operand(transformers,Reactive.ReactiveItemType.REACTIVE_PARTIAL_PIPE.toString());
+				new Operand(transformers, ImmutableMessage.ValueType.REACTIVEPARTIALPIPE);
 		
 	}
 
@@ -36,8 +36,8 @@ public class ReactivePipeNode implements ContextExpression {
 	}
 
 	@Override
-	public Optional<String> returnType() {
-		return Optional.of(Reactive.ReactiveItemType.REACTIVE_PIPE.toString());
+	public Optional<ImmutableMessage.ValueType> returnType() {
+		return Optional.of(ImmutableMessage.ValueType.REACTIVEPIPE);
 	}
 
 	@Override

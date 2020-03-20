@@ -7,7 +7,7 @@ import com.dexels.kafka.streams.base.Filters;
 import com.dexels.kafka.streams.remotejoin.ReplicationTopologyParser;
 import com.dexels.kafka.streams.remotejoin.TopologyConstructor;
 import com.dexels.kafka.streams.remotejoin.TopologyDefinitionException;
-import com.dexels.navajo.document.Operand;
+import com.dexels.navajo.document.operand.Operand;
 import com.dexels.navajo.document.stream.DataItem;
 import com.dexels.navajo.document.stream.api.StreamScriptContext;
 import com.dexels.navajo.reactive.api.*;

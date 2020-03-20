@@ -1,5 +1,7 @@
 package com.dexels.kafka.streams.remotejoin;
 
+import com.dexels.immutable.api.ImmutableMessage;
+import com.dexels.immutable.api.ImmutableMessage.ValueType;
 import com.dexels.replication.api.ReplicationMessage;
 import com.dexels.replication.api.ReplicationMessage.Operation;
 import com.dexels.replication.factory.ReplicationFactory;
@@ -41,8 +43,8 @@ public class DiffProcessor extends AbstractProcessor<String, ReplicationMessage>
 	private final ReplicationMessage createMessage(String key) {
 		Map<String,Object> value = new HashMap<>();
 		value.put("key", key);
-		Map<String,String> types = new HashMap<>();
-		types.put("key", "string");
+		Map<String, ValueType> types = new HashMap<>();
+		types.put("key", ValueType.STRING);
 		return ReplicationFactory.fromMap(key, value, types).withPrimaryKeys(Arrays.asList(new String[]{"key"}));		
 	}
 	@Override

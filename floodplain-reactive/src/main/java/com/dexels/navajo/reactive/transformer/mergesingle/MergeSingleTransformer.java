@@ -1,8 +1,9 @@
 package com.dexels.navajo.reactive.transformer.mergesingle;
 
 import com.dexels.immutable.api.ImmutableMessage;
+import com.dexels.immutable.api.ImmutableMessage.ValueType;
 import com.dexels.immutable.factory.ImmutableFactory;
-import com.dexels.navajo.document.Operand;
+import com.dexels.navajo.document.operand.Operand;
 import com.dexels.navajo.document.stream.DataItem;
 import com.dexels.navajo.document.stream.ReactiveParseProblem;
 import com.dexels.navajo.document.stream.api.StreamScriptContext;
@@ -32,7 +33,7 @@ public class MergeSingleTransformer implements ReactiveTransformer {
 		if(parameters.unnamed.size()==0) {
 			problems.add(ReactiveParseProblem.of("join transformer needs at least a source as first parameter"));
 		}
-		Optional<String> srcType = parameters.unnamed.get(0).returnType();
+		Optional<ValueType> srcType = parameters.unnamed.get(0).returnType();
 		if(!srcType.isPresent()) {
 			problems.add(ReactiveParseProblem.of("in join transformer: Source type is unclear"));
 			return;

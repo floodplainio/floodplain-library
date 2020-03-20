@@ -2,7 +2,8 @@
 
 package com.dexels.navajo.parser.compiled;
 
-import com.dexels.navajo.document.Operand;
+import com.dexels.immutable.api.ImmutableMessage;
+import com.dexels.navajo.document.operand.Operand;
 import com.dexels.navajo.document.Property;
 import com.dexels.navajo.expression.api.ContextExpression;
 import com.dexels.navajo.expression.api.FunctionClassification;
@@ -19,7 +20,7 @@ final class ASTNotNode extends SimpleNode {
 	@Override
 	public ContextExpression interpretToLambda(List<String> problems, String expression, Function<String, FunctionClassification> functionClassifier, Function<String,Optional<Node>> mapResolver) {
 		
-		return lazyFunction(problems,expression, a->interpret(a),Optional.of(Property.BOOLEAN_PROPERTY),functionClassifier,mapResolver);
+		return lazyFunction(problems,expression, a->interpret(a),Optional.of(ImmutableMessage.ValueType.BOOLEAN),functionClassifier,mapResolver);
 	}
 
 	private final Operand interpret(Operand a) {

@@ -1,6 +1,7 @@
 package com.dexels.replication.factory;
 
 import com.dexels.immutable.api.ImmutableMessage;
+import com.dexels.immutable.api.ImmutableMessage.ValueType;
 import com.dexels.replication.api.ReplicationMessage;
 import com.dexels.replication.api.ReplicationMessage.Operation;
 import com.dexels.replication.api.ReplicationMessageParser;
@@ -35,7 +36,7 @@ public class ReplicationFactory {
 	}
 
 	public static ReplicationMessage createReplicationMessage(Optional<String> source, Optional<Integer> partition, Optional<Long> offset, final String transactionId, final long timestamp,
-			final Operation operation, final List<String> primaryKeys, Map<String, String> types,
+			final Operation operation, final List<String> primaryKeys, Map<String, ValueType> types,
 			Map<String, Object> values, Map<String, ImmutableMessage> subMessageMap,
 			Map<String, List<ImmutableMessage>> subMessageListMap,Optional<Runnable> commitAction, Optional<ImmutableMessage> paramMessage) {
 		return new ReplicationImmutableMessageImpl(source, partition, offset, transactionId, operation, timestamp, values, types,subMessageMap, subMessageListMap, primaryKeys, commitAction,paramMessage);
@@ -46,12 +47,12 @@ public class ReplicationFactory {
 		return new ReplicationImmutableMessageImpl(source, partition, offset, transactionId, operation, timestamp, message, primaryKeys, commitAction,paramMessage);
 	}
 
-	public static ReplicationMessage fromMap(String key, Map<String, Object> values, Map<String, String> types) {
+	public static ReplicationMessage fromMap(String key, Map<String, Object> values, Map<String, ValueType> types) {
 		List<String> keys = key == null ? Collections.emptyList() : Arrays.asList(new String[]{key});
 		return ReplicationFactory.createReplicationMessage(Optional.empty(), Optional.empty(), Optional.empty(), null, System.currentTimeMillis(), Operation.NONE, keys, types, values,Collections.emptyMap(),Collections.emptyMap(),Optional.of(noopCommit),Optional.empty());
 	}
 
-	public static ReplicationMessage create(Map<String, Object> values, Map<String, String> types) {
+	public static ReplicationMessage create(Map<String, Object> values, Map<String, ValueType> types) {
 		return ReplicationFactory.createReplicationMessage(Optional.empty(),Optional.empty(),Optional.empty(),null, System.currentTimeMillis(), Operation.NONE, Collections.emptyList(), types, values,Collections.emptyMap(),Collections.emptyMap(),Optional.of(noopCommit),Optional.empty());
 	}
 

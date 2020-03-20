@@ -146,8 +146,8 @@ public class TestTransformations {
 
 	@Test
 	public void testAdd() {
-		Assert.assertEquals("monkey", addressMessage.with("animal","monkey","string").columnValue("animal"));
-		Assert.assertEquals("string", addressMessage.with("animal","monkey","string").columnType("animal"));
+		Assert.assertEquals("monkey", addressMessage.with("animal","monkey",ImmutableMessage.ValueType.STRING).columnValue("animal"));
+		Assert.assertEquals("string", addressMessage.with("animal","monkey",ImmutableMessage.ValueType.STRING).columnType("animal"));
 	}
 	
 	@Test
@@ -285,7 +285,7 @@ public class TestTransformations {
 	
 	@Test
 	public void testTransformerApply() {
-		transformerRegistry.put("streettoupper", (params,msg)->msg.with("streetname", ((String)(msg.columnValue("streetname"))).toString().toUpperCase(),"string"));
+		transformerRegistry.put("streettoupper", (params,msg)->msg.with("streetname", ((String)(msg.columnValue("streetname"))).toString().toUpperCase(),ImmutableMessage.ValueType.STRING));
 		XMLElement xe = new CaseSensitiveXMLElement();
 		xe.parseString("<transform><streettoupper/></transform>");
 		XmlMessageTransformerImpl xmt = new XmlMessageTransformerImpl(transformerRegistry,xe,"TENANT-topic");
@@ -295,7 +295,7 @@ public class TestTransformations {
 	
 	@Test
 	public void testTransformerApplyWithNull() {
-		transformerRegistry.put("streettoupper", (params,msg)->msg.with("streetname", ((String)(msg.columnValue("streetname"))).toString().toUpperCase(),"string"));
+		transformerRegistry.put("streettoupper", (params,msg)->msg.with("streetname", ((String)(msg.columnValue("streetname"))).toString().toUpperCase(),ImmutableMessage.ValueType.STRING));
 		XMLElement xe = new CaseSensitiveXMLElement();
 		xe.parseString("<transform><streettoupper/></transform>");
 		XmlMessageTransformerImpl xmt = new XmlMessageTransformerImpl(transformerRegistry,xe,"TENANT-topic");
@@ -310,7 +310,7 @@ public class TestTransformations {
 					msg.with(params.get("field"), 
 							((String)(msg.columnValue(params.get("field"))))
 							.toString()
-							.toUpperCase(),"string"));
+							.toUpperCase(),ImmutableMessage.ValueType.STRING));
 		XMLElement xe = new CaseSensitiveXMLElement();
 		xe.parseString("<transform><fieldtoupper field=\"streetname\"/></transform>");
 		XmlMessageTransformerImpl xmt = new XmlMessageTransformerImpl(transformerRegistry,xe,"TENANT-topic");
@@ -324,7 +324,7 @@ public class TestTransformations {
 			if(fieldValue==null) {
 				return msg;
 			}
-			return msg.with(params.get("field"), fieldValue.toString().toUpperCase(),"string");
+			return msg.with(params.get("field"), fieldValue.toString().toUpperCase(),ImmutableMessage.ValueType.STRING);
 		});
 		XMLElement xe = new CaseSensitiveXMLElement();
 		xe.parseString("<transform><fieldtoupper field=\"notexisting\"/></transform>");

@@ -1,5 +1,6 @@
 package com.dexels.kafka.webapi;
 
+import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.pubsub.rx2.api.PersistentPublisher;
 import com.dexels.pubsub.rx2.api.PersistentSubscriber;
@@ -114,30 +115,30 @@ public class TopicServlet extends HttpServlet implements Servlet {
 		publisher.create("TESTCLUBADDRESS",Optional.of(1),Optional.of(1));
 		publisher.create("TESTADDRESS",Optional.of(1),Optional.of(1));
 		
-		ReplicationMessage club = ReplicationFactory.standardMessage(ImmutableFactory.empty().with("organizationid", 1, "integer"))
+		ReplicationMessage club = ReplicationFactory.standardMessage(ImmutableFactory.empty().with("organizationid", 1, ImmutableMessage.ValueType.INTEGER))
 				.withPrimaryKeys(Arrays.asList(new String[]{"organizationid"}))
 				;
-		ReplicationMessage address = ReplicationFactory.standardMessage(ImmutableFactory.empty().with("addressid", 10, "integer")
-				.with("street", "monkey", "string")
+		ReplicationMessage address = ReplicationFactory.standardMessage(ImmutableFactory.empty().with("addressid", 10, ImmutableMessage.ValueType.INTEGER)
+				.with("street", "monkey", ImmutableMessage.ValueType.STRING)
 				)
 				.withPrimaryKeys(Arrays.asList(new String[]{"addressid"}))
 				;
 		
-		ReplicationMessage otheraddress = ReplicationFactory.standardMessage(ImmutableFactory.empty().with("addressid", 10, "integer")
-				.with("street", "othermonkey", "string")
+		ReplicationMessage otheraddress = ReplicationFactory.standardMessage(ImmutableFactory.empty().with("addressid", 10, ImmutableMessage.ValueType.INTEGER)
+				.with("street", "othermonkey", ImmutableMessage.ValueType.STRING)
 				)
 				.withPrimaryKeys(Arrays.asList(new String[]{"addressid"}))
 				;
 
 		
-		ReplicationMessage otheraddress2 = ReplicationFactory.standardMessage(ImmutableFactory.empty().with("addressid", 10, "integer")
-				.with("street", "pemguin", "string")
+		ReplicationMessage otheraddress2 = ReplicationFactory.standardMessage(ImmutableFactory.empty().with("addressid", 10, ImmutableMessage.ValueType.INTEGER)
+				.with("street", "pemguin", ImmutableMessage.ValueType.STRING)
 				)
 				.withPrimaryKeys(Arrays.asList(new String[]{"addressid"}))
 				;
 		
-		ReplicationMessage clubaddress = ReplicationFactory.standardMessage(ImmutableFactory.empty().with("organizationid", 1, "integer")
-				.with("addressid", 10, "integer")
+		ReplicationMessage clubaddress = ReplicationFactory.standardMessage(ImmutableFactory.empty().with("organizationid", 1, ImmutableMessage.ValueType.INTEGER)
+				.with("addressid", 10, ImmutableMessage.ValueType.INTEGER)
 				).withPrimaryKeys(Arrays.asList(new String[]{"addressid","organizationid"}))
 				;
 //		publisher.publish("MOCKUP-test-TESTCLUB", "1", ReplicationFactory.getInstance().serialize(club));

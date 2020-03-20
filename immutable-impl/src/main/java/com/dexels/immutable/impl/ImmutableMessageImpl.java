@@ -18,13 +18,13 @@ public class ImmutableMessageImpl implements ImmutableMessage {
 
 	private final static Logger logger = LoggerFactory.getLogger(ImmutableMessageImpl.class);
 	private final Map<String,Object> values;
-	private final Map<String,String> types;
+	private final Map<String,ValueType> types;
 	
 	private final Map<String,ImmutableMessage> subMessageMap;
 	private final Map<String,List<ImmutableMessage>> subMessagesMap;
 
 	
-	public ImmutableMessageImpl(Map<String,? extends Object> values, Map<String,String> types,Map<String,ImmutableMessage> submessage, Map<String,List<ImmutableMessage>> submessages) {
+	public ImmutableMessageImpl(Map<String,? extends Object> values, Map<String,ValueType> types,Map<String,ImmutableMessage> submessage, Map<String,List<ImmutableMessage>> submessages) {
 		this.values = Collections.unmodifiableMap(values);
 		this.types = Collections.unmodifiableMap(types);
 		this.subMessageMap = Collections.unmodifiableMap(submessage);
@@ -53,8 +53,8 @@ public class ImmutableMessageImpl implements ImmutableMessage {
 			values.put(c, newValue);
 		}
 		this.values = Collections.unmodifiableMap(values);
-		Map<String, String> types1 = message1.types();
-		Map<String, String> types2 = message2.types();
+		Map<String, ValueType> types1 = message1.types();
+		Map<String, ValueType> types2 = message2.types();
 		this.types = combineTypes(types1,types2);
 		if(message1.subMessageNames().isEmpty()) {
 			if(message2.subMessageMap().isEmpty()) {
@@ -128,31 +128,31 @@ public class ImmutableMessageImpl implements ImmutableMessage {
 		this.subMessagesMap = Collections.emptyMap();
 	}
 
-	private Map<String,String> resolveTypesFromValues(Map<String, ? extends Object> values) {
-		Map<String,String> t = new HashMap<>();
+	private Map<String,ValueType> resolveTypesFromValues(Map<String, ? extends Object> values) {
+		Map<String,ValueType> t = new HashMap<>();
 		for (Entry<String,? extends Object> e : values.entrySet()) {
 			Object val = e.getValue();
 			if(val==null) {
 //				t.put(e.getKey(), "unknown");
 			} else if(val instanceof Long) {
-				t.put(e.getKey(), "long");
+				t.put(e.getKey(), ValueType.LONG);
 			} else if(val instanceof Double) {
-				t.put(e.getKey(), "double");
+				t.put(e.getKey(), ValueType.DOUBLE);
 			} else if(val instanceof Integer) {
-				t.put(e.getKey(), "integer");
+				t.put(e.getKey(), ValueType.INTEGER);
 			} else if(val instanceof Float) {
-				t.put(e.getKey(), "float");
+				t.put(e.getKey(), ValueType.FLOAT);
 			} else if(val instanceof Date) {
-				t.put(e.getKey(), "date");
+				t.put(e.getKey(), ValueType.DATE);
 			} else if(val instanceof Boolean) {
-				t.put(e.getKey(), "boolean");
+				t.put(e.getKey(), ValueType.BOOLEAN);
 			} else if(val instanceof String) {
-				t.put(e.getKey(), "string");
+				t.put(e.getKey(), ValueType.STRING);
             } else if (val instanceof CoordinateType) {
-                t.put(e.getKey(), "coordinate");
+                t.put(e.getKey(), ValueType.COORDINATE);
 			} else {
 				logger.warn("Unknown type::: {}",val.getClass());
-				t.put(e.getKey(), "string");
+				t.put(e.getKey(), ValueType.UNKNOWN);
 				
 			}
 		}
@@ -160,9 +160,9 @@ public class ImmutableMessageImpl implements ImmutableMessage {
 	}
 
 
-	private Map<String, String> combineTypes(Map<String, String> typesa, Map<String, String> typesb) {
-		HashMap<String,String> combine = new HashMap<>(typesa);
-		for (Entry<String,String> e : typesb.entrySet()) {
+	private Map<String, ValueType> combineTypes(Map<String, ValueType> typesa, Map<String, ValueType> typesb) {
+		HashMap<String,ValueType> combine = new HashMap<>(typesa);
+		for (Entry<String,ValueType> e : typesb.entrySet()) {
 			// TODO sanity check types?
 			combine.put(e.getKey(), e.getValue());
 		}
@@ -170,7 +170,7 @@ public class ImmutableMessageImpl implements ImmutableMessage {
 	}
 
 	@Override
-	public Map<String,String> types() {
+	public Map<String,ValueType> types() {
 		return this.types;
 	}
  	
@@ -248,7 +248,7 @@ public class ImmutableMessageImpl implements ImmutableMessage {
 	}
 
 	@Override
-	public String columnType(String name) {
+	public ValueType columnType(String name) {
 		return types.get(name);
 	}
 
@@ -296,7 +296,7 @@ public class ImmutableMessageImpl implements ImmutableMessage {
 	@Override
 	public ImmutableMessage without(String columnName) {
 		Map<String,Object> localValues = new HashMap<>(this.values);
-		Map<String,String> localTypes = new HashMap<>(this.types);
+		Map<String,ValueType> localTypes = new HashMap<>(this.types);
 		localValues.remove(columnName);
 		localTypes.remove(columnName);
 		return new ImmutableMessageImpl(localValues, localTypes,this.subMessageMap,this.subMessagesMap);
@@ -305,7 +305,7 @@ public class ImmutableMessageImpl implements ImmutableMessage {
 	@Override
 	public ImmutableMessage without(List<String> columns) {
 		Map<String,Object> localValues = new HashMap<>(this.values);
-		Map<String,String> localTypes = new HashMap<>(this.types);
+		Map<String,ValueType> localTypes = new HashMap<>(this.types);
 		for (String columnName : columns) {
 			localValues.remove(columnName);
 			localTypes.remove(columnName);			
@@ -322,7 +322,7 @@ public class ImmutableMessageImpl implements ImmutableMessage {
 	}
 
 	@Override
-	public ImmutableMessage with(String key, Object value, String type) {
+	public ImmutableMessage with(String key, Object value, ValueType type) {
 		
 		int firstSlash = key.indexOf('/');
 		if(firstSlash!=-1) {
@@ -336,15 +336,20 @@ public class ImmutableMessageImpl implements ImmutableMessage {
 			return withSubMessage(parts[0], subm.get()).with(key.substring(firstSlash+1), value, type);
 		}
 		Map<String,Object> localValues = new HashMap<>(this.values);
-		Map<String,String> localTypes = new HashMap<>(this.types);
+		Map<String,ValueType> localTypes = new HashMap<>(this.types);
 		// TODO check if the key does not change?
-		if("immutable".equals(type)) {
-			ImmutableMessage im = (ImmutableMessage) value;
-			return this.withSubMessage(key, im);
-		} else {
-			localValues.put(key, value);
-			localTypes.put(key, type);
-			return new ImmutableMessageImpl(localValues, localTypes,this.subMessageMap,this.subMessagesMap);
+		switch (type) {
+			case IMMUTABLE:
+				ImmutableMessage im = (ImmutableMessage) value;
+				return this.withSubMessage(key, im);
+			case IMMUTABLELIST:
+				List<ImmutableMessage> iml = (List<ImmutableMessage>) value;
+				return this.withSubMessages(key, iml);
+			default:
+				localValues.put(key, value);
+				localTypes.put(key, type);
+				return new ImmutableMessageImpl(localValues, localTypes,this.subMessageMap,this.subMessagesMap);
+
 		}
 	}
 
@@ -472,7 +477,7 @@ public class ImmutableMessageImpl implements ImmutableMessage {
 	@Override
 	public ImmutableMessage withOnlyColumns(List<String> columns) {
 		Map<String,Object> newValues = new HashMap<>(this.values);
-		Map<String,String> newTypes = new HashMap<>(this.types);
+		Map<String,ValueType> newTypes = new HashMap<>(this.types);
 		for (String elt : values.keySet()) {
 			if(!columns.contains(elt)) {
 				newValues.remove(elt);
@@ -590,7 +595,7 @@ public class ImmutableMessageImpl implements ImmutableMessage {
 		if ("".equals(prefix)) {
 			localValues = new HashMap<>();
 			for (Entry<String,Object> e : this.values.entrySet()) {
-				String type = this.types.get(e.getKey());
+				ValueType type = this.types.get(e.getKey());
 				final Object processed = processType.apply(e.getKey(),type, e.getValue());
 				if(processed!=null) {
 					localValues.put(e.getKey(), processed);
@@ -599,7 +604,7 @@ public class ImmutableMessageImpl implements ImmutableMessage {
 		} else {
 			localValues = new HashMap<>();
 			for (Entry<String,Object> e : this.values.entrySet()) {
-				String type = this.types.get(e.getKey());
+				ValueType type = this.types.get(e.getKey());
 				final Object processed = processType.apply(e.getKey(),type, e.getValue());
 				if(processed!=null) {
 					localValues.put(prefix+"_"+e.getKey(), processed );
@@ -625,7 +630,7 @@ public class ImmutableMessageImpl implements ImmutableMessage {
 	public Map<String,TypedData> toTypedDataMap() {
 		Map<String,TypedData> columns = new HashMap<>();
 		this.values.entrySet().stream().forEach(element->{
-			ValueType t = ImmutableTypeParser.parseType(this.columnType(element.getKey()));
+			ValueType t = this.columnType(element.getKey());
 			columns.put(element.getKey(), new TypedData(t, element.getValue()));
 		});
 		return columns;

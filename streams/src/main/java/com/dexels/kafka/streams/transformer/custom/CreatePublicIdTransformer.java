@@ -1,5 +1,6 @@
 package com.dexels.kafka.streams.transformer.custom;
 
+import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.replication.api.ReplicationMessage;
 import com.dexels.replication.transformer.api.MessageTransformer;
 
@@ -28,7 +29,7 @@ public class CreatePublicIdTransformer implements MessageTransformer {
 
         Optimus opt = new Optimus(prime, modInverse, random);
         int result =  opt.encode(field);
-        return msg.with(to, prefix + result, "string");
+        return msg.with(to, prefix + result, ImmutableMessage.ValueType.STRING);
     }
 
     /*

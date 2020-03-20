@@ -14,6 +14,8 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.Optional;
 
+import static com.dexels.immutable.api.ImmutableMessage.ValueType.*;
+
 public class TestImmutableJSON {
 	
 	private ImmutableMessageParser parser;
@@ -26,14 +28,16 @@ public class TestImmutableJSON {
 	}
 	@Test
 	public void testImmutable() {
-		ImmutableMessage msg = ImmutableFactory.empty().with("teststring", "bla", "string").with("testinteger", 3, ImmutableTypeParser.typeName(ImmutableMessage.ValueType.INTEGER));
+		ImmutableMessage msg = ImmutableFactory.empty().with("teststring", "bla", STRING)
+				.with("testinteger", 3, INTEGER);
 		byte[] bytes = parser.serialize(msg);
 		logger.info("TEST: {}", new String(bytes));
 	}
 
 	@Test
 	public void testDescribe() {
-		ImmutableMessage msg = ImmutableFactory.empty().with("teststring", "bla", "string").with("testinteger", 3,ImmutableTypeParser.typeName(ImmutableMessage.ValueType.INTEGER));
+		ImmutableMessage msg = ImmutableFactory.empty().with("teststring", "bla", STRING)
+				.with("testinteger", 3, INTEGER);
 		String description = parser.describe(msg);
 		logger.info("DESCRIPTION: {}",description);
 	}
@@ -41,7 +45,7 @@ public class TestImmutableJSON {
 	@Test
 	public void testAddSubMessage() {
 		ImmutableMessage empty = ImmutableFactory.empty();
-		ImmutableMessage created = empty.with("Aap/Noot", 3, ImmutableTypeParser.typeName(ImmutableMessage.ValueType.INTEGER));
+		ImmutableMessage created = empty.with("Aap/Noot", 3, INTEGER);
 		Optional<ImmutableMessage> sub = created.subMessage("Aap");
 		Assert.assertTrue(sub.isPresent());
 		Assert.assertEquals(3,sub.get().value("Noot").get());
@@ -49,15 +53,15 @@ public class TestImmutableJSON {
 	@Test
 	public void testGetSubValue() {
 		ImmutableMessage empty = ImmutableFactory.empty();
-		ImmutableMessage created = empty.with("Aap/Noot", 3, ImmutableTypeParser.typeName(ImmutableMessage.ValueType.INTEGER));
+		ImmutableMessage created = empty.with("Aap/Noot", 3, INTEGER);
 		Assert.assertEquals(3,created.value("Aap/Noot").get());
 	}
 	
 	@Test
 	public void testSubMessageUsingWith() {
-		ImmutableMessage created = ImmutableFactory.empty().with("Aap", 3, ImmutableTypeParser.typeName(ImmutableMessage.ValueType.INTEGER));
-		ImmutableMessage someOther = ImmutableFactory.empty().with("Noot", 4, ImmutableTypeParser.typeName(ImmutableMessage.ValueType.INTEGER));
-		ImmutableMessage combined = created.with("submessage", someOther, ImmutableTypeParser.typeName(ValueType.IMMUTABLE));
+		ImmutableMessage created = ImmutableFactory.empty().with("Aap", 3, INTEGER);
+		ImmutableMessage someOther = ImmutableFactory.empty().with("Noot", 4, INTEGER);
+		ImmutableMessage combined = created.with("submessage", someOther, IMMUTABLE);
 		Assert.assertEquals(4,combined.value("submessage/Noot").get());
 	}
 	
@@ -66,7 +70,7 @@ public class TestImmutableJSON {
 	
 	@Test
 	public void testNdJSON() throws IOException {
-		ImmutableMessage m = ImmutableFactory.empty().with("somenumber", 3, "integer");
+		ImmutableMessage m = ImmutableFactory.empty().with("somenumber", 3, INTEGER);
 		logger.info("{}",ImmutableFactory.ndJson(m));
 
 	}

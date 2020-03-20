@@ -2,7 +2,7 @@ package com.dexels.navajo.reactive;
 
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.immutable.factory.ImmutableFactory;
-import com.dexels.navajo.document.Operand;
+import com.dexels.navajo.document.operand.Operand;
 import com.dexels.navajo.document.Property;
 import com.dexels.navajo.document.stream.ReactiveParseProblem;
 import com.dexels.navajo.document.stream.api.StreamScriptContext;
@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.dexels.immutable.api.ImmutableMessage.*;
+
 public class TestSingle {
 	
 	private static final Logger logger = LoggerFactory.getLogger(TestSingle.class);
@@ -37,8 +39,8 @@ public class TestSingle {
 	public void testSingleSource() {
 		SingleSourceFactory ssf = new SingleSourceFactory();
 		ReactiveParameters parameters = ReactiveParameters.empty(ssf)
-				.withConstant("debug", true, Property.BOOLEAN_PROPERTY)
-				.withConstant("count", 10, Property.INTEGER_PROPERTY);
+				.withConstant("debug", true, ValueType.BOOLEAN)
+				.withConstant("count", 10, ValueType.INTEGER);
 		StreamScriptContext context = TestSetup.createContext("Single",Optional.empty());
 		ssf.build(parameters)
 			.execute(context, Optional.empty(), ImmutableFactory.empty())
@@ -52,8 +54,8 @@ public class TestSingle {
 	public void testTake() {
 		SingleSourceFactory ssf = new SingleSourceFactory();
 		ReactiveParameters parameters = ReactiveParameters.empty(ssf)
-				.withConstant("debug", true, Property.BOOLEAN_PROPERTY)
-				.withConstant("count", 10, Property.INTEGER_PROPERTY);
+				.withConstant("debug", true, ValueType.BOOLEAN)
+				.withConstant("count", 10, ValueType.INTEGER);
 		StreamScriptContext context = TestSetup.createContext("Single",Optional.empty());
 		TakeTransformerFactory takeTransformerFactory = new TakeTransformerFactory();
 		
@@ -77,7 +79,7 @@ public class TestSingle {
 
 	@Test
 	public void testNdJSON() throws IOException {
-		ImmutableMessage m = ImmutableFactory.empty().with("somenumber", 3, "integer");
+		ImmutableMessage m = ImmutableFactory.empty().with("somenumber", 3, ValueType.INTEGER);
 		logger.info(ImmutableFactory.ndJson(m));
 
 	}
@@ -86,8 +88,8 @@ public class TestSingle {
 		List<ReactiveParseProblem> problems = new ArrayList<>();
 		SingleSourceFactory ssf = new SingleSourceFactory();
 		ReactiveParameters parameters = ReactiveParameters.empty(ssf)
-				.withConstant("debug", true, Property.BOOLEAN_PROPERTY)
-				.withConstant("count", 10, Property.INTEGER_PROPERTY);
+				.withConstant("debug", true, ValueType.BOOLEAN)
+				.withConstant("count", 10, ValueType.INTEGER);
 		StreamScriptContext context = TestSetup.createContext("Single",Optional.empty());
 		
 		ReactiveTransformerFactory filterFactory = new FilterTransformerFactory();
@@ -96,8 +98,8 @@ public class TestSingle {
 				.withExpression(new ContextExpression() {
 					
 					@Override
-					public Optional<String> returnType() {
-						return Optional.of("boolean");
+					public Optional<ValueType> returnType() {
+						return Optional.of(ValueType.BOOLEAN);
 					}
 					
 					@Override
@@ -156,13 +158,13 @@ public class TestSingle {
 	public void testSkip() {
 		SingleSourceFactory ssf = new SingleSourceFactory();
 		ReactiveParameters parameters = ReactiveParameters.empty(ssf)
-				.withConstant("debug", true, Property.BOOLEAN_PROPERTY)
-				.withConstant("count", 10, Property.INTEGER_PROPERTY);
+				.withConstant("debug", true, ValueType.BOOLEAN)
+				.withConstant("count", 10, ValueType.INTEGER);
 		StreamScriptContext context = TestSetup.createContext("Single",Optional.empty());
 		SkipTransformerFactory skipTransformerFactory = new SkipTransformerFactory();
 		
 		ReactiveParameters transformerParameter = ReactiveParameters.empty(skipTransformerFactory)
-				.withConstant("count", 5, Property.INTEGER_PROPERTY);
+				.withConstant("count", 5, ValueType.INTEGER);
 
 		List<ReactiveParseProblem> problems = new ArrayList<>();
 		ReactiveTransformer skipTransformer = skipTransformerFactory.build(problems,transformerParameter);

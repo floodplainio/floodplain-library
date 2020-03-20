@@ -12,6 +12,8 @@ import org.junit.Test;
 
 import java.util.Optional;
 
+import static com.dexels.immutable.api.ImmutableMessage.ValueType.*;
+
 public class TestSetSubmessage {
 	
 	
@@ -23,13 +25,13 @@ public class TestSetSubmessage {
 	public void setSubMessage() {
 		SetSingle ss = new SetSingle();
 		ImmutableMessage msg = ImmutableFactory.empty()
-				.with("name", "bob", "string")
-				.with("BankAccount/balance", 11, "integer");
+				.with("name", "bob", STRING)
+				.with("BankAccount/balance", 11, INTEGER);
 		String before = ImmutableFactory.createParser().describe(msg);
 		System.err.println("Result: "+before);
 		
 		ReactiveParameters param = ReactiveParameters.empty(ss)
-			.withConstant("BankAccount/balance", 10, "integer");
+			.withConstant("BankAccount/balance", 10, INTEGER);
 		
 		DataItem dd = ss.execute(param)
 			.apply(new StreamScriptContext("tenant","service","deployment"))

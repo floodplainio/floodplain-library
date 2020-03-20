@@ -1,5 +1,8 @@
 package com.dexels.navajo.document.stream.api;
 
+import com.dexels.immutable.api.ImmutableMessage;
+import com.dexels.immutable.api.ImmutableMessage.ValueType;
+import com.dexels.immutable.api.ImmutableTypeParser;
 import com.dexels.navajo.document.Property;
 import com.dexels.navajo.document.stream.NavajoStreamSerializer;
 import com.dexels.navajo.document.types.Binary;
@@ -15,7 +18,7 @@ import java.util.*;
 public class Prop {
 	private final String name;
 	private final String value;
-	private final String type;
+	private final ValueType type;
 	private final List<Select> selections = new ArrayList<>();
 	private final int length;
 	private final String description;
@@ -31,7 +34,7 @@ public class Prop {
 		IN,OUT
 	}
 	
-	Prop(String name, String value, String type, List<Select> selections, Optional<String> cardinality) {
+	Prop(String name, String value, ValueType type, List<Select> selections, Optional<String> cardinality) {
 		this(name,value,type,selections,Optional.empty(),"",-1,"",cardinality,null);
 	}
 	
@@ -39,11 +42,11 @@ public class Prop {
 		return new Prop(name, value, type,selections,direction,description,length,subtype,cardinality,binary);
 	}
 
-	public Prop(String name, String value, String type) {
+	public Prop(String name, String value, ValueType type) {
 		this(name, value, type, Collections.emptyList(),Optional.empty());
 	}
 
-	public Prop(String name, String value, String type, List<Select> selections, Optional<Prop.Direction> direction,
+	public Prop(String name, String value, ValueType type, List<Select> selections, Optional<Prop.Direction> direction,
 			String description, int length, String subtype,Optional<String> cardinality, Binary binary) {
 		this.name = name;
 		this.type = type;
@@ -66,12 +69,12 @@ public class Prop {
 		String lngth = attributes.get("length");
 		String cardinality = attributes.get("cardinality");
 		int len = lngth==null || "".equals(lngth)?-1:Integer.parseInt(lngth);
-		return create(attributes.get("name"),attributes.get("value"),attributes.get("type"),selections,parseDirection(attributes.get("direction")),attributes.get("description"),len,attributes.get("subtype"),Optional.ofNullable(cardinality),null);
+		return create(attributes.get("name"),attributes.get("value"),ImmutableTypeParser.parseType(attributes.get("type")),selections,parseDirection(attributes.get("direction")),attributes.get("description"),len,attributes.get("subtype"),Optional.ofNullable(cardinality),null);
 	}
 
 	public static Prop create(Map<String, String> attributes, Binary currentBinary) {
 		int len =  (int) currentBinary.getLength(); // lngth==null || "".equals(lngth)?-1:Integer.parseInt(lngth);
-		return create(attributes.get("name"),(String)null,attributes.get("type"),Collections.emptyList(),parseDirection(attributes.get("direction")),attributes.get("description"),len,attributes.get("subtype"),Optional.empty(),currentBinary);
+		return create(attributes.get("name"),(String)null, ImmutableTypeParser.parseType(attributes.get("type")),Collections.emptyList(),parseDirection(attributes.get("direction")),attributes.get("description"),len,attributes.get("subtype"),Optional.empty(),currentBinary);
 	}
 	
 	private static Optional<Direction> parseDirection(String direction) {
@@ -85,15 +88,15 @@ public class Prop {
 		return new Prop(name,value,null);
 	}
 	
-	public static Prop create(String name, String value, String type) {
+	public static Prop create(String name, String value, ValueType type) {
 		return new Prop(name,value,type);
 	}
 	
-	public static Prop create(String name, String value, String type,List<Select> selections, Optional<String> cardinality) {
+	public static Prop create(String name, String value, ValueType type,List<Select> selections, Optional<String> cardinality) {
 		return new Prop(name,value,type,selections,Optional.empty(),"",-1,"",cardinality,null);
 	}
 	
-	public static Prop create(String name, String value, String type,List<Select> selections, Optional<Prop.Direction> direction, String description, int length, String subtype, Optional<String> cardinality, Binary binary ) {
+	public static Prop create(String name, String value, ValueType type,List<Select> selections, Optional<Prop.Direction> direction, String description, int length, String subtype, Optional<String> cardinality, Binary binary ) {
 		return new Prop(name,value,type,selections,direction,description,length,subtype,cardinality,binary);
 	}
 	
@@ -117,7 +120,7 @@ public class Prop {
 				logger.error("Error loading binary: ", e);
 				b = new Binary();
 			}
-			return new Prop(name, null, Property.BINARY_PROPERTY,selections,direction,description,length,subtype,cardinality,b);
+			return new Prop(name, null, ValueType.BINARY,selections,direction,description,length,subtype,cardinality,b);
 		}
 		return     new Prop(name, null, type,selections,direction,description,length,subtype,cardinality,new Binary());
 	}
@@ -126,7 +129,7 @@ public class Prop {
 		return new Prop(newName, value, type,selections,direction,description,length,subtype,cardinality,binary);
 	}
 	
-	public Prop emptyWithType(String type) {
+	public Prop emptyWithType(ValueType type) {
 		return new Prop(name,null,type);
 	}
 
@@ -134,7 +137,7 @@ public class Prop {
 		return name;
 	}
 
-	public String type() {
+	public ValueType type() {
 		return type;
 	}
 

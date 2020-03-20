@@ -2,7 +2,9 @@
 package com.dexels.navajo.parser.compiled;
 
 
-import com.dexels.navajo.document.Operand;
+import com.dexels.immutable.api.ImmutableMessage;
+import com.dexels.immutable.api.ImmutableMessage.ValueType;
+import com.dexels.navajo.document.operand.Operand;
 import com.dexels.navajo.document.Property;
 import com.dexels.navajo.expression.api.ContextExpression;
 import com.dexels.navajo.expression.api.FunctionClassification;
@@ -23,23 +25,8 @@ final class ASTSubtractNode extends SimpleNode {
     
 	@Override
 	public ContextExpression interpretToLambda(List<String> problems, String expression, Function<String, FunctionClassification> functionClassifier, Function<String,Optional<Node>> mapResolver) {
-		return lazyBiFunction(problems,expression,(a,b)->interpret(a, b),equalOrEmptyTypesOrDateWithDatePattern(),(a,b)->Optional.empty(),functionClassifier,mapResolver);
+		return lazyBiFunction(problems,expression,(a,b)->interpret(a, b),equalOrEmptyTypes(),(a,b)->Optional.empty(),functionClassifier,mapResolver);
 	}
-	
-    private BiFunction<Optional<String>, Optional<String>, Boolean> equalOrEmptyTypesOrDateWithDatePattern() {
-    		return (a,b)->{
-    			boolean res = equalOrEmptyTypes().apply(a, b);
-    			if(res) {
-    				return true;
-    			}
-    			if(a.isPresent() && b.isPresent()) {
-    				if(a.get().equals(Property.DATE_PROPERTY) && b.get().equals(Property.DATE_PATTERN_PROPERTY)) {
-    					return true;
-    				}
-    			}
-    			return res;
-    		};
-    }
 
 
 	private final Operand interpret(Operand ao, Operand bo) {

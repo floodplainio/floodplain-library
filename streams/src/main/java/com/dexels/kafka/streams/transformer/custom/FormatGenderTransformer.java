@@ -1,5 +1,6 @@
 package com.dexels.kafka.streams.transformer.custom;
 
+import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.replication.api.ReplicationMessage;
 import com.dexels.replication.transformer.api.MessageTransformer;
 
@@ -26,13 +27,13 @@ public class FormatGenderTransformer implements MessageTransformer {
 		}
 		switch (se) {
 		case "1":
-			return msg.with(outputfield, "Male", "string");
+			return msg.with(outputfield, "Male", ImmutableMessage.ValueType.STRING);
 		case "2":
-			return msg.with(outputfield, "Female", "string");
+			return msg.with(outputfield, "Female", ImmutableMessage.ValueType.STRING);
 		case "9":
-			return msg.with(outputfield, "Mixed", "string");
+			return msg.with(outputfield, "Mixed", ImmutableMessage.ValueType.STRING);
 		default:
-			return msg.with(outputfield, "Unknown", "string");
+			return msg.with(outputfield, "Unknown", ImmutableMessage.ValueType.STRING);
 		}	}
 
 }

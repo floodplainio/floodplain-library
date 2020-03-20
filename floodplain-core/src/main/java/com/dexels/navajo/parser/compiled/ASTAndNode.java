@@ -2,7 +2,9 @@
 package com.dexels.navajo.parser.compiled;
 
 import com.dexels.immutable.api.ImmutableMessage;
-import com.dexels.navajo.document.Operand;
+import com.dexels.immutable.api.ImmutableMessage.ValueType;
+import com.dexels.immutable.api.ImmutableTypeParser;
+import com.dexels.navajo.document.operand.Operand;
 import com.dexels.navajo.document.Property;
 import com.dexels.navajo.expression.api.ContextExpression;
 import com.dexels.navajo.expression.api.FunctionClassification;
@@ -20,10 +22,10 @@ final class ASTAndNode extends SimpleNode {
 	public ContextExpression interpretToLambda(List<String> problems,String expression, Function<String, FunctionClassification> functionClassifier, Function<String,Optional<Node>> mapResolver) {
 		ContextExpression expA = jjtGetChild(0).interpretToLambda(problems,expression,functionClassifier,mapResolver);
 		ContextExpression expB = jjtGetChild(1).interpretToLambda(problems,expression,functionClassifier,mapResolver);
-		Optional<String> expressionA = expA.returnType();
-		checkOrAdd("In AND expression the first expression is not a boolean but a "+expressionA.orElse("<unknown>"), problems, expB.returnType(), Property.BOOLEAN_PROPERTY);
-		Optional<String> expressionB = expB.returnType();
-		checkOrAdd("In AND expression the second expression is not a boolean but a "+expressionB.orElse("<unknown>"), problems, expB.returnType(), Property.BOOLEAN_PROPERTY);
+		Optional<ValueType> expressionA = expA.returnType();
+		checkOrAdd("In AND expression the first expression is not a boolean but a "+expressionA.map(ImmutableTypeParser::typeName).orElse("<unknown>"), problems, expB.returnType(), ValueType.BOOLEAN);
+		Optional<ValueType> expressionB = expB.returnType();
+		checkOrAdd("In AND expression the second expression is not a boolean but a "+expressionB.map(ImmutableTypeParser::typeName).orElse("<unknown>"), problems, expB.returnType(), ValueType.BOOLEAN);
 		return new ContextExpression() {
 			@Override
 			public Operand apply(Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
@@ -49,8 +51,8 @@ final class ASTAndNode extends SimpleNode {
 			}
 
 			@Override
-			public Optional<String> returnType() {
-				return Optional.of(Property.BOOLEAN_PROPERTY);
+			public Optional<ValueType> returnType() {
+				return Optional.of(ValueType.BOOLEAN);
 			}
 
 			@Override

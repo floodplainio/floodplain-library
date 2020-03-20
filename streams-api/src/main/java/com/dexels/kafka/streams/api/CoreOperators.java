@@ -15,6 +15,8 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static com.dexels.immutable.api.ImmutableMessage.*;
+
 public class CoreOperators {
 	private static final int TOPIC_PARTITION_COUNT = 1;
 	private static final int TOPIC_REPLICATION_COUNT = 1;
@@ -189,7 +191,7 @@ public class CoreOperators {
 				if(key!=null) {
 					key = key.toLowerCase(); // seems to be the standard
 					Object val = replicationMessage.columnValue(valueField);
-					String type = replicationMessage.columnType(valueField);
+					ValueType type = replicationMessage.columnType(valueField);
 					if(val!=null) {
 						current = current.with(key, val, type);
 					}
@@ -202,7 +204,7 @@ public class CoreOperators {
 				if(key!=null) {
 					key = key.toLowerCase(); // seems to be the standard
 					Object val = replicationMessage.columnValue(valueField);
-					String type = replicationMessage.columnType(valueField);
+					ValueType type = replicationMessage.columnType(valueField);
 					if(val!=null) {
 						current = current.with(key, val, type);
 					}

@@ -1,6 +1,7 @@
 package com.dexels.immutable.factory;
 
 import com.dexels.immutable.api.ImmutableMessage;
+import com.dexels.immutable.api.ImmutableMessage.ValueType;
 import com.dexels.immutable.api.ImmutableMessageParser;
 import com.dexels.immutable.impl.ImmutableMessageImpl;
 import com.dexels.immutable.impl.JSONImmutableMessageParserImpl;
@@ -21,10 +22,10 @@ public class ImmutableFactory {
 		return empty;
 	}
 
-	public static ImmutableMessage create(Map<String,? extends Object> values, Map<String,String> types) {
+	public static ImmutableMessage create(Map<String,? extends Object> values, Map<String,ValueType> types) {
 		return create(values,types,Collections.emptyMap(),Collections.emptyMap());
 	}
-	public static ImmutableMessage create(Map<String,? extends Object> values, Map<String,String> types,Map<String,ImmutableMessage> submessage, Map<String,List<ImmutableMessage>> submessages) {
+	public static ImmutableMessage create(Map<String,? extends Object> values, Map<String, ValueType> types, Map<String,ImmutableMessage> submessage, Map<String,List<ImmutableMessage>> submessages) {
 		return new ImmutableMessageImpl(values, types, submessage, submessages);
 	}
 

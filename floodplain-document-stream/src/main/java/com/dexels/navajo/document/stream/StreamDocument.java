@@ -1,6 +1,8 @@
 package com.dexels.navajo.document.stream;
 
 import com.dexels.immutable.api.ImmutableMessage;
+import com.dexels.immutable.api.ImmutableMessage.ValueType;
+import com.dexels.immutable.api.ImmutableTypeParser;
 import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.navajo.document.Message;
 import com.dexels.navajo.document.Navajo;
@@ -682,7 +684,7 @@ public class StreamDocument {
 	}
 	
 	public static Msg replicationToMsg(ImmutableMessage rpl, boolean isArrayMessage) {
-		Map<String,String> types = rpl.types();
+		Map<String, ValueType> types = rpl.types();
 		List<Prop> properties = rpl.values()
 			.entrySet()
 			.stream()
@@ -743,11 +745,11 @@ public class StreamDocument {
 			subMessages = Collections.emptyMap();
 		}
 		Map<String,Object> values = new HashMap<>();
-		Map<String,String> types = new HashMap<>();
+		Map<String,ValueType> types = new HashMap<>();
 		for (Property item : m.getAllProperties()) {
 			String name = item.getName();
 			values.put(name, item.getTypedValue());
-			types.put(name, item.getType());
+			types.put(name, ImmutableTypeParser.parseType(item.getType()));
 		}
 		return ImmutableFactory.create(values, types, subMessages, subMessageLists);
 		//		n.getAllMessages()
@@ -869,9 +871,9 @@ public class StreamDocument {
 		List<Property> pp = msg.columnNames()
 			.stream()
 			.map(e->{
-				String type = msg.columnType(e);
+				ValueType type = msg.columnType(e);
 				Optional<Object> value = msg.value(e);
-				Property p = NavajoFactory.getInstance().createProperty(n, e, type, "", 0, "", Property.DIR_OUT);
+				Property p = NavajoFactory.getInstance().createProperty(n, e, ImmutableTypeParser.typeName(type), "", 0, "", Property.DIR_OUT);
 				if(value.isPresent()) {
 					p.setAnyValue(value.get());
 				}
@@ -901,10 +903,10 @@ public class StreamDocument {
 	}	
 	public static ImmutableMessage messageToReplication(Message msg) {
 		Map<String,Object> values = new HashMap<>();
-		Map<String,String> types = new HashMap<>();
+		Map<String,ValueType> types = new HashMap<>();
 		msg.getProperties().forEach((name,prop)->{
 //			values.put(name, p)
-			String type = prop.getType();
+			ValueType type = ImmutableTypeParser.parseType(prop.getType());
 			Object value = prop.getTypedValue();
 			values.put(name, value);
 			types.put(name, type);

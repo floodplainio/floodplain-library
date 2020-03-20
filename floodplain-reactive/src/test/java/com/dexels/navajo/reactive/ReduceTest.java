@@ -22,8 +22,8 @@ public class ReduceTest {
 
 	public ImmutableMessage createMessage(int suffix) {
 		return ImmutableFactory.empty()
-				.with("name", "personname_"+suffix, Property.STRING_PROPERTY)
-				.with("address", "address_"+suffix, Property.STRING_PROPERTY);
+				.with("name", "personname_"+suffix, ImmutableMessage.ValueType.STRING)
+				.with("address", "address_"+suffix, ImmutableMessage.ValueType.STRING);
 	}
 	
 	@Test

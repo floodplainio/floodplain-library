@@ -2,7 +2,7 @@ package com.dexels.navajo.reactive.api;
 
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.navajo.document.Navajo;
-import com.dexels.navajo.document.Operand;
+import com.dexels.navajo.document.operand.Operand;
 import com.dexels.navajo.document.stream.DataItem;
 import com.dexels.navajo.document.stream.api.StreamScriptContext;
 import com.dexels.navajo.expression.api.ContextExpression;

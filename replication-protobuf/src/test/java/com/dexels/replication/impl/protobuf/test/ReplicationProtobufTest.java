@@ -1,6 +1,7 @@
 package com.dexels.replication.impl.protobuf.test;
 
 import com.dexels.immutable.api.ImmutableMessage;
+import com.dexels.immutable.api.ImmutableMessage.ValueType;
 import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.replication.api.ReplicationMessage;
 import com.dexels.replication.api.ReplicationMessageParser;
@@ -33,9 +34,9 @@ public class ReplicationProtobufTest {
 	@Test
 	public void test() {
 		Map<String,Object> values = new HashMap<>();
-		Map<String,String> types = new HashMap<>();
+		Map<String, ValueType> types = new HashMap<>();
 		values.put("astring", "blob");
-		types.put("astring", "string");
+		types.put("astring", ValueType.STRING);
 		ReplicationMessage m =  ReplicationFactory.fromMap("key", values, types);
 		m = m.withSubMessage("subb", createSubMessage());
 		byte[] bb = m.toBytes(protoBufParser);
@@ -46,18 +47,18 @@ public class ReplicationProtobufTest {
 
 	public ImmutableMessage createSubMessage() {
 		Map<String,Object> values = new HashMap<>();
-		Map<String,String> types = new HashMap<>();
+		Map<String,ValueType> types = new HashMap<>();
 		values.put("bstring", "subblob");
-		types.put("bstring", "string");
+		types.put("bstring", ValueType.STRING);
 		return ImmutableFactory.create(values, types);
 	}
 	
 	@Test
 	public void testInteger() {
 		Map<String,Object> values = new HashMap<>();
-		Map<String,String> types = new HashMap<>();
+		Map<String,ValueType> types = new HashMap<>();
 		values.put("anint", 3);
-		types.put("anint", "integer");
+		types.put("anint", ValueType.INTEGER);
 		ReplicationMessage m =  ReplicationFactory.fromMap("key", values, types);
 		Object value = m.columnValue("anint");
 		Assert.assertTrue(value instanceof Integer);
@@ -176,11 +177,11 @@ public class ReplicationProtobufTest {
 		ReplicationMessageParser jsonparser = new JSONReplicationMessageParserImpl();
 		ReplicationMessageParser parser = new ProtobufReplicationMessageParser();
 		Map<String,Object> values = new HashMap<>();
-		Map<String,String> types = new HashMap<>();
+		Map<String,ValueType> types = new HashMap<>();
 		values.put("key", "bla");
-		types.put("key", "string");
+		types.put("key", ValueType.STRING);
 		values.put("empty", null);
-		types.put("empty", "string");
+		types.put("empty", ValueType.STRING);
 		
 		ReplicationMessage msg = ReplicationFactory.fromMap("key", values, types);
 		Assert.assertNull(msg.columnValue("empty"));

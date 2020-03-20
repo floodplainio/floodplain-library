@@ -1,6 +1,8 @@
 package com.dexels.navajo.document.stream.api;
 
 import com.dexels.immutable.api.ImmutableMessage;
+import com.dexels.immutable.api.ImmutableMessage.ValueType;
+import com.dexels.immutable.api.ImmutableTypeParser;
 import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.navajo.document.Property;
 import com.dexels.navajo.document.stream.events.Events;
@@ -43,77 +45,75 @@ public class Msg {
 	
 	public ImmutableMessage toImmutableMessage() {
 		Map<String,Object> values = new HashMap<>();
-		Map<String,String> types = new HashMap<>();
+		Map<String, ValueType> types = new HashMap<>();
 		for (Prop prop : properties) {
-			String type = prop.type();
+			ValueType type = prop.type();
 			types.put(prop.name(), type);
 			switch (type) {
-			case "string":
-				values.put(prop.name(), prop.valueAsString());
-				break;
-			case "integer":
-				if(prop.value()!=null) {
-					values.put(prop.name(), Integer.parseInt( prop.valueAsString()));
-				}
-				break;
-			case "long":
-				if(prop.value()!=null) {
-					values.put(prop.name(), Long.parseLong(prop.valueAsString()));
-				}
-				break;
-			case "double":
-				if(prop.value()!=null) {
-					values.put(prop.name(), Double.parseDouble(prop.valueAsString()));
-				}
-				break;
-			case "float":
-				if(prop.value()!=null) {
-					values.put(prop.name(), Float.parseFloat(prop.valueAsString()));
-				}
-				break;
-			case "boolean":
-				if(prop.value()!=null) {
-					values.put(prop.name(), Boolean.parseBoolean(prop.valueAsString()));
-				}
-				break;
-			case "binary_digest":
-				if(prop.value()!=null) {
+				case STRING:
 					values.put(prop.name(), prop.valueAsString());
-				}
-				break;
+					break;
+				case INTEGER:
+					if(prop.value()!=null) {
+						values.put(prop.name(), Integer.parseInt( prop.valueAsString()));
+					}
+					break;
+				case LONG:
+					if(prop.value()!=null) {
+						values.put(prop.name(), Long.parseLong(prop.valueAsString()));
+					}
+					break;
+				case DOUBLE:
+					if(prop.value()!=null) {
+						values.put(prop.name(), Double.parseDouble(prop.valueAsString()));
+					}
+					break;
+				case FLOAT:
+					if(prop.value()!=null) {
+						values.put(prop.name(), Float.parseFloat(prop.valueAsString()));
+					}
+					break;
+				case BOOLEAN:
+					if(prop.value()!=null) {
+						values.put(prop.name(), Boolean.parseBoolean(prop.valueAsString()));
+					}
+					break;
+				case BINARY_DIGEST:
+					if(prop.value()!=null) {
+						values.put(prop.name(), prop.valueAsString());
+					}
+					break;
+				case DATE:
+					//"2011-10-03 15:01:06.00"
+					if(prop.value()!=null) {
+						try {
+							values.put(prop.name(), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SS").parse( prop.valueAsString()));
+						} catch (ParseException e) {
+							logger.warn("Cannot parse date {} = returning null", prop.value());
+							return null;
+						}
+					}
+				case CLOCKTIME:
+					if(prop.value()!=null) {
+						try {
+							values.put(prop.name(),new SimpleDateFormat("HH:mm:ss").parse( prop.valueAsString()));
 
-			case "date":
-				//"2011-10-03 15:01:06.00"
-				if(prop.value()!=null) {
-					try {
-						values.put(prop.name(), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SS").parse( prop.valueAsString()));
-					} catch (ParseException e) {
-					    logger.warn("Cannot parse date {} = returning null", prop.value());
-						return null;
+						} catch (ParseException e) {
+							logger.warn("Cannot parse clocktime {} = returning null", prop.value());
+						}
 					}
-				}
-			case "clocktime":
-                //"15:01:06"
-				if(prop.value()!=null) {
-					try {
-	                    values.put(prop.name(),new SimpleDateFormat("HH:mm:ss").parse( prop.valueAsString()));
-	
-	                } catch (ParseException e) {
-	                    logger.warn("Cannot parse clocktime {} = returning null", prop.value());
-	                }
-				}
-                
-			case "selection":
-				if(prop.cardinality().isPresent() && prop.cardinality().get().equals(Property.CARDINALITY_MULTIPLE)) {
-					String sel = prop.selections().stream().filter(e->e.selected()).map(e->e.value()).collect(Collectors.joining(","));
-					values.put(prop.name(), sel);
-				} else {
-					Optional<String> sel = prop.selections().stream().filter(e->e.selected()).map(e->e.value()).findFirst();
-					if(sel.isPresent()) {
-						values.put(prop.name(), sel.get());
+			// TODO using enum for selections
+				case ENUM:
+					if(prop.cardinality().isPresent() && prop.cardinality().get().equals(Property.CARDINALITY_MULTIPLE)) {
+						String sel = prop.selections().stream().filter(e->e.selected()).map(e->e.value()).collect(Collectors.joining(","));
+						values.put(prop.name(), sel);
+					} else {
+						Optional<String> sel = prop.selections().stream().filter(e->e.selected()).map(e->e.value()).findFirst();
+						if(sel.isPresent()) {
+							values.put(prop.name(), sel.get());
+						}
 					}
-				}
-				break;
+					break;
 
 			default:
 			    logger.warn("Unsupported type {}", type);

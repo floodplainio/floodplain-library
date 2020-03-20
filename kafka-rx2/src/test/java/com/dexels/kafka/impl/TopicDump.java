@@ -1,5 +1,6 @@
 package com.dexels.kafka.impl;
 
+import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.kafka.factory.KafkaClientFactory;
 import com.dexels.replication.api.ReplicationMessage;
 import com.dexels.replication.api.ReplicationMessageParser;
@@ -21,6 +22,8 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
+
+import static com.dexels.immutable.api.ImmutableMessage.ValueType.*;
 
 public class TopicDump {
 	
@@ -61,9 +64,9 @@ public class TopicDump {
 			.filter(e->e.value()!=null)
 			.map(e->parser.parseBytes(Optional.of(topic), e.value())
 					.atTime(e.timestamp())
-					.with("_kafkapartition", e.partition().orElse(-1), "integer")
-					.with("_kafkaoffset", e.offset().orElse(-1L), "long")
-					.with("_kafkakey", e.key(), "string") 
+					.with("_kafkapartition", e.partition().orElse(-1), INTEGER)
+					.with("_kafkaoffset", e.offset().orElse(-1L), LONG)
+					.with("_kafkakey", e.key(), STRING)
 				)
 			.filter(filter)
 			.map(map)
