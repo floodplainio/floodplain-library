@@ -2,7 +2,6 @@ package com.dexels.navajo.document.operand;
 
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.immutable.api.ImmutableMessage.ValueType;
-import com.dexels.immutable.api.ImmutableTypeParser;
 
 import java.util.Date;
 import java.util.List;

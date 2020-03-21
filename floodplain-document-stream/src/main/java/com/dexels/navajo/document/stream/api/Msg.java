@@ -2,7 +2,6 @@ package com.dexels.navajo.document.stream.api;
 
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.immutable.api.ImmutableMessage.ValueType;
-import com.dexels.immutable.api.ImmutableTypeParser;
 import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.navajo.document.Property;
 import com.dexels.navajo.document.stream.events.Events;

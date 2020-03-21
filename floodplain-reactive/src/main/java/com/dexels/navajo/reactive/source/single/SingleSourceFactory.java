@@ -1,7 +1,6 @@
 package com.dexels.navajo.reactive.source.single;
 
 import com.dexels.immutable.api.ImmutableMessage;
-import com.dexels.navajo.document.Property;
 import com.dexels.navajo.document.stream.DataItem;
 import com.dexels.navajo.document.stream.DataItem.Type;
 import com.dexels.navajo.reactive.api.ReactiveParameters;

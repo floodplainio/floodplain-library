@@ -1,7 +1,6 @@
 package com.dexels.navajo.reactive.transformer.csv;
 
 import com.dexels.immutable.api.ImmutableMessage;
-import com.dexels.navajo.document.Property;
 import com.dexels.navajo.document.stream.DataItem.Type;
 import com.dexels.navajo.document.stream.ReactiveParseProblem;
 import com.dexels.navajo.reactive.api.ReactiveParameters;

@@ -14,7 +14,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static com.dexels.immutable.api.ImmutableMessage.*;
+import static com.dexels.immutable.api.ImmutableMessage.ValueType;
 
 final class ASTListNode extends SimpleNode {
 

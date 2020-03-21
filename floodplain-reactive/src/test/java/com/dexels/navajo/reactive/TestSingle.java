@@ -3,7 +3,6 @@ package com.dexels.navajo.reactive;
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.navajo.document.operand.Operand;
-import com.dexels.navajo.document.Property;
 import com.dexels.navajo.document.stream.ReactiveParseProblem;
 import com.dexels.navajo.document.stream.api.StreamScriptContext;
 import com.dexels.navajo.expression.api.ContextExpression;
@@ -25,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static com.dexels.immutable.api.ImmutableMessage.*;
+import static com.dexels.immutable.api.ImmutableMessage.ValueType;
 
 public class TestSingle {
 	

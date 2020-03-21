@@ -1,6 +1,5 @@
 package com.dexels.kafka.impl;
 
-import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.kafka.factory.KafkaClientFactory;
 import com.dexels.replication.api.ReplicationMessage;
 import com.dexels.replication.api.ReplicationMessageParser;

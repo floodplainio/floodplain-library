@@ -1,7 +1,5 @@
 package com.dexels.navajo.expression.api;
 
-import com.dexels.immutable.api.ImmutableMessage;
-//import com.dexels.navajo.document.NavajoFactory;
 import com.dexels.immutable.api.ImmutableMessage.ValueType;
 import com.dexels.immutable.api.ImmutableTypeParser;
 import com.dexels.navajo.document.operand.*;
@@ -10,6 +8,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+//import com.dexels.navajo.document.NavajoFactory;
 
 public abstract class FunctionInterface {
     public abstract String remarks();

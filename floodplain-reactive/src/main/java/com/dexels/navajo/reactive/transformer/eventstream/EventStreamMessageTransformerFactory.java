@@ -1,7 +1,5 @@
 package com.dexels.navajo.reactive.transformer.eventstream;
 
-import com.dexels.immutable.api.ImmutableMessage;
-import com.dexels.navajo.document.Property;
 import com.dexels.navajo.document.stream.DataItem.Type;
 import com.dexels.navajo.document.stream.ReactiveParseProblem;
 import com.dexels.navajo.reactive.api.ReactiveParameters;
@@ -11,7 +9,7 @@ import com.dexels.navajo.reactive.api.TransformerMetadata;
 
 import java.util.*;
 
-import static com.dexels.immutable.api.ImmutableMessage.*;
+import static com.dexels.immutable.api.ImmutableMessage.ValueType;
 
 public class EventStreamMessageTransformerFactory implements ReactiveTransformerFactory, TransformerMetadata {
 

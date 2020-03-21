@@ -2,7 +2,6 @@
 package com.dexels.navajo.parser.compiled;
 
 
-import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.navajo.document.operand.ClockTime;
 import com.dexels.navajo.document.operand.Operand;
 import com.dexels.navajo.expression.api.ContextExpression;
@@ -15,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
-import static com.dexels.immutable.api.ImmutableMessage.ValueType.*;
+import static com.dexels.immutable.api.ImmutableMessage.ValueType.BOOLEAN;
 
 @SuppressWarnings({"rawtypes"})
 

@@ -2,7 +2,6 @@ package com.dexels.immutable.impl;
 
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.immutable.api.ImmutableMessageParser;
-import com.dexels.immutable.api.ImmutableTypeParser;
 import com.dexels.immutable.api.customtypes.CoordinateType;
 import com.dexels.immutable.factory.ImmutableFactory;
 import org.slf4j.Logger;

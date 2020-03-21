@@ -1,8 +1,6 @@
 package com.dexels.navajo.document.operand;
 
 import java.io.*;
-import java.nio.ByteBuffer;
-import java.util.zip.ZipOutputStream;
 
 public class Binary {
 

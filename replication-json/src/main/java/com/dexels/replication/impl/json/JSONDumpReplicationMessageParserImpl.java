@@ -1,6 +1,5 @@
 package com.dexels.replication.impl.json;
 
-import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.pubsub.rx2.api.PubSubMessage;
 import com.dexels.replication.api.ReplicationMessage;
 import com.dexels.replication.api.ReplicationMessage.Operation;
@@ -23,7 +22,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-import static com.dexels.immutable.api.ImmutableMessage.*;
+import static com.dexels.immutable.api.ImmutableMessage.ValueType;
 
 //@Component(name="dexels.replication.parser.json", enabled=false)
 @Named("ndjson") @ApplicationScoped

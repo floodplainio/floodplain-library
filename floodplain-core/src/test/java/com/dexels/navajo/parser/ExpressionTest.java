@@ -12,7 +12,7 @@ import org.junit.Test;
 
 import java.util.*;
 
-import static com.dexels.immutable.api.ImmutableMessage.*;
+import static com.dexels.immutable.api.ImmutableMessage.ValueType;
 import static org.junit.Assert.assertEquals;
 
 @SuppressWarnings("unchecked")

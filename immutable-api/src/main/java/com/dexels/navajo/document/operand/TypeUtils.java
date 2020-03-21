@@ -4,7 +4,7 @@ import com.dexels.immutable.api.ImmutableMessage;
 
 import java.util.List;
 
-import static com.dexels.immutable.api.ImmutableMessage.*;
+import static com.dexels.immutable.api.ImmutableMessage.ValueType;
 
 public class TypeUtils {
 

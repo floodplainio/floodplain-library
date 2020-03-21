@@ -1,9 +1,7 @@
 package com.dexels.immutable.impl;
 
 import com.dexels.immutable.api.ImmutableMessage;
-import com.dexels.immutable.api.ImmutableMessage.ValueType;
 import com.dexels.immutable.api.ImmutableMessageParser;
-import com.dexels.immutable.api.ImmutableTypeParser;
 import com.dexels.immutable.factory.ImmutableFactory;
 import org.junit.Assert;
 import org.junit.Before;

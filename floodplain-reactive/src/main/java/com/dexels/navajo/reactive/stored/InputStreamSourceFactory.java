@@ -1,14 +1,16 @@
 package com.dexels.navajo.reactive.stored;
 
 import com.dexels.immutable.api.ImmutableMessage;
-import com.dexels.navajo.document.Property;
 import com.dexels.navajo.document.stream.DataItem.Type;
 import com.dexels.navajo.reactive.api.ReactiveParameters;
 import com.dexels.navajo.reactive.api.ReactiveSource;
 import com.dexels.navajo.reactive.api.ReactiveSourceFactory;
 import com.dexels.navajo.reactive.api.SourceMetadata;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public class InputStreamSourceFactory implements ReactiveSourceFactory, SourceMetadata {
 

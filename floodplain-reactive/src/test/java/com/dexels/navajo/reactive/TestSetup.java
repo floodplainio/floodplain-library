@@ -4,7 +4,6 @@ import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.navajo.document.NavajoFactory;
 import com.dexels.navajo.document.stream.api.ReactiveScriptRunner;
 import com.dexels.navajo.document.stream.api.StreamScriptContext;
-import com.dexels.navajo.parser.Expression;
 import com.dexels.navajo.reactive.api.ReactiveFinder;
 import com.dexels.navajo.reactive.source.single.SingleSourceFactory;
 import com.dexels.navajo.reactive.source.test.EventStreamSourceFactory;

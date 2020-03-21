@@ -2,18 +2,14 @@
 package com.dexels.navajo.parser.compiled;
 
 
-import com.dexels.immutable.api.ImmutableMessage;
-import com.dexels.immutable.api.ImmutableMessage.ValueType;
 import com.dexels.navajo.document.operand.ClockTime;
 import com.dexels.navajo.document.operand.Operand;
 import com.dexels.navajo.document.operand.StopwatchTime;
 import com.dexels.navajo.expression.api.ContextExpression;
 import com.dexels.navajo.expression.api.FunctionClassification;
 import com.dexels.navajo.expression.api.TMLExpressionException;
-import com.dexels.navajo.parser.Utils;
 
 import java.util.*;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 
 @SuppressWarnings({"unchecked","rawtypes"})

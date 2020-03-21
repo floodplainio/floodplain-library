@@ -12,7 +12,8 @@ import org.junit.Test;
 
 import java.util.Optional;
 
-import static com.dexels.immutable.api.ImmutableMessage.ValueType.*;
+import static com.dexels.immutable.api.ImmutableMessage.ValueType.INTEGER;
+import static com.dexels.immutable.api.ImmutableMessage.ValueType.STRING;
 
 public class TestSetSubmessage {
 	
