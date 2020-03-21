@@ -1,6 +1,5 @@
 package com.dexels.navajo.functions;
 
-import com.dexels.navajo.document.types.NavajoType;
 import com.dexels.navajo.expression.api.FunctionInterface;
 import com.dexels.navajo.expression.api.TMLExpressionException;
 
@@ -16,12 +15,7 @@ public class IsEmpty extends FunctionInterface {
 		if (arg == null) {
 			return Boolean.TRUE;
 		}
-		
-		if (arg instanceof NavajoType) {
-			NavajoType n = (NavajoType)arg;
-			return (n.isEmpty());
-		}
-		
+
 		if ( arg instanceof String) {
 			return (((String) arg).trim().equals(""));
 		}

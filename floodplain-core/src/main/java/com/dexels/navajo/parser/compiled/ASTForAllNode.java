@@ -4,7 +4,6 @@ package com.dexels.navajo.parser.compiled;
 
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.immutable.api.ImmutableMessage.ValueType;
-import com.dexels.navajo.document.NavajoException;
 import com.dexels.navajo.document.operand.Operand;
 import com.dexels.navajo.expression.api.ContextExpression;
 import com.dexels.navajo.expression.api.FunctionClassification;
@@ -85,27 +84,22 @@ final class ASTForAllNode extends SimpleNode {
             matchAll = false;
 
         String msgList = (String) a.apply(immutableMessage,paramMessage).value;
-        try {
-            List<ImmutableMessage> list = immutableMessage.map(e->e.subMessages(msgList)).orElse(Optional.of(Collections.emptyList())).orElse(Collections.emptyList()); //.orElse(Collections.<ImmutableMessage>emptyList());
+		List<ImmutableMessage> list = immutableMessage.map(e->e.subMessages(msgList)).orElse(Optional.of(Collections.emptyList())).orElse(Collections.emptyList()); //.orElse(Collections.<ImmutableMessage>emptyList());
 
 
-            for(ImmutableMessage o : list) {
+		for(ImmutableMessage o : list) {
 
-                // ignore definition messages in the evaluation
+			// ignore definition messages in the evaluation
 
-                Operand apply = b.apply(immutableMessage,paramMessage);
-				boolean result = (Boolean)apply.value;
+			Operand apply = b.apply(immutableMessage,paramMessage);
+			boolean result = (Boolean)apply.value;
 
-                if ((!(result)) && matchAll)
-                    return Operand.ofBoolean(false);
-                if ((result) && !matchAll)
-                    return Operand.ofBoolean(true);
-            }
-
-        } catch (NavajoException ne) {
-            throw new TMLExpressionException("Invalid expression in FORALL construct: \n" + ne.getMessage());
-        }
-        return Operand.ofBoolean(matchAll); 
+			if ((!(result)) && matchAll)
+				return Operand.ofBoolean(false);
+			if ((result) && !matchAll)
+				return Operand.ofBoolean(true);
+		}
+        return Operand.ofBoolean(matchAll);
     }
 
 }

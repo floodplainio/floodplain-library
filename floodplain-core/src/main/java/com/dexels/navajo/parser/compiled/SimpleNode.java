@@ -5,7 +5,6 @@ package com.dexels.navajo.parser.compiled;
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.immutable.api.ImmutableMessage.ValueType;
 import com.dexels.navajo.document.operand.Operand;
-import com.dexels.navajo.document.Property;
 import com.dexels.navajo.expression.api.ContextExpression;
 import com.dexels.navajo.expression.api.FunctionClassification;
 
@@ -123,9 +122,6 @@ public abstract class SimpleNode implements Node {
                 return true;
             }
     			if(!a.isPresent() || !b.isPresent()) {
-    				return true;
-    			}
-    			if(a.get().equals(Property.ANY_PROPERTY) || b.get().equals(Property.ANY_PROPERTY)) {
     				return true;
     			}
     			return a.get().equals(b.get());

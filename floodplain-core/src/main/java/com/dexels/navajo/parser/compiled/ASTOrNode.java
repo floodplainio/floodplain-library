@@ -5,7 +5,6 @@ import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.immutable.api.ImmutableMessage.ValueType;
 import com.dexels.immutable.api.ImmutableTypeParser;
 import com.dexels.navajo.document.operand.Operand;
-import com.dexels.navajo.document.Property;
 import com.dexels.navajo.expression.api.ContextExpression;
 import com.dexels.navajo.expression.api.FunctionClassification;
 

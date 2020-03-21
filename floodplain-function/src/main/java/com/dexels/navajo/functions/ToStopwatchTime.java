@@ -1,6 +1,6 @@
 package com.dexels.navajo.functions;
 
-import com.dexels.navajo.document.types.StopwatchTime;
+import com.dexels.navajo.document.operand.StopwatchTime;
 import com.dexels.navajo.expression.api.FunctionInterface;
 import com.dexels.navajo.expression.api.TMLExpressionException;
 

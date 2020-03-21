@@ -1,6 +1,6 @@
 package com.dexels.navajo.functions;
 
-import com.dexels.navajo.document.types.Binary;
+import com.dexels.navajo.document.operand.Binary;
 import com.dexels.navajo.expression.api.FunctionInterface;
 
 import java.io.StringWriter;
@@ -43,7 +43,7 @@ public final Object evaluate() throws com.dexels.navajo.expression.api.TMLExpres
           return null;
         }
 
-        if (s instanceof com.dexels.navajo.document.types.Binary) {
+        if (s instanceof com.dexels.navajo.document.operand.Binary) {
           Binary b = (Binary) s;
           byte [] data = b.getData();
           StringWriter w = new StringWriter();

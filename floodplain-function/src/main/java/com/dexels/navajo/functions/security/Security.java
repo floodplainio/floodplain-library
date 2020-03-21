@@ -1,12 +1,12 @@
 package com.dexels.navajo.functions.security;
 
-import com.dexels.navajo.document.types.Binary;
-import org.dexels.utils.Base64;
+import com.dexels.navajo.document.operand.Binary;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.Charset;
 import java.security.Key;
+import java.util.Base64;
 
 public class Security {
 	private static final String KEY_ALGO = "AES";
@@ -33,7 +33,7 @@ public class Security {
 		c.init(Cipher.ENCRYPT_MODE, key);
 		byte[] encVal = c.doFinal(data.getData());
 		
-		String encryptedValue = Base64.encode(encVal);
+		String encryptedValue = new String(Base64.getEncoder().encode(encVal)); // .encode(encVal);
 		return encryptedValue;
 		
 	}
@@ -44,7 +44,7 @@ public class Security {
 		c.init(Cipher.ENCRYPT_MODE, key);
 		byte[] encVal = c.doFinal(Data.getBytes());
 		
-		String encryptedValue = Base64.encode(encVal);
+		String encryptedValue = new String(Base64.getEncoder().encode(encVal));
 		return encryptedValue;
 	}
 
@@ -52,7 +52,7 @@ public class Security {
 		Key key = generateKey();
 		Cipher c = Cipher.getInstance(ALGO);
 		c.init(Cipher.DECRYPT_MODE, key);
-		byte[] decordedValue = Base64.decode(encryptedData);
+		byte[] decordedValue = Base64.getDecoder().decode(encryptedData);
 		byte[] decValue = c.doFinal(decordedValue);
 		Binary b = new Binary(decValue);
 		return b;
@@ -62,7 +62,8 @@ public class Security {
 		Key key = generateKey();
 		Cipher c = Cipher.getInstance(ALGO);
 		c.init(Cipher.DECRYPT_MODE, key);
-		byte[] decordedValue = Base64.decode(encryptedData);
+//		byte[] decordedValue = Base64.decode(encryptedData);
+		byte[] decordedValue = Base64.getDecoder().decode(encryptedData);
 		byte[] decValue = c.doFinal(decordedValue);
 		String decryptedValue = new String(decValue);
 		return decryptedValue;

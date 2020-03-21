@@ -25,12 +25,8 @@ package com.dexels.navajo.parser;
  * ====================================================================
  */
 
-import com.dexels.navajo.document.Property;
-import com.dexels.navajo.document.Selection;
-import com.dexels.navajo.document.types.Binary;
-import com.dexels.navajo.document.types.ClockTime;
-import com.dexels.navajo.document.types.NavajoType;
-import com.dexels.navajo.document.types.StopwatchTime;
+import com.dexels.navajo.document.operand.Binary;
+import com.dexels.navajo.document.operand.ClockTime;
 import com.dexels.navajo.expression.api.TMLExpressionException;
 
 import java.text.SimpleDateFormat;
@@ -41,6 +37,7 @@ import java.util.List;
 public final class Utils extends Exception {
 
 	private static final long serialVersionUID = -5520295170789410974L;
+	public static final String DATE_FORMAT1 = "yyyy-MM-dd HH:mm:ss.SS";
 
 	private Utils() {
 	}
@@ -157,11 +154,9 @@ public final class Utils extends Exception {
 		else if (o instanceof Boolean)
 			return o + "";
 		else if (o instanceof java.util.Date)
-			return new SimpleDateFormat(Property.DATE_FORMAT1).format(o);
+			return new SimpleDateFormat(DATE_FORMAT1).format(o);
 		else if (o instanceof ClockTime)
 			return ((ClockTime) o).toString();
-		else if (o instanceof Selection)
-			return ((Selection) o).getValue();
 		else if (o != null) {
 			return o.toString();
 		} else {
@@ -169,55 +164,6 @@ public final class Utils extends Exception {
 		}
 	}
 
-	/**
-	 * Generic method to subtract two objects.
-	 *
-	 * @param a
-	 * @param b
-	 * @return
-	 * @throws TMLExpressionException
-	 */
-	public static final Object subtract(Object a, Object b) {
-		if ((a instanceof Integer) && (b instanceof Integer))
-			return Integer.valueOf(((Integer) a).intValue() - ((Integer) b).intValue());
-		else if ((a instanceof String) || (b instanceof String)) {
-			throw new TMLExpressionException("Subtraction not defined for Strings");
-		} else if (a instanceof Double && b instanceof Integer) {
-			return Double.valueOf(((Double) a).doubleValue() - ((Integer) b).intValue());
-		} else if (a instanceof Long && b instanceof Long) {
-			return Long.valueOf(((Long) a).longValue() - ((Long) b).longValue());
-		} else if (a instanceof Integer && b instanceof Double) {
-			return Double.valueOf(((Integer) a).intValue() - ((Double) b).doubleValue());
-		} else if (a instanceof Double && b instanceof Double) {
-			return Double.valueOf(((Double) a).doubleValue() - ((Double) b).doubleValue());
-		}
-		if (a instanceof Date && b instanceof Date) {
-			// Correct dates for daylight savings time.
-			Calendar ca = Calendar.getInstance();
-			ca.setTime((Date) a);
-			ca.add(Calendar.MILLISECOND, ca.get(Calendar.DST_OFFSET));
-
-			Calendar cb = Calendar.getInstance();
-			cb.setTime((Date) b);
-			cb.add(Calendar.MILLISECOND, cb.get(Calendar.DST_OFFSET));
-
-			return Integer.valueOf((int) ((ca.getTimeInMillis() - cb.getTimeInMillis()) / (double) MILLIS_IN_DAY));
-		}
-		if ((a instanceof ClockTime || a instanceof Date || a instanceof StopwatchTime)
-				&& (b instanceof ClockTime || b instanceof Date || b instanceof StopwatchTime)) {
-			long myMillis = (a instanceof ClockTime ? ((ClockTime) a).dateValue().getTime()
-					: (a instanceof Date ? ((Date) a).getTime() : ((StopwatchTime) a).getMillis()));
-			long otherMillis = (b instanceof ClockTime ? ((ClockTime) b).dateValue().getTime()
-					: (b instanceof Date ? ((Date) b).getTime() : ((StopwatchTime) b).getMillis()));
-			return new StopwatchTime((int) (myMillis - otherMillis));
-		}
-
-		if (a == null || b == null) {
-			return null;
-		} else {
-			throw new TMLExpressionException("Unknown  for subtract");
-		}
-	}
 
 	/**
 	 * Generic method to add two objects.
@@ -258,31 +204,9 @@ public final class Utils extends Exception {
 		}
 	}
 
-	/**
-	 * Fix money==null issue
-	 * 
-	 * @param a
-	 * @return
-	 */
-	private static Object getActualValue(Object a) {
-		if (a == null) {
-			return null;
-		} else {
-			if (a instanceof NavajoType) {
-				NavajoType n = (NavajoType) a;
-				if (n.isEmpty()) {
-					return null;
-				} else {
-					return a;
-				}
-			}
-		}
-		return a;
-	}
 
-	private static final boolean isEqual(Object aval, Object bval) throws TMLExpressionException {
-		Object a = getActualValue(aval);
-		Object b = getActualValue(bval);
+
+	private static final boolean isEqual(Object a, Object b) throws TMLExpressionException {
 		if ((a == null) && (b == null))
 			return true;
 		else if ((a == null) || (b == null))

@@ -1,6 +1,6 @@
 package com.dexels.navajo.functions.test;
 
-import com.dexels.navajo.document.types.Binary;
+import com.dexels.navajo.document.operand.Binary;
 import com.dexels.navajo.functions.security.Security;
 import org.junit.Assert;
 import org.junit.Test;

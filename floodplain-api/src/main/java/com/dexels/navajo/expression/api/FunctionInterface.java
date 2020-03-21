@@ -3,6 +3,7 @@ package com.dexels.navajo.expression.api;
 import com.dexels.immutable.api.ImmutableMessage;
 //import com.dexels.navajo.document.NavajoFactory;
 import com.dexels.immutable.api.ImmutableMessage.ValueType;
+import com.dexels.immutable.api.ImmutableTypeParser;
 import com.dexels.navajo.document.operand.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -220,26 +221,26 @@ public abstract class FunctionInterface {
     }
 
     public String getStringOperand(int index) {
-        return (String) operandWithType(index, "string");
+        return (String) operandWithType(index, ValueType.STRING);
     }
 
     public Integer getIntegerOperand(int index) {
-        return (Integer) operandWithType(index, "integer");
+        return (Integer) operandWithType(index, ValueType.INTEGER);
     }
     public Boolean getBooleanOperand(int index) {
-        return (Boolean) operandWithType(index, "boolean");
+        return (Boolean) operandWithType(index, ValueType.BOOLEAN);
     }
 
 
     public Binary getBinaryOperand(int index) {
-        return (Binary) operandWithType(index, "binary");
+        return (Binary) operandWithType(index, ValueType.BINARY);
     }
     public BinaryDigest getBinaryDigestOperand(int index) {
-        return (BinaryDigest) operandWithType(index, "binary_digest");
+        return (BinaryDigest) operandWithType(index, ValueType.BINARY_DIGEST);
 
     }
     public Date getDateOperand(int index) {
-        return (Date) operandWithType(index, "date");
+        return (Date) operandWithType(index, ValueType.DATE);
     }
 
 
@@ -286,7 +287,7 @@ public abstract class FunctionInterface {
         return operand(index).value;
     }
 
-    public Object operandWithType(int index, String type) {
+    public Object operandWithType(int index, ValueType type) {
         Operand d = operand(index);
         if(d.value==null) {
             return null;
@@ -296,7 +297,7 @@ public abstract class FunctionInterface {
         }
         Object value = d.value;
         Class<?> valueClass = value == null ? null : value.getClass();
-        throw new TMLExpressionException("Illegal operand type operand (index = " + index + ") should be of type: "+type+" but was of type: "+d.type+" the value class is: "+valueClass);
+        throw new TMLExpressionException("Illegal operand type operand (index = " + index + ") should be of type: "+ ImmutableTypeParser.typeName(type)+" but was of type: "+ImmutableTypeParser.typeName(d.type)+" the value class is: "+valueClass);
     }
     protected Operand operand(int index) {
         if (index >= operandList.size())

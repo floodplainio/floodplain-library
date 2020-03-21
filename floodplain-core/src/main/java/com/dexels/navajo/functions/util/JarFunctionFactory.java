@@ -1,8 +1,8 @@
 package com.dexels.navajo.functions.util;
 
-import com.dexels.navajo.document.nanoimpl.CaseSensitiveXMLElement;
-import com.dexels.navajo.document.nanoimpl.XMLElement;
 import com.dexels.navajo.expression.api.FunctionDefinition;
+import com.dexels.navajo.expression.api.nanoimpl.CaseSensitiveXMLElement;
+import com.dexels.navajo.expression.api.nanoimpl.XMLElement;
 import navajo.ExtensionDefinition;
 import navajocore.Version;
 import org.slf4j.Logger;

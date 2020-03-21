@@ -6,9 +6,9 @@ package com.dexels.navajo.functions;
 
 import com.dexels.navajo.expression.api.FunctionInterface;
 import com.dexels.navajo.expression.api.TMLExpressionException;
-import org.dexels.utils.Base64;
 
 import java.nio.charset.Charset;
+import java.util.Base64;
 
 /**
  * @author cbrouwer
@@ -42,8 +42,7 @@ public class BasicAuthenticationHeader extends FunctionInterface {
 
 		String authString =  o1 + ":" + o2;
 		byte[] bytes = authString.getBytes(Charset.forName("UTF-8"));
-		return "Basic " + Base64.encode(bytes, 0, bytes.length, 0, "");
-
+		return "Basic " + Base64.getEncoder().encode(bytes);
 	}
 
 }

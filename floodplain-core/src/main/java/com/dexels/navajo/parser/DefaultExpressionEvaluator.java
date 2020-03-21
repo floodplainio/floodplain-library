@@ -2,8 +2,6 @@ package com.dexels.navajo.parser;
 
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.navajo.document.ExpressionEvaluator;
-import com.dexels.navajo.document.NavajoException;
-import com.dexels.navajo.document.NavajoFactory;
 import com.dexels.navajo.document.operand.Operand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,13 +40,11 @@ public class DefaultExpressionEvaluator implements ExpressionEvaluator {
 	}
 
 	@Override
-	public Operand evaluate(String clause, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) throws NavajoException {
+	public Operand evaluate(String clause, Optional<ImmutableMessage> immutableMessage, Optional<ImmutableMessage> paramMessage) {
 		try {
 			return Expression.evaluate(clause, immutableMessage,paramMessage);
 		} catch (Throwable ex) {
-
-			throw NavajoFactory.getInstance()
-					.createNavajoException("Parse error: " + ex.getMessage() + "\n while parsing: " + clause, ex);
+			throw new RuntimeException("Issue when evaluating: "+clause,ex);
 		}
 	}
 

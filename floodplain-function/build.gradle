@@ -14,7 +14,6 @@ dependencies {
     implementation project(':replication-api')
     implementation project(':replication-impl')
     implementation project(':floodplain-api')
-    implementation project(':floodplain-document')
     implementation project(':floodplain-core')
     implementation project(':floodplain-document-stream')
     implementation project(':floodplain-version')

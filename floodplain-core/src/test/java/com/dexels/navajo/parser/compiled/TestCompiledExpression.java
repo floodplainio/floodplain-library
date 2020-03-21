@@ -1,6 +1,5 @@
 package com.dexels.navajo.parser.compiled;
 
-import com.dexels.navajo.document.*;
 import com.dexels.navajo.document.operand.Operand;
 import com.dexels.navajo.expression.api.*;
 import com.dexels.navajo.expression.compiled.AddTestFunction;
@@ -23,25 +22,7 @@ import java.util.Optional;
 public class TestCompiledExpression {
 
 	
-	private Navajo input;
 
-
-	@Before
-	public void setup() {
-		input = NavajoFactory.getInstance().createNavajo();
-		input.addMessage(NavajoFactory.getInstance().createMessage(input,"TestMessage")).addProperty(NavajoFactory.getInstance().createProperty(input, "TestProperty", Property.STRING_PROPERTY, "TestValue", 99, "TestDescription", Property.DIR_OUT));
-		Message createMessage = NavajoFactory.getInstance().createMessage(input,"TestArrayMessageMessage",Message.MSG_TYPE_ARRAY);
-		input.addMessage(createMessage);
-		Message element1 = NavajoFactory.getInstance().createMessage(input, "TestArrayMessageMessage", Message.MSG_TYPE_ARRAY_ELEMENT);
-		element1.addProperty(NavajoFactory.getInstance().createProperty(input,"Property",Property.STRING_PROPERTY,"Prop",99,"",Property.DIR_IN));
-		Message element2 = NavajoFactory.getInstance().createMessage(input, "TestArrayMessageMessage", Message.MSG_TYPE_ARRAY_ELEMENT);
-		Message params = NavajoFactory.getInstance().createMessage(input, "__parms__");
-		params.addProperty(NavajoFactory.getInstance().createProperty(input,"Param",Property.STRING_PROPERTY,"SomeParam",99,"",Property.DIR_IN));
-		input.addMessage(params);
-		element2.addProperty(NavajoFactory.getInstance().createProperty(input,"Property",Property.STRING_PROPERTY,"Prop2",99,"",Property.DIR_IN));
-		createMessage.addElement(element1);
-		createMessage.addElement(element2);
-	}
 	@Test
 	public void parseIntAddition() throws ParseException, TMLExpressionException {
 		List<String> problems = new ArrayList<>();
@@ -114,7 +95,7 @@ public class TestCompiledExpression {
 	@Test
 	public void testFunctionCallWithNamedParams() throws ParseException {
         FunctionInterface testFunction = new AddTestFunction();
-        FunctionDefinition fd = new FunctionDefinition(testFunction.getClass().getName(), "blib", "bleb", "blab");
+        FunctionDefinition fd = new FunctionDefinition(testFunction.getClass().getName(), "blib", "string", "string");
         FunctionFactoryFactory.getInstance().addExplicitFunctionDefinition("addtest",fd);
 		String expression = "addtest(aap='blub',3+5,4)";
 		StringReader sr = new StringReader(expression);
@@ -131,7 +112,7 @@ public class TestCompiledExpression {
 	@Test
 	public void testEmptyFunctionCall() throws ParseException {
        FunctionInterface testFunction = new AddTestFunction();
-        FunctionDefinition fd = new FunctionDefinition(testFunction.getClass().getName(), "blib", "bleb", "blab");
+        FunctionDefinition fd = new FunctionDefinition(testFunction.getClass().getName(), "blib", "string", "string");
         FunctionFactoryFactory.getInstance().addExplicitFunctionDefinition("addtest",fd);
 
 		String expression = "addtest()";
@@ -148,7 +129,7 @@ public class TestCompiledExpression {
 	@Test
 	public void testMultiArgFunction() throws Exception {
         FunctionInterface testFunction = new AddTestFunction();
-        FunctionDefinition fd = new FunctionDefinition(testFunction.getClass().getName(), "blib", "bleb", "blab");
+        FunctionDefinition fd = new FunctionDefinition(testFunction.getClass().getName(), "blib", "string", "string");
         FunctionFactoryFactory.getInstance().addExplicitFunctionDefinition("SingleValueQuery",fd);
 		String expression = 	"SingleValueQuery( 'aap','noot' )";
 		
@@ -164,7 +145,7 @@ public class TestCompiledExpression {
 	@Test
 	public void testNestedNamedFunction() throws Exception {
         FunctionInterface testFunction = new AddTestFunction();
-        FunctionDefinition fd = new FunctionDefinition(testFunction.getClass().getName(), "description", "input", "result");
+        FunctionDefinition fd = new FunctionDefinition(testFunction.getClass().getName(), "description", "string", "string");
         FunctionFactoryFactory.getInstance().addExplicitFunctionDefinition("MysteryFunction",fd);
         
 		String expression = 	"MysteryFunction(eep=MysteryFunction('blib','blob'), 'aap','noot' )";
@@ -180,7 +161,7 @@ public class TestCompiledExpression {
 	@Test
 	public void testNestedNamedParams() throws Exception {
         FunctionInterface testFunction = new ParameterNamesFunction();
-        FunctionDefinition fd = new FunctionDefinition(testFunction.getClass().getName(), "description", "input", "result");
+        FunctionDefinition fd = new FunctionDefinition(testFunction.getClass().getName(), "description", "string", "string");
         FunctionFactoryFactory.getInstance().addExplicitFunctionDefinition("ParameterNamesFunction",fd);
         
 		String expression = 	"ParameterNamesFunction(aap=1+1,noot=2+2)";

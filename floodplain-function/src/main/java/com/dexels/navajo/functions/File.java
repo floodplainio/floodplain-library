@@ -1,7 +1,7 @@
 package com.dexels.navajo.functions;
 
+import com.dexels.navajo.document.operand.Binary;
 import com.dexels.navajo.document.operand.Operand;
-import com.dexels.navajo.document.types.Binary;
 import com.dexels.navajo.expression.api.FunctionInterface;
 import com.dexels.navajo.parser.Expression;
 import org.slf4j.Logger;

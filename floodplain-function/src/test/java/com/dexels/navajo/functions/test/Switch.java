@@ -29,30 +29,6 @@ public class Switch extends AbstractFunction {
 	public void tearDown() throws Exception {
 	}
 
-	@Override
-	protected Navajo createTestNavajo() throws Exception {
-		Navajo doc = NavajoFactory.getInstance().createNavajo();
-		Message array = NavajoFactory.getInstance().createMessage(doc, "Aap");
-		array.setType(Message.MSG_TYPE_ARRAY);
-		Message array1 = NavajoFactory.getInstance().createMessage(doc, "Aap");
-		array.addElement(array1);
-		doc.addMessage(array);
-		Property p = NavajoFactory.getInstance().createProperty(doc, "Noot", Property.INTEGER_PROPERTY, "10", 10, "", "in");
-		p.setValue(10);
-		array1.addProperty(p);
-
-
-		Message single = NavajoFactory.getInstance().createMessage(doc, "Single");
-		doc.addMessage(single);
-		Property p2 = NavajoFactory.getInstance().createProperty(doc, "Selectie", "1", "", "in");
-		p2.addSelection(NavajoFactory.getInstance().createSelection(doc, "key", "value", true));
-		single.addProperty(p2);
-		Property p3 = NavajoFactory.getInstance().createProperty(doc, "Vuur", Property.INTEGER_PROPERTY, "10", 10, "", "out");
-		p3.setValue(10);
-		single.addProperty(p3);
-
-		return doc;
-	}
 
 	@Test
 	public void testSingleSimpleHit() throws Exception {
@@ -88,24 +64,7 @@ public class Switch extends AbstractFunction {
 
 
 
-	@Test
-	public void testWithNotZeroParameters() throws Exception {
-		FunctionInterface fi = fff.getInstance(cl, "Switch");
-		fi.reset();
-		Navajo n = createTestNavajo();
-//		fi.setInMessage(n);
 
-
-		try {
-			Object result = fi.evaluate();
-			} catch (TMLExpressionException tmle) {
-				assertTrue(tmle.getMessage().indexOf("Not enough") != -1);
-			}
-
-	}
-
-
-	
 	@Test
 	public void testUnicodeExpressionFunction() throws Exception {
 		Operand result = Expression.evaluate("Unicode('0x20AC')");

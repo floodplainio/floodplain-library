@@ -2,7 +2,7 @@ package com.dexels.navajo.parser;
 
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.immutable.factory.ImmutableFactory;
-import com.dexels.navajo.document.*;
+import com.dexels.navajo.document.ExpressionEvaluator;
 import com.dexels.navajo.document.operand.Operand;
 import com.dexels.navajo.parser.compiled.api.CachedExpressionEvaluator;
 import com.dexels.replication.api.ReplicationMessage.Operation;
@@ -18,9 +18,8 @@ import static org.junit.Assert.assertEquals;
 @SuppressWarnings("unchecked")
 public class ExpressionTest {
 
-	private Navajo testDoc;
-	private Message topMessage;
-	private Selection testSelection;
+//	private Navajo testDoc;
+//	private Message topMessage;
 	private ImmutableMessage immutableMessage;
 	private ImmutableMessage paramMessage;
 
@@ -28,29 +27,29 @@ public class ExpressionTest {
 
 	@Before
 	public void setup() {
-		testDoc = NavajoFactory.getInstance().createNavajo();
-		topMessage = NavajoFactory.getInstance().createMessage(testDoc, "MyTop");
-		testDoc.addMessage(topMessage);
-		Property pt = NavajoFactory.getInstance().createProperty(testDoc,
-				"TopProp", "1", "", Property.DIR_IN);
-		testSelection = NavajoFactory.getInstance().createSelection(testDoc, "option1", "value1", true);
-		pt.addSelection(testSelection);
-		topMessage.addProperty(pt);
-		Message a = NavajoFactory.getInstance().createMessage(testDoc,
-				"MyArrayMessage", "array");
-		topMessage.addMessage(a);
-		for (int i = 0; i < 5; i++) {
-			Message a1 = NavajoFactory.getInstance().createMessage(testDoc,
-					"MyArrayMessage");
-			a.addMessage(a1);
-			Property p = NavajoFactory.getInstance().createProperty(testDoc,
-					"MyProp", "string", "noot" + i, 0, "", "in");
-			a1.addProperty(p);
-			Property p2 = NavajoFactory.getInstance().createProperty(testDoc,
-					"MyProp2", "string", "aap" + i, 0, "", "in");
-			a1.addProperty(p2);
-		}
-		
+//		testDoc = NavajoFactory.getInstance().createNavajo();
+//		topMessage = NavajoFactory.getInstance().createMessage(testDoc, "MyTop");
+//		testDoc.addMessage(topMessage);
+//		Property pt = NavajoFactory.getInstance().createProperty(testDoc,
+//				"TopProp", "1", "", Property.DIR_IN);
+//		testSelection = NavajoFactory.getInstance().createSelection(testDoc, "option1", "value1", true);
+//		pt.addSelection(testSelection);
+//		topMessage.addProperty(pt);
+//		Message a = NavajoFactory.getInstance().createMessage(testDoc,
+//				"MyArrayMessage", "array");
+//		topMessage.addMessage(a);
+//		for (int i = 0; i < 5; i++) {
+//			Message a1 = NavajoFactory.getInstance().createMessage(testDoc,
+//					"MyArrayMessage");
+//			a.addMessage(a1);
+//			Property p = NavajoFactory.getInstance().createProperty(testDoc,
+//					"MyProp", "string", "noot" + i, 0, "", "in");
+//			a1.addProperty(p);
+//			Property p2 = NavajoFactory.getInstance().createProperty(testDoc,
+//					"MyProp2", "string", "aap" + i, 0, "", "in");
+//			a1.addProperty(p2);
+//		}
+//
 		Map<String,Object> values = new HashMap<>();
 		Map<String, ValueType> types = new HashMap<>();
 		values.put("SomeString", "Tralala");

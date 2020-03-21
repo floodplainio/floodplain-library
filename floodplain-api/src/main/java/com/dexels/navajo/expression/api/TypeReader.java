@@ -14,7 +14,7 @@ import java.util.Vector;
 
 public class TypeReader {
 
-    private static TypeReader instance;
+    private static TypeReader instance = null;
     private Map<String, Class<?>> toJavaType = new HashMap<>();
     private Map<String, String> toJavaGenericType = new HashMap<>();
     private Map<Class<?>, String> toNavajoType = new HashMap<>();
@@ -24,8 +24,13 @@ public class TypeReader {
 
 
     public static TypeReader getInstance() {
-        if(instance!=null) {
+        if(instance==null) {
             instance = new TypeReader();
+            try {
+                instance.readTypes();
+            } catch (ClassNotFoundException|IOException e) {
+                logger.error("Error reading types");
+            }
         }
         return instance;
     }
@@ -70,7 +75,11 @@ public class TypeReader {
     }
 
     public Class<?> getJavaType(String p) {
-        return toJavaType.get(p);
+        Class<?> javaClass = toJavaType.get(p);
+        if(javaClass==null) {
+            throw new RuntimeException("Can't resolve java class for floodplain type: "+p);
+        }
+        return javaClass;
     }
 
     public String getJavaTypeGeneric(String p) {

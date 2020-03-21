@@ -14,27 +14,7 @@
 		<input>date,date|empty</input>
 		<result>integer</result>
 	</function>
-	<function name="AppendArray" class="com.dexels.navajo.functions.AppendArray">
-		<description>Appends the first array message to the second array
-			message. Returns the second message. Note: Call by reference function
-		</description>
-		<input />
-		<result />
-	</function>
-	<function name="Base64Encode" class="com.dexels.navajo.functions.Base64Encode">
-		<description>Get a Base64 representation of a given string or
-			binary(deprecated).
-		</description>
-		<input />
-		<result />
-	</function>
-    <function name="Base64ImageStringToBinary" class="com.dexels.navajo.functions.Base64ImageStringToBinary">
-        <description>Get a binary from a Base64 representation of a given string.
-        </description>
-        <input>string</input>
-        <result>binary</result>
-    </function>
-    
+
     <function name="BasicAuthenticationHeader" class="com.dexels.navajo.functions.BasicAuthenticationHeader">
         <description> Gets the HTTP Authorization header value based on username + password
         </description>
@@ -194,12 +174,6 @@
 		<input />
 		<result />
 	</function>
-
-	<function name="ExistsSelectionValue" class="com.dexels.navajo.functions.ExistsSelectionValue">
-		<description>Checks if the given value is available as one of the options in the given selection property</description>
-		<input>property, string</input>
-		<result>boolean</result>
-	</function>
 	<function name="File" class="com.dexels.navajo.functions.File">
 		<description>Reads a file</description>
 		<input>string</input>
@@ -245,26 +219,6 @@
 		<input>string</input>
 		<result>string</result>
 	</function>
-	<function name="GetBinaryPath" class="com.dexels.navajo.functions.GetBinaryPath">
-		<description>Returns the path to a binary</description>
-		<input>binary</input>
-		<result>string</result>
-	</function>
-
-	<function name="GetDescription" class="com.dexels.navajo.functions.GetDescription">
-		<description>Gets the description of property as a string
-		</description>
-		<input />
-		<result />
-	</function>
-	<function name="GetFileExtension" class="com.dexels.navajo.functions.GetFileExtension">
-		<description>Guesses mime/type of a binary object and returns default
-			file extension
-		</description>
-		<input />
-		<result />
-	</function>
-
 	<function name="GetInitials" class="com.dexels.navajo.functions.GetInitials">
 		<description>This function returns the initials of a specified string
 			field . Eg. GetInitials(&apos;aap noot mies&apos;) results in &apos;a
@@ -278,28 +232,7 @@
 		<input />
 		<result />
 	</function>
-	<function name="GetProperty" class="com.dexels.navajo.functions.GetProperty">
-		<description>Gets a property from a string</description>
-		<input />
-		<result />
-	</function>
 
-
-	<function name="GetSelectedName" class="com.dexels.navajo.functions.GetSelectedName">
-		<description>Gets the name of a selected property</description>
-		<input />
-		<result />
-	</function>
-	<function name="GetSelectedValue" class="com.dexels.navajo.functions.GetSelectedValue">
-		<description>Gets the value of a selected property</description>
-		<input />
-		<result />
-	</function>
-    <function name="GetSelectedValues" class="com.dexels.navajo.functions.GetSelectedValues">
-        <description>Gets the values of a selection property</description>
-        <input>selection,string|empty</input>
-        <result />
-    </function>
 	<!-- GetUrlBase is not a used function, so it's not in here -->
 	<function name="GetUrlMimeType" class="com.dexels.navajo.functions.GetUrlMimeType">
 		<description>Check the mime type of an url.</description>
@@ -331,11 +264,6 @@
         <input>string</input>
         <result>integer</result>
     </function>
-	<function name="GetValue" class="com.dexels.navajo.functions.GetValue">
-		<description>Gets a typed value from a property object</description>
-		<input />
-		<result />
-	</function>
 
 	<function name="GetWeekDayDate" class="com.dexels.navajo.functions.GetWeekDayDate">
 		<description>This function return the a calendar date of the first
@@ -350,14 +278,6 @@
 		<input>boolean,any,any</input>
 		<result>any</result>
 	</function>
-	<function name="InMonthTurnInterval"
-		class="com.dexels.navajo.functions.InMonthTurnInterval">
-		<description>Returns true when a given date is either in the first or
-			last n days of the month
-		</description>
-		<input>date,integer,boolean</input>
-		<result>boolean</result>
-	</function>
 
 	<function name="IsDate" class="com.dexels.navajo.functions.IsDate">
 		<description>IsDate(date|string,string|empty)</description>
@@ -365,25 +285,11 @@
 		<result>boolean</result>
 	</function>
 
-	<function name="IsEmpty" class="com.dexels.navajo.functions.IsEmpty">
-		<description>Determines whether a given object is null or empty
-		</description>
-		<input>string|binary|list|message|integer|boolean|date|clocktime|memo|money|percentage|stopwatchtime|float|selection
-		</input>
-		<result>boolean</result>
-	</function>
     <function name="IsFutureDate" class="com.dexels.navajo.functions.IsFutureDate">
         <description>IsFutureDate(date|string,string|empty)</description>
         <input>date|string,string|empty</input>
         <result>boolean</result>
     </function>
-	<function name="IsNull" class="com.dexels.navajo.functions.IsNull">
-		<description>Will return true if the supplied argument is null, false
-			otherwise
-		</description>
-		<input>any</input>
-		<result>boolean</result>
-	</function>
 	<function name="IsNumeric" class="com.dexels.navajo.functions.IsNumeric">
 		<description>IsNumeric(string|integer|float)</description>
 		<input>string|integer|float</input>
@@ -394,11 +300,7 @@
         <input>binary</input>
         <result>boolean</result>        
     </function>
-    <function name="JsonToTml" class="com.dexels.navajo.functions.JsonToTml">
-        <description>Returns a tml representation of the supplied json object</description>
-        <input>string,string</input>
-        <result>tml</result>
-    </function>
+
     <function name="LimitList" class="com.dexels.navajo.functions.LimitList">
         <description>Return a list with at most x elements</description>
         <input>list,number</input>
@@ -413,16 +315,6 @@
 		<description>Return the maximum of two given numbers.</description>
 		<input>integer|float,integer|float</input>
 		<result>integer|float</result>
-	</function>
-	<function name="MD5Sum" class="com.dexels.navajo.functions.MD5Sum">
-		<description>Get the MD5Sum of a supplied object. Set second argument to true to get hex representation</description>
-		<input>any,boolean|empty</input>
-		<result>string</result>
-	</function>
-	<function name="MergeNavajo" class="com.dexels.navajo.functions.MergeNavajo">
-		<description>Merges two navajo objects</description>
-		<input>navajo,navajo</input>
-		<result>navajo</result>
 	</function>
 	<function name="Min" class="com.dexels.navajo.functions.Min">
 		<description>Return the minimum of two given numbers.</description>
@@ -462,13 +354,6 @@
 		</description>
 		<input>date|string,string|empty</input>
 		<result>date</result>
-	</function>
-	<function name="ParseSelection" class="com.dexels.navajo.functions.ParseSelection">
-		<description>This function creates a selection out of a semi-colon
-			separated string of options
-		</description>
-		<input>string</input>
-		<result>any</result>
 	</function>
 	<function name="ParseStringList" class="com.dexels.navajo.functions.ParseStringList">
 		<description>Creates a list out of a string representation, e.g.
@@ -521,13 +406,6 @@
 		<input>float,integer</input>
 		<result>float</result>
 	</function>
-	<function name="SetAllProperties" class="com.dexels.navajo.functions.SetAllProperties">
-		<description>Loops through an array message, and sets for every
-			message the property with the supplied name to the supplied value
-		</description>
-		<input>message,string,any</input>
-		<result>empty</result>
-	</function>
 	<function name="SetMimeType" class="com.dexels.navajo.functions.SetMimeType">
 		<description>Sets mime-type for a binary object</description>
 		<input>binary,string</input>
@@ -578,11 +456,6 @@
 		<result>float|integer|string</result>
 	</function>
 
-	<function name="SumMessage" class="com.dexels.navajo.functions.SumMessage">
-		<description />
-		<input>message|string</input>
-		<result>any</result>
-	</function>
 
 	<function name="Switch" class="com.dexels.navajo.functions.Switch">
 		<description>Switch(target, when, then, when, then, when, then, ...,
@@ -761,12 +634,6 @@
 		<input>string</input>
 		<result>binary</result>
 	</function>
-	<function name="Msg" class="com.dexels.navajo.functions.Msg">
-		<description>Creates immutable message
-		</description>
-		<input></input>
-		<result>immutable</result>
-	</function>	
 </functiondef>
 
 

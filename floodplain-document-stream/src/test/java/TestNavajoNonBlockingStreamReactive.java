@@ -10,6 +10,7 @@ import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Single;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -119,7 +120,7 @@ public class TestNavajoNonBlockingStreamReactive {
 		System.err.println("Output: "+new String(byteArray));
 		Assert.assertTrue(byteArray.length>5000);
 	}
-	@Test 
+	@Test @Ignore
 	public void testStreamParserAndSerializerWithSelection() throws Exception {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		Bytes.from(TestRx.class.getClassLoader().getResourceAsStream("tml_with_selection.xml"),8192)

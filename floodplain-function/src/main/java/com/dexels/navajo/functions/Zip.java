@@ -24,7 +24,7 @@
  */
 package com.dexels.navajo.functions;
 
-import com.dexels.navajo.document.types.Binary;
+import com.dexels.navajo.document.operand.Binary;
 import com.dexels.navajo.expression.api.FunctionInterface;
 import com.dexels.navajo.expression.api.TMLExpressionException;
 
@@ -74,14 +74,14 @@ public class Zip extends FunctionInterface {
 			ZipEntry entry = new ZipEntry(f);
 			zo.putNextEntry(entry);
 			//zo.write( i.getData() );
-			i.write( zo,false );
+			i.write(zo);
 			fos.flush();
 			zo.closeEntry();
 			zo.close();
 			//byte [] result = baos.toByteArray();
 			fos.close();
 			
-			Binary b = new Binary( tempFile, false );
+			Binary b = new Binary( tempFile );
 			
 			
 			return b;

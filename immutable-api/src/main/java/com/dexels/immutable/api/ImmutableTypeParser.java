@@ -11,7 +11,7 @@ public class ImmutableTypeParser {
 		case BINARY:
 			return "binary";
 		case BINARY_DIGEST:
-			return "binary";
+			return "binary_digest";
 		case BOOLEAN:
 			return "boolean";
 		case COORDINATE:
@@ -65,9 +65,13 @@ public class ImmutableTypeParser {
 			return ValueType.LIST;
 		case "binary":
 			return ValueType.BINARY;
+		case "clocktime":
+			return ValueType.CLOCKTIME;
 		case "coordinate":
 			return ValueType.COORDINATE;
 		case "object":
+		case "any":
+		case "empty":
 			return ValueType.UNKNOWN;
 		case "enum":
 			return ValueType.ENUM;

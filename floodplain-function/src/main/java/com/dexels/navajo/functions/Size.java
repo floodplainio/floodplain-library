@@ -1,8 +1,6 @@
 package com.dexels.navajo.functions;
 
-
-import com.dexels.navajo.document.Message;
-import com.dexels.navajo.document.types.Binary;
+import com.dexels.navajo.document.operand.Binary;
 import com.dexels.navajo.expression.api.FunctionInterface;
 import com.dexels.navajo.expression.api.TMLExpressionException;
 
@@ -43,9 +41,6 @@ public final class Size extends FunctionInterface {
         }
         else if (arg instanceof Binary) {
         	return Integer.valueOf( (int) ((Binary) arg).getLength());
-        } 
-        else if (arg instanceof Message) {
-        	return Integer.valueOf( ((Message) arg).getArraySize());
         } 
         else if (arg instanceof Object[]) {
           	return Integer.valueOf( ((Object[]) arg).length);

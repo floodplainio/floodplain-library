@@ -147,7 +147,7 @@ public class TestTransformations {
 	@Test
 	public void testAdd() {
 		Assert.assertEquals("monkey", addressMessage.with("animal","monkey",ImmutableMessage.ValueType.STRING).columnValue("animal"));
-		Assert.assertEquals("string", addressMessage.with("animal","monkey",ImmutableMessage.ValueType.STRING).columnType("animal"));
+		Assert.assertEquals(ImmutableMessage.ValueType.STRING, addressMessage.with("animal","monkey",ImmutableMessage.ValueType.STRING).columnType("animal"));
 	}
 	
 	@Test

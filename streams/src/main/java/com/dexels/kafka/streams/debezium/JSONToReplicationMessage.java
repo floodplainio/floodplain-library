@@ -98,7 +98,7 @@ public class JSONToReplicationMessage {
 			}
 
 			Map<String,ValueType> types = new HashMap<>();
-			Map<String,ValueType> typeNames = new HashMap<>();
+//			Map<String,ValueType> typeNames = new HashMap<>();
 			Map<String,Object> jsonValues = new HashMap<>();
 
 			fields.forEach(e->{
@@ -107,16 +107,16 @@ public class JSONToReplicationMessage {
 				JsonNode name = e.get("name");
 				Optional<String> typeName = name==null?Optional.empty():Optional.of(name.asText());
 				Optional<JsonNode> typeParameters = Optional.ofNullable(e.get("parameters"));
-				if(typeName.isPresent()) {
-					typeNames.put(field, ImmutableTypeParser.parseType(typeName.get()) );
-				}
+//				if(typeName.isPresent()) {
+//					typeNames.put(field, ImmutableTypeParser.parseType(typeName.get()) );
+//				}
 				String rawType = e.get("type").asText();
-				String type = resolveType(rawType,typeName,typeParameters);
-				types.put(field, ImmutableTypeParser.parseType(typeName.get()));
+				ValueType type = resolveType(rawType,typeName,typeParameters);
+				types.put(field, type);
 				boolean hasAfter = payload.get().has("after");
 				boolean reallyHasAfter = hasAfter && !payload.get().get("after").isNull();
 				final Optional<ObjectNode> after = reallyHasAfter ? Optional.ofNullable((ObjectNode)payload.get().get("after")) : Optional.empty();
-				final Object resolvedValue = reallyHasAfter ? resolveValue(after, field,type, typeName,e) : resolveValue(payload, field,type,typeName,e);
+				final Object resolvedValue = reallyHasAfter ? resolveValue(after, field,rawType, typeName,e) : resolveValue(payload, field,rawType,typeName,e);
 				jsonValues.put(field,resolvedValue);
 			});
 			return ImmutableFactory.create(jsonValues, types);
@@ -153,31 +153,28 @@ public class JSONToReplicationMessage {
 		}
 	}
 	
-	public static String resolveType(String type, Optional<String> namedType,Optional<JsonNode> parameters) {
+	public static ValueType resolveType(String type, Optional<String> namedType,Optional<JsonNode> parameters) {
 		if(!namedType.isPresent()) {
 			return resolveSimpleType(type);
 		}
 		switch (namedType.get()) {
 			case "io.debezium.time.Date":
-				return "date";
+				return ValueType.DATE;
 			case "io.debezium.time.ZonedTimestamp":
-				return "long";
 			case "io.debezium.time.NanoTimestamp":
-				return "long";
 			case "io.debezium.time.MicroTimestamp":
-				return "long";
 			case "io.debezium.data.VariableScaleDecimal":
-				return "long";
+				return ValueType.LONG;
 			case "org.apache.kafka.connect.data.Decimal":
 				if(parameters.isPresent()) {
 					JsonNode scaleNode = parameters.get().get("scale");
 					if(scaleNode!=null) {
-						return Integer.parseInt(scaleNode.asText()) > 0 ? "double" : "long";
+						return Integer.parseInt(scaleNode.asText()) > 0 ?ValueType.DOUBLE: ValueType.LONG;
 					}
 				}
-				return "long";
+				return ValueType.LONG;
 			case "io.debezium.data.Enum":
-				return "enum";
+				return ValueType.ENUM;
 			default:
 				logger.warn("Unknown type with name, this will probably fail: {}",namedType.get());
 				return resolveSimpleType(type);
@@ -298,23 +295,23 @@ private static Object resolveSimple(String type, JsonNode value) {
 		}
 	}
 
-	private static String resolveSimpleType(String type) {
+	private static ValueType resolveSimpleType(String type) {
 		switch (type) {
 		case "int16":
 		case "int32":
-			return "integer";
+			return ValueType.INTEGER;
 		case "int64":
-			return "long";
+			return ValueType.LONG;
 		case "string":
-			return "string";
+			return ValueType.STRING;
 		case "double":
-			return "double";
+			return ValueType.DOUBLE;
 		case "bytes":
-			return "binary";
+			return ValueType.BINARY;
 		case "array":
-			return "list";
+			return ValueType.LIST;
 		case "boolean":
-			return "boolean";
+			return ValueType.BOOLEAN;
 		default:
 			throw new RuntimeException("Unknown type: "+type);
 		}

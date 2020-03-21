@@ -241,9 +241,6 @@ public class StreamRuntime {
             }
 		    
 		});
-		
-		
-
 		streams.clear();
 		this.startedInstances.clear();
 

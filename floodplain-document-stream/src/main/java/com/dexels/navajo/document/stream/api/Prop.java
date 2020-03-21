@@ -189,7 +189,7 @@ public class Prop {
 			 sw.write(" name=\""+ StringEscapeUtils.escapeXml(name)+"\"");
 		 }
 		 if(type!=null) {
-			 sw.write(" type=\""+type+"\"");
+			 sw.write(" type=\""+ImmutableTypeParser.typeName(type)+"\"");
 		 }
 		 if(value!=null && !isBinary()) {
 			 String value = valueAsString();

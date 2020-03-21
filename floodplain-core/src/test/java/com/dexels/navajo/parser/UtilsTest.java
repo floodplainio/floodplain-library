@@ -1,5 +1,6 @@
 package com.dexels.navajo.parser;
 
+import com.dexels.navajo.parser.compiled.ASTSubtractNode;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,7 +26,7 @@ public class UtilsTest {
 		Calendar b = Calendar.getInstance();
 		b.add(Calendar.DAY_OF_YEAR, 1);
 
-		Object o = com.dexels.navajo.parser.Utils.subtract(a.getTime(),
+		Object o = ASTSubtractNode.subtract(a.getTime(),
 				b.getTime());
 
 		assertEquals("-1", o + "");
@@ -33,13 +34,13 @@ public class UtilsTest {
 
 	@Test
 	public void testSubtractDatesLessThan24HoursDifference() throws Exception {
-
+	ASTSubtractNode n;
 		Calendar a = Calendar.getInstance();
 		Calendar b = Calendar.getInstance();
 		b.add(Calendar.DAY_OF_YEAR, 1);
 		b.add(Calendar.HOUR_OF_DAY, -3);
 
-		Object o = com.dexels.navajo.parser.Utils.subtract(a.getTime(),
+		Object o = ASTSubtractNode.subtract(a.getTime(),
 				b.getTime());
 
 		assertEquals("0", o + "");
@@ -53,7 +54,7 @@ public class UtilsTest {
 		b.add(Calendar.DAY_OF_YEAR, 1);
 		b.add(Calendar.HOUR_OF_DAY, 3);
 
-		Object o = com.dexels.navajo.parser.Utils.subtract(a.getTime(),
+		Object o = ASTSubtractNode.subtract(a.getTime(),
 				b.getTime());
 
 		assertEquals("-1", o + "");
@@ -72,7 +73,7 @@ public class UtilsTest {
 		System.err.println("a = " + a.getTime());
 		System.err.println("b = " + b.getTime());
 
-		Integer o = (Integer) com.dexels.navajo.parser.Utils.subtract(
+		Integer o = (Integer) ASTSubtractNode.subtract(
 				a.getTime(), b.getTime());
 
 		System.err.println("diff = " + o);
@@ -92,7 +93,7 @@ public class UtilsTest {
 		System.err.println("a = " + a.getTime());
 		System.err.println("b = " + b.getTime());
 
-		Integer o = (Integer) com.dexels.navajo.parser.Utils.subtract(
+		Integer o = (Integer) ASTSubtractNode.subtract(
 				a.getTime(), b.getTime());
 
 		System.err.println("diff = " + o);

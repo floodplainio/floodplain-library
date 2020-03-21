@@ -3,7 +3,6 @@ package com.dexels.navajo.functions.test;
 import com.dexels.config.runtime.RuntimeConfig;
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.navajo.document.operand.Operand;
-import com.dexels.navajo.document.Property;
 import com.dexels.navajo.expression.api.ContextExpression;
 import com.dexels.navajo.expression.api.FunctionClassification;
 import com.dexels.navajo.expression.api.TMLExpressionException;
@@ -60,7 +59,7 @@ public class TestCompiledExpression {
 		System.err.println("problems: "+problems);
 		System.err.println("returntype: "+o.returnType().map(ImmutableMessage.ValueType::name).orElse("<unknown>"));
 		Assert.assertTrue("Expected a return type here", o.returnType().isPresent());
-		Assert.assertEquals("string", o.returnType().get());
+		Assert.assertEquals(ImmutableMessage.ValueType.STRING, o.returnType().get());
 		System.err.println("immutable: "+o.isLiteral());
 	}
 	
@@ -94,7 +93,7 @@ public class TestCompiledExpression {
 		ExpressionCache ce = ExpressionCache.getInstance();
 		List<String> problems = new ArrayList<>();
 		ContextExpression cx = ce.parse(problems,"ToUpper([whatever])",name->FunctionClassification.DEFAULT);
-		Assert.assertEquals(Property.STRING_PROPERTY, cx.returnType().get());
+		Assert.assertEquals(ImmutableMessage.ValueType.STRING, cx.returnType().get());
 	}
 	
 	@Test

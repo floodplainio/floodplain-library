@@ -1,9 +1,6 @@
 package com.dexels.navajo.functions.test;
 
-import com.dexels.navajo.document.Message;
-import com.dexels.navajo.document.Navajo;
-import com.dexels.navajo.document.NavajoFactory;
-import com.dexels.navajo.document.Property;
+import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.navajo.document.operand.Binary;
 import com.dexels.navajo.document.operand.ClockTime;
 import com.dexels.navajo.document.operand.Operand;
@@ -14,7 +11,6 @@ import com.dexels.navajo.functions.*;
 import com.dexels.navajo.functions.util.FunctionFactoryFactory;
 import com.dexels.navajo.functions.util.FunctionFactoryInterface;
 import com.dexels.navajo.parser.Expression;
-import org.dexels.utils.Base64;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,32 +36,6 @@ public class StandardFunctionsTest {
 		navajofunctions.Version v = new navajofunctions.Version();
 		v.start(null);
 		fff = FunctionFactoryFactory.getInstance();
-	}
-
-	private Navajo createTestNavajo() {
-		Navajo doc = NavajoFactory.getInstance().createNavajo();
-		Message array = NavajoFactory.getInstance().createMessage(doc, "Aap");
-		array.setType(Message.MSG_TYPE_ARRAY);
-		Message array1 = NavajoFactory.getInstance().createMessage(doc, "Aap");
-		array.addElement(array1);
-		doc.addMessage(array);
-		Property p = NavajoFactory.getInstance().createProperty(doc, "Noot",
-				Property.INTEGER_PROPERTY, "10", 10, "", "in");
-		array1.addProperty(p);
-
-		Message single = NavajoFactory.getInstance().createMessage(doc,
-				"Single");
-		doc.addMessage(single);
-		Property p2 = NavajoFactory.getInstance().createProperty(doc,
-				"Selectie", "1", "", "in");
-		p2.addSelection(NavajoFactory.getInstance().createSelection(doc, "key",
-				"value", true));
-		single.addProperty(p2);
-		Property p3 = NavajoFactory.getInstance().createProperty(doc, "Vuur",
-				Property.INTEGER_PROPERTY, "10", 10, "", "out");
-		single.addProperty(p3);
-
-		return doc;
 	}
 
 
@@ -634,19 +604,6 @@ public class StandardFunctionsTest {
 
 	}
 
-	@Test
-	public void testParseSelection() {
-
-		FunctionInterface fi = fff.getInstance(cl, "ParseSelection");
-		fi.reset();
-		fi.insertStringOperand("aap,noot,mies");
-
-		Object o = fi.evaluateWithTypeChecking();
-
-		assertNotNull(o);
-		assertTrue(o.getClass().isArray());
-
-	}
 
 	@Test
 	public void testParseDate() {
@@ -657,7 +614,7 @@ public class StandardFunctionsTest {
 		fi.insertStringOperand("yyyy-MM-dd");
 
 		Operand o = fi.evaluateWithTypeCheckingOperand();
-		assertEquals(Property.DATE_PROPERTY,o.type);
+		assertEquals(ImmutableMessage.ValueType.DATE,o.type);
 		assertNotNull(o.value);
 		assertEquals(java.util.Date.class, o.value.getClass());
 
@@ -754,35 +711,7 @@ public class StandardFunctionsTest {
 		assertEquals("20", o.toString());
 	}
 
-	@Test
-	public void testIsNull() {
 
-		FunctionInterface fi = fff.getInstance(cl, "IsNull");
-		fi.reset();
-		fi.insertOperand(Operand.NULL);
-
-		Object o = fi.evaluateWithTypeChecking();
-
-		assertNotNull(o);
-		assertEquals("true", o.toString());
-
-	}
-
-	@Test
-	public void testInMonthTurnInterval() {
-
-		FunctionInterface fi = fff.getInstance(cl, "InMonthTurnInterval");
-		fi.reset();
-		fi.insertDateOperand(new java.util.Date());
-		fi.insertIntegerOperand(5);
-		fi.insertBooleanOperand(true);
-
-		Object o = fi.evaluateWithTypeChecking();
-
-		assertNotNull(o);
-		assertEquals(Boolean.class, o.getClass());
-
-	}
 
 	@Test
 	public void testGetWeekDayDate() {
@@ -871,7 +800,7 @@ public class StandardFunctionsTest {
 	public void testGetInitials() {
 
 		FunctionInterface fi = fff.getInstance(cl, "GetInitials");
-		Navajo doc = createTestNavajo();
+//		Navajo doc = createTestNavajo();
 //		fi.setInMessage(doc);
 
 		fi.reset();
@@ -883,19 +812,7 @@ public class StandardFunctionsTest {
 		assertEquals(String.class, o.getClass());
 	}
 
-	@Test
-	public void testGetFileExtension() {
 
-		FunctionInterface fi = fff.getInstance(cl, "GetFileExtension");
-		Navajo doc = createTestNavajo();
-		fi.reset();
-		fi.insertOperand(Operand.NULL);
-
-		Object o = fi.evaluateWithTypeChecking();
-
-		assertNull(o);
-
-	}
 
 	@Test
 	public void testFormatStringList() {
@@ -1218,21 +1135,6 @@ public class StandardFunctionsTest {
 
 	}
 
-	@Test
-	public void testBase64Encode() {
-
-		FunctionInterface fi = fff.getInstance(cl, "Base64Encode");
-		byte[] bytes = "tralala".getBytes();
-		String b = Base64.encode(bytes);
-		fi.reset();
-
-		fi.insertStringOperand(b);
-
-		Object o = fi.evaluateWithTypeChecking();
-		Binary oo = (Binary) o;
-		byte[] returned = oo.getData();
-		assertTrue(Arrays.equals(returned, bytes));
-	}
 
 
 	@Test
@@ -1265,69 +1167,6 @@ public class StandardFunctionsTest {
 
 		assertEquals(sdf.format(d3), sdf.format(d4));
 
-	}
-
-	@Test
-	public void testIsEmpty() {
-
-		FunctionInterface fi = fff.getInstance(cl, "IsEmpty");
-
-		// Empty String.
-		fi.reset();
-		fi.insertStringOperand("");
-		Object o = fi.evaluateWithTypeChecking();
-		assertNotNull(o);
-		assertEquals(Boolean.TRUE, o);
-
-		// Non Empty String.
-		fi.reset();
-		fi.insertStringOperand("aap");
-		o = fi.evaluateWithTypeChecking();
-		assertNotNull(o);
-		assertEquals(Boolean.FALSE, o);
-
-		// Null value.
-		fi.reset();
-		fi.insertOperand(Operand.NULL);
-		o = fi.evaluateWithTypeChecking();
-		assertNotNull(o);
-		assertEquals(Boolean.TRUE, o);
-
-		// Empty list
-		fi.reset();
-		fi.insertListOperand(new ArrayList<Object>());
-		o = fi.evaluateWithTypeChecking();
-		assertNotNull(o);
-		assertEquals(Boolean.TRUE, o);
-
-		// Non Empty list.
-		fi.reset();
-		boolean thing = new ArrayList<String>().add("noot");
-		fi.insertBooleanOperand(thing);
-		o = fi.evaluateWithTypeChecking();
-		assertNotNull(o);
-		assertEquals(Boolean.FALSE, o);
-
-		// Empty Binary.
-		fi.reset();
-		fi.insertBinaryOperand(new Binary());
-		o = fi.evaluateWithTypeChecking();
-		assertNotNull(o);
-		assertEquals(Boolean.TRUE, o);
-
-		// Non Empty Binary.
-		fi.reset();
-		fi.insertBinaryOperand(new Binary("aap".getBytes()));
-		o = fi.evaluateWithTypeChecking();
-		assertNotNull(o);
-		assertEquals(Boolean.FALSE, o);
-
-		// Non empty Clocktime.
-		fi.reset();
-		fi.insertClockTimeOperand(new ClockTime(new java.util.Date()));
-		o = fi.evaluateWithTypeChecking();
-		assertNotNull(o);
-		assertEquals(Boolean.FALSE, o);
 	}
 
 	@Test

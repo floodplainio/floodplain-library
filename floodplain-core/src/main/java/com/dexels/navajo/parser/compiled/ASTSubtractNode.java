@@ -4,21 +4,23 @@ package com.dexels.navajo.parser.compiled;
 
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.immutable.api.ImmutableMessage.ValueType;
+import com.dexels.navajo.document.operand.ClockTime;
 import com.dexels.navajo.document.operand.Operand;
-import com.dexels.navajo.document.Property;
+import com.dexels.navajo.document.operand.StopwatchTime;
 import com.dexels.navajo.expression.api.ContextExpression;
 import com.dexels.navajo.expression.api.FunctionClassification;
 import com.dexels.navajo.expression.api.TMLExpressionException;
 import com.dexels.navajo.parser.Utils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
 @SuppressWarnings({"unchecked","rawtypes"})
-final class ASTSubtractNode extends SimpleNode {
+public final class ASTSubtractNode extends SimpleNode {
+
+    private static final int MILLIS_IN_DAY = 24 * 60 * 60 * 1000;
+
     ASTSubtractNode(int id) {
         super(id);
     }
@@ -33,14 +35,14 @@ final class ASTSubtractNode extends SimpleNode {
 		Object a = ao.value;
 		Object b = bo.value;
         if (!(a instanceof ArrayList || b instanceof ArrayList)) {
-            return Operand.ofDynamic(Utils.subtract(a, b));
+            return Operand.ofDynamic(subtract(a, b));
         } else if ((a instanceof ArrayList) && !(b instanceof ArrayList)) {
             ArrayList list = (ArrayList) a;
             ArrayList result = new ArrayList();
 
             for (int i = 0; i < list.size(); i++) {
                 Object val = list.get(i);
-                Object rel = Utils.subtract(val, b);
+                Object rel = subtract(val, b);
 
                 result.add(rel);
             }
@@ -51,7 +53,7 @@ final class ASTSubtractNode extends SimpleNode {
 
             for (int i = 0; i < list.size(); i++) {
                 Object val = list.get(i);
-                Object rel = Utils.subtract(a, val);
+                Object rel = subtract(a, val);
 
                 result.add(rel);
             }
@@ -67,7 +69,7 @@ final class ASTSubtractNode extends SimpleNode {
             for (int i = 0; i < list1.size(); i++) {
                 Object val1 = list1.get(i);
                 Object val2 = list2.get(i);
-                Object rel = Utils.subtract(val1, val2);
+                Object rel = subtract(val1, val2);
 
                 result.add(rel);
             }
@@ -75,4 +77,55 @@ final class ASTSubtractNode extends SimpleNode {
         } else
             throw new TMLExpressionException("Unknown type");
     }
+
+    /**
+     * Generic method to subtract two objects.
+     *
+     * @param a
+     * @param b
+     * @return
+     * @throws TMLExpressionException
+     */
+    public static final Object subtract(Object a, Object b) {
+        if ((a instanceof Integer) && (b instanceof Integer))
+            return Integer.valueOf(((Integer) a).intValue() - ((Integer) b).intValue());
+        else if ((a instanceof String) || (b instanceof String)) {
+            throw new TMLExpressionException("Subtraction not defined for Strings");
+        } else if (a instanceof Double && b instanceof Integer) {
+            return Double.valueOf(((Double) a).doubleValue() - ((Integer) b).intValue());
+        } else if (a instanceof Long && b instanceof Long) {
+            return Long.valueOf(((Long) a).longValue() - ((Long) b).longValue());
+        } else if (a instanceof Integer && b instanceof Double) {
+            return Double.valueOf(((Integer) a).intValue() - ((Double) b).doubleValue());
+        } else if (a instanceof Double && b instanceof Double) {
+            return Double.valueOf(((Double) a).doubleValue() - ((Double) b).doubleValue());
+        }
+        if (a instanceof Date && b instanceof Date) {
+            // Correct dates for daylight savings time.
+            Calendar ca = Calendar.getInstance();
+            ca.setTime((Date) a);
+            ca.add(Calendar.MILLISECOND, ca.get(Calendar.DST_OFFSET));
+
+            Calendar cb = Calendar.getInstance();
+            cb.setTime((Date) b);
+            cb.add(Calendar.MILLISECOND, cb.get(Calendar.DST_OFFSET));
+
+            return Integer.valueOf((int) ((ca.getTimeInMillis() - cb.getTimeInMillis()) / (double) MILLIS_IN_DAY));
+        }
+        if ((a instanceof ClockTime || a instanceof Date || a instanceof StopwatchTime)
+                && (b instanceof ClockTime || b instanceof Date || b instanceof StopwatchTime)) {
+            long myMillis = (a instanceof ClockTime ? ((ClockTime) a).dateValue().getTime()
+                    : (a instanceof Date ? ((Date) a).getTime() : ((StopwatchTime) a).getMillis()));
+            long otherMillis = (b instanceof ClockTime ? ((ClockTime) b).dateValue().getTime()
+                    : (b instanceof Date ? ((Date) b).getTime() : ((StopwatchTime) b).getMillis()));
+            return new StopwatchTime((int) (myMillis - otherMillis));
+        }
+
+        if (a == null || b == null) {
+            return null;
+        } else {
+            throw new TMLExpressionException("Unknown  for subtract");
+        }
+    }
+
 }

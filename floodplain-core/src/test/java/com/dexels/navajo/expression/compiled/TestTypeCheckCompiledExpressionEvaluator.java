@@ -1,6 +1,6 @@
 package com.dexels.navajo.expression.compiled;
 
-import com.dexels.navajo.document.Property;
+import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.navajo.expression.api.ContextExpression;
 import com.dexels.navajo.expression.api.FunctionClassification;
 import com.dexels.navajo.parser.compiled.api.ExpressionCache;
@@ -17,7 +17,7 @@ public class TestTypeCheckCompiledExpressionEvaluator {
 		ExpressionCache ce = ExpressionCache.getInstance();
 		List<String> problems = new ArrayList<>();
 		ContextExpression cx = ce.parse(problems,"1",fn->FunctionClassification.DEFAULT);
-		Assert.assertEquals(Property.INTEGER_PROPERTY, cx.returnType().get());
+		Assert.assertEquals(ImmutableMessage.ValueType.INTEGER, cx.returnType().get());
 	}
 
 	@Test
@@ -25,7 +25,7 @@ public class TestTypeCheckCompiledExpressionEvaluator {
 		ExpressionCache ce = ExpressionCache.getInstance();
 		List<String> problems = new ArrayList<>();
 		ContextExpression cx = ce.parse(problems, "1==1",fn->FunctionClassification.DEFAULT);
-		Assert.assertEquals(Property.BOOLEAN_PROPERTY, cx.returnType().get());
+		Assert.assertEquals(ImmutableMessage.ValueType.BOOLEAN, cx.returnType().get());
 	}
 
 	@Test
@@ -46,6 +46,6 @@ public class TestTypeCheckCompiledExpressionEvaluator {
 		ContextExpression cx = ce.parse(problems,"1 AND 'monkey' AND [whoop]",fn->FunctionClassification.DEFAULT);
 		System.err.println("Problems: "+problems);
 		Assert.assertEquals(2,problems.size());
-		Assert.assertEquals(Property.BOOLEAN_PROPERTY, cx.returnType().get());
+		Assert.assertEquals(ImmutableMessage.ValueType.BOOLEAN, cx.returnType().get());
 	}
 }
