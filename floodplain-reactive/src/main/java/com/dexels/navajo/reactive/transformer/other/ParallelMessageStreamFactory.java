@@ -1,5 +1,6 @@
 package com.dexels.navajo.reactive.transformer.other;
 
+import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.navajo.document.Property;
 import com.dexels.navajo.document.stream.DataItem;
 import com.dexels.navajo.document.stream.DataItem.Type;
@@ -48,11 +49,8 @@ public class ParallelMessageStreamFactory implements ReactiveTransformerFactory,
 	}
 
 	@Override
-	public Optional<Map<String, String>> parameterTypes() {
-		Map<String, String> r = new HashMap<>();
-//		r.put("isArrayElement", Property.BOOLEAN_PROPERTY);
-		r.put("parallel", Property.INTEGER_PROPERTY);
-		return Optional.of(Collections.unmodifiableMap(r));
+	public Optional<Map<String, ImmutableMessage.ValueType>> parameterTypes() {
+		return Optional.of(Map.of("parallel", ImmutableMessage.ValueType.INTEGER));
 	}
 	
 

@@ -1,5 +1,6 @@
 package com.dexels.navajo.reactive.transformer.stream;
 
+import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.navajo.document.Property;
 import com.dexels.navajo.document.stream.DataItem.Type;
 import com.dexels.navajo.document.stream.ReactiveParseProblem;
@@ -43,11 +44,8 @@ public class StreamMessageTransformerFactory implements ReactiveTransformerFacto
 	}
 
 	@Override
-	public Optional<Map<String, String>> parameterTypes() {
-		Map<String,String> r = new HashMap<String, String>();
-		r.put("messageName", Property.STRING_PROPERTY);
-		r.put("isArray", Property.BOOLEAN_PROPERTY);
-		return Optional.of(r);
+	public Optional<Map<String, ImmutableMessage.ValueType>> parameterTypes() {
+		return Optional.of(Map.of("messageName", ImmutableMessage.ValueType.STRING,"isArray", ImmutableMessage.ValueType.BOOLEAN));
 	}
 	
 

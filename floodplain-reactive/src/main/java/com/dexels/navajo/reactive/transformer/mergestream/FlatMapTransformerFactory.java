@@ -1,5 +1,6 @@
 package com.dexels.navajo.reactive.transformer.mergestream;
 
+import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.navajo.document.stream.DataItem.Type;
 import com.dexels.navajo.document.stream.ReactiveParseProblem;
 import com.dexels.navajo.reactive.api.*;
@@ -45,11 +46,8 @@ public class FlatMapTransformerFactory implements ReactiveTransformerFactory, Tr
 	}
 
 	@Override
-	public Optional<Map<String, String>> parameterTypes() {
-		Map<String, String> r = new HashMap<>();
-		r.put("parallel", "integer");
-		return Optional.of(Collections.unmodifiableMap(r));
-
+	public Optional<Map<String, ImmutableMessage.ValueType>> parameterTypes() {
+		return Optional.of(Map.of("parallel", ImmutableMessage.ValueType.BOOLEAN));
 	}
 
 	@Override

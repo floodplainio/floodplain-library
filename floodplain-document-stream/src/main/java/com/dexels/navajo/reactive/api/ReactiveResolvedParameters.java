@@ -1,6 +1,7 @@
 package com.dexels.navajo.reactive.api;
 
 import com.dexels.immutable.api.ImmutableMessage;
+import com.dexels.immutable.api.ImmutableMessage.ValueType;
 import com.dexels.navajo.document.Navajo;
 import com.dexels.navajo.document.operand.Operand;
 import com.dexels.navajo.document.stream.DataItem;
@@ -19,16 +20,16 @@ public class ReactiveResolvedParameters {
 	List<Operand> resolvedUnnamed = new ArrayList<>();
 
 	Map<String,Operand> resolvedNamed = new HashMap<>();
-	Map<String,String> resolvedTypes = new HashMap<>();
+	Map<String, ValueType> resolvedTypes = new HashMap<>();
 
 	Map<String,Operand> resolvedStateNamed = new HashMap<>();
-	Map<String,String> resolvedStateTypes = new HashMap<>();
+	Map<String,ValueType> resolvedStateTypes = new HashMap<>();
 
 	private static final Logger logger = LoggerFactory.getLogger(ReactiveResolvedParameters.class);
 	private boolean allResolved = false;
 	private final Optional<ImmutableMessage> currentMessage;
 	private final ImmutableMessage paramMessage;
-	private final Optional<Map<String,String>> expectedTypes;
+	private final Optional<Map<String, ValueType>> expectedTypes;
 
 	private final Map<String, ContextExpression> named;
 	private final List<ContextExpression> unnamed;
@@ -99,7 +100,7 @@ public class ReactiveResolvedParameters {
 		if(resolvedNamed.containsKey(key)) {
 			return Optional.ofNullable(resolvedNamed.get(key));
 		}
-		Optional<String> expectedType = expectedTypes.isPresent() ? Optional.ofNullable(expectedTypes.get().get(key)) : Optional.empty();
+		Optional<ValueType> expectedType = expectedTypes.isPresent() ? Optional.ofNullable(expectedTypes.get().get(key)) : Optional.empty();
 		ContextExpression function = named.get(key);
 		if(function==null) {
 			return Optional.empty();
@@ -192,7 +193,7 @@ public class ReactiveResolvedParameters {
 //	
 	private void resolveNamed() {
 		named.entrySet().forEach(e->{
-			Optional<String> expectedType = expectedTypes.isPresent() ? Optional.ofNullable(expectedTypes.get().get(e.getKey())) : Optional.empty();
+			Optional<ValueType> expectedType = expectedTypes.isPresent() ? Optional.ofNullable(expectedTypes.get().get(e.getKey())) : Optional.empty();
 			ContextExpression value = e.getValue();
 			if(value==null) {
 				throw new NullPointerException("Named Expression with key: "+e.getKey()+" resolved to null");
@@ -204,7 +205,7 @@ public class ReactiveResolvedParameters {
 	
 	private void resolveNamedState() {
 		namedState.entrySet().forEach(e->{
-			Optional<String> expectedType = expectedTypes.isPresent() ? Optional.ofNullable(expectedTypes.get().get(e.getKey())) : Optional.empty();
+			Optional<ValueType> expectedType = expectedTypes.isPresent() ? Optional.ofNullable(expectedTypes.get().get(e.getKey())) : Optional.empty();
 			ContextExpression value = e.getValue();
 			if(value==null) {
 				throw new NullPointerException("Named Expression with key: "+e.getKey()+" resolved to null");
@@ -215,7 +216,7 @@ public class ReactiveResolvedParameters {
 	}
 	
 
-	private Operand resolveParam(String key,Optional<String> expectedType, ContextExpression function) {
+	private Operand resolveParam(String key, Optional<ValueType> expectedType, ContextExpression function) {
 		Operand applied;
 		try {
 			// TODO move this to constructor or something
@@ -231,7 +232,7 @@ public class ReactiveResolvedParameters {
 		}
 	}
 	
-	private Operand resolveStateParam(String key,Optional<String> expectedType, ContextExpression function) {
+	private Operand resolveStateParam(String key,Optional<ValueType> expectedType, ContextExpression function) {
 		Operand applied;
 		try {
 			// TODO move this to constructor or something

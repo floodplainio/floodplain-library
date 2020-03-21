@@ -1,5 +1,6 @@
 package com.dexels.navajo.reactive.stored;
 
+import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.navajo.document.Property;
 import com.dexels.navajo.document.stream.DataItem.Type;
 import com.dexels.navajo.reactive.api.ReactiveParameters;
@@ -36,11 +37,8 @@ public class InputStreamSourceFactory implements ReactiveSourceFactory, SourceMe
 	}
 
 	@Override
-	public Optional<Map<String, String>> parameterTypes() {
-		Map<String,String> types = new HashMap<>();
-		types.put("path", Property.STRING_PROPERTY);
-		types.put("classpath", Property.STRING_PROPERTY);
-		return Optional.of(Collections.unmodifiableMap(types));
+	public Optional<Map<String, ImmutableMessage.ValueType>> parameterTypes() {
+		return Optional.of(Map.of("path",ImmutableMessage.ValueType.STRING,"classpath", ImmutableMessage.ValueType.STRING));
 	}
 
 	@Override

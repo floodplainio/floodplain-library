@@ -1,5 +1,6 @@
 package com.dexels.navajo.reactive.transformer.mergesingle;
 
+import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.navajo.document.stream.DataItem.Type;
 import com.dexels.navajo.document.stream.ReactiveParseProblem;
 import com.dexels.navajo.reactive.api.ReactiveParameters;
@@ -54,7 +55,7 @@ public class MergeSingleTransformerFactory implements ReactiveTransformerFactory
 	}
 
 	@Override
-	public Optional<Map<String, String>> parameterTypes() {
+	public Optional<Map<String, ImmutableMessage.ValueType>> parameterTypes() {
 		return Optional.of(Collections.emptyMap());
 	}
 

@@ -1,5 +1,6 @@
 package com.dexels.navajo.reactive.api;
 
+import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.navajo.document.stream.DataItem.Type;
 
 import java.util.*;
@@ -17,7 +18,7 @@ public class ImplicitTransformerMetadata implements TransformerMetadata {
 		}
 
 	@Override
-	public Optional<Map<String, String>> parameterTypes() {
+	public Optional<Map<String, ImmutableMessage.ValueType>> parameterTypes() {
 		return Optional.empty();
 			}
 

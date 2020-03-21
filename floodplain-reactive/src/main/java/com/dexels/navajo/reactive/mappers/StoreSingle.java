@@ -48,11 +48,8 @@ public class StoreSingle implements ReactiveMerger {
 	}
 
 	@Override
-	public Optional<Map<String, String>> parameterTypes() {
-		Map<String,String> r = new HashMap<>();
-		r.put("to", Property.STRING_PROPERTY);
-		r.put("condition", Property.BOOLEAN_PROPERTY);
-		return Optional.of(Collections.unmodifiableMap(r));
+	public Optional<Map<String, ImmutableMessage.ValueType>> parameterTypes() {
+		return Optional.of(Map.of("condition",ImmutableMessage.ValueType.BOOLEAN,"to", ImmutableMessage.ValueType.STRING));
 	}
 
 	@Override

@@ -1,5 +1,6 @@
 package com.dexels.navajo.reactive.transformer.other;
 
+import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.navajo.document.stream.DataItem;
 import com.dexels.navajo.document.stream.DataItem.Type;
 import com.dexels.navajo.document.stream.ReactiveParseProblem;
@@ -41,10 +42,8 @@ public class TakeTransformerFactory implements ReactiveTransformerFactory, Trans
 	}
 
 	@Override
-	public Optional<Map<String, String>> parameterTypes() {
-		Map<String, String> r = new HashMap<>();
-//		r.put("count", Property.INTEGER_PROPERTY);
-		return Optional.of(Collections.unmodifiableMap(r));
+	public Optional<Map<String, ImmutableMessage.ValueType>> parameterTypes() {
+		return Optional.of(Collections.emptyMap());
 	}
 
 

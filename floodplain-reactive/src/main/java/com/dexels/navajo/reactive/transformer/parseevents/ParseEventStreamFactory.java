@@ -1,5 +1,6 @@
 package com.dexels.navajo.reactive.transformer.parseevents;
 
+import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.navajo.document.Property;
 import com.dexels.navajo.document.stream.DataItem.Type;
 import com.dexels.navajo.document.stream.ReactiveParseProblem;
@@ -42,10 +43,8 @@ public class ParseEventStreamFactory implements ReactiveTransformerFactory, Tran
 	}
 
 	@Override
-	public Optional<Map<String, String>> parameterTypes() {
-		Map<String,String> r = new HashMap<String, String>();
-		r.put("path", Property.STRING_PROPERTY);
-		return Optional.of(r);
+	public Optional<Map<String, ImmutableMessage.ValueType>> parameterTypes() {
+		return Optional.of(Map.of("path", ImmutableMessage.ValueType.STRING));
 	}
 
 	@Override

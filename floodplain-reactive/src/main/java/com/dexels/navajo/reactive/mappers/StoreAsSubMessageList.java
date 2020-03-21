@@ -2,7 +2,6 @@ package com.dexels.navajo.reactive.mappers;
 
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.immutable.factory.ImmutableFactory;
-import com.dexels.navajo.document.Property;
 import com.dexels.navajo.document.stream.DataItem;
 import com.dexels.navajo.document.stream.api.StreamScriptContext;
 import com.dexels.navajo.reactive.api.ReactiveMerger;
@@ -61,12 +60,8 @@ public class StoreAsSubMessageList implements ReactiveMerger {
 	}
 
 	@Override
-	public Optional<Map<String, String>> parameterTypes() {
-		Map<String,String> result = new HashMap<String, String>();
-		result.put("name", Property.STRING_PROPERTY);
-		result.put("condition", Property.BOOLEAN_PROPERTY);
-		result.put("debug", Property.BOOLEAN_PROPERTY);
-		return Optional.of(Collections.unmodifiableMap(result));
+	public Optional<Map<String, ImmutableMessage.ValueType>> parameterTypes() {
+		return Optional.of(Map.of("condition",ImmutableMessage.ValueType.BOOLEAN,"name", ImmutableMessage.ValueType.STRING,"debug", ImmutableMessage.ValueType.BOOLEAN));
 	}
 
 	@Override

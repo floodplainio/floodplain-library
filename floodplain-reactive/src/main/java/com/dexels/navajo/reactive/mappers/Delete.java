@@ -1,5 +1,6 @@
 package com.dexels.navajo.reactive.mappers;
 
+import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.navajo.document.Property;
 import com.dexels.navajo.document.stream.DataItem;
@@ -43,11 +44,8 @@ public class Delete implements ReactiveMerger {
 	}
 
 	@Override
-	public Optional<Map<String, String>> parameterTypes() {
-		Map<String,String> r = new HashMap<>();
-		r.put("name", Property.STRING_PROPERTY);
-		r.put("condition", Property.BOOLEAN_PROPERTY);
-		return Optional.of(Collections.unmodifiableMap(r));
+	public Optional<Map<String, ImmutableMessage.ValueType>> parameterTypes() {
+		return Optional.of(Map.of("condition",ImmutableMessage.ValueType.BOOLEAN,"name", ImmutableMessage.ValueType.STRING));
 	}
 
 	@Override

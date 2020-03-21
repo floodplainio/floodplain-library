@@ -1,5 +1,6 @@
 package com.dexels.navajo.reactive.transformer.other;
 
+import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.navajo.document.Property;
 import com.dexels.navajo.document.stream.DataItem;
 import com.dexels.navajo.document.stream.DataItem.Type;
@@ -46,10 +47,8 @@ public class FilterTransformerFactory implements ReactiveTransformerFactory, Tra
 	}
 
 	@Override
-	public Optional<Map<String, String>> parameterTypes() {
-		Map<String, String> r = new HashMap<>();
-		r.put("filter", Property.BOOLEAN_PROPERTY);
-		return Optional.of(Collections.unmodifiableMap(r));
+	public Optional<Map<String, ImmutableMessage.ValueType>> parameterTypes() {
+		return Optional.of(Map.of("filter", ImmutableMessage.ValueType.BOOLEAN));
 	}
 
 	@Override

@@ -1,5 +1,6 @@
 package com.dexels.navajo.reactive.source.topology;
 
+import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.navajo.document.Property;
 import com.dexels.navajo.document.stream.DataItem;
 import com.dexels.navajo.document.stream.DataItem.Type;
@@ -38,12 +39,8 @@ public class LogTransformerFactory implements ReactiveTransformerFactory {
 	}
 
 	@Override
-	public Optional<Map<String, String>> parameterTypes() {
-		Map<String, String> r = new HashMap<>();
-		r.put("every", Property.INTEGER_PROPERTY);
-		r.put("dumpStack", Property.BOOLEAN_PROPERTY);
-		r.put("logName", Property.STRING_PROPERTY);
-		return Optional.of(Collections.unmodifiableMap(r));
+	public Optional<Map<String, ImmutableMessage.ValueType>> parameterTypes() {
+		return Optional.of(Map.of("every",ImmutableMessage.ValueType.INTEGER,"dumpStack",ImmutableMessage.ValueType.BOOLEAN,"logName", ImmutableMessage.ValueType.STRING));
 	}
 
 	@Override

@@ -27,7 +27,7 @@ public interface ReactiveMerger extends ParameterValidator {
 					}
 					
 					@Override
-					public Optional<Map<String, String>> parameterTypes() {
+					public Optional<Map<String, ImmutableMessage.ValueType>> parameterTypes() {
 						return ReactiveMerger.this.parameterTypes();
 					}
 					

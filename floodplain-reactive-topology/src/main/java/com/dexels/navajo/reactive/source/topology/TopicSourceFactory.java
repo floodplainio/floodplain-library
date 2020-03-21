@@ -1,5 +1,6 @@
 package com.dexels.navajo.reactive.source.topology;
 
+import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.navajo.document.stream.DataItem.Type;
 import com.dexels.navajo.reactive.api.ReactiveParameters;
 import com.dexels.navajo.reactive.api.ReactiveSource;
@@ -29,10 +30,8 @@ public class TopicSourceFactory implements ReactiveSourceFactory {
 }
 
 	@Override
-	public Optional<Map<String, String>> parameterTypes() {
-		Map<String,String> types = new HashMap<String, String>();
-		types.put("name", "string");
-		return Optional.of(Collections.unmodifiableMap(types));
+	public Optional<Map<String, ImmutableMessage.ValueType>> parameterTypes() {
+		return Optional.of(Map.of("string",ImmutableMessage.ValueType.STRING));
 	}
 
 	@Override

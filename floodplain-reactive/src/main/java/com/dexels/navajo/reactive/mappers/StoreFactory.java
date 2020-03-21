@@ -1,6 +1,6 @@
 package com.dexels.navajo.reactive.mappers;
 
-import com.dexels.navajo.document.Property;
+import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.navajo.document.stream.DataItem.Type;
 import com.dexels.navajo.document.stream.ReactiveParseProblem;
 import com.dexels.navajo.reactive.api.ReactiveParameters;
@@ -34,11 +34,8 @@ public class StoreFactory implements ReactiveTransformerFactory {
 	}
 
 	@Override
-	public Optional<Map<String, String>> parameterTypes() {
-		Map<String,String> result = new HashMap<String, String>();
-		result.put("name", Property.STRING_PROPERTY);
-		result.put("value", Property.INTEGER_PROPERTY);
-		return Optional.of(Collections.unmodifiableMap(result));
+	public Optional<Map<String, ImmutableMessage.ValueType>> parameterTypes() {
+		return Optional.of(Map.of("name",ImmutableMessage.ValueType.STRING,"value", ImmutableMessage.ValueType.INTEGER));
 	}
 
 	@Override

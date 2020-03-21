@@ -1,5 +1,6 @@
 package com.dexels.navajo.reactive.source.topology;
 
+import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.navajo.document.stream.DataItem.Type;
 import com.dexels.navajo.document.stream.ReactiveParseProblem;
 import com.dexels.navajo.reactive.api.ReactiveParameters;
@@ -40,7 +41,7 @@ public class SinkTransformerFactory implements ReactiveTransformerFactory {
 	}
 
 	@Override
-	public Optional<Map<String, String>> parameterTypes() {
+	public Optional<Map<String, ImmutableMessage.ValueType>> parameterTypes() {
 		return Optional.empty();
 
 //		Map<String,String> types = new HashMap<String, String>();

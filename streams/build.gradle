@@ -13,7 +13,6 @@ dependencies {
     implementation project(':replication-http')
     implementation project(':pubsub-rx2')
     implementation project(':floodplain-api')
-    implementation project(':floodplain-document')
     compile dependencies.osgiCompendium
     compile dependencies.servletApi
     testCompile dependencies.jUnit

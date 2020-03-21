@@ -83,4 +83,7 @@ public class Binary {
 
     public void setMimeType(String mt) {
     }
+
+    public void writeBase64(Writer sw) {
+    }
 }

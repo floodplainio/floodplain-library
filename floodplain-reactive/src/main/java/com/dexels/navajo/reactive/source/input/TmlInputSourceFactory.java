@@ -1,5 +1,6 @@
 package com.dexels.navajo.reactive.source.input;
 
+import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.navajo.document.stream.DataItem.Type;
 import com.dexels.navajo.reactive.api.ReactiveParameters;
 import com.dexels.navajo.reactive.api.ReactiveSource;
@@ -26,10 +27,8 @@ public class TmlInputSourceFactory implements ReactiveSourceFactory, SourceMetad
 	}
 
 	@Override
-	public Optional<Map<String, String>> parameterTypes() {
-		Map<String,String> res = new HashMap<>();
-		res.put("name", "string");
-		return Optional.of(Collections.unmodifiableMap(res));
+	public Optional<Map<String, ImmutableMessage.ValueType>> parameterTypes() {
+		return Optional.of(Map.of("name", ImmutableMessage.ValueType.STRING));
 	}
 
 

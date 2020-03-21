@@ -1,5 +1,6 @@
 package com.dexels.navajo.reactive.source.topology;
 
+import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.navajo.document.Property;
 import com.dexels.navajo.document.stream.DataItem.Type;
 import com.dexels.navajo.reactive.api.ReactiveParameters;
@@ -26,13 +27,8 @@ public class DebeziumTopicFactory implements ReactiveSourceFactory {
 	}
 
 	@Override
-	public Optional<Map<String, String>> parameterTypes() {
-		Map<String, String> r = new HashMap<>();
-		r.put("table", Property.STRING_PROPERTY);
-		r.put("schema", Property.STRING_PROPERTY);
-		r.put("resource", Property.STRING_PROPERTY);
-		r.put("appendSchema", Property.BOOLEAN_PROPERTY);
-		return Optional.of(Collections.unmodifiableMap(r));
+	public Optional<Map<String, ImmutableMessage.ValueType>> parameterTypes() {
+		return Optional.of(Map.of("table",ImmutableMessage.ValueType.STRING,"schema", ImmutableMessage.ValueType.STRING,"resource", ImmutableMessage.ValueType.STRING,"appendSchema", ImmutableMessage.ValueType.BOOLEAN));
 	}
 
 

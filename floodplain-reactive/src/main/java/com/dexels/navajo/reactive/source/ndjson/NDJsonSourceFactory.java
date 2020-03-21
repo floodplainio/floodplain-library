@@ -1,10 +1,12 @@
 package com.dexels.navajo.reactive.source.ndjson;
 
+import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.navajo.document.stream.DataItem.Type;
 import com.dexels.navajo.reactive.api.ReactiveParameters;
 import com.dexels.navajo.reactive.api.ReactiveSource;
 import com.dexels.navajo.reactive.api.ReactiveSourceFactory;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -20,20 +22,17 @@ public class NDJsonSourceFactory implements ReactiveSourceFactory {
 
 	@Override
 	public Optional<List<String>> allowedParameters() {
-		// TODO Auto-generated method stub
-		return null;
+		return Optional.of(Collections.emptyList());
 	}
 
 	@Override
 	public Optional<List<String>> requiredParameters() {
-		// TODO Auto-generated method stub
-		return null;
+		return Optional.of(Collections.emptyList());
 	}
 
 	@Override
-	public Optional<Map<String, String>> parameterTypes() {
-		// TODO Auto-generated method stub
-		return null;
+	public Optional<Map<String, ImmutableMessage.ValueType>> parameterTypes() {
+		return Optional.empty();
 	}
 
 	@Override

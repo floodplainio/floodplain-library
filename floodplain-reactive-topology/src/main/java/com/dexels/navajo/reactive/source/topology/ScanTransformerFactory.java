@@ -1,5 +1,6 @@
 package com.dexels.navajo.reactive.source.topology;
 
+import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.navajo.document.stream.DataItem.Type;
 import com.dexels.navajo.document.stream.ReactiveParseProblem;
 import com.dexels.navajo.reactive.api.ReactiveParameters;
@@ -39,10 +40,8 @@ public class ScanTransformerFactory implements ReactiveTransformerFactory {
 }
 
 	@Override
-	public Optional<Map<String, String>> parameterTypes() {
-		Map<String,String> types = new HashMap<>();
-		types.put("key", "string");
-		return Optional.of(Collections.unmodifiableMap(types));
+	public Optional<Map<String, ImmutableMessage.ValueType>> parameterTypes() {
+		return Optional.of(Map.of("key",ImmutableMessage.ValueType.STRING));
 	}
 
 	@Override

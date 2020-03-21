@@ -59,12 +59,8 @@ public class ReverseStoreAsSubMessage implements ReactiveMerger {
 	}
 
 	@Override
-	public Optional<Map<String, String>> parameterTypes() {
-		Map<String,String> result = new HashMap<String, String>();
-		result.put("name", Property.STRING_PROPERTY);
-		result.put("condition", Property.BOOLEAN_PROPERTY);
-		result.put("debug", Property.BOOLEAN_PROPERTY);
-		return Optional.of(Collections.unmodifiableMap(result));
+	public Optional<Map<String, ImmutableMessage.ValueType>> parameterTypes() {
+		return Optional.of(Map.of("condition",ImmutableMessage.ValueType.BOOLEAN,"name", ImmutableMessage.ValueType.STRING,"debug", ImmutableMessage.ValueType.BOOLEAN));
 	}
 
 	@Override

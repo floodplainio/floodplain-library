@@ -104,11 +104,8 @@ public class Log implements ReactiveMerger {
 	}
 
 	@Override
-	public Optional<Map<String, String>> parameterTypes() {
-		Map<String,String> r = new HashMap<>();
-		r.put("condition", Property.BOOLEAN_PROPERTY);
-		r.put("field", Property.STRING_PROPERTY);
-		return Optional.of(Collections.unmodifiableMap(r));
+	public Optional<Map<String, ImmutableMessage.ValueType>> parameterTypes() {
+		return Optional.of(Map.of("condition", ImmutableMessage.ValueType.BOOLEAN,"field", ImmutableMessage.ValueType.STRING));
 	}
 
 	@Override

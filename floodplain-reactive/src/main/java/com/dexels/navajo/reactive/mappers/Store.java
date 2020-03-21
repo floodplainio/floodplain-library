@@ -54,7 +54,7 @@ public class Store implements ReactiveMerger {
 	}
 
 	@Override
-	public Optional<Map<String, String>> parameterTypes() {
+	public Optional<Map<String, ImmutableMessage.ValueType>> parameterTypes() {
 		return Optional.empty();
 	}
 
