@@ -26,7 +26,6 @@ dependencies {
     implementation project(':replication-impl')
     implementation project(':replication-json')
     implementation project(':floodplain-api')
-    implementation project(':floodplain-document')
     implementation project(':floodplain-core')
     implementation project(':floodplain-reactive')
     implementation project(':floodplain-version')
@@ -34,16 +33,14 @@ dependencies {
     implementation project(':floodplain-function')
     implementation project(':config-runtime')
     implementation project(':pubsub-rx2')
-    implementation project('::streams')
-    implementation project('::streams-api')
+    implementation project(':streams')
+    implementation project(':streams-api')
     implementation project(':kafka-converter')
     compile dependencies.slf4j
     compile dependencies.jacksonCore
     compile dependencies.jacksonDatabind
-    compile dependencies.osgiCompendium
     compile dependencies.cdiApi
     compile dependencies.reactiveStreams
-    compile dependencies.rxJava
     testCompile dependencies.jUnit
 	testImplementation dependencies.slf4jLog4j
  }
