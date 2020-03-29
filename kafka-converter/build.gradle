@@ -10,10 +10,12 @@ plugins {
 def globalConf = rootProject.ext
 
 shadowJar {
-    baseName = 'converter'
-    classifier = ''
-    archiveVersion = '0.1.1'
+    mergeServiceFiles {
+        path = 'META-INF/custom'
+        exclude 'META-INF/services/javax.xml.stream.*'
+    }
 }
+
 
 dependencies {
     Map<String, String> dependencies = globalConf.commonDependencies

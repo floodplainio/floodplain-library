@@ -17,6 +17,7 @@
             <option value="$PROJECT_DIR$/floodplain-core" />
             <option value="$PROJECT_DIR$/floodplain-document" />
             <option value="$PROJECT_DIR$/floodplain-document-stream" />
+            <option value="$PROJECT_DIR$/floodplain-dsl" />
             <option value="$PROJECT_DIR$/floodplain-function" />
             <option value="$PROJECT_DIR$/floodplain-quarkus" />
             <option value="$PROJECT_DIR$/floodplain-reactive" />
