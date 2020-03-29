@@ -1,4 +1,25 @@
+plugins {
+  id "com.palantir.docker" version "0.25.0"
+}
 def globalConf = rootProject.ext
+
+docker {
+    Map<String, String> dependencies = globalConf.commonDependencies
+    dockerfile file('src/main/docker/Dockerfile.jvm')
+    name "floodplain/floodplain:$version"
+    dependsOn build
+    files 'build'
+    buildArgs([VERSION: version])
+}
+
+publishing {
+    publications {
+        dockerPublication(MavenPublication) {
+            from components.docker
+            artifactId project.name + "-docker"
+        }
+    }
+}
 
 dependencies {
     Map<String, String> dependencies = globalConf.commonDependencies
@@ -34,8 +55,3 @@ dependencies {
     testImplementation 'io.quarkus:quarkus-junit5'
     testImplementation 'io.rest-assured:rest-assured'
 }
-
-
-
-
-
