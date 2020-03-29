@@ -14,33 +14,37 @@ pluginManagement {
         google()
     }
     plugins {
-        id 'org.jetbrains.kotlin.jvm' version "1.3.70"
-        id "org.jetbrains.kotlin.plugin.allopen" version "1.3.70"
-	    id 'com.github.johnrengelman.shadow' version '5.2.0'
+        id 'org.jetbrains.kotlin.jvm' version "1.3.71"
+        id "org.jetbrains.kotlin.plugin.allopen" version "1.3.71"
+        id 'com.github.johnrengelman.shadow' version '5.2.0'
+        id 'com.palantir.docker' version '0.25.0'
     }
 }
 
 rootProject.name = 'floodplain-library'
 include 'immutable-api',
-'immutable-impl',
-'replication-api',
-'pubsub-rx2',
-'replication-impl',
-'replication-json',
-'replication-protobuf',
-'kafka-rx2',
-'streams-api',
-'kafka-webapi',
-'streams',
-'replication-http',
-'floodplain-version',
-'floodplain-document',
-'floodplain-api',
-'floodplain-core',
-'floodplain-document-stream',
-'config-runtime',
-'floodplain-reactive',
-'floodplain-function',
-'floodplain-reactive-topology',
-'floodplain-quarkus',
-'kafka-converter'
+        'immutable-impl',
+        'replication-api',
+        'pubsub-rx2',
+        'replication-impl',
+        'replication-json',
+        'replication-protobuf',
+        'kafka-rx2',
+        'streams-api',
+        'kafka-webapi',
+        'streams',
+        'replication-http',
+        'floodplain-version',
+        'floodplain-document',
+        'floodplain-api',
+        'floodplain-core',
+        'floodplain-document-stream',
+        'config-runtime',
+        'floodplain-reactive',
+        'floodplain-function',
+        'floodplain-reactive-topology',
+        'floodplain-quarkus',
+        'floodplain-dsl',
+        'kafka-converter'
+include 'floodplain-dsl'
+
