@@ -10,7 +10,13 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
 import java.util.*;
 
 
@@ -30,7 +36,8 @@ public class StreamConfiguration {
 	private final Optional<URL> connectURL;
 	private static final String SOURCETYPE = "source";
 	private static final String SINKTYPE = "sink";
-	
+	private final HttpClient client;
+
 	public StreamConfiguration(String kafkaHosts, Optional<String> connectURL, Map<String,ConnectConfiguration> connectors, int maxWait, int maxSize, int replicationFactor) throws IOException {
 		this.kafkaHosts = kafkaHosts;
 //		this.sourceConfigs = sources;
@@ -43,11 +50,38 @@ public class StreamConfiguration {
 		this.maxSize = maxSize;
 		this.replicationFactor = replicationFactor;
 		this.connectURL = connectURL.isPresent()?Optional.of(new URL(connectURL.get())) : Optional.empty();
+		this.client = HttpClient.newBuilder()
+				.connectTimeout(Duration.ofSeconds(5))
+				.build();
 	}
 
 //	public static StreamConfiguration parse(InputStream is) {
 //		
 //	}
+
+
+	public void verifyConnectURL(int retries, Duration retryDelay) throws URISyntaxException, InterruptedException {
+		if(!connectURL.isPresent()) {
+			return;
+		}
+		URI uri = connectURL.get().toURI();
+		HttpRequest request = HttpRequest.newBuilder()
+				.GET()
+				.uri(uri)
+				.build();
+		try {
+			HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+			if(response.statusCode()>=400) {
+				Thread.sleep(retryDelay.toMillis());
+				verifyConnectURL(retries-1,retryDelay);
+			}
+		} catch (IOException e) {
+			Thread.sleep(retryDelay.toMillis());
+			verifyConnectURL(retries-1,retryDelay);
+			e.printStackTrace();
+		}
+	}
+
 	
 	public static StreamConfiguration parseConfig(String deployment,InputStream r) {
 		try {

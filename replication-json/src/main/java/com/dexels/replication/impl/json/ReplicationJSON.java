@@ -286,9 +286,9 @@ public class ReplicationJSON {
 	}
 	
 	public static byte[] immutableTotalToJSON(ImmutableMessage msg) {
-		ObjectNode node = objectMapper.createObjectNode();
-		appendImmutable(node, msg, false);
 		try {
+			ObjectNode node = objectMapper.createObjectNode();
+			appendImmutable(node, msg, false);
 			return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(node);
 		} catch (JsonProcessingException e) {
 			throw new RuntimeException("Error writing json",e);
@@ -377,17 +377,25 @@ public class ReplicationJSON {
 		});
 		return node;
 	}
-	private static void appendImmutable(ObjectNode node, ImmutableMessage immutable, boolean includeNullValues) {
+	private static void appendImmutable(ObjectNode node, ImmutableMessage immutable, boolean includeNullValues) throws JsonProcessingException {
 		ObjectNode columns = objectMapper.createObjectNode();
 		node.set("Columns",columns);
 		final Map<String, ValueType> types = immutable.types();
 		for (Entry<String,Object> e : immutable.values().entrySet()) {
-			ObjectNode m = objectMapper.createObjectNode();
 			final String key = e.getKey();
 			final ValueType type = types.get(key);
-			m.put("Type", ImmutableTypeParser.typeName(type));
-			ReplicationJSON.resolveValue(objectMapper, m,key,type,e.getValue(),includeNullValues);
-			columns.set(e.getKey(), m);
+			Object value = e.getValue();
+			if(type==ValueType.UNKNOWN && value!=null) {
+				String msg = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(node);
+				logger.error("Unknown type detected while appending key: {} and node: {}",key,msg);
+			}
+			// Specifically skip untyped nulls. Typed nulls are ok, untyped non-nulls will throw an exception from typeName
+			if(value!=null || type!=ValueType.UNKNOWN) {
+				ObjectNode m = objectMapper.createObjectNode();
+				m.put("Type", ImmutableTypeParser.typeName(type));
+				ReplicationJSON.resolveValue(objectMapper, m,key,type, value,includeNullValues);
+				columns.set(e.getKey(), m);
+			}
 		}
 		ObjectNode subMessage = null;
 		if(immutable.subMessageMap()!=null || immutable.subMessageListMap()!=null) {
@@ -477,6 +485,14 @@ public class ReplicationJSON {
 					}
 				}
 				ValueType type = ImmutableTypeParser.parseType(typeObject.asText());
+				if(type==ValueType.UNKNOWN) {
+					try {
+						String serialized = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(node);
+						logger.error("Unknown type detected while parsing JSON: {}",serialized);
+					} catch (JsonProcessingException ex) {
+						ex.printStackTrace();
+					}
+				}
 				Object value = ReplicationJSON.resolveValue(type,column.get("Value"));
 				localvalues.put(name, value);
 				localtypes.put(name, type);
