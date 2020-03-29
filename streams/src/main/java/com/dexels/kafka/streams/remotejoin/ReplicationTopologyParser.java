@@ -677,30 +677,25 @@ public class ReplicationTopologyParser {
 
 	public static String addReducer(final Topology topology, TopologyContext topologyContext,TopologyConstructor topologyConstructor,
 			String namespace, Stack<String> transformerNames, int currentPipeId,List<TopologyPipeComponent> onAdd, List<TopologyPipeComponent> onRemove,
-			ImmutableMessage stateMessage, boolean materialize, Optional<ContextExpression> keyExtractor) {
+			ImmutableMessage initialMessage, boolean materialize, Optional<ContextExpression> keyExtractor) {
 
 		String parentName =  transformerNames.peek();
 		String reduceReader = topologyContext.qualifiedName("reduce",transformerNames.size(),currentPipeId);
 		transformerNames.push(reduceReader);
-//		String reduceReader = processorName(transformerNames.peek()+"_reduceread");
-//		String ifElseName = processorName(namespace+"_"+currentPipeId+"_"+"ifelse"+transformerNames.size());
 		String ifElseName = topologyContext.qualifiedName("ifelse",transformerNames.size(),currentPipeId);
 		transformerNames.push(ifElseName);
 		int trueBranchPipeId = topologyConstructor.generateNewPipeId();
 		int falseBranchPipeId = topologyConstructor.generateNewPipeId();
 
 		String trueBranchName = topologyContext.qualifiedName("addbranch",transformerNames.size(),currentPipeId);
-//		String trueBranchName = processorName(namespace+"_"+trueBranchPipeId+"_"+"addbranch"+transformerNames.size());
-//		String falseBranchName = processorName(namespace+"_"+falseBranchPipeId+"_"+"removebranch"+transformerNames.size());
 		String falseBranchName = topologyContext.qualifiedName("removeBranch",transformerNames.size(),currentPipeId);
 
-//		String reduceName = processorName(namespace+"_"+currentPipeId+"_"+"reduce"+transformerNames.size());
 		String reduceName = topologyContext.qualifiedName("reduce",transformerNames.size(),currentPipeId);
 
 		String reduceStoreName = STORE_PREFIX+reduceName;
 			String inputStoreName = STORE_PREFIX+parentName+"_reduce_inputstore";
 
-		topology.addProcessor(reduceReader, ()->new ReduceReadProcessor(inputStoreName,reduceStoreName, stateMessage,keyExtractor), parentName);
+		topology.addProcessor(reduceReader, ()->new ReduceReadProcessor(inputStoreName,reduceStoreName, initialMessage,keyExtractor), parentName);
 		topology.addProcessor(ifElseName, ()->new IfElseProcessor(msg->msg.operation()!=Operation.DELETE, trueBranchName, Optional.of(falseBranchName)), reduceReader);
 
 		Stack<String> addProcessorStack = new Stack<>();
@@ -716,13 +711,13 @@ public class ReplicationTopologyParser {
 		removeProcessorStack.push(falseBranchName);
 
 		for (TopologyPipeComponent addBranchComponents : onAdd) {
-			addBranchComponents.addToTopology(addProcessorStack, trueBranchPipeId, topology, topologyContext, topologyConstructor, stateMessage);
+			addBranchComponents.addToTopology(addProcessorStack, trueBranchPipeId, topology, topologyContext, topologyConstructor, initialMessage);
 		}
 		for (TopologyPipeComponent removePipeComponents : onRemove) {
-			removePipeComponents.addToTopology(removeProcessorStack, falseBranchPipeId, topology, topologyContext, topologyConstructor, stateMessage);
+			removePipeComponents.addToTopology(removeProcessorStack, falseBranchPipeId, topology, topologyContext, topologyConstructor, initialMessage);
 		}
 //		topologyConstructor
-		topology.addProcessor(materialize? "_proc"+reduceName: reduceName, ()->new StoreStateProcessor(reduceName, reduceStoreName, stateMessage,keyExtractor), addProcessorStack.peek(),removeProcessorStack.peek());
+		topology.addProcessor(materialize? "_proc"+reduceName: reduceName, ()->new StoreStateProcessor(reduceName, reduceStoreName, initialMessage,keyExtractor), addProcessorStack.peek(),removeProcessorStack.peek());
  		addStateStoreMapping(topologyConstructor.processorStateStoreMapper, reduceName, reduceStoreName);
 		addStateStoreMapping(topologyConstructor.processorStateStoreMapper, reduceReader, reduceStoreName);
 		addStateStoreMapping(topologyConstructor.processorStateStoreMapper, reduceReader, inputStoreName);

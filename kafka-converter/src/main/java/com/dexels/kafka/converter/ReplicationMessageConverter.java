@@ -34,7 +34,14 @@ public class ReplicationMessageConverter implements Converter {
 		ReplicationFactory.setInstance(new FallbackReplicationMessageParser());
 		logger.info("Initializer of ReplicationMessageConverter key: {}",isKey);
 		logger.info("Configuration: {}",configs);
-		this.schemaEnable = Optional.ofNullable((Boolean) configs.get("schema.enable")).orElse(false);
+		Object o = configs.get("schemas.enable");
+		if(o instanceof String) {
+			this.schemaEnable = Boolean.parseBoolean ((String)o); //. Optional.ofNullable((String) o).orElse(false);
+		} else if(o instanceof Boolean) {
+			this.schemaEnable = Optional.ofNullable((Boolean) o).orElse(false);
+		} else {
+			this.schemaEnable = false;
+		}
 		this.isKey = isKey;
 	}
 
@@ -60,7 +67,7 @@ public class ReplicationMessageConverter implements Converter {
 
 	@Override
 	public SchemaAndValue toConnectData(String topic, byte[] value) {
-		logger.info("toConnectData topic: {}, value: {}",topic,value==null?0: value.length);
+		logger.info("toConnectData topic: {}, value: {}",topic,value==null?0: new String(value));
 		if(value==null) {
 			return new SchemaAndValue(null, null);
 		}
@@ -69,6 +76,8 @@ public class ReplicationMessageConverter implements Converter {
 		} else {
 			ReplicationMessage replMessage = ReplicationFactory.getInstance().parseBytes(Optional.empty(),value);
 			Map<String, Object> valueMap = replMessage.valueMap(true, Collections.emptySet());
+			logger.info("Generated replication message. Schema? {}. Values: {}",schemaEnable,valueMap);
+
 			if(this.schemaEnable) {
 				Map<String,Object> valueWithPayload = new HashMap<String, Object>();
 				valueWithPayload.put("payload", valueMap);
