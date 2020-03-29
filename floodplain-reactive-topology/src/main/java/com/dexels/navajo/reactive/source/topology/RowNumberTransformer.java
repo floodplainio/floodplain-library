@@ -56,6 +56,7 @@ public class RowNumberTransformer implements ReactiveTransformer,TopologyPipeCom
 			return keyExtract.apply(Optional.of(msg.message()), msg.paramMessage()).stringValue();
 		};
 //		ReactiveResolvedParameters resolved = parameters.resolve(context, Optional.empty(), ImmutableFactory.empty(), metadata);
+// TODO why is here a key extractor / group transformer? Copy paste error?
 		addGroupTransformer(transformerNames, pipeId, topology, topologyContext, topologyConstructor, keyExtractor,metadata.name());
 		String from = transformerNames.peek();
 		String name = topologyContext.qualifiedName(this.metadata.name(),transformerNames.size(), pipeId);

@@ -51,24 +51,13 @@ public class ScanTransformer implements ReactiveTransformer,TopologyPipeComponen
 	public void addToTopology(Stack<String> transformerNames, int currentPipeId, Topology topology,
 			TopologyContext topologyContext, TopologyConstructor topologyConstructor, ImmutableMessage stateMessage) {
 		StreamScriptContext context =new StreamScriptContext(topologyContext.tenant.orElse(TopologyContext.DEFAULT_TENANT), topologyContext.instance, topologyContext.deployment);
-//		junit_junit_1_debezium_0_debezium-Generic-test-dvd.public.payment
-//		ReactiveResolvedParameters resolved = parameters.resolve(context, Optional.empty(), ImmutableFactory.empty(), metadata);
 		Optional<ContextExpression> keyExtractor = Optional.ofNullable(parameters.named.get("key"));
 		ImmutableMessage initial = (ImmutableMessage) parameters.unnamed.get(0).apply().value;
-//		ImmutableMessage initial = (ImmutableMessage) resolved.unnamedParameters().get(0).value;
-//		Optional<String> key = resolved.optionalString("key");
 		List<TopologyPipeComponent> onAdd = (List<TopologyPipeComponent>) parameters.unnamed.get(1).apply().value;
 		List<TopologyPipeComponent> onRemove = (List<TopologyPipeComponent>) parameters.unnamed.get(2).apply().value;
-//		String parentProcessor = transformerNames.peek();
-//		Stack<String> removeProcessorStack = new Stack<>();
-//		removeProcessorStack.addAll(transformerNames);
-//		onAdd.stream().map(e->e.)
-//		ReplicationTopologyParser.addReducer(initial,onAdd,onRemove);
 		// TODO everything after the first is ignored
-//		onAdd.get(0).addToTopology(namespace, transformerNames, currentPipeId, topology, topologyContext, topologyConstructor, initial);
 		String reducerName = ReplicationTopologyParser.addReducer(topology, topologyContext, topologyConstructor, topologyContext.instance, transformerNames, currentPipeId, onAdd, onRemove, initial, materialize,keyExtractor);
 		transformerNames.push(reducerName);
-		//		addReducer(topology, topologyContext, topologyConstructor, namespace, transformerNames, currentPipeId, onAdd, onRemove, stateMessage);
 	}
 
 	@Override
