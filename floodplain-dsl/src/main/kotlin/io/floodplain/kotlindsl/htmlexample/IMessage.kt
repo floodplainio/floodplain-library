@@ -57,5 +57,6 @@ class IMessage(input: Map<String,Any>) {
         val (msg,name) = parsePath(path.split("/"))
         msg.content.set(name,value)
     }
-
 }
+
+fun empty(): IMessage = IMessage(emptyMap())
