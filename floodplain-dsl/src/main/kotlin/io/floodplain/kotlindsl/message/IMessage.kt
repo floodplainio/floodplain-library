@@ -1,8 +1,11 @@
-package io.floodplain.kotlindsl.htmlexample
+package io.floodplain.kotlindsl.message
 
 import com.dexels.immutable.api.ImmutableMessage
+import com.dexels.immutable.factory.ImmutableFactory
+import org.apache.kafka.common.metrics.stats.Value
 import java.lang.ClassCastException
 import java.lang.NullPointerException
+import java.util.stream.Collectors
 
 class IMessage(input: Map<String,Any>) {
 
@@ -53,10 +56,47 @@ class IMessage(input: Map<String,Any>) {
         msg.content.remove(name)
     }
 
-    fun set(path: String, value: Any) {
+    fun set(path: String, value: Any): IMessage {
+        return set(path,value,ImmutableFactory.resolveTypeFromValue(value))
+    }
+    private fun set(path: String, value: Any, type: ImmutableMessage.ValueType): IMessage {
         val (msg,name) = parsePath(path.split("/"))
         msg.content.set(name,value)
+        return this
+    }
+
+    fun toImmutable(): ImmutableMessage {
+        val values = mutableMapOf<String,Any>()
+        val types = mutableMapOf<String, ImmutableMessage.ValueType>()
+        val subMessage = mutableMapOf<String,ImmutableMessage>()
+        val subMessageList = mutableMapOf<String,List<ImmutableMessage>>()
+        for((name,elt) in content) {
+            when(elt) {
+                is IMessage -> subMessage[name] = elt.toImmutable()
+                is List<*> -> subMessageList[name] = subListToImmutable(elt)
+                else ->{values[name] = elt; types.put(name,ImmutableFactory.resolveTypeFromValue(elt))}
+            }
+        }
+        return ImmutableFactory.create(values,types,subMessage,subMessageList)
+    }
+
+    private fun subListToImmutable(items: List<*>): List<ImmutableMessage> {
+        return items.stream().map { e->e as IMessage }.map { e->e.toImmutable() }.collect(Collectors.toList())
     }
 }
 
 fun empty(): IMessage = IMessage(emptyMap())
+
+fun fromImmutable(msg: ImmutableMessage): IMessage {
+    val content = mutableMapOf<String,Any>()
+    for((name,value) in msg.values()) {
+        content[name] = value
+    }
+    for((name,value) in msg.subMessageMap()) {
+        content[name] = value
+    }
+    for((name,value) in msg.subMessageListMap()) {
+        content[name] = value
+    }
+    return IMessage(content)
+}
