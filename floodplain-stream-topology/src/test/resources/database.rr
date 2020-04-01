@@ -1,0 +1,10 @@
+|>database(resource='dvd',schema='public',table='address')
+    ->sink('@SINK1')
+    
+|>database(resource='dvd',schema='public',table='city')
+	->joinRemote(key='country_id',
+		|>database(resource='dvd',schema='public',table='country')
+	)
+	->set(country=[@country])
+    ->sink(topic='@SINK2',connector='replication')
+    

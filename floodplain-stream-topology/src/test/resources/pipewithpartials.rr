@@ -1,0 +1,7 @@
+|>database(resource='dvd',schema='public',table='payment')
+	->scan(Msg(countx=0)
+        ,->set(@countx=[@countx]+1)
+        ,->set(@countx=[@countx]-1)->log(logName='delete',dumpStack=false)
+    )
+    ->set(cnt=[@countx])
+    ->sink('@SNEK')
