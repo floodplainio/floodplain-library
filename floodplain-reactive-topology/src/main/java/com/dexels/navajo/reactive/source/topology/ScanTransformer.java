@@ -19,6 +19,7 @@ import org.apache.kafka.streams.Topology;
 import java.util.List;
 import java.util.Optional;
 import java.util.Stack;
+import java.util.function.BiFunction;
 
 public class ScanTransformer implements ReactiveTransformer,TopologyPipeComponent {
 
@@ -56,7 +57,8 @@ public class ScanTransformer implements ReactiveTransformer,TopologyPipeComponen
 		List<TopologyPipeComponent> onAdd = (List<TopologyPipeComponent>) parameters.unnamed.get(1).apply().value;
 		List<TopologyPipeComponent> onRemove = (List<TopologyPipeComponent>) parameters.unnamed.get(2).apply().value;
 		// TODO everything after the first is ignored
-		String reducerName = ReplicationTopologyParser.addReducer(topology, topologyContext, topologyConstructor, topologyContext.instance, transformerNames, currentPipeId, onAdd, onRemove, initial, materialize,keyExtractor);
+		Optional<BiFunction<ImmutableMessage, ImmutableMessage, String>> keyX = keyExtractor.map(e->(msg,state)->(String)e.apply(Optional.of(msg),Optional.of(state)).value);
+		String reducerName = ReplicationTopologyParser.addReducer(topology, topologyContext, topologyConstructor, topologyContext.instance, transformerNames, currentPipeId, onAdd, onRemove, initial, materialize,keyX);
 		transformerNames.push(reducerName);
 	}
 

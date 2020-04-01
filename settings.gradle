@@ -43,8 +43,8 @@ include 'immutable-api',
         'floodplain-reactive',
         'floodplain-function',
         'floodplain-reactive-topology',
+	    'floodplain-stream-topology',
         'floodplain-quarkus',
         'floodplain-dsl',
         'kafka-converter'
-include 'floodplain-dsl'
 

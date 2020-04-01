@@ -677,7 +677,7 @@ public class ReplicationTopologyParser {
 
 	public static String addReducer(final Topology topology, TopologyContext topologyContext,TopologyConstructor topologyConstructor,
 			String namespace, Stack<String> transformerNames, int currentPipeId,List<TopologyPipeComponent> onAdd, List<TopologyPipeComponent> onRemove,
-			ImmutableMessage initialMessage, boolean materialize, Optional<ContextExpression> keyExtractor) {
+			ImmutableMessage initialMessage, boolean materialize, Optional<BiFunction<ImmutableMessage, ImmutableMessage, String>> keyExtractor) {
 
 		String parentName =  transformerNames.peek();
 		String reduceReader = topologyContext.qualifiedName("reduce",transformerNames.size(),currentPipeId);

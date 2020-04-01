@@ -2,37 +2,30 @@
 
 package io.floodplain.kotlindsl
 
+import com.dexels.immutable.api.ImmutableMessage
+import com.dexels.navajo.reactive.source.topology.*
+import com.dexels.navajo.reactive.source.topology.api.TopologyPipeComponent
+import com.dexels.navajo.reactive.topology.ReactivePipe
 import io.floodplain.kotlindsl.message.IMessage
 import io.floodplain.kotlindsl.message.empty
+import io.floodplain.kotlindsl.message.fromImmutable
+import java.util.*
+import java.util.function.BiFunction
+import java.util.function.Function
 
-abstract class Transformer : PartialPipe() {
-//    abstract fun render()
-}
-
-class Transform(transformer: (IMessage, IMessage) -> IMessage) : Transformer() {
-}
-
-class JoinRemote(key: (IMessage) -> String, source: () -> Source) : Transformer() {
-}
-
-class JoinWith(source: () -> Source) : Transformer() {
-}
-
-class Scan(key: (IMessage) -> String, initial: () -> IMessage) : Transformer() {
-    val onAdd = Block()
-    val onRemove = Block()
-
+open class Transformer(val component: TopologyPipeComponent) : PartialPipe() {
 }
 
 
-class Filter(filter: (IMessage, IMessage) -> Boolean) : Transformer() {
-}
+
 
 //class Filter2(filter: (IMessage, IMessage) -> Boolean) : Transformer() {
 //}
 
-fun PartialPipe.filter(a: (IMessage, IMessage) -> Boolean) {
-    addTransformer(Filter(a))
+fun PartialPipe.filter(flt: (IMessage, IMessage) -> Boolean) {
+    val transformerFilter: (ImmutableMessage,ImmutableMessage)->Boolean = {msg: ImmutableMessage,param: ImmutableMessage->flt.invoke(fromImmutable(msg), fromImmutable(param))}
+    val transformer = FilterTransformer(transformerFilter)
+    addTransformer(Transformer(transformer))
 }
 
 //fun PartialPipe.filter2(filter: (IMessage, IMessage) -> Boolean, init: Filter2.() -> Unit): Transformer {
@@ -42,24 +35,42 @@ fun PartialPipe.filter(a: (IMessage, IMessage) -> Boolean) {
 //    return filter2
 //}
 
-fun PartialPipe.set(a: (IMessage, IMessage) -> IMessage): Transformer {
-    return addTransformer(Transform(a))
+fun PartialPipe.set(transform: (IMessage, IMessage) -> IMessage): Transformer {
+    val transformer: (ImmutableMessage,ImmutableMessage)->ImmutableMessage = {msg: ImmutableMessage,param: ImmutableMessage->transform.invoke(fromImmutable(msg), fromImmutable(param)).toImmutable()}
+    val set = SetTransformer(transformer)
+    return addTransformer(Transformer(set))
 }
 
 //fun PartialPipe.copy()
 fun PartialPipe.joinRemote(key: (IMessage) -> String, source: () -> Source) {
-    addTransformer(JoinRemote(key, source))
+    val keyExtractor: (ImmutableMessage,ImmutableMessage)->String = {msg,_->key.invoke(fromImmutable(msg))}
+    val jrt = JoinRemoteTransformer(source.invoke().toReactivePipe(), keyExtractor)
+    addTransformer(Transformer(jrt))
 }
 
 fun PartialPipe.joinWith(source: () -> Source) {
-    addTransformer(JoinWith(source))
+    val jrt = JoinWithTransformer(source.invoke().toReactivePipe(), Optional.empty())
+    addTransformer(Transformer(jrt))
 }
 
-fun PartialPipe.scan(key: (IMessage) -> String, initial: () -> IMessage, onAdd: Block.() -> Unit, onRemove: Block.() -> Unit) {
-    val scan = Scan(key, initial)
-    scan.onAdd.onAdd()
-    scan.onRemove.onRemove()
-    addTransformer(scan)
+fun PartialPipe.scan(key: (IMessage) -> String, initial: () -> IMessage, onAdd: Block.() -> Transformer, onRemove: Block.() -> Transformer) {
+    val keyExtractor: (ImmutableMessage,ImmutableMessage)->String = {msg,_->key.invoke(fromImmutable(msg))}
+
+//    val scan = Scan(key, initial)
+    val onAddBlock = Block()
+    onAdd.invoke(onAddBlock)
+    val onRemoveBlock = Block()
+    onRemove.invoke(onRemoveBlock)
+
+//    val bif : BiFunction<ImmutableMessage,ImmutableMessage,Optional<String>> = BiFunction( {
+//
+//    })
+//    public ScanTransformer(java.util.Optional<BiFunction<ImmutableMessage, ImmutableMessage, String>> keyExtractor, ImmutableMessage initial, List<TopologyPipeComponent> onAdd, List<TopologyPipeComponent> onRemove) {
+    val scanTransformer = ScanTransformer(keyExtractor,initial.invoke().toImmutable(),onAddBlock.transformers.map { e->e.component },onRemoveBlock.transformers.map { e->e.component } )
+
+//    scan.onAdd.onAdd()
+//    scan.onRemove.onRemove()
+//    addTransformer(scan)
 }
 
 fun pipe(init: Pipe.() -> Unit): Pipe {
@@ -68,12 +79,18 @@ fun pipe(init: Pipe.() -> Unit): Pipe {
     return pipe
 }
 
-abstract class Source : PartialPipe() {
+open class Source(val component: TopologyPipeComponent) : PartialPipe() {
+    fun toReactivePipe(): ReactivePipe {
+        return ReactivePipe(component,transformers.map { e->e.component })
+    }
 }
 
 
 abstract class PartialPipe {
-    private val transformers: MutableList<Transformer> = mutableListOf()
+    val transformers: MutableList<Transformer> = mutableListOf()
+//    fun setTopologyPipeComponent(tpc: TopologyPipeComponent) {
+//
+//    }
 
 
     fun addTransformer(transformer: Transformer): Transformer {
@@ -86,9 +103,6 @@ class Block() : PartialPipe() {
 
 }
 
-class DatabaseSource(resourceName: String, schema: String, table: String) : Source() {
-}
-
 
 //fun Pipe.block(init: Block.()->Unit):Source {
 //    val block = Block()
@@ -96,8 +110,8 @@ class DatabaseSource(resourceName: String, schema: String, table: String) : Sour
 //    this.addSource()
 //}
 
-fun Pipe.databaseSource(resourceName: String, schema: String, table: String, init: DatabaseSource.() -> Unit): Source {
-    val databaseSource = DatabaseSource(resourceName, schema, table)
+fun Pipe.databaseSource(resourceName: String, schema: String, table: String, init: Source.() -> Unit): Source {
+    val databaseSource = Source(DebeziumTopic(table, schema,resourceName,true,true))
     databaseSource.init()
     this.addSource(databaseSource)
     return databaseSource
@@ -121,7 +135,7 @@ fun main() {
         databaseSource("dvd", "public", "customer") {
             joinWith {
                 databaseSource("dvd", "public", "payment") {
-                    scan({ msg -> msg.integer("customer_id").toString() }, { empty() },
+                    scan({ msg -> msg.integer("customer_id").toString() }, { empty().set("total",0) },
                             { set { msg, state -> state.set("total", state.integer("total") + msg.integer("amount")); state } },
                             { set { msg, state -> state.set("total", state.integer("total") - msg.integer("amount")); state } }
                     )

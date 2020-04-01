@@ -1,6 +1,7 @@
 package com.dexels.kafka.streams.remotejoin;
 
 import com.dexels.immutable.api.ImmutableMessage;
+import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.navajo.expression.api.ContextExpression;
 import com.dexels.replication.api.ReplicationMessage;
 import com.dexels.replication.api.ReplicationMessage.Operation;
@@ -11,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
+import java.util.function.BiFunction;
 
 public class StoreStateProcessor extends AbstractProcessor<String, ReplicationMessage> {
 
@@ -20,9 +22,9 @@ public class StoreStateProcessor extends AbstractProcessor<String, ReplicationMe
 	private final String lookupStoreName;
 	private final ImmutableMessage initial;
 	private KeyValueStore<String, ImmutableMessage> lookupStore;
-	private final Optional<ContextExpression> keyExtractor;
+	private final Optional<BiFunction<ImmutableMessage, ImmutableMessage, String>> keyExtractor;
 	public static final String COMMONKEY = "singlerestore";
-	public StoreStateProcessor(String name, String lookupStoreName, ImmutableMessage initial, Optional<ContextExpression> keyExtractor) {
+	public StoreStateProcessor(String name, String lookupStoreName, ImmutableMessage initial, Optional<BiFunction<ImmutableMessage, ImmutableMessage, String>> keyExtractor) {
 		this.name = name;
 		this.lookupStoreName = lookupStoreName;
 		this.initial = initial;
@@ -42,7 +44,7 @@ public class StoreStateProcessor extends AbstractProcessor<String, ReplicationMe
 	@Override
 	public void process(String key, ReplicationMessage inputValue) {
 
-		Optional<String> extracted = keyExtractor.map(e->e.apply(Optional.of(inputValue.message()),inputValue.paramMessage())).map(e->(String)e.value);
+		String extracted = keyExtractor.orElse((msg,state)->COMMONKEY).apply(inputValue.message(),inputValue.paramMessage().orElse(ImmutableFactory.empty())); //  keyExtractor.map(e->e.apply(Optional.of(inputValue.message()),inputValue.paramMessage())).map(e->(String)e.value);
 
 		//		for (int i = 0; i < 50; i++) {
 //			lookupStore.put(""+i, ImmutableFactory.empty().with("number", i, "integer").with("aap","noot", "string"));
@@ -67,7 +69,7 @@ public class StoreStateProcessor extends AbstractProcessor<String, ReplicationMe
 //			paramMessage.with(UUID.randomUUID().toString(), RandomUtils.nextInt(), "integer");
 //			l = lookupStore.approximateNumEntries();
 //			System.err.println("Number of entries: "+l);
-			lookupStore.put(extracted.orElse(COMMONKEY), paramMessage);
+			lookupStore.put(extracted, paramMessage);
 //			l = lookupStore.approximateNumEntries();
 //			System.err.println("After number of entries: "+l);
 //			System.err.println("Storing key: "+COMMONKEY+" into store: "+lookupStoreName);
@@ -76,7 +78,7 @@ public class StoreStateProcessor extends AbstractProcessor<String, ReplicationMe
 //		ImmutableMessage msg = Optional.ofNullable(paramMessage.orElse(initial)).orElse(initial);
 //		String keyVal = this.key.map(e->)
 //		super.context().forward(extracted.orElse(COMMONKEY), inputValue);
-		super.context().forward(extracted.orElse(COMMONKEY), inputValue.withOperation(Operation.UPDATE));
+		super.context().forward(extracted, inputValue.withOperation(Operation.UPDATE));
 	}
 
 }

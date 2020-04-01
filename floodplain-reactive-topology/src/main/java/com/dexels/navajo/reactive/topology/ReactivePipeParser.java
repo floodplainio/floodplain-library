@@ -67,7 +67,7 @@ public class ReactivePipeParser {
 			if(e instanceof TopologyPipeComponent) {
 				TopologyPipeComponent tpc = (TopologyPipeComponent)e;
 				logger.info("Adding pipe component: "+tpc.getClass()+" to stack: "+pipeStack);
-				tpc.addToTopology(pipeStack, pipeNr, topology, topologyContext, topologyConstructor,ImmutableFactory.empty());
+				tpc.	addToTopology(pipeStack, pipeNr, topology, topologyContext, topologyConstructor,ImmutableFactory.empty());
 			}
 		}
 	}

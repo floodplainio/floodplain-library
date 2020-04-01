@@ -22,6 +22,7 @@
             <option value="$PROJECT_DIR$/floodplain-quarkus" />
             <option value="$PROJECT_DIR$/floodplain-reactive" />
             <option value="$PROJECT_DIR$/floodplain-reactive-topology" />
+            <option value="$PROJECT_DIR$/floodplain-stream-topology" />
             <option value="$PROJECT_DIR$/floodplain-version" />
             <option value="$PROJECT_DIR$/immutable-api" />
             <option value="$PROJECT_DIR$/immutable-impl" />

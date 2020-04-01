@@ -130,33 +130,11 @@ public class ImmutableMessageImpl implements ImmutableMessage {
 	private Map<String,ValueType> resolveTypesFromValues(Map<String, ? extends Object> values) {
 		Map<String,ValueType> t = new HashMap<>();
 		for (Entry<String,? extends Object> e : values.entrySet()) {
-			Object val = e.getValue();
-			if(val==null) {
-//				t.put(e.getKey(), "unknown");
-			} else if(val instanceof Long) {
-				t.put(e.getKey(), ValueType.LONG);
-			} else if(val instanceof Double) {
-				t.put(e.getKey(), ValueType.DOUBLE);
-			} else if(val instanceof Integer) {
-				t.put(e.getKey(), ValueType.INTEGER);
-			} else if(val instanceof Float) {
-				t.put(e.getKey(), ValueType.FLOAT);
-			} else if(val instanceof Date) {
-				t.put(e.getKey(), ValueType.DATE);
-			} else if(val instanceof Boolean) {
-				t.put(e.getKey(), ValueType.BOOLEAN);
-			} else if(val instanceof String) {
-				t.put(e.getKey(), ValueType.STRING);
-            } else if (val instanceof CoordinateType) {
-                t.put(e.getKey(), ValueType.COORDINATE);
-			} else {
-				logger.warn("Unknown type::: {}",val.getClass());
-				t.put(e.getKey(), ValueType.UNKNOWN);
-				
-			}
+			t.put(e.getKey(), ImmutableFactory.resolveTypeFromValue(e.getValue()));
 		}
 		return t;
 	}
+
 
 
 	private Map<String, ValueType> combineTypes(Map<String, ValueType> typesa, Map<String, ValueType> typesb) {

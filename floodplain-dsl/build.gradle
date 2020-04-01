@@ -10,6 +10,7 @@ dependencies {
     implementation project(':pubsub-rx2')
     implementation project(':streams')
     implementation project(':streams-api')
+    implementation project(':floodplain-stream-topology')
     compile dependencies.slf4j
     compile dependencies.reactiveStreams
     testCompile dependencies.jUnit
