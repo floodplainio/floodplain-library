@@ -40,7 +40,7 @@ public class DebeziumTopic implements TopologyPipeComponent {
 	}
 	
 	@Override
-	public void addToTopology(Stack<String> transformerNames, int pipeId,  Topology topology, TopologyContext topologyContext,TopologyConstructor topologyConstructor, ImmutableMessage stateMessage) {
+	public void addToTopology(Stack<String> transformerNames, int pipeId,  Topology topology, TopologyContext topologyContext,TopologyConstructor topologyConstructor) {
 		boolean appendTable = false;
 //		String name = processorName(createName(topologyContext, transformerNames.size(),pipeId));
 		final String metadataName = "debezium";

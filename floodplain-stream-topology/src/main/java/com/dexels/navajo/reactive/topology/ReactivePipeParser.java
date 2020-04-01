@@ -52,13 +52,13 @@ public class ReactivePipeParser {
 		}
 
 		TopologyPipeComponent sourceTopologyComponent = (TopologyPipeComponent)pipe.source;
-		sourceTopologyComponent.addToTopology(pipeStack, pipeNr, topology, topologyContext, topologyConstructor,ImmutableFactory.empty());
+		sourceTopologyComponent.addToTopology(pipeStack, pipeNr, topology, topologyContext, topologyConstructor);
 		for (Object e : pipe.transformers) {
 			logger.info("Transformer: {} pipestack: {}",e,pipeStack);
 			if(e instanceof TopologyPipeComponent) {
 				TopologyPipeComponent tpc = (TopologyPipeComponent)e;
 				logger.info("Adding pipe component: "+tpc.getClass()+" to stack: "+pipeStack);
-				tpc.	addToTopology(pipeStack, pipeNr, topology, topologyContext, topologyConstructor,ImmutableFactory.empty());
+				tpc.	addToTopology(pipeStack, pipeNr, topology, topologyContext, topologyConstructor);
 			}
 		}
 	}

@@ -25,7 +25,7 @@ public class GroupTransformer implements TopologyPipeComponent {
 
 	@Override
 	public void addToTopology(Stack<String> transformerNames, int pipeId, Topology topology,
-			TopologyContext topologyContext, TopologyConstructor topologyConstructor, ImmutableMessage stateMessage) {
+			TopologyContext topologyContext, TopologyConstructor topologyConstructor) {
 		Function<ReplicationMessage,String> keyExtractor = msg->{
 			return this.keyExtractor.apply(msg.message(),msg.paramMessage().orElse(ImmutableFactory.empty()));
 		};

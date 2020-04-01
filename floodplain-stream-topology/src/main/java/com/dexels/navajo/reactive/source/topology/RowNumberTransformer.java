@@ -20,15 +20,7 @@ public class RowNumberTransformer implements TopologyPipeComponent {
 
 	@Override
 	public void addToTopology(Stack<String> transformerNames, int pipeId, Topology topology,
-			TopologyContext topologyContext, TopologyConstructor topologyConstructor, ImmutableMessage stateMessage) {
-//		StreamScriptContext context =new StreamScriptContext(topologyContext.tenant.orElse(TopologyContext.DEFAULT_TENANT), topologyContext.instance, topologyContext.deployment);
-//		ContextExpression keyExtract  = parameters.named.get("key");
-//		Function<ReplicationMessage,String> keyExtractor = msg->{
-//			return keyExtract.apply(Optional.of(msg.message()), msg.paramMessage()).stringValue();
-//		};
-//		ReactiveResolvedParameters resolved = parameters.resolve(context, Optional.empty(), ImmutableFactory.empty(), metadata);
-// TODO why is here a key extractor / group transformer? Copy paste error?
-//		addGroupTransformer(transformerNames, pipeId, topology, topologyContext, topologyConstructor, keyExtractor,"rownum");
+			TopologyContext topologyContext, TopologyConstructor topologyConstructor) {
 		String from = transformerNames.peek();
 		String name = topologyContext.qualifiedName("rownum",transformerNames.size(), pipeId);
 		String rowNum = ReplicationTopologyParser.addKeyRowProcessor(topology, topologyContext, topologyConstructor, from, name,this.materialize);

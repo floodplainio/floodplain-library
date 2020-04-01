@@ -30,7 +30,7 @@ public class SetTransformer implements TopologyPipeComponent {
 
 	@Override
 	public void addToTopology(Stack<String> transformerNames, int currentPipeId, Topology topology,
-			TopologyContext topologyContext, TopologyConstructor topologyConstructor, ImmutableMessage stateMessage) {
+			TopologyContext topologyContext, TopologyConstructor topologyConstructor) {
 		FunctionProcessor fp = new FunctionProcessor(this.transformer);
 		String name = topologyContext.qualifiedName("set",transformerNames.size(), currentPipeId);
 //		String name = createName(topologyContext, this.metadata.name(),transformerNames.size(), currentPipeId);

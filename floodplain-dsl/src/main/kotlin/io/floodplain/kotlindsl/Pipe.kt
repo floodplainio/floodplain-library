@@ -19,7 +19,7 @@ class Pipe() {
     fun render(context: TopologyContext, topologyConstructor: TopologyConstructor) {
         val reactivePipes =  sources.map { e->e.toReactivePipe() }
         for (reactivePipe in reactivePipes) {
-            reactivePipe.source.addToTopology()
+//            reactivePipe.source.addToTopology()
         }
     }
 }

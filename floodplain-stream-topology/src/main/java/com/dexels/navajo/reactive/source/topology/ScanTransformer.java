@@ -33,7 +33,7 @@ public class ScanTransformer implements TopologyPipeComponent {
 	}
 	@Override
 	public void addToTopology(Stack<String> transformerNames, int currentPipeId, Topology topology,
-			TopologyContext topologyContext, TopologyConstructor topologyConstructor, ImmutableMessage stateMessage) {
+			TopologyContext topologyContext, TopologyConstructor topologyConstructor) {
 //		Function<ReplicationMessage,String> keyXtr = msg->{
 //			return this.keyExtractor.apply(msg.message(),msg.paramMessage().orElse(ImmutableFactory.empty()));
 //		};

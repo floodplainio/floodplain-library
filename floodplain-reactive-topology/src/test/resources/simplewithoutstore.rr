@@ -1,3 +1,0 @@
-|>topic(name='database-ACTIVITYATTRIBUTE')
-    ->filter([activityid] > 20)
-    ->sink('SINK1','SINK3')

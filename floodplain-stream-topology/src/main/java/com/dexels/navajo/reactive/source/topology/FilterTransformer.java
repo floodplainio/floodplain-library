@@ -28,7 +28,7 @@ public class FilterTransformer implements TopologyPipeComponent {
 	}
 
 	@Override
-	public void addToTopology(Stack<String> transformerNames, int pipeId,  Topology topology, TopologyContext topologyContext,TopologyConstructor topologyConstructor, ImmutableMessage stateMessage) {
+	public void addToTopology(Stack<String> transformerNames, int pipeId,  Topology topology, TopologyContext topologyContext,TopologyConstructor topologyConstructor) {
 //		String filterName = createName(topologyContext.instance, transformerNames.size(), pipeId);
 		String filterName = topologyContext.qualifiedName("filter",transformerNames.size(), pipeId);
 

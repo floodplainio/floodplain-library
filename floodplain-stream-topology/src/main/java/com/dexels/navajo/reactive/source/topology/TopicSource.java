@@ -22,7 +22,7 @@ public class TopicSource implements TopologyPipeComponent {
 	}
 
 	@Override
-	public void addToTopology(Stack<String> transformerNames, int pipeId,  Topology topology, TopologyContext topologyContext,TopologyConstructor topologyConstructor, ImmutableMessage stateMessage) {
+	public void addToTopology(Stack<String> transformerNames, int pipeId,  Topology topology, TopologyContext topologyContext,TopologyConstructor topologyConstructor) {
 		String source = ReplicationTopologyParser.addSourceStore(topology, topologyContext, topologyConstructor, Optional.empty(), topicName, Optional.empty(),this.materialize());
 		KafkaUtils.ensureExistsSync(topologyConstructor.adminClient, source, Optional.empty());
 		transformerNames.push(source);

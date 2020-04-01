@@ -30,7 +30,7 @@ public class JoinWithTransformer implements TopologyPipeComponent{
 
 	@Override
 	public void addToTopology(Stack<String> transformerNames, int pipeId, Topology topology,
-		TopologyContext topologyContext, TopologyConstructor topologyConstructor, ImmutableMessage stateMessage) {
+		TopologyContext topologyContext, TopologyConstructor topologyConstructor) {
 		Optional<String> from = Optional.of(transformerNames.peek());
 		Stack<String> pipeStack = new Stack<>();
 		ReactivePipeParser.processPipe(topologyContext, topologyConstructor, topology, topologyConstructor.generateNewPipeId(),pipeStack, joinWith,true);

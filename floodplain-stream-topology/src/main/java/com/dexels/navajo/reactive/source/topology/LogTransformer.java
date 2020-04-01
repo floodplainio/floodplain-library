@@ -31,7 +31,7 @@ public class LogTransformer implements TopologyPipeComponent {
 	}
 
 	@Override
-	public void addToTopology(Stack<String> transformerNames, int pipeId,  Topology topology, TopologyContext topologyContext,TopologyConstructor topologyConstructor, ImmutableMessage stateMessage) {
+	public void addToTopology(Stack<String> transformerNames, int pipeId,  Topology topology, TopologyContext topologyContext,TopologyConstructor topologyConstructor) {
 //		boolean dumpStack = resolved.optionalBoolean("dumpStack").orElse(false);
 //		if(every.isPresent()) {
 //			throw new UnsupportedOperationException("'every' param not yet implemented in LogTransformer");

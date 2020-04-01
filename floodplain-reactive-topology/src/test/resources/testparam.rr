@@ -1,4 +1,0 @@
-|>database(resource='dvd',schema='public',table='staff')
-	->set(@thing='ble')
-	->set(bla=[@thing])
-    ->sink('@SNK')

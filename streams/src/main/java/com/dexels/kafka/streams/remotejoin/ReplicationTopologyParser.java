@@ -711,10 +711,10 @@ public class ReplicationTopologyParser {
 		removeProcessorStack.push(falseBranchName);
 
 		for (TopologyPipeComponent addBranchComponents : onAdd) {
-			addBranchComponents.addToTopology(addProcessorStack, trueBranchPipeId, topology, topologyContext, topologyConstructor, initialMessage);
+			addBranchComponents.addToTopology(addProcessorStack, trueBranchPipeId, topology, topologyContext, topologyConstructor);
 		}
 		for (TopologyPipeComponent removePipeComponents : onRemove) {
-			removePipeComponents.addToTopology(removeProcessorStack, falseBranchPipeId, topology, topologyContext, topologyConstructor, initialMessage);
+			removePipeComponents.addToTopology(removeProcessorStack, falseBranchPipeId, topology, topologyContext, topologyConstructor);
 		}
 //		topologyConstructor
 		topology.addProcessor(materialize? "_proc"+reduceName: reduceName, ()->new StoreStateProcessor(reduceName, reduceStoreName, initialMessage,keyExtractor), addProcessorStack.peek(),removeProcessorStack.peek());

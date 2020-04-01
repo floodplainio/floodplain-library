@@ -1,8 +1,0 @@
-|>database(resource='dvd',schema='public',table='customer')
-	->joinWith(|>database(resource='dvd',schema='public',table='payment')
-		->set(last_update=null)
-		->group(key=ToString([customer_id]))
-		,into='payments')
-	->set(payments=[@payments/])
-    ->sink(connector='@replication',collection='customer', '@CUSTOMER')
-

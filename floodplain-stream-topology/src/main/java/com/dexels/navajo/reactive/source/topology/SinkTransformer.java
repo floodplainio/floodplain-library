@@ -44,7 +44,7 @@ public class SinkTransformer implements TopologyPipeComponent {
 	}
 
 	@Override
-	public void addToTopology(Stack<String> transformerNames, int pipeId,  Topology topology, TopologyContext topologyContext,TopologyConstructor topologyConstructor, ImmutableMessage stateMessage) {
+	public void addToTopology(Stack<String> transformerNames, int pipeId,  Topology topology, TopologyContext topologyContext,TopologyConstructor topologyConstructor) {
 
 		String sinkTopic = topicName( name, topologyContext);
 		// TODO shouldn't we use the createName?
