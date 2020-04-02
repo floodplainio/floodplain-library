@@ -134,78 +134,7 @@ public class StreamInstance {
 			return false;
 		}
 	}
-	
-	public String generation() {
-		return this.generation;
-	}
-	public void parseStreamMap(Topology topologyBuilder, InputStream xmlStream, File outputFolder, String repositoryDeployment, String fileGeneration, Optional<File> debugFile) throws IOException, InterruptedException, ExecutionException {
 
-		XMLElement xe = new CaseSensitiveXMLElement();
-		try {
-			xe.parseFromStream(xmlStream);
-		} catch (IOException e) {
-			logger.error("Error parsing stream instance: "+this.instanceName+" with file path: "+debugFile.map(f->f.getAbsolutePath()).orElse("<unknown>"), e);
-			return;
-		}
-		this.generation  = "generation-"+fileGeneration;
-		boolean useTenant = xe.getBooleanAttribute("tenant", "true", "false", true);
-		
-		String tenantDefinition = System.getenv("TENANT_MASTER");
-		if (xe.getStringAttribute("tenants") != null) {
-		    tenantDefinition = xe.getStringAttribute("tenants");
-		}
-		boolean enableTenantless = Optional.ofNullable(System.getenv("ENABLE_TENANTLESS")).map(e->"true".equals(e)).orElse(false);
-
-		String storagePath = outputFolder.getAbsolutePath();
-		File storageFolder = new File(storagePath);
-		storageFolder.mkdirs();
-		if(!useTenant) {
-			if(enableTenantless) {
-				parseForTenant(topologyBuilder, repositoryDeployment, xe, generation, storagePath, storageFolder, Optional.empty());
-			} else {
-				logger.warn("No tenantless allowed!");
-			}
-			
-		} else {
-			String[] tenants = tenantDefinition == null ? new String[] {"DEFAULT"}  : tenantDefinition.split(",");
-			for (String tenant : tenants) {
-				parseForTenant(topologyBuilder, repositoryDeployment, xe, generation, storagePath, storageFolder, Optional.of(tenant));
-			}
-		}
-	}
-
-	private void parseForTenant(Topology topology,  String repositoryDeployment, XMLElement xe, String generation, String storagePath,
-			File storageFolder, Optional<String> tenant) throws IOException, InterruptedException, ExecutionException {
-		String brokers = this.configuration.kafkaHosts();
-		String deployment = repositoryDeployment!=null?repositoryDeployment:xe.getStringAttribute("deployment");
-		List<XMLElement> elts = xe.getChildren();
-		int i=0;
-		List<XMLElement> lowLevelAPIElements = new ArrayList<>();
-		try {
-			for (XMLElement x : elts) {
-				if(x.getName().equals("direct")) {
-					lowLevelAPIElements.add(x);
-				} else if(x.getName().endsWith(".sink")) {
-					throw new RuntimeException("Disabled sinks, removed addSinks");
-//					addSinks(x.getName().split("\\.")[0],x,generation,brokers,tenant,deployment,storageFolder, i);
-				}
-				i++;
-			}
-			if(!lowLevelAPIElements.isEmpty()) {
-				TopologyContext context = new TopologyContext(tenant, deployment, this.instanceName, generation);
-				ReplicationTopologyParser.topologyFromXML(topology,lowLevelAPIElements, context, transformerRegistry,this.adminClient,Collections.emptyMap(),this.configuration);
-				Properties streamsConfiguration = createProperties(context.applicationId(),brokers,storagePath);
-				System.err.println("Topology:\n"+topology.describe().toString());
-				KafkaStreams stream = new KafkaStreams(topology, streamsConfiguration);
-				topologyDescriptions.put(context.applicationId(), topology.describe());
-				streams.put(context.applicationId(),stream);
-			}
-		} catch (InvalidTopicException e) {
-			logger.error("Failed to build topology while building instance: "+this.instanceName+" for generation: "+generation+" processing join #"+i,e);
-			throw e;
-		}
-	}
-	
 	public void start() {
 		for (Entry<String,KafkaStreams> entry : streams.entrySet()) {
 		    try {

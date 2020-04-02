@@ -3,12 +3,16 @@
 package io.floodplain.kotlindsl
 
 import com.dexels.immutable.api.ImmutableMessage
+import com.dexels.kafka.streams.api.TopologyContext
+import com.dexels.kafka.streams.remotejoin.TopologyConstructor
 import com.dexels.navajo.reactive.source.topology.*
 import com.dexels.navajo.reactive.source.topology.api.TopologyPipeComponent
 import com.dexels.navajo.reactive.topology.ReactivePipe
+import com.dexels.navajo.reactive.topology.ReactivePipeParser
 import io.floodplain.kotlindsl.message.IMessage
 import io.floodplain.kotlindsl.message.empty
 import io.floodplain.kotlindsl.message.fromImmutable
+import org.apache.kafka.streams.Topology
 import java.util.*
 import java.util.function.BiFunction
 import java.util.function.Function
@@ -164,5 +168,12 @@ fun main() {
     }
 
     val src = myPipe.sources().size
-    println("sources: $src")
+    var topology = Topology()
+    var topologyContext = TopologyContext(Optional.of("TENANT"),"test","instance","20200401")
+    var topologyConstructor = TopologyConstructor(Optional.empty(), Optional.empty())
+//    ReactivePipeParser.processPipe(topologyContext, topologyConstructor, topology, int, Stack<String>, ReactivePipe, boolean)
+
+    myPipe.render(topology,topologyContext,topologyConstructor )
+
+    println("sources: ${topology.describe()}")
 }

@@ -5,6 +5,9 @@
       <module name="floodplain-library.floodplain-authentication-api.main" target="11" />
       <module name="floodplain-library.floodplain-authentication-api.native-test" target="11" />
       <module name="floodplain-library.floodplain-authentication-api.test" target="11" />
+      <module name="floodplain-library.floodplain-reactive-topology.main" target="11" />
+      <module name="floodplain-library.floodplain-reactive-topology.native-test" target="11" />
+      <module name="floodplain-library.floodplain-reactive-topology.test" target="11" />
       <module name="floodplain.repository.com.dexels.config.runtime.main" target="1.8" />
       <module name="floodplain.repository.com.dexels.config.runtime.test" target="1.8" />
       <module name="floodplain.repository.com.dexels.immutable.api.main" target="1.8" />

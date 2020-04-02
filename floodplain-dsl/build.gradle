@@ -12,6 +12,7 @@ dependencies {
     implementation project(':streams-api')
     implementation project(':floodplain-stream-topology')
     compile dependencies.slf4j
+    implementation dependencies.slf4jSimple
     compile dependencies.reactiveStreams
     testCompile dependencies.jUnit
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"

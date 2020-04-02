@@ -80,24 +80,6 @@ public class StreamRuntime {
 		this.updateQueueSubscription = updateQueue.observeOn(Schedulers.from(Executors.newSingleThreadExecutor()))
 			.subscribe(r->r.run());
 	}
-
-	@PostConstruct
-	public void activate() throws IOException, InterruptedException, ExecutionException {
-		System.err.println("Starting runtime");
-		File resources = new File(this.path,"config/resources.xml");
-		try (InputStream r = new FileInputStream(resources)){
-			this.configuration = StreamConfiguration.parseConfig(this.deployment,r);
-			this.adminClient = AdminClient.create(this.configuration.config());
-		} catch (XMLParseException | IOException e) {
-			logger.error("Error starting streaminstance", e);
-			return;
-		}
-
-		
-		parseFromRepository();
-		logger.info("Streams: {}",streams.keySet());
-		startInstances();
-	}
 	
 	public Optional<String> configuredGeneration() {
 		return configuredGeneration;
@@ -122,78 +104,6 @@ public class StreamRuntime {
 		
 	}
 
-//	private static  void registerSinks(StreamConfiguration conf, ConfigurationAdmin configAdmin) {
-//		conf.sinks().entrySet().forEach(e->{
-//			String sinkResource = "dexels.streams.sink";
-//			Dictionary<String,Object> settings = new Hashtable<String,Object>(e.getValue().settings());
-//			final String name = e.getValue().name();
-//			final String type = e.getValue().type();
-//			settings.put("name", name);
-//			settings.put("type", type);
-//			try {
-//				Configuration cf = createOrReuse(sinkResource,"(name="+name+")",configAdmin);
-//				updateIfChanged(cf,settings);
-//			} catch (Exception e1) {
-//				logger.error("Error: ", e1);
-//			}
-//			
-//		});
-//	}
-//	
-
-	
-	private void parseFromRepository() throws IOException, InterruptedException, ExecutionException {
-		File output = getOutputFolder();
-		logger.info("Using output folder: {}",output.getAbsolutePath());
-		if(!output.exists()) {
-			logger.info("Creating output folder: {}",output.getAbsolutePath());
-			output.mkdirs();
-		}
-		File streamFolder = new File(this.path,"streams");
-		File[] folders =  streamFolder.listFiles(file->file.isDirectory());
-		String generationEnv = configuredGeneration().orElseGet(()->System.getenv("GENERATION")); // System.getenv("GENERATION");
-		
-		if(generationEnv==null || "".equals(generationEnv)) {
-			throw new IllegalArgumentException("Can not load stream instance: no generation");
-		}
-		for (File folder : folders) {
-			if(folder.getName().startsWith(".") || folder.getName().startsWith("_")) {
-				// ignore "_"
-				continue;
-			}
-			File[] f =  folder.listFiles((file,name)->name.endsWith(".xml"));
-			for (File file : f) {
-			    try {
-			        parseFile(output, streamFolder, file, generationEnv);
-			    } catch (Throwable t) {
-			        logger.error("Error in parsing. Ignoring path: "+ file.getAbsolutePath(),t);
-					if(System.getenv("DRAMA_MODE")!=null) {
-						System.exit(-1);
-					}
-			    }
-				
-			}
-			
-		}
-		File[] f =  streamFolder.listFiles((file,name)->name.endsWith(".xml"));
-		for (File file : f) {
-			parseFile(output, streamFolder, file,generationEnv);
-		}
-	}
-
-	private void parseFile(File outputFolder, File streamFolder, File file, String generation) throws IOException, InterruptedException, ExecutionException {
-		String pathInStreamsFolder = streamFolder.toPath().relativize(file.toPath()).toString();
-		logger.info("Parsing replication file at path: {}",pathInStreamsFolder);
-	
-		String name = nameFromFileName(pathInStreamsFolder);
-
-		if(!this.instanceFilter.isEmpty() && !this.instanceFilter.contains(name)) {
-			logger.info(" -> Skipping non-matching instance: {}", name);
-			return;
-		}
-		addStreamInstance(file, streamFolder,outputFolder,generation);
-	}
-
 	public static String nameFromFileName(String fullpath) {
 		String path = fullpath.split("\\.")[0];
 		String[] pathelements = path.split("/");
@@ -201,22 +111,6 @@ public class StreamRuntime {
 		return pathparts.length > 1 ? pathparts[0] :pathelements[pathelements.length-1];
 	}
 
-	private void addStreamInstance(File file, File streamFolder, File outputStorage, String generation) throws IOException, InterruptedException, ExecutionException {
-		String pathInStreamsFolder = streamFolder.toPath().relativize(file.toPath()).toString();
-		logger.info("Parsing replication file at path: {}",pathInStreamsFolder);
-		String name = nameFromFileName(pathInStreamsFolder);
-		if(file.length()==0) {
-			logger.warn("Ignoring empty file: {}",file.getAbsolutePath());
-			return;
-		}
-		try(InputStream definitionStream = new FileInputStream(file)) {
-			StreamInstance si = new StreamInstance(friendlyName(name), this.configuration,this.adminClient, this.transformerRegistry);
-			Topology topology = new Topology();
-			si.parseStreamMap(topology,definitionStream,outputStorage,this.deployment,generation,Optional.of(file));
-			streams.put(friendlyName(name),si);
-		}
-	}
-	
 	private String friendlyName(String name) {
 		if(name.endsWith(".xml")) {
 			name = name.substring(0, name.length()-4);

@@ -79,116 +79,6 @@ public class ReplicationTopologyParser {
 		}
 		parts.add(processor);
 	}
-	
-	public static void topologyFromXML(Topology current,List<XMLElement> xmlList,TopologyContext context, final Map<String,MessageTransformer> initialTransformerRegistry, AdminClient externalAdminClient, Map<String, GenericProcessorBuilder> genericProcessorRegistry, StreamConfiguration streamConfig) throws InterruptedException, ExecutionException {
-
-	    TopologyConstructor topologyConstructor = new TopologyConstructor(Optional.of(initialTransformerRegistry), Optional.of(externalAdminClient));
-	    
-	    for (XMLElement xml : xmlList) {
-	    	Vector<XMLElement> children = xml.getChildren();
-	    	
-			for (XMLElement xe : children) {
-
-				String sourceTopicName = xe.getStringAttribute("topic");
-				switch (xe.getName()) {
-				case "processor": {
-					String name = xe.getStringAttribute("name");
-					GenericProcessorBuilder genericBuilder = genericProcessorRegistry.get(name);
-					addGenericProcessor(current,context,topologyConstructor,genericBuilder,xe.attributes(),streamConfig);
-//					GenericProcessor processor = genericBuilder.build(xe,Optional.of(this),context.tenant);
-//					startedProcessors.add(processor);
-					break;
-				}
-				case STORE:
-				{
-				  
-					final Optional<String> to = Optional.ofNullable(xe.getStringAttribute("to"));
-		        	final Optional<ProcessorSupplier<String, ReplicationMessage>> processorFromChildren = processorFromChildren(Optional.of(xe), topicName(sourceTopicName, context), topologyConstructor);
-					addSourceStore(current, context, topologyConstructor,processorFromChildren, sourceTopicName, to,true);
-				}
-				break;
-				case DIFFSTORE:
-				{
-					String name = xe.getStringAttribute("name");
-					if(name==null) {
-						throw new UnsupportedOperationException("A diffstore definition should have a 'name'");
-					}
-					String from = xe.getStringAttribute("from");
-					if(sourceTopicName==null && from == null) {
-						throw new UnsupportedOperationException("A diffstore definition should either have a 'topic' or a 'from'");
-					}
-					Optional<String> toDiffSink = Optional.ofNullable(xe.getStringAttribute("to"));
-					
-					// TODO add store filter
-					final Optional<ProcessorSupplier<String, ReplicationMessage>> processorFromChildren = processorFromChildren(Optional.of(xe),sourceTopicName, topologyConstructor);
-
-					String diffProcessorNamePrefix = name;
-					 
-					addDiffProcessor(current, context, topologyConstructor, sourceTopicName, from, toDiffSink,
-							processorFromChildren, diffProcessorNamePrefix);
-				}
-					break;
-			    case CACHE:
-                    addPersistentCacheXML(current, context,topologyConstructor, xe);
-                    break;
-			  
-				case JOIN:
-					addJoinXML(current, context,xe ,topologyConstructor);
-				    break;
-				case GROUPEDSTORE: 
-					{
-						String from = xe.getStringAttribute("from");
-						if(from==null) {
-							throw new NullPointerException("'from' required in groupedstore: "+xe);
-						}
-						String key = xe.getStringAttribute("key");
-						if(key==null) {
-							throw new NullPointerException("'key' required in groupedstore: "+xe);
-						}
-						String name = xe.getStringAttribute("name");
-						if(name==null) {
-							throw new NullPointerException("'name' required in groupedstore: "+xe);
-						}
-						String topic = xe.getStringAttribute("topic");
-						if(topic!=null) {
-							throw new NullPointerException("Shouldn't use topics in groupedstore in elemenet: "+xe);
-						}
-						String sourceTopic = topicName(from, context);
-						boolean ignoreOriginalKey = xe.getBooleanAttribute("ignoreOriginalKey", "true", "false", false);
-//						Optional<String> filter = Optional.ofNullable(xe.getStringAttribute("filter"));
-						addGroupedProcessor(current, context,topologyConstructor, name,from,ignoreOriginalKey,
-								CoreOperators.extractKey(key),processorFromChildren(Optional.of(xe),sourceTopic, topologyConstructor));
-					}
-					break;
-				case JOINGROUPED:
-					// I *think* that any child-filters will be applied to both streams
-					addSingleJoinGroupedXML(current, context, topologyConstructor, xe);
-					break;
-				case SPLIT:
-					{
-						String name = xe.getStringAttribute("name");
-						Optional<String> topic = Optional.ofNullable(xe.getStringAttribute("topic"));
-						Optional<String> from = Optional.ofNullable(xe.getStringAttribute("from"));
-						Optional<XMLElement> transformer = Optional.ofNullable(xe.getChildByTagName("transformer"));
-						List<XMLElement> destinations = xe.getChildrenByTagName("destination");
-						Optional<XMLElement> defaultDestination = Optional.ofNullable(xe.getChildByTagName("default"));
-						final String sourceTopic;
-						if (from.isPresent()) {
-						    sourceTopic = topicName(from.get(), context);
-						} else {
-						    sourceTopic = "";
-						}
-						addSplit(current, context, name, from,topic,processorFromChildren(transformer,sourceTopic, topologyConstructor),destinations,defaultDestination, topologyConstructor.adminClient);
-					}
-					break;
-				default:
-					break;
-				}
-			}
-	    }
-	    materializeStateStores(topologyConstructor, current);
-	}
-
 
 	private static void addGenericProcessor(Topology current, TopologyContext context,
 			TopologyConstructor topologyConstructor,GenericProcessorBuilder genericBuilder, Map<String,String> settings, StreamConfiguration config) {
@@ -210,7 +100,8 @@ public class ReplicationTopologyParser {
 					logger.info("Added processor: {} with sttstatestores: {} mappings: {}",element.getKey(), element.getValue(),topologyConstructor.processorStateStoreMapper.get(element.getKey()));
 				} else {
 					logger.error("Missing supplier for: {}\nStore mappings: {} available suppliers: {}",element.getKey(),topologyConstructor.processorStateStoreMapper,topologyConstructor.immutableStoreSupplier);
-					throw new RuntimeException("Missing supplier!");
+					logger.error("Available state stores: {}\nimm: {}",topologyConstructor.stateStoreSupplier.keySet(),topologyConstructor.immutableStoreSupplier.keySet());
+					throw new RuntimeException("Missing supplier for: "+element.getKey());
 				}
 				
 			} else {
@@ -412,11 +303,7 @@ public class ReplicationTopologyParser {
 	    builder.addProcessor(destinationProcName, new DestinationProcessorSupplier(keyExtract, destinationFilter), parentProcessor)
 	    		.addSink(destinationProcName+"_sink", destinationTopic, destinationProcName);
 	}
-	// will propagate null values unchanged
-	private static Optional<ProcessorSupplier<String, ReplicationMessage>> processorFromChildren(Optional<XMLElement> xml, String sourceTopicName, TopologyConstructor topologyConstructor) {
-		return Optional.of(()->new XmlTransformerProcessor(xml, sourceTopicName, topologyConstructor));
-	}
-	
+
 	private static Flatten parseFlatten(String flatten) {
 		if(flatten==null) {
 			return Flatten.NONE;
@@ -496,22 +383,7 @@ public class ReplicationTopologyParser {
 			TopologyConstructor topologyConstructor, String fromProcessor, Optional<String> into, String name,
 			Optional<String> columns, Optional<Predicate<String, ReplicationMessage>> associationBypass,
 			Flatten flattenEnum, boolean isList, String withProcessor, boolean optional) {
-//		if(from.startsWith("@")) {
-//		    String fromTopic = topicName(from,topologyContext);
-//            KafkaUtils.ensureExistsSync(topologyConstructor.adminClient, fromTopic,Optional.empty());
-//		}
-//		if (!topologyConstructor.stores.contains(STORE_PREFIX+fromProcessor)) {
-//	    	final Optional<ProcessorSupplier<String, ReplicationMessage>> fromProcessorFromChildren = processorFromChildren(Optional.empty(), topicName(from, topologyContext), topologyConstructor);
-//			addSourceStore(current, topologyContext, topologyConstructor, fromProcessorFromChildren,
-//                    from, Optional.empty(),true);
-//        }
-    	final Optional<ProcessorSupplier<String, ReplicationMessage>> withProcessorFromChildren = processorFromChildren(Optional.empty(), topicName(withProcessor, topologyContext), topologyConstructor);
 
-//        if (!topologyConstructor.stores.contains(STORE_PREFIX+withProcessor) ) {
-//        	addSourceStore(current, topologyContext, topologyConstructor, withProcessorFromChildren,
-//        			with, Optional.empty(),true);
-//        }
-//        
         String firstNamePre = name+"-forwardpre";
         String secondNamePre =  name+"-reversepre";
         String finalJoin = name+"-joined";
@@ -585,23 +457,6 @@ public class ReplicationTopologyParser {
 	
 
 
-
-    private static void addPersistentCacheXML(final Topology builderr, TopologyContext topologyContext, TopologyConstructor topologyConstructor, XMLElement xe) {
-        
-    	Topology current = builderr;
-        String name = xe.getStringAttribute("name");
-        String from = xe.getStringAttribute("from");
-        Optional<String> cacheTime =  Optional.ofNullable(xe.getStringAttribute("cacheTimeSec"));
-        Optional<String> maxSize =  Optional.ofNullable(xe.getStringAttribute("maxSize"));
-        Optional<String> to = Optional.ofNullable(xe.getStringAttribute("to"));
-		Optional<Integer> partitions =  Optional.ofNullable(xe.getStringAttribute("partitions")).map(Integer::parseInt);
-
-    	// is always empty: TODO
-        final Optional<ProcessorSupplier<String, ReplicationMessage>> processorFromChildren = processorFromChildren(Optional.empty(), topicName(from, topologyContext),topologyConstructor);
-
-        addPersistentCache(current, topologyContext, topologyConstructor, name, from, cacheTime, maxSize, to,
-				partitions, processorFromChildren);
-    }
 
 
 	public static void addPersistentCache(Topology current, TopologyContext topologyContext,
