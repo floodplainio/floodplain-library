@@ -9,23 +9,24 @@ import org.apache.kafka.streams.processor.TopicNameExtractor;
 import java.util.Optional;
 
 public class PubSubTopicNameExtractor implements TopicNameExtractor<String, PubSubMessage> {
-	
-	private final TopologyConstructor topologyConstructor;
-	public PubSubTopicNameExtractor(TopologyConstructor topologyConstructor) {
-		this.topologyConstructor = topologyConstructor;
-	}
 
-	@Override
-	public String extract(String key, PubSubMessage msg, RecordContext context) {
-		String result = msg.topic().orElse(context.topic());
-		System.err.println("TOPICNAME extracted: "+result);
+    private final TopologyConstructor topologyConstructor;
 
-		if(!this.topologyConstructor.topics.contains(result)) {
-			KafkaUtils.ensureExistsSync(topologyConstructor.adminClient, result,Optional.empty());
-			topologyConstructor.topics.add(result);
-		}
-		
-		return result;
-	}
+    public PubSubTopicNameExtractor(TopologyConstructor topologyConstructor) {
+        this.topologyConstructor = topologyConstructor;
+    }
+
+    @Override
+    public String extract(String key, PubSubMessage msg, RecordContext context) {
+        String result = msg.topic().orElse(context.topic());
+        System.err.println("TOPICNAME extracted: " + result);
+
+        if (!this.topologyConstructor.topics.contains(result)) {
+            KafkaUtils.ensureExistsSync(topologyConstructor.adminClient, result, Optional.empty());
+            topologyConstructor.topics.add(result);
+        }
+
+        return result;
+    }
 
 }

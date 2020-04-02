@@ -35,7 +35,7 @@ include 'immutable-api',
         'streams',
         'replication-http',
         'config-runtime',
-	 'floodplain-stream-topology',
+        'floodplain-stream-topology',
         'floodplain-quarkus',
         'floodplain-dsl',
         'kafka-converter'

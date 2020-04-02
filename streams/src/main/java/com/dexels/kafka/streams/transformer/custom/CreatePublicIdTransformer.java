@@ -28,28 +28,28 @@ public class CreatePublicIdTransformer implements MessageTransformer {
         Integer random = Integer.valueOf(params.get("random"));
 
         Optimus opt = new Optimus(prime, modInverse, random);
-        int result =  opt.encode(field);
+        int result = opt.encode(field);
         return msg.with(to, prefix + result, ImmutableMessage.ValueType.STRING);
     }
 
     /*
      * Taken from https://github.com/jadrio/optimus-java at 21-07-2017
-     * 
-     * 
+     *
+     *
      * The MIT License (MIT)
-     * 
+     *
      * Copyright (c) 2015 Jose Diaz
-     * 
+     *
      * Permission is hereby granted, free of charge, to any person obtaining a copy
      * of this software and associated documentation files (the "Software"), to deal
      * in the Software without restriction, including without limitation the rights
      * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
      * copies of the Software, and to permit persons to whom the Software is
      * furnished to do so, subject to the following conditions:
-     * 
+     *
      * The above copyright notice and this permission notice shall be included in
      * all copies or substantial portions of the Software.
-     * 
+     *
      * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
      * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
      * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -75,7 +75,7 @@ public class CreatePublicIdTransformer implements MessageTransformer {
         }
 
         @SuppressWarnings("unused")
-		public Optimus(int prime, int randomNumber) {
+        public Optimus(int prime, int randomNumber) {
             this(prime, ModInverse(prime), randomNumber);
         }
 
@@ -84,7 +84,7 @@ public class CreatePublicIdTransformer implements MessageTransformer {
         }
 
         @SuppressWarnings("unused")
-		public int decode(int n) {
+        public int decode(int n) {
             return ((n ^ this.randomNumber) * this.modInverse) & MAX_INT;
         }
 

@@ -8,7 +8,8 @@
             <transform>
                 <createcoordinatedoc from="longitude,latitude" to="locationCoordinates"/>
             </transform>
-=        </sink>
+            =
+        </sink>
     </mongodb.sink>
 
 </joins>

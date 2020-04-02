@@ -6,7 +6,7 @@ import org.apache.kafka.streams.Topology;
 
 public interface TopologyTransformer {
 
-	public void addTransformerToTopology(Topology topology,TopologyContext topologyContext, String instanceName,
-			TopologyConstructor topologyConstructor, int pipeNumber, int transformerNumber);
+    public void addTransformerToTopology(Topology topology, TopologyContext topologyContext, String instanceName,
+                                         TopologyConstructor topologyConstructor, int pipeNumber, int transformerNumber);
 
 }

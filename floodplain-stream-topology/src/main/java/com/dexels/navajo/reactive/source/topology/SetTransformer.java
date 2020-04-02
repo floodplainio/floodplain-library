@@ -14,38 +14,38 @@ import java.util.function.BiFunction;
 
 public class SetTransformer implements TopologyPipeComponent {
 
-	private boolean materialize;
-//	private final boolean fromEmpty;
-	private final BiFunction<ImmutableMessage,ImmutableMessage, ImmutableMessage> transformer;
-	
-	
-	private final static Logger logger = LoggerFactory.getLogger(SetTransformer.class);
+    private boolean materialize;
+    //	private final boolean fromEmpty;
+    private final BiFunction<ImmutableMessage, ImmutableMessage, ImmutableMessage> transformer;
 
-	public SetTransformer(BiFunction<ImmutableMessage,ImmutableMessage, ImmutableMessage> transformer) {
 
-		this.transformer = transformer;
+    private final static Logger logger = LoggerFactory.getLogger(SetTransformer.class);
+
+    public SetTransformer(BiFunction<ImmutableMessage, ImmutableMessage, ImmutableMessage> transformer) {
+
+        this.transformer = transformer;
 //		this.fromEmpty = fromEmpty;
-	}
-	
+    }
 
-	@Override
-	public void addToTopology(Stack<String> transformerNames, int currentPipeId, Topology topology,
-			TopologyContext topologyContext, TopologyConstructor topologyConstructor) {
-		FunctionProcessor fp = new FunctionProcessor(this.transformer);
-		String name = topologyContext.qualifiedName("set",transformerNames.size(), currentPipeId);
+
+    @Override
+    public void addToTopology(Stack<String> transformerNames, int currentPipeId, Topology topology,
+                              TopologyContext topologyContext, TopologyConstructor topologyConstructor) {
+        FunctionProcessor fp = new FunctionProcessor(this.transformer);
+        String name = topologyContext.qualifiedName("set", transformerNames.size(), currentPipeId);
 //		String name = createName(topologyContext, this.metadata.name(),transformerNames.size(), currentPipeId);
-		logger.info("Adding processor: {} to parent: {} hash: {}",name,transformerNames,transformerNames.hashCode());
+        logger.info("Adding processor: {} to parent: {} hash: {}", name, transformerNames, transformerNames.hashCode());
 
-		
-		if (this.materialize()) {
-			topology.addProcessor(name+"_prematerialize", ()->fp, transformerNames.peek());
-			ReplicationTopologyParser.addMaterializeStore(topology, topologyContext, topologyConstructor, name, name+"_prematerialize");
-		} else {
-			topology.addProcessor(name, ()->fp, transformerNames.peek());
 
-		}
-		transformerNames.push(name);
-	}
+        if (this.materialize()) {
+            topology.addProcessor(name + "_prematerialize", () -> fp, transformerNames.peek());
+            ReplicationTopologyParser.addMaterializeStore(topology, topologyContext, topologyConstructor, name, name + "_prematerialize");
+        } else {
+            topology.addProcessor(name, () -> fp, transformerNames.peek());
+
+        }
+        transformerNames.push(name);
+    }
 //
 //	private  String createName(TopologyContext topologyContext,String name, int transformerNumber, int pipeId) {
 //		return topologyContext.instance+"_"+pipeId+"_"+name+"_"+transformerNumber;
@@ -53,20 +53,20 @@ public class SetTransformer implements TopologyPipeComponent {
 //
 
 
-	@Override
-	public boolean materializeParent() {
-		return false;
-	}
+    @Override
+    public boolean materializeParent() {
+        return false;
+    }
 
-	@Override
-	public void setMaterialize() {
-		this.materialize = true;
-	}
+    @Override
+    public void setMaterialize() {
+        this.materialize = true;
+    }
 
-	@Override
-	public boolean materialize() {
-		return materialize;
-	}
+    @Override
+    public boolean materialize() {
+        return materialize;
+    }
 
 
 }

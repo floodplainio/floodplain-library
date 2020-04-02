@@ -3,20 +3,20 @@ package com.dexels.kafka.streams.api.sinkdefinition;
 import java.util.Map;
 
 public class SinkTemplateDefinition {
-	
-	private String name;
-	private Map<String, Object> settings;
 
-	public String getName() {
-		return name;
-	}
+    private String name;
+    private Map<String, Object> settings;
 
-	public Map<String, Object> getSettings() {
-		return this.settings;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void activate(Map<String,Object> settings) {
-		name = (String) settings.get("name");
-		this.settings = settings;
-	}
+    public Map<String, Object> getSettings() {
+        return this.settings;
+    }
+
+    public void activate(Map<String, Object> settings) {
+        name = (String) settings.get("name");
+        this.settings = settings;
+    }
 }

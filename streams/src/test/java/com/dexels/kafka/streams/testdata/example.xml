@@ -1,120 +1,130 @@
 <joins>
 
-	<store topic="sportlinkkernel-TEAM">
-		<remove name="updateby"/>
-		<remove name="lastupdate"/>
-	</store>
-	<store topic="sportlinkkernel-MATCH">
-		<remove name="updateby"/>
-		<remove name="lastupdate"/>
-	</store>
-	<!-- Not including competitiontypeattributes for now -->
-	<store topic="sportlinkkernel-COMPETITIONTYPE">
-		<remove name="updateby"/>
-		<remove name="lastupdate"/>
-	</store>
-	<store topic="sportlinkkernel-AGECLASS">
-		<remove name="updateby"/>
-		<remove name="lastupdate"/>
-	</store>
-	<store topic="sportlinkkernel-CLASSSEASON">
-		<remove name="updateby"/>
-		<remove name="lastupdate"/>
-	</store>
-	<store topic="sportlinkkernel-CLASS">
-		<remove name="updateby"/>
-		<remove name="lastupdate"/>
-	</store>
-	<store topic="sportlinkkernel-ORGANIZATION">
-		<remove name="updateby"/>
-		<remove name="lastupdate"/>
-	</store>
+    <store topic="sportlinkkernel-TEAM">
+        <remove name="updateby"/>
+        <remove name="lastupdate"/>
+    </store>
+    <store topic="sportlinkkernel-MATCH">
+        <remove name="updateby"/>
+        <remove name="lastupdate"/>
+    </store>
+    <!-- Not including competitiontypeattributes for now -->
+    <store topic="sportlinkkernel-COMPETITIONTYPE">
+        <remove name="updateby"/>
+        <remove name="lastupdate"/>
+    </store>
+    <store topic="sportlinkkernel-AGECLASS">
+        <remove name="updateby"/>
+        <remove name="lastupdate"/>
+    </store>
+    <store topic="sportlinkkernel-CLASSSEASON">
+        <remove name="updateby"/>
+        <remove name="lastupdate"/>
+    </store>
+    <store topic="sportlinkkernel-CLASS">
+        <remove name="updateby"/>
+        <remove name="lastupdate"/>
+    </store>
+    <store topic="sportlinkkernel-ORGANIZATION">
+        <remove name="updateby"/>
+        <remove name="lastupdate"/>
+    </store>
 
-	<store topic="CLUBLOGO">
-		<remove name="updateby"/>
-		<remove name="lastupdate"/>
-	</store>
+    <store topic="CLUBLOGO">
+        <remove name="updateby"/>
+        <remove name="lastupdate"/>
+    </store>
 
- 	<joinSingle name="competitiontypeextended" from="sportlinkkernel-COMPETITIONTYPE" with="sportlinkkernel-AGECLASS" remoteKey="ageclasscode" columns="ageclassname" optional="false" to="@COMPETITIONTYPEEXTENDED"/>
- 	<joinSingle name="classseasonwithclass" from="sportlinkkernel-CLASSSEASON" with="sportlinkkernel-CLASS" remoteKey="classid,competitiontypeid,organizingdistrictid" into="Class" optional="false" to="@CLASSSEASONWITHCLASS"/>
- 	<joinSingle name="classseasonwithclassandcompetitiontype" from="classseasonwithclass" with="competitiontypeextended" remoteKey="competitiontypeid" into="CompetitionType" optional="false" to="@CLASSSEASON"/>
+    <joinSingle name="competitiontypeextended" from="sportlinkkernel-COMPETITIONTYPE" with="sportlinkkernel-AGECLASS"
+                remoteKey="ageclasscode" columns="ageclassname" optional="false" to="@COMPETITIONTYPEEXTENDED"/>
+    <joinSingle name="classseasonwithclass" from="sportlinkkernel-CLASSSEASON" with="sportlinkkernel-CLASS"
+                remoteKey="classid,competitiontypeid,organizingdistrictid" into="Class" optional="false"
+                to="@CLASSSEASONWITHCLASS"/>
+    <joinSingle name="classseasonwithclassandcompetitiontype" from="classseasonwithclass" with="competitiontypeextended"
+                remoteKey="competitiontypeid" into="CompetitionType" optional="false" to="@CLASSSEASON"/>
 
- 	<joinSingle name="matchhometeam" from="sportlinkkernel-MATCH" with="sportlinkkernel-TEAM" remoteKey="hometeamid" into="HomeTeam"  optional="false"/>
-  	<joinSingle name="matchawayteam" from="matchhometeam" with="sportlinkkernel-TEAM" remoteKey="awayteamid" into="AwayTeam" to="@OUT3" optional="false"/>
-  	<joinSingle name="matchwithclassseason" from="matchawayteam" with="classseasonwithclassandcompetitiontype" remoteKey="classid,competitiontypeid,organizingdistrictid,seasonid" into="ClassSeason" to="@TOTALMATCH" optional="false"/>
-  	<joinSingle name="teamwithorganization" from="sportlinkkernel-TEAM" with="sportlinkkernel-ORGANIZATION" remoteKey="organizationid" columns="name" to="@ORGANIZATIONTEAMSUB" optional="false"/>
-  	<joinSingle name="teamwithlogo" from="teamwithorganization" with="CLUBLOGO" remoteKey="organizationid" into="ClubLogo" to="@ORGANIZATIONTEAM" optional="true"/>
+    <joinSingle name="matchhometeam" from="sportlinkkernel-MATCH" with="sportlinkkernel-TEAM" remoteKey="hometeamid"
+                into="HomeTeam" optional="false"/>
+    <joinSingle name="matchawayteam" from="matchhometeam" with="sportlinkkernel-TEAM" remoteKey="awayteamid"
+                into="AwayTeam" to="@OUT3" optional="false"/>
+    <joinSingle name="matchwithclassseason" from="matchawayteam" with="classseasonwithclassandcompetitiontype"
+                remoteKey="classid,competitiontypeid,organizingdistrictid,seasonid" into="ClassSeason" to="@TOTALMATCH"
+                optional="false"/>
+    <joinSingle name="teamwithorganization" from="sportlinkkernel-TEAM" with="sportlinkkernel-ORGANIZATION"
+                remoteKey="organizationid" columns="name" to="@ORGANIZATIONTEAMSUB" optional="false"/>
+    <joinSingle name="teamwithlogo" from="teamwithorganization" with="CLUBLOGO" remoteKey="organizationid"
+                into="ClubLogo" to="@ORGANIZATIONTEAM" optional="true"/>
 
 
-<!-- 
+    <!--
 
- -->
-<!-- -->
+     -->
+    <!-- -->
 
-<!-- Don't think the key is necessary? 
-	<store name="teamperson-store" topic="sportlinkkernel-TEAMPERSONSINGLE">
-		<remove name="updateby"/>
-		<remove name="lastupdate"/>
-	</store>
-	
- 	<joinSingle name="teampersonwithperson" from="sportlinkkernel-TEAMPERSONSINGLE" with="sportlinkkernel-PERSONSINGLE" remoteKey="personid" into="Person" to="@OUT1" optional="false"/>
--->
-<!-- 
-	<store name="teampersonattribute-store" topic="sportlinkkernel-TEAMPERSONATTRIBUTE" key="attribid">
-		<remove name="updateby"/>
-		<remove name="lastupdate"/>
-	</store>
+    <!-- Don't think the key is necessary?
+        <store name="teamperson-store" topic="sportlinkkernel-TEAMPERSONSINGLE">
+            <remove name="updateby"/>
+            <remove name="lastupdate"/>
+        </store>
 
-	<store name="personattribute-store" topic="sportlinkkernel-PERSONATTRIBUTE" key="attribid">
-		<remove name="updateby"/>
-		<remove name="lastupdate"/>
-	</store>
- -->
-<!-- 
-	<joinMultiple name="teamperson-attribute" from="teamperson-store" with="teampersonattribute-store" remoteKey="teampersonid" into="Attribute">
-		<joinSingle name="teampersonwithperson" with="person-attribute" remoteKey="personid" into="Person" optional="false"/>
-	</joinMultiple>
-	 -->
-<!-- 
-	<store name="team-store" topic="sportlinkkernel-TEAM">
-		<remove name="updateby"/>
-		<remove name="lastupdate"/>
-	</store>
- -->
-<!-- leave out for now 
-	<joinMultiple name="person-attribute" from="person-store" with="teampersonattribute-store" remoteKey="personid" into="Attribute">
-	</joinMultiple>
-	
-	<multiJoin name="teampersondouble" from="person-store" with="team-store" using="teampersonattribute-store">
-	
-	</multiJoin>
- -->
+         <joinSingle name="teampersonwithperson" from="sportlinkkernel-TEAMPERSONSINGLE" with="sportlinkkernel-PERSONSINGLE" remoteKey="personid" into="Person" to="@OUT1" optional="false"/>
+    -->
+    <!--
+        <store name="teampersonattribute-store" topic="sportlinkkernel-TEAMPERSONATTRIBUTE" key="attribid">
+            <remove name="updateby"/>
+            <remove name="lastupdate"/>
+        </store>
 
-	
-	<!-- Optional, should be automatic with store -->
-<!--<source name="teampersonsource" topic="sportlinkkernel-TEAMPERSONSOMETHINGELSE">
-	</source>
--->
-		<!-- Register source -->
-		<!-- transformations -->
-	
-<!-- 
-	<remoteJoin primary="@TEAMPERSON" store="personstore" key="personid">
-	</remoteJoin>
-	
-	<remoteJoin primary="@PERSON">
-		<transform>
-			<remove name="updateby"/>
-			<remove name="lastupdate"/>
-		</transform>
-		<withTopic name="@TEAMPERSON" remoteKey="personid" to="TEAMPERSONEXTENDED" id="team" into="Person">
-			<remove name="updateby"/>
-			<remove name="lastupdate"/>
-		</withTopic>
-		<withTopic name="@MATCHTEAMMEMBER" remoteKey="personid" to="MATCHTEAMMEMBEREXTENDED" id="person" into="Person">
-			<remove name="updateby"/>
-			<remove name="lastupdate"/>
-		</withTopic>
-	</remoteJoin>
-	 -->
+        <store name="personattribute-store" topic="sportlinkkernel-PERSONATTRIBUTE" key="attribid">
+            <remove name="updateby"/>
+            <remove name="lastupdate"/>
+        </store>
+     -->
+    <!--
+        <joinMultiple name="teamperson-attribute" from="teamperson-store" with="teampersonattribute-store" remoteKey="teampersonid" into="Attribute">
+            <joinSingle name="teampersonwithperson" with="person-attribute" remoteKey="personid" into="Person" optional="false"/>
+        </joinMultiple>
+         -->
+    <!--
+        <store name="team-store" topic="sportlinkkernel-TEAM">
+            <remove name="updateby"/>
+            <remove name="lastupdate"/>
+        </store>
+     -->
+    <!-- leave out for now
+        <joinMultiple name="person-attribute" from="person-store" with="teampersonattribute-store" remoteKey="personid" into="Attribute">
+        </joinMultiple>
+
+        <multiJoin name="teampersondouble" from="person-store" with="team-store" using="teampersonattribute-store">
+
+        </multiJoin>
+     -->
+
+
+    <!-- Optional, should be automatic with store -->
+    <!--<source name="teampersonsource" topic="sportlinkkernel-TEAMPERSONSOMETHINGELSE">
+        </source>
+    -->
+    <!-- Register source -->
+    <!-- transformations -->
+
+    <!--
+        <remoteJoin primary="@TEAMPERSON" store="personstore" key="personid">
+        </remoteJoin>
+
+        <remoteJoin primary="@PERSON">
+            <transform>
+                <remove name="updateby"/>
+                <remove name="lastupdate"/>
+            </transform>
+            <withTopic name="@TEAMPERSON" remoteKey="personid" to="TEAMPERSONEXTENDED" id="team" into="Person">
+                <remove name="updateby"/>
+                <remove name="lastupdate"/>
+            </withTopic>
+            <withTopic name="@MATCHTEAMMEMBER" remoteKey="personid" to="MATCHTEAMMEMBEREXTENDED" id="person" into="Person">
+                <remove name="updateby"/>
+                <remove name="lastupdate"/>
+            </withTopic>
+        </remoteJoin>
+         -->
 </joins>

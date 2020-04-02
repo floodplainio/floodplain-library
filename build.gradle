@@ -1,9 +1,9 @@
 plugins {
-  id 'eclipse'
-  id 'io.quarkus' version "${quarkusPluginVersion}"
-  id 'org.jetbrains.kotlin.jvm' version "1.3.41"
-  id "org.jetbrains.kotlin.plugin.allopen" version "1.3.41"
-  id "com.google.protobuf" version "0.8.12"
+    id 'eclipse'
+    id 'io.quarkus' version "${quarkusPluginVersion}"
+    id 'org.jetbrains.kotlin.jvm' version "1.3.41"
+    id "org.jetbrains.kotlin.plugin.allopen" version "1.3.41"
+    id "com.google.protobuf" version "0.8.12"
 }
 apply from: 'gradle/dependencies.gradle'
 
@@ -18,13 +18,13 @@ allprojects {
 }
 
 subprojects {
-    version  = rootProject.ext.floodplain_version
+    version = rootProject.ext.floodplain_version
     apply plugin: "java"
     apply plugin: "eclipse"
     apply plugin: "maven-publish"
     apply plugin: 'io.quarkus'
     apply plugin: 'org.jetbrains.kotlin.jvm'
-	apply from: "$rootProject.projectDir/gradle/common.gradle"
+    apply from: "$rootProject.projectDir/gradle/common.gradle"
     group = "io.floodplain"
 
     if (name == 'replication-protobuf') {

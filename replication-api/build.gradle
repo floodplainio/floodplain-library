@@ -1,4 +1,3 @@
-
 def globalConf = rootProject.ext
 
 dependencies {

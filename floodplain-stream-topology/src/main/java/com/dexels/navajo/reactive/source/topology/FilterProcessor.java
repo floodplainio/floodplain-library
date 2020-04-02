@@ -9,18 +9,19 @@ import java.util.function.BiFunction;
 
 public class FilterProcessor extends AbstractProcessor<String, ReplicationMessage> {
 
-	private final BiFunction<ImmutableMessage,ImmutableMessage,Boolean> filterExpression;
-	
-	public FilterProcessor(BiFunction<ImmutableMessage,ImmutableMessage,Boolean> func) {
-		this.filterExpression = func;
-	}
-	@Override
-	public void process(String key, ReplicationMessage value) {
+    private final BiFunction<ImmutableMessage, ImmutableMessage, Boolean> filterExpression;
+
+    public FilterProcessor(BiFunction<ImmutableMessage, ImmutableMessage, Boolean> func) {
+        this.filterExpression = func;
+    }
+
+    @Override
+    public void process(String key, ReplicationMessage value) {
 
 //		Operand o = filterExpression.apply(Optional.of(value.message()), value.paramMessage());
-		if(filterExpression.apply(value.message(),value.paramMessage().orElse(ImmutableFactory.empty()))) {
-			super.context().forward(key, value);
-		}
-	}
+        if (filterExpression.apply(value.message(), value.paramMessage().orElse(ImmutableFactory.empty()))) {
+            super.context().forward(key, value);
+        }
+    }
 
 }

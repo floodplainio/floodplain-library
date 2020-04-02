@@ -16,12 +16,12 @@ class Pipe() {
         sources.add(source)
     }
 
-    fun sources() : List<Source> {
+    fun sources(): List<Source> {
         return sources
     }
 
     fun render(topology: Topology, context: TopologyContext, topologyConstructor: TopologyConstructor) {
-        val reactivePipes =  sources.map { e->e.toReactivePipe() }
+        val reactivePipes = sources.map { e -> e.toReactivePipe() }
         val stack = Stack<String>()
         for (reactivePipe in reactivePipes) {
             ReactivePipeParser.processPipe(context, topologyConstructor, topology, topologyConstructor.generateNewPipeId(), stack, reactivePipe, true)

@@ -18,37 +18,37 @@ import java.util.Map;
 import java.util.Optional;
 
 public class StreamOperators {
-	
-	public static final int DEFAULT_MAX_LIST_SIZE = 500;
-	public static final ReplicationMessageSerde replicationSerde = new ReplicationMessageSerde();
-	public static final ReplicationMessageListSerde replicationListSerde = new ReplicationMessageListSerde();
+
+    public static final int DEFAULT_MAX_LIST_SIZE = 500;
+    public static final ReplicationMessageSerde replicationSerde = new ReplicationMessageSerde();
+    public static final ReplicationMessageListSerde replicationListSerde = new ReplicationMessageListSerde();
 
 
-	private static final Logger logger = LoggerFactory.getLogger(StreamOperators.class);
-		
-	private StreamOperators() {
-		// -- no instances
-	}
-	
-	public static Optional<MessageTransformer> transformersFromChildren(Optional<XMLElement> parentElement, Map<String,MessageTransformer> transformerRegistry, String sourceTopicName) {
-		if(!parentElement.isPresent()) {
-			return Optional.empty();
-		}
-		XMLElement parent = parentElement.get();
-		if(parent.getChildren()==null || parent.getChildren().isEmpty()) {
-			return Optional.empty();
-		}
-		return Optional.of(new XmlMessageTransformerImpl(transformerRegistry, parent,sourceTopicName));
-	}
-	
+    private static final Logger logger = LoggerFactory.getLogger(StreamOperators.class);
 
-	public static StoreBuilder<KeyValueStore<String, ReplicationMessage>> createMessageStoreSupplier(String name) {
-		logger.info("Creating messagestore supplier: {}",name);
-		KeyValueBytesStoreSupplier storeSupplier = Stores.persistentKeyValueStore(name);
-		
-		return Stores.keyValueStoreBuilder(storeSupplier, Serdes.String(), replicationSerde)
-				.withCachingEnabled();
+    private StreamOperators() {
+        // -- no instances
+    }
 
-	}
+    public static Optional<MessageTransformer> transformersFromChildren(Optional<XMLElement> parentElement, Map<String, MessageTransformer> transformerRegistry, String sourceTopicName) {
+        if (!parentElement.isPresent()) {
+            return Optional.empty();
+        }
+        XMLElement parent = parentElement.get();
+        if (parent.getChildren() == null || parent.getChildren().isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(new XmlMessageTransformerImpl(transformerRegistry, parent, sourceTopicName));
+    }
+
+
+    public static StoreBuilder<KeyValueStore<String, ReplicationMessage>> createMessageStoreSupplier(String name) {
+        logger.info("Creating messagestore supplier: {}", name);
+        KeyValueBytesStoreSupplier storeSupplier = Stores.persistentKeyValueStore(name);
+
+        return Stores.keyValueStoreBuilder(storeSupplier, Serdes.String(), replicationSerde)
+                .withCachingEnabled();
+
+    }
 
 }

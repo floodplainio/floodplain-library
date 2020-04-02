@@ -11,65 +11,65 @@ import java.util.Map;
 
 public class ReplicationMessageSerde implements Serde<ReplicationMessage> {
 
-	private final FallbackReplicationMessageParser parser = new FallbackReplicationMessageParser();
+    private final FallbackReplicationMessageParser parser = new FallbackReplicationMessageParser();
 
-	public ReplicationMessageSerde() {
-		ReplicationFactory.setInstance(parser);
-	}
-	
-	@Override
-	public void close() {
-		
-	}
+    public ReplicationMessageSerde() {
+        ReplicationFactory.setInstance(parser);
+    }
 
-	@Override
-	public void configure(Map<String, ?> configs, boolean isKey) {
+    @Override
+    public void close() {
 
-	}
+    }
 
-	@Override
-	public Deserializer<ReplicationMessage> deserializer() {
-		return new Deserializer<ReplicationMessage>() {
+    @Override
+    public void configure(Map<String, ?> configs, boolean isKey) {
 
-			@Override
-			public void close() {
-			}
+    }
 
-			@Override
-			public void configure(Map<String, ?> config, boolean isKey) {
-				System.err.println("Configuring deserializer: "+config);
-				
-			}
+    @Override
+    public Deserializer<ReplicationMessage> deserializer() {
+        return new Deserializer<ReplicationMessage>() {
 
-			@Override
-			public ReplicationMessage deserialize(String topic, byte[] data) {
-				return parser.parseBytes(data);
-			}
-		};
-	}
+            @Override
+            public void close() {
+            }
 
-	@Override
-	public Serializer<ReplicationMessage> serializer() {
-		return new Serializer<ReplicationMessage>() {
+            @Override
+            public void configure(Map<String, ?> config, boolean isKey) {
+                System.err.println("Configuring deserializer: " + config);
 
-			@Override
-			public void close() {
-				
-			}
+            }
 
-			@Override
-			public void configure(Map<String, ?> configs, boolean isKey) {
-				System.err.println("Configuring: "+configs);
-			}
+            @Override
+            public ReplicationMessage deserialize(String topic, byte[] data) {
+                return parser.parseBytes(data);
+            }
+        };
+    }
 
-			@Override
-			public byte[] serialize(String topic, ReplicationMessage data) {
-				if(data==null) {
-					return null;
-				}
-				return data.toBytes(parser);
-			}
-		};
-	}
+    @Override
+    public Serializer<ReplicationMessage> serializer() {
+        return new Serializer<ReplicationMessage>() {
+
+            @Override
+            public void close() {
+
+            }
+
+            @Override
+            public void configure(Map<String, ?> configs, boolean isKey) {
+                System.err.println("Configuring: " + configs);
+            }
+
+            @Override
+            public byte[] serialize(String topic, ReplicationMessage data) {
+                if (data == null) {
+                    return null;
+                }
+                return data.toBytes(parser);
+            }
+        };
+    }
 
 }

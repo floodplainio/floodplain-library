@@ -70,10 +70,10 @@ public class CoordinateType extends CustomType {
             this.latitude = new Double(latitude + "");
         }
         try {
-			verifyCoordinates();
-		} catch (Throwable e) {
-			e.printStackTrace();
-		}
+            verifyCoordinates();
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
 
     }
 

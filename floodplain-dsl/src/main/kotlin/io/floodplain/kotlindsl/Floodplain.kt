@@ -8,26 +8,21 @@ import com.dexels.kafka.streams.remotejoin.TopologyConstructor
 import com.dexels.navajo.reactive.source.topology.*
 import com.dexels.navajo.reactive.source.topology.api.TopologyPipeComponent
 import com.dexels.navajo.reactive.topology.ReactivePipe
-import com.dexels.navajo.reactive.topology.ReactivePipeParser
 import io.floodplain.kotlindsl.message.IMessage
 import io.floodplain.kotlindsl.message.empty
 import io.floodplain.kotlindsl.message.fromImmutable
 import org.apache.kafka.streams.Topology
 import java.util.*
-import java.util.function.BiFunction
-import java.util.function.Function
 
 open class Transformer(val component: TopologyPipeComponent) : PartialPipe() {
 }
-
-
 
 
 //class Filter2(filter: (IMessage, IMessage) -> Boolean) : Transformer() {
 //}
 
 fun PartialPipe.filter(flt: (IMessage, IMessage) -> Boolean) {
-    val transformerFilter: (ImmutableMessage,ImmutableMessage)->Boolean = {msg: ImmutableMessage,param: ImmutableMessage->flt.invoke(fromImmutable(msg), fromImmutable(param))}
+    val transformerFilter: (ImmutableMessage, ImmutableMessage) -> Boolean = { msg: ImmutableMessage, param: ImmutableMessage -> flt.invoke(fromImmutable(msg), fromImmutable(param)) }
     val transformer = FilterTransformer(transformerFilter)
     addTransformer(Transformer(transformer))
 }
@@ -40,14 +35,14 @@ fun PartialPipe.filter(flt: (IMessage, IMessage) -> Boolean) {
 //}
 
 fun PartialPipe.set(transform: (IMessage, IMessage) -> IMessage): Transformer {
-    val transformer: (ImmutableMessage,ImmutableMessage)->ImmutableMessage = {msg: ImmutableMessage,param: ImmutableMessage->transform.invoke(fromImmutable(msg), fromImmutable(param)).toImmutable()}
+    val transformer: (ImmutableMessage, ImmutableMessage) -> ImmutableMessage = { msg: ImmutableMessage, param: ImmutableMessage -> transform.invoke(fromImmutable(msg), fromImmutable(param)).toImmutable() }
     val set = SetTransformer(transformer)
     return addTransformer(Transformer(set))
 }
 
 //fun PartialPipe.copy()
 fun PartialPipe.joinRemote(key: (IMessage) -> String, source: () -> Source) {
-    val keyExtractor: (ImmutableMessage,ImmutableMessage)->String = {msg,_->key.invoke(fromImmutable(msg))}
+    val keyExtractor: (ImmutableMessage, ImmutableMessage) -> String = { msg, _ -> key.invoke(fromImmutable(msg)) }
     val jrt = JoinRemoteTransformer(source.invoke().toReactivePipe(), keyExtractor)
     addTransformer(Transformer(jrt))
 }
@@ -58,7 +53,7 @@ fun PartialPipe.joinWith(source: () -> Source) {
 }
 
 fun PartialPipe.scan(key: (IMessage) -> String, initial: () -> IMessage, onAdd: Block.() -> Transformer, onRemove: Block.() -> Transformer) {
-    val keyExtractor: (ImmutableMessage,ImmutableMessage)->String = {msg,_->key.invoke(fromImmutable(msg))}
+    val keyExtractor: (ImmutableMessage, ImmutableMessage) -> String = { msg, _ -> key.invoke(fromImmutable(msg)) }
 
 //    val scan = Scan(key, initial)
     val onAddBlock = Block()
@@ -70,7 +65,7 @@ fun PartialPipe.scan(key: (IMessage) -> String, initial: () -> IMessage, onAdd: 
 //
 //    })
 //    public ScanTransformer(java.util.Optional<BiFunction<ImmutableMessage, ImmutableMessage, String>> keyExtractor, ImmutableMessage initial, List<TopologyPipeComponent> onAdd, List<TopologyPipeComponent> onRemove) {
-    val scanTransformer = ScanTransformer(keyExtractor,initial.invoke().toImmutable(),onAddBlock.transformers.map { e->e.component },onRemoveBlock.transformers.map { e->e.component } )
+    val scanTransformer = ScanTransformer(keyExtractor, initial.invoke().toImmutable(), onAddBlock.transformers.map { e -> e.component }, onRemoveBlock.transformers.map { e -> e.component })
 
 //    scan.onAdd.onAdd()
 //    scan.onRemove.onRemove()
@@ -85,7 +80,7 @@ fun pipe(init: Pipe.() -> Unit): Pipe {
 
 open class Source(val component: TopologyPipeComponent) : PartialPipe() {
     fun toReactivePipe(): ReactivePipe {
-        return ReactivePipe(component,transformers.map { e->e.component })
+        return ReactivePipe(component, transformers.map { e -> e.component })
     }
 }
 
@@ -115,7 +110,7 @@ class Block() : PartialPipe() {
 //}
 
 fun Pipe.databaseSource(resourceName: String, schema: String, table: String, init: Source.() -> Unit): Source {
-    val databaseSource = Source(DebeziumTopic(table, schema,resourceName,true,true))
+    val databaseSource = Source(DebeziumTopic(table, schema, resourceName, true, true))
     databaseSource.init()
     this.addSource(databaseSource)
     return databaseSource
@@ -139,14 +134,14 @@ fun main() {
         databaseSource("dvd", "public", "customer") {
             joinWith {
                 databaseSource("dvd", "public", "payment") {
-                    scan({ msg -> msg.integer("customer_id").toString() }, { empty().set("total",0) },
+                    scan({ msg -> msg.integer("customer_id").toString() }, { empty().set("total", 0) },
                             { set { msg, state -> state.set("total", state.integer("total") + msg.integer("amount")); state } },
                             { set { msg, state -> state.set("total", state.integer("total") - msg.integer("amount")); state } }
                     )
                     set { _, state ->
                         empty()
-                            .set("total", state.integer("total"))
-                            .set("customer_id",state.integer("customer_id"))
+                                .set("total", state.integer("total"))
+                                .set("customer_id", state.integer("customer_id"))
                     }
                 }
             }
@@ -169,11 +164,11 @@ fun main() {
 
     val src = myPipe.sources().size
     var topology = Topology()
-    var topologyContext = TopologyContext(Optional.of("TENANT"),"test","instance","20200401")
+    var topologyContext = TopologyContext(Optional.of("TENANT"), "test", "instance", "20200401")
     var topologyConstructor = TopologyConstructor(Optional.empty(), Optional.empty())
 //    ReactivePipeParser.processPipe(topologyContext, topologyConstructor, topology, int, Stack<String>, ReactivePipe, boolean)
 
-    myPipe.render(topology,topologyContext,topologyConstructor )
+    myPipe.render(topology, topologyContext, topologyConstructor)
 
     println("sources: ${topology.describe()}")
 }

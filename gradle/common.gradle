@@ -1,4 +1,3 @@
-
 apply from: "$rootProject.projectDir/gradle/dependencies.gradle"
 
 def globalConf = rootProject.ext
@@ -19,7 +18,6 @@ task copyTestResources(type: Copy) {
     from "${projectDir}/test"
     into "${buildDir}/classes/test"
 }
-
 
 
 processTestResources.dependsOn copyTestResources

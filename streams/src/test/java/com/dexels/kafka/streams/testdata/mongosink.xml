@@ -5,5 +5,5 @@
         <sink.index definition="teamid:1,personid:1" unique="false"/>
         <sink.index definition="teamid:1,internalmatchid:1" unique="false"/>
     </sink>
- </mongodb.sink>
+</mongodb.sink>
  

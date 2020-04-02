@@ -15,7 +15,7 @@ import java.io.Serializable;
  * <p>
  * Company:
  * </p>
- * 
+ *
  * @author not attributable
  * @version 1.0
  */
@@ -23,7 +23,7 @@ import java.io.Serializable;
 public abstract class CustomType implements Serializable {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 7902325236842496511L;
 

@@ -17,30 +17,31 @@ import java.util.UUID;
 
 public class TestCreateTopology {
 
-	private static final String BROKERS = "kafka:9092";
+    private static final String BROKERS = "kafka:9092";
 
 
-	@Test(timeout = 10000) @Ignore
-	public void testTopology() {
-		Map<String,Object> config = new HashMap<>();
+    @Test(timeout = 10000)
+    @Ignore
+    public void testTopology() {
+        Map<String, Object> config = new HashMap<>();
 
-		config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,BROKERS);
-		config.put(AdminClientConfig.CLIENT_ID_CONFIG ,UUID.randomUUID().toString());
-		Optional<AdminClient> adminClient = Optional.of(AdminClient.create(config));
-		
-		final String applicationId = "shazam-"+UUID.randomUUID().toString();
-		System.err.println("ApplicationId: "+applicationId);
-		Topology topology = new Topology();
-		TopologyContext context = new TopologyContext(Optional.of("Generic"), "test", "my_instance", "20191214");
-		TopologyConstructor topologyConstructor = new TopologyConstructor(Optional.empty(), adminClient);
+        config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, BROKERS);
+        config.put(AdminClientConfig.CLIENT_ID_CONFIG, UUID.randomUUID().toString());
+        Optional<AdminClient> adminClient = Optional.of(AdminClient.create(config));
+
+        final String applicationId = "shazam-" + UUID.randomUUID().toString();
+        System.err.println("ApplicationId: " + applicationId);
+        Topology topology = new Topology();
+        TopologyContext context = new TopologyContext(Optional.of("Generic"), "test", "my_instance", "20191214");
+        TopologyConstructor topologyConstructor = new TopologyConstructor(Optional.empty(), adminClient);
 //		ReplicationTopologyParser.addGroupedProcessor(topology, context, topologyConstructor, name, from, ignoreOriginalKey, key, transformerSupplier);
-		ReplicationTopologyParser.addSourceStore(topology, context, topologyConstructor, Optional.empty(), "PHOTO", Optional.empty(),false);
-		ReplicationTopologyParser.materializeStateStores(topologyConstructor, topology);
-		System.err.println(topology.describe().toString());
+        ReplicationTopologyParser.addSourceStore(topology, context, topologyConstructor, Optional.empty(), "PHOTO", Optional.empty(), false);
+        ReplicationTopologyParser.materializeStateStores(topologyConstructor, topology);
+        System.err.println(topology.describe().toString());
 //		KafkaStreams stream = new KafkaStreams(topology, properties);
 //		stream.setUncaughtExceptionHandler((thread,exception)->logger.error("Uncaught exception from stream instance: ",exception));
 //		stream.start();
 //		Thread.sleep(300000);
-		
-	}
+
+    }
 }

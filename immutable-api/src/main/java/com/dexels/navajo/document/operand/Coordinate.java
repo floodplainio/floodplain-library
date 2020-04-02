@@ -8,7 +8,7 @@ public class Coordinate extends NavajoType implements Serializable {
 
     private static final long serialVersionUID = 3899354902954075174L;
 
-    public static final Coordinate nowhere = new Coordinate(Double.NaN,Double.NaN);
+    public static final Coordinate nowhere = new Coordinate(Double.NaN, Double.NaN);
     private Double latitude = null;
     private Double longitude = null;
 
@@ -97,9 +97,9 @@ public class Coordinate extends NavajoType implements Serializable {
 
     @Override
     public String toString() {
-    	if(this.longitude==Double.NaN || this.latitude==Double.NaN) {
-    		return "[NullCoordinate]";
-    	}
+        if (this.longitude == Double.NaN || this.latitude == Double.NaN) {
+            return "[NullCoordinate]";
+        }
         return "[" + this.longitude + "," + this.latitude + "]";
     }
 

@@ -34,8 +34,8 @@ public class ManyToOneGroupedProcessor extends AbstractProcessor<String, Replica
     private Predicate<String, ReplicationMessage> associationBypass;
 
     public ManyToOneGroupedProcessor(String fromProcessor, String withProcessor,
-            Optional<Predicate<String, ReplicationMessage>> associationBypass, Optional<String> into,
-            Optional<String> columns, boolean optional) {
+                                     Optional<Predicate<String, ReplicationMessage>> associationBypass, Optional<String> into,
+                                     Optional<String> columns, boolean optional) {
 
         this.fromProcessorName = fromProcessor;
         this.withProcessorName = withProcessor;
@@ -44,7 +44,7 @@ public class ManyToOneGroupedProcessor extends AbstractProcessor<String, Replica
 
 //        joinFunction = CoreOperators.getJoinFunction(into, columns);
         joinFunction = CoreOperators.getParamJoinFunction();
-        
+
 
     }
 
@@ -52,8 +52,8 @@ public class ManyToOneGroupedProcessor extends AbstractProcessor<String, Replica
     @Override
     public void init(ProcessorContext context) {
         super.init(context);
-        this.forwardLookupStore = (KeyValueStore<String, ReplicationMessage>) context.getStateStore(ReplicationTopologyParser.STORE_PREFIX+fromProcessorName);
-        this.reverseLookupStore = (KeyValueStore<String, ReplicationMessage>) context.getStateStore(ReplicationTopologyParser.STORE_PREFIX+withProcessorName);
+        this.forwardLookupStore = (KeyValueStore<String, ReplicationMessage>) context.getStateStore(ReplicationTopologyParser.STORE_PREFIX + fromProcessorName);
+        this.reverseLookupStore = (KeyValueStore<String, ReplicationMessage>) context.getStateStore(ReplicationTopologyParser.STORE_PREFIX + withProcessorName);
     }
 
     @Override
@@ -73,17 +73,17 @@ public class ManyToOneGroupedProcessor extends AbstractProcessor<String, Replica
 
     private void reverseJoin(String key, ReplicationMessage message) {
 
-        if(message ==null) {
+        if (message == null) {
             logger.debug("reverseJoin joinGrouped emitting null message with key: {} ", key);
             context().forward(key, null);
             return;
         }
-        if (message.operation()==Operation.DELETE) {
+        if (message.operation() == Operation.DELETE) {
             reverseJoinDelete(key, message);
             return;
-        } 
+        }
         final ReplicationMessage withOperation = message.withOperation(message.operation());
-        try(KeyValueIterator<String, ReplicationMessage> it = forwardLookupStore.range(key+"|", key+"}")) {
+        try (KeyValueIterator<String, ReplicationMessage> it = forwardLookupStore.range(key + "|", key + "}")) {
             while (it.hasNext()) {
                 KeyValue<String, ReplicationMessage> keyValue = it.next();
                 String parentKey = CoreOperators.ungroupKey(keyValue.key);
@@ -92,39 +92,39 @@ public class ManyToOneGroupedProcessor extends AbstractProcessor<String, Replica
                     forwardMessage(parentKey, keyValue.value);
                     continue;
                 }
-                
+
                 ReplicationMessage joined = joinFunction.apply(keyValue.value, withOperation);
                 forwardMessage(parentKey, joined);
             }
         }
 
     }
-    
-	private void reverseJoinDelete(String key, ReplicationMessage message) {
-		logger.debug("Delete detected for key: {}", key);
-		List<String> deleted = new ArrayList<>();
-		try (KeyValueIterator<String, ReplicationMessage> it = forwardLookupStore.range(key + "|", key + "}")) {
-			while (it.hasNext()) {
-				KeyValue<String, ReplicationMessage> keyValue = it.next();
-				if (optional) {
-					// Forward without joining
-					String parentKey = CoreOperators.ungroupKey(keyValue.key);
-					forwardMessage(parentKey, keyValue.value);
-				} else {
-					// Non optional join. Forward a delete
-					ReplicationMessage joined = joinFunction.apply(message, keyValue.value);
-					String parentKey = CoreOperators
-							.ungroupKey(keyValue.key);
-					forwardMessage(parentKey, joined.withOperation(Operation.DELETE));
-					deleted.add(keyValue.key);
-				}
 
-			}
-		}
-		for (String deletedKey : deleted) {
-			forwardLookupStore.delete(deletedKey);
-		}
-	}
+    private void reverseJoinDelete(String key, ReplicationMessage message) {
+        logger.debug("Delete detected for key: {}", key);
+        List<String> deleted = new ArrayList<>();
+        try (KeyValueIterator<String, ReplicationMessage> it = forwardLookupStore.range(key + "|", key + "}")) {
+            while (it.hasNext()) {
+                KeyValue<String, ReplicationMessage> keyValue = it.next();
+                if (optional) {
+                    // Forward without joining
+                    String parentKey = CoreOperators.ungroupKey(keyValue.key);
+                    forwardMessage(parentKey, keyValue.value);
+                } else {
+                    // Non optional join. Forward a delete
+                    ReplicationMessage joined = joinFunction.apply(message, keyValue.value);
+                    String parentKey = CoreOperators
+                            .ungroupKey(keyValue.key);
+                    forwardMessage(parentKey, joined.withOperation(Operation.DELETE));
+                    deleted.add(keyValue.key);
+                }
+
+            }
+        }
+        for (String deletedKey : deleted) {
+            forwardLookupStore.delete(deletedKey);
+        }
+    }
 
     private void forwardJoin(String key, ReplicationMessage message) {
         // The forward join key is a ranged key - both the reverse and the forward key
@@ -148,7 +148,7 @@ public class ManyToOneGroupedProcessor extends AbstractProcessor<String, Replica
         if (message.operation() == Operation.DELETE) {
             // We don't need to take special action on a delete. The message has been
             // removed from the forwardStore already (in the storeProcessor), 
-        	// and no action is needed on the joined part.
+            // and no action is needed on the joined part.
             // We do still perform the join itself before forwarding this delete. It's
             // possible a join down the line
             // requires fields from this join, so better safe than sorry.

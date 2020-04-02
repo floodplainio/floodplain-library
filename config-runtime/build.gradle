@@ -15,7 +15,7 @@ dependencies {
     compile dependencies.jacksonDatabind
     compile dependencies.osgiCompendium
     compile dependencies.cdiApi
- }
+}
 
 
 

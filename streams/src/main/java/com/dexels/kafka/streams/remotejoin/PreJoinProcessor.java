@@ -5,8 +5,8 @@ import org.apache.kafka.streams.processor.AbstractProcessor;
 
 public class PreJoinProcessor extends AbstractProcessor<String, ReplicationMessage> {
     public static String REVERSE_IDENTIFIER = "_REV_";
-    
-    
+
+
     private boolean isReverseJoin;
 
     public PreJoinProcessor(boolean isReverseJoin) {
@@ -22,7 +22,7 @@ public class PreJoinProcessor extends AbstractProcessor<String, ReplicationMessa
         } else {
             context().forward(key, msg == null ? null : msg.withoutParamMessage());
         }
-        
+
     }
 
 }

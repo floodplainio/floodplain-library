@@ -1,18 +1,17 @@
-{  
-   "Timestamp":1478177651654,
-   "Operation":"NONE",
-   "PrimaryKeys":[  
-      "personid"
-   ],
-   "Columns":{  
-      "somenumber":{  
-         "Type":"integer",
-         "Value":"5"
-      },
-      "sometext":{  
-         "Type":"string",
-         "Value":"monkey"
-      }
-      
+{
+  "Timestamp": 1478177651654,
+  "Operation": "NONE",
+  "PrimaryKeys": [
+    "personid"
+  ],
+  "Columns": {
+    "somenumber": {
+      "Type": "integer",
+      "Value": "5"
+    },
+    "sometext": {
+      "Type": "string",
+      "Value": "monkey"
+    }
   }
 }

@@ -6,5 +6,5 @@ import java.util.List;
 
 // TODO not used, remove?
 public interface MessageListTransformer {
-	public ReplicationMessage apply(List<ReplicationMessage> input);
+    public ReplicationMessage apply(List<ReplicationMessage> input);
 }

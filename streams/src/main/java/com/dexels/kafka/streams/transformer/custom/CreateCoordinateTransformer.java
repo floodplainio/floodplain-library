@@ -12,7 +12,7 @@ import java.util.Map;
 // TODO this name is weird
 public class CreateCoordinateTransformer implements MessageTransformer {
     private final static Logger logger = LoggerFactory.getLogger(CreateCoordinateTransformer.class);
-    
+
     @Override
     public ReplicationMessage apply(Map<String, String> params, ReplicationMessage msg) {
 
@@ -22,14 +22,14 @@ public class CreateCoordinateTransformer implements MessageTransformer {
         String[] st = from.split(",");
         Object val1 = msg.columnValue(st[0]);
         Object val2 = msg.columnValue(st[1]);
-        
+
         if (val1 == null || val2 == null) {
             return msg;
         }
 
         try {
             CoordinateType coor = new CoordinateType(val1, val2);
-            return msg.with(to, coor,ImmutableMessage.ValueType.COORDINATE);
+            return msg.with(to, coor, ImmutableMessage.ValueType.COORDINATE);
         } catch (Throwable e) {
             logger.warn("Error in transformer - skipping. Val1: {} val2: {}", val1, val2, e);
         }

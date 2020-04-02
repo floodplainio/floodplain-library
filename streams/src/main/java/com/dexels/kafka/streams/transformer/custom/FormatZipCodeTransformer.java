@@ -8,9 +8,9 @@ import java.util.Map;
 
 public class FormatZipCodeTransformer implements MessageTransformer {
 
-	@Override
-	public ReplicationMessage apply(Map<String, String> params, ReplicationMessage msg) {
-		String field = params.get("field");
+    @Override
+    public ReplicationMessage apply(Map<String, String> params, ReplicationMessage msg) {
+        String field = params.get("field");
         Object valueObj = msg.columnValue(field);
         String value = (String) valueObj;
         if (value != null) {

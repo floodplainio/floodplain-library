@@ -1,4 +1,3 @@
-
 def globalConf = rootProject.ext
 dependencies {
     Map<String, String> dependencies = globalConf.commonDependencies
@@ -23,7 +22,7 @@ protobuf {
             // options.  Note the braces cannot be omitted, otherwise the
             // plugin will not be added. This is because of the implicit way
             // NamedDomainObjectContainer binds the methods.
-            grpc { }
+            grpc {}
         }
     }
 }

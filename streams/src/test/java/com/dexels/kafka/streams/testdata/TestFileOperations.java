@@ -10,18 +10,19 @@ public class TestFileOperations {
 
 //	private StreamRuntime runtime;
 
-	@Before
-	public void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
 //		runtime = new StreamRuntime();
-	}
+    }
 
-	@Test
-	public void testNameMulti() {
-		Assert.assertEquals("mies",StreamRuntime.nameFromFileName("/aap/noot/mies.xml"));
-	}
-	@Test
-	public void testNameSingle() {
-		Assert.assertEquals("mies",StreamRuntime.nameFromFileName("mies.xml"));
-	}
+    @Test
+    public void testNameMulti() {
+        Assert.assertEquals("mies", StreamRuntime.nameFromFileName("/aap/noot/mies.xml"));
+    }
+
+    @Test
+    public void testNameSingle() {
+        Assert.assertEquals("mies", StreamRuntime.nameFromFileName("mies.xml"));
+    }
 
 }

@@ -1,7 +1,7 @@
 package com.dexels.kafka.webapi;
 
 public class MongoSupplier {
-	
+
 //	private final Map<String,Map<String,Map<String,Object>>> tenantSettings = new HashMap<>();
 //	private final Map<String,Map<String,Object>> globalSettings = new HashMap<>();
 //	private final Map<String,MongoClient> activeClients = new HashMap<>();
@@ -238,5 +238,5 @@ public class MongoSupplier {
 //        return url;
 //    }
 
-	
+
 }

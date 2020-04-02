@@ -25,164 +25,166 @@ import java.util.Optional;
 import static com.dexels.immutable.api.ImmutableMessage.ValueType;
 
 //@Component(name="dexels.replication.parser.json", enabled=false)
-@Named("json") @ApplicationScoped
+@Named("json")
+@ApplicationScoped
 public class JSONReplicationMessageParserImpl implements ReplicationMessageParser {
-	
-	private final static Logger logger = LoggerFactory.getLogger(JSONReplicationMessageParserImpl.class);
 
-	private final boolean includeNullValues = true;
+    private final static Logger logger = LoggerFactory.getLogger(JSONReplicationMessageParserImpl.class);
 
-	public ReplicationMessage parseJson(Optional<String> source, ObjectNode on) {
-		return ReplicationJSON.parseJSON(source, on);
-	}
+    private final boolean includeNullValues = true;
 
-	protected boolean prettyPrint() {
-		return ReplicationMessage.usePretty;
-	}
-	@Override
-	public ReplicationMessage parseBytes(byte[] data) {
-		if(data==null) {
-			return null;
-		}
-		try {
-			return ReplicationJSON.parseReplicationMessage(data,Optional.empty(), ReplicationJSON.objectMapper);
-		} catch (JsonProcessingException e) {
-			return ReplicationFactory.createErrorReplicationMessage(e);
-		} catch (Throwable e) {
-			return ReplicationFactory.createErrorReplicationMessage(e);
-		}
-	}
-	
+    public ReplicationMessage parseJson(Optional<String> source, ObjectNode on) {
+        return ReplicationJSON.parseJSON(source, on);
+    }
 
-	@Override
-	public ReplicationMessage parseBytes(Optional<String> source, byte[] data) {
-		if(data==null) {
-			return null;
-		}
-		try {
-			return ReplicationJSON.parseReplicationMessage(data,source, ReplicationJSON.objectMapper);
-		} catch (JsonProcessingException e) {
-			return ReplicationFactory.createErrorReplicationMessage(e);
-		} catch (Throwable e) {
-			return ReplicationFactory.createErrorReplicationMessage(e);
-		}
-	}
+    protected boolean prettyPrint() {
+        return ReplicationMessage.usePretty;
+    }
+
+    @Override
+    public ReplicationMessage parseBytes(byte[] data) {
+        if (data == null) {
+            return null;
+        }
+        try {
+            return ReplicationJSON.parseReplicationMessage(data, Optional.empty(), ReplicationJSON.objectMapper);
+        } catch (JsonProcessingException e) {
+            return ReplicationFactory.createErrorReplicationMessage(e);
+        } catch (Throwable e) {
+            return ReplicationFactory.createErrorReplicationMessage(e);
+        }
+    }
 
 
-	@Override
-	public ReplicationMessage parseStream(InputStream data) {
-		return parseStream(Optional.empty(), data);
-	}
-	
-	@Override
-	public ReplicationMessage parseStream(Optional<String> source, InputStream data) {
-		JsonNode node;
-		try {
-			node = ReplicationJSON.objectMapper.readTree(data);
-			return ReplicationJSON.parseJSON(source, (ObjectNode)node);
-		} catch (JsonProcessingException e) {
-			return ReplicationFactory.createErrorReplicationMessage(e);
-		} catch (IOException e) {
-			return ReplicationFactory.createErrorReplicationMessage(e);
-		}
-	}
-	@Override
-	public List<ReplicationMessage> parseMessageList(Optional<String> source, byte[] data) {
-		try {
-			JsonNode node = ReplicationJSON.objectMapper.readTree(data);
-			return parseJSONNode(source, node);
-		} catch (JsonProcessingException e) {
-			List<ReplicationMessage> result = new LinkedList<>();
-			result.add(ReplicationFactory.createErrorReplicationMessage(e));
-			return Collections.unmodifiableList(result);
-		} catch (Throwable e) {
-			List<ReplicationMessage> result = new LinkedList<>();
-			result.add(ReplicationFactory.createErrorReplicationMessage(e));
-			return Collections.unmodifiableList(result);
-		}
-	}
-
-	private List<ReplicationMessage> parseJSONNode(Optional<String> source, JsonNode node) {
-		List<ReplicationMessage> result = new LinkedList<>();
-		if(!(node instanceof ArrayNode)) {
-			logger.warn("Node is not an array, so can't parse to list, will create list of one!");
-			ObjectNode on = (ObjectNode)node;
-			ReplicationMessage single = ReplicationJSON.parseJSON(source, on);
-			result.add(single);
-			return Collections.unmodifiableList(result);
-		}
-		ArrayNode elements = (ArrayNode)node;
-		for (JsonNode jsonNode : elements) {
-			ObjectNode on = (ObjectNode)jsonNode;
-			result.add(ReplicationJSON.parseJSON(source, on));
-		}
-		return Collections.unmodifiableList(result);
-	}
+    @Override
+    public ReplicationMessage parseBytes(Optional<String> source, byte[] data) {
+        if (data == null) {
+            return null;
+        }
+        try {
+            return ReplicationJSON.parseReplicationMessage(data, source, ReplicationJSON.objectMapper);
+        } catch (JsonProcessingException e) {
+            return ReplicationFactory.createErrorReplicationMessage(e);
+        } catch (Throwable e) {
+            return ReplicationFactory.createErrorReplicationMessage(e);
+        }
+    }
 
 
-	
-	@Override
-	public byte[] serializeMessageList(List<ReplicationMessage> data) {
-		ArrayNode list = ReplicationJSON.objectMapper.createArrayNode();
-		data.stream().map(msg->ReplicationJSON.toJSON(msg,includeNullValues)).forEach(e->list.add(e));
-		try {
-			ObjectWriter w = ReplicationMessage.usePrettyPrint()?ReplicationJSON.objectMapper.writerWithDefaultPrettyPrinter():ReplicationJSON.objectMapper.writer();
-			return w.writeValueAsBytes(list);
-		} catch (JsonProcessingException e) {
-			logger.error("Error: ", e);
-			// TODO, what is wise to return in this case?
-			return null;
-		}
-	}
+    @Override
+    public ReplicationMessage parseStream(InputStream data) {
+        return parseStream(Optional.empty(), data);
+    }
 
-	@Override
-	public byte[] serialize(ReplicationMessage msg) {
-		return ReplicationJSON.jsonSerializer(msg,includeNullValues);
-	}
+    @Override
+    public ReplicationMessage parseStream(Optional<String> source, InputStream data) {
+        JsonNode node;
+        try {
+            node = ReplicationJSON.objectMapper.readTree(data);
+            return ReplicationJSON.parseJSON(source, (ObjectNode) node);
+        } catch (JsonProcessingException e) {
+            return ReplicationFactory.createErrorReplicationMessage(e);
+        } catch (IOException e) {
+            return ReplicationFactory.createErrorReplicationMessage(e);
+        }
+    }
 
-	@Override
-	public String describe(ReplicationMessage msg) {
-		return ReplicationJSON.jsonDescriber(msg,this);
-	}
+    @Override
+    public List<ReplicationMessage> parseMessageList(Optional<String> source, byte[] data) {
+        try {
+            JsonNode node = ReplicationJSON.objectMapper.readTree(data);
+            return parseJSONNode(source, node);
+        } catch (JsonProcessingException e) {
+            List<ReplicationMessage> result = new LinkedList<>();
+            result.add(ReplicationFactory.createErrorReplicationMessage(e));
+            return Collections.unmodifiableList(result);
+        } catch (Throwable e) {
+            List<ReplicationMessage> result = new LinkedList<>();
+            result.add(ReplicationFactory.createErrorReplicationMessage(e));
+            return Collections.unmodifiableList(result);
+        }
+    }
 
-	@Override
-	public List<ReplicationMessage> parseMessageList(Optional<String> source,  InputStream data) {
-		try {
-			JsonNode node = ReplicationJSON.objectMapper.readTree(data);
-			return parseJSONNode(source, node);
-		} catch (JsonProcessingException e) {
-			List<ReplicationMessage> result = new LinkedList<>();
-			result.add(ReplicationFactory.createErrorReplicationMessage(e));
-			return Collections.unmodifiableList(result);
-		} catch (Throwable e) {
-			List<ReplicationMessage> result = new LinkedList<>();
-			result.add(ReplicationFactory.createErrorReplicationMessage(e));
-			return Collections.unmodifiableList(result);
-		}	
-	}
+    private List<ReplicationMessage> parseJSONNode(Optional<String> source, JsonNode node) {
+        List<ReplicationMessage> result = new LinkedList<>();
+        if (!(node instanceof ArrayNode)) {
+            logger.warn("Node is not an array, so can't parse to list, will create list of one!");
+            ObjectNode on = (ObjectNode) node;
+            ReplicationMessage single = ReplicationJSON.parseJSON(source, on);
+            result.add(single);
+            return Collections.unmodifiableList(result);
+        }
+        ArrayNode elements = (ArrayNode) node;
+        for (JsonNode jsonNode : elements) {
+            ObjectNode on = (ObjectNode) jsonNode;
+            result.add(ReplicationJSON.parseJSON(source, on));
+        }
+        return Collections.unmodifiableList(result);
+    }
 
-	@Override
-	public List<ReplicationMessage> parseMessageList(byte[] data) {
-		return parseMessageList(Optional.empty(), data);
-	}
 
-	@Override
-	public ReplicationMessage parseBytes(PubSubMessage data) {
-		ReplicationMessage result = data.value()!=null ? parseBytes(data.value()) : ReplicationFactory.empty().withOperation(Operation.DELETE);
-		if(ReplicationMessage.includeKafkaMetadata()) {
-			return result
-					.withPartition(data.partition())
-					.withOffset(data.offset())
-					.withSource(data.topic())
-					.with("_kafkapartition", data.partition().orElse(-1), ValueType.INTEGER)
-					.with("_kafkaoffset", data.offset().orElse(-1L), ValueType.LONG)
-					.with("_kafkakey", data.key(), ValueType.STRING)
-					.with("_kafkatopic",data.topic().orElse(null),ValueType.STRING);
-		} else {
-			return result;
-		}
-		
-	}
+    @Override
+    public byte[] serializeMessageList(List<ReplicationMessage> data) {
+        ArrayNode list = ReplicationJSON.objectMapper.createArrayNode();
+        data.stream().map(msg -> ReplicationJSON.toJSON(msg, includeNullValues)).forEach(e -> list.add(e));
+        try {
+            ObjectWriter w = ReplicationMessage.usePrettyPrint() ? ReplicationJSON.objectMapper.writerWithDefaultPrettyPrinter() : ReplicationJSON.objectMapper.writer();
+            return w.writeValueAsBytes(list);
+        } catch (JsonProcessingException e) {
+            logger.error("Error: ", e);
+            // TODO, what is wise to return in this case?
+            return null;
+        }
+    }
 
-	
+    @Override
+    public byte[] serialize(ReplicationMessage msg) {
+        return ReplicationJSON.jsonSerializer(msg, includeNullValues);
+    }
+
+    @Override
+    public String describe(ReplicationMessage msg) {
+        return ReplicationJSON.jsonDescriber(msg, this);
+    }
+
+    @Override
+    public List<ReplicationMessage> parseMessageList(Optional<String> source, InputStream data) {
+        try {
+            JsonNode node = ReplicationJSON.objectMapper.readTree(data);
+            return parseJSONNode(source, node);
+        } catch (JsonProcessingException e) {
+            List<ReplicationMessage> result = new LinkedList<>();
+            result.add(ReplicationFactory.createErrorReplicationMessage(e));
+            return Collections.unmodifiableList(result);
+        } catch (Throwable e) {
+            List<ReplicationMessage> result = new LinkedList<>();
+            result.add(ReplicationFactory.createErrorReplicationMessage(e));
+            return Collections.unmodifiableList(result);
+        }
+    }
+
+    @Override
+    public List<ReplicationMessage> parseMessageList(byte[] data) {
+        return parseMessageList(Optional.empty(), data);
+    }
+
+    @Override
+    public ReplicationMessage parseBytes(PubSubMessage data) {
+        ReplicationMessage result = data.value() != null ? parseBytes(data.value()) : ReplicationFactory.empty().withOperation(Operation.DELETE);
+        if (ReplicationMessage.includeKafkaMetadata()) {
+            return result
+                    .withPartition(data.partition())
+                    .withOffset(data.offset())
+                    .withSource(data.topic())
+                    .with("_kafkapartition", data.partition().orElse(-1), ValueType.INTEGER)
+                    .with("_kafkaoffset", data.offset().orElse(-1L), ValueType.LONG)
+                    .with("_kafkakey", data.key(), ValueType.STRING)
+                    .with("_kafkatopic", data.topic().orElse(null), ValueType.STRING);
+        } else {
+            return result;
+        }
+
+    }
+
+
 }

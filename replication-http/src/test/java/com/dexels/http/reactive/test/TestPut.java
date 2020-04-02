@@ -16,32 +16,33 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 public class TestPut {
-	
-	@Before
-	public void setup() {
-		ReplicationFactory.setInstance(new JSONReplicationMessageParserImpl());
-	}
 
-	
-	@Test @Ignore
-	public void putBulkToElastic() {
-		final InputStream resourceAsStream = getClass().getResourceAsStream("customer.json");
-		ReplicationMessage r = ReplicationFactory.getInstance().parseStream(resourceAsStream).withSource(Optional.of("customertopic"));
+    @Before
+    public void setup() {
+        ReplicationFactory.setInstance(new JSONReplicationMessageParserImpl());
+    }
+
+
+    @Test
+    @Ignore
+    public void putBulkToElastic() {
+        final InputStream resourceAsStream = getClass().getResourceAsStream("customer.json");
+        ReplicationMessage r = ReplicationFactory.getInstance().parseStream(resourceAsStream).withSource(Optional.of("customertopic"));
 //		ReplicationMessage r2 = new TopicElement("", "key2", ReplicationFactory.getInstance().parseStream(getClass().getClassLoader().getResourceAsStream("customer.json")));
-		Flowable<byte[]> in = Flowable.just(ReplicationFactory.getInstance().serialize(r));
+        Flowable<byte[]> in = Flowable.just(ReplicationFactory.getInstance().serialize(r));
 
-		String ress = Flowable.just(in)
-				.doOnNext(e->System.err.println("First"))
-			.compose(HttpInsertTransformer.httpInsert("http://localhost:1111/_bulk",req->req.method(HttpMethod.POST).timeout(2,TimeUnit.SECONDS), "application/x-ndjson",1,1,true))
-			.compose(JettyClient.responseStream())
-			.reduce(new StringBuilder(),(a,c)->a.append(new String(c)))
-			.doOnError(e->{
-				System.err.println("detected");
-				e.printStackTrace();
-				
-			})
-			.map(sb->sb.toString())
-			.blockingGet();
-		System.err.println("Ress: "+ress);
-	}
+        String ress = Flowable.just(in)
+                .doOnNext(e -> System.err.println("First"))
+                .compose(HttpInsertTransformer.httpInsert("http://localhost:1111/_bulk", req -> req.method(HttpMethod.POST).timeout(2, TimeUnit.SECONDS), "application/x-ndjson", 1, 1, true))
+                .compose(JettyClient.responseStream())
+                .reduce(new StringBuilder(), (a, c) -> a.append(new String(c)))
+                .doOnError(e -> {
+                    System.err.println("detected");
+                    e.printStackTrace();
+
+                })
+                .map(sb -> sb.toString())
+                .blockingGet();
+        System.err.println("Ress: " + ress);
+    }
 }

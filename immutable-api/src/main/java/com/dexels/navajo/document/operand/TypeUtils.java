@@ -9,7 +9,7 @@ import static com.dexels.immutable.api.ImmutableMessage.ValueType;
 public class TypeUtils {
 
     public static final ValueType determineNavajoType(Object o) {
-    	return determineNavajoType(o, ValueType.UNKNOWN);
+        return determineNavajoType(o, ValueType.UNKNOWN);
     }
 
     public static final ValueType determineNavajoType(Object o, ValueType defaultType) {
@@ -35,15 +35,15 @@ public class TypeUtils {
             return ValueType.CLOCKTIME;
         else if (o instanceof StopwatchTime)
             return ValueType.STOPWATCHTIME;
-        // Added by frank... To enable tipi-expressions, without creating a dep
+            // Added by frank... To enable tipi-expressions, without creating a dep
 //        else if (o instanceof Binary)
 //            return ValueType.BINARY;
         else if (o instanceof Coordinate) {
             return ValueType.COORDINATE;
         } else if (o instanceof ImmutableMessage) {
-        	return ValueType.IMMUTABLE;
+            return ValueType.IMMUTABLE;
         }
-            return defaultType;
+        return defaultType;
     }
 
 }

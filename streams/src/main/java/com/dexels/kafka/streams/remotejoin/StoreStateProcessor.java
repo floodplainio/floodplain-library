@@ -15,37 +15,38 @@ import java.util.function.BiFunction;
 
 public class StoreStateProcessor extends AbstractProcessor<String, ReplicationMessage> {
 
-	
-	private final static Logger logger = LoggerFactory.getLogger(StoreStateProcessor.class);
-	private final String name;
-	private final String lookupStoreName;
-	private final ImmutableMessage initial;
-	private KeyValueStore<String, ImmutableMessage> lookupStore;
-	private final Optional<BiFunction<ImmutableMessage, ImmutableMessage, String>> keyExtractor;
-	public static final String COMMONKEY = "singlerestore";
-	public StoreStateProcessor(String name, String lookupStoreName, ImmutableMessage initial, Optional<BiFunction<ImmutableMessage, ImmutableMessage, String>> keyExtractor) {
-		this.name = name;
-		this.lookupStoreName = lookupStoreName;
-		this.initial = initial;
-		this.keyExtractor = keyExtractor;
-	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public void init(ProcessorContext context) {
-		
-		this.lookupStore = (KeyValueStore<String, ImmutableMessage>) context.getStateStore(lookupStoreName);
-		
+    private final static Logger logger = LoggerFactory.getLogger(StoreStateProcessor.class);
+    private final String name;
+    private final String lookupStoreName;
+    private final ImmutableMessage initial;
+    private KeyValueStore<String, ImmutableMessage> lookupStore;
+    private final Optional<BiFunction<ImmutableMessage, ImmutableMessage, String>> keyExtractor;
+    public static final String COMMONKEY = "singlerestore";
 
-		super.init(context);
-	}
+    public StoreStateProcessor(String name, String lookupStoreName, ImmutableMessage initial, Optional<BiFunction<ImmutableMessage, ImmutableMessage, String>> keyExtractor) {
+        this.name = name;
+        this.lookupStoreName = lookupStoreName;
+        this.initial = initial;
+        this.keyExtractor = keyExtractor;
+    }
 
-	@Override
-	public void process(String key, ReplicationMessage inputValue) {
+    @SuppressWarnings("unchecked")
+    @Override
+    public void init(ProcessorContext context) {
 
-		String extracted = keyExtractor.orElse((msg,state)->COMMONKEY).apply(inputValue.message(),inputValue.paramMessage().orElse(ImmutableFactory.empty())); //  keyExtractor.map(e->e.apply(Optional.of(inputValue.message()),inputValue.paramMessage())).map(e->(String)e.value);
+        this.lookupStore = (KeyValueStore<String, ImmutableMessage>) context.getStateStore(lookupStoreName);
 
-		//		for (int i = 0; i < 50; i++) {
+
+        super.init(context);
+    }
+
+    @Override
+    public void process(String key, ReplicationMessage inputValue) {
+
+        String extracted = keyExtractor.orElse((msg, state) -> COMMONKEY).apply(inputValue.message(), inputValue.paramMessage().orElse(ImmutableFactory.empty())); //  keyExtractor.map(e->e.apply(Optional.of(inputValue.message()),inputValue.paramMessage())).map(e->(String)e.value);
+
+        //		for (int i = 0; i < 50; i++) {
 //			lookupStore.put(""+i, ImmutableFactory.empty().with("number", i, "integer").with("aap","noot", "string"));
 //		}
 
@@ -64,11 +65,11 @@ public class StoreStateProcessor extends AbstractProcessor<String, ReplicationMe
 //			System.err.println("Found: "+vl.toFlatString(ImmutableFactory.createParser()));
 //			System.err.println("Input msg: "+value.message().toFlatString(ImmutableFactory.createParser()));
 //			System.err.println("Input param: "+value.paramMessage().orElse(ImmutableFactory.empty()).toFlatString(ImmutableFactory.createParser()));
-			ImmutableMessage paramMessage = inputValue.paramMessage().get();
+        ImmutableMessage paramMessage = inputValue.paramMessage().get();
 //			paramMessage.with(UUID.randomUUID().toString(), RandomUtils.nextInt(), "integer");
 //			l = lookupStore.approximateNumEntries();
 //			System.err.println("Number of entries: "+l);
-			lookupStore.put(extracted, paramMessage);
+        lookupStore.put(extracted, paramMessage);
 //			l = lookupStore.approximateNumEntries();
 //			System.err.println("After number of entries: "+l);
 //			System.err.println("Storing key: "+COMMONKEY+" into store: "+lookupStoreName);
@@ -77,7 +78,7 @@ public class StoreStateProcessor extends AbstractProcessor<String, ReplicationMe
 //		ImmutableMessage msg = Optional.ofNullable(paramMessage.orElse(initial)).orElse(initial);
 //		String keyVal = this.key.map(e->)
 //		super.context().forward(extracted.orElse(COMMONKEY), inputValue);
-		super.context().forward(extracted, inputValue.withOperation(Operation.UPDATE));
-	}
+        super.context().forward(extracted, inputValue.withOperation(Operation.UPDATE));
+    }
 
 }

@@ -31,10 +31,10 @@ public class Binary {
     }
 
     public boolean isEqual(Binary b) {
-        if(data==null) {
-            return b.data==null;
+        if (data == null) {
+            return b.data == null;
         }
-        if(b.data==null) {
+        if (b.data == null) {
             return false;
         }
         return data.equals(b.data);
@@ -48,8 +48,8 @@ public class Binary {
         return data == null ? new ByteArrayInputStream(new byte[]{}) : new ByteArrayInputStream(data);
     }
 
-    private static byte[] readBytes( InputStream stream ) throws IOException {
-        if (stream == null) return new byte[] {};
+    private static byte[] readBytes(InputStream stream) throws IOException {
+        if (stream == null) return new byte[]{};
         byte[] buffer = new byte[1024];
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         boolean error = false;

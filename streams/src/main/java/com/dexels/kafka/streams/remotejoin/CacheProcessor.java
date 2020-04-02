@@ -37,9 +37,9 @@ public class CacheProcessor extends AbstractProcessor<String, ReplicationMessage
     private boolean clearPersistentCache = false;
 
     private int maxSize;
-    
+
     public CacheProcessor(String cacheProcName, Optional<String> cacheTimeS, Optional<String> maxSizeS) {
-        
+
         this.cacheProcName = cacheProcName;
         Integer cacheTime = getCacheTime(cacheTimeS);
         this.cache = new ConcurrentHashMap<>();
@@ -53,10 +53,10 @@ public class CacheProcessor extends AbstractProcessor<String, ReplicationMessage
         this.cacheTimeMs = (cacheTime * 1000);
     }
 
-    /* 
+    /*
      * We can either pass no cache time, in which case we will return DEFAULT_CACHE_TIME
      * If we do have a cacheTime set, check if its a number or not. If it's not a number
-     * then assume we want to use an environment variable. Try parsing it, and if all fails, 
+     * then assume we want to use an environment variable. Try parsing it, and if all fails,
      * return DEFAULT_CACHE_TIME.
      */
     private Integer getCacheTime(Optional<String> cacheTime) {
@@ -66,21 +66,21 @@ public class CacheProcessor extends AbstractProcessor<String, ReplicationMessage
         } else {
             return DEFAULT_CACHE_TIME;
         }
-        
+
         // Try parsing as integer. If this fails, it might be a environment var. if all fails, return default. 
         Integer cacheTimeI;
         try {
             cacheTimeI = Integer.parseInt(cacheTimeS);
         } catch (NumberFormatException e) {
             try { // Isn't this weird?
-                cacheTimeI =  Integer.parseInt(System.getenv(cacheTimeS));
+                cacheTimeI = Integer.parseInt(System.getenv(cacheTimeS));
             } catch (NumberFormatException e2) {
                 logger.warn("Unable to parse cache time {}, using default", cacheTimeS);
                 cacheTimeI = DEFAULT_CACHE_TIME;
             }
         }
         return cacheTimeI;
-        
+
     }
 
     @SuppressWarnings("unchecked")
@@ -94,20 +94,19 @@ public class CacheProcessor extends AbstractProcessor<String, ReplicationMessage
 
         this.context.schedule(runInterval, PunctuationType.WALL_CLOCK_TIME, this::checkCache);
         logger.info("Created persistentCache for {} with check interval of {}ms", this.cacheProcName, runInterval);
-        
+
         if (memoryCache) {
             clearPersistentCache = true;
         }
     }
-    
-    
+
 
     @Override
     public void process(String key, ReplicationMessage message) {
         synchronized (sync) {
             if (message == null || message.operation() == Operation.DELETE) {
-        		cache.remove(key);
-        		lookupStore.delete(key);
+                cache.remove(key);
+                lookupStore.delete(key);
                 context.forward(key, message);
             } else if (memoryCache) {
                 if (cache.size() > maxSize) {
@@ -122,12 +121,12 @@ public class CacheProcessor extends AbstractProcessor<String, ReplicationMessage
         }
     }
 
-    
+
     @Override
     public void close() {
-        synchronized(sync) { 
+        synchronized (sync) {
             for (String key : cache.keySet()) {
-                CacheEntry entry = cache.get(key); 
+                CacheEntry entry = cache.get(key);
                 context.forward(key, entry.getEntry());
                 cache.remove(key);
             }
@@ -139,22 +138,22 @@ public class CacheProcessor extends AbstractProcessor<String, ReplicationMessage
         if (clearPersistentCache) {
             clearPersistentCache();
         }
-        
+
         long started = System.currentTimeMillis();
         int entries = 0;
         int expiredEntries = 0;
         if (memoryCache) {
             Set<String> toForward = new HashSet<>();
             for (String key : cache.keySet()) {
-                CacheEntry entry = cache.get(key); 
+                CacheEntry entry = cache.get(key);
                 if (entry.isExpired()) {
                     toForward.add(key);
                 }
             }
-            synchronized(sync) { 
+            synchronized (sync) {
                 for (String key : toForward) {
-                	if (cache.get(key) == null) continue; // message is deleted
-            		context.forward(key, cache.get(key).getEntry());
+                    if (cache.get(key) == null) continue; // message is deleted
+                    context.forward(key, cache.get(key).getEntry());
                     cache.remove(key);
                 }
             }
@@ -170,7 +169,7 @@ public class CacheProcessor extends AbstractProcessor<String, ReplicationMessage
                     }
                 }
             }
-            
+
             synchronized (sync) {
                 for (String key : possibleExpired) {
                     ReplicationMessage message = lookupStore.get(key);
@@ -190,7 +189,7 @@ public class CacheProcessor extends AbstractProcessor<String, ReplicationMessage
             logger.info("Checked cache {} - {} entries, {} expired entries in {}ms", this.cacheProcName, entries, expiredEntries, duration);
         }
     }
-    
+
     private void clearPersistentCache() {
         // Make sure all entries from the state store will be evicted
         Set<String> toClear = new HashSet<>();
@@ -204,7 +203,7 @@ public class CacheProcessor extends AbstractProcessor<String, ReplicationMessage
             lookupStore.delete(key);
         }
         clearPersistentCache = false; // one time job
-        
+
     }
 
     private class CacheEntry {
