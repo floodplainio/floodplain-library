@@ -33,7 +33,6 @@ dependencies {
     implementation 'io.quarkus:quarkus-resteasy'
     implementation project(':floodplain-stream-topology')
     implementation project(':config-runtime')
-    implementation project(':floodplain-version')
     implementation project(':immutable-api')
     implementation project(':immutable-impl')
     implementation project(':replication-api')

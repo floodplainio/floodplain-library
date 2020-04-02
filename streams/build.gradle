@@ -12,7 +12,6 @@ dependencies {
     implementation project(':replication-protobuf')
     implementation project(':replication-http')
     implementation project(':pubsub-rx2')
-    implementation project(':floodplain-api')
     compile dependencies.osgiCompendium
     compile dependencies.servletApi
     testCompile dependencies.jUnit

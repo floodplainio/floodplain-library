@@ -2,7 +2,6 @@ package com.dexels.kafka.streams.remotejoin;
 
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.immutable.factory.ImmutableFactory;
-import com.dexels.navajo.expression.api.ContextExpression;
 import com.dexels.replication.api.ReplicationMessage;
 import com.dexels.replication.api.ReplicationMessage.Operation;
 import org.apache.kafka.streams.processor.AbstractProcessor;
