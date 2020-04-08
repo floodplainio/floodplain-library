@@ -72,7 +72,6 @@ public class ConnectReplicationMessageSerde implements Serde<ReplicationMessage>
                     return data.primaryKeys().stream().collect(Collectors.joining(ReplicationMessage.KEYSEPARATOR)).getBytes();
                 } else {
                     byte[] replicationToConnectJSON = ReplicationJSON.replicationToConnectJSON(data);
-//					System.err.println("Replicated to: "+new String(replicationToConnectJSON));
                     return replicationToConnectJSON;
 
                 }

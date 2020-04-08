@@ -50,9 +50,6 @@ public class SinkTransformer implements TopologyPipeComponent {
             topologyConstructor.ensureTopicExists(sinkTopic, partitions);
         }
         logger.info("Stack top for transformer: " + transformerNames.peek());
-//		Map<String,String> values = resolved.namedParameters().entrySet().stream().filter(e->!e.getKey().equals("connect")) .collect(Collectors.toMap(e->e.getKey(), e->(String)e.getValue().value));
-//		Map<String,String> withTopic = new HashMap<>(values);
-//		withTopic.put("topic", sinkTopic);
         connectorName.ifPresent(sink -> topologyConstructor.addConnectSink(sink, sinkTopic, connectorSettings));
         if (isConnect.isPresent() && isConnect.get()) {
             ConnectReplicationMessageSerde crms = new ConnectReplicationMessageSerde();

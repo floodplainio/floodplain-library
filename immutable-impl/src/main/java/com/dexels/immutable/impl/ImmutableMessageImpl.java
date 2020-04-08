@@ -108,24 +108,6 @@ public class ImmutableMessageImpl implements ImmutableMessage {
         return c.serialize(this);
     }
 
-    public ImmutableMessageImpl(Throwable t) {
-        logger.error("Creating failure replication message", t);
-        t.printStackTrace(System.err);
-        t.printStackTrace(System.out);
-        this.values = Collections.emptyMap();
-        this.types = Collections.emptyMap();
-        this.subMessageMap = Collections.emptyMap();
-        this.subMessagesMap = Collections.emptyMap();
-    }
-
-    @SuppressWarnings("unchecked")
-    public ImmutableMessageImpl(Map<String, Object> initial) {
-        this.values = Collections.unmodifiableMap((Map<? extends String, ? extends Object>) initial.get("Columns"));
-        this.types = Collections.unmodifiableMap(resolveTypesFromValues(this.values));
-        this.subMessageMap = Collections.emptyMap();
-        this.subMessagesMap = Collections.emptyMap();
-    }
-
     private Map<String, ValueType> resolveTypesFromValues(Map<String, ? extends Object> values) {
         Map<String, ValueType> t = new HashMap<>();
         for (Entry<String, ? extends Object> e : values.entrySet()) {

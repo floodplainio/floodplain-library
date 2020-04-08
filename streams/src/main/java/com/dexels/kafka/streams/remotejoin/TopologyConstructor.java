@@ -26,24 +26,22 @@ public class TopologyConstructor {
     }
 
     public final Map<String, List<ConnectorTopicTuple>> connectorAssociations = new HashMap<>();
-    //	public final List<ConnectorTopicTuple> connectorAssociations = new LinkedList<>();
     public final Map<String, List<String>> processorStateStoreMapper = new HashMap<>();
     public final Map<String, StoreBuilder<KeyValueStore<String, ReplicationMessage>>> stateStoreSupplier = new HashMap<>();
     public final Map<String, StoreBuilder<KeyValueStore<String, ImmutableMessage>>> immutableStoreSupplier = new HashMap<>();
     // TODO: Could be optional, only needed in xml based stream code
-    public final Map<String, MessageTransformer> transformerRegistry;
     public final Optional<AdminClient> adminClient;
     public final Set<String> stores = new HashSet<>();
-    //    public final Set<String> processors = new HashSet<>();
     public final Map<String, String> sources = new HashMap<>();
     // TODO could race conditions happen? If so, would that be a problem?
     public final Set<String> topics = new HashSet<String>();
 
     private int pipeCounter = 1;
 
-    public TopologyConstructor(Optional<Map<String, MessageTransformer>> transformerRegistry,
-                               Optional<AdminClient> adminClient) {
-        this.transformerRegistry = transformerRegistry.orElse(Collections.emptyMap());
+    public TopologyConstructor() {
+        this(Optional.empty());
+    }
+    public TopologyConstructor(Optional<AdminClient> adminClient) {
         this.adminClient = adminClient;
         if (this.adminClient.isPresent()) {
             try {
@@ -65,14 +63,6 @@ public class TopologyConstructor {
         List<ConnectorTopicTuple> ctt = connectorAssociations.compute(connectorResourceName, (resourceName, list) -> list == null ? new ArrayList<>() : list);
         ctt.add(new ConnectorTopicTuple(connectorResourceName, topicName, sinkParameters));
     }
-
-    public Set<String> detectedConnectors() {
-        return connectorAssociations.keySet(); //  stream().map(e->e.connectorResourceName).collect(Collectors.toSet());
-    }
-//    
-//    public Set<String> topicsForConnector(String connectorName) {
-//    	return connectorAssociations.stream().filter(e->e.connectorResourceName.equals(connectorName)).map(e->e.topicName).collect(Collectors.toSet());
-//    }
 
     public int generateNewPipeId() {
         return pipeCounter++;

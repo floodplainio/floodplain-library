@@ -9,7 +9,7 @@ class IMessage(input: Map<String, Any>) {
     private val content = input.toMutableMap()
 
     //    val content = mapOf<String,Any>()
-    private fun value(path: String): Any? {
+    operator fun get(path: String): Any? {
         val (msg, name) = parsePath(path.split("/"))
         return msg.content.get(name)
     }
@@ -24,7 +24,7 @@ class IMessage(input: Map<String, Any>) {
     }
 
     fun optionalInteger(path: String): Int? {
-        val raw = value(path) ?: return null
+        val raw = get(path) ?: return null
         if (raw !is Int) {
             throw ClassCastException("Path element $path should be an integer but it is a ${raw::class}")
         }
@@ -32,7 +32,7 @@ class IMessage(input: Map<String, Any>) {
     }
 
     fun optionalString(path: String): String? {
-        val raw = value(path) ?: return null
+        val raw = get(path) ?: return null
         if (raw !is String) {
             throw ClassCastException("Path element $path should be an string but it is a ${raw::class}")
         }
@@ -57,7 +57,7 @@ class IMessage(input: Map<String, Any>) {
         msg.content.remove(name)
     }
 
-    fun set(path: String, value: Any): IMessage {
+    operator fun set(path: String, value: Any): IMessage {
         return set(path, value, ImmutableFactory.resolveTypeFromValue(value))
     }
 
@@ -93,8 +93,10 @@ fun empty(): IMessage = IMessage(emptyMap())
 
 fun fromImmutable(msg: ImmutableMessage): IMessage {
     val content = mutableMapOf<String, Any>()
-    for ((name, value) in msg.values()) {
-        content[name] = value
+    for ((name, value: Any?) in msg.values()) {
+        if(value!=null) {
+            content[name] = value
+        }
     }
     for ((name, value) in msg.subMessageMap()) {
         content[name] = value

@@ -38,5 +38,6 @@ include 'immutable-api',
         'floodplain-stream-topology',
         'floodplain-quarkus',
         'floodplain-dsl',
+	'floodplain-example',
         'kafka-converter'
 

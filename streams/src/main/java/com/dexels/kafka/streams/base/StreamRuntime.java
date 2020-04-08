@@ -34,8 +34,6 @@ public class StreamRuntime {
     Subject<Runnable> updateQueue = PublishSubject.<Runnable>create().toSerialized();
     private Disposable updateQueueSubscription;
 
-    private final Map<String, MessageTransformer> transformerRegistry = new HashMap<>();
-
     private AdminClient adminClient;
     private final String deployment;
     private final File path;
@@ -51,26 +49,7 @@ public class StreamRuntime {
         } else {
             this.instanceFilter = Arrays.asList(filter.split(","));
         }
-        transformerRegistry.put("formatgender", new FormatGenderTransformer());
-        transformerRegistry.put("createlist", new CreateListTransformer());
-        transformerRegistry.put("splitToList", new SplitToListTransformer());
-        transformerRegistry.put("copyfield", new CopyFieldTransformer());
-        transformerRegistry.put("publicid", new CreatePublicIdTransformer());
-        transformerRegistry.put("formatcommunication", new CommunicationTransformer());
-        transformerRegistry.put("stringtodate", new StringToDateTransformer());
-        transformerRegistry.put("formatzipcode", new FormatZipCodeTransformer());
-        transformerRegistry.put("teamname", new TeamName());
-        transformerRegistry.put("mergedatetime", new MergeDateTimeTransformer());
-        transformerRegistry.put("createcoordinate", new CreateCoordinateTransformer());
-        transformerRegistry.put("fieldtoupper", (params, msg) -> msg.with(params.get("field"), ((String) (msg.columnValue(params.get("field")))).toString().toUpperCase(), ImmutableMessage.ValueType.STRING));
-        transformerRegistry.put("fieldtolower", (params, msg) -> msg.with(params.get("field"), ((String) (msg.columnValue(params.get("field")))).toString().toLowerCase(), ImmutableMessage.ValueType.STRING));
-        transformerRegistry.put("emailtolower", (params, msg) -> {
-            if ("EMAIL".equals(msg.columnValue("typeofcommunication"))) {
-                return msg.with("communicationdata", ((String) msg.columnValue("communicationdata")).toLowerCase(), ImmutableMessage.ValueType.STRING);
-            } else {
-                return msg;
-            }
-        });
+
         this.updateQueueSubscription = updateQueue.observeOn(Schedulers.from(Executors.newSingleThreadExecutor()))
                 .subscribe(r -> r.run());
     }

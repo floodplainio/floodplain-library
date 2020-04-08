@@ -22,6 +22,7 @@ ext {
             slf4jLog4j        : "org.slf4j:slf4j-log4j12:$slf4j_version",
             servletApi        : "javax.servlet:javax.servlet-api:3.1.0",
             protobuf          : "com.google.protobuf:protobuf-java:3.11.4",
+            kotlinLogging     : 'io.github.microutils:kotlin-logging:1.7.9',
             commonsLang       : "commons-lang:commons-lang:2.6",
             commonsIo         : "commons-io:commons-io:2.6",
             jacksonCore       : "com.fasterxml.jackson.core:jackson-core:$jackson_version",

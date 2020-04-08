@@ -11,10 +11,7 @@ import java.util.Map;
 
 public class ImmutableMessageSerde implements Serde<ImmutableMessage> {
 
-//	private final FallbackReplicationMessageParser parser = new FallbackReplicationMessageParser();
-
     public ImmutableMessageSerde() {
-//		ReplicationFactory.setInstance(parser);
     }
 
     @Override

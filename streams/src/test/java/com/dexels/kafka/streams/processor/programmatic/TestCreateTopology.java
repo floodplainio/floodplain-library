@@ -33,7 +33,7 @@ public class TestCreateTopology {
         System.err.println("ApplicationId: " + applicationId);
         Topology topology = new Topology();
         TopologyContext context = new TopologyContext(Optional.of("Generic"), "test", "my_instance", "20191214");
-        TopologyConstructor topologyConstructor = new TopologyConstructor(Optional.empty(), adminClient);
+        TopologyConstructor topologyConstructor = new TopologyConstructor(adminClient);
 //		ReplicationTopologyParser.addGroupedProcessor(topology, context, topologyConstructor, name, from, ignoreOriginalKey, key, transformerSupplier);
         ReplicationTopologyParser.addSourceStore(topology, context, topologyConstructor, Optional.empty(), "PHOTO", Optional.empty(), false);
         ReplicationTopologyParser.materializeStateStores(topologyConstructor, topology);

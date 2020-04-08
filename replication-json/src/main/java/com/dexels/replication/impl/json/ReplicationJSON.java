@@ -103,6 +103,19 @@ public class ReplicationJSON {
             }
             return;
         }
+        // coming across optionals. Shouldn't be TODO investigate
+        // Treat empty optionals as null, barf on filled optionals
+        if(value instanceof Optional) {
+            Optional o = (Optional)value;
+            // empty optional, treat as null
+            if(o.isEmpty()) {
+                if (includeNullValues) {
+                    m.putNull(key);
+                }
+                return;
+            }
+            throw new RuntimeException("Unexpected optional for "+key+" type: "+type);
+        }
         if (type == null) {
             logger.info("Null type for key: " + key);
         }

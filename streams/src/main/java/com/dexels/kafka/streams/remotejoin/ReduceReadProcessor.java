@@ -15,10 +15,9 @@ public class ReduceReadProcessor extends AbstractProcessor<String, ReplicationMe
 
     private final String accumulatorStoreName;
     private final String inputStoreName;
-    private KeyValueStore<String, ImmutableMessage> accumulatorStore;
-    //	private KeyValueStore<String, ReplicationMessage> lookupStore;
     private final ImmutableMessage initial;
     private final Optional<BiFunction<ImmutableMessage, ImmutableMessage, String>> keyExtractor;
+    private KeyValueStore<String, ImmutableMessage> accumulatorStore;
     private KeyValueStore<String, ReplicationMessage> inputStore;
 
     public ReduceReadProcessor(String inputStoreName, String accumulatorStoreName, ImmutableMessage initial, Optional<BiFunction<ImmutableMessage, ImmutableMessage, String>> keyExtractor) {
@@ -46,14 +45,9 @@ public class ReduceReadProcessor extends AbstractProcessor<String, ReplicationMe
                 throw new RuntimeException("Issue: Deleting (?) a message that isn't there. Is this bad?");
             }
             extracted = keyExtractor.orElse((m, s) -> StoreStateProcessor.COMMONKEY).apply(inputValue.message(), inputValue.paramMessage().orElse(ImmutableFactory.empty()));
-//			extracted = keyExtractor.map(e->e.apply(Optional.of(inputValue.message()),inputValue.paramMessage())).map(e->(String)e.value);
         } else {
             extracted = keyExtractor.orElse((m, s) -> StoreStateProcessor.COMMONKEY).apply(stored.message(), stored.paramMessage().orElse(ImmutableFactory.empty()));
-//			extracted = keyExtractor.map(e->e.apply(Optional.of(stored.message()),stored.paramMessage())).map(e->(String)e.value);
-
         }
-//		Optional<String> extracted = keyExtractor.map(e->e.apply(null,Optional.of(stored.message()),stored.paramMessage())).map(e->(String)e.value);
-//		System.err.println("KEY: "+extracted);
         ImmutableMessage msg = this.accumulatorStore.get(extracted);
         ReplicationMessage value = inputValue;
         inputStore.put(key, inputValue);

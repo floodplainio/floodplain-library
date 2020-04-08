@@ -13,16 +13,10 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/config-runtime" />
-            <option value="$PROJECT_DIR$/floodplain-api" />
-            <option value="$PROJECT_DIR$/floodplain-core" />
-            <option value="$PROJECT_DIR$/floodplain-document" />
-            <option value="$PROJECT_DIR$/floodplain-document-stream" />
             <option value="$PROJECT_DIR$/floodplain-dsl" />
-            <option value="$PROJECT_DIR$/floodplain-function" />
+            <option value="$PROJECT_DIR$/floodplain-example" />
             <option value="$PROJECT_DIR$/floodplain-quarkus" />
-            <option value="$PROJECT_DIR$/floodplain-reactive" />
             <option value="$PROJECT_DIR$/floodplain-stream-topology" />
-            <option value="$PROJECT_DIR$/floodplain-version" />
             <option value="$PROJECT_DIR$/immutable-api" />
             <option value="$PROJECT_DIR$/immutable-impl" />
             <option value="$PROJECT_DIR$/kafka-converter" />

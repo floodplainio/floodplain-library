@@ -73,7 +73,7 @@ public class TopologyRunner {
         baseSettings = Collections.unmodifiableMap(settings);
         this.streamConfiguration = streamConfiguration;
         props = StreamInstance.createProperties(applicationId, streamConfiguration.kafkaHosts(), storagePath);
-        this.topologyConstructor = new TopologyConstructor(Optional.empty(), offline ? Optional.empty() : Optional.of(AdminClient.create(props)));
+        this.topologyConstructor = new TopologyConstructor(offline ? Optional.empty() : Optional.of(AdminClient.create(props)));
     }
 
     public KafkaStreams runTopology(Topology topology) throws InterruptedException, IOException {
@@ -97,7 +97,7 @@ public class TopologyRunner {
         return topologyConstructor;
     }
 
-    public void startConnector(TopologyContext topologyContext, URL connectURL, String connectorName, ConnectType type, boolean force, Map<String, Object> parameters) throws IOException {
+    public static void startConnector(TopologyContext topologyContext, URL connectURL, String connectorName, boolean force, Map<String, Object> parameters) throws IOException {
         String generatedName = CoreOperators.topicName(connectorName, topologyContext);
 
         List<String> current = existingConnectors(connectURL);
@@ -142,7 +142,7 @@ public class TopologyRunner {
         postToHttp(connectURL, jsonString);
     }
 
-    private List<String> existingConnectors(URL url) throws IOException {
+    private static List<String> existingConnectors(URL url) throws IOException {
         ArrayNode an = (ArrayNode) objectMapper.readTree(url.openStream());
         List<String> result = new ArrayList<>();
         an.forEach(j -> result.add(j.asText()));
@@ -150,7 +150,7 @@ public class TopologyRunner {
     }
 
 
-    private void deleteConnector(String name, URL connectURL) throws IOException {
+    private static void deleteConnector(String name, URL connectURL) throws IOException {
         URL url = new URL(connectURL + "/" + name);
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("DELETE");
@@ -159,7 +159,7 @@ public class TopologyRunner {
     }
 
     // TODO replace with Java 11 client when we can go to graal 19.3
-    private void postToHttp(URL url, String jsonString) throws ProtocolException, IOException {
+    private static void postToHttp(URL url, String jsonString) throws ProtocolException, IOException {
 //		URL url = new URL(this.connectURL);
         logger.info("Posting to: {}", url);
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -316,7 +316,7 @@ public class TopologyRunner {
         if (this.offline) {
             logger.warn("No connectors will be started in offline mode");
         } else {
-            startConnector(topologyContext, connectURL, connectorName, cc.type, force, result);
+            startConnector(topologyContext, connectURL, connectorName, force, result);
         }
     }
 

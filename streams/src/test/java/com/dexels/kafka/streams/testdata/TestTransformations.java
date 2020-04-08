@@ -5,18 +5,13 @@ import com.dexels.kafka.streams.api.CoreOperators;
 import com.dexels.kafka.streams.api.TopologyContext;
 import com.dexels.kafka.streams.base.StreamOperators;
 import com.dexels.kafka.streams.transformer.custom.*;
-import com.dexels.kafka.streams.xml.XmlMessageTransformerImpl;
-import com.dexels.kafka.streams.xml.parser.CaseSensitiveXMLElement;
-import com.dexels.kafka.streams.xml.parser.XMLElement;
 import com.dexels.replication.api.ReplicationMessage;
 import com.dexels.replication.api.ReplicationMessageParser;
 import com.dexels.replication.factory.ReplicationFactory;
 import com.dexels.replication.impl.protobuf.FallbackReplicationMessageParser;
 import com.dexels.replication.transformer.api.MessageTransformer;
-import org.bson.Document;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -29,7 +24,6 @@ public class TestTransformations {
     private ReplicationMessage addressMessage;
     private ReplicationMessage differentAddressMessage;
     private Map<String, MessageTransformer> transformerRegistry;
-    private XmlMessageTransformerImpl persontransform;
     private ReplicationMessage personMessage;
     private ReplicationMessage calendarDayMessage;
     private ReplicationMessage coordinatesMessage;
@@ -46,9 +40,6 @@ public class TestTransformations {
         ReplicationMessageParser tp = new FallbackReplicationMessageParser();
 
         ReplicationFactory.setInstance(tp);
-        transformerRegistry.put("formatgender", new FormatGenderTransformer());
-        transformerRegistry.put("mergedatetime", new MergeDateTimeTransformer());
-        transformerRegistry.put("createlist", new CreateListTransformer());
         transformerRegistry.put("createcoordinatedoc", new CreateCoordinateTransformer());
         transformerRegistry.put("formatcommunication", new CommunicationTransformer());
         try (InputStream resourceAsStream = TestTransformations.class.getClassLoader().getResourceAsStream("address1.json")) {
@@ -79,11 +70,6 @@ public class TestTransformations {
             coordinatesMessage = ReplicationFactory.getInstance().parseStream(resourceAsStream);
         }
 
-        try (InputStream resourceAsStream = TestTransformations.class.getClassLoader().getResourceAsStream("persontransform.xml")) {
-            XMLElement xe = new CaseSensitiveXMLElement();
-            xe.parseFromStream(resourceAsStream);
-            persontransform = new XmlMessageTransformerImpl(transformerRegistry, xe, "TENANT-topic");
-        }
 
     }
 
@@ -151,100 +137,6 @@ public class TestTransformations {
         Assert.assertEquals(ImmutableMessage.ValueType.STRING, addressMessage.with("animal", "monkey", ImmutableMessage.ValueType.STRING).columnType("animal"));
     }
 
-    @Test
-    public void testTransformerRename() {
-        XMLElement xe = new CaseSensitiveXMLElement();
-        xe.parseString("<transform><rename from=\"zipcode\" to=\"zippy\"/></transform>");
-        XmlMessageTransformerImpl xmt = new XmlMessageTransformerImpl(transformerRegistry, xe, "TENANT-topic");
-        ReplicationMessage result = xmt.apply(null, addressMessage);
-        Assert.assertEquals("4565AB", result.columnValue("zippy"));
-    }
-
-    @Test
-    public void testTransformerRenameNull() {
-        XMLElement xe = new CaseSensitiveXMLElement();
-        xe.parseString("<transform><rename from=\"notexisting\" to=\"zippy\"/></transform>");
-        XmlMessageTransformerImpl xmt = new XmlMessageTransformerImpl(transformerRegistry, xe, "TENANT-topic");
-        ReplicationMessage result = xmt.apply(null, addressMessage);
-        Assert.assertNull(result.columnValue("zippy"));
-    }
-
-    @Test
-    @Ignore
-    // TODO Figure out why this test fails @CircleCI
-    public void testMergeDateTime_Clocktime() {
-        XMLElement xe = new CaseSensitiveXMLElement();
-        xe.parseString("<transform><mergedatetime fromdate=\"calendardate\" fromtime=\"starttime\" to=\"datetime\" /></transform>");
-        XmlMessageTransformerImpl xmt = new XmlMessageTransformerImpl(transformerRegistry, xe, "TENANT-topic");
-        ReplicationMessage result = xmt.apply(null, calendarDayMessage);
-        Assert.assertNotNull(result.columnValue("datetime"));
-        Assert.assertEquals(Date.class, result.columnValue("datetime").getClass());
-        Assert.assertEquals(1462452480000L, ((Date) result.columnValue("datetime")).getTime());
-    }
-
-    @Test
-    @Ignore
-    // TODO Figure out why this test fails @CircleCI
-    public void testMergeDateTime_Date() {
-        XMLElement xe = new CaseSensitiveXMLElement();
-        xe.parseString("<transform><mergedatetime fromdate=\"calendardate\" fromtime=\"starttimedate\" to=\"datetime\" /></transform>");
-        XmlMessageTransformerImpl xmt = new XmlMessageTransformerImpl(transformerRegistry, xe, "TENANT-topic");
-        ReplicationMessage result = xmt.apply(null, calendarDayMessage);
-        Assert.assertNotNull(result.columnValue("datetime"));
-        Assert.assertEquals(Date.class, result.columnValue("datetime").getClass());
-        Assert.assertEquals(1462452480000L, ((Date) result.columnValue("datetime")).getTime());
-    }
-
-    @Test
-    @Ignore
-    public void testCoordinatesTransformerFromList() {
-        XMLElement xe1 = new CaseSensitiveXMLElement();
-        xe1.parseString("<transform><createlist from=\"longitude,latitude\" to=\"myCoordinate\" /></transform>");
-        XmlMessageTransformerImpl xmt1 = new XmlMessageTransformerImpl(transformerRegistry, xe1, "TENANT-topic");
-        ReplicationMessage result1 = xmt1.apply(null, coordinatesMessage);
-
-        XMLElement xe = new CaseSensitiveXMLElement();
-        xe.parseString(
-                "<transform><createcoordinatedoc from=\"myCoordinate\" to=\"myCoordinateDoc\" /></transform>");
-        XmlMessageTransformerImpl xmt = new XmlMessageTransformerImpl(transformerRegistry, xe, "TENANT-topic");
-        ReplicationMessage result = xmt.apply(null, result1);
-        Assert.assertNotNull(result.columnValue("myCoordinateDoc"));
-        Assert.assertNotNull(result.columnValue("myCoordinateDoc"));
-        Assert.assertEquals("coordinate", Document.parse((String) result.columnValue("myCoordinateDoc")).get("_type"));
-        Assert.assertEquals("Point", Document.parse((String) result.columnValue("myCoordinateDoc")).get("type"));
-        Assert.assertEquals("coordinate", Document.parse((String) result.columnValue("myCoordinateDoc")).get("_type"));
-        Assert.assertEquals(ArrayList.class, Document.parse((String) result.columnValue("myCoordinateDoc")).get("coordinates").getClass());
-        Assert.assertEquals("[-50.0, 13.0]", Document.parse((String) result.columnValue("myCoordinateDoc")).get("coordinates").toString());
-    }
-
-    @Test
-    @Ignore
-    public void testCoordinatesTransformerFromFields() {
-        XMLElement xe1 = new CaseSensitiveXMLElement();
-        xe1.parseString("<transform><createcoordinatedoc from=\"longitude,latitude\" to=\"myCoordinateDoc\" /></transform>");
-        XmlMessageTransformerImpl xmt1 = new XmlMessageTransformerImpl(transformerRegistry, xe1, "TENANT-topic");
-        ReplicationMessage result = xmt1.apply(null, coordinatesMessage);
-        Assert.assertNotNull(result.columnValue("myCoordinateDoc"));
-        Assert.assertEquals("coordinate", Document.parse((String) result.columnValue("myCoordinateDoc")).get("_type"));
-        Assert.assertEquals("Point", Document.parse((String) result.columnValue("myCoordinateDoc")).get("type"));
-        Assert.assertEquals("coordinate", Document.parse((String) result.columnValue("myCoordinateDoc")).get("_type"));
-        Assert.assertEquals(ArrayList.class, Document.parse((String) result.columnValue("myCoordinateDoc")).get("coordinates").getClass());
-        Assert.assertEquals("[-50.0, 13.0]", Document.parse((String) result.columnValue("myCoordinateDoc")).get("coordinates").toString());
-    }
-
-    @Test
-    @Ignore
-    public void testListTransformer() {
-        XMLElement xe = new CaseSensitiveXMLElement();
-        xe.parseString("<transform><createlist from=\"longitude,latitude\" to=\"myCoordinate\" /></transform>");
-        XmlMessageTransformerImpl xmt = new XmlMessageTransformerImpl(transformerRegistry, xe, "TENANT-topic");
-        ReplicationMessage result = xmt.apply(null, coordinatesMessage);
-
-        Assert.assertNotNull(result.columnValue("myCoordinate"));
-        Assert.assertEquals(ArrayList.class, result.columnValue("myCoordinate").getClass());
-        Assert.assertEquals("[-50.0, 13.0]", result.columnValue("myCoordinate").toString());
-    }
-
 
     @Test
     public void testClearTransformerRenameSubMessages() {
@@ -258,98 +150,6 @@ public class TestTransformations {
         ReplicationMessage result = personMessage.withoutSubMessage("fakesubmessage");
         Assert.assertFalse(result.subMessage("fakesubmessage").isPresent());
     }
-
-    @Test
-    public void testTransformerRenameSubMessage() {
-        XMLElement xe = new CaseSensitiveXMLElement();
-        xe.parseString("<transform><renameSubMessages from=\"communication\" to=\"Communication\"/></transform>");
-        XmlMessageTransformerImpl xmt = new XmlMessageTransformerImpl(transformerRegistry, xe, "TENANT-topic");
-        ReplicationMessage result = xmt.apply(null, playerMessage2);
-        System.err.println("MMMMSG:\n" + new String(result.toBytes(ReplicationFactory.getInstance())));
-        Assert.assertTrue(result.subMessages("Communication").isPresent());
-        Assert.assertFalse(result.subMessages("communication").isPresent());
-    }
-
-
-    @Test
-    public void testTransformerRemove() {
-        XMLElement xe = new CaseSensitiveXMLElement();
-        xe.parseString("<transform><remove name=\"streetname\"/></transform>");
-        XmlMessageTransformerImpl xmt = new XmlMessageTransformerImpl(transformerRegistry, xe, "TENANT-topic");
-        ReplicationMessage result = xmt.apply(null, addressMessage);
-        Assert.assertNull(result.columnValue("streetname"));
-    }
-
-    @Test
-    public void testTransformerRemoveNull() {
-        XMLElement xe = new CaseSensitiveXMLElement();
-        xe.parseString("<transform><remove name=\"notexisting\"/></transform>");
-        XmlMessageTransformerImpl xmt = new XmlMessageTransformerImpl(transformerRegistry, xe, "TENANT-topic");
-        ReplicationMessage result = xmt.apply(null, addressMessage);
-        Assert.assertNull(result.columnValue("notexisting"));
-    }
-
-    @Test
-    public void testTransformerApply() {
-        transformerRegistry.put("streettoupper", (params, msg) -> msg.with("streetname", ((String) (msg.columnValue("streetname"))).toString().toUpperCase(), ImmutableMessage.ValueType.STRING));
-        XMLElement xe = new CaseSensitiveXMLElement();
-        xe.parseString("<transform><streettoupper/></transform>");
-        XmlMessageTransformerImpl xmt = new XmlMessageTransformerImpl(transformerRegistry, xe, "TENANT-topic");
-        ReplicationMessage result = xmt.apply(null, addressMessage);
-        Assert.assertEquals("KONIJNENBERGWEG", result.columnValue("streetname"));
-    }
-
-    @Test
-    public void testTransformerApplyWithNull() {
-        transformerRegistry.put("streettoupper", (params, msg) -> msg.with("streetname", ((String) (msg.columnValue("streetname"))).toString().toUpperCase(), ImmutableMessage.ValueType.STRING));
-        XMLElement xe = new CaseSensitiveXMLElement();
-        xe.parseString("<transform><streettoupper/></transform>");
-        XmlMessageTransformerImpl xmt = new XmlMessageTransformerImpl(transformerRegistry, xe, "TENANT-topic");
-        ReplicationMessage result = xmt.apply(null, addressMessage);
-        Assert.assertNull(result.columnValue("notexisting"));
-    }
-
-    @Test
-    public void testTransformerApplyWithParams() {
-        transformerRegistry.put("fieldtoupper",
-                (params, msg) ->
-                        msg.with(params.get("field"),
-                                ((String) (msg.columnValue(params.get("field"))))
-                                        .toString()
-                                        .toUpperCase(), ImmutableMessage.ValueType.STRING));
-        XMLElement xe = new CaseSensitiveXMLElement();
-        xe.parseString("<transform><fieldtoupper field=\"streetname\"/></transform>");
-        XmlMessageTransformerImpl xmt = new XmlMessageTransformerImpl(transformerRegistry, xe, "TENANT-topic");
-        ReplicationMessage result = xmt.apply(Collections.emptyMap(), addressMessage);
-        Assert.assertEquals("KONIJNENBERGWEG", result.columnValue("streetname"));
-    }
-
-    @Test
-    public void testTransformerApplyWithParamsWithMissingField() {
-        transformerRegistry.put("fieldtoupper", (params, msg) -> {
-            String fieldValue = (String) (msg.columnValue(params.get("field")));
-            if (fieldValue == null) {
-                return msg;
-            }
-            return msg.with(params.get("field"), fieldValue.toString().toUpperCase(), ImmutableMessage.ValueType.STRING);
-        });
-        XMLElement xe = new CaseSensitiveXMLElement();
-        xe.parseString("<transform><fieldtoupper field=\"notexisting\"/></transform>");
-        XmlMessageTransformerImpl xmt = new XmlMessageTransformerImpl(transformerRegistry, xe, "TENANT-topic");
-        ReplicationMessage result = xmt.apply(null, addressMessage);
-        Assert.assertEquals("Konijnenbergweg", result.columnValue("streetname"));
-    }
-
-    @Test
-    public void testPersonTransformer() {
-        ReplicationMessage result = this.persontransform.apply(null, this.playerMessage2);
-        System.err.println("Result:\n" + result.toFlatString(ReplicationFactory.getInstance()));
-        Optional<ImmutableMessage> rm = result.subMessage("Communication");
-        Assert.assertTrue(rm.isPresent());
-        String email = (String) rm.get().columnValue("Email");
-        Assert.assertNotNull(email);
-    }
-
 
     @Test
     public void testEqual() {
