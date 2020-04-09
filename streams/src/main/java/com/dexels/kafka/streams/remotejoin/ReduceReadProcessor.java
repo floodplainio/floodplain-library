@@ -39,6 +39,7 @@ public class ReduceReadProcessor extends AbstractProcessor<String, ReplicationMe
     public void process(String key, final ReplicationMessage inputValue) {
         ReplicationMessage stored = inputStore.get(key);
         String extracted;
+        System.err.println("Querying key from inputstore. Key: "+key+" store: "+inputStoreName+" accumulator store: "+accumulatorStoreName+" found? "+stored!=null);
         if (stored == null) {
             // no stored value, so must be upsert.
             if (inputValue == null || inputValue.operation() == Operation.DELETE) {

@@ -19,9 +19,7 @@ public class SinkTransformer implements TopologyPipeComponent {
 
     private final String name;
     private final Optional<Integer> partitions;
-    private final Optional<String> connectorName;
-    private final Optional<Boolean> isConnect;
-    private final Map<String, String> connectorSettings;
+
     private boolean create = true;
 
     private boolean materialize = false;
@@ -32,12 +30,9 @@ public class SinkTransformer implements TopologyPipeComponent {
     public static final String SINK_PREFIX = "SINK_";
     public static final String SINKLOG_PREFIX = "SINK_LOG_";
 
-    public SinkTransformer(String name, Optional<Integer> partitions, Optional<String> connectorName, Optional<Boolean> isConnect, Map<String, String> connectorSettings) {
+    public SinkTransformer(String name, Optional<Integer> partitions) {
         this.name = name;
         this.partitions = partitions;
-        this.connectorName = connectorName;
-        this.isConnect = isConnect;
-        this.connectorSettings = connectorSettings;
     }
 
     @Override
@@ -50,13 +45,7 @@ public class SinkTransformer implements TopologyPipeComponent {
             topologyConstructor.ensureTopicExists(sinkTopic, partitions);
         }
         logger.info("Stack top for transformer: " + transformerNames.peek());
-        connectorName.ifPresent(sink -> topologyConstructor.addConnectSink(sink, sinkTopic, connectorSettings));
-        if (isConnect.isPresent() && isConnect.get()) {
-            ConnectReplicationMessageSerde crms = new ConnectReplicationMessageSerde();
-            topology.addSink(SINK_PREFIX + sinkTopic, sinkTopic, Serdes.String().serializer(), crms.serializer(), transformerNames.peek());
-        } else {
-            topology.addSink(SINK_PREFIX + sinkTopic, sinkTopic, transformerNames.peek());
-        }
+        topology.addSink(SINK_PREFIX + sinkTopic, sinkTopic, transformerNames.peek());
     }
 
 

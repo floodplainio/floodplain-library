@@ -5,64 +5,84 @@ import com.dexels.kafka.streams.tools.KafkaUtils;
 import com.dexels.replication.api.ReplicationMessage;
 import com.dexels.replication.transformer.api.MessageTransformer;
 import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.streams.state.KeyValueStore;
 import org.apache.kafka.streams.state.StoreBuilder;
 
 import java.util.*;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 public class TopologyConstructor {
 
-    public class ConnectorTopicTuple {
-        public final String connectorResourceName;
-        public final Map<String, String> sinkParameters;
-        public final String topicName;
 
-        public ConnectorTopicTuple(String connectorResourceName, String topicName, Map<String, String> sinkParameters) {
-            this.connectorResourceName = connectorResourceName;
-            this.sinkParameters = sinkParameters;
-            this.topicName = topicName;
-        }
-    }
 
-    public final Map<String, List<ConnectorTopicTuple>> connectorAssociations = new HashMap<>();
+//    public final Map<String, List<ConnectorTopicTuple>> connectorAssociations = new HashMap<>();
     public final Map<String, List<String>> processorStateStoreMapper = new HashMap<>();
     public final Map<String, StoreBuilder<KeyValueStore<String, ReplicationMessage>>> stateStoreSupplier = new HashMap<>();
     public final Map<String, StoreBuilder<KeyValueStore<String, ImmutableMessage>>> immutableStoreSupplier = new HashMap<>();
     // TODO: Could be optional, only needed in xml based stream code
-    public final Optional<AdminClient> adminClient;
     public final Set<String> stores = new HashSet<>();
     public final Map<String, String> sources = new HashMap<>();
     // TODO could race conditions happen? If so, would that be a problem?
-    public final Set<String> topics = new HashSet<String>();
 
+    private final Map<String,Optional<Integer>> desiredTopics = new HashMap<>();
     private int pipeCounter = 1;
 
     public TopologyConstructor() {
-        this(Optional.empty());
+//        this(Optional.empty());
+//    }
+//    public TopologyConstructor(Optional<AdminClient> adminClient) {
+//        this.adminClient = adminClient;
+//        if (this.adminClient.isPresent()) {
+//            try {
+//                topics.addAll(adminClient.get().listTopics().names().get());
+//            } catch (InterruptedException | ExecutionException e) {
+//                throw new RuntimeException("Error listing topics", e);
+//            }
+//        }
     }
-    public TopologyConstructor(Optional<AdminClient> adminClient) {
-        this.adminClient = adminClient;
-        if (this.adminClient.isPresent()) {
-            try {
-                topics.addAll(adminClient.get().listTopics().names().get());
-            } catch (InterruptedException | ExecutionException e) {
-                throw new RuntimeException("Error listing topics", e);
-            }
-        }
+    public void addDesiredTopic(String topicName, Optional<Integer> partitions) {
+        // if requested with specific partition count, don't overwrite
+        if(!desiredTopics.containsKey(topicName) || partitions.isPresent())
+            desiredTopics.put(topicName,partitions);
     }
 
     public void ensureTopicExists(String topicName, Optional<Integer> partitionCount) {
-        if (topics.contains(topicName)) {
-            return;
-        }
-        KafkaUtils.ensureExistsSync(adminClient, topicName, partitionCount);
+        desiredTopics.put(topicName,partitionCount);
     }
 
-    public void addConnectSink(String connectorResourceName, String topicName, Map<String, String> sinkParameters) {
-        List<ConnectorTopicTuple> ctt = connectorAssociations.compute(connectorResourceName, (resourceName, list) -> list == null ? new ArrayList<>() : list);
-        ctt.add(new ConnectorTopicTuple(connectorResourceName, topicName, sinkParameters));
+    public void createTopicsAsNeeded(String kafkaHosts, String clientId) {
+        Map<String,Object> config = new HashMap<>();
+        config.put("bootstrap.servers", kafkaHosts);
+        config.put("client.id", UUID.randomUUID().toString());
+
+        AdminClient adminClient = AdminClient.create(config);
+        Set<String> topics = new HashSet<String>();
+
+        try {
+            topics.addAll(adminClient.listTopics().names().get());
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException("Error listing topics", e);
+        }
+        List<NewTopic> toBeCreated = desiredTopics.entrySet()
+                .stream()
+                .filter(e->!topics.contains(e.getKey()))
+                .map(e->new NewTopic(e.getKey(),e.getValue(),Optional.empty()))
+                .collect(Collectors.toList());
+        try {
+            adminClient.createTopics(toBeCreated).all().get();
+        } catch (InterruptedException|ExecutionException e) {
+            throw new RuntimeException("Issue creating topics: "+desiredTopics.keySet(),e);
+        }
     }
+//
+//    public void addConnectSink(String connectorResourceName, String topicName, Map<String, String> sinkParameters) {
+//        System.err.println("addConnectSink>>>>>");
+//
+//        List<ConnectorTopicTuple> ctt = connectorAssociations.compute(connectorResourceName, (resourceName, list) -> list == null ? new ArrayList<>() : list);
+//        ctt.add(new ConnectorTopicTuple(connectorResourceName, topicName, sinkParameters));
+//    }
 
     public int generateNewPipeId() {
         return pipeCounter++;

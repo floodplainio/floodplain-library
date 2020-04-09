@@ -118,7 +118,7 @@ public class ReplicationTopologyParser {
                                          String diffProcessorNamePrefix) {
         if (sourceTopic != null) {
             String diffStoreTopic = topicName(sourceTopic, context);
-            KafkaUtils.ensureExistsSync(topologyConstructor.adminClient, diffStoreTopic, Optional.empty());
+            topologyConstructor.addDesiredTopic(diffStoreTopic,Optional.empty());
             current = current.addSource(diffProcessorNamePrefix + "_src", diffStoreTopic)
                     .addProcessor(diffProcessorNamePrefix + "_transform", processorFromChildren.orElse(() -> new IdentityProcessor()), diffProcessorNamePrefix + "_src")
                     .addProcessor(diffProcessorNamePrefix, () -> new DiffProcessor(diffProcessorNamePrefix), diffProcessorNamePrefix + "_transform");
@@ -139,7 +139,7 @@ public class ReplicationTopologyParser {
                                            String to, String parentProcessorName, Optional<Integer> partitions) {
         String topicName = topicName(to, context);
         logger.info("Adding sink to: {}", topicName);
-        KafkaUtils.ensureExistsSync(topologyConstructor.adminClient, topicName, partitions);
+        topologyConstructor.addDesiredTopic(topicName,partitions);
         topology.addSink(
                 processorNamePrefx + "_sink",
                 topicName,
@@ -165,7 +165,7 @@ public class ReplicationTopologyParser {
         // TODO It might be better to fail if the topic does not exist? -> Well depends,
         // if it is external yes, but if it is created by the same instance, then no.
         // No: if the topic is dynamic, it won't exist at first, so better to ensure.
-        topologyConstructor.ensureTopicExists(topicName, Optional.empty());
+        topologyConstructor.addDesiredTopic(topicName,Optional.empty());
 //		final String sourceProcessorName = processorName(sourceTopicName);
 //		String sourceName;
         if (!topologyConstructor.sources.containsKey(topicName)) {

@@ -58,10 +58,6 @@ class IMessage(input: Map<String, Any>) {
     }
 
     operator fun set(path: String, value: Any): IMessage {
-        return set(path, value, ImmutableFactory.resolveTypeFromValue(value))
-    }
-
-    private fun set(path: String, value: Any, type: ImmutableMessage.ValueType): IMessage {
         val (msg, name) = parsePath(path.split("/"))
         msg.content.set(name, value)
         return this
@@ -76,6 +72,7 @@ class IMessage(input: Map<String, Any>) {
             when (elt) {
                 is IMessage -> subMessage[name] = elt.toImmutable()
                 is List<*> -> subMessageList[name] = subListToImmutable(elt)
+                is ImmutableMessage -> subMessage[name] = elt
                 else -> {
                     values[name] = elt; types.put(name, ImmutableFactory.resolveTypeFromValue(elt))
                 }
@@ -86,6 +83,10 @@ class IMessage(input: Map<String, Any>) {
 
     private fun subListToImmutable(items: List<*>): List<ImmutableMessage> {
         return items.stream().map { e -> e as IMessage }.map { e -> e.toImmutable() }.collect(Collectors.toList())
+    }
+
+    override fun toString(): String {
+        return this.content.toString()
     }
 }
 

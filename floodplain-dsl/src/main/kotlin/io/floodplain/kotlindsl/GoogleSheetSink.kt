@@ -4,13 +4,9 @@ import com.dexels.kafka.streams.api.TopologyContext
 import com.dexels.navajo.reactive.source.topology.SinkTransformer
 import java.util.*
 
-
-//    ->sink(connector='@staffsheets','@CUSTOMER',connect=true,columns='customer_id,last_name,first_name,email,total')
-//<googlesheets.sink name="@staffsheets" connector.class="io.floodplain.sink.SheetSinkConnector" spreadsheetId="1COkG3-Y0phnHKvwNiFpYewKhT3weEC5CmzmKkXUpPA4" columns="last_name,first_name,email" />
-
 fun PartialPipe.googleSheetsSink(config: GoogleSheetConfiguration) {
     val configMap: Map<String,String> = mapOf(Pair("connector.class","io.floodplain.sink.SheetSinkConnector"))
-    val sink = SinkTransformer(config.topic, Optional.empty(), Optional.of(config.name), Optional.empty(), emptyMap() )
+    val sink = SinkTransformer(config.topic, Optional.empty() )
     addTransformer(Transformer(sink))
 }
 

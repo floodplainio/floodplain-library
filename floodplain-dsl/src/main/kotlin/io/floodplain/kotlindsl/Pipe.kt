@@ -1,5 +1,6 @@
 package io.floodplain.kotlindsl
 
+import com.dexels.kafka.streams.api.CoreOperators
 import com.dexels.kafka.streams.api.TopologyContext
 import com.dexels.kafka.streams.remotejoin.ReplicationTopologyParser
 import com.dexels.kafka.streams.remotejoin.TopologyConstructor
@@ -42,27 +43,24 @@ class Pipe(val context: TopologyContext, private val topologyConstructor: Topolo
         val stack = Stack<String>()
         for (reactivePipe in reactivePipes) {
             ReactivePipeParser.processPipe(context, topologyConstructor, topology, topologyConstructor.generateNewPipeId(), stack, reactivePipe, true)
-//
-////            public void addToTopology(Stack<String> transformerNames, int currentPipeId,  Topology topology, TopologyContext topologyContext,TopologyConstructor topologyConstructor);
-//            reactivePipe.source.addToTopology(stack,topologyConstructor.generateNewPipeId(),topology,context,topologyConstructor)
-//            reactivePipe.transformers.forEach {
-//                e->e.addToTopology(stack,topologyConstructor.generateNewPipeId(),topology,context,topologyConstructor)
-//            }
         }
         ReplicationTopologyParser.materializeStateStores(topologyConstructor, topology)
         return topology;
     }
 
-    fun renderAndStart() {
+    fun renderAndStart(connectorURL:URL, kafkaHosts: String, clientId: String) {
         val (topology,sources,sinks) = render()
+        topologyConstructor.createTopicsAsNeeded(kafkaHosts,clientId)
         sources.forEach { (name, json) ->
-            startConstructor(name,context, URL( "http://localhost:8083/connectors"),json,true  )
+            startConstructor(name,context, connectorURL,json,true  )
         }
-        Thread.sleep(5000)
+        // TODO does this work?
+//        Thread.sleep(5000)
         sinks.forEach { (name, json) ->
-            startConstructor(name,context, URL( "http://localhost:8083/connectors"),json,true  )
+            startConstructor(name,context, connectorURL,json,true  )
         }
-        runTopology(topology,"appId","kafka:9092","storagePath")
+        val appId = CoreOperators.generationalGroup("appId",context)
+        runTopology(topology,appId,kafkaHosts,"storagePath")
     }
 
     fun render(): Triple<Topology,List<Pair<String,String>>,List<Pair<String,String>>> {
@@ -71,13 +69,11 @@ class Pipe(val context: TopologyContext, private val topologyConstructor: Topolo
             element->
             val (name,config) = element.materializeConnectorConfig(context)
             name to constructConnectorJson(context,name,config)
-//            startConnector(context, URL("http://localhost:8083/connectors"), name, true, config)
         }
         val sinks = sinkConfigurations().map {
             element->
             val (name,config) = element.materializeConnectorConfig(context)
             name to constructConnectorJson(context,name,config)
-//            startConnector(context, URL("http://localhost:8083/connectors"), name, true, config)
         }
         return Triple(topology,sources,sinks)
 

@@ -78,7 +78,8 @@ public class ImmutableFactory {
             return ValueType.COORDINATE;
         } else {
             logger.warn("Unknown type::: {}", val.getClass());
-            return ValueType.UNKNOWN;
+            throw new IllegalArgumentException("Unknown type: "+val.getClass());
+//            return ValueType.UNKNOWN;
         }
     }
 }

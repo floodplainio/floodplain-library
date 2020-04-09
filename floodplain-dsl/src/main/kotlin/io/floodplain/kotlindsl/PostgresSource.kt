@@ -1,9 +1,7 @@
 package io.floodplain.kotlindsl
 
 import com.dexels.kafka.streams.api.TopologyContext
-import com.dexels.navajo.reactive.source.topology.DebeziumTopic
-import com.dexels.navajo.reactive.source.topology.SinkTransformer
-import java.util.*
+import com.dexels.navajo.reactive.source.topology.DebeziumTopicSource
 
 
 //<postgres.source name="dvd" connector.class="io.debezium.connector.postgresql.PostgresConnector"
@@ -50,7 +48,7 @@ fun Pipe.postgresSourceConfig(name: String, hostname: String,port: Int, username
 
 fun Pipe.debeziumSource(schema: String, table: String,config: PostgresConfig, init: Source.() -> Unit): Source {
 
-    val topicSource = DebeziumTopic(config.name, table, schema, true, true)
+    val topicSource = DebeziumTopicSource(config.name, table, schema, true, true)
     val topicName = topicSource.topicName(this.context)
     config.addSourceElement(DebeziumSourceElement(topicName,table,schema))
     val databaseSource = Source(topicSource)

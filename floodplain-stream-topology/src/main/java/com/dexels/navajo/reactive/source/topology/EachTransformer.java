@@ -1,5 +1,6 @@
 package com.dexels.navajo.reactive.source.topology;
 
+import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.kafka.streams.api.TopologyContext;
 import com.dexels.kafka.streams.remotejoin.ReplicationTopologyParser;
 import com.dexels.kafka.streams.remotejoin.TopologyConstructor;
@@ -10,24 +11,22 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 import java.util.Stack;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 
-public class LogTransformer implements TopologyPipeComponent {
+public class EachTransformer implements TopologyPipeComponent {
 
-    private final String logName;
-    //	private final Optional<Integer> every;
-    private final boolean dumpStack;
+    private final BiConsumer<ImmutableMessage, ImmutableMessage> lambda;
     private boolean materialize = false;
 
 
-    private final static Logger logger = LoggerFactory.getLogger(LogTransformer.class);
+    private final static Logger logger = LoggerFactory.getLogger(EachTransformer.class);
 
     public static final String SINK_PREFIX = "SINK_";
     public static final String SINKLOG_PREFIX = "SINK_LOG_";
 
-    public LogTransformer(String logName, Optional<Integer> every, boolean dumpStack) {
-        this.logName = logName;
-//		this.every = every;
-        this.dumpStack = dumpStack;
+    public EachTransformer(BiConsumer<ImmutableMessage,ImmutableMessage> lambda) {
+        this.lambda = lambda;
     }
 
     @Override
@@ -42,10 +41,10 @@ public class LogTransformer implements TopologyPipeComponent {
         String name = topologyContext.qualifiedName("log", transformerNames.size(), pipeId);
         if (this.materialize()) {
 //			topology.addProcessor(filterName+"_prematerialize",filterProcessor, transformerNames.peek());
-            topology.addProcessor(name + "_prematerialize", () -> new LogProcessor(logName, dumpStack), transformerNames.peek());
+            topology.addProcessor(name + "_prematerialize", () -> new EachProcessor(lambda), transformerNames.peek());
             ReplicationTopologyParser.addMaterializeStore(topology, topologyContext, topologyConstructor, name, name + "_prematerialize");
         } else {
-            topology.addProcessor(name, () -> new LogProcessor(logName, dumpStack), transformerNames.peek());
+            topology.addProcessor(name, () -> new EachProcessor(lambda), transformerNames.peek());
         }
         transformerNames.push(name);
     }

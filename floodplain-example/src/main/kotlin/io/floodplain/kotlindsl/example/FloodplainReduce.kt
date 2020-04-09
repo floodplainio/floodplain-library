@@ -14,16 +14,14 @@ fun main() {
     val tenant = "mytenant"
     val deployment = "mydeployment"
     val instance = "myinstance"
-    val generation = "mygeneration"
+    val generation = "mygeneration2"
     var topologyContext = TopologyContext(Optional.ofNullable(tenant), deployment, instance, generation)
     var topologyConstructor = TopologyConstructor()
 
-    pipe(topologyContext, topologyConstructor) {
+    val myPipe = pipe(topologyContext, topologyConstructor) {
 
         val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")
         val mongoConfig = mongoConfig("mongosink","mongodb://mongo", "mongodump")
-        debeziumSource("public", "customer", postgresConfig) {
-            joinWith {
                 debeziumSource("public", "payment",postgresConfig) {
 
                     scan({ msg -> msg["customer_id"].toString() }, { empty().set("total", 0.0).set("customer_id",0) },
@@ -49,13 +47,9 @@ fun main() {
                     set { msg, state ->
                         msg.set("total", state.get("total")!!)
                     }
-                }
-            }
-            set {
-                msg,state->msg["payments"] = state; state
-            }
 
-            mongoSink(topologyContext,"customerwithtotal", "myfinaltopic", mongoConfig)
+            mongoSink(topologyContext,"coll", "something", mongoConfig)
         }
     }.renderAndStart(URL( "http://localhost:8083/connectors"),"kafka:9092",UUID.randomUUID().toString())
+
 }

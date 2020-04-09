@@ -21,11 +21,7 @@ public class PubSubTopicNameExtractor implements TopicNameExtractor<String, PubS
         String result = msg.topic().orElse(context.topic());
         System.err.println("TOPICNAME extracted: " + result);
 
-        if (!this.topologyConstructor.topics.contains(result)) {
-            KafkaUtils.ensureExistsSync(topologyConstructor.adminClient, result, Optional.empty());
-            topologyConstructor.topics.add(result);
-        }
-
+        topologyConstructor.addDesiredTopic(result,Optional.empty());
         return result;
     }
 

@@ -12,7 +12,7 @@ class MongoConfig(val name: String, val uri: String, val database: String): Conf
         println("Pairs: $sinkInstancePair")
         val collections: String = sinkInstancePair.map { e->e.first }.joinToString ("," )
         val topics: String = sinkInstancePair.map {r->CoreOperators.topicName(r.second,topologyContext)}.joinToString ( "," )
-
+        val generationalDatabase = CoreOperators.generationalGroup(database,topologyContext)
         return name to mapOf("connector.class" to "com.mongodb.kafka.connect.MongoSinkConnector",
                 "value.converter.schemas.enable" to "false",
                 "key.converter.schemas.enable" to "false",
@@ -20,7 +20,7 @@ class MongoConfig(val name: String, val uri: String, val database: String): Conf
                "key.converter" to "com.dexels.kafka.converter.ReplicationMessageConverter",
                 "document.id.strategy" to "com.mongodb.kafka.connect.sink.processor.id.strategy.FullKeyStrategy",
                 "connection.uri" to uri,
-                "database" to database,
+                "database" to generationalDatabase,
                 "collections" to collections,
                 "topics" to topics)
 
@@ -37,15 +37,6 @@ fun Pipe.mongoConfig(name: String, uri: String, database: String): MongoConfig {
 
 fun PartialPipe.mongoSink(topologyContext: TopologyContext, collection: String, topic: String, config: MongoConfig) {
     config.sinkInstancePair.add(collection to topic)
-//    val fullTopic = CoreOperators.topicName(topic,topologyContext)
-//    config.sinkInstancePair.add("topic" to topic)
-//    val topics: String = sinkInstancePair.map { e->CoreOperators.topicName(e.second,topologyContext) }.joinToString ( "," )
-
-
-    val configMap: Map<String,String> = mapOf("connector.class" to "com.mongodb.kafka.connect.MongoSinkConnector",
-            "value.converter.schemas.enable" to "false",
-            "key.converter.schemas.enable" to "false"
-            )
-    val sink = SinkTransformer(topic, Optional.empty(), Optional.of(collection), Optional.empty(), configMap)
+    val sink = SinkTransformer(topic, Optional.empty())
     addTransformer(Transformer(sink))
 }

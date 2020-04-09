@@ -3,6 +3,7 @@ package com.dexels.navajo.reactive.source.topology;
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.replication.api.ReplicationMessage;
+import com.dexels.replication.factory.ReplicationFactory;
 import org.apache.kafka.streams.processor.AbstractProcessor;
 
 import java.util.function.BiFunction;
@@ -21,7 +22,8 @@ public class FunctionProcessor extends AbstractProcessor<String, ReplicationMess
             return;
         }
 //		if(value.operation()!=Operation.DELETE) {
-        super.context().forward(key, function.apply(value.message(), value.paramMessage().orElse(ImmutableFactory.empty())));
+        ImmutableMessage applied = function.apply(value.message(), value.paramMessage().orElse(ImmutableFactory.empty()));
+        super.context().forward(key, ReplicationFactory.standardMessage(applied).withParamMessage(value.paramMessage().get()));
 //		}
     }
 

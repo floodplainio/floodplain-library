@@ -38,7 +38,6 @@ public class ScanTransformer implements TopologyPipeComponent {
 //			return this.keyExtractor.apply(msg.message(),msg.paramMessage().orElse(ImmutableFactory.empty()));
 //		};
 //		Optional<ContextExpression> keyExtractor = Optional.ofNullable(parameters.named.get("key"));
-        // TODO everything after the first is ignored
         String reducerName = ReplicationTopologyParser.addReducer(topology, topologyContext, topologyConstructor, topologyContext.instance, transformerNames, currentPipeId, onAdd, onRemove, initial, materialize, keyExtractor);
         transformerNames.push(reducerName);
     }

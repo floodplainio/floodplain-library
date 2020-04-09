@@ -15,16 +15,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 
-public class DebeziumTopic implements TopologyPipeComponent {
+public class DebeziumTopicSource implements TopologyPipeComponent {
 
     private final String table;
     private final String schema;
+    private final String resource;
     private final boolean appendTenant;
     private final boolean appendSchema;
-    private final String resource;
     private boolean materialize;
 
-    public DebeziumTopic(String resource, String table, String schema, boolean appendTenant, boolean appendSchema) {
+    public DebeziumTopicSource(String resource, String table, String schema, boolean appendTenant, boolean appendSchema) {
         this.resource = resource;
         this.table = table;
         this.schema = schema;
@@ -44,14 +44,11 @@ public class DebeziumTopic implements TopologyPipeComponent {
         final String metadataName = "debezium";
 
         String topicName = topicName(topologyContext);
-        Map<String, String> associatedSettings = new HashMap<>();
-        associatedSettings.put("resource", resource);
-        associatedSettings.put("schema", schema);
-        associatedSettings.put("table", table);
 
-        topologyConstructor.addConnectSink(resource, topicName, associatedSettings);
 
-        final String sourceProcessorName = topologyContext.qualifiedName(metadataName + "_debsrc", transformerNames.size(), pipeId);
+//        topologyConstructor.addConnectSink(resource, topicName, associatedSettings);
+
+//        final String sourceProcessorName = topologyContext.qualifiedName(metadataName + "_debsrc", transformerNames.size(), pipeId);
         final String convertProcessorName = topologyContext.qualifiedName(metadataName + "_debconv", transformerNames.size(), pipeId);
         final String finalProcessorName = topologyContext.qualifiedName(metadataName + "_deb", transformerNames.size(), pipeId);
         ReplicationTopologyParser.addLazySourceStore(topology, topologyContext, topologyConstructor, topicName, Serdes.String().deserializer(), Serdes.ByteArray().deserializer());
@@ -71,10 +68,10 @@ public class DebeziumTopic implements TopologyPipeComponent {
         }
         transformerNames.push(finalProcessorName);
     }
-
-    private static String processorName(String sourceTopicName) {
-        return sourceTopicName.replace(':', '_').replace('@', '.');
-    }
+//
+//    private static String processorName(String sourceTopicName) {
+//        return sourceTopicName.replace(':', '_').replace('@', '.');
+//    }
 
     @Override
     public boolean materializeParent() {

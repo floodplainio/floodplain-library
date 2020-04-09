@@ -22,9 +22,7 @@ public class SetTransformer implements TopologyPipeComponent {
     private final static Logger logger = LoggerFactory.getLogger(SetTransformer.class);
 
     public SetTransformer(BiFunction<ImmutableMessage, ImmutableMessage, ImmutableMessage> transformer) {
-
         this.transformer = transformer;
-//		this.fromEmpty = fromEmpty;
     }
 
 
@@ -46,12 +44,6 @@ public class SetTransformer implements TopologyPipeComponent {
         }
         transformerNames.push(name);
     }
-//
-//	private  String createName(TopologyContext topologyContext,String name, int transformerNumber, int pipeId) {
-//		return topologyContext.instance+"_"+pipeId+"_"+name+"_"+transformerNumber;
-//	}
-//
-
 
     @Override
     public boolean materializeParent() {

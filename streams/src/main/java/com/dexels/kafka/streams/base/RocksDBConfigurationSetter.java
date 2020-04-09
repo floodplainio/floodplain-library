@@ -45,7 +45,7 @@ public class RocksDBConfigurationSetter implements RocksDBConfigSetter {
 
             @Override
             protected void log(InfoLogLevel loglevel, String value) {
-                logger.info("storeName: {}, loglevel {}, value {}", storeName, loglevel, value);
+                logger.debug("storeName: {}, loglevel {}, value {}", storeName, loglevel, value);
             }
         });
 

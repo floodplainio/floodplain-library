@@ -11,21 +11,21 @@ fun main() {
 
 //    postgresql://user:secret@localhost
 
-    val tenant = "mytenant"
-    val deployment = "mydeployment"
-    val instance = "myinstance"
-    val generation = "mygeneration"
-    var topologyContext = TopologyContext(Optional.ofNullable(tenant), deployment, instance, generation)
-    var topologyConstructor = TopologyConstructor(Optional.empty())
+//    val tenant = "mytenant"
+//    val deployment = "mydeployment"
+//    val instance = "myinstance"
+//    val generation = "mygeneration"
+//    var topologyContext = TopologyContext(Optional.ofNullable(tenant), deployment, instance, generation)
+//    var topologyConstructor = TopologyConstructor()
 
 
-    pipe(topologyContext,topologyConstructor) {
+    pipe("mygeneration") {
         val postgresConfig = postgresSourceConfig("mypostgres","postgres",5432,"postgres","mysecretpassword","dvdrental")
         val mongoConfig = mongoConfig("mymongo","mongodb://mongo","mydatabase")
         debeziumSource("public","actor",postgresConfig) {
             mongoSink(topologyContext,"mycollection","sometopic",mongoConfig)
         }
-    }.renderAndStart()
+    }.renderAndStart(URL( "http://localhost:8083/connectors"),"kafka:9092", UUID.randomUUID().toString())
 //    sources.forEach { (name, json) ->
 //        startConstructor(name,topologyContext, URL( "http://localhost:8083/connectors"),json,true  )
 //    }

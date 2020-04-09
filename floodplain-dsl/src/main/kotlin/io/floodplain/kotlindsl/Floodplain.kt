@@ -12,6 +12,7 @@ import com.dexels.navajo.reactive.source.topology.api.TopologyPipeComponent
 import com.dexels.navajo.reactive.topology.ReactivePipe
 import io.floodplain.kotlindsl.message.IMessage
 import io.floodplain.kotlindsl.message.fromImmutable
+import org.apache.kafka.clients.admin.AdminClient
 import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.Topology
 import java.io.IOException
@@ -38,6 +39,12 @@ fun PartialPipe.filter(flt: (IMessage, IMessage) -> Boolean) {
     addTransformer(Transformer(transformer))
 }
 
+fun PartialPipe.each(transform: (IMessage, IMessage) -> Unit): Transformer {
+    val transformer: (ImmutableMessage, ImmutableMessage) -> Unit = { msg: ImmutableMessage, param: ImmutableMessage -> transform.invoke(fromImmutable(msg), fromImmutable(param)) }
+    val each = EachTransformer(transformer)
+    return addTransformer(Transformer(each))
+
+}
 fun PartialPipe.set(transform: (IMessage, IMessage) -> IMessage): Transformer {
     val transformer: (ImmutableMessage, ImmutableMessage) -> ImmutableMessage = { msg: ImmutableMessage, param: ImmutableMessage -> transform.invoke(fromImmutable(msg), fromImmutable(param)).toImmutable() }
     val set = SetTransformer(transformer)
@@ -49,6 +56,19 @@ fun PartialPipe.joinRemote(key: (IMessage) -> String, source: () -> Source) {
     val keyExtractor: (ImmutableMessage, ImmutableMessage) -> String = { msg, _ -> key.invoke(fromImmutable(msg)) }
     val jrt = JoinRemoteTransformer(source.invoke().toReactivePipe(), keyExtractor)
     addTransformer(Transformer(jrt))
+}
+//fun PartialPipe.source(topic: String) {
+//    val source = TopicSource(topic)
+//    Source(source)
+//}
+fun Pipe.source(topic: String, init: Source.() -> Unit): Source {
+    val source = TopicSource(topic)
+    return Source(source)
+}
+
+fun PartialPipe.sink(topic: String) {
+    val sink = SinkTransformer(topic, Optional.empty())
+    addTransformer(Transformer(sink))
 }
 
 fun PartialPipe.joinWith(source: () -> Source) {
@@ -65,17 +85,28 @@ fun PartialPipe.scan(key: (IMessage) -> String, initial: () -> IMessage, onAdd: 
     addTransformer(Transformer(ScanTransformer(keyExtractor, initial.invoke().toImmutable(), onAddBlock.transformers.map { e -> e.component }, onRemoveBlock.transformers.map { e -> e.component })))
 }
 
+fun pipe(generation: String, init: Pipe.() -> Unit): Pipe {
+    val tenant = "mytenant"
+    val deployment = "mydeployment"
+    val instance = "myinstance"
+    var topologyConstructor = TopologyConstructor() // TopologyConstructor(Optional.of(AdminClient.create(mapOf("bootstrap.servers" to kafkaBrokers, "client.id" to clientId))))
+    var topologyContext = TopologyContext(Optional.ofNullable(tenant), deployment, instance, generation)
+    val pipe = Pipe(topologyContext,topologyConstructor)
+    pipe.init()
+    return pipe
+
+}
 fun pipe(topologyContext: TopologyContext, topologyConstructor: TopologyConstructor, init: Pipe.() -> Unit): Pipe {
     val pipe = Pipe(topologyContext,topologyConstructor)
     pipe.init()
     return pipe
 }
 
-fun pipe(init: Pipe.() -> Unit): Pipe {
-    val pipe = Pipe(defaultTopologyContext(), TopologyConstructor(Optional.empty()))
-    pipe.init()
-    return pipe
-}
+//fun pipe(init: Pipe.() -> Unit): Pipe {
+//    val pipe = Pipe(defaultTopologyContext(), TopologyConstructor())
+//    pipe.init()
+//    return pipe
+//}
 
 fun defaultTopologyContext(): TopologyContext {
     return TopologyContext(Optional.of("defaultTenant"),"defaultDeployment","defaultInstance","defaultGeneration")
@@ -97,14 +128,6 @@ abstract class PartialPipe {
 }
 
 class Block() : PartialPipe() {
-}
-
-fun run(pipe: Pipe, tenant: String?, deployment: String, instance: String, generation: String) {
-    var topologyContext = TopologyContext(Optional.ofNullable(tenant), deployment, instance, generation)
-    var topologyConstructor = TopologyConstructor(Optional.empty())
-    val (topology,configs) = pipe.render()
-
-    println("sources: ${topology.describe()}")
 }
 
 @Throws(InterruptedException::class, IOException::class)
