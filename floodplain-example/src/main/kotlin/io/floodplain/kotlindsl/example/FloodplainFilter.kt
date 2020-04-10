@@ -25,7 +25,7 @@ fun filterTest() {
 }
 
 fun main() {
-    pipe("gen_z") {
+    pipe("gen_zzzz") {
         val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")
         val mongoConfig = mongoConfig("mongosink", "mongodb://mongo", "@mongodump")
         debeziumSource("public", "address", postgresConfig) {
@@ -54,6 +54,16 @@ fun main() {
             }
             mongoSink(topologyContext, "customer", "filtertopic", mongoConfig)
         }
+        debeziumSource("public", "staff", postgresConfig) {
+            joinRemote({ m -> "${m["address_id"]}" }) {
+                source("address") {}
+            }
+            set { msg, state ->
+                msg.set("address",state)
+            }
+            mongoSink(topologyContext, "staff", "stafftopic", mongoConfig)
+        }
+
     }.renderAndStart(URL( "http://localhost:8083/connectors"),"kafka:9092",UUID.randomUUID().toString())
     logger.info { "done!" }
 }

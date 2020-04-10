@@ -1,11 +1,11 @@
 package io.floodplain.kotlindsl.example
 
-import io.floodplain.kotlindsl.*
-import io.floodplain.kotlindsl.message.*
-import java.util.*
 import com.dexels.kafka.streams.api.TopologyContext
 import com.dexels.kafka.streams.remotejoin.TopologyConstructor
+import io.floodplain.kotlindsl.*
+import io.floodplain.kotlindsl.message.empty
 import java.net.URL
+import java.util.*
 
 private val logger = mu.KotlinLogging.logger {}
 
