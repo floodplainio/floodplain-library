@@ -35,8 +35,7 @@ public class ManyToManyGroupedProcessor extends AbstractProcessor<String, Replic
     private Predicate<String, ReplicationMessage> associationBypass;
 
     public ManyToManyGroupedProcessor(String fromProcessor, String withProcessor,
-                                      Optional<Predicate<String, ReplicationMessage>> associationBypass, String into, Optional<String> columns,
-                                      boolean optional, Flatten flatten) {
+                                      Optional<Predicate<String, ReplicationMessage>> associationBypass, boolean optional) {
 
         this.fromProcessorName = fromProcessor;
         this.withProcessorName = withProcessor;
@@ -44,18 +43,19 @@ public class ManyToManyGroupedProcessor extends AbstractProcessor<String, Replic
         this.associationBypass = associationBypass.orElse((k, v) -> true);
 
 //		switc
+        manyToManyJoinFunction = CoreOperators.getListJoinFunctionToParam(false);
         // TODO refactor this
-        switch (flatten) {
-            case FIRST:
-                manyToManyJoinFunction = CoreOperators.getListJoinFunctionFirstOnly(into);
-                break;
-            case LAST:
-                manyToManyJoinFunction = CoreOperators.getListJoinFunction(into, false, columns);
-                break;
-            case NONE:
-                manyToManyJoinFunction = CoreOperators.getListJoinFunction(into, false, columns);
-                break;
-        }
+//        switch (flatten) {
+//            case FIRST:
+//                manyToManyJoinFunction = CoreOperators.getListJoinFunctionFirstOnly(into);
+//                break;
+//            case LAST:
+//                manyToManyJoinFunction = CoreOperators.getListJoinFunction(into, false, columns);
+//                break;
+//            case NONE:
+//                manyToManyJoinFunction = CoreOperators.getListJoinFunction(into, false, columns);
+//                break;
+//        }
     }
 
     @SuppressWarnings("unchecked")

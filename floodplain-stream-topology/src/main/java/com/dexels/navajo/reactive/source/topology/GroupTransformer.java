@@ -29,6 +29,7 @@ public class GroupTransformer implements TopologyPipeComponent {
         Function<ReplicationMessage, String> keyExtractor = msg -> {
             return this.keyExtractor.apply(msg.message(), msg.paramMessage().orElse(ImmutableFactory.empty()));
         };
+
         addGroupTransformer(transformerNames, pipeId, topology, topologyContext, topologyConstructor, keyExtractor, "group");
 
     }

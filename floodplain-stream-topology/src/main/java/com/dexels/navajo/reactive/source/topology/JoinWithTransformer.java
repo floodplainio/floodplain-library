@@ -18,13 +18,18 @@ import java.util.function.BiFunction;
 public class JoinWithTransformer implements TopologyPipeComponent {
 
     private final ReactivePipe joinWith;
-    private final Optional<String> into;
+    private final boolean isOptional;
+    private final boolean multiple;
     private boolean materialize = false;
 
+    public JoinWithTransformer(ReactivePipe joinWith) {
+        this(false,false,joinWith);
+    }
     // 'into' will be the
-    public JoinWithTransformer(ReactivePipe joinWith, Optional<String> into) {
+    public JoinWithTransformer(boolean isOptional, boolean multiple, ReactivePipe joinWith) {
+        this.isOptional = isOptional;
         this.joinWith = joinWith;
-        this.into = into;
+        this.multiple = multiple;
     }
 
     @Override
@@ -33,20 +38,14 @@ public class JoinWithTransformer implements TopologyPipeComponent {
         Optional<String> from = Optional.of(transformerNames.peek());
         Stack<String> pipeStack = new Stack<>();
         ReactivePipeParser.processPipe(topologyContext, topologyConstructor, topology, topologyConstructor.generateNewPipeId(), pipeStack, joinWith, true);
-//		Optional<String> into = resolved.optionalString("into");
-//		boolean isList = into.isPresent();
         String with = pipeStack.peek();
-//		String name = createName(topologyContext, transformerNames.size(), pipeId);
         String name = topologyContext.qualifiedName("joinWith", transformerNames.size(), pipeId);
         Optional<String> filter = Optional.empty();
-        boolean isOptional = false;
-
-        //        ReplicationTopologyParser.createJoinFunction(isList, into, name, columns, keyField, valueField);
         final BiFunction<ReplicationMessage, ReplicationMessage, ReplicationMessage> joinFunction = (msg, comsg) -> msg.withParamMessage(comsg.message());
 
         Optional<Predicate<String, ReplicationMessage>> filterPredicate = Filters.getFilter(filter);
 
-        ReplicationTopologyParser.addJoin(topology, topologyContext, topologyConstructor, from.get(), with, name, isOptional, into, filterPredicate, this.materialize);
+        ReplicationTopologyParser.addJoin(topology, topologyContext, topologyConstructor, from.get(), with, name, isOptional, multiple, filterPredicate, this.materialize);
         transformerNames.push(name);
     }
 

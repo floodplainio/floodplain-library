@@ -18,6 +18,7 @@ message ValueProtobuf {
     BINARY = 10;
     COORDINATE = 11;
     ENUM = 12;
+    STRINGLIST = 13;
   }
   ValueType type = 2;
   bool isNull = 3;

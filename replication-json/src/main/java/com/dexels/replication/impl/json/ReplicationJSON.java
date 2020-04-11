@@ -168,6 +168,16 @@ public class ReplicationJSON {
                 ArrayNode valueToTree = objectMapper.valueToTree((List) value);
                 arrayNode.addAll(valueToTree);
                 break;
+            case STRINGLIST:
+                ArrayNode stringArrayNode = m.putArray("Value");
+                if(value instanceof String[]) {
+                    ArrayNode conf = objectMapper.valueToTree((String[]) value);
+                    stringArrayNode.addAll(conf);
+                } else if(value instanceof List) {
+                    ArrayNode conf = objectMapper.valueToTree(value);
+                    stringArrayNode.addAll(conf);
+                }
+                break;
             case BINARY:
                 m.put("Value", Base64.getEncoder().encodeToString((byte[]) value));
                 break;
@@ -208,6 +218,17 @@ public class ReplicationJSON {
                 return jsonNode.asBoolean();
             case BINARY:
                 return jsonNode.isNull() ? new byte[]{} : Base64.getDecoder().decode(jsonNode.asText());
+            case STRINGLIST:
+                ArrayNode stringNode = ((ArrayNode) jsonNode);
+                List<String> stringResult = new ArrayList<>();
+                for (final JsonNode objNode : stringNode) {
+                    if (objNode.isTextual()) {
+                        stringResult.add(objNode.asText());
+                    } else {
+                        logger.warn("Unsupported array element type: {} in {}. Ignoring!", objNode, jsonNode);
+                    }
+                }
+                return stringResult.toArray(new String[]{});
             case LIST:
                 ArrayNode node = ((ArrayNode) jsonNode);
                 List<Object> result = new ArrayList<>();
@@ -347,6 +368,15 @@ public class ReplicationJSON {
                 case INTEGER:
                     node.put(key, (Integer) o);
                     break;
+                case STRINGLIST:
+                    String[] rs = (String[]) o;
+                    ArrayNode alist = objectMapper.createArrayNode();
+                    for (String element:rs) {
+                        alist.add(element);
+                    };
+                    node.set(key, alist);
+                    break;
+
                 case LIST:
                     List<String> s = (List<String>) o;
                     ArrayNode an = objectMapper.createArrayNode();

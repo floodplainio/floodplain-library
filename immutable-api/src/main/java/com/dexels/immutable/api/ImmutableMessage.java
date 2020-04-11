@@ -32,7 +32,8 @@ public interface ImmutableMessage {
         REACTIVEPIPE,
         REACTIVEPARTIALPIPE,
         MAPPER,
-        ENUM;
+        ENUM,
+        STRINGLIST;
     }
 
     public Set<String> columnNames();

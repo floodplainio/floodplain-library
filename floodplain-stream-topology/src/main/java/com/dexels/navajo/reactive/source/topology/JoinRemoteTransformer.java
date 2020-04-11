@@ -20,12 +20,16 @@ import java.util.function.Function;
 public class JoinRemoteTransformer implements TopologyPipeComponent {
 
     private final ReactivePipe remoteJoin;
+    private final boolean isList;
+    private final boolean isOptional;
     private boolean materialize = false;
     private final BiFunction<ImmutableMessage, ImmutableMessage, String> keyExtractor;
 
-    public JoinRemoteTransformer(ReactivePipe remoteJoin, BiFunction<ImmutableMessage, ImmutableMessage, String> keyExtractor) {
+    public JoinRemoteTransformer(ReactivePipe remoteJoin, BiFunction<ImmutableMessage, ImmutableMessage, String> keyExtractor, boolean isList, boolean isOptional) {
         this.remoteJoin = remoteJoin;
         this.keyExtractor = keyExtractor;
+        this.isList = isList;
+        this.isOptional = isOptional;
     }
 
     @Override
@@ -33,21 +37,21 @@ public class JoinRemoteTransformer implements TopologyPipeComponent {
                               TopologyContext topologyContext, TopologyConstructor topologyConstructor) {
 
         Function<ReplicationMessage, String> keyXtr = msg -> {
-            return this.keyExtractor.apply(msg.message(), msg.paramMessage().orElse(ImmutableFactory.empty()));
+            String extracted = this.keyExtractor.apply(msg.message(), msg.paramMessage().orElse(ImmutableFactory.empty()));
+            return extracted;
         };
         GroupTransformer.addGroupTransformer(transformerNames, pipeId, topology, topologyContext, topologyConstructor, keyXtr, "joinRemote");
 
         Optional<String> from = Optional.of(transformerNames.peek());
         Stack<String> pipeStack = new Stack<>();
         ReactivePipeParser.processPipe(topologyContext, topologyConstructor, topology, topologyConstructor.generateNewPipeId(), pipeStack, remoteJoin, true);
-        boolean isList = false;
         String with = pipeStack.peek();
 
         String name = topologyContext.instance + "_" + pipeId + "_" + "joinRemote" + "_" + transformerNames.size();
-        Optional<String> into = Optional.of("monkeymonkey");
-        boolean optional = false;
+        Optional<String> into = Optional.of("list");
+//        boolean optional = false;
 
-        ReplicationTopologyParser.addSingleJoinGrouped(topology, topologyContext, topologyConstructor, from.get(), into, name, Optional.empty(), Optional.empty(), Flatten.NONE, isList, with, optional);
+        ReplicationTopologyParser.addSingleJoinGrouped(topology, topologyContext, topologyConstructor, from.get(), name, Optional.empty(),isList, with, isOptional);
         transformerNames.push(name);
     }
 

@@ -52,10 +52,26 @@ fun PartialPipe.set(transform: (IMessage, IMessage) -> IMessage): Transformer {
 }
 
 //fun PartialPipe.copy()
-fun PartialPipe.joinRemote(key: (IMessage) -> String, source: () -> Source) {
+fun PartialPipe.joinRemote(key: (IMessage) -> String, optional: Boolean, source: () -> Source) {
     val keyExtractor: (ImmutableMessage, ImmutableMessage) -> String = { msg, _ -> key.invoke(fromImmutable(msg)) }
-    val jrt = JoinRemoteTransformer(source.invoke().toReactivePipe(), keyExtractor)
+    val jrt = JoinRemoteTransformer(source.invoke().toReactivePipe(), keyExtractor,false,optional)
     addTransformer(Transformer(jrt))
+}
+
+fun PartialPipe.joinGroup(key: (IMessage) -> String, optional: Boolean, source: () -> Source) {
+    val keyExtractor: (ImmutableMessage, ImmutableMessage) -> String = { msg, _ ->
+        val extracted = key.invoke(fromImmutable(msg))
+        extracted
+    }
+    val jrt = JoinRemoteTransformer(source.invoke().toReactivePipe(), keyExtractor,true,optional)
+    addTransformer(Transformer(jrt))
+}
+
+
+fun PartialPipe.group(key: (IMessage) -> String) {
+    val keyExtractor: (ImmutableMessage, ImmutableMessage) -> String = { msg, _ -> key.invoke(fromImmutable(msg)) }
+    val group = GroupTransformer(keyExtractor)
+    addTransformer(Transformer(group))
 }
 //fun PartialPipe.source(topic: String) {
 //    val source = TopicSource(topic)
@@ -71,8 +87,8 @@ fun PartialPipe.sink(topic: String) {
     addTransformer(Transformer(sink))
 }
 
-fun PartialPipe.joinWith(source: () -> Source) {
-    val jrt = JoinWithTransformer(source.invoke().toReactivePipe(), Optional.empty())
+fun PartialPipe.joinWith(optional: Boolean=false, multiple: Boolean=false, source: () -> Source) {
+    val jrt = JoinWithTransformer(optional,multiple,source.invoke().toReactivePipe())
     addTransformer(Transformer(jrt))
 }
 

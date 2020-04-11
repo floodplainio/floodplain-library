@@ -28,7 +28,7 @@ subprojects {
     group = "io.floodplain"
 
     if (name == 'replication-protobuf') {
-        apply plugin: 'io.quarkus'
+        apply plugin: 'com.google.protobuf'
     }
     if (name == 'floodplain-quarkus') {
         apply plugin: 'org.jetbrains.kotlin.plugin.allopen'

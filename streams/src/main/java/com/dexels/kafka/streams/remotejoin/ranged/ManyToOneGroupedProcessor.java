@@ -34,8 +34,8 @@ public class ManyToOneGroupedProcessor extends AbstractProcessor<String, Replica
     private Predicate<String, ReplicationMessage> associationBypass;
 
     public ManyToOneGroupedProcessor(String fromProcessor, String withProcessor,
-                                     Optional<Predicate<String, ReplicationMessage>> associationBypass, Optional<String> into,
-                                     Optional<String> columns, boolean optional) {
+                                     Optional<Predicate<String, ReplicationMessage>> associationBypass,
+                                     boolean optional) {
 
         this.fromProcessorName = fromProcessor;
         this.withProcessorName = withProcessor;

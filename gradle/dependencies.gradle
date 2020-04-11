@@ -1,5 +1,5 @@
 ext {
-    floodplain_version = "0.6.5"
+    floodplain_version = "0.7.0"
     jackson_version = "2.10.3"
     kafka_version = "2.4.0"
     osgi_version = "7.0.0"

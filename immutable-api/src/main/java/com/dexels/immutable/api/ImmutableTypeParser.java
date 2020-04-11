@@ -26,6 +26,8 @@ public class ImmutableTypeParser {
                 return "integer";
             case LIST:
                 return "list";
+            case STRINGLIST:
+                return "stringlist";
             case LONG:
                 return "long";
             case STOPWATCHTIME:
@@ -64,6 +66,8 @@ public class ImmutableTypeParser {
                 return ValueType.DATE;
             case "list":
                 return ValueType.LIST;
+            case "stringlist":
+                return ValueType.STRINGLIST;
             case "binary":
                 return ValueType.BINARY;
             case "clocktime":

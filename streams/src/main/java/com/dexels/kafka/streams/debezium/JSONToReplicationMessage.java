@@ -285,6 +285,7 @@ public class JSONToReplicationMessage {
             case "bytes":
                 return Base64.getDecoder().decode(value.asText());
             case "list":
+            case "array":
                 List<String> ar = new ArrayList<>();
                 ((ArrayNode) value).forEach(e -> ar.add(e.asText()));
                 return Collections.unmodifiableList(ar);
@@ -307,7 +308,7 @@ public class JSONToReplicationMessage {
             case "bytes":
                 return ValueType.BINARY;
             case "array":
-                return ValueType.LIST;
+                return ValueType.STRINGLIST;
             case "boolean":
                 return ValueType.BOOLEAN;
             default:

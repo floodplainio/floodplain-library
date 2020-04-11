@@ -78,6 +78,8 @@ public class ImmutableFactory {
             return ValueType.COORDINATE;
         } else if (val instanceof byte[]) {
             return ValueType.BINARY;
+        } else if (val instanceof String[]) {
+            return ValueType.STRINGLIST;
         } else {
             logger.warn("Unknown type::: {}", val.getClass());
             throw new IllegalArgumentException("Unknown type: "+val.getClass());

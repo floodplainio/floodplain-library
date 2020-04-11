@@ -2,6 +2,7 @@ package com.dexels.kafka.streams.remotejoin;
 
 import com.dexels.immutable.api.ImmutableMessage;
 import com.dexels.immutable.factory.ImmutableFactory;
+import com.dexels.kafka.streams.api.CoreOperators;
 import com.dexels.kafka.streams.api.StreamConfiguration;
 import com.dexels.kafka.streams.api.TopologyContext;
 import com.dexels.kafka.streams.base.Filters;
@@ -329,59 +330,10 @@ public class ReplicationTopologyParser {
         }
     }
 
-    private static void addSingleJoinGroupedXML(final Topology current, TopologyContext topologyContext, TopologyConstructor topologyConstructor, XMLElement xe) throws InterruptedException, ExecutionException {
-
-
-        /**
-         * The inner (many-to-one) processor ('teamperson') listens to the inner processor. It will look up the foreign key (using a lambda) in the 'from' processor,
-         * if there is an entry it will join (using the lambda) and propagate.
-         * If optional is true, and there is no entry, the original will be propagated
-         */
-        if (xe.getChildren() != null && !xe.getChildren().isEmpty()) {
-            throw new UnsupportedOperationException("Can't have child xml for node: " + JOINGROUPED + " xml is: " + xe.toString());
-        }
-        String from = xe.getStringAttribute("from");
-        String withSingle = xe.getStringAttribute("with");
-        String withList = xe.getStringAttribute("withList");
-
-        Optional<String> into = Optional.ofNullable(xe.getStringAttribute("into"));
-        Optional<Integer> intoPartitions = partitionsFromDestination(into);
-        String name = xe.getStringAttribute("name");
-        Optional<String> columns = Optional.ofNullable(xe.getStringAttribute("columns"));
-        String bypass = xe.getStringAttribute("bypass");
-        Optional<Predicate<String, ReplicationMessage>> associationBypass = Filters.getFilter(Optional.ofNullable(bypass));
-
-        Flatten flattenEnum = parseFlatten(xe.getStringAttribute("flatten"));
-
-        boolean isList = withList != null;
-        String with = withList != null ? withList : withSingle;
-        if (isList && !into.isPresent()) {
-            throw new TopologyDefinitionException("Can not joinGrouped with a list without an 'into'. Spec: " + xe);
-        }
-
-        boolean optional = xe.getBooleanAttribute("optional", "true", "false", false);
-        Optional<String> to = Optional.ofNullable(xe.getStringAttribute("to"));
-
-        //--
-        String finalJoin = addSingleJoinGrouped(current, topologyContext, topologyConstructor, from, into, name,
-                columns, associationBypass, flattenEnum, isList, with, optional);
-
-
-        /**
-         * If you supply a 'to' attribute, it will also send
-         */
-        if (to.isPresent()) {
-            addTopicDestination(current, topologyContext, topologyConstructor, name, to.get(), finalJoin, intoPartitions);
-        } else {
-            logger.debug("No sink found in join");
-        }
-    }
-
-
     public static String addSingleJoinGrouped(final Topology current, TopologyContext topologyContext,
-                                              TopologyConstructor topologyConstructor, String fromProcessor, Optional<String> into, String name,
-                                              Optional<String> columns, Optional<Predicate<String, ReplicationMessage>> associationBypass,
-                                              Flatten flattenEnum, boolean isList, String withProcessor, boolean optional) {
+                                              TopologyConstructor topologyConstructor, String fromProcessor, String name,
+                                              Optional<Predicate<String, ReplicationMessage>> associationBypass,
+                                              boolean isList, String withProcessor, boolean optional) {
 
         String firstNamePre = name + "-forwardpre";
         String secondNamePre = name + "-reversepre";
@@ -403,8 +355,6 @@ public class ReplicationTopologyParser {
                                 fromProcessor,
                                 withProcessor,
                                 associationBypass,
-                                into,
-                                columns,
                                 optional
                         )
                         :
@@ -412,10 +362,7 @@ public class ReplicationTopologyParser {
                                 fromProcessor,
                                 withProcessor,
                                 associationBypass,
-                                into.get(),
-                                columns,
-                                optional,
-                                flattenEnum
+                                optional
                         )
                 , firstNamePre, secondNamePre
         );
@@ -481,50 +428,6 @@ public class ReplicationTopologyParser {
         }
     }
 
-    private static void addJoinXML(final Topology builderr, TopologyContext topologyContext, XMLElement xe, TopologyConstructor topologyConstructor) {
-
-        List<XMLElement> children = xe.getChildren();
-        if (children != null && !children.isEmpty()) {
-            throw new UnsupportedOperationException("Sorry, removed sub-transformers from joins. Please transform the relevant source. Offending xml: " + xe);
-        }
-        String from = xe.getStringAttribute("from");
-        String withSingle = xe.getStringAttribute("with");
-        String withList = xe.getStringAttribute("withList");
-        boolean isList = withList != null;
-        String with = isList ? withList : withSingle;
-
-        Optional<String> into = Optional.ofNullable(xe.getStringAttribute("into"));
-        String name = xe.getStringAttribute("name");
-        Optional<String> columns = Optional.ofNullable(xe.getStringAttribute("columns"));
-        boolean optional = xe.getBooleanAttribute("optional", "true", "false", false);
-        Optional<String> filter = Optional.ofNullable(xe.getStringAttribute("filter"));
-        Optional<String> to = Optional.ofNullable(xe.getStringAttribute("to"));
-        Optional<String> keyField = Optional.ofNullable(xe.getStringAttribute("keyField"));
-        Optional<String> valueField = Optional.ofNullable(xe.getStringAttribute("valueField"));
-//        BiFunction<ReplicationMessage, List<ReplicationMessage>, ReplicationMessage> listJoinFunction = createJoinFunction(isList, into, name, columns, keyField, valueField);
-//        final BiFunction<ReplicationMessage, ReplicationMessage, ReplicationMessage> joinFunction = getJoinFunction(into,columns);
-
-        Optional<Predicate<String, ReplicationMessage>> filterPredicate = Filters.getFilter(filter);
-//        ReplicationTopologyParser.createParamListJoinFunction(into.get()));
-
-        Topology current = addJoin(builderr, topologyContext, topologyConstructor, from, with, name, optional, into,
-                filterPredicate, false);
-
-
-//        Add processor here?
-
-
-        /**
-         * If you supply a 'to' attribute, it will also send
-         */
-        if (to.isPresent()) {
-            addTopicDestination(current, topologyContext, topologyConstructor, name, to.get(), name, partitionsFromDestination(to));
-        } else {
-            logger.debug("No sink found in join");
-        }
-
-    }
-
     public static String addReducer(final Topology topology, TopologyContext topologyContext, TopologyConstructor topologyConstructor,
                                     String namespace, Stack<String> transformerNames, int currentPipeId, List<TopologyPipeComponent> onAdd, List<TopologyPipeComponent> onRemove,
                                     ImmutableMessage initialMessage, boolean materialize, Optional<BiFunction<ImmutableMessage, ImmutableMessage, String>> keyExtractor) {
@@ -587,12 +490,9 @@ public class ReplicationTopologyParser {
     public static Topology addJoin(final Topology current, TopologyContext topologyContext,
                                    TopologyConstructor topologyConstructor, String fromProcessorName, String withProcessorName, String name,
                                    boolean optional,
-                                   Optional<String> into,
+                                   boolean multiple,
                                    Optional<Predicate<String, ReplicationMessage>> filterPredicate,
                                    boolean materialize) {
-//		KafkaUtils.ensureExistsSync(topologyConstructor.adminClient, topicName(from,topologyContext),Optional.empty());
-//        final String fromProcessorName = processorName(from);
-//		final String withProcessorName  = processorName(with);
         String firstNamePre = name + "-forwardpre";
         String secondNamePre = name + "-reversepre";
 
@@ -608,13 +508,15 @@ public class ReplicationTopologyParser {
         );
 
         @SuppressWarnings("rawtypes") final Processor proc;
-        if (into.isPresent()) {
+        if (multiple) {
             proc = new OneToManyGroupedProcessor(
                     STORE_PREFIX + fromProcessorName,
                     STORE_PREFIX + withProcessorName,
                     optional,
                     filterPredicate,
-                    ReplicationTopologyParser.createParamListJoinFunction(into.get()));
+                    CoreOperators.getListJoinFunctionToParam(false)
+            );
+//                    ReplicationTopologyParser.createParamListJoinFunction(into.get()));
         } else {
             proc = new OneToOneProcessor(
                     STORE_PREFIX + fromProcessorName,
@@ -644,12 +546,6 @@ public class ReplicationTopologyParser {
         return current;
     }
 
-    public static BiFunction<ReplicationMessage, List<ReplicationMessage>, ReplicationMessage> createParamListJoinFunction(String into) {
-        return (msg, list) -> {
-            ReplicationMessage combinedMessage = msg.withParamMessage(ImmutableFactory.empty().withSubMessages(into, list.stream().map(ReplicationMessage::message).collect(Collectors.toList())));
-            return combinedMessage;
-        };
-    }
 
     public static StoreBuilder<KeyValueStore<String, ReplicationMessage>> createMessageStoreSupplier(String name, boolean persistent) {
         logger.info("Creating messagestore supplier: {}", name);

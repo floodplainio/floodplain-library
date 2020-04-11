@@ -29,6 +29,8 @@ public class TypeUtils {
             return ValueType.FLOAT;
         else if (o instanceof List)
             return ValueType.LIST;
+        else if (o instanceof String[])
+            return ValueType.STRINGLIST;
         else if (o instanceof Boolean)
             return ValueType.BOOLEAN;
         else if (o instanceof ClockTime)

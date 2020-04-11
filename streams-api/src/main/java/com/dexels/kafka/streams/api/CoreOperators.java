@@ -1,6 +1,7 @@
 package com.dexels.kafka.streams.api;
 
 import com.dexels.immutable.api.ImmutableMessage;
+import com.dexels.immutable.factory.ImmutableFactory;
 import com.dexels.replication.api.ReplicationMessage;
 import com.dexels.replication.factory.ReplicationFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -364,6 +365,21 @@ public class CoreOperators {
                     withList = list.stream().map(e -> e.message().withOnlyColumns(parsedColumns)).collect(Collectors.toList());
                 }
                 return message.withSubMessages(into, withList);
+            }
+        };
+    }
+
+
+
+    public static BiFunction<ReplicationMessage, List<ReplicationMessage>, ReplicationMessage> getListJoinFunctionToParam( boolean skipEmpty) {
+        return (message, list) -> {
+            if (list.isEmpty() && skipEmpty) {
+                return message;
+            } else {
+                List<ImmutableMessage> withList;
+                withList = list.stream().map(e -> e.message()).collect(Collectors.toList());
+                return message.withParamMessage(ImmutableFactory.empty().withSubMessages("list",withList));
+//                return message.withSubMessages(into, withList);
             }
         };
     }

@@ -11,14 +11,14 @@ private val logger = mu.KotlinLogging.logger {}
 
 
 fun main() {
-    val tenant = "mytenant"
-    val deployment = "mydeployment"
-    val instance = "myinstance"
-    val generation = "mygeneration2"
-    var topologyContext = TopologyContext(Optional.ofNullable(tenant), deployment, instance, generation)
-    var topologyConstructor = TopologyConstructor()
+//    val tenant = "mytenant"
+//    val deployment = "mydeployment"
+//    val instance = "myinstance"
+//    val generation = "mygeneration2"
+//    var topologyContext = TopologyContext(Optional.ofNullable(tenant), deployment, instance, generation)
+//    var topologyConstructor = TopologyConstructor()
 
-    val myPipe = pipe(topologyContext, topologyConstructor) {
+    val myPipe = pipe("gen_1") {
 
         val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")
         val mongoConfig = mongoConfig("mongosink","mongodb://mongo", "mongodump")

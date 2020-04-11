@@ -82,7 +82,7 @@ class IMessage(input: Map<String, Any>) {
     }
 
     private fun subListToImmutable(items: List<*>): List<ImmutableMessage> {
-        return items.stream().map { e -> e as IMessage }.map { e -> e.toImmutable() }.collect(Collectors.toList())
+        return items.stream().map { e -> e as ImmutableMessage }.collect(Collectors.toList())
     }
 
     override fun toString(): String {
@@ -91,6 +91,7 @@ class IMessage(input: Map<String, Any>) {
 }
 
 fun empty(): IMessage = IMessage(emptyMap())
+
 
 fun fromImmutable(msg: ImmutableMessage): IMessage {
     val content = mutableMapOf<String, Any>()

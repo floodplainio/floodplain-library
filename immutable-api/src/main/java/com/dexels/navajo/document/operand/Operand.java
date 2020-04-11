@@ -71,6 +71,9 @@ public class Operand {
         return new Operand(result, ValueType.LIST);
     }
 
+    public static Operand ofStringList(String[] result) {
+        return new Operand(result, ValueType.STRINGLIST);
+    }
     public static Operand ofLong(long longValue) {
         return new Operand(longValue, ValueType.LONG);
     }

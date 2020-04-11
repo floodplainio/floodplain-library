@@ -160,8 +160,16 @@ public class ImmutableJSON {
                 }
 
                 return;
+            case STRINGLIST:
+                if (value instanceof String[]) {
+                    String[] values = (String[]) value;
+                    ArrayNode arrayNode = m.putArray(key);
+                    ArrayNode valueToTree = objectMapper.valueToTree(values);
+                    arrayNode.addAll(valueToTree);
+                }
+                return;
             case LIST:
-                if (value instanceof List) {
+                if (value instanceof String[]) {
                     ArrayNode arrayNode = m.putArray(key);
                     @SuppressWarnings("rawtypes")
                     ArrayNode valueToTree = objectMapper.valueToTree((List) value);
@@ -200,6 +208,18 @@ public class ImmutableJSON {
                 return jsonNode.asDouble();
             case BOOLEAN:
                 return jsonNode.asBoolean();
+            case STRINGLIST:
+                ArrayNode nodes = ((ArrayNode) jsonNode);
+                List<Object> resultStringList = new ArrayList<>();
+                for (final JsonNode objNode : nodes) {
+                    if (objNode.isTextual()) {
+                        resultStringList.add(objNode.asText());
+                    } else {
+                        logger.warn("Unsupported array element type: {} in {}. Ignoring!", objNode, jsonNode);
+                    }
+                }
+                String[] converted = resultStringList.toArray(new String[]{});
+                return converted;
             case LIST:
                 ArrayNode node = ((ArrayNode) jsonNode);
                 List<Object> result = new ArrayList<>();
