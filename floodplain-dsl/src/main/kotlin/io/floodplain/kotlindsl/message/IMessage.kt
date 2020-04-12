@@ -57,9 +57,13 @@ class IMessage(input: Map<String, Any>) {
         msg.content.remove(name)
     }
 
-    operator fun set(path: String, value: Any): IMessage {
+    operator fun set(path: String, value: Any?): IMessage {
         val (msg, name) = parsePath(path.split("/"))
-        msg.content.set(name, value)
+        if(value==null) {
+            msg.content.remove(name)
+        } else {
+            msg.content[name]=value
+        }
         return this
     }
 

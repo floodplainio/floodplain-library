@@ -32,8 +32,7 @@ class MongoConfig(val name: String, val uri: String, val database: String): Conf
                 "collection" to collections,
                 "topics" to topics)
         settings.putAll(additional)
-        settings.forEach{
-            key,value->logger.info { "Setting: ${key} value: ${value}" }
+        settings.forEach{ (key, value) ->logger.info { "Setting: ${key} value: ${value}" }
         }
         return name to settings
 
@@ -41,6 +40,10 @@ class MongoConfig(val name: String, val uri: String, val database: String): Conf
     }
 }
 
+/**
+ * Creates a config for this specific connector type, add the required params as needed. This config object will be passed
+ * to all sink objects
+ */
 fun Pipe.mongoConfig(name: String, uri: String, database: String): MongoConfig {
     val c = MongoConfig(name, uri, database)
     this.addSinkConfiguration(c)
@@ -48,7 +51,7 @@ fun Pipe.mongoConfig(name: String, uri: String, database: String): MongoConfig {
 }
 
 
-fun PartialPipe.mongoSink(topologyContext: TopologyContext, collection: String, topic: String, config: MongoConfig) {
+fun PartialPipe.mongoSink(collection: String, topic: String, config: MongoConfig) {
     config.sinkInstancePair.add(collection to topic)
     val sink = SinkTransformer(topic, Optional.empty())
     addTransformer(Transformer(sink))

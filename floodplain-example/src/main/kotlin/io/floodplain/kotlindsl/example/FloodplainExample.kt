@@ -3,28 +3,21 @@ package io.floodplain.kotlindsl.example
 import io.floodplain.kotlindsl.*
 import io.floodplain.kotlindsl.message.*
 import java.util.*
-import com.dexels.kafka.streams.api.TopologyContext
-import com.dexels.kafka.streams.remotejoin.TopologyConstructor
 import java.net.URL
 
 private val logger = mu.KotlinLogging.logger {}
 
 
 fun main() {
-    val tenant = "mytenant"
-    val deployment = "mydeployment"
-    val instance = "myinstance"
     val generation = "mygeneration"
-    var topologyContext = TopologyContext(Optional.ofNullable(tenant), deployment, instance, generation)
-    var topologyConstructor = TopologyConstructor()
 
-    pipe(topologyContext, topologyConstructor) {
+    pipe(generation) {
 
         val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")
         val mongoConfig = mongoConfig("mongosink","mongodb://mongo", "mongodump")
-        debeziumSource("public", "customer", postgresConfig) {
+        postgresSource("public", "customer", postgresConfig) {
             joinWith {
-                debeziumSource("public", "payment",postgresConfig) {
+                postgresSource("public", "payment",postgresConfig) {
 
                     scan({ msg -> msg["customer_id"].toString() }, { empty().set("total", 0.0).set("customer_id",0) },
                             {
@@ -55,7 +48,7 @@ fun main() {
                 msg,state->msg["payments"] = state; state
             }
 
-            mongoSink(topologyContext,"customerwithtotal", "myfinaltopic", mongoConfig)
+            mongoSink("customerwithtotal", "myfinaltopic", mongoConfig)
         }
     }.renderAndStart(URL( "http://localhost:8083/connectors"),"kafka:9092",UUID.randomUUID().toString())
 }

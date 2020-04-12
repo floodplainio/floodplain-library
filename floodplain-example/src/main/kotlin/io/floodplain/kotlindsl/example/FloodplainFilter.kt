@@ -1,7 +1,6 @@
 package io.floodplain.kotlindsl.example
 
 import com.dexels.kafka.streams.api.TopologyContext
-import com.dexels.kafka.streams.remotejoin.TopologyConstructor
 import io.floodplain.kotlindsl.*
 import io.floodplain.kotlindsl.message.IMessage
 import java.net.URL
@@ -10,23 +9,21 @@ import java.util.*
 val topologyContext = TopologyContext(Optional.of("tenant"), "test", "instance", "generation")
 private val logger = mu.KotlinLogging.logger {}
 
-fun filterTest() {
-
-    pipe(topologyContext, TopologyConstructor()) {
+fun filterTest(generation: String) {
+    pipe(generation) {
         val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")
         val mongoConfig = mongoConfig("mongosink", "mongodb://mongo", "mongodump")
-        debeziumSource("public", "actor", postgresConfig) {
+        postgresSource("public", "actor", postgresConfig) {
             filter { msg, _ ->
                 msg["last_name"] as String > "b"
             }
-            mongoSink(topologyContext, "filtercollection", "filtertopic", mongoConfig)
+            mongoSink( "filtercollection", "filtertopic", mongoConfig)
         }
 
     }
 }
 
 fun main() {
-//    joinAddresses("gen_zzzz")
     filmWithActorList("gen_aat")
 }
 
@@ -34,9 +31,9 @@ fun films(generation: String) {
     pipe(generation) {
         val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")
         val mongoConfig = mongoConfig("mongosink", "mongodb://mongo", "@mongodump")
-        debeziumSource("public", "film", postgresConfig) {
+        postgresSource("public", "film", postgresConfig) {
             each { iMessage, iMessage2 -> logger.info { "message: ${iMessage}" } }
-            mongoSink(topologyContext,"filmwithcategories","filmwithcat",mongoConfig)
+            mongoSink("filmwithcategories","filmwithcat",mongoConfig)
         }
     }.renderAndStart(URL( "http://localhost:8083/connectors"),"kafka:9092",UUID.randomUUID().toString())
     logger.info { "done!" }
@@ -46,9 +43,9 @@ fun filmActorSubGroupList(generation: String) {
     pipe(generation) {
         val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")
         val mongoConfig = mongoConfig("mongosink", "mongodb://mongo", "@mongodump")
-        debeziumSource("public", "film_actor", postgresConfig) {
+        postgresSource("public", "film_actor", postgresConfig) {
             group { msg -> "${msg["film_id"]}" }
-            mongoSink(topologyContext, "filmwithcategories", "filmwithcat", mongoConfig)
+            mongoSink( "filmwithcategories", "filmwithcat", mongoConfig)
         }
     }.renderAndStart(URL( "http://localhost:8083/connectors"),"kafka:9092",UUID.randomUUID().toString())
     logger.info { "done!" }
@@ -58,11 +55,11 @@ fun filmWithActorList(generation: String) {
     pipe(generation) {
         val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")
         val mongoConfig = mongoConfig("mongosink", "mongodb://mongo", "@mongodump")
-        debeziumSource("public", "film", postgresConfig) {
+        postgresSource("public", "film", postgresConfig) {
             joinWith(optional = true, multiple = true) {
-                debeziumSource("public", "film_actor", postgresConfig) {
+                postgresSource("public", "film_actor", postgresConfig) {
                     joinRemote({msg->"${msg["actor_id"]}"}, false) {
-                        debeziumSource("public", "actor", postgresConfig) {
+                        postgresSource("public", "actor", postgresConfig) {
                         }
                     }
                     set { msg,state->msg["actor"]=state
@@ -81,7 +78,7 @@ fun filmWithActorList(generation: String) {
 //                logger.info("SPECIAL_FEATURE: ${msg.get("special_features")}")
                 msg
             }
-            mongoSink(topologyContext,"filmwithcategories","filmwithcat",mongoConfig)
+            mongoSink("filmwithcategories","filmwithcat",mongoConfig)
         }
     }.renderAndStart(URL( "http://localhost:8083/connectors"),"kafka:9092",UUID.randomUUID().toString())
     logger.info { "done!" }
@@ -91,11 +88,11 @@ fun joinFilms(generation: String) {
     pipe(generation) {
         val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")
         val mongoConfig = mongoConfig("mongosink", "mongodb://mongo", "@mongodump")
-        debeziumSource("public", "film", postgresConfig) {
+        postgresSource("public", "film", postgresConfig) {
             joinGroup({ msg -> "${msg["film_id"]}" },false) {
-                debeziumSource("public", "film_category", postgresConfig) {
+                postgresSource("public", "film_category", postgresConfig) {
                     joinRemote({ msg -> "${msg["category_id"]}" },true) {
-                        debeziumSource("public", "category", postgresConfig) {}
+                        postgresSource("public", "category", postgresConfig) {}
                     }
                     set {
                         msg,state->msg["category"]=state["name"]!!
@@ -107,7 +104,7 @@ fun joinFilms(generation: String) {
                 msg,state->msg["categories"]=state["list"]!!
                 msg
             }
-            mongoSink(topologyContext,"filmwithcategories","filmwithcat",mongoConfig)
+            mongoSink("filmwithcategories","filmwithcat",mongoConfig)
 
         }
 
@@ -118,11 +115,11 @@ fun joinAddresses(generation: String) {
     pipe(generation) {
         val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")
         val mongoConfig = mongoConfig("mongosink", "mongodb://mongo", "@mongodump")
-        debeziumSource("public", "address", postgresConfig) {
+        postgresSource("public", "address", postgresConfig) {
             joinRemote({ msg -> "${msg["city_id"]}" },false) {
-                debeziumSource("public", "city", postgresConfig) {
+                postgresSource("public", "city", postgresConfig) {
                     joinRemote({ msg -> "${msg["country_id"]}" },false) {
-                        debeziumSource("public", "country", postgresConfig) {}
+                        postgresSource("public", "country", postgresConfig) {}
                     }
                     set { msg, state ->
                         msg.set("country", state)
@@ -133,25 +130,25 @@ fun joinAddresses(generation: String) {
                 msg.set("city", state)
             }
             sink("address")
-            mongoSink(topologyContext, "address", "addresstopic", mongoConfig)
+            mongoSink( "address", "addresstopic", mongoConfig)
         }
-        debeziumSource("public", "customer", postgresConfig) {
+        postgresSource("public", "customer", postgresConfig) {
             joinRemote({ m -> "${m["address_id"]}" },false) {
                 source("address") {}
             }
             set { msg, state ->
                 msg.set("address",state)
             }
-            mongoSink(topologyContext, "customer", "filtertopic", mongoConfig)
+            mongoSink( "customer", "filtertopic", mongoConfig)
         }
-        debeziumSource("public", "staff", postgresConfig) {
+        postgresSource("public", "staff", postgresConfig) {
             joinRemote({ m -> "${m["address_id"]}" },false) {
                 source("address") {}
             }
             set { msg, state ->
                 msg.set("address",state)
             }
-            mongoSink(topologyContext, "staff", "stafftopic", mongoConfig)
+            mongoSink( "staff", "stafftopic", mongoConfig)
         }
 
     }.renderAndStart(URL( "http://localhost:8083/connectors"),"kafka:9092",UUID.randomUUID().toString())
