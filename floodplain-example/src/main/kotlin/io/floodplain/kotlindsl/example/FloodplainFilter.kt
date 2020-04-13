@@ -105,7 +105,6 @@ fun joinFilms(generation: String) {
                 msg
             }
             mongoSink("filmwithcategories","filmwithcat",mongoConfig)
-
         }
 
     }.renderAndStart(URL( "http://localhost:8083/connectors"),"kafka:9092",UUID.randomUUID().toString())
