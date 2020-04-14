@@ -82,7 +82,7 @@ fun PartialPipe.set(transform: (IMessage, IMessage) -> IMessage): Transformer {
  * @param source The source to join with
  *
  */
-fun PartialPipe.joinRemote(key: (IMessage) -> String, optional: Boolean, source: () -> Source) {
+fun PartialPipe.joinRemote(key: (IMessage) -> String, optional: Boolean=false, source: () -> Source) {
     val keyExtractor: (ImmutableMessage, ImmutableMessage) -> String = { msg, _ -> key.invoke(fromImmutable(msg)) }
     val jrt = JoinRemoteTransformer(source.invoke().toReactivePipe(), keyExtractor,false,optional)
     addTransformer(Transformer(jrt))
