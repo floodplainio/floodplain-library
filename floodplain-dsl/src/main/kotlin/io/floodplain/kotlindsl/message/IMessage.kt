@@ -1,7 +1,7 @@
 package io.floodplain.kotlindsl.message
 
-import com.dexels.immutable.api.ImmutableMessage
-import com.dexels.immutable.factory.ImmutableFactory
+import io.floodplain.immutable.api.ImmutableMessage
+import io.floodplain.immutable.factory.ImmutableFactory
 import java.util.stream.Collectors
 
 class IMessage(input: Map<String, Any>) {
@@ -59,10 +59,10 @@ class IMessage(input: Map<String, Any>) {
 
     operator fun set(path: String, value: Any?): IMessage {
         val (msg, name) = parsePath(path.split("/"))
-        if(value==null) {
+        if (value == null) {
             msg.content.remove(name)
         } else {
-            msg.content[name]=value
+            msg.content[name] = value
         }
         return this
     }
@@ -100,7 +100,7 @@ fun empty(): IMessage = IMessage(emptyMap())
 fun fromImmutable(msg: ImmutableMessage): IMessage {
     val content = mutableMapOf<String, Any>()
     for ((name, value: Any?) in msg.values()) {
-        if(value!=null) {
+        if (value != null) {
             content[name] = value
         }
     }

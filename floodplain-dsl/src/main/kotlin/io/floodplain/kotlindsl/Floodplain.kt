@@ -2,21 +2,14 @@
 
 package io.floodplain.kotlindsl
 
-import com.dexels.immutable.api.ImmutableMessage
-import com.dexels.kafka.streams.api.StreamConfiguration
-import com.dexels.kafka.streams.api.TopologyContext
-import com.dexels.kafka.streams.base.StreamInstance
-import com.dexels.kafka.streams.remotejoin.TopologyConstructor
-import com.dexels.navajo.reactive.source.topology.*
-import com.dexels.navajo.reactive.source.topology.api.TopologyPipeComponent
-import com.dexels.navajo.reactive.topology.ReactivePipe
+import io.floodplain.immutable.api.ImmutableMessage
 import io.floodplain.kotlindsl.message.IMessage
 import io.floodplain.kotlindsl.message.fromImmutable
-import org.apache.kafka.clients.admin.AdminClient
-import org.apache.kafka.streams.KafkaStreams
-import org.apache.kafka.streams.Topology
-import java.io.IOException
-import java.io.InputStream
+import io.floodplain.reactive.source.topology.*
+import io.floodplain.reactive.source.topology.api.TopologyPipeComponent
+import io.floodplain.reactive.topology.ReactivePipe
+import io.floodplain.streams.api.TopologyContext
+import io.floodplain.streams.remotejoin.TopologyConstructor
 import java.util.*
 
 private val logger = mu.KotlinLogging.logger {}
@@ -34,7 +27,7 @@ abstract class Config() {
      * The map is essentially a Kafka Connect configuration, and will be converted to JSON and posted to Kafka Connect
      * For some
      */
-    abstract fun materializeConnectorConfig(topologyContext: TopologyContext): Pair<String,Map<String,String>>
+    abstract fun materializeConnectorConfig(topologyContext: TopologyContext): Pair<String, Map<String, String>>
 
 }
 
@@ -82,9 +75,9 @@ fun PartialPipe.set(transform: (IMessage, IMessage) -> IMessage): Transformer {
  * @param source The source to join with
  *
  */
-fun PartialPipe.joinRemote(key: (IMessage) -> String, optional: Boolean=false, source: () -> Source) {
+fun PartialPipe.joinRemote(key: (IMessage) -> String, optional: Boolean = false, source: () -> Source) {
     val keyExtractor: (ImmutableMessage, ImmutableMessage) -> String = { msg, _ -> key.invoke(fromImmutable(msg)) }
-    val jrt = JoinRemoteTransformer(source.invoke().toReactivePipe(), keyExtractor,false,optional)
+    val jrt = JoinRemoteTransformer(source.invoke().toReactivePipe(), keyExtractor, false, optional)
     addTransformer(Transformer(jrt))
 }
 
@@ -96,7 +89,7 @@ fun PartialPipe.joinGroup(key: (IMessage) -> String, optional: Boolean, source: 
         val extracted = key.invoke(fromImmutable(msg))
         extracted
     }
-    val jrt = JoinRemoteTransformer(source.invoke().toReactivePipe(), keyExtractor,true,optional)
+    val jrt = JoinRemoteTransformer(source.invoke().toReactivePipe(), keyExtractor, true, optional)
     addTransformer(Transformer(jrt))
 }
 
@@ -133,8 +126,8 @@ fun PartialPipe.sink(topic: String) {
  * @param multiple: If set to true, it will assume that the inner source is a grouped source: A source with a different key, but that has been
  * grouped to the key of the current source. Perhaps at some point we could infer it from the inner source.
  */
-fun PartialPipe.joinWith(optional: Boolean=false, multiple: Boolean=false, source: () -> Source) {
-    val jrt = JoinWithTransformer(optional,multiple,source.invoke().toReactivePipe())
+fun PartialPipe.joinWith(optional: Boolean = false, multiple: Boolean = false, source: () -> Source) {
+    val jrt = JoinWithTransformer(optional, multiple, source.invoke().toReactivePipe())
     addTransformer(Transformer(jrt))
 }
 
@@ -168,7 +161,7 @@ fun pipe(generation: String, init: Pipe.() -> Unit): Pipe {
     val instance = "myinstance"
     var topologyConstructor = TopologyConstructor() // TopologyConstructor(Optional.of(AdminClient.create(mapOf("bootstrap.servers" to kafkaBrokers, "client.id" to clientId))))
     var topologyContext = TopologyContext(Optional.ofNullable(tenant), deployment, instance, generation)
-    val pipe = Pipe(topologyContext,topologyConstructor)
+    val pipe = Pipe(topologyContext, topologyConstructor)
     pipe.init()
     return pipe
 

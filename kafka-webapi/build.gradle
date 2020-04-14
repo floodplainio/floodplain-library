@@ -10,7 +10,6 @@ dependencies {
     implementation project(':replication-json')
     implementation project(':replication-protobuf')
     implementation project(':pubsub-rx2')
-    compile dependencies.osgiCompendium
     compile dependencies.servletApi
     testCompile dependencies.jUnit
     testRuntime dependencies.slf4jSimple

@@ -1,10 +1,7 @@
 package io.floodplain.kotlindsl
 
-import com.dexels.immutable.factory.ImmutableFactory
-import com.dexels.kafka.streams.api.TopologyContext
-import com.dexels.kafka.streams.remotejoin.TopologyConstructor
+import io.floodplain.immutable.factory.ImmutableFactory
 import io.floodplain.kotlindsl.message.empty
-import java.util.*
 import kotlin.test.Test
 
 class FloodplainTest {

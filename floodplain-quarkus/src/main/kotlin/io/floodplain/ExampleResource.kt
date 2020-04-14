@@ -17,15 +17,6 @@ class ExampleResource {
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     fun hello(): String {
-//        var r: com.dexels.navajo.reactive.api.ReactiveFinder;
-
         return "ok"
-//        var rs = source.connection.prepareStatement("select * from city").executeQuery()
-//        var buffer = StringBuffer()
-//        while (rs.next()) {
-//            buffer.append(rs.getString(2))
-//            buffer.append("\n")
-//        }
-//        return buffer.toString()
     }
 }

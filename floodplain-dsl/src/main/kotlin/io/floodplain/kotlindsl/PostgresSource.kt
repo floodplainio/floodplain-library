@@ -1,14 +1,14 @@
 package io.floodplain.kotlindsl
 
-import com.dexels.kafka.streams.api.TopologyContext
-import com.dexels.navajo.reactive.source.topology.DebeziumTopicSource
+import io.floodplain.reactive.source.topology.DebeziumTopicSource
+import io.floodplain.streams.api.TopologyContext
 
 
-class PostgresConfig(val name: String, val hostname: String, val port: Int, val username: String, val password: String, val database: String): Config() {
+class PostgresConfig(val name: String, val hostname: String, val port: Int, val username: String, val password: String, val database: String) : Config() {
 
     private val sourceElements: MutableList<DebeziumSourceElement> = mutableListOf()
 
-    override fun materializeConnectorConfig(topologyContext: TopologyContext): Pair<String,Map<String,String>> {
+    override fun materializeConnectorConfig(topologyContext: TopologyContext): Pair<String, Map<String, String>> {
         return name to mapOf(
                 "connector.class" to "io.debezium.connector.postgresql.PostgresConnector",
                 "database.hostname" to hostname,
@@ -17,7 +17,7 @@ class PostgresConfig(val name: String, val hostname: String, val port: Int, val 
                 "database.user" to username,
                 "database.password" to password,
                 // TODO
-                "tablewhitelistorsomething" to sourceElements.map { e->e.schema+"."+e.table }.joinToString ( "," )
+                "tablewhitelistorsomething" to sourceElements.map { e -> e.schema + "." + e.table }.joinToString(",")
         )
     }
 
@@ -27,7 +27,7 @@ class PostgresConfig(val name: String, val hostname: String, val port: Int, val 
 }
 
 
-fun Pipe.postgresSourceConfig(name: String, hostname: String,port: Int, username: String, password: String, database: String): PostgresConfig {
+fun Pipe.postgresSourceConfig(name: String, hostname: String, port: Int, username: String, password: String, database: String): PostgresConfig {
     val postgresConfig = PostgresConfig(name, hostname, port, username, password, database)
     addSourceConfiguration(postgresConfig)
     return postgresConfig
@@ -37,7 +37,7 @@ fun Pipe.postgresSource(schema: String, table: String, config: PostgresConfig, i
 
     val topicSource = DebeziumTopicSource(config.name, table, schema, true, true)
     val topicName = topicSource.topicName(this.context)
-    config.addSourceElement(DebeziumSourceElement(topicName,table,schema))
+    config.addSourceElement(DebeziumSourceElement(topicName, table, schema))
     val databaseSource = Source(topicSource)
     databaseSource.init()
     this.addSource(databaseSource)

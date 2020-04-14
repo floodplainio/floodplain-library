@@ -3,8 +3,8 @@
  */
 package io.floodplain.kotlindsl
 
-import com.dexels.immutable.api.ImmutableMessage
-import com.dexels.immutable.factory.ImmutableFactory
+import io.floodplain.immutable.api.ImmutableMessage
+import io.floodplain.immutable.factory.ImmutableFactory
 import io.floodplain.kotlindsl.message.IMessage
 import io.floodplain.kotlindsl.message.fromImmutable
 import kotlin.test.Test

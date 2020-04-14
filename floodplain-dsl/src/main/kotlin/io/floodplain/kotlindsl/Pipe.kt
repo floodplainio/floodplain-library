@@ -1,11 +1,11 @@
 package io.floodplain.kotlindsl
 
-import com.dexels.kafka.streams.api.CoreOperators
-import com.dexels.kafka.streams.api.TopologyContext
-import com.dexels.kafka.streams.base.StreamInstance
-import com.dexels.kafka.streams.remotejoin.ReplicationTopologyParser
-import com.dexels.kafka.streams.remotejoin.TopologyConstructor
-import com.dexels.navajo.reactive.topology.ReactivePipeParser
+import io.floodplain.reactive.topology.ReactivePipeParser
+import io.floodplain.streams.api.CoreOperators
+import io.floodplain.streams.api.TopologyContext
+import io.floodplain.streams.base.StreamInstance
+import io.floodplain.streams.remotejoin.ReplicationTopologyParser
+import io.floodplain.streams.remotejoin.TopologyConstructor
 import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.Topology
 import java.io.IOException
@@ -68,17 +68,17 @@ class Pipe(val context: TopologyContext, private val topologyConstructor: Topolo
      * instance pointing at the kafka cluster at kafkaHosts, using the supplied clientId.
      * Finally, it will POST the supplied
      */
-    fun renderAndStart(connectorURL:URL, kafkaHosts: String, clientId: String) {
-        val (topology,sources,sinks) = render()
-        topologyConstructor.createTopicsAsNeeded(kafkaHosts,clientId)
+    fun renderAndStart(connectorURL: URL, kafkaHosts: String, clientId: String) {
+        val (topology, sources, sinks) = render()
+        topologyConstructor.createTopicsAsNeeded(kafkaHosts, clientId)
         sources.forEach { (name, json) ->
-            startConstructor(name,context, connectorURL,json,true  )
+            startConstructor(name, context, connectorURL, json, true)
         }
         sinks.forEach { (name, json) ->
-            startConstructor(name,context, connectorURL,json,true  )
+            startConstructor(name, context, connectorURL, json, true)
         }
-        val appId = CoreOperators.generationalGroup("appId",context)
-        runTopology(topology,appId,kafkaHosts,"storagePath")
+        val appId = CoreOperators.generationalGroup("appId", context)
+        runTopology(topology, appId, kafkaHosts, "storagePath")
     }
 
     /**
@@ -87,19 +87,17 @@ class Pipe(val context: TopologyContext, private val topologyConstructor: Topolo
      * - A list of kafka connect source pairs (name to json definition)
      * - A list of kafka connect sink pairs (name to json definition)
      */
-    fun render(): Triple<Topology,List<Pair<String,String>>,List<Pair<String,String>>> {
+    fun render(): Triple<Topology, List<Pair<String, String>>, List<Pair<String, String>>> {
         val topology = renderTopology()
-        val sources = sourceConfigurations().map {
-            element->
-            val (name,config) = element.materializeConnectorConfig(context)
-            name to constructConnectorJson(context,name,config)
+        val sources = sourceConfigurations().map { element ->
+            val (name, config) = element.materializeConnectorConfig(context)
+            name to constructConnectorJson(context, name, config)
         }
-        val sinks = sinkConfigurations().map {
-            element->
-            val (name,config) = element.materializeConnectorConfig(context)
-            name to constructConnectorJson(context,name,config)
+        val sinks = sinkConfigurations().map { element ->
+            val (name, config) = element.materializeConnectorConfig(context)
+            name to constructConnectorJson(context, name, config)
         }
-        return Triple(topology,sources,sinks)
+        return Triple(topology, sources, sinks)
 
     }
 

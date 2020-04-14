@@ -7,12 +7,11 @@ dependencies {
     implementation project(':immutable-impl')
     implementation project(':replication-api')
     implementation project(':replication-impl')
-    implementation project('::streams-api')
+    implementation project(':streams-api')
     implementation project(':replication-json')
     implementation project(':replication-protobuf')
     implementation project(':replication-http')
     implementation project(':pubsub-rx2')
-    compile dependencies.osgiCompendium
     compile dependencies.servletApi
     testCompile dependencies.jUnit
     testRuntime dependencies.slf4jSimple

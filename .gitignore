@@ -2,7 +2,6 @@
 .gradle
 .DS_Store
 bin/
-com.dexels.navajo.core/sharedstore
 buildOutputCleanup
 .vscode
 .project

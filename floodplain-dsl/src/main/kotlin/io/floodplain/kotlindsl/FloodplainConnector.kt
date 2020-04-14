@@ -1,11 +1,11 @@
 package io.floodplain.kotlindsl
 
-import com.dexels.kafka.streams.api.CoreOperators
-import com.dexels.kafka.streams.api.TopologyContext
-import com.dexels.kafka.streams.remotejoin.TopologyDefinitionException
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ArrayNode
+import io.floodplain.streams.api.CoreOperators
+import io.floodplain.streams.api.TopologyContext
+import io.floodplain.streams.remotejoin.TopologyDefinitionException
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
