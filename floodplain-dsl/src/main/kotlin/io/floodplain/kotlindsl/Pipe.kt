@@ -79,6 +79,7 @@ class Pipe(val context: TopologyContext, private val topologyConstructor: Topolo
         }
         val appId = CoreOperators.generationalGroup("appId", context)
         runTopology(topology, appId, kafkaHosts, "storagePath")
+        logger.info { "Topology running!" }
     }
 
     /**
