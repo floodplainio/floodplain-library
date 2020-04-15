@@ -100,6 +100,7 @@ private fun postToHttp(url: URL, jsonString: String) {
         os.write(input, 0, input.size)
     }
     logger.info("Result code: {} and message: {}", con.responseCode, con.responseMessage)
+    logger.info("JSON:\n$jsonString")
     BufferedReader(
             InputStreamReader(con.inputStream, "utf-8")).use { br ->
         val response = StringBuilder()

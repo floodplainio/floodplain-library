@@ -82,19 +82,6 @@ fun PartialPipe.joinRemote(key: (IMessage) -> String, optional: Boolean = false,
 }
 
 /**
- * do not use
- */
-fun PartialPipe.joinGroup(key: (IMessage) -> String, optional: Boolean, source: () -> Source) {
-    val keyExtractor: (ImmutableMessage, ImmutableMessage) -> String = { msg, _ ->
-        val extracted = key.invoke(fromImmutable(msg))
-        extracted
-    }
-    val jrt = JoinRemoteTransformer(source.invoke().toReactivePipe(), keyExtractor, true, optional)
-    addTransformer(Transformer(jrt))
-}
-
-
-/**
  * Group a source, using the key from the lambda. The messages will be unchanged, only the key will have the supplied key pre-pended.
  */
 fun PartialPipe.group(key: (IMessage) -> String) {
@@ -107,8 +94,12 @@ fun PartialPipe.group(key: (IMessage) -> String) {
  * Use an existing source
  */
 fun Pipe.source(topic: String, init: Source.() -> Unit): Source {
-    val source = TopicSource(topic)
-    return Source(source)
+    val sourceElement = TopicSource(topic)
+    val source = Source(sourceElement)
+
+    source.init()
+    this.addSource(source)
+    return source
 }
 
 /**
@@ -123,11 +114,20 @@ fun PartialPipe.sink(topic: String) {
  * Joins with another source using the same key as this source.
  * @param optional: If set to true, it will also emit a value if there is no counterpart (yet) in the supplied source.
  * Note that setting this to true can cause a performance penalty, as more items could be emitted.
- * @param multiple: If set to true, it will assume that the inner source is a grouped source: A source with a different key, but that has been
- * grouped to the key of the current source. Perhaps at some point we could infer it from the inner source.
  */
-fun PartialPipe.joinWith(optional: Boolean = false, multiple: Boolean = false, source: () -> Source) {
-    val jrt = JoinWithTransformer(optional, multiple, source.invoke().toReactivePipe())
+fun PartialPipe.join(optional: Boolean = false,source: () -> Source) {
+    val jrt = JoinWithTransformer(optional, false, source.invoke().toReactivePipe())
+    addTransformer(Transformer(jrt))
+}
+
+/**
+ * Joins with another source that has been grouped with the key of the current source.
+ * This generally means that the inner source should end with a 'group' transformation
+ * @param optional: If set to true, it will also emit a value if there is no counterpart (yet) in the supplied source.
+ * Note that setting this to true can cause a performance penalty, as more items could be emitted.
+ */
+fun PartialPipe.joinGrouped(optional: Boolean = false,source: () -> Source) {
+    val jrt = JoinWithTransformer(optional, true, source.invoke().toReactivePipe())
     addTransformer(Transformer(jrt))
 }
 
@@ -155,10 +155,10 @@ fun PartialPipe.scan(key: (IMessage) -> String, initial: () -> IMessage, onAdd: 
  * meaning you want to attach. You can increment a number, use a sort of time stamp, or even a git commit.
  */
 fun pipe(generation: String, init: Pipe.() -> Unit): Pipe {
-    val tenant = "mytenant"
-    val deployment = "mydeployment"
+    val tenant = "tenant"
+    val deployment = "deployment"
     // this is basically the name of the pipe instance, to make sure no names clash
-    val instance = "myinstance"
+    val instance = "instance"
     var topologyConstructor = TopologyConstructor() // TopologyConstructor(Optional.of(AdminClient.create(mapOf("bootstrap.servers" to kafkaBrokers, "client.id" to clientId))))
     var topologyContext = TopologyContext(Optional.ofNullable(tenant), deployment, instance, generation)
     val pipe = Pipe(topologyContext, topologyConstructor)

@@ -14,7 +14,7 @@ fun main() = pipe("mygeneration") {
         }
         mongoSink("filmwithlanguage", "filmwithlanguage", mongoConfig)
     }
-}.renderAndStart(URL("http://localhost:8083/connectors"), "kafka:9092", UUID.randomUUID().toString())
+}.renderAndStart(URL("http://localhost:8083/connectors"), "localhost:9092", UUID.randomUUID().toString())
 
 fun mainold() {
     pipe("mygeneration") {
@@ -25,5 +25,5 @@ fun mainold() {
             filter { msg, _ -> (msg["actor_id"] as Int) < 10 }
             mongoSink("mycollection", "sometopic", mongoConfig)
         }
-    }.renderAndStart(URL("http://localhost:8083/connectors"), "kafka:9092", UUID.randomUUID().toString())
+    }.renderAndStart(URL("http://localhost:8083/connectors"), "localhost:9092", UUID.randomUUID().toString())
 }

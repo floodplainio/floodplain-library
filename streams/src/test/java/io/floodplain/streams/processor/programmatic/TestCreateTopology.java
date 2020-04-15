@@ -17,7 +17,7 @@ import java.util.UUID;
 
 public class TestCreateTopology {
 
-    private static final String BROKERS = "kafka:9092";
+    private static final String BROKERS = "localhost:9092";
 
 
     @Test(timeout = 10000)

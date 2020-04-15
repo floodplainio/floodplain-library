@@ -356,7 +356,7 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
                                 final String serializeValue = serializeValue(type, value, dataFormat, clockTimeFormat);
                                 if (serializeValue == null) {
                                     return new ValueTuple(e.getKey(), Replication.ValueProtobuf.newBuilder()
-                                            .setType(parseType)
+                                            .setType(Replication.ValueProtobuf.ValueType.CLOCKTIME)
                                             .setIsNull(value == null)
                                             .build()
                                     );

@@ -27,7 +27,7 @@ public class TestFilters {
 
     @Before
     public void setup() throws IOException {
-        StreamConfiguration config = new StreamConfiguration("kafka:9092", Optional.of("http://connect:8081"), Collections.emptyMap(), 100, 100, 1);
+        StreamConfiguration config = new StreamConfiguration("localhost:9092", Optional.of("http://connect:8081"), Collections.emptyMap(), 100, 100, 1);
         AdminClient adminClient = AdminClient.create(config.config());
         new StreamInstance("test", config, adminClient, Collections.emptyMap());
         ReplicationFactory.setInstance(new FallbackReplicationMessageParser());

@@ -16,7 +16,7 @@ fun main() {
         val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")
         val mongoConfig = mongoConfig("mongosink", "mongodb://mongo", "mongodump")
         postgresSource("public", "customer", postgresConfig) {
-            joinWith {
+            join {
                 postgresSource("public", "payment", postgresConfig) {
 
                     scan({ msg -> msg["customer_id"].toString() }, { empty().set("total", 0.0).set("customer_id", 0) },
@@ -49,5 +49,5 @@ fun main() {
 
             mongoSink("customerwithtotal", "myfinaltopic", mongoConfig)
         }
-    }.renderAndStart(URL("http://localhost:8083/connectors"), "kafka:9092", UUID.randomUUID().toString())
+    }.renderAndStart(URL("http://localhost:8083/connectors"), "localhost:9092", UUID.randomUUID().toString())
 }
