@@ -9,8 +9,6 @@ import io.floodplain.replication.transformer.api.MessageTransformer;
 import io.floodplain.streams.api.CoreOperators;
 import io.floodplain.streams.api.TopologyContext;
 import io.floodplain.streams.base.StreamOperators;
-import io.floodplain.streams.transformer.custom.CommunicationTransformer;
-import io.floodplain.streams.transformer.custom.CreateCoordinateTransformer;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,8 +39,8 @@ public class TestTransformations {
         ReplicationMessageParser tp = new FallbackReplicationMessageParser();
 
         ReplicationFactory.setInstance(tp);
-        transformerRegistry.put("createcoordinatedoc", new CreateCoordinateTransformer());
-        transformerRegistry.put("formatcommunication", new CommunicationTransformer());
+//        transformerRegistry.put("createcoordinatedoc", new CreateCoordinateTransformer());
+//        transformerRegistry.put("formatcommunication", new CommunicationTransformer());
         try (InputStream resourceAsStream = TestTransformations.class.getClassLoader().getResourceAsStream("address1.json")) {
             addressMessage = ReplicationFactory.getInstance().parseStream(resourceAsStream);
         }

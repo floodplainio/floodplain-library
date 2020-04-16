@@ -6,16 +6,12 @@ import io.floodplain.replication.api.ReplicationMessage;
 import io.floodplain.replication.api.ReplicationMessage.Operation;
 import io.floodplain.streams.api.CoreOperators;
 import io.floodplain.streams.api.TopologyContext;
-import io.floodplain.streams.base.Filters;
 import io.floodplain.streams.remotejoin.ranged.GroupedUpdateProcessor;
 import io.floodplain.streams.remotejoin.ranged.ManyToManyGroupedProcessor;
 import io.floodplain.streams.remotejoin.ranged.ManyToOneGroupedProcessor;
 import io.floodplain.streams.remotejoin.ranged.OneToManyGroupedProcessor;
 import io.floodplain.streams.serializer.ImmutableMessageSerde;
 import io.floodplain.streams.serializer.ReplicationMessageSerde;
-import io.floodplain.streams.tools.KafkaUtils;
-import io.floodplain.streams.xml.parser.XMLElement;
-import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
@@ -32,21 +28,10 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.concurrent.ExecutionException;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public class ReplicationTopologyParser {
-    private static final String STORE = "store";
-    private static final String CACHE = "cache";
-
-    private static final String DIFFSTORE = "diffstore";
-    private static final String JOIN = "join";
-
-    private static final String GROUPEDSTORE = "groupedStore";
-    private static final String JOINGROUPED = "joinGrouped";
-    private static final String SPLIT = "split";
-
     public static final String STORE_PREFIX = "STORE_";
 
     private static final Serde<ReplicationMessage> messageSerde = new ReplicationMessageSerde();
@@ -135,16 +120,6 @@ public class ReplicationTopologyParser {
         );
     }
 
-    // unused?
-//   public static String addProcessorStore(final Topology currentBuilder, TopologyContext context, TopologyConstructor topologyConstructor,String processorName) {
-//	   final String sourceProcessorName = processorName(processorName);
-//		addStateStoreMapping(topologyConstructor.processorStateStoreMapper,sourceProcessorName, STORE_PREFIX+sourceProcessorName);
-//		topologyConstructor.stores.add(STORE_PREFIX+sourceProcessorName);
-//		logger.info("Granting access for processor: {} to store: {}",sourceProcessorName, STORE_PREFIX+sourceProcessorName);
-//       topologyConstructor.stateStoreSupplier.put(STORE_PREFIX+sourceProcessorName,createMessageStoreSupplier(STORE_PREFIX+sourceProcessorName,true));
-//       return sourceProcessorName;
-//   }
-
     public static String addLazySourceStore(final Topology currentBuilder, TopologyContext context,
                                             TopologyConstructor topologyConstructor, String topicName, Deserializer<?> keyDeserializer, Deserializer<?> valueDeserializer) {
 //		String storeTopic = topicName(topicName, context);
@@ -152,18 +127,11 @@ public class ReplicationTopologyParser {
         // if it is external yes, but if it is created by the same instance, then no.
         // No: if the topic is dynamic, it won't exist at first, so better to ensure.
         topologyConstructor.addDesiredTopic(topicName, Optional.empty());
-//		final String sourceProcessorName = processorName(sourceTopicName);
-//		String sourceName;
         if (!topologyConstructor.sources.containsKey(topicName)) {
-//			sourceName = sourceProcessorName + "_src";
             currentBuilder.addSource(topicName, keyDeserializer, valueDeserializer, topicName);
             topologyConstructor.sources.put(topicName, topicName);
             // TODO Optimize. The topology should be valid without adding identityprocessors
-        } else {
-//    	sourceName = topologyConstructor.sources.get(storeTopic);
-//    	currentBuilder.addProcessor(sourceProcessorName,()->new IdentityProcessor(), sourceName);
         }
-//		currentBuilder.addProcessor(sourceProcessorName, () -> new IdentityProcessor(), topicName);
         return topicName;
     }
 
@@ -229,66 +197,61 @@ public class ReplicationTopologyParser {
         return sourceProcessorName;
     }
 
-//	private static String processorName(String sourceTopicName) {
-//        return sourceTopicName.replace(':',  '_').replace('@', '.');
+//    // TODO replace, with the new streams api we can extract topic names from messages in a more declarative way
+//    private static void addSplit(Topology current, TopologyContext topologyContext, String name, Optional<String> from, Optional<String> topic,
+//                                 Optional<ProcessorSupplier<String, ReplicationMessage>> transformerSupplier, List<XMLElement> destinations, Optional<XMLElement> defaultDestination, Optional<AdminClient> adminClient) throws InterruptedException, ExecutionException {
+//        String transformProcessor;
+//        if (from.isPresent()) {
+//            String sourceProcessor = from.get();
+//            transformProcessor = name + "_transform";
+//            current.addProcessor(transformProcessor, transformerSupplier.orElse(() -> new IdentityProcessor()), sourceProcessor);
+//        } else {
+//            if (!topic.isPresent()) {
+//                throw new NullPointerException("In a groupedProcessor you either need a 'from' or a 'topic'");
+//            }
+//            transformProcessor = topic.get(); //TODO Huh?
+//            String topicName = CoreOperators.topicName(topic.get(), topologyContext);
+//            current.addSource(topic.get() + "_src", topicName)
+//                    .addProcessor(transformProcessor, transformerSupplier.orElse(() -> new IdentityProcessor()), topic.get() + "_src");
+//        }
+//        List<Predicate<String, ReplicationMessage>> filterList = new ArrayList<>();
+//        for (XMLElement destination : destinations) {
+//            String destinationName = destination.getStringAttribute("name");
+//            String destinationTopic = CoreOperators.topicName(destination.getStringAttribute("topic"), topologyContext);
+//            Optional<Integer> partitions = Optional.ofNullable(destination.getStringAttribute("partitions")).map(Integer::parseInt);
+//            String filter = destination.getStringAttribute("filter");
+//            String keyColumn = destination.getStringAttribute("keyColumn");
+//            Predicate<String, ReplicationMessage> destinationFilter = Filters.getFilter(Optional.ofNullable(filter)).orElse((key, value) -> true);
+//            filterList.add(destinationFilter);
+//            Function<ReplicationMessage, String> keyExtract = CoreOperators.extractKey(keyColumn);
+//            addSplitDestination(current, transformProcessor, destinationName, destinationTopic, keyExtract, destinationFilter, adminClient, partitions);
+//        }
+//        if (defaultDestination.isPresent()) {
+//            String destinationTopic = CoreOperators.topicName(defaultDestination.get().getStringAttribute("topic"), topologyContext);
+//            Optional<Integer> partitions = Optional.ofNullable(defaultDestination.get().getStringAttribute("partitions")).map(Integer::parseInt);
+//
+//            String keyColumn = defaultDestination.get().getStringAttribute("keyColumn");
+//            Function<ReplicationMessage, String> keyExtract = CoreOperators.extractKey(keyColumn);
+//            Predicate<String, ReplicationMessage> defaultPredicate = (k, v) -> {
+//                for (Predicate<String, ReplicationMessage> element : filterList) {
+//                    if (element.test(k, v)) {
+//                        return false;
+//                    }
+//                }
+//                return true;
+//            };
+//            addSplitDestination(current, transformProcessor, "default", destinationTopic, keyExtract, defaultPredicate, adminClient, partitions);
+//        }
 //    }
-
-
-    // TODO replace, with the new streams api we can extract topic names from messages in a more declarative way
-    private static void addSplit(Topology current, TopologyContext topologyContext, String name, Optional<String> from, Optional<String> topic,
-                                 Optional<ProcessorSupplier<String, ReplicationMessage>> transformerSupplier, List<XMLElement> destinations, Optional<XMLElement> defaultDestination, Optional<AdminClient> adminClient) throws InterruptedException, ExecutionException {
-        String transformProcessor;
-        if (from.isPresent()) {
-            String sourceProcessor = from.get();
-            transformProcessor = name + "_transform";
-            current.addProcessor(transformProcessor, transformerSupplier.orElse(() -> new IdentityProcessor()), sourceProcessor);
-        } else {
-            if (!topic.isPresent()) {
-                throw new NullPointerException("In a groupedProcessor you either need a 'from' or a 'topic'");
-            }
-            transformProcessor = topic.get(); //TODO Huh?
-            String topicName = CoreOperators.topicName(topic.get(), topologyContext);
-            current.addSource(topic.get() + "_src", topicName)
-                    .addProcessor(transformProcessor, transformerSupplier.orElse(() -> new IdentityProcessor()), topic.get() + "_src");
-        }
-        List<Predicate<String, ReplicationMessage>> filterList = new ArrayList<>();
-        for (XMLElement destination : destinations) {
-            String destinationName = destination.getStringAttribute("name");
-            String destinationTopic = CoreOperators.topicName(destination.getStringAttribute("topic"), topologyContext);
-            Optional<Integer> partitions = Optional.ofNullable(destination.getStringAttribute("partitions")).map(Integer::parseInt);
-            String filter = destination.getStringAttribute("filter");
-            String keyColumn = destination.getStringAttribute("keyColumn");
-            Predicate<String, ReplicationMessage> destinationFilter = Filters.getFilter(Optional.ofNullable(filter)).orElse((key, value) -> true);
-            filterList.add(destinationFilter);
-            Function<ReplicationMessage, String> keyExtract = CoreOperators.extractKey(keyColumn);
-            addSplitDestination(current, transformProcessor, destinationName, destinationTopic, keyExtract, destinationFilter, adminClient, partitions);
-        }
-        if (defaultDestination.isPresent()) {
-            String destinationTopic = CoreOperators.topicName(defaultDestination.get().getStringAttribute("topic"), topologyContext);
-            Optional<Integer> partitions = Optional.ofNullable(defaultDestination.get().getStringAttribute("partitions")).map(Integer::parseInt);
-
-            String keyColumn = defaultDestination.get().getStringAttribute("keyColumn");
-            Function<ReplicationMessage, String> keyExtract = CoreOperators.extractKey(keyColumn);
-            Predicate<String, ReplicationMessage> defaultPredicate = (k, v) -> {
-                for (Predicate<String, ReplicationMessage> element : filterList) {
-                    if (element.test(k, v)) {
-                        return false;
-                    }
-                }
-                return true;
-            };
-            addSplitDestination(current, transformProcessor, "default", destinationTopic, keyExtract, defaultPredicate, adminClient, partitions);
-        }
-    }
-
-    private static void addSplitDestination(Topology builder, String parentProcessor, String destinationName, String destinationTopic,
-                                            Function<ReplicationMessage, String> keyExtract, Predicate<String, ReplicationMessage> destinationFilter, Optional<AdminClient> adminClient, Optional<Integer> partitions) {
-        String destinationProcName = destinationName;
-
-        KafkaUtils.ensureExistsSync(adminClient, destinationTopic, partitions);
-        builder.addProcessor(destinationProcName, new DestinationProcessorSupplier(keyExtract, destinationFilter), parentProcessor)
-                .addSink(destinationProcName + "_sink", destinationTopic, destinationProcName);
-    }
+//
+//    private static void addSplitDestination(Topology builder, String parentProcessor, String destinationName, String destinationTopic,
+//                                            Function<ReplicationMessage, String> keyExtract, Predicate<String, ReplicationMessage> destinationFilter, Optional<AdminClient> adminClient, Optional<Integer> partitions) {
+//        String destinationProcName = destinationName;
+//
+//        KafkaUtils.ensureExistsSync(adminClient, destinationTopic, partitions);
+//        builder.addProcessor(destinationProcName, new DestinationProcessorSupplier(keyExtract, destinationFilter), parentProcessor)
+//                .addSink(destinationProcName + "_sink", destinationTopic, destinationProcName);
+//    }
 
     private static Flatten parseFlatten(String flatten) {
         if (flatten == null) {

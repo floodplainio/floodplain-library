@@ -24,6 +24,5 @@ dependencies {
     compile dependencies.rxJava
     compile dependencies.cdiApi
     compile dependencies.microProfileConfig
-
 }
 
