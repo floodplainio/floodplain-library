@@ -23,14 +23,14 @@ fun joinFilms(generation: String) {
                         postgresSource("public", "category", postgresConfig) {}
                     }
                     set { msg, state ->
-                        msg["category"] = state["name"]?:"unknown"
+                        msg["category"] = state["name"] ?: "unknown"
                         msg
                     }
-                    group { msg-> "${msg["film_id"]}" }
+                    group { msg -> "${msg["film_id"]}" }
                 }
             }
             set { msg, state ->
-                msg["categories"] = state["list"]?: empty()
+                msg["categories"] = state["list"] ?: empty()
                 msg
             }
             mongoSink("filmwithcategories", "filmwithcat", mongoConfig)

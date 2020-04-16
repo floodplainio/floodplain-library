@@ -1,8 +1,6 @@
 package io.floodplain.kotlindsl.example
 
 import io.floodplain.kotlindsl.*
-import io.floodplain.kotlindsl.message.IMessage
-import io.floodplain.kotlindsl.message.empty
 import java.net.URL
 import java.util.*
 
@@ -14,7 +12,7 @@ fun filter(generation: String) {
         val mongoConfig = mongoConfig("mongosink", "mongodb://mongo", "mongodump")
         postgresSource("public", "actor", postgresConfig) {
             filter { msg, _ ->
-                (msg["last_name"] as String).startsWith("G",true)
+                (msg["last_name"] as String).startsWith("G", true)
             }
             mongoSink("filtercollection", "filtertopic", mongoConfig)
         }

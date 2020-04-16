@@ -4,4026 +4,4408 @@
 package io.floodplain.protobuf.generated;
 
 public final class Replication {
-  private Replication() {}
-  public static void registerAllExtensions(
-      com.google.protobuf.ExtensionRegistryLite registry) {
-  }
+    private Replication() {
+    }
 
-  public static void registerAllExtensions(
-      com.google.protobuf.ExtensionRegistry registry) {
-    registerAllExtensions(
-        (com.google.protobuf.ExtensionRegistryLite) registry);
-  }
-  public interface ValueProtobufOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:io.floodplain.protobuf.generated.ValueProtobuf)
-      com.google.protobuf.MessageOrBuilder {
+    public static void registerAllExtensions(
+            com.google.protobuf.ExtensionRegistryLite registry) {
+    }
 
-    /**
-     * <code>string value = 1;</code>
-     */
-    java.lang.String getValue();
-    /**
-     * <code>string value = 1;</code>
-     */
-    com.google.protobuf.ByteString
+    public static void registerAllExtensions(
+            com.google.protobuf.ExtensionRegistry registry) {
+        registerAllExtensions(
+                (com.google.protobuf.ExtensionRegistryLite) registry);
+    }
+
+    public interface ValueProtobufOrBuilder extends
+            // @@protoc_insertion_point(interface_extends:io.floodplain.protobuf.generated.ValueProtobuf)
+            com.google.protobuf.MessageOrBuilder {
+
+        /**
+         * <code>string value = 1;</code>
+         */
+        java.lang.String getValue();
+
+        /**
+         * <code>string value = 1;</code>
+         */
+        com.google.protobuf.ByteString
         getValueBytes();
 
-    /**
-     * <code>.io.floodplain.protobuf.generated.ValueProtobuf.ValueType type = 2;</code>
-     */
-    int getTypeValue();
-    /**
-     * <code>.io.floodplain.protobuf.generated.ValueProtobuf.ValueType type = 2;</code>
-     */
-    io.floodplain.protobuf.generated.Replication.ValueProtobuf.ValueType getType();
+        /**
+         * <code>.io.floodplain.protobuf.generated.ValueProtobuf.ValueType type = 2;</code>
+         */
+        int getTypeValue();
 
-    /**
-     * <code>bool isNull = 3;</code>
-     */
-    boolean getIsNull();
+        /**
+         * <code>.io.floodplain.protobuf.generated.ValueProtobuf.ValueType type = 2;</code>
+         */
+        io.floodplain.protobuf.generated.Replication.ValueProtobuf.ValueType getType();
 
-    /**
-     * <code>bytes byteData = 4;</code>
-     */
-    com.google.protobuf.ByteString getByteData();
-  }
-  /**
-   * Protobuf type {@code io.floodplain.protobuf.generated.ValueProtobuf}
-   */
-  public  static final class ValueProtobuf extends
-      com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:io.floodplain.protobuf.generated.ValueProtobuf)
-      ValueProtobufOrBuilder {
-    // Use ValueProtobuf.newBuilder() to construct.
-    private ValueProtobuf(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
-      super(builder);
-    }
-    private ValueProtobuf() {
-      value_ = "";
-      type_ = 0;
-      isNull_ = false;
-      byteData_ = com.google.protobuf.ByteString.EMPTY;
+        /**
+         * <code>bool isNull = 3;</code>
+         */
+        boolean getIsNull();
+
+        /**
+         * <code>bytes byteData = 4;</code>
+         */
+        com.google.protobuf.ByteString getByteData();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
-    }
-    private ValueProtobuf(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      int mutable_bitField0_ = 0;
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            default: {
-              if (!input.skipField(tag)) {
-                done = true;
-              }
-              break;
-            }
-            case 10: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              value_ = s;
-              break;
-            }
-            case 16: {
-              int rawValue = input.readEnum();
-
-              type_ = rawValue;
-              break;
-            }
-            case 24: {
-
-              isNull_ = input.readBool();
-              break;
-            }
-            case 34: {
-
-              byteData_ = input.readBytes();
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        makeExtensionsImmutable();
-      }
-    }
-    public static final com.google.protobuf.Descriptors.Descriptor
-        getDescriptor() {
-      return io.floodplain.protobuf.generated.Replication.internal_static_io_floodplain_protobuf_generated_ValueProtobuf_descriptor;
-    }
-
-    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-        internalGetFieldAccessorTable() {
-      return io.floodplain.protobuf.generated.Replication.internal_static_io_floodplain_protobuf_generated_ValueProtobuf_fieldAccessorTable
-          .ensureFieldAccessorsInitialized(
-              io.floodplain.protobuf.generated.Replication.ValueProtobuf.class, io.floodplain.protobuf.generated.Replication.ValueProtobuf.Builder.class);
-    }
-
-    /**
-     * Protobuf enum {@code io.floodplain.protobuf.generated.ValueProtobuf.ValueType}
-     */
-    public enum ValueType
-        implements com.google.protobuf.ProtocolMessageEnum {
-      /**
-       * <code>STRING = 0;</code>
-       */
-      STRING(0),
-      /**
-       * <code>INTEGER = 1;</code>
-       */
-      INTEGER(1),
-      /**
-       * <code>LONG = 2;</code>
-       */
-      LONG(2),
-      /**
-       * <code>DOUBLE = 3;</code>
-       */
-      DOUBLE(3),
-      /**
-       * <code>FLOAT = 4;</code>
-       */
-      FLOAT(4),
-      /**
-       * <code>BOOLEAN = 5;</code>
-       */
-      BOOLEAN(5),
-      /**
-       * <code>BINARY_DIGEST = 6;</code>
-       */
-      BINARY_DIGEST(6),
-      /**
-       * <code>DATE = 7;</code>
-       */
-      DATE(7),
-      /**
-       * <code>CLOCKTIME = 8;</code>
-       */
-      CLOCKTIME(8),
-      /**
-       * <code>LIST = 9;</code>
-       */
-      LIST(9),
-      /**
-       * <code>BINARY = 10;</code>
-       */
-      BINARY(10),
-      /**
-       * <code>COORDINATE = 11;</code>
-       */
-      COORDINATE(11),
-      /**
-       * <code>ENUM = 12;</code>
-       */
-      ENUM(12),
-      /**
-       * <code>STRINGLIST = 13;</code>
-       */
-      STRINGLIST(13),
-      UNRECOGNIZED(-1),
-      ;
-
-      /**
-       * <code>STRING = 0;</code>
-       */
-      public static final int STRING_VALUE = 0;
-      /**
-       * <code>INTEGER = 1;</code>
-       */
-      public static final int INTEGER_VALUE = 1;
-      /**
-       * <code>LONG = 2;</code>
-       */
-      public static final int LONG_VALUE = 2;
-      /**
-       * <code>DOUBLE = 3;</code>
-       */
-      public static final int DOUBLE_VALUE = 3;
-      /**
-       * <code>FLOAT = 4;</code>
-       */
-      public static final int FLOAT_VALUE = 4;
-      /**
-       * <code>BOOLEAN = 5;</code>
-       */
-      public static final int BOOLEAN_VALUE = 5;
-      /**
-       * <code>BINARY_DIGEST = 6;</code>
-       */
-      public static final int BINARY_DIGEST_VALUE = 6;
-      /**
-       * <code>DATE = 7;</code>
-       */
-      public static final int DATE_VALUE = 7;
-      /**
-       * <code>CLOCKTIME = 8;</code>
-       */
-      public static final int CLOCKTIME_VALUE = 8;
-      /**
-       * <code>LIST = 9;</code>
-       */
-      public static final int LIST_VALUE = 9;
-      /**
-       * <code>BINARY = 10;</code>
-       */
-      public static final int BINARY_VALUE = 10;
-      /**
-       * <code>COORDINATE = 11;</code>
-       */
-      public static final int COORDINATE_VALUE = 11;
-      /**
-       * <code>ENUM = 12;</code>
-       */
-      public static final int ENUM_VALUE = 12;
-      /**
-       * <code>STRINGLIST = 13;</code>
-       */
-      public static final int STRINGLIST_VALUE = 13;
-
-
-      public final int getNumber() {
-        if (this == UNRECOGNIZED) {
-          throw new java.lang.IllegalArgumentException(
-              "Can't get the number of an unknown enum value.");
-        }
-        return value;
-      }
-
-      /**
-       * @deprecated Use {@link #forNumber(int)} instead.
-       */
-      @java.lang.Deprecated
-      public static ValueType valueOf(int value) {
-        return forNumber(value);
-      }
-
-      public static ValueType forNumber(int value) {
-        switch (value) {
-          case 0: return STRING;
-          case 1: return INTEGER;
-          case 2: return LONG;
-          case 3: return DOUBLE;
-          case 4: return FLOAT;
-          case 5: return BOOLEAN;
-          case 6: return BINARY_DIGEST;
-          case 7: return DATE;
-          case 8: return CLOCKTIME;
-          case 9: return LIST;
-          case 10: return BINARY;
-          case 11: return COORDINATE;
-          case 12: return ENUM;
-          case 13: return STRINGLIST;
-          default: return null;
-        }
-      }
-
-      public static com.google.protobuf.Internal.EnumLiteMap<ValueType>
-          internalGetValueMap() {
-        return internalValueMap;
-      }
-      private static final com.google.protobuf.Internal.EnumLiteMap<
-          ValueType> internalValueMap =
-            new com.google.protobuf.Internal.EnumLiteMap<ValueType>() {
-              public ValueType findValueByNumber(int number) {
-                return ValueType.forNumber(number);
-              }
-            };
-
-      public final com.google.protobuf.Descriptors.EnumValueDescriptor
-          getValueDescriptor() {
-        return getDescriptor().getValues().get(ordinal());
-      }
-      public final com.google.protobuf.Descriptors.EnumDescriptor
-          getDescriptorForType() {
-        return getDescriptor();
-      }
-      public static final com.google.protobuf.Descriptors.EnumDescriptor
-          getDescriptor() {
-        return io.floodplain.protobuf.generated.Replication.ValueProtobuf.getDescriptor().getEnumTypes().get(0);
-      }
-
-      private static final ValueType[] VALUES = values();
-
-      public static ValueType valueOf(
-          com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
-        if (desc.getType() != getDescriptor()) {
-          throw new java.lang.IllegalArgumentException(
-            "EnumValueDescriptor is not for this type.");
-        }
-        if (desc.getIndex() == -1) {
-          return UNRECOGNIZED;
-        }
-        return VALUES[desc.getIndex()];
-      }
-
-      private final int value;
-
-      private ValueType(int value) {
-        this.value = value;
-      }
-
-      // @@protoc_insertion_point(enum_scope:io.floodplain.protobuf.generated.ValueProtobuf.ValueType)
-    }
-
-    public static final int VALUE_FIELD_NUMBER = 1;
-    private volatile java.lang.Object value_;
-    /**
-     * <code>string value = 1;</code>
-     */
-    public java.lang.String getValue() {
-      java.lang.Object ref = value_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        value_ = s;
-        return s;
-      }
-    }
-    /**
-     * <code>string value = 1;</code>
-     */
-    public com.google.protobuf.ByteString
-        getValueBytes() {
-      java.lang.Object ref = value_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        value_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
-    public static final int TYPE_FIELD_NUMBER = 2;
-    private int type_;
-    /**
-     * <code>.io.floodplain.protobuf.generated.ValueProtobuf.ValueType type = 2;</code>
-     */
-    public int getTypeValue() {
-      return type_;
-    }
-    /**
-     * <code>.io.floodplain.protobuf.generated.ValueProtobuf.ValueType type = 2;</code>
-     */
-    public io.floodplain.protobuf.generated.Replication.ValueProtobuf.ValueType getType() {
-      io.floodplain.protobuf.generated.Replication.ValueProtobuf.ValueType result = io.floodplain.protobuf.generated.Replication.ValueProtobuf.ValueType.valueOf(type_);
-      return result == null ? io.floodplain.protobuf.generated.Replication.ValueProtobuf.ValueType.UNRECOGNIZED : result;
-    }
-
-    public static final int ISNULL_FIELD_NUMBER = 3;
-    private boolean isNull_;
-    /**
-     * <code>bool isNull = 3;</code>
-     */
-    public boolean getIsNull() {
-      return isNull_;
-    }
-
-    public static final int BYTEDATA_FIELD_NUMBER = 4;
-    private com.google.protobuf.ByteString byteData_;
-    /**
-     * <code>bytes byteData = 4;</code>
-     */
-    public com.google.protobuf.ByteString getByteData() {
-      return byteData_;
-    }
-
-    private byte memoizedIsInitialized = -1;
-    public final boolean isInitialized() {
-      byte isInitialized = memoizedIsInitialized;
-      if (isInitialized == 1) return true;
-      if (isInitialized == 0) return false;
-
-      memoizedIsInitialized = 1;
-      return true;
-    }
-
-    public void writeTo(com.google.protobuf.CodedOutputStream output)
-                        throws java.io.IOException {
-      if (!getValueBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, value_);
-      }
-      if (type_ != io.floodplain.protobuf.generated.Replication.ValueProtobuf.ValueType.STRING.getNumber()) {
-        output.writeEnum(2, type_);
-      }
-      if (isNull_ != false) {
-        output.writeBool(3, isNull_);
-      }
-      if (!byteData_.isEmpty()) {
-        output.writeBytes(4, byteData_);
-      }
-    }
-
-    public int getSerializedSize() {
-      int size = memoizedSize;
-      if (size != -1) return size;
-
-      size = 0;
-      if (!getValueBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, value_);
-      }
-      if (type_ != io.floodplain.protobuf.generated.Replication.ValueProtobuf.ValueType.STRING.getNumber()) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeEnumSize(2, type_);
-      }
-      if (isNull_ != false) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBoolSize(3, isNull_);
-      }
-      if (!byteData_.isEmpty()) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(4, byteData_);
-      }
-      memoizedSize = size;
-      return size;
-    }
-
-    private static final long serialVersionUID = 0L;
-    @java.lang.Override
-    public boolean equals(final java.lang.Object obj) {
-      if (obj == this) {
-       return true;
-      }
-      if (!(obj instanceof io.floodplain.protobuf.generated.Replication.ValueProtobuf)) {
-        return super.equals(obj);
-      }
-      io.floodplain.protobuf.generated.Replication.ValueProtobuf other = (io.floodplain.protobuf.generated.Replication.ValueProtobuf) obj;
-
-      boolean result = true;
-      result = result && getValue()
-          .equals(other.getValue());
-      result = result && type_ == other.type_;
-      result = result && (getIsNull()
-          == other.getIsNull());
-      result = result && getByteData()
-          .equals(other.getByteData());
-      return result;
-    }
-
-    @java.lang.Override
-    public int hashCode() {
-      if (memoizedHashCode != 0) {
-        return memoizedHashCode;
-      }
-      int hash = 41;
-      hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (37 * hash) + VALUE_FIELD_NUMBER;
-      hash = (53 * hash) + getValue().hashCode();
-      hash = (37 * hash) + TYPE_FIELD_NUMBER;
-      hash = (53 * hash) + type_;
-      hash = (37 * hash) + ISNULL_FIELD_NUMBER;
-      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
-          getIsNull());
-      hash = (37 * hash) + BYTEDATA_FIELD_NUMBER;
-      hash = (53 * hash) + getByteData().hashCode();
-      hash = (29 * hash) + unknownFields.hashCode();
-      memoizedHashCode = hash;
-      return hash;
-    }
-
-    public static io.floodplain.protobuf.generated.Replication.ValueProtobuf parseFrom(
-        java.nio.ByteBuffer data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static io.floodplain.protobuf.generated.Replication.ValueProtobuf parseFrom(
-        java.nio.ByteBuffer data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static io.floodplain.protobuf.generated.Replication.ValueProtobuf parseFrom(
-        com.google.protobuf.ByteString data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static io.floodplain.protobuf.generated.Replication.ValueProtobuf parseFrom(
-        com.google.protobuf.ByteString data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static io.floodplain.protobuf.generated.Replication.ValueProtobuf parseFrom(byte[] data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static io.floodplain.protobuf.generated.Replication.ValueProtobuf parseFrom(
-        byte[] data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static io.floodplain.protobuf.generated.Replication.ValueProtobuf parseFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input);
-    }
-    public static io.floodplain.protobuf.generated.Replication.ValueProtobuf parseFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
-    }
-    public static io.floodplain.protobuf.generated.Replication.ValueProtobuf parseDelimitedFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseDelimitedWithIOException(PARSER, input);
-    }
-    public static io.floodplain.protobuf.generated.Replication.ValueProtobuf parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
-    }
-    public static io.floodplain.protobuf.generated.Replication.ValueProtobuf parseFrom(
-        com.google.protobuf.CodedInputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input);
-    }
-    public static io.floodplain.protobuf.generated.Replication.ValueProtobuf parseFrom(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
-    }
-
-    public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder() {
-      return DEFAULT_INSTANCE.toBuilder();
-    }
-    public static Builder newBuilder(io.floodplain.protobuf.generated.Replication.ValueProtobuf prototype) {
-      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
-    }
-    public Builder toBuilder() {
-      return this == DEFAULT_INSTANCE
-          ? new Builder() : new Builder().mergeFrom(this);
-    }
-
-    @java.lang.Override
-    protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
-      Builder builder = new Builder(parent);
-      return builder;
-    }
     /**
      * Protobuf type {@code io.floodplain.protobuf.generated.ValueProtobuf}
      */
-    public static final class Builder extends
-        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:io.floodplain.protobuf.generated.ValueProtobuf)
-        io.floodplain.protobuf.generated.Replication.ValueProtobufOrBuilder {
-      public static final com.google.protobuf.Descriptors.Descriptor
-          getDescriptor() {
-        return io.floodplain.protobuf.generated.Replication.internal_static_io_floodplain_protobuf_generated_ValueProtobuf_descriptor;
-      }
-
-      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-          internalGetFieldAccessorTable() {
-        return io.floodplain.protobuf.generated.Replication.internal_static_io_floodplain_protobuf_generated_ValueProtobuf_fieldAccessorTable
-            .ensureFieldAccessorsInitialized(
-                io.floodplain.protobuf.generated.Replication.ValueProtobuf.class, io.floodplain.protobuf.generated.Replication.ValueProtobuf.Builder.class);
-      }
-
-      // Construct using io.floodplain.protobuf.generated.Replication.ValueProtobuf.newBuilder()
-      private Builder() {
-        maybeForceBuilderInitialization();
-      }
-
-      private Builder(
-          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
-        super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
+    public static final class ValueProtobuf extends
+            com.google.protobuf.GeneratedMessageV3 implements
+            // @@protoc_insertion_point(message_implements:io.floodplain.protobuf.generated.ValueProtobuf)
+            ValueProtobufOrBuilder {
+        // Use ValueProtobuf.newBuilder() to construct.
+        private ValueProtobuf(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+            super(builder);
         }
-      }
-      public Builder clear() {
-        super.clear();
-        value_ = "";
 
-        type_ = 0;
-
-        isNull_ = false;
-
-        byteData_ = com.google.protobuf.ByteString.EMPTY;
-
-        return this;
-      }
-
-      public com.google.protobuf.Descriptors.Descriptor
-          getDescriptorForType() {
-        return io.floodplain.protobuf.generated.Replication.internal_static_io_floodplain_protobuf_generated_ValueProtobuf_descriptor;
-      }
-
-      public io.floodplain.protobuf.generated.Replication.ValueProtobuf getDefaultInstanceForType() {
-        return io.floodplain.protobuf.generated.Replication.ValueProtobuf.getDefaultInstance();
-      }
-
-      public io.floodplain.protobuf.generated.Replication.ValueProtobuf build() {
-        io.floodplain.protobuf.generated.Replication.ValueProtobuf result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(result);
+        private ValueProtobuf() {
+            value_ = "";
+            type_ = 0;
+            isNull_ = false;
+            byteData_ = com.google.protobuf.ByteString.EMPTY;
         }
-        return result;
-      }
 
-      public io.floodplain.protobuf.generated.Replication.ValueProtobuf buildPartial() {
-        io.floodplain.protobuf.generated.Replication.ValueProtobuf result = new io.floodplain.protobuf.generated.Replication.ValueProtobuf(this);
-        result.value_ = value_;
-        result.type_ = type_;
-        result.isNull_ = isNull_;
-        result.byteData_ = byteData_;
-        onBuilt();
-        return result;
-      }
-
-      public Builder clone() {
-        return (Builder) super.clone();
-      }
-      public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          Object value) {
-        return (Builder) super.setField(field, value);
-      }
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
-      }
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
-      }
-      public Builder setRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
-      }
-      public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          Object value) {
-        return (Builder) super.addRepeatedField(field, value);
-      }
-      public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof io.floodplain.protobuf.generated.Replication.ValueProtobuf) {
-          return mergeFrom((io.floodplain.protobuf.generated.Replication.ValueProtobuf)other);
-        } else {
-          super.mergeFrom(other);
-          return this;
+        @java.lang.Override
+        public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+            return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
         }
-      }
 
-      public Builder mergeFrom(io.floodplain.protobuf.generated.Replication.ValueProtobuf other) {
-        if (other == io.floodplain.protobuf.generated.Replication.ValueProtobuf.getDefaultInstance()) return this;
-        if (!other.getValue().isEmpty()) {
-          value_ = other.value_;
-          onChanged();
+        private ValueProtobuf(
+                com.google.protobuf.CodedInputStream input,
+                com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                throws com.google.protobuf.InvalidProtocolBufferException {
+            this();
+            int mutable_bitField0_ = 0;
+            try {
+                boolean done = false;
+                while (!done) {
+                    int tag = input.readTag();
+                    switch (tag) {
+                        case 0:
+                            done = true;
+                            break;
+                        default: {
+                            if (!input.skipField(tag)) {
+                                done = true;
+                            }
+                            break;
+                        }
+                        case 10: {
+                            java.lang.String s = input.readStringRequireUtf8();
+
+                            value_ = s;
+                            break;
+                        }
+                        case 16: {
+                            int rawValue = input.readEnum();
+
+                            type_ = rawValue;
+                            break;
+                        }
+                        case 24: {
+
+                            isNull_ = input.readBool();
+                            break;
+                        }
+                        case 34: {
+
+                            byteData_ = input.readBytes();
+                            break;
+                        }
+                    }
+                }
+            } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+                throw e.setUnfinishedMessage(this);
+            } catch (java.io.IOException e) {
+                throw new com.google.protobuf.InvalidProtocolBufferException(
+                        e).setUnfinishedMessage(this);
+            } finally {
+                makeExtensionsImmutable();
+            }
         }
-        if (other.type_ != 0) {
-          setTypeValue(other.getTypeValue());
+
+        public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+            return io.floodplain.protobuf.generated.Replication.internal_static_io_floodplain_protobuf_generated_ValueProtobuf_descriptor;
         }
-        if (other.getIsNull() != false) {
-          setIsNull(other.getIsNull());
+
+        protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+            return io.floodplain.protobuf.generated.Replication.internal_static_io_floodplain_protobuf_generated_ValueProtobuf_fieldAccessorTable
+                    .ensureFieldAccessorsInitialized(
+                            io.floodplain.protobuf.generated.Replication.ValueProtobuf.class, io.floodplain.protobuf.generated.Replication.ValueProtobuf.Builder.class);
         }
-        if (other.getByteData() != com.google.protobuf.ByteString.EMPTY) {
-          setByteData(other.getByteData());
+
+        /**
+         * Protobuf enum {@code io.floodplain.protobuf.generated.ValueProtobuf.ValueType}
+         */
+        public enum ValueType
+                implements com.google.protobuf.ProtocolMessageEnum {
+            /**
+             * <code>STRING = 0;</code>
+             */
+            STRING(0),
+            /**
+             * <code>INTEGER = 1;</code>
+             */
+            INTEGER(1),
+            /**
+             * <code>LONG = 2;</code>
+             */
+            LONG(2),
+            /**
+             * <code>DOUBLE = 3;</code>
+             */
+            DOUBLE(3),
+            /**
+             * <code>FLOAT = 4;</code>
+             */
+            FLOAT(4),
+            /**
+             * <code>BOOLEAN = 5;</code>
+             */
+            BOOLEAN(5),
+            /**
+             * <code>BINARY_DIGEST = 6;</code>
+             */
+            BINARY_DIGEST(6),
+            /**
+             * <code>DATE = 7;</code>
+             */
+            DATE(7),
+            /**
+             * <code>CLOCKTIME = 8;</code>
+             */
+            CLOCKTIME(8),
+            /**
+             * <code>LIST = 9;</code>
+             */
+            LIST(9),
+            /**
+             * <code>BINARY = 10;</code>
+             */
+            BINARY(10),
+            /**
+             * <code>COORDINATE = 11;</code>
+             */
+            COORDINATE(11),
+            /**
+             * <code>ENUM = 12;</code>
+             */
+            ENUM(12),
+            /**
+             * <code>STRINGLIST = 13;</code>
+             */
+            STRINGLIST(13),
+            UNRECOGNIZED(-1),
+            ;
+
+            /**
+             * <code>STRING = 0;</code>
+             */
+            public static final int STRING_VALUE = 0;
+            /**
+             * <code>INTEGER = 1;</code>
+             */
+            public static final int INTEGER_VALUE = 1;
+            /**
+             * <code>LONG = 2;</code>
+             */
+            public static final int LONG_VALUE = 2;
+            /**
+             * <code>DOUBLE = 3;</code>
+             */
+            public static final int DOUBLE_VALUE = 3;
+            /**
+             * <code>FLOAT = 4;</code>
+             */
+            public static final int FLOAT_VALUE = 4;
+            /**
+             * <code>BOOLEAN = 5;</code>
+             */
+            public static final int BOOLEAN_VALUE = 5;
+            /**
+             * <code>BINARY_DIGEST = 6;</code>
+             */
+            public static final int BINARY_DIGEST_VALUE = 6;
+            /**
+             * <code>DATE = 7;</code>
+             */
+            public static final int DATE_VALUE = 7;
+            /**
+             * <code>CLOCKTIME = 8;</code>
+             */
+            public static final int CLOCKTIME_VALUE = 8;
+            /**
+             * <code>LIST = 9;</code>
+             */
+            public static final int LIST_VALUE = 9;
+            /**
+             * <code>BINARY = 10;</code>
+             */
+            public static final int BINARY_VALUE = 10;
+            /**
+             * <code>COORDINATE = 11;</code>
+             */
+            public static final int COORDINATE_VALUE = 11;
+            /**
+             * <code>ENUM = 12;</code>
+             */
+            public static final int ENUM_VALUE = 12;
+            /**
+             * <code>STRINGLIST = 13;</code>
+             */
+            public static final int STRINGLIST_VALUE = 13;
+
+
+            public final int getNumber() {
+                if (this == UNRECOGNIZED) {
+                    throw new java.lang.IllegalArgumentException(
+                            "Can't get the number of an unknown enum value.");
+                }
+                return value;
+            }
+
+            /**
+             * @deprecated Use {@link #forNumber(int)} instead.
+             */
+            @java.lang.Deprecated
+            public static ValueType valueOf(int value) {
+                return forNumber(value);
+            }
+
+            public static ValueType forNumber(int value) {
+                switch (value) {
+                    case 0:
+                        return STRING;
+                    case 1:
+                        return INTEGER;
+                    case 2:
+                        return LONG;
+                    case 3:
+                        return DOUBLE;
+                    case 4:
+                        return FLOAT;
+                    case 5:
+                        return BOOLEAN;
+                    case 6:
+                        return BINARY_DIGEST;
+                    case 7:
+                        return DATE;
+                    case 8:
+                        return CLOCKTIME;
+                    case 9:
+                        return LIST;
+                    case 10:
+                        return BINARY;
+                    case 11:
+                        return COORDINATE;
+                    case 12:
+                        return ENUM;
+                    case 13:
+                        return STRINGLIST;
+                    default:
+                        return null;
+                }
+            }
+
+            public static com.google.protobuf.Internal.EnumLiteMap<ValueType>
+            internalGetValueMap() {
+                return internalValueMap;
+            }
+
+            private static final com.google.protobuf.Internal.EnumLiteMap<
+                    ValueType> internalValueMap =
+                    new com.google.protobuf.Internal.EnumLiteMap<ValueType>() {
+                        public ValueType findValueByNumber(int number) {
+                            return ValueType.forNumber(number);
+                        }
+                    };
+
+            public final com.google.protobuf.Descriptors.EnumValueDescriptor
+            getValueDescriptor() {
+                return getDescriptor().getValues().get(ordinal());
+            }
+
+            public final com.google.protobuf.Descriptors.EnumDescriptor
+            getDescriptorForType() {
+                return getDescriptor();
+            }
+
+            public static final com.google.protobuf.Descriptors.EnumDescriptor
+            getDescriptor() {
+                return io.floodplain.protobuf.generated.Replication.ValueProtobuf.getDescriptor().getEnumTypes().get(0);
+            }
+
+            private static final ValueType[] VALUES = values();
+
+            public static ValueType valueOf(
+                    com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+                if (desc.getType() != getDescriptor()) {
+                    throw new java.lang.IllegalArgumentException(
+                            "EnumValueDescriptor is not for this type.");
+                }
+                if (desc.getIndex() == -1) {
+                    return UNRECOGNIZED;
+                }
+                return VALUES[desc.getIndex()];
+            }
+
+            private final int value;
+
+            private ValueType(int value) {
+                this.value = value;
+            }
+
+            // @@protoc_insertion_point(enum_scope:io.floodplain.protobuf.generated.ValueProtobuf.ValueType)
         }
-        onChanged();
-        return this;
-      }
 
-      public final boolean isInitialized() {
-        return true;
-      }
+        public static final int VALUE_FIELD_NUMBER = 1;
+        private volatile java.lang.Object value_;
 
-      public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        io.floodplain.protobuf.generated.Replication.ValueProtobuf parsedMessage = null;
-        try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (io.floodplain.protobuf.generated.Replication.ValueProtobuf) e.getUnfinishedMessage();
-          throw e.unwrapIOException();
-        } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
+        /**
+         * <code>string value = 1;</code>
+         */
+        public java.lang.String getValue() {
+            java.lang.Object ref = value_;
+            if (ref instanceof java.lang.String) {
+                return (java.lang.String) ref;
+            } else {
+                com.google.protobuf.ByteString bs =
+                        (com.google.protobuf.ByteString) ref;
+                java.lang.String s = bs.toStringUtf8();
+                value_ = s;
+                return s;
+            }
         }
-        return this;
-      }
 
-      private java.lang.Object value_ = "";
-      /**
-       * <code>string value = 1;</code>
-       */
-      public java.lang.String getValue() {
-        java.lang.Object ref = value_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          value_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
+        /**
+         * <code>string value = 1;</code>
+         */
+        public com.google.protobuf.ByteString
+        getValueBytes() {
+            java.lang.Object ref = value_;
+            if (ref instanceof java.lang.String) {
+                com.google.protobuf.ByteString b =
+                        com.google.protobuf.ByteString.copyFromUtf8(
+                                (java.lang.String) ref);
+                value_ = b;
+                return b;
+            } else {
+                return (com.google.protobuf.ByteString) ref;
+            }
         }
-      }
-      /**
-       * <code>string value = 1;</code>
-       */
-      public com.google.protobuf.ByteString
-          getValueBytes() {
-        java.lang.Object ref = value_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          value_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
+
+        public static final int TYPE_FIELD_NUMBER = 2;
+        private int type_;
+
+        /**
+         * <code>.io.floodplain.protobuf.generated.ValueProtobuf.ValueType type = 2;</code>
+         */
+        public int getTypeValue() {
+            return type_;
         }
-      }
-      /**
-       * <code>string value = 1;</code>
-       */
-      public Builder setValue(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
-        value_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string value = 1;</code>
-       */
-      public Builder clearValue() {
-        
-        value_ = getDefaultInstance().getValue();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string value = 1;</code>
-       */
-      public Builder setValueBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
-        value_ = value;
-        onChanged();
-        return this;
-      }
 
-      private int type_ = 0;
-      /**
-       * <code>.io.floodplain.protobuf.generated.ValueProtobuf.ValueType type = 2;</code>
-       */
-      public int getTypeValue() {
-        return type_;
-      }
-      /**
-       * <code>.io.floodplain.protobuf.generated.ValueProtobuf.ValueType type = 2;</code>
-       */
-      public Builder setTypeValue(int value) {
-        type_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>.io.floodplain.protobuf.generated.ValueProtobuf.ValueType type = 2;</code>
-       */
-      public io.floodplain.protobuf.generated.Replication.ValueProtobuf.ValueType getType() {
-        io.floodplain.protobuf.generated.Replication.ValueProtobuf.ValueType result = io.floodplain.protobuf.generated.Replication.ValueProtobuf.ValueType.valueOf(type_);
-        return result == null ? io.floodplain.protobuf.generated.Replication.ValueProtobuf.ValueType.UNRECOGNIZED : result;
-      }
-      /**
-       * <code>.io.floodplain.protobuf.generated.ValueProtobuf.ValueType type = 2;</code>
-       */
-      public Builder setType(io.floodplain.protobuf.generated.Replication.ValueProtobuf.ValueType value) {
-        if (value == null) {
-          throw new NullPointerException();
+        /**
+         * <code>.io.floodplain.protobuf.generated.ValueProtobuf.ValueType type = 2;</code>
+         */
+        public io.floodplain.protobuf.generated.Replication.ValueProtobuf.ValueType getType() {
+            io.floodplain.protobuf.generated.Replication.ValueProtobuf.ValueType result = io.floodplain.protobuf.generated.Replication.ValueProtobuf.ValueType.valueOf(type_);
+            return result == null ? io.floodplain.protobuf.generated.Replication.ValueProtobuf.ValueType.UNRECOGNIZED : result;
         }
-        
-        type_ = value.getNumber();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>.io.floodplain.protobuf.generated.ValueProtobuf.ValueType type = 2;</code>
-       */
-      public Builder clearType() {
-        
-        type_ = 0;
-        onChanged();
-        return this;
-      }
 
-      private boolean isNull_ ;
-      /**
-       * <code>bool isNull = 3;</code>
-       */
-      public boolean getIsNull() {
-        return isNull_;
-      }
-      /**
-       * <code>bool isNull = 3;</code>
-       */
-      public Builder setIsNull(boolean value) {
-        
-        isNull_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>bool isNull = 3;</code>
-       */
-      public Builder clearIsNull() {
-        
-        isNull_ = false;
-        onChanged();
-        return this;
-      }
+        public static final int ISNULL_FIELD_NUMBER = 3;
+        private boolean isNull_;
 
-      private com.google.protobuf.ByteString byteData_ = com.google.protobuf.ByteString.EMPTY;
-      /**
-       * <code>bytes byteData = 4;</code>
-       */
-      public com.google.protobuf.ByteString getByteData() {
-        return byteData_;
-      }
-      /**
-       * <code>bytes byteData = 4;</code>
-       */
-      public Builder setByteData(com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
-        byteData_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>bytes byteData = 4;</code>
-       */
-      public Builder clearByteData() {
-        
-        byteData_ = getDefaultInstance().getByteData();
-        onChanged();
-        return this;
-      }
-      public final Builder setUnknownFields(
-          final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
-      }
+        /**
+         * <code>bool isNull = 3;</code>
+         */
+        public boolean getIsNull() {
+            return isNull_;
+        }
 
-      public final Builder mergeUnknownFields(
-          final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
-      }
+        public static final int BYTEDATA_FIELD_NUMBER = 4;
+        private com.google.protobuf.ByteString byteData_;
+
+        /**
+         * <code>bytes byteData = 4;</code>
+         */
+        public com.google.protobuf.ByteString getByteData() {
+            return byteData_;
+        }
+
+        private byte memoizedIsInitialized = -1;
+
+        public final boolean isInitialized() {
+            byte isInitialized = memoizedIsInitialized;
+            if (isInitialized == 1) return true;
+            if (isInitialized == 0) return false;
+
+            memoizedIsInitialized = 1;
+            return true;
+        }
+
+        public void writeTo(com.google.protobuf.CodedOutputStream output)
+                throws java.io.IOException {
+            if (!getValueBytes().isEmpty()) {
+                com.google.protobuf.GeneratedMessageV3.writeString(output, 1, value_);
+            }
+            if (type_ != io.floodplain.protobuf.generated.Replication.ValueProtobuf.ValueType.STRING.getNumber()) {
+                output.writeEnum(2, type_);
+            }
+            if (isNull_ != false) {
+                output.writeBool(3, isNull_);
+            }
+            if (!byteData_.isEmpty()) {
+                output.writeBytes(4, byteData_);
+            }
+        }
+
+        public int getSerializedSize() {
+            int size = memoizedSize;
+            if (size != -1) return size;
+
+            size = 0;
+            if (!getValueBytes().isEmpty()) {
+                size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, value_);
+            }
+            if (type_ != io.floodplain.protobuf.generated.Replication.ValueProtobuf.ValueType.STRING.getNumber()) {
+                size += com.google.protobuf.CodedOutputStream
+                        .computeEnumSize(2, type_);
+            }
+            if (isNull_ != false) {
+                size += com.google.protobuf.CodedOutputStream
+                        .computeBoolSize(3, isNull_);
+            }
+            if (!byteData_.isEmpty()) {
+                size += com.google.protobuf.CodedOutputStream
+                        .computeBytesSize(4, byteData_);
+            }
+            memoizedSize = size;
+            return size;
+        }
+
+        private static final long serialVersionUID = 0L;
+
+        @java.lang.Override
+        public boolean equals(final java.lang.Object obj) {
+            if (obj == this) {
+                return true;
+            }
+            if (!(obj instanceof io.floodplain.protobuf.generated.Replication.ValueProtobuf)) {
+                return super.equals(obj);
+            }
+            io.floodplain.protobuf.generated.Replication.ValueProtobuf other = (io.floodplain.protobuf.generated.Replication.ValueProtobuf) obj;
+
+            boolean result = true;
+            result = result && getValue()
+                    .equals(other.getValue());
+            result = result && type_ == other.type_;
+            result = result && (getIsNull()
+                    == other.getIsNull());
+            result = result && getByteData()
+                    .equals(other.getByteData());
+            return result;
+        }
+
+        @java.lang.Override
+        public int hashCode() {
+            if (memoizedHashCode != 0) {
+                return memoizedHashCode;
+            }
+            int hash = 41;
+            hash = (19 * hash) + getDescriptor().hashCode();
+            hash = (37 * hash) + VALUE_FIELD_NUMBER;
+            hash = (53 * hash) + getValue().hashCode();
+            hash = (37 * hash) + TYPE_FIELD_NUMBER;
+            hash = (53 * hash) + type_;
+            hash = (37 * hash) + ISNULL_FIELD_NUMBER;
+            hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+                    getIsNull());
+            hash = (37 * hash) + BYTEDATA_FIELD_NUMBER;
+            hash = (53 * hash) + getByteData().hashCode();
+            hash = (29 * hash) + unknownFields.hashCode();
+            memoizedHashCode = hash;
+            return hash;
+        }
+
+        public static io.floodplain.protobuf.generated.Replication.ValueProtobuf parseFrom(
+                java.nio.ByteBuffer data)
+                throws com.google.protobuf.InvalidProtocolBufferException {
+            return PARSER.parseFrom(data);
+        }
+
+        public static io.floodplain.protobuf.generated.Replication.ValueProtobuf parseFrom(
+                java.nio.ByteBuffer data,
+                com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                throws com.google.protobuf.InvalidProtocolBufferException {
+            return PARSER.parseFrom(data, extensionRegistry);
+        }
+
+        public static io.floodplain.protobuf.generated.Replication.ValueProtobuf parseFrom(
+                com.google.protobuf.ByteString data)
+                throws com.google.protobuf.InvalidProtocolBufferException {
+            return PARSER.parseFrom(data);
+        }
+
+        public static io.floodplain.protobuf.generated.Replication.ValueProtobuf parseFrom(
+                com.google.protobuf.ByteString data,
+                com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                throws com.google.protobuf.InvalidProtocolBufferException {
+            return PARSER.parseFrom(data, extensionRegistry);
+        }
+
+        public static io.floodplain.protobuf.generated.Replication.ValueProtobuf parseFrom(byte[] data)
+                throws com.google.protobuf.InvalidProtocolBufferException {
+            return PARSER.parseFrom(data);
+        }
+
+        public static io.floodplain.protobuf.generated.Replication.ValueProtobuf parseFrom(
+                byte[] data,
+                com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                throws com.google.protobuf.InvalidProtocolBufferException {
+            return PARSER.parseFrom(data, extensionRegistry);
+        }
+
+        public static io.floodplain.protobuf.generated.Replication.ValueProtobuf parseFrom(java.io.InputStream input)
+                throws java.io.IOException {
+            return com.google.protobuf.GeneratedMessageV3
+                    .parseWithIOException(PARSER, input);
+        }
+
+        public static io.floodplain.protobuf.generated.Replication.ValueProtobuf parseFrom(
+                java.io.InputStream input,
+                com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                throws java.io.IOException {
+            return com.google.protobuf.GeneratedMessageV3
+                    .parseWithIOException(PARSER, input, extensionRegistry);
+        }
+
+        public static io.floodplain.protobuf.generated.Replication.ValueProtobuf parseDelimitedFrom(java.io.InputStream input)
+                throws java.io.IOException {
+            return com.google.protobuf.GeneratedMessageV3
+                    .parseDelimitedWithIOException(PARSER, input);
+        }
+
+        public static io.floodplain.protobuf.generated.Replication.ValueProtobuf parseDelimitedFrom(
+                java.io.InputStream input,
+                com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                throws java.io.IOException {
+            return com.google.protobuf.GeneratedMessageV3
+                    .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+        }
+
+        public static io.floodplain.protobuf.generated.Replication.ValueProtobuf parseFrom(
+                com.google.protobuf.CodedInputStream input)
+                throws java.io.IOException {
+            return com.google.protobuf.GeneratedMessageV3
+                    .parseWithIOException(PARSER, input);
+        }
+
+        public static io.floodplain.protobuf.generated.Replication.ValueProtobuf parseFrom(
+                com.google.protobuf.CodedInputStream input,
+                com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                throws java.io.IOException {
+            return com.google.protobuf.GeneratedMessageV3
+                    .parseWithIOException(PARSER, input, extensionRegistry);
+        }
+
+        public Builder newBuilderForType() {
+            return newBuilder();
+        }
+
+        public static Builder newBuilder() {
+            return DEFAULT_INSTANCE.toBuilder();
+        }
+
+        public static Builder newBuilder(io.floodplain.protobuf.generated.Replication.ValueProtobuf prototype) {
+            return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+        }
+
+        public Builder toBuilder() {
+            return this == DEFAULT_INSTANCE
+                    ? new Builder() : new Builder().mergeFrom(this);
+        }
+
+        @java.lang.Override
+        protected Builder newBuilderForType(
+                com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+            Builder builder = new Builder(parent);
+            return builder;
+        }
+
+        /**
+         * Protobuf type {@code io.floodplain.protobuf.generated.ValueProtobuf}
+         */
+        public static final class Builder extends
+                com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+                // @@protoc_insertion_point(builder_implements:io.floodplain.protobuf.generated.ValueProtobuf)
+                io.floodplain.protobuf.generated.Replication.ValueProtobufOrBuilder {
+            public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+                return io.floodplain.protobuf.generated.Replication.internal_static_io_floodplain_protobuf_generated_ValueProtobuf_descriptor;
+            }
+
+            protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+                return io.floodplain.protobuf.generated.Replication.internal_static_io_floodplain_protobuf_generated_ValueProtobuf_fieldAccessorTable
+                        .ensureFieldAccessorsInitialized(
+                                io.floodplain.protobuf.generated.Replication.ValueProtobuf.class, io.floodplain.protobuf.generated.Replication.ValueProtobuf.Builder.class);
+            }
+
+            // Construct using io.floodplain.protobuf.generated.Replication.ValueProtobuf.newBuilder()
+            private Builder() {
+                maybeForceBuilderInitialization();
+            }
+
+            private Builder(
+                    com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+                super(parent);
+                maybeForceBuilderInitialization();
+            }
+
+            private void maybeForceBuilderInitialization() {
+                if (com.google.protobuf.GeneratedMessageV3
+                        .alwaysUseFieldBuilders) {
+                }
+            }
+
+            public Builder clear() {
+                super.clear();
+                value_ = "";
+
+                type_ = 0;
+
+                isNull_ = false;
+
+                byteData_ = com.google.protobuf.ByteString.EMPTY;
+
+                return this;
+            }
+
+            public com.google.protobuf.Descriptors.Descriptor
+            getDescriptorForType() {
+                return io.floodplain.protobuf.generated.Replication.internal_static_io_floodplain_protobuf_generated_ValueProtobuf_descriptor;
+            }
+
+            public io.floodplain.protobuf.generated.Replication.ValueProtobuf getDefaultInstanceForType() {
+                return io.floodplain.protobuf.generated.Replication.ValueProtobuf.getDefaultInstance();
+            }
+
+            public io.floodplain.protobuf.generated.Replication.ValueProtobuf build() {
+                io.floodplain.protobuf.generated.Replication.ValueProtobuf result = buildPartial();
+                if (!result.isInitialized()) {
+                    throw newUninitializedMessageException(result);
+                }
+                return result;
+            }
+
+            public io.floodplain.protobuf.generated.Replication.ValueProtobuf buildPartial() {
+                io.floodplain.protobuf.generated.Replication.ValueProtobuf result = new io.floodplain.protobuf.generated.Replication.ValueProtobuf(this);
+                result.value_ = value_;
+                result.type_ = type_;
+                result.isNull_ = isNull_;
+                result.byteData_ = byteData_;
+                onBuilt();
+                return result;
+            }
+
+            public Builder clone() {
+                return (Builder) super.clone();
+            }
+
+            public Builder setField(
+                    com.google.protobuf.Descriptors.FieldDescriptor field,
+                    Object value) {
+                return (Builder) super.setField(field, value);
+            }
+
+            public Builder clearField(
+                    com.google.protobuf.Descriptors.FieldDescriptor field) {
+                return (Builder) super.clearField(field);
+            }
+
+            public Builder clearOneof(
+                    com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+                return (Builder) super.clearOneof(oneof);
+            }
+
+            public Builder setRepeatedField(
+                    com.google.protobuf.Descriptors.FieldDescriptor field,
+                    int index, Object value) {
+                return (Builder) super.setRepeatedField(field, index, value);
+            }
+
+            public Builder addRepeatedField(
+                    com.google.protobuf.Descriptors.FieldDescriptor field,
+                    Object value) {
+                return (Builder) super.addRepeatedField(field, value);
+            }
+
+            public Builder mergeFrom(com.google.protobuf.Message other) {
+                if (other instanceof io.floodplain.protobuf.generated.Replication.ValueProtobuf) {
+                    return mergeFrom((io.floodplain.protobuf.generated.Replication.ValueProtobuf) other);
+                } else {
+                    super.mergeFrom(other);
+                    return this;
+                }
+            }
+
+            public Builder mergeFrom(io.floodplain.protobuf.generated.Replication.ValueProtobuf other) {
+                if (other == io.floodplain.protobuf.generated.Replication.ValueProtobuf.getDefaultInstance())
+                    return this;
+                if (!other.getValue().isEmpty()) {
+                    value_ = other.value_;
+                    onChanged();
+                }
+                if (other.type_ != 0) {
+                    setTypeValue(other.getTypeValue());
+                }
+                if (other.getIsNull() != false) {
+                    setIsNull(other.getIsNull());
+                }
+                if (other.getByteData() != com.google.protobuf.ByteString.EMPTY) {
+                    setByteData(other.getByteData());
+                }
+                onChanged();
+                return this;
+            }
+
+            public final boolean isInitialized() {
+                return true;
+            }
+
+            public Builder mergeFrom(
+                    com.google.protobuf.CodedInputStream input,
+                    com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                    throws java.io.IOException {
+                io.floodplain.protobuf.generated.Replication.ValueProtobuf parsedMessage = null;
+                try {
+                    parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+                } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+                    parsedMessage = (io.floodplain.protobuf.generated.Replication.ValueProtobuf) e.getUnfinishedMessage();
+                    throw e.unwrapIOException();
+                } finally {
+                    if (parsedMessage != null) {
+                        mergeFrom(parsedMessage);
+                    }
+                }
+                return this;
+            }
+
+            private java.lang.Object value_ = "";
+
+            /**
+             * <code>string value = 1;</code>
+             */
+            public java.lang.String getValue() {
+                java.lang.Object ref = value_;
+                if (!(ref instanceof java.lang.String)) {
+                    com.google.protobuf.ByteString bs =
+                            (com.google.protobuf.ByteString) ref;
+                    java.lang.String s = bs.toStringUtf8();
+                    value_ = s;
+                    return s;
+                } else {
+                    return (java.lang.String) ref;
+                }
+            }
+
+            /**
+             * <code>string value = 1;</code>
+             */
+            public com.google.protobuf.ByteString
+            getValueBytes() {
+                java.lang.Object ref = value_;
+                if (ref instanceof String) {
+                    com.google.protobuf.ByteString b =
+                            com.google.protobuf.ByteString.copyFromUtf8(
+                                    (java.lang.String) ref);
+                    value_ = b;
+                    return b;
+                } else {
+                    return (com.google.protobuf.ByteString) ref;
+                }
+            }
+
+            /**
+             * <code>string value = 1;</code>
+             */
+            public Builder setValue(
+                    java.lang.String value) {
+                if (value == null) {
+                    throw new NullPointerException();
+                }
+
+                value_ = value;
+                onChanged();
+                return this;
+            }
+
+            /**
+             * <code>string value = 1;</code>
+             */
+            public Builder clearValue() {
+
+                value_ = getDefaultInstance().getValue();
+                onChanged();
+                return this;
+            }
+
+            /**
+             * <code>string value = 1;</code>
+             */
+            public Builder setValueBytes(
+                    com.google.protobuf.ByteString value) {
+                if (value == null) {
+                    throw new NullPointerException();
+                }
+                checkByteStringIsUtf8(value);
+
+                value_ = value;
+                onChanged();
+                return this;
+            }
+
+            private int type_ = 0;
+
+            /**
+             * <code>.io.floodplain.protobuf.generated.ValueProtobuf.ValueType type = 2;</code>
+             */
+            public int getTypeValue() {
+                return type_;
+            }
+
+            /**
+             * <code>.io.floodplain.protobuf.generated.ValueProtobuf.ValueType type = 2;</code>
+             */
+            public Builder setTypeValue(int value) {
+                type_ = value;
+                onChanged();
+                return this;
+            }
+
+            /**
+             * <code>.io.floodplain.protobuf.generated.ValueProtobuf.ValueType type = 2;</code>
+             */
+            public io.floodplain.protobuf.generated.Replication.ValueProtobuf.ValueType getType() {
+                io.floodplain.protobuf.generated.Replication.ValueProtobuf.ValueType result = io.floodplain.protobuf.generated.Replication.ValueProtobuf.ValueType.valueOf(type_);
+                return result == null ? io.floodplain.protobuf.generated.Replication.ValueProtobuf.ValueType.UNRECOGNIZED : result;
+            }
+
+            /**
+             * <code>.io.floodplain.protobuf.generated.ValueProtobuf.ValueType type = 2;</code>
+             */
+            public Builder setType(io.floodplain.protobuf.generated.Replication.ValueProtobuf.ValueType value) {
+                if (value == null) {
+                    throw new NullPointerException();
+                }
+
+                type_ = value.getNumber();
+                onChanged();
+                return this;
+            }
+
+            /**
+             * <code>.io.floodplain.protobuf.generated.ValueProtobuf.ValueType type = 2;</code>
+             */
+            public Builder clearType() {
+
+                type_ = 0;
+                onChanged();
+                return this;
+            }
+
+            private boolean isNull_;
+
+            /**
+             * <code>bool isNull = 3;</code>
+             */
+            public boolean getIsNull() {
+                return isNull_;
+            }
+
+            /**
+             * <code>bool isNull = 3;</code>
+             */
+            public Builder setIsNull(boolean value) {
+
+                isNull_ = value;
+                onChanged();
+                return this;
+            }
+
+            /**
+             * <code>bool isNull = 3;</code>
+             */
+            public Builder clearIsNull() {
+
+                isNull_ = false;
+                onChanged();
+                return this;
+            }
+
+            private com.google.protobuf.ByteString byteData_ = com.google.protobuf.ByteString.EMPTY;
+
+            /**
+             * <code>bytes byteData = 4;</code>
+             */
+            public com.google.protobuf.ByteString getByteData() {
+                return byteData_;
+            }
+
+            /**
+             * <code>bytes byteData = 4;</code>
+             */
+            public Builder setByteData(com.google.protobuf.ByteString value) {
+                if (value == null) {
+                    throw new NullPointerException();
+                }
+
+                byteData_ = value;
+                onChanged();
+                return this;
+            }
+
+            /**
+             * <code>bytes byteData = 4;</code>
+             */
+            public Builder clearByteData() {
+
+                byteData_ = getDefaultInstance().getByteData();
+                onChanged();
+                return this;
+            }
+
+            public final Builder setUnknownFields(
+                    final com.google.protobuf.UnknownFieldSet unknownFields) {
+                return this;
+            }
+
+            public final Builder mergeUnknownFields(
+                    final com.google.protobuf.UnknownFieldSet unknownFields) {
+                return this;
+            }
 
 
-      // @@protoc_insertion_point(builder_scope:io.floodplain.protobuf.generated.ValueProtobuf)
+            // @@protoc_insertion_point(builder_scope:io.floodplain.protobuf.generated.ValueProtobuf)
+        }
+
+        // @@protoc_insertion_point(class_scope:io.floodplain.protobuf.generated.ValueProtobuf)
+        private static final io.floodplain.protobuf.generated.Replication.ValueProtobuf DEFAULT_INSTANCE;
+
+        static {
+            DEFAULT_INSTANCE = new io.floodplain.protobuf.generated.Replication.ValueProtobuf();
+        }
+
+        public static io.floodplain.protobuf.generated.Replication.ValueProtobuf getDefaultInstance() {
+            return DEFAULT_INSTANCE;
+        }
+
+        private static final com.google.protobuf.Parser<ValueProtobuf>
+                PARSER = new com.google.protobuf.AbstractParser<ValueProtobuf>() {
+            public ValueProtobuf parsePartialFrom(
+                    com.google.protobuf.CodedInputStream input,
+                    com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                    throws com.google.protobuf.InvalidProtocolBufferException {
+                return new ValueProtobuf(input, extensionRegistry);
+            }
+        };
+
+        public static com.google.protobuf.Parser<ValueProtobuf> parser() {
+            return PARSER;
+        }
+
+        @java.lang.Override
+        public com.google.protobuf.Parser<ValueProtobuf> getParserForType() {
+            return PARSER;
+        }
+
+        public io.floodplain.protobuf.generated.Replication.ValueProtobuf getDefaultInstanceForType() {
+            return DEFAULT_INSTANCE;
+        }
+
     }
 
-    // @@protoc_insertion_point(class_scope:io.floodplain.protobuf.generated.ValueProtobuf)
-    private static final io.floodplain.protobuf.generated.Replication.ValueProtobuf DEFAULT_INSTANCE;
-    static {
-      DEFAULT_INSTANCE = new io.floodplain.protobuf.generated.Replication.ValueProtobuf();
-    }
+    public interface ReplicationMessageProtobufOrBuilder extends
+            // @@protoc_insertion_point(interface_extends:io.floodplain.protobuf.generated.ReplicationMessageProtobuf)
+            com.google.protobuf.MessageOrBuilder {
 
-    public static io.floodplain.protobuf.generated.Replication.ValueProtobuf getDefaultInstance() {
-      return DEFAULT_INSTANCE;
-    }
+        /**
+         * <code>int32 magic = 1;</code>
+         */
+        int getMagic();
 
-    private static final com.google.protobuf.Parser<ValueProtobuf>
-        PARSER = new com.google.protobuf.AbstractParser<ValueProtobuf>() {
-      public ValueProtobuf parsePartialFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-          return new ValueProtobuf(input, extensionRegistry);
-      }
-    };
+        /**
+         * <code>.io.floodplain.protobuf.generated.ReplicationMessageProtobuf.Operation operation = 2;</code>
+         */
+        int getOperationValue();
 
-    public static com.google.protobuf.Parser<ValueProtobuf> parser() {
-      return PARSER;
-    }
+        /**
+         * <code>.io.floodplain.protobuf.generated.ReplicationMessageProtobuf.Operation operation = 2;</code>
+         */
+        io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Operation getOperation();
 
-    @java.lang.Override
-    public com.google.protobuf.Parser<ValueProtobuf> getParserForType() {
-      return PARSER;
-    }
+        /**
+         * <code>int64 timestamp = 3;</code>
+         */
+        long getTimestamp();
 
-    public io.floodplain.protobuf.generated.Replication.ValueProtobuf getDefaultInstanceForType() {
-      return DEFAULT_INSTANCE;
-    }
+        /**
+         * <code>string transaction_id = 4;</code>
+         */
+        java.lang.String getTransactionId();
 
-  }
-
-  public interface ReplicationMessageProtobufOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:io.floodplain.protobuf.generated.ReplicationMessageProtobuf)
-      com.google.protobuf.MessageOrBuilder {
-
-    /**
-     * <code>int32 magic = 1;</code>
-     */
-    int getMagic();
-
-    /**
-     * <code>.io.floodplain.protobuf.generated.ReplicationMessageProtobuf.Operation operation = 2;</code>
-     */
-    int getOperationValue();
-    /**
-     * <code>.io.floodplain.protobuf.generated.ReplicationMessageProtobuf.Operation operation = 2;</code>
-     */
-    io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Operation getOperation();
-
-    /**
-     * <code>int64 timestamp = 3;</code>
-     */
-    long getTimestamp();
-
-    /**
-     * <code>string transaction_id = 4;</code>
-     */
-    java.lang.String getTransactionId();
-    /**
-     * <code>string transaction_id = 4;</code>
-     */
-    com.google.protobuf.ByteString
+        /**
+         * <code>string transaction_id = 4;</code>
+         */
+        com.google.protobuf.ByteString
         getTransactionIdBytes();
 
-    /**
-     * <code>repeated string primarykeys = 5;</code>
-     */
-    java.util.List<java.lang.String>
+        /**
+         * <code>repeated string primarykeys = 5;</code>
+         */
+        java.util.List<java.lang.String>
         getPrimarykeysList();
-    /**
-     * <code>repeated string primarykeys = 5;</code>
-     */
-    int getPrimarykeysCount();
-    /**
-     * <code>repeated string primarykeys = 5;</code>
-     */
-    java.lang.String getPrimarykeys(int index);
-    /**
-     * <code>repeated string primarykeys = 5;</code>
-     */
-    com.google.protobuf.ByteString
+
+        /**
+         * <code>repeated string primarykeys = 5;</code>
+         */
+        int getPrimarykeysCount();
+
+        /**
+         * <code>repeated string primarykeys = 5;</code>
+         */
+        java.lang.String getPrimarykeys(int index);
+
+        /**
+         * <code>repeated string primarykeys = 5;</code>
+         */
+        com.google.protobuf.ByteString
         getPrimarykeysBytes(int index);
 
-    /**
-     * <code>map&lt;string, .io.floodplain.protobuf.generated.ValueProtobuf&gt; values = 6;</code>
-     */
-    int getValuesCount();
-    /**
-     * <code>map&lt;string, .io.floodplain.protobuf.generated.ValueProtobuf&gt; values = 6;</code>
-     */
-    boolean containsValues(
-        java.lang.String key);
-    /**
-     * Use {@link #getValuesMap()} instead.
-     */
-    @java.lang.Deprecated
-    java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ValueProtobuf>
-    getValues();
-    /**
-     * <code>map&lt;string, .io.floodplain.protobuf.generated.ValueProtobuf&gt; values = 6;</code>
-     */
-    java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ValueProtobuf>
-    getValuesMap();
-    /**
-     * <code>map&lt;string, .io.floodplain.protobuf.generated.ValueProtobuf&gt; values = 6;</code>
-     */
+        /**
+         * <code>map&lt;string, .io.floodplain.protobuf.generated.ValueProtobuf&gt; values = 6;</code>
+         */
+        int getValuesCount();
+
+        /**
+         * <code>map&lt;string, .io.floodplain.protobuf.generated.ValueProtobuf&gt; values = 6;</code>
+         */
+        boolean containsValues(
+                java.lang.String key);
+
+        /**
+         * Use {@link #getValuesMap()} instead.
+         */
+        @java.lang.Deprecated
+        java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ValueProtobuf>
+        getValues();
+
+        /**
+         * <code>map&lt;string, .io.floodplain.protobuf.generated.ValueProtobuf&gt; values = 6;</code>
+         */
+        java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ValueProtobuf>
+        getValuesMap();
+
+        /**
+         * <code>map&lt;string, .io.floodplain.protobuf.generated.ValueProtobuf&gt; values = 6;</code>
+         */
+
+        io.floodplain.protobuf.generated.Replication.ValueProtobuf getValuesOrDefault(
+                java.lang.String key,
+                io.floodplain.protobuf.generated.Replication.ValueProtobuf defaultValue);
+
+        /**
+         * <code>map&lt;string, .io.floodplain.protobuf.generated.ValueProtobuf&gt; values = 6;</code>
+         */
+
+        io.floodplain.protobuf.generated.Replication.ValueProtobuf getValuesOrThrow(
+                java.lang.String key);
+
+        /**
+         * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageListProtobuf&gt; submessage_list = 7;</code>
+         */
+        int getSubmessageListCount();
+
+        /**
+         * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageListProtobuf&gt; submessage_list = 7;</code>
+         */
+        boolean containsSubmessageList(
+                java.lang.String key);
+
+        /**
+         * Use {@link #getSubmessageListMap()} instead.
+         */
+        @java.lang.Deprecated
+        java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf>
+        getSubmessageList();
+
+        /**
+         * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageListProtobuf&gt; submessage_list = 7;</code>
+         */
+        java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf>
+        getSubmessageListMap();
+
+        /**
+         * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageListProtobuf&gt; submessage_list = 7;</code>
+         */
+
+        io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf getSubmessageListOrDefault(
+                java.lang.String key,
+                io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf defaultValue);
+
+        /**
+         * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageListProtobuf&gt; submessage_list = 7;</code>
+         */
+
+        io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf getSubmessageListOrThrow(
+                java.lang.String key);
+
+        /**
+         * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageProtobuf&gt; submessage = 8;</code>
+         */
+        int getSubmessageCount();
+
+        /**
+         * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageProtobuf&gt; submessage = 8;</code>
+         */
+        boolean containsSubmessage(
+                java.lang.String key);
+
+        /**
+         * Use {@link #getSubmessageMap()} instead.
+         */
+        @java.lang.Deprecated
+        java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf>
+        getSubmessage();
+
+        /**
+         * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageProtobuf&gt; submessage = 8;</code>
+         */
+        java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf>
+        getSubmessageMap();
 
-    io.floodplain.protobuf.generated.Replication.ValueProtobuf getValuesOrDefault(
-        java.lang.String key,
-        io.floodplain.protobuf.generated.Replication.ValueProtobuf defaultValue);
-    /**
-     * <code>map&lt;string, .io.floodplain.protobuf.generated.ValueProtobuf&gt; values = 6;</code>
-     */
+        /**
+         * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageProtobuf&gt; submessage = 8;</code>
+         */
 
-    io.floodplain.protobuf.generated.Replication.ValueProtobuf getValuesOrThrow(
-        java.lang.String key);
+        io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf getSubmessageOrDefault(
+                java.lang.String key,
+                io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf defaultValue);
 
-    /**
-     * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageListProtobuf&gt; submessage_list = 7;</code>
-     */
-    int getSubmessageListCount();
-    /**
-     * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageListProtobuf&gt; submessage_list = 7;</code>
-     */
-    boolean containsSubmessageList(
-        java.lang.String key);
-    /**
-     * Use {@link #getSubmessageListMap()} instead.
-     */
-    @java.lang.Deprecated
-    java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf>
-    getSubmessageList();
-    /**
-     * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageListProtobuf&gt; submessage_list = 7;</code>
-     */
-    java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf>
-    getSubmessageListMap();
-    /**
-     * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageListProtobuf&gt; submessage_list = 7;</code>
-     */
+        /**
+         * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageProtobuf&gt; submessage = 8;</code>
+         */
 
-    io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf getSubmessageListOrDefault(
-        java.lang.String key,
-        io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf defaultValue);
-    /**
-     * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageListProtobuf&gt; submessage_list = 7;</code>
-     */
+        io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf getSubmessageOrThrow(
+                java.lang.String key);
 
-    io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf getSubmessageListOrThrow(
-        java.lang.String key);
+        /**
+         * <code>.io.floodplain.protobuf.generated.ReplicationMessageProtobuf paramMessage = 9;</code>
+         */
+        boolean hasParamMessage();
 
-    /**
-     * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageProtobuf&gt; submessage = 8;</code>
-     */
-    int getSubmessageCount();
-    /**
-     * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageProtobuf&gt; submessage = 8;</code>
-     */
-    boolean containsSubmessage(
-        java.lang.String key);
-    /**
-     * Use {@link #getSubmessageMap()} instead.
-     */
-    @java.lang.Deprecated
-    java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf>
-    getSubmessage();
-    /**
-     * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageProtobuf&gt; submessage = 8;</code>
-     */
-    java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf>
-    getSubmessageMap();
-    /**
-     * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageProtobuf&gt; submessage = 8;</code>
-     */
+        /**
+         * <code>.io.floodplain.protobuf.generated.ReplicationMessageProtobuf paramMessage = 9;</code>
+         */
+        io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf getParamMessage();
 
-    io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf getSubmessageOrDefault(
-        java.lang.String key,
-        io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf defaultValue);
-    /**
-     * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageProtobuf&gt; submessage = 8;</code>
-     */
-
-    io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf getSubmessageOrThrow(
-        java.lang.String key);
-
-    /**
-     * <code>.io.floodplain.protobuf.generated.ReplicationMessageProtobuf paramMessage = 9;</code>
-     */
-    boolean hasParamMessage();
-    /**
-     * <code>.io.floodplain.protobuf.generated.ReplicationMessageProtobuf paramMessage = 9;</code>
-     */
-    io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf getParamMessage();
-    /**
-     * <code>.io.floodplain.protobuf.generated.ReplicationMessageProtobuf paramMessage = 9;</code>
-     */
-    io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobufOrBuilder getParamMessageOrBuilder();
-  }
-  /**
-   * Protobuf type {@code io.floodplain.protobuf.generated.ReplicationMessageProtobuf}
-   */
-  public  static final class ReplicationMessageProtobuf extends
-      com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:io.floodplain.protobuf.generated.ReplicationMessageProtobuf)
-      ReplicationMessageProtobufOrBuilder {
-    // Use ReplicationMessageProtobuf.newBuilder() to construct.
-    private ReplicationMessageProtobuf(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
-      super(builder);
-    }
-    private ReplicationMessageProtobuf() {
-      magic_ = 0;
-      operation_ = 0;
-      timestamp_ = 0L;
-      transactionId_ = "";
-      primarykeys_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-    }
-
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
-    }
-    private ReplicationMessageProtobuf(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      int mutable_bitField0_ = 0;
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            default: {
-              if (!input.skipField(tag)) {
-                done = true;
-              }
-              break;
-            }
-            case 8: {
-
-              magic_ = input.readInt32();
-              break;
-            }
-            case 16: {
-              int rawValue = input.readEnum();
-
-              operation_ = rawValue;
-              break;
-            }
-            case 24: {
-
-              timestamp_ = input.readInt64();
-              break;
-            }
-            case 34: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              transactionId_ = s;
-              break;
-            }
-            case 42: {
-              java.lang.String s = input.readStringRequireUtf8();
-              if (!((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
-                primarykeys_ = new com.google.protobuf.LazyStringArrayList();
-                mutable_bitField0_ |= 0x00000010;
-              }
-              primarykeys_.add(s);
-              break;
-            }
-            case 50: {
-              if (!((mutable_bitField0_ & 0x00000020) == 0x00000020)) {
-                values_ = com.google.protobuf.MapField.newMapField(
-                    ValuesDefaultEntryHolder.defaultEntry);
-                mutable_bitField0_ |= 0x00000020;
-              }
-              com.google.protobuf.MapEntry<java.lang.String, io.floodplain.protobuf.generated.Replication.ValueProtobuf>
-              values__ = input.readMessage(
-                  ValuesDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
-              values_.getMutableMap().put(
-                  values__.getKey(), values__.getValue());
-              break;
-            }
-            case 58: {
-              if (!((mutable_bitField0_ & 0x00000040) == 0x00000040)) {
-                submessageList_ = com.google.protobuf.MapField.newMapField(
-                    SubmessageListDefaultEntryHolder.defaultEntry);
-                mutable_bitField0_ |= 0x00000040;
-              }
-              com.google.protobuf.MapEntry<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf>
-              submessageList__ = input.readMessage(
-                  SubmessageListDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
-              submessageList_.getMutableMap().put(
-                  submessageList__.getKey(), submessageList__.getValue());
-              break;
-            }
-            case 66: {
-              if (!((mutable_bitField0_ & 0x00000080) == 0x00000080)) {
-                submessage_ = com.google.protobuf.MapField.newMapField(
-                    SubmessageDefaultEntryHolder.defaultEntry);
-                mutable_bitField0_ |= 0x00000080;
-              }
-              com.google.protobuf.MapEntry<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf>
-              submessage__ = input.readMessage(
-                  SubmessageDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
-              submessage_.getMutableMap().put(
-                  submessage__.getKey(), submessage__.getValue());
-              break;
-            }
-            case 74: {
-              io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Builder subBuilder = null;
-              if (paramMessage_ != null) {
-                subBuilder = paramMessage_.toBuilder();
-              }
-              paramMessage_ = input.readMessage(io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.parser(), extensionRegistry);
-              if (subBuilder != null) {
-                subBuilder.mergeFrom(paramMessage_);
-                paramMessage_ = subBuilder.buildPartial();
-              }
-
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        if (((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
-          primarykeys_ = primarykeys_.getUnmodifiableView();
-        }
-        makeExtensionsImmutable();
-      }
-    }
-    public static final com.google.protobuf.Descriptors.Descriptor
-        getDescriptor() {
-      return io.floodplain.protobuf.generated.Replication.internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_descriptor;
-    }
-
-    @SuppressWarnings({"rawtypes"})
-    protected com.google.protobuf.MapField internalGetMapField(
-        int number) {
-      switch (number) {
-        case 6:
-          return internalGetValues();
-        case 7:
-          return internalGetSubmessageList();
-        case 8:
-          return internalGetSubmessage();
-        default:
-          throw new RuntimeException(
-              "Invalid map field number: " + number);
-      }
-    }
-    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-        internalGetFieldAccessorTable() {
-      return io.floodplain.protobuf.generated.Replication.internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_fieldAccessorTable
-          .ensureFieldAccessorsInitialized(
-              io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.class, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Builder.class);
-    }
-
-    /**
-     * Protobuf enum {@code io.floodplain.protobuf.generated.ReplicationMessageProtobuf.Operation}
-     */
-    public enum Operation
-        implements com.google.protobuf.ProtocolMessageEnum {
-      /**
-       * <code>NONE = 0;</code>
-       */
-      NONE(0),
-      /**
-       * <code>INSERT = 1;</code>
-       */
-      INSERT(1),
-      /**
-       * <code>UPDATE = 2;</code>
-       */
-      UPDATE(2),
-      /**
-       * <code>DELETE = 3;</code>
-       */
-      DELETE(3),
-      /**
-       * <code>COMMIT = 4;</code>
-       */
-      COMMIT(4),
-      /**
-       * <code>MERGE = 5;</code>
-       */
-      MERGE(5),
-      /**
-       * <code>INITIAL = 6;</code>
-       */
-      INITIAL(6),
-      UNRECOGNIZED(-1),
-      ;
-
-      /**
-       * <code>NONE = 0;</code>
-       */
-      public static final int NONE_VALUE = 0;
-      /**
-       * <code>INSERT = 1;</code>
-       */
-      public static final int INSERT_VALUE = 1;
-      /**
-       * <code>UPDATE = 2;</code>
-       */
-      public static final int UPDATE_VALUE = 2;
-      /**
-       * <code>DELETE = 3;</code>
-       */
-      public static final int DELETE_VALUE = 3;
-      /**
-       * <code>COMMIT = 4;</code>
-       */
-      public static final int COMMIT_VALUE = 4;
-      /**
-       * <code>MERGE = 5;</code>
-       */
-      public static final int MERGE_VALUE = 5;
-      /**
-       * <code>INITIAL = 6;</code>
-       */
-      public static final int INITIAL_VALUE = 6;
-
-
-      public final int getNumber() {
-        if (this == UNRECOGNIZED) {
-          throw new java.lang.IllegalArgumentException(
-              "Can't get the number of an unknown enum value.");
-        }
-        return value;
-      }
-
-      /**
-       * @deprecated Use {@link #forNumber(int)} instead.
-       */
-      @java.lang.Deprecated
-      public static Operation valueOf(int value) {
-        return forNumber(value);
-      }
-
-      public static Operation forNumber(int value) {
-        switch (value) {
-          case 0: return NONE;
-          case 1: return INSERT;
-          case 2: return UPDATE;
-          case 3: return DELETE;
-          case 4: return COMMIT;
-          case 5: return MERGE;
-          case 6: return INITIAL;
-          default: return null;
-        }
-      }
-
-      public static com.google.protobuf.Internal.EnumLiteMap<Operation>
-          internalGetValueMap() {
-        return internalValueMap;
-      }
-      private static final com.google.protobuf.Internal.EnumLiteMap<
-          Operation> internalValueMap =
-            new com.google.protobuf.Internal.EnumLiteMap<Operation>() {
-              public Operation findValueByNumber(int number) {
-                return Operation.forNumber(number);
-              }
-            };
-
-      public final com.google.protobuf.Descriptors.EnumValueDescriptor
-          getValueDescriptor() {
-        return getDescriptor().getValues().get(ordinal());
-      }
-      public final com.google.protobuf.Descriptors.EnumDescriptor
-          getDescriptorForType() {
-        return getDescriptor();
-      }
-      public static final com.google.protobuf.Descriptors.EnumDescriptor
-          getDescriptor() {
-        return io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.getDescriptor().getEnumTypes().get(0);
-      }
-
-      private static final Operation[] VALUES = values();
-
-      public static Operation valueOf(
-          com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
-        if (desc.getType() != getDescriptor()) {
-          throw new java.lang.IllegalArgumentException(
-            "EnumValueDescriptor is not for this type.");
-        }
-        if (desc.getIndex() == -1) {
-          return UNRECOGNIZED;
-        }
-        return VALUES[desc.getIndex()];
-      }
-
-      private final int value;
-
-      private Operation(int value) {
-        this.value = value;
-      }
-
-      // @@protoc_insertion_point(enum_scope:io.floodplain.protobuf.generated.ReplicationMessageProtobuf.Operation)
-    }
-
-    private int bitField0_;
-    public static final int MAGIC_FIELD_NUMBER = 1;
-    private int magic_;
-    /**
-     * <code>int32 magic = 1;</code>
-     */
-    public int getMagic() {
-      return magic_;
-    }
-
-    public static final int OPERATION_FIELD_NUMBER = 2;
-    private int operation_;
-    /**
-     * <code>.io.floodplain.protobuf.generated.ReplicationMessageProtobuf.Operation operation = 2;</code>
-     */
-    public int getOperationValue() {
-      return operation_;
-    }
-    /**
-     * <code>.io.floodplain.protobuf.generated.ReplicationMessageProtobuf.Operation operation = 2;</code>
-     */
-    public io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Operation getOperation() {
-      io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Operation result = io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Operation.valueOf(operation_);
-      return result == null ? io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Operation.UNRECOGNIZED : result;
-    }
-
-    public static final int TIMESTAMP_FIELD_NUMBER = 3;
-    private long timestamp_;
-    /**
-     * <code>int64 timestamp = 3;</code>
-     */
-    public long getTimestamp() {
-      return timestamp_;
-    }
-
-    public static final int TRANSACTION_ID_FIELD_NUMBER = 4;
-    private volatile java.lang.Object transactionId_;
-    /**
-     * <code>string transaction_id = 4;</code>
-     */
-    public java.lang.String getTransactionId() {
-      java.lang.Object ref = transactionId_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        transactionId_ = s;
-        return s;
-      }
-    }
-    /**
-     * <code>string transaction_id = 4;</code>
-     */
-    public com.google.protobuf.ByteString
-        getTransactionIdBytes() {
-      java.lang.Object ref = transactionId_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        transactionId_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
-    public static final int PRIMARYKEYS_FIELD_NUMBER = 5;
-    private com.google.protobuf.LazyStringList primarykeys_;
-    /**
-     * <code>repeated string primarykeys = 5;</code>
-     */
-    public com.google.protobuf.ProtocolStringList
-        getPrimarykeysList() {
-      return primarykeys_;
-    }
-    /**
-     * <code>repeated string primarykeys = 5;</code>
-     */
-    public int getPrimarykeysCount() {
-      return primarykeys_.size();
-    }
-    /**
-     * <code>repeated string primarykeys = 5;</code>
-     */
-    public java.lang.String getPrimarykeys(int index) {
-      return primarykeys_.get(index);
-    }
-    /**
-     * <code>repeated string primarykeys = 5;</code>
-     */
-    public com.google.protobuf.ByteString
-        getPrimarykeysBytes(int index) {
-      return primarykeys_.getByteString(index);
-    }
-
-    public static final int VALUES_FIELD_NUMBER = 6;
-    private static final class ValuesDefaultEntryHolder {
-      static final com.google.protobuf.MapEntry<
-          java.lang.String, io.floodplain.protobuf.generated.Replication.ValueProtobuf> defaultEntry =
-              com.google.protobuf.MapEntry
-              .<java.lang.String, io.floodplain.protobuf.generated.Replication.ValueProtobuf>newDefaultInstance(
-                  io.floodplain.protobuf.generated.Replication.internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_ValuesEntry_descriptor, 
-                  com.google.protobuf.WireFormat.FieldType.STRING,
-                  "",
-                  com.google.protobuf.WireFormat.FieldType.MESSAGE,
-                  io.floodplain.protobuf.generated.Replication.ValueProtobuf.getDefaultInstance());
-    }
-    private com.google.protobuf.MapField<
-        java.lang.String, io.floodplain.protobuf.generated.Replication.ValueProtobuf> values_;
-    private com.google.protobuf.MapField<java.lang.String, io.floodplain.protobuf.generated.Replication.ValueProtobuf>
-    internalGetValues() {
-      if (values_ == null) {
-        return com.google.protobuf.MapField.emptyMapField(
-            ValuesDefaultEntryHolder.defaultEntry);
-      }
-      return values_;
-    }
-
-    public int getValuesCount() {
-      return internalGetValues().getMap().size();
-    }
-    /**
-     * <code>map&lt;string, .io.floodplain.protobuf.generated.ValueProtobuf&gt; values = 6;</code>
-     */
-
-    public boolean containsValues(
-        java.lang.String key) {
-      if (key == null) { throw new java.lang.NullPointerException(); }
-      return internalGetValues().getMap().containsKey(key);
-    }
-    /**
-     * Use {@link #getValuesMap()} instead.
-     */
-    @java.lang.Deprecated
-    public java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ValueProtobuf> getValues() {
-      return getValuesMap();
-    }
-    /**
-     * <code>map&lt;string, .io.floodplain.protobuf.generated.ValueProtobuf&gt; values = 6;</code>
-     */
-
-    public java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ValueProtobuf> getValuesMap() {
-      return internalGetValues().getMap();
-    }
-    /**
-     * <code>map&lt;string, .io.floodplain.protobuf.generated.ValueProtobuf&gt; values = 6;</code>
-     */
-
-    public io.floodplain.protobuf.generated.Replication.ValueProtobuf getValuesOrDefault(
-        java.lang.String key,
-        io.floodplain.protobuf.generated.Replication.ValueProtobuf defaultValue) {
-      if (key == null) { throw new java.lang.NullPointerException(); }
-      java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ValueProtobuf> map =
-          internalGetValues().getMap();
-      return map.containsKey(key) ? map.get(key) : defaultValue;
-    }
-    /**
-     * <code>map&lt;string, .io.floodplain.protobuf.generated.ValueProtobuf&gt; values = 6;</code>
-     */
-
-    public io.floodplain.protobuf.generated.Replication.ValueProtobuf getValuesOrThrow(
-        java.lang.String key) {
-      if (key == null) { throw new java.lang.NullPointerException(); }
-      java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ValueProtobuf> map =
-          internalGetValues().getMap();
-      if (!map.containsKey(key)) {
-        throw new java.lang.IllegalArgumentException();
-      }
-      return map.get(key);
-    }
-
-    public static final int SUBMESSAGE_LIST_FIELD_NUMBER = 7;
-    private static final class SubmessageListDefaultEntryHolder {
-      static final com.google.protobuf.MapEntry<
-          java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf> defaultEntry =
-              com.google.protobuf.MapEntry
-              .<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf>newDefaultInstance(
-                  io.floodplain.protobuf.generated.Replication.internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_SubmessageListEntry_descriptor, 
-                  com.google.protobuf.WireFormat.FieldType.STRING,
-                  "",
-                  com.google.protobuf.WireFormat.FieldType.MESSAGE,
-                  io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf.getDefaultInstance());
+        /**
+         * <code>.io.floodplain.protobuf.generated.ReplicationMessageProtobuf paramMessage = 9;</code>
+         */
+        io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobufOrBuilder getParamMessageOrBuilder();
     }
-    private com.google.protobuf.MapField<
-        java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf> submessageList_;
-    private com.google.protobuf.MapField<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf>
-    internalGetSubmessageList() {
-      if (submessageList_ == null) {
-        return com.google.protobuf.MapField.emptyMapField(
-            SubmessageListDefaultEntryHolder.defaultEntry);
-      }
-      return submessageList_;
-    }
-
-    public int getSubmessageListCount() {
-      return internalGetSubmessageList().getMap().size();
-    }
-    /**
-     * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageListProtobuf&gt; submessage_list = 7;</code>
-     */
-
-    public boolean containsSubmessageList(
-        java.lang.String key) {
-      if (key == null) { throw new java.lang.NullPointerException(); }
-      return internalGetSubmessageList().getMap().containsKey(key);
-    }
-    /**
-     * Use {@link #getSubmessageListMap()} instead.
-     */
-    @java.lang.Deprecated
-    public java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf> getSubmessageList() {
-      return getSubmessageListMap();
-    }
-    /**
-     * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageListProtobuf&gt; submessage_list = 7;</code>
-     */
-
-    public java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf> getSubmessageListMap() {
-      return internalGetSubmessageList().getMap();
-    }
-    /**
-     * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageListProtobuf&gt; submessage_list = 7;</code>
-     */
-
-    public io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf getSubmessageListOrDefault(
-        java.lang.String key,
-        io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf defaultValue) {
-      if (key == null) { throw new java.lang.NullPointerException(); }
-      java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf> map =
-          internalGetSubmessageList().getMap();
-      return map.containsKey(key) ? map.get(key) : defaultValue;
-    }
-    /**
-     * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageListProtobuf&gt; submessage_list = 7;</code>
-     */
-
-    public io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf getSubmessageListOrThrow(
-        java.lang.String key) {
-      if (key == null) { throw new java.lang.NullPointerException(); }
-      java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf> map =
-          internalGetSubmessageList().getMap();
-      if (!map.containsKey(key)) {
-        throw new java.lang.IllegalArgumentException();
-      }
-      return map.get(key);
-    }
-
-    public static final int SUBMESSAGE_FIELD_NUMBER = 8;
-    private static final class SubmessageDefaultEntryHolder {
-      static final com.google.protobuf.MapEntry<
-          java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf> defaultEntry =
-              com.google.protobuf.MapEntry
-              .<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf>newDefaultInstance(
-                  io.floodplain.protobuf.generated.Replication.internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_SubmessageEntry_descriptor, 
-                  com.google.protobuf.WireFormat.FieldType.STRING,
-                  "",
-                  com.google.protobuf.WireFormat.FieldType.MESSAGE,
-                  io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.getDefaultInstance());
-    }
-    private com.google.protobuf.MapField<
-        java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf> submessage_;
-    private com.google.protobuf.MapField<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf>
-    internalGetSubmessage() {
-      if (submessage_ == null) {
-        return com.google.protobuf.MapField.emptyMapField(
-            SubmessageDefaultEntryHolder.defaultEntry);
-      }
-      return submessage_;
-    }
-
-    public int getSubmessageCount() {
-      return internalGetSubmessage().getMap().size();
-    }
-    /**
-     * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageProtobuf&gt; submessage = 8;</code>
-     */
-
-    public boolean containsSubmessage(
-        java.lang.String key) {
-      if (key == null) { throw new java.lang.NullPointerException(); }
-      return internalGetSubmessage().getMap().containsKey(key);
-    }
-    /**
-     * Use {@link #getSubmessageMap()} instead.
-     */
-    @java.lang.Deprecated
-    public java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf> getSubmessage() {
-      return getSubmessageMap();
-    }
-    /**
-     * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageProtobuf&gt; submessage = 8;</code>
-     */
-
-    public java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf> getSubmessageMap() {
-      return internalGetSubmessage().getMap();
-    }
-    /**
-     * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageProtobuf&gt; submessage = 8;</code>
-     */
-
-    public io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf getSubmessageOrDefault(
-        java.lang.String key,
-        io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf defaultValue) {
-      if (key == null) { throw new java.lang.NullPointerException(); }
-      java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf> map =
-          internalGetSubmessage().getMap();
-      return map.containsKey(key) ? map.get(key) : defaultValue;
-    }
-    /**
-     * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageProtobuf&gt; submessage = 8;</code>
-     */
-
-    public io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf getSubmessageOrThrow(
-        java.lang.String key) {
-      if (key == null) { throw new java.lang.NullPointerException(); }
-      java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf> map =
-          internalGetSubmessage().getMap();
-      if (!map.containsKey(key)) {
-        throw new java.lang.IllegalArgumentException();
-      }
-      return map.get(key);
-    }
-
-    public static final int PARAMMESSAGE_FIELD_NUMBER = 9;
-    private io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf paramMessage_;
-    /**
-     * <code>.io.floodplain.protobuf.generated.ReplicationMessageProtobuf paramMessage = 9;</code>
-     */
-    public boolean hasParamMessage() {
-      return paramMessage_ != null;
-    }
-    /**
-     * <code>.io.floodplain.protobuf.generated.ReplicationMessageProtobuf paramMessage = 9;</code>
-     */
-    public io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf getParamMessage() {
-      return paramMessage_ == null ? io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.getDefaultInstance() : paramMessage_;
-    }
-    /**
-     * <code>.io.floodplain.protobuf.generated.ReplicationMessageProtobuf paramMessage = 9;</code>
-     */
-    public io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobufOrBuilder getParamMessageOrBuilder() {
-      return getParamMessage();
-    }
 
-    private byte memoizedIsInitialized = -1;
-    public final boolean isInitialized() {
-      byte isInitialized = memoizedIsInitialized;
-      if (isInitialized == 1) return true;
-      if (isInitialized == 0) return false;
-
-      memoizedIsInitialized = 1;
-      return true;
-    }
-
-    public void writeTo(com.google.protobuf.CodedOutputStream output)
-                        throws java.io.IOException {
-      if (magic_ != 0) {
-        output.writeInt32(1, magic_);
-      }
-      if (operation_ != io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Operation.NONE.getNumber()) {
-        output.writeEnum(2, operation_);
-      }
-      if (timestamp_ != 0L) {
-        output.writeInt64(3, timestamp_);
-      }
-      if (!getTransactionIdBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 4, transactionId_);
-      }
-      for (int i = 0; i < primarykeys_.size(); i++) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 5, primarykeys_.getRaw(i));
-      }
-      com.google.protobuf.GeneratedMessageV3
-        .serializeStringMapTo(
-          output,
-          internalGetValues(),
-          ValuesDefaultEntryHolder.defaultEntry,
-          6);
-      com.google.protobuf.GeneratedMessageV3
-        .serializeStringMapTo(
-          output,
-          internalGetSubmessageList(),
-          SubmessageListDefaultEntryHolder.defaultEntry,
-          7);
-      com.google.protobuf.GeneratedMessageV3
-        .serializeStringMapTo(
-          output,
-          internalGetSubmessage(),
-          SubmessageDefaultEntryHolder.defaultEntry,
-          8);
-      if (paramMessage_ != null) {
-        output.writeMessage(9, getParamMessage());
-      }
-    }
-
-    public int getSerializedSize() {
-      int size = memoizedSize;
-      if (size != -1) return size;
-
-      size = 0;
-      if (magic_ != 0) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(1, magic_);
-      }
-      if (operation_ != io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Operation.NONE.getNumber()) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeEnumSize(2, operation_);
-      }
-      if (timestamp_ != 0L) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt64Size(3, timestamp_);
-      }
-      if (!getTransactionIdBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, transactionId_);
-      }
-      {
-        int dataSize = 0;
-        for (int i = 0; i < primarykeys_.size(); i++) {
-          dataSize += computeStringSizeNoTag(primarykeys_.getRaw(i));
-        }
-        size += dataSize;
-        size += 1 * getPrimarykeysList().size();
-      }
-      for (java.util.Map.Entry<java.lang.String, io.floodplain.protobuf.generated.Replication.ValueProtobuf> entry
-           : internalGetValues().getMap().entrySet()) {
-        com.google.protobuf.MapEntry<java.lang.String, io.floodplain.protobuf.generated.Replication.ValueProtobuf>
-        values__ = ValuesDefaultEntryHolder.defaultEntry.newBuilderForType()
-            .setKey(entry.getKey())
-            .setValue(entry.getValue())
-            .build();
-        size += com.google.protobuf.CodedOutputStream
-            .computeMessageSize(6, values__);
-      }
-      for (java.util.Map.Entry<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf> entry
-           : internalGetSubmessageList().getMap().entrySet()) {
-        com.google.protobuf.MapEntry<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf>
-        submessageList__ = SubmessageListDefaultEntryHolder.defaultEntry.newBuilderForType()
-            .setKey(entry.getKey())
-            .setValue(entry.getValue())
-            .build();
-        size += com.google.protobuf.CodedOutputStream
-            .computeMessageSize(7, submessageList__);
-      }
-      for (java.util.Map.Entry<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf> entry
-           : internalGetSubmessage().getMap().entrySet()) {
-        com.google.protobuf.MapEntry<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf>
-        submessage__ = SubmessageDefaultEntryHolder.defaultEntry.newBuilderForType()
-            .setKey(entry.getKey())
-            .setValue(entry.getValue())
-            .build();
-        size += com.google.protobuf.CodedOutputStream
-            .computeMessageSize(8, submessage__);
-      }
-      if (paramMessage_ != null) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(9, getParamMessage());
-      }
-      memoizedSize = size;
-      return size;
-    }
-
-    private static final long serialVersionUID = 0L;
-    @java.lang.Override
-    public boolean equals(final java.lang.Object obj) {
-      if (obj == this) {
-       return true;
-      }
-      if (!(obj instanceof io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf)) {
-        return super.equals(obj);
-      }
-      io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf other = (io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf) obj;
-
-      boolean result = true;
-      result = result && (getMagic()
-          == other.getMagic());
-      result = result && operation_ == other.operation_;
-      result = result && (getTimestamp()
-          == other.getTimestamp());
-      result = result && getTransactionId()
-          .equals(other.getTransactionId());
-      result = result && getPrimarykeysList()
-          .equals(other.getPrimarykeysList());
-      result = result && internalGetValues().equals(
-          other.internalGetValues());
-      result = result && internalGetSubmessageList().equals(
-          other.internalGetSubmessageList());
-      result = result && internalGetSubmessage().equals(
-          other.internalGetSubmessage());
-      result = result && (hasParamMessage() == other.hasParamMessage());
-      if (hasParamMessage()) {
-        result = result && getParamMessage()
-            .equals(other.getParamMessage());
-      }
-      return result;
-    }
-
-    @java.lang.Override
-    public int hashCode() {
-      if (memoizedHashCode != 0) {
-        return memoizedHashCode;
-      }
-      int hash = 41;
-      hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (37 * hash) + MAGIC_FIELD_NUMBER;
-      hash = (53 * hash) + getMagic();
-      hash = (37 * hash) + OPERATION_FIELD_NUMBER;
-      hash = (53 * hash) + operation_;
-      hash = (37 * hash) + TIMESTAMP_FIELD_NUMBER;
-      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
-          getTimestamp());
-      hash = (37 * hash) + TRANSACTION_ID_FIELD_NUMBER;
-      hash = (53 * hash) + getTransactionId().hashCode();
-      if (getPrimarykeysCount() > 0) {
-        hash = (37 * hash) + PRIMARYKEYS_FIELD_NUMBER;
-        hash = (53 * hash) + getPrimarykeysList().hashCode();
-      }
-      if (!internalGetValues().getMap().isEmpty()) {
-        hash = (37 * hash) + VALUES_FIELD_NUMBER;
-        hash = (53 * hash) + internalGetValues().hashCode();
-      }
-      if (!internalGetSubmessageList().getMap().isEmpty()) {
-        hash = (37 * hash) + SUBMESSAGE_LIST_FIELD_NUMBER;
-        hash = (53 * hash) + internalGetSubmessageList().hashCode();
-      }
-      if (!internalGetSubmessage().getMap().isEmpty()) {
-        hash = (37 * hash) + SUBMESSAGE_FIELD_NUMBER;
-        hash = (53 * hash) + internalGetSubmessage().hashCode();
-      }
-      if (hasParamMessage()) {
-        hash = (37 * hash) + PARAMMESSAGE_FIELD_NUMBER;
-        hash = (53 * hash) + getParamMessage().hashCode();
-      }
-      hash = (29 * hash) + unknownFields.hashCode();
-      memoizedHashCode = hash;
-      return hash;
-    }
-
-    public static io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf parseFrom(
-        java.nio.ByteBuffer data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf parseFrom(
-        java.nio.ByteBuffer data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf parseFrom(
-        com.google.protobuf.ByteString data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf parseFrom(
-        com.google.protobuf.ByteString data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf parseFrom(byte[] data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf parseFrom(
-        byte[] data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf parseFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input);
-    }
-    public static io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf parseFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
-    }
-    public static io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf parseDelimitedFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseDelimitedWithIOException(PARSER, input);
-    }
-    public static io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
-    }
-    public static io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf parseFrom(
-        com.google.protobuf.CodedInputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input);
-    }
-    public static io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf parseFrom(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
-    }
-
-    public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder() {
-      return DEFAULT_INSTANCE.toBuilder();
-    }
-    public static Builder newBuilder(io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf prototype) {
-      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
-    }
-    public Builder toBuilder() {
-      return this == DEFAULT_INSTANCE
-          ? new Builder() : new Builder().mergeFrom(this);
-    }
-
-    @java.lang.Override
-    protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
-      Builder builder = new Builder(parent);
-      return builder;
-    }
     /**
      * Protobuf type {@code io.floodplain.protobuf.generated.ReplicationMessageProtobuf}
      */
-    public static final class Builder extends
-        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:io.floodplain.protobuf.generated.ReplicationMessageProtobuf)
-        io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobufOrBuilder {
-      public static final com.google.protobuf.Descriptors.Descriptor
-          getDescriptor() {
-        return io.floodplain.protobuf.generated.Replication.internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_descriptor;
-      }
-
-      @SuppressWarnings({"rawtypes"})
-      protected com.google.protobuf.MapField internalGetMapField(
-          int number) {
-        switch (number) {
-          case 6:
-            return internalGetValues();
-          case 7:
-            return internalGetSubmessageList();
-          case 8:
-            return internalGetSubmessage();
-          default:
-            throw new RuntimeException(
-                "Invalid map field number: " + number);
-        }
-      }
-      @SuppressWarnings({"rawtypes"})
-      protected com.google.protobuf.MapField internalGetMutableMapField(
-          int number) {
-        switch (number) {
-          case 6:
-            return internalGetMutableValues();
-          case 7:
-            return internalGetMutableSubmessageList();
-          case 8:
-            return internalGetMutableSubmessage();
-          default:
-            throw new RuntimeException(
-                "Invalid map field number: " + number);
-        }
-      }
-      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-          internalGetFieldAccessorTable() {
-        return io.floodplain.protobuf.generated.Replication.internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_fieldAccessorTable
-            .ensureFieldAccessorsInitialized(
-                io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.class, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Builder.class);
-      }
-
-      // Construct using io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.newBuilder()
-      private Builder() {
-        maybeForceBuilderInitialization();
-      }
-
-      private Builder(
-          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
-        super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
-      }
-      public Builder clear() {
-        super.clear();
-        magic_ = 0;
-
-        operation_ = 0;
-
-        timestamp_ = 0L;
-
-        transactionId_ = "";
-
-        primarykeys_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000010);
-        internalGetMutableValues().clear();
-        internalGetMutableSubmessageList().clear();
-        internalGetMutableSubmessage().clear();
-        if (paramMessageBuilder_ == null) {
-          paramMessage_ = null;
-        } else {
-          paramMessage_ = null;
-          paramMessageBuilder_ = null;
-        }
-        return this;
-      }
-
-      public com.google.protobuf.Descriptors.Descriptor
-          getDescriptorForType() {
-        return io.floodplain.protobuf.generated.Replication.internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_descriptor;
-      }
-
-      public io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf getDefaultInstanceForType() {
-        return io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.getDefaultInstance();
-      }
-
-      public io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf build() {
-        io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(result);
-        }
-        return result;
-      }
-
-      public io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf buildPartial() {
-        io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf result = new io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf(this);
-        int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
-        result.magic_ = magic_;
-        result.operation_ = operation_;
-        result.timestamp_ = timestamp_;
-        result.transactionId_ = transactionId_;
-        if (((bitField0_ & 0x00000010) == 0x00000010)) {
-          primarykeys_ = primarykeys_.getUnmodifiableView();
-          bitField0_ = (bitField0_ & ~0x00000010);
-        }
-        result.primarykeys_ = primarykeys_;
-        result.values_ = internalGetValues();
-        result.values_.makeImmutable();
-        result.submessageList_ = internalGetSubmessageList();
-        result.submessageList_.makeImmutable();
-        result.submessage_ = internalGetSubmessage();
-        result.submessage_.makeImmutable();
-        if (paramMessageBuilder_ == null) {
-          result.paramMessage_ = paramMessage_;
-        } else {
-          result.paramMessage_ = paramMessageBuilder_.build();
-        }
-        result.bitField0_ = to_bitField0_;
-        onBuilt();
-        return result;
-      }
-
-      public Builder clone() {
-        return (Builder) super.clone();
-      }
-      public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          Object value) {
-        return (Builder) super.setField(field, value);
-      }
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
-      }
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
-      }
-      public Builder setRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
-      }
-      public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          Object value) {
-        return (Builder) super.addRepeatedField(field, value);
-      }
-      public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf) {
-          return mergeFrom((io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf)other);
-        } else {
-          super.mergeFrom(other);
-          return this;
-        }
-      }
-
-      public Builder mergeFrom(io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf other) {
-        if (other == io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.getDefaultInstance()) return this;
-        if (other.getMagic() != 0) {
-          setMagic(other.getMagic());
-        }
-        if (other.operation_ != 0) {
-          setOperationValue(other.getOperationValue());
-        }
-        if (other.getTimestamp() != 0L) {
-          setTimestamp(other.getTimestamp());
-        }
-        if (!other.getTransactionId().isEmpty()) {
-          transactionId_ = other.transactionId_;
-          onChanged();
-        }
-        if (!other.primarykeys_.isEmpty()) {
-          if (primarykeys_.isEmpty()) {
-            primarykeys_ = other.primarykeys_;
-            bitField0_ = (bitField0_ & ~0x00000010);
-          } else {
-            ensurePrimarykeysIsMutable();
-            primarykeys_.addAll(other.primarykeys_);
-          }
-          onChanged();
-        }
-        internalGetMutableValues().mergeFrom(
-            other.internalGetValues());
-        internalGetMutableSubmessageList().mergeFrom(
-            other.internalGetSubmessageList());
-        internalGetMutableSubmessage().mergeFrom(
-            other.internalGetSubmessage());
-        if (other.hasParamMessage()) {
-          mergeParamMessage(other.getParamMessage());
-        }
-        onChanged();
-        return this;
-      }
-
-      public final boolean isInitialized() {
-        return true;
-      }
-
-      public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf parsedMessage = null;
-        try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf) e.getUnfinishedMessage();
-          throw e.unwrapIOException();
-        } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
-        return this;
-      }
-      private int bitField0_;
-
-      private int magic_ ;
-      /**
-       * <code>int32 magic = 1;</code>
-       */
-      public int getMagic() {
-        return magic_;
-      }
-      /**
-       * <code>int32 magic = 1;</code>
-       */
-      public Builder setMagic(int value) {
-        
-        magic_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>int32 magic = 1;</code>
-       */
-      public Builder clearMagic() {
-        
-        magic_ = 0;
-        onChanged();
-        return this;
-      }
-
-      private int operation_ = 0;
-      /**
-       * <code>.io.floodplain.protobuf.generated.ReplicationMessageProtobuf.Operation operation = 2;</code>
-       */
-      public int getOperationValue() {
-        return operation_;
-      }
-      /**
-       * <code>.io.floodplain.protobuf.generated.ReplicationMessageProtobuf.Operation operation = 2;</code>
-       */
-      public Builder setOperationValue(int value) {
-        operation_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>.io.floodplain.protobuf.generated.ReplicationMessageProtobuf.Operation operation = 2;</code>
-       */
-      public io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Operation getOperation() {
-        io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Operation result = io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Operation.valueOf(operation_);
-        return result == null ? io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Operation.UNRECOGNIZED : result;
-      }
-      /**
-       * <code>.io.floodplain.protobuf.generated.ReplicationMessageProtobuf.Operation operation = 2;</code>
-       */
-      public Builder setOperation(io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Operation value) {
-        if (value == null) {
-          throw new NullPointerException();
-        }
-        
-        operation_ = value.getNumber();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>.io.floodplain.protobuf.generated.ReplicationMessageProtobuf.Operation operation = 2;</code>
-       */
-      public Builder clearOperation() {
-        
-        operation_ = 0;
-        onChanged();
-        return this;
-      }
-
-      private long timestamp_ ;
-      /**
-       * <code>int64 timestamp = 3;</code>
-       */
-      public long getTimestamp() {
-        return timestamp_;
-      }
-      /**
-       * <code>int64 timestamp = 3;</code>
-       */
-      public Builder setTimestamp(long value) {
-        
-        timestamp_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>int64 timestamp = 3;</code>
-       */
-      public Builder clearTimestamp() {
-        
-        timestamp_ = 0L;
-        onChanged();
-        return this;
-      }
-
-      private java.lang.Object transactionId_ = "";
-      /**
-       * <code>string transaction_id = 4;</code>
-       */
-      public java.lang.String getTransactionId() {
-        java.lang.Object ref = transactionId_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          transactionId_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-      /**
-       * <code>string transaction_id = 4;</code>
-       */
-      public com.google.protobuf.ByteString
-          getTransactionIdBytes() {
-        java.lang.Object ref = transactionId_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          transactionId_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>string transaction_id = 4;</code>
-       */
-      public Builder setTransactionId(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
-        transactionId_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string transaction_id = 4;</code>
-       */
-      public Builder clearTransactionId() {
-        
-        transactionId_ = getDefaultInstance().getTransactionId();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string transaction_id = 4;</code>
-       */
-      public Builder setTransactionIdBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
-        transactionId_ = value;
-        onChanged();
-        return this;
-      }
-
-      private com.google.protobuf.LazyStringList primarykeys_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-      private void ensurePrimarykeysIsMutable() {
-        if (!((bitField0_ & 0x00000010) == 0x00000010)) {
-          primarykeys_ = new com.google.protobuf.LazyStringArrayList(primarykeys_);
-          bitField0_ |= 0x00000010;
-         }
-      }
-      /**
-       * <code>repeated string primarykeys = 5;</code>
-       */
-      public com.google.protobuf.ProtocolStringList
-          getPrimarykeysList() {
-        return primarykeys_.getUnmodifiableView();
-      }
-      /**
-       * <code>repeated string primarykeys = 5;</code>
-       */
-      public int getPrimarykeysCount() {
-        return primarykeys_.size();
-      }
-      /**
-       * <code>repeated string primarykeys = 5;</code>
-       */
-      public java.lang.String getPrimarykeys(int index) {
-        return primarykeys_.get(index);
-      }
-      /**
-       * <code>repeated string primarykeys = 5;</code>
-       */
-      public com.google.protobuf.ByteString
-          getPrimarykeysBytes(int index) {
-        return primarykeys_.getByteString(index);
-      }
-      /**
-       * <code>repeated string primarykeys = 5;</code>
-       */
-      public Builder setPrimarykeys(
-          int index, java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensurePrimarykeysIsMutable();
-        primarykeys_.set(index, value);
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>repeated string primarykeys = 5;</code>
-       */
-      public Builder addPrimarykeys(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensurePrimarykeysIsMutable();
-        primarykeys_.add(value);
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>repeated string primarykeys = 5;</code>
-       */
-      public Builder addAllPrimarykeys(
-          java.lang.Iterable<java.lang.String> values) {
-        ensurePrimarykeysIsMutable();
-        com.google.protobuf.AbstractMessageLite.Builder.addAll(
-            values, primarykeys_);
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>repeated string primarykeys = 5;</code>
-       */
-      public Builder clearPrimarykeys() {
-        primarykeys_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000010);
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>repeated string primarykeys = 5;</code>
-       */
-      public Builder addPrimarykeysBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        ensurePrimarykeysIsMutable();
-        primarykeys_.add(value);
-        onChanged();
-        return this;
-      }
-
-      private com.google.protobuf.MapField<
-          java.lang.String, io.floodplain.protobuf.generated.Replication.ValueProtobuf> values_;
-      private com.google.protobuf.MapField<java.lang.String, io.floodplain.protobuf.generated.Replication.ValueProtobuf>
-      internalGetValues() {
-        if (values_ == null) {
-          return com.google.protobuf.MapField.emptyMapField(
-              ValuesDefaultEntryHolder.defaultEntry);
-        }
-        return values_;
-      }
-      private com.google.protobuf.MapField<java.lang.String, io.floodplain.protobuf.generated.Replication.ValueProtobuf>
-      internalGetMutableValues() {
-        onChanged();;
-        if (values_ == null) {
-          values_ = com.google.protobuf.MapField.newMapField(
-              ValuesDefaultEntryHolder.defaultEntry);
-        }
-        if (!values_.isMutable()) {
-          values_ = values_.copy();
-        }
-        return values_;
-      }
-
-      public int getValuesCount() {
-        return internalGetValues().getMap().size();
-      }
-      /**
-       * <code>map&lt;string, .io.floodplain.protobuf.generated.ValueProtobuf&gt; values = 6;</code>
-       */
-
-      public boolean containsValues(
-          java.lang.String key) {
-        if (key == null) { throw new java.lang.NullPointerException(); }
-        return internalGetValues().getMap().containsKey(key);
-      }
-      /**
-       * Use {@link #getValuesMap()} instead.
-       */
-      @java.lang.Deprecated
-      public java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ValueProtobuf> getValues() {
-        return getValuesMap();
-      }
-      /**
-       * <code>map&lt;string, .io.floodplain.protobuf.generated.ValueProtobuf&gt; values = 6;</code>
-       */
-
-      public java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ValueProtobuf> getValuesMap() {
-        return internalGetValues().getMap();
-      }
-      /**
-       * <code>map&lt;string, .io.floodplain.protobuf.generated.ValueProtobuf&gt; values = 6;</code>
-       */
-
-      public io.floodplain.protobuf.generated.Replication.ValueProtobuf getValuesOrDefault(
-          java.lang.String key,
-          io.floodplain.protobuf.generated.Replication.ValueProtobuf defaultValue) {
-        if (key == null) { throw new java.lang.NullPointerException(); }
-        java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ValueProtobuf> map =
-            internalGetValues().getMap();
-        return map.containsKey(key) ? map.get(key) : defaultValue;
-      }
-      /**
-       * <code>map&lt;string, .io.floodplain.protobuf.generated.ValueProtobuf&gt; values = 6;</code>
-       */
-
-      public io.floodplain.protobuf.generated.Replication.ValueProtobuf getValuesOrThrow(
-          java.lang.String key) {
-        if (key == null) { throw new java.lang.NullPointerException(); }
-        java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ValueProtobuf> map =
-            internalGetValues().getMap();
-        if (!map.containsKey(key)) {
-          throw new java.lang.IllegalArgumentException();
-        }
-        return map.get(key);
-      }
-
-      public Builder clearValues() {
-        internalGetMutableValues().getMutableMap()
-            .clear();
-        return this;
-      }
-      /**
-       * <code>map&lt;string, .io.floodplain.protobuf.generated.ValueProtobuf&gt; values = 6;</code>
-       */
-
-      public Builder removeValues(
-          java.lang.String key) {
-        if (key == null) { throw new java.lang.NullPointerException(); }
-        internalGetMutableValues().getMutableMap()
-            .remove(key);
-        return this;
-      }
-      /**
-       * Use alternate mutation accessors instead.
-       */
-      @java.lang.Deprecated
-      public java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ValueProtobuf>
-      getMutableValues() {
-        return internalGetMutableValues().getMutableMap();
-      }
-      /**
-       * <code>map&lt;string, .io.floodplain.protobuf.generated.ValueProtobuf&gt; values = 6;</code>
-       */
-      public Builder putValues(
-          java.lang.String key,
-          io.floodplain.protobuf.generated.Replication.ValueProtobuf value) {
-        if (key == null) { throw new java.lang.NullPointerException(); }
-        if (value == null) { throw new java.lang.NullPointerException(); }
-        internalGetMutableValues().getMutableMap()
-            .put(key, value);
-        return this;
-      }
-      /**
-       * <code>map&lt;string, .io.floodplain.protobuf.generated.ValueProtobuf&gt; values = 6;</code>
-       */
-
-      public Builder putAllValues(
-          java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ValueProtobuf> values) {
-        internalGetMutableValues().getMutableMap()
-            .putAll(values);
-        return this;
-      }
-
-      private com.google.protobuf.MapField<
-          java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf> submessageList_;
-      private com.google.protobuf.MapField<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf>
-      internalGetSubmessageList() {
-        if (submessageList_ == null) {
-          return com.google.protobuf.MapField.emptyMapField(
-              SubmessageListDefaultEntryHolder.defaultEntry);
-        }
-        return submessageList_;
-      }
-      private com.google.protobuf.MapField<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf>
-      internalGetMutableSubmessageList() {
-        onChanged();;
-        if (submessageList_ == null) {
-          submessageList_ = com.google.protobuf.MapField.newMapField(
-              SubmessageListDefaultEntryHolder.defaultEntry);
-        }
-        if (!submessageList_.isMutable()) {
-          submessageList_ = submessageList_.copy();
-        }
-        return submessageList_;
-      }
-
-      public int getSubmessageListCount() {
-        return internalGetSubmessageList().getMap().size();
-      }
-      /**
-       * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageListProtobuf&gt; submessage_list = 7;</code>
-       */
-
-      public boolean containsSubmessageList(
-          java.lang.String key) {
-        if (key == null) { throw new java.lang.NullPointerException(); }
-        return internalGetSubmessageList().getMap().containsKey(key);
-      }
-      /**
-       * Use {@link #getSubmessageListMap()} instead.
-       */
-      @java.lang.Deprecated
-      public java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf> getSubmessageList() {
-        return getSubmessageListMap();
-      }
-      /**
-       * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageListProtobuf&gt; submessage_list = 7;</code>
-       */
-
-      public java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf> getSubmessageListMap() {
-        return internalGetSubmessageList().getMap();
-      }
-      /**
-       * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageListProtobuf&gt; submessage_list = 7;</code>
-       */
-
-      public io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf getSubmessageListOrDefault(
-          java.lang.String key,
-          io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf defaultValue) {
-        if (key == null) { throw new java.lang.NullPointerException(); }
-        java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf> map =
-            internalGetSubmessageList().getMap();
-        return map.containsKey(key) ? map.get(key) : defaultValue;
-      }
-      /**
-       * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageListProtobuf&gt; submessage_list = 7;</code>
-       */
-
-      public io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf getSubmessageListOrThrow(
-          java.lang.String key) {
-        if (key == null) { throw new java.lang.NullPointerException(); }
-        java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf> map =
-            internalGetSubmessageList().getMap();
-        if (!map.containsKey(key)) {
-          throw new java.lang.IllegalArgumentException();
-        }
-        return map.get(key);
-      }
-
-      public Builder clearSubmessageList() {
-        internalGetMutableSubmessageList().getMutableMap()
-            .clear();
-        return this;
-      }
-      /**
-       * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageListProtobuf&gt; submessage_list = 7;</code>
-       */
-
-      public Builder removeSubmessageList(
-          java.lang.String key) {
-        if (key == null) { throw new java.lang.NullPointerException(); }
-        internalGetMutableSubmessageList().getMutableMap()
-            .remove(key);
-        return this;
-      }
-      /**
-       * Use alternate mutation accessors instead.
-       */
-      @java.lang.Deprecated
-      public java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf>
-      getMutableSubmessageList() {
-        return internalGetMutableSubmessageList().getMutableMap();
-      }
-      /**
-       * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageListProtobuf&gt; submessage_list = 7;</code>
-       */
-      public Builder putSubmessageList(
-          java.lang.String key,
-          io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf value) {
-        if (key == null) { throw new java.lang.NullPointerException(); }
-        if (value == null) { throw new java.lang.NullPointerException(); }
-        internalGetMutableSubmessageList().getMutableMap()
-            .put(key, value);
-        return this;
-      }
-      /**
-       * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageListProtobuf&gt; submessage_list = 7;</code>
-       */
-
-      public Builder putAllSubmessageList(
-          java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf> values) {
-        internalGetMutableSubmessageList().getMutableMap()
-            .putAll(values);
-        return this;
-      }
-
-      private com.google.protobuf.MapField<
-          java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf> submessage_;
-      private com.google.protobuf.MapField<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf>
-      internalGetSubmessage() {
-        if (submessage_ == null) {
-          return com.google.protobuf.MapField.emptyMapField(
-              SubmessageDefaultEntryHolder.defaultEntry);
-        }
-        return submessage_;
-      }
-      private com.google.protobuf.MapField<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf>
-      internalGetMutableSubmessage() {
-        onChanged();;
-        if (submessage_ == null) {
-          submessage_ = com.google.protobuf.MapField.newMapField(
-              SubmessageDefaultEntryHolder.defaultEntry);
-        }
-        if (!submessage_.isMutable()) {
-          submessage_ = submessage_.copy();
-        }
-        return submessage_;
-      }
-
-      public int getSubmessageCount() {
-        return internalGetSubmessage().getMap().size();
-      }
-      /**
-       * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageProtobuf&gt; submessage = 8;</code>
-       */
-
-      public boolean containsSubmessage(
-          java.lang.String key) {
-        if (key == null) { throw new java.lang.NullPointerException(); }
-        return internalGetSubmessage().getMap().containsKey(key);
-      }
-      /**
-       * Use {@link #getSubmessageMap()} instead.
-       */
-      @java.lang.Deprecated
-      public java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf> getSubmessage() {
-        return getSubmessageMap();
-      }
-      /**
-       * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageProtobuf&gt; submessage = 8;</code>
-       */
-
-      public java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf> getSubmessageMap() {
-        return internalGetSubmessage().getMap();
-      }
-      /**
-       * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageProtobuf&gt; submessage = 8;</code>
-       */
-
-      public io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf getSubmessageOrDefault(
-          java.lang.String key,
-          io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf defaultValue) {
-        if (key == null) { throw new java.lang.NullPointerException(); }
-        java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf> map =
-            internalGetSubmessage().getMap();
-        return map.containsKey(key) ? map.get(key) : defaultValue;
-      }
-      /**
-       * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageProtobuf&gt; submessage = 8;</code>
-       */
-
-      public io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf getSubmessageOrThrow(
-          java.lang.String key) {
-        if (key == null) { throw new java.lang.NullPointerException(); }
-        java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf> map =
-            internalGetSubmessage().getMap();
-        if (!map.containsKey(key)) {
-          throw new java.lang.IllegalArgumentException();
-        }
-        return map.get(key);
-      }
-
-      public Builder clearSubmessage() {
-        internalGetMutableSubmessage().getMutableMap()
-            .clear();
-        return this;
-      }
-      /**
-       * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageProtobuf&gt; submessage = 8;</code>
-       */
-
-      public Builder removeSubmessage(
-          java.lang.String key) {
-        if (key == null) { throw new java.lang.NullPointerException(); }
-        internalGetMutableSubmessage().getMutableMap()
-            .remove(key);
-        return this;
-      }
-      /**
-       * Use alternate mutation accessors instead.
-       */
-      @java.lang.Deprecated
-      public java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf>
-      getMutableSubmessage() {
-        return internalGetMutableSubmessage().getMutableMap();
-      }
-      /**
-       * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageProtobuf&gt; submessage = 8;</code>
-       */
-      public Builder putSubmessage(
-          java.lang.String key,
-          io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf value) {
-        if (key == null) { throw new java.lang.NullPointerException(); }
-        if (value == null) { throw new java.lang.NullPointerException(); }
-        internalGetMutableSubmessage().getMutableMap()
-            .put(key, value);
-        return this;
-      }
-      /**
-       * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageProtobuf&gt; submessage = 8;</code>
-       */
-
-      public Builder putAllSubmessage(
-          java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf> values) {
-        internalGetMutableSubmessage().getMutableMap()
-            .putAll(values);
-        return this;
-      }
-
-      private io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf paramMessage_ = null;
-      private com.google.protobuf.SingleFieldBuilderV3<
-          io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Builder, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobufOrBuilder> paramMessageBuilder_;
-      /**
-       * <code>.io.floodplain.protobuf.generated.ReplicationMessageProtobuf paramMessage = 9;</code>
-       */
-      public boolean hasParamMessage() {
-        return paramMessageBuilder_ != null || paramMessage_ != null;
-      }
-      /**
-       * <code>.io.floodplain.protobuf.generated.ReplicationMessageProtobuf paramMessage = 9;</code>
-       */
-      public io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf getParamMessage() {
-        if (paramMessageBuilder_ == null) {
-          return paramMessage_ == null ? io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.getDefaultInstance() : paramMessage_;
-        } else {
-          return paramMessageBuilder_.getMessage();
-        }
-      }
-      /**
-       * <code>.io.floodplain.protobuf.generated.ReplicationMessageProtobuf paramMessage = 9;</code>
-       */
-      public Builder setParamMessage(io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf value) {
-        if (paramMessageBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          paramMessage_ = value;
-          onChanged();
-        } else {
-          paramMessageBuilder_.setMessage(value);
+    public static final class ReplicationMessageProtobuf extends
+            com.google.protobuf.GeneratedMessageV3 implements
+            // @@protoc_insertion_point(message_implements:io.floodplain.protobuf.generated.ReplicationMessageProtobuf)
+            ReplicationMessageProtobufOrBuilder {
+        // Use ReplicationMessageProtobuf.newBuilder() to construct.
+        private ReplicationMessageProtobuf(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+            super(builder);
         }
 
-        return this;
-      }
-      /**
-       * <code>.io.floodplain.protobuf.generated.ReplicationMessageProtobuf paramMessage = 9;</code>
-       */
-      public Builder setParamMessage(
-          io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Builder builderForValue) {
-        if (paramMessageBuilder_ == null) {
-          paramMessage_ = builderForValue.build();
-          onChanged();
-        } else {
-          paramMessageBuilder_.setMessage(builderForValue.build());
+        private ReplicationMessageProtobuf() {
+            magic_ = 0;
+            operation_ = 0;
+            timestamp_ = 0L;
+            transactionId_ = "";
+            primarykeys_ = com.google.protobuf.LazyStringArrayList.EMPTY;
         }
 
-        return this;
-      }
-      /**
-       * <code>.io.floodplain.protobuf.generated.ReplicationMessageProtobuf paramMessage = 9;</code>
-       */
-      public Builder mergeParamMessage(io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf value) {
-        if (paramMessageBuilder_ == null) {
-          if (paramMessage_ != null) {
-            paramMessage_ =
-              io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.newBuilder(paramMessage_).mergeFrom(value).buildPartial();
-          } else {
-            paramMessage_ = value;
-          }
-          onChanged();
-        } else {
-          paramMessageBuilder_.mergeFrom(value);
+        @java.lang.Override
+        public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+            return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
         }
 
-        return this;
-      }
-      /**
-       * <code>.io.floodplain.protobuf.generated.ReplicationMessageProtobuf paramMessage = 9;</code>
-       */
-      public Builder clearParamMessage() {
-        if (paramMessageBuilder_ == null) {
-          paramMessage_ = null;
-          onChanged();
-        } else {
-          paramMessage_ = null;
-          paramMessageBuilder_ = null;
-        }
+        private ReplicationMessageProtobuf(
+                com.google.protobuf.CodedInputStream input,
+                com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                throws com.google.protobuf.InvalidProtocolBufferException {
+            this();
+            int mutable_bitField0_ = 0;
+            try {
+                boolean done = false;
+                while (!done) {
+                    int tag = input.readTag();
+                    switch (tag) {
+                        case 0:
+                            done = true;
+                            break;
+                        default: {
+                            if (!input.skipField(tag)) {
+                                done = true;
+                            }
+                            break;
+                        }
+                        case 8: {
 
-        return this;
-      }
-      /**
-       * <code>.io.floodplain.protobuf.generated.ReplicationMessageProtobuf paramMessage = 9;</code>
-       */
-      public io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Builder getParamMessageBuilder() {
-        
-        onChanged();
-        return getParamMessageFieldBuilder().getBuilder();
-      }
-      /**
-       * <code>.io.floodplain.protobuf.generated.ReplicationMessageProtobuf paramMessage = 9;</code>
-       */
-      public io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobufOrBuilder getParamMessageOrBuilder() {
-        if (paramMessageBuilder_ != null) {
-          return paramMessageBuilder_.getMessageOrBuilder();
-        } else {
-          return paramMessage_ == null ?
-              io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.getDefaultInstance() : paramMessage_;
-        }
-      }
-      /**
-       * <code>.io.floodplain.protobuf.generated.ReplicationMessageProtobuf paramMessage = 9;</code>
-       */
-      private com.google.protobuf.SingleFieldBuilderV3<
-          io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Builder, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobufOrBuilder> 
-          getParamMessageFieldBuilder() {
-        if (paramMessageBuilder_ == null) {
-          paramMessageBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-              io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Builder, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobufOrBuilder>(
-                  getParamMessage(),
-                  getParentForChildren(),
-                  isClean());
-          paramMessage_ = null;
-        }
-        return paramMessageBuilder_;
-      }
-      public final Builder setUnknownFields(
-          final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
-      }
+                            magic_ = input.readInt32();
+                            break;
+                        }
+                        case 16: {
+                            int rawValue = input.readEnum();
 
-      public final Builder mergeUnknownFields(
-          final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
-      }
+                            operation_ = rawValue;
+                            break;
+                        }
+                        case 24: {
 
+                            timestamp_ = input.readInt64();
+                            break;
+                        }
+                        case 34: {
+                            java.lang.String s = input.readStringRequireUtf8();
 
-      // @@protoc_insertion_point(builder_scope:io.floodplain.protobuf.generated.ReplicationMessageProtobuf)
-    }
+                            transactionId_ = s;
+                            break;
+                        }
+                        case 42: {
+                            java.lang.String s = input.readStringRequireUtf8();
+                            if (!((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
+                                primarykeys_ = new com.google.protobuf.LazyStringArrayList();
+                                mutable_bitField0_ |= 0x00000010;
+                            }
+                            primarykeys_.add(s);
+                            break;
+                        }
+                        case 50: {
+                            if (!((mutable_bitField0_ & 0x00000020) == 0x00000020)) {
+                                values_ = com.google.protobuf.MapField.newMapField(
+                                        ValuesDefaultEntryHolder.defaultEntry);
+                                mutable_bitField0_ |= 0x00000020;
+                            }
+                            com.google.protobuf.MapEntry<java.lang.String, io.floodplain.protobuf.generated.Replication.ValueProtobuf>
+                                    values__ = input.readMessage(
+                                    ValuesDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
+                            values_.getMutableMap().put(
+                                    values__.getKey(), values__.getValue());
+                            break;
+                        }
+                        case 58: {
+                            if (!((mutable_bitField0_ & 0x00000040) == 0x00000040)) {
+                                submessageList_ = com.google.protobuf.MapField.newMapField(
+                                        SubmessageListDefaultEntryHolder.defaultEntry);
+                                mutable_bitField0_ |= 0x00000040;
+                            }
+                            com.google.protobuf.MapEntry<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf>
+                                    submessageList__ = input.readMessage(
+                                    SubmessageListDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
+                            submessageList_.getMutableMap().put(
+                                    submessageList__.getKey(), submessageList__.getValue());
+                            break;
+                        }
+                        case 66: {
+                            if (!((mutable_bitField0_ & 0x00000080) == 0x00000080)) {
+                                submessage_ = com.google.protobuf.MapField.newMapField(
+                                        SubmessageDefaultEntryHolder.defaultEntry);
+                                mutable_bitField0_ |= 0x00000080;
+                            }
+                            com.google.protobuf.MapEntry<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf>
+                                    submessage__ = input.readMessage(
+                                    SubmessageDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
+                            submessage_.getMutableMap().put(
+                                    submessage__.getKey(), submessage__.getValue());
+                            break;
+                        }
+                        case 74: {
+                            io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Builder subBuilder = null;
+                            if (paramMessage_ != null) {
+                                subBuilder = paramMessage_.toBuilder();
+                            }
+                            paramMessage_ = input.readMessage(io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.parser(), extensionRegistry);
+                            if (subBuilder != null) {
+                                subBuilder.mergeFrom(paramMessage_);
+                                paramMessage_ = subBuilder.buildPartial();
+                            }
 
-    // @@protoc_insertion_point(class_scope:io.floodplain.protobuf.generated.ReplicationMessageProtobuf)
-    private static final io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf DEFAULT_INSTANCE;
-    static {
-      DEFAULT_INSTANCE = new io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf();
-    }
-
-    public static io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf getDefaultInstance() {
-      return DEFAULT_INSTANCE;
-    }
-
-    private static final com.google.protobuf.Parser<ReplicationMessageProtobuf>
-        PARSER = new com.google.protobuf.AbstractParser<ReplicationMessageProtobuf>() {
-      public ReplicationMessageProtobuf parsePartialFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-          return new ReplicationMessageProtobuf(input, extensionRegistry);
-      }
-    };
-
-    public static com.google.protobuf.Parser<ReplicationMessageProtobuf> parser() {
-      return PARSER;
-    }
-
-    @java.lang.Override
-    public com.google.protobuf.Parser<ReplicationMessageProtobuf> getParserForType() {
-      return PARSER;
-    }
-
-    public io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf getDefaultInstanceForType() {
-      return DEFAULT_INSTANCE;
-    }
-
-  }
-
-  public interface ReplicationMessageListProtobufOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:io.floodplain.protobuf.generated.ReplicationMessageListProtobuf)
-      com.google.protobuf.MessageOrBuilder {
-
-    /**
-     * <code>int32 magic = 1;</code>
-     */
-    int getMagic();
-
-    /**
-     * <code>repeated .io.floodplain.protobuf.generated.ReplicationMessageProtobuf elements = 2;</code>
-     */
-    java.util.List<io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf> 
-        getElementsList();
-    /**
-     * <code>repeated .io.floodplain.protobuf.generated.ReplicationMessageProtobuf elements = 2;</code>
-     */
-    io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf getElements(int index);
-    /**
-     * <code>repeated .io.floodplain.protobuf.generated.ReplicationMessageProtobuf elements = 2;</code>
-     */
-    int getElementsCount();
-    /**
-     * <code>repeated .io.floodplain.protobuf.generated.ReplicationMessageProtobuf elements = 2;</code>
-     */
-    java.util.List<? extends io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobufOrBuilder> 
-        getElementsOrBuilderList();
-    /**
-     * <code>repeated .io.floodplain.protobuf.generated.ReplicationMessageProtobuf elements = 2;</code>
-     */
-    io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobufOrBuilder getElementsOrBuilder(
-        int index);
-  }
-  /**
-   * Protobuf type {@code io.floodplain.protobuf.generated.ReplicationMessageListProtobuf}
-   */
-  public  static final class ReplicationMessageListProtobuf extends
-      com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:io.floodplain.protobuf.generated.ReplicationMessageListProtobuf)
-      ReplicationMessageListProtobufOrBuilder {
-    // Use ReplicationMessageListProtobuf.newBuilder() to construct.
-    private ReplicationMessageListProtobuf(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
-      super(builder);
-    }
-    private ReplicationMessageListProtobuf() {
-      magic_ = 0;
-      elements_ = java.util.Collections.emptyList();
-    }
-
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
-    }
-    private ReplicationMessageListProtobuf(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      int mutable_bitField0_ = 0;
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            default: {
-              if (!input.skipField(tag)) {
-                done = true;
-              }
-              break;
+                            break;
+                        }
+                    }
+                }
+            } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+                throw e.setUnfinishedMessage(this);
+            } catch (java.io.IOException e) {
+                throw new com.google.protobuf.InvalidProtocolBufferException(
+                        e).setUnfinishedMessage(this);
+            } finally {
+                if (((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
+                    primarykeys_ = primarykeys_.getUnmodifiableView();
+                }
+                makeExtensionsImmutable();
             }
-            case 8: {
+        }
 
-              magic_ = input.readInt32();
-              break;
-            }
-            case 18: {
-              if (!((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
-                elements_ = new java.util.ArrayList<io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf>();
-                mutable_bitField0_ |= 0x00000002;
-              }
-              elements_.add(
-                  input.readMessage(io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.parser(), extensionRegistry));
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        if (((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
-          elements_ = java.util.Collections.unmodifiableList(elements_);
-        }
-        makeExtensionsImmutable();
-      }
-    }
-    public static final com.google.protobuf.Descriptors.Descriptor
+        public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return io.floodplain.protobuf.generated.Replication.internal_static_io_floodplain_protobuf_generated_ReplicationMessageListProtobuf_descriptor;
-    }
+            return io.floodplain.protobuf.generated.Replication.internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_descriptor;
+        }
 
-    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        @SuppressWarnings({"rawtypes"})
+        protected com.google.protobuf.MapField internalGetMapField(
+                int number) {
+            switch (number) {
+                case 6:
+                    return internalGetValues();
+                case 7:
+                    return internalGetSubmessageList();
+                case 8:
+                    return internalGetSubmessage();
+                default:
+                    throw new RuntimeException(
+                            "Invalid map field number: " + number);
+            }
+        }
+
+        protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return io.floodplain.protobuf.generated.Replication.internal_static_io_floodplain_protobuf_generated_ReplicationMessageListProtobuf_fieldAccessorTable
-          .ensureFieldAccessorsInitialized(
-              io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf.class, io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf.Builder.class);
+            return io.floodplain.protobuf.generated.Replication.internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_fieldAccessorTable
+                    .ensureFieldAccessorsInitialized(
+                            io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.class, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Builder.class);
+        }
+
+        /**
+         * Protobuf enum {@code io.floodplain.protobuf.generated.ReplicationMessageProtobuf.Operation}
+         */
+        public enum Operation
+                implements com.google.protobuf.ProtocolMessageEnum {
+            /**
+             * <code>NONE = 0;</code>
+             */
+            NONE(0),
+            /**
+             * <code>INSERT = 1;</code>
+             */
+            INSERT(1),
+            /**
+             * <code>UPDATE = 2;</code>
+             */
+            UPDATE(2),
+            /**
+             * <code>DELETE = 3;</code>
+             */
+            DELETE(3),
+            /**
+             * <code>COMMIT = 4;</code>
+             */
+            COMMIT(4),
+            /**
+             * <code>MERGE = 5;</code>
+             */
+            MERGE(5),
+            /**
+             * <code>INITIAL = 6;</code>
+             */
+            INITIAL(6),
+            UNRECOGNIZED(-1),
+            ;
+
+            /**
+             * <code>NONE = 0;</code>
+             */
+            public static final int NONE_VALUE = 0;
+            /**
+             * <code>INSERT = 1;</code>
+             */
+            public static final int INSERT_VALUE = 1;
+            /**
+             * <code>UPDATE = 2;</code>
+             */
+            public static final int UPDATE_VALUE = 2;
+            /**
+             * <code>DELETE = 3;</code>
+             */
+            public static final int DELETE_VALUE = 3;
+            /**
+             * <code>COMMIT = 4;</code>
+             */
+            public static final int COMMIT_VALUE = 4;
+            /**
+             * <code>MERGE = 5;</code>
+             */
+            public static final int MERGE_VALUE = 5;
+            /**
+             * <code>INITIAL = 6;</code>
+             */
+            public static final int INITIAL_VALUE = 6;
+
+
+            public final int getNumber() {
+                if (this == UNRECOGNIZED) {
+                    throw new java.lang.IllegalArgumentException(
+                            "Can't get the number of an unknown enum value.");
+                }
+                return value;
+            }
+
+            /**
+             * @deprecated Use {@link #forNumber(int)} instead.
+             */
+            @java.lang.Deprecated
+            public static Operation valueOf(int value) {
+                return forNumber(value);
+            }
+
+            public static Operation forNumber(int value) {
+                switch (value) {
+                    case 0:
+                        return NONE;
+                    case 1:
+                        return INSERT;
+                    case 2:
+                        return UPDATE;
+                    case 3:
+                        return DELETE;
+                    case 4:
+                        return COMMIT;
+                    case 5:
+                        return MERGE;
+                    case 6:
+                        return INITIAL;
+                    default:
+                        return null;
+                }
+            }
+
+            public static com.google.protobuf.Internal.EnumLiteMap<Operation>
+            internalGetValueMap() {
+                return internalValueMap;
+            }
+
+            private static final com.google.protobuf.Internal.EnumLiteMap<
+                    Operation> internalValueMap =
+                    new com.google.protobuf.Internal.EnumLiteMap<Operation>() {
+                        public Operation findValueByNumber(int number) {
+                            return Operation.forNumber(number);
+                        }
+                    };
+
+            public final com.google.protobuf.Descriptors.EnumValueDescriptor
+            getValueDescriptor() {
+                return getDescriptor().getValues().get(ordinal());
+            }
+
+            public final com.google.protobuf.Descriptors.EnumDescriptor
+            getDescriptorForType() {
+                return getDescriptor();
+            }
+
+            public static final com.google.protobuf.Descriptors.EnumDescriptor
+            getDescriptor() {
+                return io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.getDescriptor().getEnumTypes().get(0);
+            }
+
+            private static final Operation[] VALUES = values();
+
+            public static Operation valueOf(
+                    com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+                if (desc.getType() != getDescriptor()) {
+                    throw new java.lang.IllegalArgumentException(
+                            "EnumValueDescriptor is not for this type.");
+                }
+                if (desc.getIndex() == -1) {
+                    return UNRECOGNIZED;
+                }
+                return VALUES[desc.getIndex()];
+            }
+
+            private final int value;
+
+            private Operation(int value) {
+                this.value = value;
+            }
+
+            // @@protoc_insertion_point(enum_scope:io.floodplain.protobuf.generated.ReplicationMessageProtobuf.Operation)
+        }
+
+        private int bitField0_;
+        public static final int MAGIC_FIELD_NUMBER = 1;
+        private int magic_;
+
+        /**
+         * <code>int32 magic = 1;</code>
+         */
+        public int getMagic() {
+            return magic_;
+        }
+
+        public static final int OPERATION_FIELD_NUMBER = 2;
+        private int operation_;
+
+        /**
+         * <code>.io.floodplain.protobuf.generated.ReplicationMessageProtobuf.Operation operation = 2;</code>
+         */
+        public int getOperationValue() {
+            return operation_;
+        }
+
+        /**
+         * <code>.io.floodplain.protobuf.generated.ReplicationMessageProtobuf.Operation operation = 2;</code>
+         */
+        public io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Operation getOperation() {
+            io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Operation result = io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Operation.valueOf(operation_);
+            return result == null ? io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Operation.UNRECOGNIZED : result;
+        }
+
+        public static final int TIMESTAMP_FIELD_NUMBER = 3;
+        private long timestamp_;
+
+        /**
+         * <code>int64 timestamp = 3;</code>
+         */
+        public long getTimestamp() {
+            return timestamp_;
+        }
+
+        public static final int TRANSACTION_ID_FIELD_NUMBER = 4;
+        private volatile java.lang.Object transactionId_;
+
+        /**
+         * <code>string transaction_id = 4;</code>
+         */
+        public java.lang.String getTransactionId() {
+            java.lang.Object ref = transactionId_;
+            if (ref instanceof java.lang.String) {
+                return (java.lang.String) ref;
+            } else {
+                com.google.protobuf.ByteString bs =
+                        (com.google.protobuf.ByteString) ref;
+                java.lang.String s = bs.toStringUtf8();
+                transactionId_ = s;
+                return s;
+            }
+        }
+
+        /**
+         * <code>string transaction_id = 4;</code>
+         */
+        public com.google.protobuf.ByteString
+        getTransactionIdBytes() {
+            java.lang.Object ref = transactionId_;
+            if (ref instanceof java.lang.String) {
+                com.google.protobuf.ByteString b =
+                        com.google.protobuf.ByteString.copyFromUtf8(
+                                (java.lang.String) ref);
+                transactionId_ = b;
+                return b;
+            } else {
+                return (com.google.protobuf.ByteString) ref;
+            }
+        }
+
+        public static final int PRIMARYKEYS_FIELD_NUMBER = 5;
+        private com.google.protobuf.LazyStringList primarykeys_;
+
+        /**
+         * <code>repeated string primarykeys = 5;</code>
+         */
+        public com.google.protobuf.ProtocolStringList
+        getPrimarykeysList() {
+            return primarykeys_;
+        }
+
+        /**
+         * <code>repeated string primarykeys = 5;</code>
+         */
+        public int getPrimarykeysCount() {
+            return primarykeys_.size();
+        }
+
+        /**
+         * <code>repeated string primarykeys = 5;</code>
+         */
+        public java.lang.String getPrimarykeys(int index) {
+            return primarykeys_.get(index);
+        }
+
+        /**
+         * <code>repeated string primarykeys = 5;</code>
+         */
+        public com.google.protobuf.ByteString
+        getPrimarykeysBytes(int index) {
+            return primarykeys_.getByteString(index);
+        }
+
+        public static final int VALUES_FIELD_NUMBER = 6;
+
+        private static final class ValuesDefaultEntryHolder {
+            static final com.google.protobuf.MapEntry<
+                    java.lang.String, io.floodplain.protobuf.generated.Replication.ValueProtobuf> defaultEntry =
+                    com.google.protobuf.MapEntry
+                            .<java.lang.String, io.floodplain.protobuf.generated.Replication.ValueProtobuf>newDefaultInstance(
+                                    io.floodplain.protobuf.generated.Replication.internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_ValuesEntry_descriptor,
+                                    com.google.protobuf.WireFormat.FieldType.STRING,
+                                    "",
+                                    com.google.protobuf.WireFormat.FieldType.MESSAGE,
+                                    io.floodplain.protobuf.generated.Replication.ValueProtobuf.getDefaultInstance());
+        }
+
+        private com.google.protobuf.MapField<
+                java.lang.String, io.floodplain.protobuf.generated.Replication.ValueProtobuf> values_;
+
+        private com.google.protobuf.MapField<java.lang.String, io.floodplain.protobuf.generated.Replication.ValueProtobuf>
+        internalGetValues() {
+            if (values_ == null) {
+                return com.google.protobuf.MapField.emptyMapField(
+                        ValuesDefaultEntryHolder.defaultEntry);
+            }
+            return values_;
+        }
+
+        public int getValuesCount() {
+            return internalGetValues().getMap().size();
+        }
+
+        /**
+         * <code>map&lt;string, .io.floodplain.protobuf.generated.ValueProtobuf&gt; values = 6;</code>
+         */
+
+        public boolean containsValues(
+                java.lang.String key) {
+            if (key == null) {
+                throw new java.lang.NullPointerException();
+            }
+            return internalGetValues().getMap().containsKey(key);
+        }
+
+        /**
+         * Use {@link #getValuesMap()} instead.
+         */
+        @java.lang.Deprecated
+        public java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ValueProtobuf> getValues() {
+            return getValuesMap();
+        }
+
+        /**
+         * <code>map&lt;string, .io.floodplain.protobuf.generated.ValueProtobuf&gt; values = 6;</code>
+         */
+
+        public java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ValueProtobuf> getValuesMap() {
+            return internalGetValues().getMap();
+        }
+
+        /**
+         * <code>map&lt;string, .io.floodplain.protobuf.generated.ValueProtobuf&gt; values = 6;</code>
+         */
+
+        public io.floodplain.protobuf.generated.Replication.ValueProtobuf getValuesOrDefault(
+                java.lang.String key,
+                io.floodplain.protobuf.generated.Replication.ValueProtobuf defaultValue) {
+            if (key == null) {
+                throw new java.lang.NullPointerException();
+            }
+            java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ValueProtobuf> map =
+                    internalGetValues().getMap();
+            return map.containsKey(key) ? map.get(key) : defaultValue;
+        }
+
+        /**
+         * <code>map&lt;string, .io.floodplain.protobuf.generated.ValueProtobuf&gt; values = 6;</code>
+         */
+
+        public io.floodplain.protobuf.generated.Replication.ValueProtobuf getValuesOrThrow(
+                java.lang.String key) {
+            if (key == null) {
+                throw new java.lang.NullPointerException();
+            }
+            java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ValueProtobuf> map =
+                    internalGetValues().getMap();
+            if (!map.containsKey(key)) {
+                throw new java.lang.IllegalArgumentException();
+            }
+            return map.get(key);
+        }
+
+        public static final int SUBMESSAGE_LIST_FIELD_NUMBER = 7;
+
+        private static final class SubmessageListDefaultEntryHolder {
+            static final com.google.protobuf.MapEntry<
+                    java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf> defaultEntry =
+                    com.google.protobuf.MapEntry
+                            .<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf>newDefaultInstance(
+                                    io.floodplain.protobuf.generated.Replication.internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_SubmessageListEntry_descriptor,
+                                    com.google.protobuf.WireFormat.FieldType.STRING,
+                                    "",
+                                    com.google.protobuf.WireFormat.FieldType.MESSAGE,
+                                    io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf.getDefaultInstance());
+        }
+
+        private com.google.protobuf.MapField<
+                java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf> submessageList_;
+
+        private com.google.protobuf.MapField<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf>
+        internalGetSubmessageList() {
+            if (submessageList_ == null) {
+                return com.google.protobuf.MapField.emptyMapField(
+                        SubmessageListDefaultEntryHolder.defaultEntry);
+            }
+            return submessageList_;
+        }
+
+        public int getSubmessageListCount() {
+            return internalGetSubmessageList().getMap().size();
+        }
+
+        /**
+         * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageListProtobuf&gt; submessage_list = 7;</code>
+         */
+
+        public boolean containsSubmessageList(
+                java.lang.String key) {
+            if (key == null) {
+                throw new java.lang.NullPointerException();
+            }
+            return internalGetSubmessageList().getMap().containsKey(key);
+        }
+
+        /**
+         * Use {@link #getSubmessageListMap()} instead.
+         */
+        @java.lang.Deprecated
+        public java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf> getSubmessageList() {
+            return getSubmessageListMap();
+        }
+
+        /**
+         * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageListProtobuf&gt; submessage_list = 7;</code>
+         */
+
+        public java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf> getSubmessageListMap() {
+            return internalGetSubmessageList().getMap();
+        }
+
+        /**
+         * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageListProtobuf&gt; submessage_list = 7;</code>
+         */
+
+        public io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf getSubmessageListOrDefault(
+                java.lang.String key,
+                io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf defaultValue) {
+            if (key == null) {
+                throw new java.lang.NullPointerException();
+            }
+            java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf> map =
+                    internalGetSubmessageList().getMap();
+            return map.containsKey(key) ? map.get(key) : defaultValue;
+        }
+
+        /**
+         * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageListProtobuf&gt; submessage_list = 7;</code>
+         */
+
+        public io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf getSubmessageListOrThrow(
+                java.lang.String key) {
+            if (key == null) {
+                throw new java.lang.NullPointerException();
+            }
+            java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf> map =
+                    internalGetSubmessageList().getMap();
+            if (!map.containsKey(key)) {
+                throw new java.lang.IllegalArgumentException();
+            }
+            return map.get(key);
+        }
+
+        public static final int SUBMESSAGE_FIELD_NUMBER = 8;
+
+        private static final class SubmessageDefaultEntryHolder {
+            static final com.google.protobuf.MapEntry<
+                    java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf> defaultEntry =
+                    com.google.protobuf.MapEntry
+                            .<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf>newDefaultInstance(
+                                    io.floodplain.protobuf.generated.Replication.internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_SubmessageEntry_descriptor,
+                                    com.google.protobuf.WireFormat.FieldType.STRING,
+                                    "",
+                                    com.google.protobuf.WireFormat.FieldType.MESSAGE,
+                                    io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.getDefaultInstance());
+        }
+
+        private com.google.protobuf.MapField<
+                java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf> submessage_;
+
+        private com.google.protobuf.MapField<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf>
+        internalGetSubmessage() {
+            if (submessage_ == null) {
+                return com.google.protobuf.MapField.emptyMapField(
+                        SubmessageDefaultEntryHolder.defaultEntry);
+            }
+            return submessage_;
+        }
+
+        public int getSubmessageCount() {
+            return internalGetSubmessage().getMap().size();
+        }
+
+        /**
+         * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageProtobuf&gt; submessage = 8;</code>
+         */
+
+        public boolean containsSubmessage(
+                java.lang.String key) {
+            if (key == null) {
+                throw new java.lang.NullPointerException();
+            }
+            return internalGetSubmessage().getMap().containsKey(key);
+        }
+
+        /**
+         * Use {@link #getSubmessageMap()} instead.
+         */
+        @java.lang.Deprecated
+        public java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf> getSubmessage() {
+            return getSubmessageMap();
+        }
+
+        /**
+         * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageProtobuf&gt; submessage = 8;</code>
+         */
+
+        public java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf> getSubmessageMap() {
+            return internalGetSubmessage().getMap();
+        }
+
+        /**
+         * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageProtobuf&gt; submessage = 8;</code>
+         */
+
+        public io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf getSubmessageOrDefault(
+                java.lang.String key,
+                io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf defaultValue) {
+            if (key == null) {
+                throw new java.lang.NullPointerException();
+            }
+            java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf> map =
+                    internalGetSubmessage().getMap();
+            return map.containsKey(key) ? map.get(key) : defaultValue;
+        }
+
+        /**
+         * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageProtobuf&gt; submessage = 8;</code>
+         */
+
+        public io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf getSubmessageOrThrow(
+                java.lang.String key) {
+            if (key == null) {
+                throw new java.lang.NullPointerException();
+            }
+            java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf> map =
+                    internalGetSubmessage().getMap();
+            if (!map.containsKey(key)) {
+                throw new java.lang.IllegalArgumentException();
+            }
+            return map.get(key);
+        }
+
+        public static final int PARAMMESSAGE_FIELD_NUMBER = 9;
+        private io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf paramMessage_;
+
+        /**
+         * <code>.io.floodplain.protobuf.generated.ReplicationMessageProtobuf paramMessage = 9;</code>
+         */
+        public boolean hasParamMessage() {
+            return paramMessage_ != null;
+        }
+
+        /**
+         * <code>.io.floodplain.protobuf.generated.ReplicationMessageProtobuf paramMessage = 9;</code>
+         */
+        public io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf getParamMessage() {
+            return paramMessage_ == null ? io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.getDefaultInstance() : paramMessage_;
+        }
+
+        /**
+         * <code>.io.floodplain.protobuf.generated.ReplicationMessageProtobuf paramMessage = 9;</code>
+         */
+        public io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobufOrBuilder getParamMessageOrBuilder() {
+            return getParamMessage();
+        }
+
+        private byte memoizedIsInitialized = -1;
+
+        public final boolean isInitialized() {
+            byte isInitialized = memoizedIsInitialized;
+            if (isInitialized == 1) return true;
+            if (isInitialized == 0) return false;
+
+            memoizedIsInitialized = 1;
+            return true;
+        }
+
+        public void writeTo(com.google.protobuf.CodedOutputStream output)
+                throws java.io.IOException {
+            if (magic_ != 0) {
+                output.writeInt32(1, magic_);
+            }
+            if (operation_ != io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Operation.NONE.getNumber()) {
+                output.writeEnum(2, operation_);
+            }
+            if (timestamp_ != 0L) {
+                output.writeInt64(3, timestamp_);
+            }
+            if (!getTransactionIdBytes().isEmpty()) {
+                com.google.protobuf.GeneratedMessageV3.writeString(output, 4, transactionId_);
+            }
+            for (int i = 0; i < primarykeys_.size(); i++) {
+                com.google.protobuf.GeneratedMessageV3.writeString(output, 5, primarykeys_.getRaw(i));
+            }
+            com.google.protobuf.GeneratedMessageV3
+                    .serializeStringMapTo(
+                            output,
+                            internalGetValues(),
+                            ValuesDefaultEntryHolder.defaultEntry,
+                            6);
+            com.google.protobuf.GeneratedMessageV3
+                    .serializeStringMapTo(
+                            output,
+                            internalGetSubmessageList(),
+                            SubmessageListDefaultEntryHolder.defaultEntry,
+                            7);
+            com.google.protobuf.GeneratedMessageV3
+                    .serializeStringMapTo(
+                            output,
+                            internalGetSubmessage(),
+                            SubmessageDefaultEntryHolder.defaultEntry,
+                            8);
+            if (paramMessage_ != null) {
+                output.writeMessage(9, getParamMessage());
+            }
+        }
+
+        public int getSerializedSize() {
+            int size = memoizedSize;
+            if (size != -1) return size;
+
+            size = 0;
+            if (magic_ != 0) {
+                size += com.google.protobuf.CodedOutputStream
+                        .computeInt32Size(1, magic_);
+            }
+            if (operation_ != io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Operation.NONE.getNumber()) {
+                size += com.google.protobuf.CodedOutputStream
+                        .computeEnumSize(2, operation_);
+            }
+            if (timestamp_ != 0L) {
+                size += com.google.protobuf.CodedOutputStream
+                        .computeInt64Size(3, timestamp_);
+            }
+            if (!getTransactionIdBytes().isEmpty()) {
+                size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, transactionId_);
+            }
+            {
+                int dataSize = 0;
+                for (int i = 0; i < primarykeys_.size(); i++) {
+                    dataSize += computeStringSizeNoTag(primarykeys_.getRaw(i));
+                }
+                size += dataSize;
+                size += 1 * getPrimarykeysList().size();
+            }
+            for (java.util.Map.Entry<java.lang.String, io.floodplain.protobuf.generated.Replication.ValueProtobuf> entry
+                    : internalGetValues().getMap().entrySet()) {
+                com.google.protobuf.MapEntry<java.lang.String, io.floodplain.protobuf.generated.Replication.ValueProtobuf>
+                        values__ = ValuesDefaultEntryHolder.defaultEntry.newBuilderForType()
+                        .setKey(entry.getKey())
+                        .setValue(entry.getValue())
+                        .build();
+                size += com.google.protobuf.CodedOutputStream
+                        .computeMessageSize(6, values__);
+            }
+            for (java.util.Map.Entry<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf> entry
+                    : internalGetSubmessageList().getMap().entrySet()) {
+                com.google.protobuf.MapEntry<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf>
+                        submessageList__ = SubmessageListDefaultEntryHolder.defaultEntry.newBuilderForType()
+                        .setKey(entry.getKey())
+                        .setValue(entry.getValue())
+                        .build();
+                size += com.google.protobuf.CodedOutputStream
+                        .computeMessageSize(7, submessageList__);
+            }
+            for (java.util.Map.Entry<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf> entry
+                    : internalGetSubmessage().getMap().entrySet()) {
+                com.google.protobuf.MapEntry<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf>
+                        submessage__ = SubmessageDefaultEntryHolder.defaultEntry.newBuilderForType()
+                        .setKey(entry.getKey())
+                        .setValue(entry.getValue())
+                        .build();
+                size += com.google.protobuf.CodedOutputStream
+                        .computeMessageSize(8, submessage__);
+            }
+            if (paramMessage_ != null) {
+                size += com.google.protobuf.CodedOutputStream
+                        .computeMessageSize(9, getParamMessage());
+            }
+            memoizedSize = size;
+            return size;
+        }
+
+        private static final long serialVersionUID = 0L;
+
+        @java.lang.Override
+        public boolean equals(final java.lang.Object obj) {
+            if (obj == this) {
+                return true;
+            }
+            if (!(obj instanceof io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf)) {
+                return super.equals(obj);
+            }
+            io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf other = (io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf) obj;
+
+            boolean result = true;
+            result = result && (getMagic()
+                    == other.getMagic());
+            result = result && operation_ == other.operation_;
+            result = result && (getTimestamp()
+                    == other.getTimestamp());
+            result = result && getTransactionId()
+                    .equals(other.getTransactionId());
+            result = result && getPrimarykeysList()
+                    .equals(other.getPrimarykeysList());
+            result = result && internalGetValues().equals(
+                    other.internalGetValues());
+            result = result && internalGetSubmessageList().equals(
+                    other.internalGetSubmessageList());
+            result = result && internalGetSubmessage().equals(
+                    other.internalGetSubmessage());
+            result = result && (hasParamMessage() == other.hasParamMessage());
+            if (hasParamMessage()) {
+                result = result && getParamMessage()
+                        .equals(other.getParamMessage());
+            }
+            return result;
+        }
+
+        @java.lang.Override
+        public int hashCode() {
+            if (memoizedHashCode != 0) {
+                return memoizedHashCode;
+            }
+            int hash = 41;
+            hash = (19 * hash) + getDescriptor().hashCode();
+            hash = (37 * hash) + MAGIC_FIELD_NUMBER;
+            hash = (53 * hash) + getMagic();
+            hash = (37 * hash) + OPERATION_FIELD_NUMBER;
+            hash = (53 * hash) + operation_;
+            hash = (37 * hash) + TIMESTAMP_FIELD_NUMBER;
+            hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+                    getTimestamp());
+            hash = (37 * hash) + TRANSACTION_ID_FIELD_NUMBER;
+            hash = (53 * hash) + getTransactionId().hashCode();
+            if (getPrimarykeysCount() > 0) {
+                hash = (37 * hash) + PRIMARYKEYS_FIELD_NUMBER;
+                hash = (53 * hash) + getPrimarykeysList().hashCode();
+            }
+            if (!internalGetValues().getMap().isEmpty()) {
+                hash = (37 * hash) + VALUES_FIELD_NUMBER;
+                hash = (53 * hash) + internalGetValues().hashCode();
+            }
+            if (!internalGetSubmessageList().getMap().isEmpty()) {
+                hash = (37 * hash) + SUBMESSAGE_LIST_FIELD_NUMBER;
+                hash = (53 * hash) + internalGetSubmessageList().hashCode();
+            }
+            if (!internalGetSubmessage().getMap().isEmpty()) {
+                hash = (37 * hash) + SUBMESSAGE_FIELD_NUMBER;
+                hash = (53 * hash) + internalGetSubmessage().hashCode();
+            }
+            if (hasParamMessage()) {
+                hash = (37 * hash) + PARAMMESSAGE_FIELD_NUMBER;
+                hash = (53 * hash) + getParamMessage().hashCode();
+            }
+            hash = (29 * hash) + unknownFields.hashCode();
+            memoizedHashCode = hash;
+            return hash;
+        }
+
+        public static io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf parseFrom(
+                java.nio.ByteBuffer data)
+                throws com.google.protobuf.InvalidProtocolBufferException {
+            return PARSER.parseFrom(data);
+        }
+
+        public static io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf parseFrom(
+                java.nio.ByteBuffer data,
+                com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                throws com.google.protobuf.InvalidProtocolBufferException {
+            return PARSER.parseFrom(data, extensionRegistry);
+        }
+
+        public static io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf parseFrom(
+                com.google.protobuf.ByteString data)
+                throws com.google.protobuf.InvalidProtocolBufferException {
+            return PARSER.parseFrom(data);
+        }
+
+        public static io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf parseFrom(
+                com.google.protobuf.ByteString data,
+                com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                throws com.google.protobuf.InvalidProtocolBufferException {
+            return PARSER.parseFrom(data, extensionRegistry);
+        }
+
+        public static io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf parseFrom(byte[] data)
+                throws com.google.protobuf.InvalidProtocolBufferException {
+            return PARSER.parseFrom(data);
+        }
+
+        public static io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf parseFrom(
+                byte[] data,
+                com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                throws com.google.protobuf.InvalidProtocolBufferException {
+            return PARSER.parseFrom(data, extensionRegistry);
+        }
+
+        public static io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf parseFrom(java.io.InputStream input)
+                throws java.io.IOException {
+            return com.google.protobuf.GeneratedMessageV3
+                    .parseWithIOException(PARSER, input);
+        }
+
+        public static io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf parseFrom(
+                java.io.InputStream input,
+                com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                throws java.io.IOException {
+            return com.google.protobuf.GeneratedMessageV3
+                    .parseWithIOException(PARSER, input, extensionRegistry);
+        }
+
+        public static io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf parseDelimitedFrom(java.io.InputStream input)
+                throws java.io.IOException {
+            return com.google.protobuf.GeneratedMessageV3
+                    .parseDelimitedWithIOException(PARSER, input);
+        }
+
+        public static io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf parseDelimitedFrom(
+                java.io.InputStream input,
+                com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                throws java.io.IOException {
+            return com.google.protobuf.GeneratedMessageV3
+                    .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+        }
+
+        public static io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf parseFrom(
+                com.google.protobuf.CodedInputStream input)
+                throws java.io.IOException {
+            return com.google.protobuf.GeneratedMessageV3
+                    .parseWithIOException(PARSER, input);
+        }
+
+        public static io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf parseFrom(
+                com.google.protobuf.CodedInputStream input,
+                com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                throws java.io.IOException {
+            return com.google.protobuf.GeneratedMessageV3
+                    .parseWithIOException(PARSER, input, extensionRegistry);
+        }
+
+        public Builder newBuilderForType() {
+            return newBuilder();
+        }
+
+        public static Builder newBuilder() {
+            return DEFAULT_INSTANCE.toBuilder();
+        }
+
+        public static Builder newBuilder(io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf prototype) {
+            return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+        }
+
+        public Builder toBuilder() {
+            return this == DEFAULT_INSTANCE
+                    ? new Builder() : new Builder().mergeFrom(this);
+        }
+
+        @java.lang.Override
+        protected Builder newBuilderForType(
+                com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+            Builder builder = new Builder(parent);
+            return builder;
+        }
+
+        /**
+         * Protobuf type {@code io.floodplain.protobuf.generated.ReplicationMessageProtobuf}
+         */
+        public static final class Builder extends
+                com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+                // @@protoc_insertion_point(builder_implements:io.floodplain.protobuf.generated.ReplicationMessageProtobuf)
+                io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobufOrBuilder {
+            public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+                return io.floodplain.protobuf.generated.Replication.internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_descriptor;
+            }
+
+            @SuppressWarnings({"rawtypes"})
+            protected com.google.protobuf.MapField internalGetMapField(
+                    int number) {
+                switch (number) {
+                    case 6:
+                        return internalGetValues();
+                    case 7:
+                        return internalGetSubmessageList();
+                    case 8:
+                        return internalGetSubmessage();
+                    default:
+                        throw new RuntimeException(
+                                "Invalid map field number: " + number);
+                }
+            }
+
+            @SuppressWarnings({"rawtypes"})
+            protected com.google.protobuf.MapField internalGetMutableMapField(
+                    int number) {
+                switch (number) {
+                    case 6:
+                        return internalGetMutableValues();
+                    case 7:
+                        return internalGetMutableSubmessageList();
+                    case 8:
+                        return internalGetMutableSubmessage();
+                    default:
+                        throw new RuntimeException(
+                                "Invalid map field number: " + number);
+                }
+            }
+
+            protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+                return io.floodplain.protobuf.generated.Replication.internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_fieldAccessorTable
+                        .ensureFieldAccessorsInitialized(
+                                io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.class, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Builder.class);
+            }
+
+            // Construct using io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.newBuilder()
+            private Builder() {
+                maybeForceBuilderInitialization();
+            }
+
+            private Builder(
+                    com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+                super(parent);
+                maybeForceBuilderInitialization();
+            }
+
+            private void maybeForceBuilderInitialization() {
+                if (com.google.protobuf.GeneratedMessageV3
+                        .alwaysUseFieldBuilders) {
+                }
+            }
+
+            public Builder clear() {
+                super.clear();
+                magic_ = 0;
+
+                operation_ = 0;
+
+                timestamp_ = 0L;
+
+                transactionId_ = "";
+
+                primarykeys_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+                bitField0_ = (bitField0_ & ~0x00000010);
+                internalGetMutableValues().clear();
+                internalGetMutableSubmessageList().clear();
+                internalGetMutableSubmessage().clear();
+                if (paramMessageBuilder_ == null) {
+                    paramMessage_ = null;
+                } else {
+                    paramMessage_ = null;
+                    paramMessageBuilder_ = null;
+                }
+                return this;
+            }
+
+            public com.google.protobuf.Descriptors.Descriptor
+            getDescriptorForType() {
+                return io.floodplain.protobuf.generated.Replication.internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_descriptor;
+            }
+
+            public io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf getDefaultInstanceForType() {
+                return io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.getDefaultInstance();
+            }
+
+            public io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf build() {
+                io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf result = buildPartial();
+                if (!result.isInitialized()) {
+                    throw newUninitializedMessageException(result);
+                }
+                return result;
+            }
+
+            public io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf buildPartial() {
+                io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf result = new io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf(this);
+                int from_bitField0_ = bitField0_;
+                int to_bitField0_ = 0;
+                result.magic_ = magic_;
+                result.operation_ = operation_;
+                result.timestamp_ = timestamp_;
+                result.transactionId_ = transactionId_;
+                if (((bitField0_ & 0x00000010) == 0x00000010)) {
+                    primarykeys_ = primarykeys_.getUnmodifiableView();
+                    bitField0_ = (bitField0_ & ~0x00000010);
+                }
+                result.primarykeys_ = primarykeys_;
+                result.values_ = internalGetValues();
+                result.values_.makeImmutable();
+                result.submessageList_ = internalGetSubmessageList();
+                result.submessageList_.makeImmutable();
+                result.submessage_ = internalGetSubmessage();
+                result.submessage_.makeImmutable();
+                if (paramMessageBuilder_ == null) {
+                    result.paramMessage_ = paramMessage_;
+                } else {
+                    result.paramMessage_ = paramMessageBuilder_.build();
+                }
+                result.bitField0_ = to_bitField0_;
+                onBuilt();
+                return result;
+            }
+
+            public Builder clone() {
+                return (Builder) super.clone();
+            }
+
+            public Builder setField(
+                    com.google.protobuf.Descriptors.FieldDescriptor field,
+                    Object value) {
+                return (Builder) super.setField(field, value);
+            }
+
+            public Builder clearField(
+                    com.google.protobuf.Descriptors.FieldDescriptor field) {
+                return (Builder) super.clearField(field);
+            }
+
+            public Builder clearOneof(
+                    com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+                return (Builder) super.clearOneof(oneof);
+            }
+
+            public Builder setRepeatedField(
+                    com.google.protobuf.Descriptors.FieldDescriptor field,
+                    int index, Object value) {
+                return (Builder) super.setRepeatedField(field, index, value);
+            }
+
+            public Builder addRepeatedField(
+                    com.google.protobuf.Descriptors.FieldDescriptor field,
+                    Object value) {
+                return (Builder) super.addRepeatedField(field, value);
+            }
+
+            public Builder mergeFrom(com.google.protobuf.Message other) {
+                if (other instanceof io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf) {
+                    return mergeFrom((io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf) other);
+                } else {
+                    super.mergeFrom(other);
+                    return this;
+                }
+            }
+
+            public Builder mergeFrom(io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf other) {
+                if (other == io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.getDefaultInstance())
+                    return this;
+                if (other.getMagic() != 0) {
+                    setMagic(other.getMagic());
+                }
+                if (other.operation_ != 0) {
+                    setOperationValue(other.getOperationValue());
+                }
+                if (other.getTimestamp() != 0L) {
+                    setTimestamp(other.getTimestamp());
+                }
+                if (!other.getTransactionId().isEmpty()) {
+                    transactionId_ = other.transactionId_;
+                    onChanged();
+                }
+                if (!other.primarykeys_.isEmpty()) {
+                    if (primarykeys_.isEmpty()) {
+                        primarykeys_ = other.primarykeys_;
+                        bitField0_ = (bitField0_ & ~0x00000010);
+                    } else {
+                        ensurePrimarykeysIsMutable();
+                        primarykeys_.addAll(other.primarykeys_);
+                    }
+                    onChanged();
+                }
+                internalGetMutableValues().mergeFrom(
+                        other.internalGetValues());
+                internalGetMutableSubmessageList().mergeFrom(
+                        other.internalGetSubmessageList());
+                internalGetMutableSubmessage().mergeFrom(
+                        other.internalGetSubmessage());
+                if (other.hasParamMessage()) {
+                    mergeParamMessage(other.getParamMessage());
+                }
+                onChanged();
+                return this;
+            }
+
+            public final boolean isInitialized() {
+                return true;
+            }
+
+            public Builder mergeFrom(
+                    com.google.protobuf.CodedInputStream input,
+                    com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                    throws java.io.IOException {
+                io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf parsedMessage = null;
+                try {
+                    parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+                } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+                    parsedMessage = (io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf) e.getUnfinishedMessage();
+                    throw e.unwrapIOException();
+                } finally {
+                    if (parsedMessage != null) {
+                        mergeFrom(parsedMessage);
+                    }
+                }
+                return this;
+            }
+
+            private int bitField0_;
+
+            private int magic_;
+
+            /**
+             * <code>int32 magic = 1;</code>
+             */
+            public int getMagic() {
+                return magic_;
+            }
+
+            /**
+             * <code>int32 magic = 1;</code>
+             */
+            public Builder setMagic(int value) {
+
+                magic_ = value;
+                onChanged();
+                return this;
+            }
+
+            /**
+             * <code>int32 magic = 1;</code>
+             */
+            public Builder clearMagic() {
+
+                magic_ = 0;
+                onChanged();
+                return this;
+            }
+
+            private int operation_ = 0;
+
+            /**
+             * <code>.io.floodplain.protobuf.generated.ReplicationMessageProtobuf.Operation operation = 2;</code>
+             */
+            public int getOperationValue() {
+                return operation_;
+            }
+
+            /**
+             * <code>.io.floodplain.protobuf.generated.ReplicationMessageProtobuf.Operation operation = 2;</code>
+             */
+            public Builder setOperationValue(int value) {
+                operation_ = value;
+                onChanged();
+                return this;
+            }
+
+            /**
+             * <code>.io.floodplain.protobuf.generated.ReplicationMessageProtobuf.Operation operation = 2;</code>
+             */
+            public io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Operation getOperation() {
+                io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Operation result = io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Operation.valueOf(operation_);
+                return result == null ? io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Operation.UNRECOGNIZED : result;
+            }
+
+            /**
+             * <code>.io.floodplain.protobuf.generated.ReplicationMessageProtobuf.Operation operation = 2;</code>
+             */
+            public Builder setOperation(io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Operation value) {
+                if (value == null) {
+                    throw new NullPointerException();
+                }
+
+                operation_ = value.getNumber();
+                onChanged();
+                return this;
+            }
+
+            /**
+             * <code>.io.floodplain.protobuf.generated.ReplicationMessageProtobuf.Operation operation = 2;</code>
+             */
+            public Builder clearOperation() {
+
+                operation_ = 0;
+                onChanged();
+                return this;
+            }
+
+            private long timestamp_;
+
+            /**
+             * <code>int64 timestamp = 3;</code>
+             */
+            public long getTimestamp() {
+                return timestamp_;
+            }
+
+            /**
+             * <code>int64 timestamp = 3;</code>
+             */
+            public Builder setTimestamp(long value) {
+
+                timestamp_ = value;
+                onChanged();
+                return this;
+            }
+
+            /**
+             * <code>int64 timestamp = 3;</code>
+             */
+            public Builder clearTimestamp() {
+
+                timestamp_ = 0L;
+                onChanged();
+                return this;
+            }
+
+            private java.lang.Object transactionId_ = "";
+
+            /**
+             * <code>string transaction_id = 4;</code>
+             */
+            public java.lang.String getTransactionId() {
+                java.lang.Object ref = transactionId_;
+                if (!(ref instanceof java.lang.String)) {
+                    com.google.protobuf.ByteString bs =
+                            (com.google.protobuf.ByteString) ref;
+                    java.lang.String s = bs.toStringUtf8();
+                    transactionId_ = s;
+                    return s;
+                } else {
+                    return (java.lang.String) ref;
+                }
+            }
+
+            /**
+             * <code>string transaction_id = 4;</code>
+             */
+            public com.google.protobuf.ByteString
+            getTransactionIdBytes() {
+                java.lang.Object ref = transactionId_;
+                if (ref instanceof String) {
+                    com.google.protobuf.ByteString b =
+                            com.google.protobuf.ByteString.copyFromUtf8(
+                                    (java.lang.String) ref);
+                    transactionId_ = b;
+                    return b;
+                } else {
+                    return (com.google.protobuf.ByteString) ref;
+                }
+            }
+
+            /**
+             * <code>string transaction_id = 4;</code>
+             */
+            public Builder setTransactionId(
+                    java.lang.String value) {
+                if (value == null) {
+                    throw new NullPointerException();
+                }
+
+                transactionId_ = value;
+                onChanged();
+                return this;
+            }
+
+            /**
+             * <code>string transaction_id = 4;</code>
+             */
+            public Builder clearTransactionId() {
+
+                transactionId_ = getDefaultInstance().getTransactionId();
+                onChanged();
+                return this;
+            }
+
+            /**
+             * <code>string transaction_id = 4;</code>
+             */
+            public Builder setTransactionIdBytes(
+                    com.google.protobuf.ByteString value) {
+                if (value == null) {
+                    throw new NullPointerException();
+                }
+                checkByteStringIsUtf8(value);
+
+                transactionId_ = value;
+                onChanged();
+                return this;
+            }
+
+            private com.google.protobuf.LazyStringList primarykeys_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+
+            private void ensurePrimarykeysIsMutable() {
+                if (!((bitField0_ & 0x00000010) == 0x00000010)) {
+                    primarykeys_ = new com.google.protobuf.LazyStringArrayList(primarykeys_);
+                    bitField0_ |= 0x00000010;
+                }
+            }
+
+            /**
+             * <code>repeated string primarykeys = 5;</code>
+             */
+            public com.google.protobuf.ProtocolStringList
+            getPrimarykeysList() {
+                return primarykeys_.getUnmodifiableView();
+            }
+
+            /**
+             * <code>repeated string primarykeys = 5;</code>
+             */
+            public int getPrimarykeysCount() {
+                return primarykeys_.size();
+            }
+
+            /**
+             * <code>repeated string primarykeys = 5;</code>
+             */
+            public java.lang.String getPrimarykeys(int index) {
+                return primarykeys_.get(index);
+            }
+
+            /**
+             * <code>repeated string primarykeys = 5;</code>
+             */
+            public com.google.protobuf.ByteString
+            getPrimarykeysBytes(int index) {
+                return primarykeys_.getByteString(index);
+            }
+
+            /**
+             * <code>repeated string primarykeys = 5;</code>
+             */
+            public Builder setPrimarykeys(
+                    int index, java.lang.String value) {
+                if (value == null) {
+                    throw new NullPointerException();
+                }
+                ensurePrimarykeysIsMutable();
+                primarykeys_.set(index, value);
+                onChanged();
+                return this;
+            }
+
+            /**
+             * <code>repeated string primarykeys = 5;</code>
+             */
+            public Builder addPrimarykeys(
+                    java.lang.String value) {
+                if (value == null) {
+                    throw new NullPointerException();
+                }
+                ensurePrimarykeysIsMutable();
+                primarykeys_.add(value);
+                onChanged();
+                return this;
+            }
+
+            /**
+             * <code>repeated string primarykeys = 5;</code>
+             */
+            public Builder addAllPrimarykeys(
+                    java.lang.Iterable<java.lang.String> values) {
+                ensurePrimarykeysIsMutable();
+                com.google.protobuf.AbstractMessageLite.Builder.addAll(
+                        values, primarykeys_);
+                onChanged();
+                return this;
+            }
+
+            /**
+             * <code>repeated string primarykeys = 5;</code>
+             */
+            public Builder clearPrimarykeys() {
+                primarykeys_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+                bitField0_ = (bitField0_ & ~0x00000010);
+                onChanged();
+                return this;
+            }
+
+            /**
+             * <code>repeated string primarykeys = 5;</code>
+             */
+            public Builder addPrimarykeysBytes(
+                    com.google.protobuf.ByteString value) {
+                if (value == null) {
+                    throw new NullPointerException();
+                }
+                checkByteStringIsUtf8(value);
+                ensurePrimarykeysIsMutable();
+                primarykeys_.add(value);
+                onChanged();
+                return this;
+            }
+
+            private com.google.protobuf.MapField<
+                    java.lang.String, io.floodplain.protobuf.generated.Replication.ValueProtobuf> values_;
+
+            private com.google.protobuf.MapField<java.lang.String, io.floodplain.protobuf.generated.Replication.ValueProtobuf>
+            internalGetValues() {
+                if (values_ == null) {
+                    return com.google.protobuf.MapField.emptyMapField(
+                            ValuesDefaultEntryHolder.defaultEntry);
+                }
+                return values_;
+            }
+
+            private com.google.protobuf.MapField<java.lang.String, io.floodplain.protobuf.generated.Replication.ValueProtobuf>
+            internalGetMutableValues() {
+                onChanged();
+                ;
+                if (values_ == null) {
+                    values_ = com.google.protobuf.MapField.newMapField(
+                            ValuesDefaultEntryHolder.defaultEntry);
+                }
+                if (!values_.isMutable()) {
+                    values_ = values_.copy();
+                }
+                return values_;
+            }
+
+            public int getValuesCount() {
+                return internalGetValues().getMap().size();
+            }
+
+            /**
+             * <code>map&lt;string, .io.floodplain.protobuf.generated.ValueProtobuf&gt; values = 6;</code>
+             */
+
+            public boolean containsValues(
+                    java.lang.String key) {
+                if (key == null) {
+                    throw new java.lang.NullPointerException();
+                }
+                return internalGetValues().getMap().containsKey(key);
+            }
+
+            /**
+             * Use {@link #getValuesMap()} instead.
+             */
+            @java.lang.Deprecated
+            public java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ValueProtobuf> getValues() {
+                return getValuesMap();
+            }
+
+            /**
+             * <code>map&lt;string, .io.floodplain.protobuf.generated.ValueProtobuf&gt; values = 6;</code>
+             */
+
+            public java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ValueProtobuf> getValuesMap() {
+                return internalGetValues().getMap();
+            }
+
+            /**
+             * <code>map&lt;string, .io.floodplain.protobuf.generated.ValueProtobuf&gt; values = 6;</code>
+             */
+
+            public io.floodplain.protobuf.generated.Replication.ValueProtobuf getValuesOrDefault(
+                    java.lang.String key,
+                    io.floodplain.protobuf.generated.Replication.ValueProtobuf defaultValue) {
+                if (key == null) {
+                    throw new java.lang.NullPointerException();
+                }
+                java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ValueProtobuf> map =
+                        internalGetValues().getMap();
+                return map.containsKey(key) ? map.get(key) : defaultValue;
+            }
+
+            /**
+             * <code>map&lt;string, .io.floodplain.protobuf.generated.ValueProtobuf&gt; values = 6;</code>
+             */
+
+            public io.floodplain.protobuf.generated.Replication.ValueProtobuf getValuesOrThrow(
+                    java.lang.String key) {
+                if (key == null) {
+                    throw new java.lang.NullPointerException();
+                }
+                java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ValueProtobuf> map =
+                        internalGetValues().getMap();
+                if (!map.containsKey(key)) {
+                    throw new java.lang.IllegalArgumentException();
+                }
+                return map.get(key);
+            }
+
+            public Builder clearValues() {
+                internalGetMutableValues().getMutableMap()
+                        .clear();
+                return this;
+            }
+
+            /**
+             * <code>map&lt;string, .io.floodplain.protobuf.generated.ValueProtobuf&gt; values = 6;</code>
+             */
+
+            public Builder removeValues(
+                    java.lang.String key) {
+                if (key == null) {
+                    throw new java.lang.NullPointerException();
+                }
+                internalGetMutableValues().getMutableMap()
+                        .remove(key);
+                return this;
+            }
+
+            /**
+             * Use alternate mutation accessors instead.
+             */
+            @java.lang.Deprecated
+            public java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ValueProtobuf>
+            getMutableValues() {
+                return internalGetMutableValues().getMutableMap();
+            }
+
+            /**
+             * <code>map&lt;string, .io.floodplain.protobuf.generated.ValueProtobuf&gt; values = 6;</code>
+             */
+            public Builder putValues(
+                    java.lang.String key,
+                    io.floodplain.protobuf.generated.Replication.ValueProtobuf value) {
+                if (key == null) {
+                    throw new java.lang.NullPointerException();
+                }
+                if (value == null) {
+                    throw new java.lang.NullPointerException();
+                }
+                internalGetMutableValues().getMutableMap()
+                        .put(key, value);
+                return this;
+            }
+
+            /**
+             * <code>map&lt;string, .io.floodplain.protobuf.generated.ValueProtobuf&gt; values = 6;</code>
+             */
+
+            public Builder putAllValues(
+                    java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ValueProtobuf> values) {
+                internalGetMutableValues().getMutableMap()
+                        .putAll(values);
+                return this;
+            }
+
+            private com.google.protobuf.MapField<
+                    java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf> submessageList_;
+
+            private com.google.protobuf.MapField<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf>
+            internalGetSubmessageList() {
+                if (submessageList_ == null) {
+                    return com.google.protobuf.MapField.emptyMapField(
+                            SubmessageListDefaultEntryHolder.defaultEntry);
+                }
+                return submessageList_;
+            }
+
+            private com.google.protobuf.MapField<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf>
+            internalGetMutableSubmessageList() {
+                onChanged();
+                ;
+                if (submessageList_ == null) {
+                    submessageList_ = com.google.protobuf.MapField.newMapField(
+                            SubmessageListDefaultEntryHolder.defaultEntry);
+                }
+                if (!submessageList_.isMutable()) {
+                    submessageList_ = submessageList_.copy();
+                }
+                return submessageList_;
+            }
+
+            public int getSubmessageListCount() {
+                return internalGetSubmessageList().getMap().size();
+            }
+
+            /**
+             * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageListProtobuf&gt; submessage_list = 7;</code>
+             */
+
+            public boolean containsSubmessageList(
+                    java.lang.String key) {
+                if (key == null) {
+                    throw new java.lang.NullPointerException();
+                }
+                return internalGetSubmessageList().getMap().containsKey(key);
+            }
+
+            /**
+             * Use {@link #getSubmessageListMap()} instead.
+             */
+            @java.lang.Deprecated
+            public java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf> getSubmessageList() {
+                return getSubmessageListMap();
+            }
+
+            /**
+             * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageListProtobuf&gt; submessage_list = 7;</code>
+             */
+
+            public java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf> getSubmessageListMap() {
+                return internalGetSubmessageList().getMap();
+            }
+
+            /**
+             * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageListProtobuf&gt; submessage_list = 7;</code>
+             */
+
+            public io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf getSubmessageListOrDefault(
+                    java.lang.String key,
+                    io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf defaultValue) {
+                if (key == null) {
+                    throw new java.lang.NullPointerException();
+                }
+                java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf> map =
+                        internalGetSubmessageList().getMap();
+                return map.containsKey(key) ? map.get(key) : defaultValue;
+            }
+
+            /**
+             * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageListProtobuf&gt; submessage_list = 7;</code>
+             */
+
+            public io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf getSubmessageListOrThrow(
+                    java.lang.String key) {
+                if (key == null) {
+                    throw new java.lang.NullPointerException();
+                }
+                java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf> map =
+                        internalGetSubmessageList().getMap();
+                if (!map.containsKey(key)) {
+                    throw new java.lang.IllegalArgumentException();
+                }
+                return map.get(key);
+            }
+
+            public Builder clearSubmessageList() {
+                internalGetMutableSubmessageList().getMutableMap()
+                        .clear();
+                return this;
+            }
+
+            /**
+             * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageListProtobuf&gt; submessage_list = 7;</code>
+             */
+
+            public Builder removeSubmessageList(
+                    java.lang.String key) {
+                if (key == null) {
+                    throw new java.lang.NullPointerException();
+                }
+                internalGetMutableSubmessageList().getMutableMap()
+                        .remove(key);
+                return this;
+            }
+
+            /**
+             * Use alternate mutation accessors instead.
+             */
+            @java.lang.Deprecated
+            public java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf>
+            getMutableSubmessageList() {
+                return internalGetMutableSubmessageList().getMutableMap();
+            }
+
+            /**
+             * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageListProtobuf&gt; submessage_list = 7;</code>
+             */
+            public Builder putSubmessageList(
+                    java.lang.String key,
+                    io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf value) {
+                if (key == null) {
+                    throw new java.lang.NullPointerException();
+                }
+                if (value == null) {
+                    throw new java.lang.NullPointerException();
+                }
+                internalGetMutableSubmessageList().getMutableMap()
+                        .put(key, value);
+                return this;
+            }
+
+            /**
+             * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageListProtobuf&gt; submessage_list = 7;</code>
+             */
+
+            public Builder putAllSubmessageList(
+                    java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf> values) {
+                internalGetMutableSubmessageList().getMutableMap()
+                        .putAll(values);
+                return this;
+            }
+
+            private com.google.protobuf.MapField<
+                    java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf> submessage_;
+
+            private com.google.protobuf.MapField<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf>
+            internalGetSubmessage() {
+                if (submessage_ == null) {
+                    return com.google.protobuf.MapField.emptyMapField(
+                            SubmessageDefaultEntryHolder.defaultEntry);
+                }
+                return submessage_;
+            }
+
+            private com.google.protobuf.MapField<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf>
+            internalGetMutableSubmessage() {
+                onChanged();
+                ;
+                if (submessage_ == null) {
+                    submessage_ = com.google.protobuf.MapField.newMapField(
+                            SubmessageDefaultEntryHolder.defaultEntry);
+                }
+                if (!submessage_.isMutable()) {
+                    submessage_ = submessage_.copy();
+                }
+                return submessage_;
+            }
+
+            public int getSubmessageCount() {
+                return internalGetSubmessage().getMap().size();
+            }
+
+            /**
+             * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageProtobuf&gt; submessage = 8;</code>
+             */
+
+            public boolean containsSubmessage(
+                    java.lang.String key) {
+                if (key == null) {
+                    throw new java.lang.NullPointerException();
+                }
+                return internalGetSubmessage().getMap().containsKey(key);
+            }
+
+            /**
+             * Use {@link #getSubmessageMap()} instead.
+             */
+            @java.lang.Deprecated
+            public java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf> getSubmessage() {
+                return getSubmessageMap();
+            }
+
+            /**
+             * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageProtobuf&gt; submessage = 8;</code>
+             */
+
+            public java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf> getSubmessageMap() {
+                return internalGetSubmessage().getMap();
+            }
+
+            /**
+             * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageProtobuf&gt; submessage = 8;</code>
+             */
+
+            public io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf getSubmessageOrDefault(
+                    java.lang.String key,
+                    io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf defaultValue) {
+                if (key == null) {
+                    throw new java.lang.NullPointerException();
+                }
+                java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf> map =
+                        internalGetSubmessage().getMap();
+                return map.containsKey(key) ? map.get(key) : defaultValue;
+            }
+
+            /**
+             * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageProtobuf&gt; submessage = 8;</code>
+             */
+
+            public io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf getSubmessageOrThrow(
+                    java.lang.String key) {
+                if (key == null) {
+                    throw new java.lang.NullPointerException();
+                }
+                java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf> map =
+                        internalGetSubmessage().getMap();
+                if (!map.containsKey(key)) {
+                    throw new java.lang.IllegalArgumentException();
+                }
+                return map.get(key);
+            }
+
+            public Builder clearSubmessage() {
+                internalGetMutableSubmessage().getMutableMap()
+                        .clear();
+                return this;
+            }
+
+            /**
+             * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageProtobuf&gt; submessage = 8;</code>
+             */
+
+            public Builder removeSubmessage(
+                    java.lang.String key) {
+                if (key == null) {
+                    throw new java.lang.NullPointerException();
+                }
+                internalGetMutableSubmessage().getMutableMap()
+                        .remove(key);
+                return this;
+            }
+
+            /**
+             * Use alternate mutation accessors instead.
+             */
+            @java.lang.Deprecated
+            public java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf>
+            getMutableSubmessage() {
+                return internalGetMutableSubmessage().getMutableMap();
+            }
+
+            /**
+             * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageProtobuf&gt; submessage = 8;</code>
+             */
+            public Builder putSubmessage(
+                    java.lang.String key,
+                    io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf value) {
+                if (key == null) {
+                    throw new java.lang.NullPointerException();
+                }
+                if (value == null) {
+                    throw new java.lang.NullPointerException();
+                }
+                internalGetMutableSubmessage().getMutableMap()
+                        .put(key, value);
+                return this;
+            }
+
+            /**
+             * <code>map&lt;string, .io.floodplain.protobuf.generated.ReplicationMessageProtobuf&gt; submessage = 8;</code>
+             */
+
+            public Builder putAllSubmessage(
+                    java.util.Map<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf> values) {
+                internalGetMutableSubmessage().getMutableMap()
+                        .putAll(values);
+                return this;
+            }
+
+            private io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf paramMessage_ = null;
+            private com.google.protobuf.SingleFieldBuilderV3<
+                    io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Builder, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobufOrBuilder> paramMessageBuilder_;
+
+            /**
+             * <code>.io.floodplain.protobuf.generated.ReplicationMessageProtobuf paramMessage = 9;</code>
+             */
+            public boolean hasParamMessage() {
+                return paramMessageBuilder_ != null || paramMessage_ != null;
+            }
+
+            /**
+             * <code>.io.floodplain.protobuf.generated.ReplicationMessageProtobuf paramMessage = 9;</code>
+             */
+            public io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf getParamMessage() {
+                if (paramMessageBuilder_ == null) {
+                    return paramMessage_ == null ? io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.getDefaultInstance() : paramMessage_;
+                } else {
+                    return paramMessageBuilder_.getMessage();
+                }
+            }
+
+            /**
+             * <code>.io.floodplain.protobuf.generated.ReplicationMessageProtobuf paramMessage = 9;</code>
+             */
+            public Builder setParamMessage(io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf value) {
+                if (paramMessageBuilder_ == null) {
+                    if (value == null) {
+                        throw new NullPointerException();
+                    }
+                    paramMessage_ = value;
+                    onChanged();
+                } else {
+                    paramMessageBuilder_.setMessage(value);
+                }
+
+                return this;
+            }
+
+            /**
+             * <code>.io.floodplain.protobuf.generated.ReplicationMessageProtobuf paramMessage = 9;</code>
+             */
+            public Builder setParamMessage(
+                    io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Builder builderForValue) {
+                if (paramMessageBuilder_ == null) {
+                    paramMessage_ = builderForValue.build();
+                    onChanged();
+                } else {
+                    paramMessageBuilder_.setMessage(builderForValue.build());
+                }
+
+                return this;
+            }
+
+            /**
+             * <code>.io.floodplain.protobuf.generated.ReplicationMessageProtobuf paramMessage = 9;</code>
+             */
+            public Builder mergeParamMessage(io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf value) {
+                if (paramMessageBuilder_ == null) {
+                    if (paramMessage_ != null) {
+                        paramMessage_ =
+                                io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.newBuilder(paramMessage_).mergeFrom(value).buildPartial();
+                    } else {
+                        paramMessage_ = value;
+                    }
+                    onChanged();
+                } else {
+                    paramMessageBuilder_.mergeFrom(value);
+                }
+
+                return this;
+            }
+
+            /**
+             * <code>.io.floodplain.protobuf.generated.ReplicationMessageProtobuf paramMessage = 9;</code>
+             */
+            public Builder clearParamMessage() {
+                if (paramMessageBuilder_ == null) {
+                    paramMessage_ = null;
+                    onChanged();
+                } else {
+                    paramMessage_ = null;
+                    paramMessageBuilder_ = null;
+                }
+
+                return this;
+            }
+
+            /**
+             * <code>.io.floodplain.protobuf.generated.ReplicationMessageProtobuf paramMessage = 9;</code>
+             */
+            public io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Builder getParamMessageBuilder() {
+
+                onChanged();
+                return getParamMessageFieldBuilder().getBuilder();
+            }
+
+            /**
+             * <code>.io.floodplain.protobuf.generated.ReplicationMessageProtobuf paramMessage = 9;</code>
+             */
+            public io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobufOrBuilder getParamMessageOrBuilder() {
+                if (paramMessageBuilder_ != null) {
+                    return paramMessageBuilder_.getMessageOrBuilder();
+                } else {
+                    return paramMessage_ == null ?
+                            io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.getDefaultInstance() : paramMessage_;
+                }
+            }
+
+            /**
+             * <code>.io.floodplain.protobuf.generated.ReplicationMessageProtobuf paramMessage = 9;</code>
+             */
+            private com.google.protobuf.SingleFieldBuilderV3<
+                    io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Builder, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobufOrBuilder>
+            getParamMessageFieldBuilder() {
+                if (paramMessageBuilder_ == null) {
+                    paramMessageBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+                            io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Builder, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobufOrBuilder>(
+                            getParamMessage(),
+                            getParentForChildren(),
+                            isClean());
+                    paramMessage_ = null;
+                }
+                return paramMessageBuilder_;
+            }
+
+            public final Builder setUnknownFields(
+                    final com.google.protobuf.UnknownFieldSet unknownFields) {
+                return this;
+            }
+
+            public final Builder mergeUnknownFields(
+                    final com.google.protobuf.UnknownFieldSet unknownFields) {
+                return this;
+            }
+
+
+            // @@protoc_insertion_point(builder_scope:io.floodplain.protobuf.generated.ReplicationMessageProtobuf)
+        }
+
+        // @@protoc_insertion_point(class_scope:io.floodplain.protobuf.generated.ReplicationMessageProtobuf)
+        private static final io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf DEFAULT_INSTANCE;
+
+        static {
+            DEFAULT_INSTANCE = new io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf();
+        }
+
+        public static io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf getDefaultInstance() {
+            return DEFAULT_INSTANCE;
+        }
+
+        private static final com.google.protobuf.Parser<ReplicationMessageProtobuf>
+                PARSER = new com.google.protobuf.AbstractParser<ReplicationMessageProtobuf>() {
+            public ReplicationMessageProtobuf parsePartialFrom(
+                    com.google.protobuf.CodedInputStream input,
+                    com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                    throws com.google.protobuf.InvalidProtocolBufferException {
+                return new ReplicationMessageProtobuf(input, extensionRegistry);
+            }
+        };
+
+        public static com.google.protobuf.Parser<ReplicationMessageProtobuf> parser() {
+            return PARSER;
+        }
+
+        @java.lang.Override
+        public com.google.protobuf.Parser<ReplicationMessageProtobuf> getParserForType() {
+            return PARSER;
+        }
+
+        public io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf getDefaultInstanceForType() {
+            return DEFAULT_INSTANCE;
+        }
+
     }
 
-    private int bitField0_;
-    public static final int MAGIC_FIELD_NUMBER = 1;
-    private int magic_;
-    /**
-     * <code>int32 magic = 1;</code>
-     */
-    public int getMagic() {
-      return magic_;
+    public interface ReplicationMessageListProtobufOrBuilder extends
+            // @@protoc_insertion_point(interface_extends:io.floodplain.protobuf.generated.ReplicationMessageListProtobuf)
+            com.google.protobuf.MessageOrBuilder {
+
+        /**
+         * <code>int32 magic = 1;</code>
+         */
+        int getMagic();
+
+        /**
+         * <code>repeated .io.floodplain.protobuf.generated.ReplicationMessageProtobuf elements = 2;</code>
+         */
+        java.util.List<io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf>
+        getElementsList();
+
+        /**
+         * <code>repeated .io.floodplain.protobuf.generated.ReplicationMessageProtobuf elements = 2;</code>
+         */
+        io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf getElements(int index);
+
+        /**
+         * <code>repeated .io.floodplain.protobuf.generated.ReplicationMessageProtobuf elements = 2;</code>
+         */
+        int getElementsCount();
+
+        /**
+         * <code>repeated .io.floodplain.protobuf.generated.ReplicationMessageProtobuf elements = 2;</code>
+         */
+        java.util.List<? extends io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobufOrBuilder>
+        getElementsOrBuilderList();
+
+        /**
+         * <code>repeated .io.floodplain.protobuf.generated.ReplicationMessageProtobuf elements = 2;</code>
+         */
+        io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobufOrBuilder getElementsOrBuilder(
+                int index);
     }
 
-    public static final int ELEMENTS_FIELD_NUMBER = 2;
-    private java.util.List<io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf> elements_;
-    /**
-     * <code>repeated .io.floodplain.protobuf.generated.ReplicationMessageProtobuf elements = 2;</code>
-     */
-    public java.util.List<io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf> getElementsList() {
-      return elements_;
-    }
-    /**
-     * <code>repeated .io.floodplain.protobuf.generated.ReplicationMessageProtobuf elements = 2;</code>
-     */
-    public java.util.List<? extends io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobufOrBuilder> 
-        getElementsOrBuilderList() {
-      return elements_;
-    }
-    /**
-     * <code>repeated .io.floodplain.protobuf.generated.ReplicationMessageProtobuf elements = 2;</code>
-     */
-    public int getElementsCount() {
-      return elements_.size();
-    }
-    /**
-     * <code>repeated .io.floodplain.protobuf.generated.ReplicationMessageProtobuf elements = 2;</code>
-     */
-    public io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf getElements(int index) {
-      return elements_.get(index);
-    }
-    /**
-     * <code>repeated .io.floodplain.protobuf.generated.ReplicationMessageProtobuf elements = 2;</code>
-     */
-    public io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobufOrBuilder getElementsOrBuilder(
-        int index) {
-      return elements_.get(index);
-    }
-
-    private byte memoizedIsInitialized = -1;
-    public final boolean isInitialized() {
-      byte isInitialized = memoizedIsInitialized;
-      if (isInitialized == 1) return true;
-      if (isInitialized == 0) return false;
-
-      memoizedIsInitialized = 1;
-      return true;
-    }
-
-    public void writeTo(com.google.protobuf.CodedOutputStream output)
-                        throws java.io.IOException {
-      if (magic_ != 0) {
-        output.writeInt32(1, magic_);
-      }
-      for (int i = 0; i < elements_.size(); i++) {
-        output.writeMessage(2, elements_.get(i));
-      }
-    }
-
-    public int getSerializedSize() {
-      int size = memoizedSize;
-      if (size != -1) return size;
-
-      size = 0;
-      if (magic_ != 0) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(1, magic_);
-      }
-      for (int i = 0; i < elements_.size(); i++) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(2, elements_.get(i));
-      }
-      memoizedSize = size;
-      return size;
-    }
-
-    private static final long serialVersionUID = 0L;
-    @java.lang.Override
-    public boolean equals(final java.lang.Object obj) {
-      if (obj == this) {
-       return true;
-      }
-      if (!(obj instanceof io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf)) {
-        return super.equals(obj);
-      }
-      io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf other = (io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf) obj;
-
-      boolean result = true;
-      result = result && (getMagic()
-          == other.getMagic());
-      result = result && getElementsList()
-          .equals(other.getElementsList());
-      return result;
-    }
-
-    @java.lang.Override
-    public int hashCode() {
-      if (memoizedHashCode != 0) {
-        return memoizedHashCode;
-      }
-      int hash = 41;
-      hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (37 * hash) + MAGIC_FIELD_NUMBER;
-      hash = (53 * hash) + getMagic();
-      if (getElementsCount() > 0) {
-        hash = (37 * hash) + ELEMENTS_FIELD_NUMBER;
-        hash = (53 * hash) + getElementsList().hashCode();
-      }
-      hash = (29 * hash) + unknownFields.hashCode();
-      memoizedHashCode = hash;
-      return hash;
-    }
-
-    public static io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf parseFrom(
-        java.nio.ByteBuffer data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf parseFrom(
-        java.nio.ByteBuffer data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf parseFrom(
-        com.google.protobuf.ByteString data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf parseFrom(
-        com.google.protobuf.ByteString data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf parseFrom(byte[] data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf parseFrom(
-        byte[] data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf parseFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input);
-    }
-    public static io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf parseFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
-    }
-    public static io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf parseDelimitedFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseDelimitedWithIOException(PARSER, input);
-    }
-    public static io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
-    }
-    public static io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf parseFrom(
-        com.google.protobuf.CodedInputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input);
-    }
-    public static io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf parseFrom(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
-    }
-
-    public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder() {
-      return DEFAULT_INSTANCE.toBuilder();
-    }
-    public static Builder newBuilder(io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf prototype) {
-      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
-    }
-    public Builder toBuilder() {
-      return this == DEFAULT_INSTANCE
-          ? new Builder() : new Builder().mergeFrom(this);
-    }
-
-    @java.lang.Override
-    protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
-      Builder builder = new Builder(parent);
-      return builder;
-    }
     /**
      * Protobuf type {@code io.floodplain.protobuf.generated.ReplicationMessageListProtobuf}
      */
-    public static final class Builder extends
-        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:io.floodplain.protobuf.generated.ReplicationMessageListProtobuf)
-        io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobufOrBuilder {
-      public static final com.google.protobuf.Descriptors.Descriptor
-          getDescriptor() {
-        return io.floodplain.protobuf.generated.Replication.internal_static_io_floodplain_protobuf_generated_ReplicationMessageListProtobuf_descriptor;
-      }
-
-      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-          internalGetFieldAccessorTable() {
-        return io.floodplain.protobuf.generated.Replication.internal_static_io_floodplain_protobuf_generated_ReplicationMessageListProtobuf_fieldAccessorTable
-            .ensureFieldAccessorsInitialized(
-                io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf.class, io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf.Builder.class);
-      }
-
-      // Construct using io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf.newBuilder()
-      private Builder() {
-        maybeForceBuilderInitialization();
-      }
-
-      private Builder(
-          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
-        super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-          getElementsFieldBuilder();
+    public static final class ReplicationMessageListProtobuf extends
+            com.google.protobuf.GeneratedMessageV3 implements
+            // @@protoc_insertion_point(message_implements:io.floodplain.protobuf.generated.ReplicationMessageListProtobuf)
+            ReplicationMessageListProtobufOrBuilder {
+        // Use ReplicationMessageListProtobuf.newBuilder() to construct.
+        private ReplicationMessageListProtobuf(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+            super(builder);
         }
-      }
-      public Builder clear() {
-        super.clear();
-        magic_ = 0;
 
-        if (elementsBuilder_ == null) {
-          elements_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000002);
-        } else {
-          elementsBuilder_.clear();
+        private ReplicationMessageListProtobuf() {
+            magic_ = 0;
+            elements_ = java.util.Collections.emptyList();
         }
-        return this;
-      }
 
-      public com.google.protobuf.Descriptors.Descriptor
-          getDescriptorForType() {
-        return io.floodplain.protobuf.generated.Replication.internal_static_io_floodplain_protobuf_generated_ReplicationMessageListProtobuf_descriptor;
-      }
-
-      public io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf getDefaultInstanceForType() {
-        return io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf.getDefaultInstance();
-      }
-
-      public io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf build() {
-        io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(result);
+        @java.lang.Override
+        public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+            return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
         }
-        return result;
-      }
 
-      public io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf buildPartial() {
-        io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf result = new io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf(this);
-        int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
-        result.magic_ = magic_;
-        if (elementsBuilder_ == null) {
-          if (((bitField0_ & 0x00000002) == 0x00000002)) {
-            elements_ = java.util.Collections.unmodifiableList(elements_);
-            bitField0_ = (bitField0_ & ~0x00000002);
-          }
-          result.elements_ = elements_;
-        } else {
-          result.elements_ = elementsBuilder_.build();
-        }
-        result.bitField0_ = to_bitField0_;
-        onBuilt();
-        return result;
-      }
+        private ReplicationMessageListProtobuf(
+                com.google.protobuf.CodedInputStream input,
+                com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                throws com.google.protobuf.InvalidProtocolBufferException {
+            this();
+            int mutable_bitField0_ = 0;
+            try {
+                boolean done = false;
+                while (!done) {
+                    int tag = input.readTag();
+                    switch (tag) {
+                        case 0:
+                            done = true;
+                            break;
+                        default: {
+                            if (!input.skipField(tag)) {
+                                done = true;
+                            }
+                            break;
+                        }
+                        case 8: {
 
-      public Builder clone() {
-        return (Builder) super.clone();
-      }
-      public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          Object value) {
-        return (Builder) super.setField(field, value);
-      }
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
-      }
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
-      }
-      public Builder setRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
-      }
-      public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          Object value) {
-        return (Builder) super.addRepeatedField(field, value);
-      }
-      public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf) {
-          return mergeFrom((io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf)other);
-        } else {
-          super.mergeFrom(other);
-          return this;
-        }
-      }
-
-      public Builder mergeFrom(io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf other) {
-        if (other == io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf.getDefaultInstance()) return this;
-        if (other.getMagic() != 0) {
-          setMagic(other.getMagic());
-        }
-        if (elementsBuilder_ == null) {
-          if (!other.elements_.isEmpty()) {
-            if (elements_.isEmpty()) {
-              elements_ = other.elements_;
-              bitField0_ = (bitField0_ & ~0x00000002);
-            } else {
-              ensureElementsIsMutable();
-              elements_.addAll(other.elements_);
+                            magic_ = input.readInt32();
+                            break;
+                        }
+                        case 18: {
+                            if (!((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
+                                elements_ = new java.util.ArrayList<io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf>();
+                                mutable_bitField0_ |= 0x00000002;
+                            }
+                            elements_.add(
+                                    input.readMessage(io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.parser(), extensionRegistry));
+                            break;
+                        }
+                    }
+                }
+            } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+                throw e.setUnfinishedMessage(this);
+            } catch (java.io.IOException e) {
+                throw new com.google.protobuf.InvalidProtocolBufferException(
+                        e).setUnfinishedMessage(this);
+            } finally {
+                if (((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
+                    elements_ = java.util.Collections.unmodifiableList(elements_);
+                }
+                makeExtensionsImmutable();
             }
-            onChanged();
-          }
-        } else {
-          if (!other.elements_.isEmpty()) {
-            if (elementsBuilder_.isEmpty()) {
-              elementsBuilder_.dispose();
-              elementsBuilder_ = null;
-              elements_ = other.elements_;
-              bitField0_ = (bitField0_ & ~0x00000002);
-              elementsBuilder_ = 
-                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
-                   getElementsFieldBuilder() : null;
-            } else {
-              elementsBuilder_.addAllMessages(other.elements_);
+        }
+
+        public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+            return io.floodplain.protobuf.generated.Replication.internal_static_io_floodplain_protobuf_generated_ReplicationMessageListProtobuf_descriptor;
+        }
+
+        protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+            return io.floodplain.protobuf.generated.Replication.internal_static_io_floodplain_protobuf_generated_ReplicationMessageListProtobuf_fieldAccessorTable
+                    .ensureFieldAccessorsInitialized(
+                            io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf.class, io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf.Builder.class);
+        }
+
+        private int bitField0_;
+        public static final int MAGIC_FIELD_NUMBER = 1;
+        private int magic_;
+
+        /**
+         * <code>int32 magic = 1;</code>
+         */
+        public int getMagic() {
+            return magic_;
+        }
+
+        public static final int ELEMENTS_FIELD_NUMBER = 2;
+        private java.util.List<io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf> elements_;
+
+        /**
+         * <code>repeated .io.floodplain.protobuf.generated.ReplicationMessageProtobuf elements = 2;</code>
+         */
+        public java.util.List<io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf> getElementsList() {
+            return elements_;
+        }
+
+        /**
+         * <code>repeated .io.floodplain.protobuf.generated.ReplicationMessageProtobuf elements = 2;</code>
+         */
+        public java.util.List<? extends io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobufOrBuilder>
+        getElementsOrBuilderList() {
+            return elements_;
+        }
+
+        /**
+         * <code>repeated .io.floodplain.protobuf.generated.ReplicationMessageProtobuf elements = 2;</code>
+         */
+        public int getElementsCount() {
+            return elements_.size();
+        }
+
+        /**
+         * <code>repeated .io.floodplain.protobuf.generated.ReplicationMessageProtobuf elements = 2;</code>
+         */
+        public io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf getElements(int index) {
+            return elements_.get(index);
+        }
+
+        /**
+         * <code>repeated .io.floodplain.protobuf.generated.ReplicationMessageProtobuf elements = 2;</code>
+         */
+        public io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobufOrBuilder getElementsOrBuilder(
+                int index) {
+            return elements_.get(index);
+        }
+
+        private byte memoizedIsInitialized = -1;
+
+        public final boolean isInitialized() {
+            byte isInitialized = memoizedIsInitialized;
+            if (isInitialized == 1) return true;
+            if (isInitialized == 0) return false;
+
+            memoizedIsInitialized = 1;
+            return true;
+        }
+
+        public void writeTo(com.google.protobuf.CodedOutputStream output)
+                throws java.io.IOException {
+            if (magic_ != 0) {
+                output.writeInt32(1, magic_);
             }
-          }
+            for (int i = 0; i < elements_.size(); i++) {
+                output.writeMessage(2, elements_.get(i));
+            }
         }
-        onChanged();
-        return this;
-      }
 
-      public final boolean isInitialized() {
-        return true;
-      }
+        public int getSerializedSize() {
+            int size = memoizedSize;
+            if (size != -1) return size;
 
-      public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf parsedMessage = null;
-        try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf) e.getUnfinishedMessage();
-          throw e.unwrapIOException();
-        } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
+            size = 0;
+            if (magic_ != 0) {
+                size += com.google.protobuf.CodedOutputStream
+                        .computeInt32Size(1, magic_);
+            }
+            for (int i = 0; i < elements_.size(); i++) {
+                size += com.google.protobuf.CodedOutputStream
+                        .computeMessageSize(2, elements_.get(i));
+            }
+            memoizedSize = size;
+            return size;
         }
-        return this;
-      }
-      private int bitField0_;
 
-      private int magic_ ;
-      /**
-       * <code>int32 magic = 1;</code>
-       */
-      public int getMagic() {
-        return magic_;
-      }
-      /**
-       * <code>int32 magic = 1;</code>
-       */
-      public Builder setMagic(int value) {
-        
-        magic_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>int32 magic = 1;</code>
-       */
-      public Builder clearMagic() {
-        
-        magic_ = 0;
-        onChanged();
-        return this;
-      }
+        private static final long serialVersionUID = 0L;
 
-      private java.util.List<io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf> elements_ =
-        java.util.Collections.emptyList();
-      private void ensureElementsIsMutable() {
-        if (!((bitField0_ & 0x00000002) == 0x00000002)) {
-          elements_ = new java.util.ArrayList<io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf>(elements_);
-          bitField0_ |= 0x00000002;
-         }
-      }
+        @java.lang.Override
+        public boolean equals(final java.lang.Object obj) {
+            if (obj == this) {
+                return true;
+            }
+            if (!(obj instanceof io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf)) {
+                return super.equals(obj);
+            }
+            io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf other = (io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf) obj;
 
-      private com.google.protobuf.RepeatedFieldBuilderV3<
-          io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Builder, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobufOrBuilder> elementsBuilder_;
-
-      /**
-       * <code>repeated .io.floodplain.protobuf.generated.ReplicationMessageProtobuf elements = 2;</code>
-       */
-      public java.util.List<io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf> getElementsList() {
-        if (elementsBuilder_ == null) {
-          return java.util.Collections.unmodifiableList(elements_);
-        } else {
-          return elementsBuilder_.getMessageList();
+            boolean result = true;
+            result = result && (getMagic()
+                    == other.getMagic());
+            result = result && getElementsList()
+                    .equals(other.getElementsList());
+            return result;
         }
-      }
-      /**
-       * <code>repeated .io.floodplain.protobuf.generated.ReplicationMessageProtobuf elements = 2;</code>
-       */
-      public int getElementsCount() {
-        if (elementsBuilder_ == null) {
-          return elements_.size();
-        } else {
-          return elementsBuilder_.getCount();
-        }
-      }
-      /**
-       * <code>repeated .io.floodplain.protobuf.generated.ReplicationMessageProtobuf elements = 2;</code>
-       */
-      public io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf getElements(int index) {
-        if (elementsBuilder_ == null) {
-          return elements_.get(index);
-        } else {
-          return elementsBuilder_.getMessage(index);
-        }
-      }
-      /**
-       * <code>repeated .io.floodplain.protobuf.generated.ReplicationMessageProtobuf elements = 2;</code>
-       */
-      public Builder setElements(
-          int index, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf value) {
-        if (elementsBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureElementsIsMutable();
-          elements_.set(index, value);
-          onChanged();
-        } else {
-          elementsBuilder_.setMessage(index, value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .io.floodplain.protobuf.generated.ReplicationMessageProtobuf elements = 2;</code>
-       */
-      public Builder setElements(
-          int index, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Builder builderForValue) {
-        if (elementsBuilder_ == null) {
-          ensureElementsIsMutable();
-          elements_.set(index, builderForValue.build());
-          onChanged();
-        } else {
-          elementsBuilder_.setMessage(index, builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .io.floodplain.protobuf.generated.ReplicationMessageProtobuf elements = 2;</code>
-       */
-      public Builder addElements(io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf value) {
-        if (elementsBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureElementsIsMutable();
-          elements_.add(value);
-          onChanged();
-        } else {
-          elementsBuilder_.addMessage(value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .io.floodplain.protobuf.generated.ReplicationMessageProtobuf elements = 2;</code>
-       */
-      public Builder addElements(
-          int index, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf value) {
-        if (elementsBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureElementsIsMutable();
-          elements_.add(index, value);
-          onChanged();
-        } else {
-          elementsBuilder_.addMessage(index, value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .io.floodplain.protobuf.generated.ReplicationMessageProtobuf elements = 2;</code>
-       */
-      public Builder addElements(
-          io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Builder builderForValue) {
-        if (elementsBuilder_ == null) {
-          ensureElementsIsMutable();
-          elements_.add(builderForValue.build());
-          onChanged();
-        } else {
-          elementsBuilder_.addMessage(builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .io.floodplain.protobuf.generated.ReplicationMessageProtobuf elements = 2;</code>
-       */
-      public Builder addElements(
-          int index, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Builder builderForValue) {
-        if (elementsBuilder_ == null) {
-          ensureElementsIsMutable();
-          elements_.add(index, builderForValue.build());
-          onChanged();
-        } else {
-          elementsBuilder_.addMessage(index, builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .io.floodplain.protobuf.generated.ReplicationMessageProtobuf elements = 2;</code>
-       */
-      public Builder addAllElements(
-          java.lang.Iterable<? extends io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf> values) {
-        if (elementsBuilder_ == null) {
-          ensureElementsIsMutable();
-          com.google.protobuf.AbstractMessageLite.Builder.addAll(
-              values, elements_);
-          onChanged();
-        } else {
-          elementsBuilder_.addAllMessages(values);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .io.floodplain.protobuf.generated.ReplicationMessageProtobuf elements = 2;</code>
-       */
-      public Builder clearElements() {
-        if (elementsBuilder_ == null) {
-          elements_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000002);
-          onChanged();
-        } else {
-          elementsBuilder_.clear();
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .io.floodplain.protobuf.generated.ReplicationMessageProtobuf elements = 2;</code>
-       */
-      public Builder removeElements(int index) {
-        if (elementsBuilder_ == null) {
-          ensureElementsIsMutable();
-          elements_.remove(index);
-          onChanged();
-        } else {
-          elementsBuilder_.remove(index);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .io.floodplain.protobuf.generated.ReplicationMessageProtobuf elements = 2;</code>
-       */
-      public io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Builder getElementsBuilder(
-          int index) {
-        return getElementsFieldBuilder().getBuilder(index);
-      }
-      /**
-       * <code>repeated .io.floodplain.protobuf.generated.ReplicationMessageProtobuf elements = 2;</code>
-       */
-      public io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobufOrBuilder getElementsOrBuilder(
-          int index) {
-        if (elementsBuilder_ == null) {
-          return elements_.get(index);  } else {
-          return elementsBuilder_.getMessageOrBuilder(index);
-        }
-      }
-      /**
-       * <code>repeated .io.floodplain.protobuf.generated.ReplicationMessageProtobuf elements = 2;</code>
-       */
-      public java.util.List<? extends io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobufOrBuilder> 
-           getElementsOrBuilderList() {
-        if (elementsBuilder_ != null) {
-          return elementsBuilder_.getMessageOrBuilderList();
-        } else {
-          return java.util.Collections.unmodifiableList(elements_);
-        }
-      }
-      /**
-       * <code>repeated .io.floodplain.protobuf.generated.ReplicationMessageProtobuf elements = 2;</code>
-       */
-      public io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Builder addElementsBuilder() {
-        return getElementsFieldBuilder().addBuilder(
-            io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.getDefaultInstance());
-      }
-      /**
-       * <code>repeated .io.floodplain.protobuf.generated.ReplicationMessageProtobuf elements = 2;</code>
-       */
-      public io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Builder addElementsBuilder(
-          int index) {
-        return getElementsFieldBuilder().addBuilder(
-            index, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.getDefaultInstance());
-      }
-      /**
-       * <code>repeated .io.floodplain.protobuf.generated.ReplicationMessageProtobuf elements = 2;</code>
-       */
-      public java.util.List<io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Builder> 
-           getElementsBuilderList() {
-        return getElementsFieldBuilder().getBuilderList();
-      }
-      private com.google.protobuf.RepeatedFieldBuilderV3<
-          io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Builder, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobufOrBuilder> 
-          getElementsFieldBuilder() {
-        if (elementsBuilder_ == null) {
-          elementsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
-              io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Builder, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobufOrBuilder>(
-                  elements_,
-                  ((bitField0_ & 0x00000002) == 0x00000002),
-                  getParentForChildren(),
-                  isClean());
-          elements_ = null;
-        }
-        return elementsBuilder_;
-      }
-      public final Builder setUnknownFields(
-          final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
-      }
 
-      public final Builder mergeUnknownFields(
-          final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
-      }
+        @java.lang.Override
+        public int hashCode() {
+            if (memoizedHashCode != 0) {
+                return memoizedHashCode;
+            }
+            int hash = 41;
+            hash = (19 * hash) + getDescriptor().hashCode();
+            hash = (37 * hash) + MAGIC_FIELD_NUMBER;
+            hash = (53 * hash) + getMagic();
+            if (getElementsCount() > 0) {
+                hash = (37 * hash) + ELEMENTS_FIELD_NUMBER;
+                hash = (53 * hash) + getElementsList().hashCode();
+            }
+            hash = (29 * hash) + unknownFields.hashCode();
+            memoizedHashCode = hash;
+            return hash;
+        }
+
+        public static io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf parseFrom(
+                java.nio.ByteBuffer data)
+                throws com.google.protobuf.InvalidProtocolBufferException {
+            return PARSER.parseFrom(data);
+        }
+
+        public static io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf parseFrom(
+                java.nio.ByteBuffer data,
+                com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                throws com.google.protobuf.InvalidProtocolBufferException {
+            return PARSER.parseFrom(data, extensionRegistry);
+        }
+
+        public static io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf parseFrom(
+                com.google.protobuf.ByteString data)
+                throws com.google.protobuf.InvalidProtocolBufferException {
+            return PARSER.parseFrom(data);
+        }
+
+        public static io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf parseFrom(
+                com.google.protobuf.ByteString data,
+                com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                throws com.google.protobuf.InvalidProtocolBufferException {
+            return PARSER.parseFrom(data, extensionRegistry);
+        }
+
+        public static io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf parseFrom(byte[] data)
+                throws com.google.protobuf.InvalidProtocolBufferException {
+            return PARSER.parseFrom(data);
+        }
+
+        public static io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf parseFrom(
+                byte[] data,
+                com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                throws com.google.protobuf.InvalidProtocolBufferException {
+            return PARSER.parseFrom(data, extensionRegistry);
+        }
+
+        public static io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf parseFrom(java.io.InputStream input)
+                throws java.io.IOException {
+            return com.google.protobuf.GeneratedMessageV3
+                    .parseWithIOException(PARSER, input);
+        }
+
+        public static io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf parseFrom(
+                java.io.InputStream input,
+                com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                throws java.io.IOException {
+            return com.google.protobuf.GeneratedMessageV3
+                    .parseWithIOException(PARSER, input, extensionRegistry);
+        }
+
+        public static io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf parseDelimitedFrom(java.io.InputStream input)
+                throws java.io.IOException {
+            return com.google.protobuf.GeneratedMessageV3
+                    .parseDelimitedWithIOException(PARSER, input);
+        }
+
+        public static io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf parseDelimitedFrom(
+                java.io.InputStream input,
+                com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                throws java.io.IOException {
+            return com.google.protobuf.GeneratedMessageV3
+                    .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+        }
+
+        public static io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf parseFrom(
+                com.google.protobuf.CodedInputStream input)
+                throws java.io.IOException {
+            return com.google.protobuf.GeneratedMessageV3
+                    .parseWithIOException(PARSER, input);
+        }
+
+        public static io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf parseFrom(
+                com.google.protobuf.CodedInputStream input,
+                com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                throws java.io.IOException {
+            return com.google.protobuf.GeneratedMessageV3
+                    .parseWithIOException(PARSER, input, extensionRegistry);
+        }
+
+        public Builder newBuilderForType() {
+            return newBuilder();
+        }
+
+        public static Builder newBuilder() {
+            return DEFAULT_INSTANCE.toBuilder();
+        }
+
+        public static Builder newBuilder(io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf prototype) {
+            return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+        }
+
+        public Builder toBuilder() {
+            return this == DEFAULT_INSTANCE
+                    ? new Builder() : new Builder().mergeFrom(this);
+        }
+
+        @java.lang.Override
+        protected Builder newBuilderForType(
+                com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+            Builder builder = new Builder(parent);
+            return builder;
+        }
+
+        /**
+         * Protobuf type {@code io.floodplain.protobuf.generated.ReplicationMessageListProtobuf}
+         */
+        public static final class Builder extends
+                com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+                // @@protoc_insertion_point(builder_implements:io.floodplain.protobuf.generated.ReplicationMessageListProtobuf)
+                io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobufOrBuilder {
+            public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+                return io.floodplain.protobuf.generated.Replication.internal_static_io_floodplain_protobuf_generated_ReplicationMessageListProtobuf_descriptor;
+            }
+
+            protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+                return io.floodplain.protobuf.generated.Replication.internal_static_io_floodplain_protobuf_generated_ReplicationMessageListProtobuf_fieldAccessorTable
+                        .ensureFieldAccessorsInitialized(
+                                io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf.class, io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf.Builder.class);
+            }
+
+            // Construct using io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf.newBuilder()
+            private Builder() {
+                maybeForceBuilderInitialization();
+            }
+
+            private Builder(
+                    com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+                super(parent);
+                maybeForceBuilderInitialization();
+            }
+
+            private void maybeForceBuilderInitialization() {
+                if (com.google.protobuf.GeneratedMessageV3
+                        .alwaysUseFieldBuilders) {
+                    getElementsFieldBuilder();
+                }
+            }
+
+            public Builder clear() {
+                super.clear();
+                magic_ = 0;
+
+                if (elementsBuilder_ == null) {
+                    elements_ = java.util.Collections.emptyList();
+                    bitField0_ = (bitField0_ & ~0x00000002);
+                } else {
+                    elementsBuilder_.clear();
+                }
+                return this;
+            }
+
+            public com.google.protobuf.Descriptors.Descriptor
+            getDescriptorForType() {
+                return io.floodplain.protobuf.generated.Replication.internal_static_io_floodplain_protobuf_generated_ReplicationMessageListProtobuf_descriptor;
+            }
+
+            public io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf getDefaultInstanceForType() {
+                return io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf.getDefaultInstance();
+            }
+
+            public io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf build() {
+                io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf result = buildPartial();
+                if (!result.isInitialized()) {
+                    throw newUninitializedMessageException(result);
+                }
+                return result;
+            }
+
+            public io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf buildPartial() {
+                io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf result = new io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf(this);
+                int from_bitField0_ = bitField0_;
+                int to_bitField0_ = 0;
+                result.magic_ = magic_;
+                if (elementsBuilder_ == null) {
+                    if (((bitField0_ & 0x00000002) == 0x00000002)) {
+                        elements_ = java.util.Collections.unmodifiableList(elements_);
+                        bitField0_ = (bitField0_ & ~0x00000002);
+                    }
+                    result.elements_ = elements_;
+                } else {
+                    result.elements_ = elementsBuilder_.build();
+                }
+                result.bitField0_ = to_bitField0_;
+                onBuilt();
+                return result;
+            }
+
+            public Builder clone() {
+                return (Builder) super.clone();
+            }
+
+            public Builder setField(
+                    com.google.protobuf.Descriptors.FieldDescriptor field,
+                    Object value) {
+                return (Builder) super.setField(field, value);
+            }
+
+            public Builder clearField(
+                    com.google.protobuf.Descriptors.FieldDescriptor field) {
+                return (Builder) super.clearField(field);
+            }
+
+            public Builder clearOneof(
+                    com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+                return (Builder) super.clearOneof(oneof);
+            }
+
+            public Builder setRepeatedField(
+                    com.google.protobuf.Descriptors.FieldDescriptor field,
+                    int index, Object value) {
+                return (Builder) super.setRepeatedField(field, index, value);
+            }
+
+            public Builder addRepeatedField(
+                    com.google.protobuf.Descriptors.FieldDescriptor field,
+                    Object value) {
+                return (Builder) super.addRepeatedField(field, value);
+            }
+
+            public Builder mergeFrom(com.google.protobuf.Message other) {
+                if (other instanceof io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf) {
+                    return mergeFrom((io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf) other);
+                } else {
+                    super.mergeFrom(other);
+                    return this;
+                }
+            }
+
+            public Builder mergeFrom(io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf other) {
+                if (other == io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf.getDefaultInstance())
+                    return this;
+                if (other.getMagic() != 0) {
+                    setMagic(other.getMagic());
+                }
+                if (elementsBuilder_ == null) {
+                    if (!other.elements_.isEmpty()) {
+                        if (elements_.isEmpty()) {
+                            elements_ = other.elements_;
+                            bitField0_ = (bitField0_ & ~0x00000002);
+                        } else {
+                            ensureElementsIsMutable();
+                            elements_.addAll(other.elements_);
+                        }
+                        onChanged();
+                    }
+                } else {
+                    if (!other.elements_.isEmpty()) {
+                        if (elementsBuilder_.isEmpty()) {
+                            elementsBuilder_.dispose();
+                            elementsBuilder_ = null;
+                            elements_ = other.elements_;
+                            bitField0_ = (bitField0_ & ~0x00000002);
+                            elementsBuilder_ =
+                                    com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                                            getElementsFieldBuilder() : null;
+                        } else {
+                            elementsBuilder_.addAllMessages(other.elements_);
+                        }
+                    }
+                }
+                onChanged();
+                return this;
+            }
+
+            public final boolean isInitialized() {
+                return true;
+            }
+
+            public Builder mergeFrom(
+                    com.google.protobuf.CodedInputStream input,
+                    com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                    throws java.io.IOException {
+                io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf parsedMessage = null;
+                try {
+                    parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+                } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+                    parsedMessage = (io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf) e.getUnfinishedMessage();
+                    throw e.unwrapIOException();
+                } finally {
+                    if (parsedMessage != null) {
+                        mergeFrom(parsedMessage);
+                    }
+                }
+                return this;
+            }
+
+            private int bitField0_;
+
+            private int magic_;
+
+            /**
+             * <code>int32 magic = 1;</code>
+             */
+            public int getMagic() {
+                return magic_;
+            }
+
+            /**
+             * <code>int32 magic = 1;</code>
+             */
+            public Builder setMagic(int value) {
+
+                magic_ = value;
+                onChanged();
+                return this;
+            }
+
+            /**
+             * <code>int32 magic = 1;</code>
+             */
+            public Builder clearMagic() {
+
+                magic_ = 0;
+                onChanged();
+                return this;
+            }
+
+            private java.util.List<io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf> elements_ =
+                    java.util.Collections.emptyList();
+
+            private void ensureElementsIsMutable() {
+                if (!((bitField0_ & 0x00000002) == 0x00000002)) {
+                    elements_ = new java.util.ArrayList<io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf>(elements_);
+                    bitField0_ |= 0x00000002;
+                }
+            }
+
+            private com.google.protobuf.RepeatedFieldBuilderV3<
+                    io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Builder, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobufOrBuilder> elementsBuilder_;
+
+            /**
+             * <code>repeated .io.floodplain.protobuf.generated.ReplicationMessageProtobuf elements = 2;</code>
+             */
+            public java.util.List<io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf> getElementsList() {
+                if (elementsBuilder_ == null) {
+                    return java.util.Collections.unmodifiableList(elements_);
+                } else {
+                    return elementsBuilder_.getMessageList();
+                }
+            }
+
+            /**
+             * <code>repeated .io.floodplain.protobuf.generated.ReplicationMessageProtobuf elements = 2;</code>
+             */
+            public int getElementsCount() {
+                if (elementsBuilder_ == null) {
+                    return elements_.size();
+                } else {
+                    return elementsBuilder_.getCount();
+                }
+            }
+
+            /**
+             * <code>repeated .io.floodplain.protobuf.generated.ReplicationMessageProtobuf elements = 2;</code>
+             */
+            public io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf getElements(int index) {
+                if (elementsBuilder_ == null) {
+                    return elements_.get(index);
+                } else {
+                    return elementsBuilder_.getMessage(index);
+                }
+            }
+
+            /**
+             * <code>repeated .io.floodplain.protobuf.generated.ReplicationMessageProtobuf elements = 2;</code>
+             */
+            public Builder setElements(
+                    int index, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf value) {
+                if (elementsBuilder_ == null) {
+                    if (value == null) {
+                        throw new NullPointerException();
+                    }
+                    ensureElementsIsMutable();
+                    elements_.set(index, value);
+                    onChanged();
+                } else {
+                    elementsBuilder_.setMessage(index, value);
+                }
+                return this;
+            }
+
+            /**
+             * <code>repeated .io.floodplain.protobuf.generated.ReplicationMessageProtobuf elements = 2;</code>
+             */
+            public Builder setElements(
+                    int index, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Builder builderForValue) {
+                if (elementsBuilder_ == null) {
+                    ensureElementsIsMutable();
+                    elements_.set(index, builderForValue.build());
+                    onChanged();
+                } else {
+                    elementsBuilder_.setMessage(index, builderForValue.build());
+                }
+                return this;
+            }
+
+            /**
+             * <code>repeated .io.floodplain.protobuf.generated.ReplicationMessageProtobuf elements = 2;</code>
+             */
+            public Builder addElements(io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf value) {
+                if (elementsBuilder_ == null) {
+                    if (value == null) {
+                        throw new NullPointerException();
+                    }
+                    ensureElementsIsMutable();
+                    elements_.add(value);
+                    onChanged();
+                } else {
+                    elementsBuilder_.addMessage(value);
+                }
+                return this;
+            }
+
+            /**
+             * <code>repeated .io.floodplain.protobuf.generated.ReplicationMessageProtobuf elements = 2;</code>
+             */
+            public Builder addElements(
+                    int index, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf value) {
+                if (elementsBuilder_ == null) {
+                    if (value == null) {
+                        throw new NullPointerException();
+                    }
+                    ensureElementsIsMutable();
+                    elements_.add(index, value);
+                    onChanged();
+                } else {
+                    elementsBuilder_.addMessage(index, value);
+                }
+                return this;
+            }
+
+            /**
+             * <code>repeated .io.floodplain.protobuf.generated.ReplicationMessageProtobuf elements = 2;</code>
+             */
+            public Builder addElements(
+                    io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Builder builderForValue) {
+                if (elementsBuilder_ == null) {
+                    ensureElementsIsMutable();
+                    elements_.add(builderForValue.build());
+                    onChanged();
+                } else {
+                    elementsBuilder_.addMessage(builderForValue.build());
+                }
+                return this;
+            }
+
+            /**
+             * <code>repeated .io.floodplain.protobuf.generated.ReplicationMessageProtobuf elements = 2;</code>
+             */
+            public Builder addElements(
+                    int index, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Builder builderForValue) {
+                if (elementsBuilder_ == null) {
+                    ensureElementsIsMutable();
+                    elements_.add(index, builderForValue.build());
+                    onChanged();
+                } else {
+                    elementsBuilder_.addMessage(index, builderForValue.build());
+                }
+                return this;
+            }
+
+            /**
+             * <code>repeated .io.floodplain.protobuf.generated.ReplicationMessageProtobuf elements = 2;</code>
+             */
+            public Builder addAllElements(
+                    java.lang.Iterable<? extends io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf> values) {
+                if (elementsBuilder_ == null) {
+                    ensureElementsIsMutable();
+                    com.google.protobuf.AbstractMessageLite.Builder.addAll(
+                            values, elements_);
+                    onChanged();
+                } else {
+                    elementsBuilder_.addAllMessages(values);
+                }
+                return this;
+            }
+
+            /**
+             * <code>repeated .io.floodplain.protobuf.generated.ReplicationMessageProtobuf elements = 2;</code>
+             */
+            public Builder clearElements() {
+                if (elementsBuilder_ == null) {
+                    elements_ = java.util.Collections.emptyList();
+                    bitField0_ = (bitField0_ & ~0x00000002);
+                    onChanged();
+                } else {
+                    elementsBuilder_.clear();
+                }
+                return this;
+            }
+
+            /**
+             * <code>repeated .io.floodplain.protobuf.generated.ReplicationMessageProtobuf elements = 2;</code>
+             */
+            public Builder removeElements(int index) {
+                if (elementsBuilder_ == null) {
+                    ensureElementsIsMutable();
+                    elements_.remove(index);
+                    onChanged();
+                } else {
+                    elementsBuilder_.remove(index);
+                }
+                return this;
+            }
+
+            /**
+             * <code>repeated .io.floodplain.protobuf.generated.ReplicationMessageProtobuf elements = 2;</code>
+             */
+            public io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Builder getElementsBuilder(
+                    int index) {
+                return getElementsFieldBuilder().getBuilder(index);
+            }
+
+            /**
+             * <code>repeated .io.floodplain.protobuf.generated.ReplicationMessageProtobuf elements = 2;</code>
+             */
+            public io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobufOrBuilder getElementsOrBuilder(
+                    int index) {
+                if (elementsBuilder_ == null) {
+                    return elements_.get(index);
+                } else {
+                    return elementsBuilder_.getMessageOrBuilder(index);
+                }
+            }
+
+            /**
+             * <code>repeated .io.floodplain.protobuf.generated.ReplicationMessageProtobuf elements = 2;</code>
+             */
+            public java.util.List<? extends io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobufOrBuilder>
+            getElementsOrBuilderList() {
+                if (elementsBuilder_ != null) {
+                    return elementsBuilder_.getMessageOrBuilderList();
+                } else {
+                    return java.util.Collections.unmodifiableList(elements_);
+                }
+            }
+
+            /**
+             * <code>repeated .io.floodplain.protobuf.generated.ReplicationMessageProtobuf elements = 2;</code>
+             */
+            public io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Builder addElementsBuilder() {
+                return getElementsFieldBuilder().addBuilder(
+                        io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.getDefaultInstance());
+            }
+
+            /**
+             * <code>repeated .io.floodplain.protobuf.generated.ReplicationMessageProtobuf elements = 2;</code>
+             */
+            public io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Builder addElementsBuilder(
+                    int index) {
+                return getElementsFieldBuilder().addBuilder(
+                        index, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.getDefaultInstance());
+            }
+
+            /**
+             * <code>repeated .io.floodplain.protobuf.generated.ReplicationMessageProtobuf elements = 2;</code>
+             */
+            public java.util.List<io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Builder>
+            getElementsBuilderList() {
+                return getElementsFieldBuilder().getBuilderList();
+            }
+
+            private com.google.protobuf.RepeatedFieldBuilderV3<
+                    io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Builder, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobufOrBuilder>
+            getElementsFieldBuilder() {
+                if (elementsBuilder_ == null) {
+                    elementsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+                            io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf.Builder, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobufOrBuilder>(
+                            elements_,
+                            ((bitField0_ & 0x00000002) == 0x00000002),
+                            getParentForChildren(),
+                            isClean());
+                    elements_ = null;
+                }
+                return elementsBuilder_;
+            }
+
+            public final Builder setUnknownFields(
+                    final com.google.protobuf.UnknownFieldSet unknownFields) {
+                return this;
+            }
+
+            public final Builder mergeUnknownFields(
+                    final com.google.protobuf.UnknownFieldSet unknownFields) {
+                return this;
+            }
 
 
-      // @@protoc_insertion_point(builder_scope:io.floodplain.protobuf.generated.ReplicationMessageListProtobuf)
-    }
+            // @@protoc_insertion_point(builder_scope:io.floodplain.protobuf.generated.ReplicationMessageListProtobuf)
+        }
 
-    // @@protoc_insertion_point(class_scope:io.floodplain.protobuf.generated.ReplicationMessageListProtobuf)
-    private static final io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf DEFAULT_INSTANCE;
-    static {
-      DEFAULT_INSTANCE = new io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf();
-    }
+        // @@protoc_insertion_point(class_scope:io.floodplain.protobuf.generated.ReplicationMessageListProtobuf)
+        private static final io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf DEFAULT_INSTANCE;
 
-    public static io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf getDefaultInstance() {
-      return DEFAULT_INSTANCE;
-    }
+        static {
+            DEFAULT_INSTANCE = new io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf();
+        }
 
-    private static final com.google.protobuf.Parser<ReplicationMessageListProtobuf>
-        PARSER = new com.google.protobuf.AbstractParser<ReplicationMessageListProtobuf>() {
-      public ReplicationMessageListProtobuf parsePartialFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-          return new ReplicationMessageListProtobuf(input, extensionRegistry);
-      }
-    };
+        public static io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf getDefaultInstance() {
+            return DEFAULT_INSTANCE;
+        }
 
-    public static com.google.protobuf.Parser<ReplicationMessageListProtobuf> parser() {
-      return PARSER;
-    }
-
-    @java.lang.Override
-    public com.google.protobuf.Parser<ReplicationMessageListProtobuf> getParserForType() {
-      return PARSER;
-    }
-
-    public io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf getDefaultInstanceForType() {
-      return DEFAULT_INSTANCE;
-    }
-
-  }
-
-  private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_io_floodplain_protobuf_generated_ValueProtobuf_descriptor;
-  private static final 
-    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_io_floodplain_protobuf_generated_ValueProtobuf_fieldAccessorTable;
-  private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_descriptor;
-  private static final 
-    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_fieldAccessorTable;
-  private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_ValuesEntry_descriptor;
-  private static final 
-    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_ValuesEntry_fieldAccessorTable;
-  private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_SubmessageListEntry_descriptor;
-  private static final 
-    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_SubmessageListEntry_fieldAccessorTable;
-  private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_SubmessageEntry_descriptor;
-  private static final 
-    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_SubmessageEntry_fieldAccessorTable;
-  private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_io_floodplain_protobuf_generated_ReplicationMessageListProtobuf_descriptor;
-  private static final 
-    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_io_floodplain_protobuf_generated_ReplicationMessageListProtobuf_fieldAccessorTable;
-
-  public static com.google.protobuf.Descriptors.FileDescriptor
-      getDescriptor() {
-    return descriptor;
-  }
-  private static  com.google.protobuf.Descriptors.FileDescriptor
-      descriptor;
-  static {
-    java.lang.String[] descriptorData = {
-      "\n\021replication.proto\022 io.floodplain.proto" +
-      "buf.generated\"\312\002\n\rValueProtobuf\022\r\n\005value" +
-      "\030\001 \001(\t\022G\n\004type\030\002 \001(\01629.io.floodplain.pro" +
-      "tobuf.generated.ValueProtobuf.ValueType\022" +
-      "\016\n\006isNull\030\003 \001(\010\022\020\n\010byteData\030\004 \001(\014\"\276\001\n\tVa" +
-      "lueType\022\n\n\006STRING\020\000\022\013\n\007INTEGER\020\001\022\010\n\004LONG" +
-      "\020\002\022\n\n\006DOUBLE\020\003\022\t\n\005FLOAT\020\004\022\013\n\007BOOLEAN\020\005\022\021" +
-      "\n\rBINARY_DIGEST\020\006\022\010\n\004DATE\020\007\022\r\n\tCLOCKTIME" +
-      "\020\010\022\010\n\004LIST\020\t\022\n\n\006BINARY\020\n\022\016\n\nCOORDINATE\020\013" +
-      "\022\010\n\004ENUM\020\014\022\016\n\nSTRINGLIST\020\r\"\352\007\n\032Replicati",
-      "onMessageProtobuf\022\r\n\005magic\030\001 \001(\005\022Y\n\toper" +
-      "ation\030\002 \001(\0162F.io.floodplain.protobuf.gen" +
-      "erated.ReplicationMessageProtobuf.Operat" +
-      "ion\022\021\n\ttimestamp\030\003 \001(\003\022\026\n\016transaction_id" +
-      "\030\004 \001(\t\022\023\n\013primarykeys\030\005 \003(\t\022X\n\006values\030\006 " +
-      "\003(\0132H.io.floodplain.protobuf.generated.R" +
-      "eplicationMessageProtobuf.ValuesEntry\022i\n" +
-      "\017submessage_list\030\007 \003(\0132P.io.floodplain.p" +
-      "rotobuf.generated.ReplicationMessageProt" +
-      "obuf.SubmessageListEntry\022`\n\nsubmessage\030\010",
-      " \003(\0132L.io.floodplain.protobuf.generated." +
-      "ReplicationMessageProtobuf.SubmessageEnt" +
-      "ry\022R\n\014paramMessage\030\t \001(\0132<.io.floodplain" +
-      ".protobuf.generated.ReplicationMessagePr" +
-      "otobuf\032^\n\013ValuesEntry\022\013\n\003key\030\001 \001(\t\022>\n\005va" +
-      "lue\030\002 \001(\0132/.io.floodplain.protobuf.gener" +
-      "ated.ValueProtobuf:\0028\001\032w\n\023SubmessageList" +
-      "Entry\022\013\n\003key\030\001 \001(\t\022O\n\005value\030\002 \001(\0132@.io.f" +
-      "loodplain.protobuf.generated.Replication" +
-      "MessageListProtobuf:\0028\001\032o\n\017SubmessageEnt",
-      "ry\022\013\n\003key\030\001 \001(\t\022K\n\005value\030\002 \001(\0132<.io.floo" +
-      "dplain.protobuf.generated.ReplicationMes" +
-      "sageProtobuf:\0028\001\"]\n\tOperation\022\010\n\004NONE\020\000\022" +
-      "\n\n\006INSERT\020\001\022\n\n\006UPDATE\020\002\022\n\n\006DELETE\020\003\022\n\n\006C" +
-      "OMMIT\020\004\022\t\n\005MERGE\020\005\022\013\n\007INITIAL\020\006\"\177\n\036Repli" +
-      "cationMessageListProtobuf\022\r\n\005magic\030\001 \001(\005" +
-      "\022N\n\010elements\030\002 \003(\0132<.io.floodplain.proto" +
-      "buf.generated.ReplicationMessageProtobuf" +
-      "b\006proto3"
-    };
-    com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
-        new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
-          public com.google.protobuf.ExtensionRegistry assignDescriptors(
-              com.google.protobuf.Descriptors.FileDescriptor root) {
-            descriptor = root;
-            return null;
-          }
+        private static final com.google.protobuf.Parser<ReplicationMessageListProtobuf>
+                PARSER = new com.google.protobuf.AbstractParser<ReplicationMessageListProtobuf>() {
+            public ReplicationMessageListProtobuf parsePartialFrom(
+                    com.google.protobuf.CodedInputStream input,
+                    com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                    throws com.google.protobuf.InvalidProtocolBufferException {
+                return new ReplicationMessageListProtobuf(input, extensionRegistry);
+            }
         };
-    com.google.protobuf.Descriptors.FileDescriptor
-      .internalBuildGeneratedFileFrom(descriptorData,
-        new com.google.protobuf.Descriptors.FileDescriptor[] {
-        }, assigner);
-    internal_static_io_floodplain_protobuf_generated_ValueProtobuf_descriptor =
-      getDescriptor().getMessageTypes().get(0);
-    internal_static_io_floodplain_protobuf_generated_ValueProtobuf_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_io_floodplain_protobuf_generated_ValueProtobuf_descriptor,
-        new java.lang.String[] { "Value", "Type", "IsNull", "ByteData", });
-    internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_descriptor =
-      getDescriptor().getMessageTypes().get(1);
-    internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_descriptor,
-        new java.lang.String[] { "Magic", "Operation", "Timestamp", "TransactionId", "Primarykeys", "Values", "SubmessageList", "Submessage", "ParamMessage", });
-    internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_ValuesEntry_descriptor =
-      internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_descriptor.getNestedTypes().get(0);
-    internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_ValuesEntry_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_ValuesEntry_descriptor,
-        new java.lang.String[] { "Key", "Value", });
-    internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_SubmessageListEntry_descriptor =
-      internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_descriptor.getNestedTypes().get(1);
-    internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_SubmessageListEntry_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_SubmessageListEntry_descriptor,
-        new java.lang.String[] { "Key", "Value", });
-    internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_SubmessageEntry_descriptor =
-      internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_descriptor.getNestedTypes().get(2);
-    internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_SubmessageEntry_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_SubmessageEntry_descriptor,
-        new java.lang.String[] { "Key", "Value", });
-    internal_static_io_floodplain_protobuf_generated_ReplicationMessageListProtobuf_descriptor =
-      getDescriptor().getMessageTypes().get(2);
-    internal_static_io_floodplain_protobuf_generated_ReplicationMessageListProtobuf_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_io_floodplain_protobuf_generated_ReplicationMessageListProtobuf_descriptor,
-        new java.lang.String[] { "Magic", "Elements", });
-  }
 
-  // @@protoc_insertion_point(outer_class_scope)
+        public static com.google.protobuf.Parser<ReplicationMessageListProtobuf> parser() {
+            return PARSER;
+        }
+
+        @java.lang.Override
+        public com.google.protobuf.Parser<ReplicationMessageListProtobuf> getParserForType() {
+            return PARSER;
+        }
+
+        public io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf getDefaultInstanceForType() {
+            return DEFAULT_INSTANCE;
+        }
+
+    }
+
+    private static final com.google.protobuf.Descriptors.Descriptor
+            internal_static_io_floodplain_protobuf_generated_ValueProtobuf_descriptor;
+    private static final
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+            internal_static_io_floodplain_protobuf_generated_ValueProtobuf_fieldAccessorTable;
+    private static final com.google.protobuf.Descriptors.Descriptor
+            internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_descriptor;
+    private static final
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+            internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_fieldAccessorTable;
+    private static final com.google.protobuf.Descriptors.Descriptor
+            internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_ValuesEntry_descriptor;
+    private static final
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+            internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_ValuesEntry_fieldAccessorTable;
+    private static final com.google.protobuf.Descriptors.Descriptor
+            internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_SubmessageListEntry_descriptor;
+    private static final
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+            internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_SubmessageListEntry_fieldAccessorTable;
+    private static final com.google.protobuf.Descriptors.Descriptor
+            internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_SubmessageEntry_descriptor;
+    private static final
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+            internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_SubmessageEntry_fieldAccessorTable;
+    private static final com.google.protobuf.Descriptors.Descriptor
+            internal_static_io_floodplain_protobuf_generated_ReplicationMessageListProtobuf_descriptor;
+    private static final
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+            internal_static_io_floodplain_protobuf_generated_ReplicationMessageListProtobuf_fieldAccessorTable;
+
+    public static com.google.protobuf.Descriptors.FileDescriptor
+    getDescriptor() {
+        return descriptor;
+    }
+
+    private static com.google.protobuf.Descriptors.FileDescriptor
+            descriptor;
+
+    static {
+        java.lang.String[] descriptorData = {
+                "\n\021replication.proto\022 io.floodplain.proto" +
+                        "buf.generated\"\312\002\n\rValueProtobuf\022\r\n\005value" +
+                        "\030\001 \001(\t\022G\n\004type\030\002 \001(\01629.io.floodplain.pro" +
+                        "tobuf.generated.ValueProtobuf.ValueType\022" +
+                        "\016\n\006isNull\030\003 \001(\010\022\020\n\010byteData\030\004 \001(\014\"\276\001\n\tVa" +
+                        "lueType\022\n\n\006STRING\020\000\022\013\n\007INTEGER\020\001\022\010\n\004LONG" +
+                        "\020\002\022\n\n\006DOUBLE\020\003\022\t\n\005FLOAT\020\004\022\013\n\007BOOLEAN\020\005\022\021" +
+                        "\n\rBINARY_DIGEST\020\006\022\010\n\004DATE\020\007\022\r\n\tCLOCKTIME" +
+                        "\020\010\022\010\n\004LIST\020\t\022\n\n\006BINARY\020\n\022\016\n\nCOORDINATE\020\013" +
+                        "\022\010\n\004ENUM\020\014\022\016\n\nSTRINGLIST\020\r\"\352\007\n\032Replicati",
+                "onMessageProtobuf\022\r\n\005magic\030\001 \001(\005\022Y\n\toper" +
+                        "ation\030\002 \001(\0162F.io.floodplain.protobuf.gen" +
+                        "erated.ReplicationMessageProtobuf.Operat" +
+                        "ion\022\021\n\ttimestamp\030\003 \001(\003\022\026\n\016transaction_id" +
+                        "\030\004 \001(\t\022\023\n\013primarykeys\030\005 \003(\t\022X\n\006values\030\006 " +
+                        "\003(\0132H.io.floodplain.protobuf.generated.R" +
+                        "eplicationMessageProtobuf.ValuesEntry\022i\n" +
+                        "\017submessage_list\030\007 \003(\0132P.io.floodplain.p" +
+                        "rotobuf.generated.ReplicationMessageProt" +
+                        "obuf.SubmessageListEntry\022`\n\nsubmessage\030\010",
+                " \003(\0132L.io.floodplain.protobuf.generated." +
+                        "ReplicationMessageProtobuf.SubmessageEnt" +
+                        "ry\022R\n\014paramMessage\030\t \001(\0132<.io.floodplain" +
+                        ".protobuf.generated.ReplicationMessagePr" +
+                        "otobuf\032^\n\013ValuesEntry\022\013\n\003key\030\001 \001(\t\022>\n\005va" +
+                        "lue\030\002 \001(\0132/.io.floodplain.protobuf.gener" +
+                        "ated.ValueProtobuf:\0028\001\032w\n\023SubmessageList" +
+                        "Entry\022\013\n\003key\030\001 \001(\t\022O\n\005value\030\002 \001(\0132@.io.f" +
+                        "loodplain.protobuf.generated.Replication" +
+                        "MessageListProtobuf:\0028\001\032o\n\017SubmessageEnt",
+                "ry\022\013\n\003key\030\001 \001(\t\022K\n\005value\030\002 \001(\0132<.io.floo" +
+                        "dplain.protobuf.generated.ReplicationMes" +
+                        "sageProtobuf:\0028\001\"]\n\tOperation\022\010\n\004NONE\020\000\022" +
+                        "\n\n\006INSERT\020\001\022\n\n\006UPDATE\020\002\022\n\n\006DELETE\020\003\022\n\n\006C" +
+                        "OMMIT\020\004\022\t\n\005MERGE\020\005\022\013\n\007INITIAL\020\006\"\177\n\036Repli" +
+                        "cationMessageListProtobuf\022\r\n\005magic\030\001 \001(\005" +
+                        "\022N\n\010elements\030\002 \003(\0132<.io.floodplain.proto" +
+                        "buf.generated.ReplicationMessageProtobuf" +
+                        "b\006proto3"
+        };
+        com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
+                new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
+                    public com.google.protobuf.ExtensionRegistry assignDescriptors(
+                            com.google.protobuf.Descriptors.FileDescriptor root) {
+                        descriptor = root;
+                        return null;
+                    }
+                };
+        com.google.protobuf.Descriptors.FileDescriptor
+                .internalBuildGeneratedFileFrom(descriptorData,
+                        new com.google.protobuf.Descriptors.FileDescriptor[]{
+                        }, assigner);
+        internal_static_io_floodplain_protobuf_generated_ValueProtobuf_descriptor =
+                getDescriptor().getMessageTypes().get(0);
+        internal_static_io_floodplain_protobuf_generated_ValueProtobuf_fieldAccessorTable = new
+                com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+                internal_static_io_floodplain_protobuf_generated_ValueProtobuf_descriptor,
+                new java.lang.String[]{"Value", "Type", "IsNull", "ByteData",});
+        internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_descriptor =
+                getDescriptor().getMessageTypes().get(1);
+        internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_fieldAccessorTable = new
+                com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+                internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_descriptor,
+                new java.lang.String[]{"Magic", "Operation", "Timestamp", "TransactionId", "Primarykeys", "Values", "SubmessageList", "Submessage", "ParamMessage",});
+        internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_ValuesEntry_descriptor =
+                internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_descriptor.getNestedTypes().get(0);
+        internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_ValuesEntry_fieldAccessorTable = new
+                com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+                internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_ValuesEntry_descriptor,
+                new java.lang.String[]{"Key", "Value",});
+        internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_SubmessageListEntry_descriptor =
+                internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_descriptor.getNestedTypes().get(1);
+        internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_SubmessageListEntry_fieldAccessorTable = new
+                com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+                internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_SubmessageListEntry_descriptor,
+                new java.lang.String[]{"Key", "Value",});
+        internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_SubmessageEntry_descriptor =
+                internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_descriptor.getNestedTypes().get(2);
+        internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_SubmessageEntry_fieldAccessorTable = new
+                com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+                internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_SubmessageEntry_descriptor,
+                new java.lang.String[]{"Key", "Value",});
+        internal_static_io_floodplain_protobuf_generated_ReplicationMessageListProtobuf_descriptor =
+                getDescriptor().getMessageTypes().get(2);
+        internal_static_io_floodplain_protobuf_generated_ReplicationMessageListProtobuf_fieldAccessorTable = new
+                com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+                internal_static_io_floodplain_protobuf_generated_ReplicationMessageListProtobuf_descriptor,
+                new java.lang.String[]{"Magic", "Elements",});
+    }
+
+    // @@protoc_insertion_point(outer_class_scope)
 }

@@ -74,7 +74,7 @@ public class XMLParseException
      * @param name    The name of the element where the error is located.
      * @param message A message describing what went wrong.
      *                <p>
-     *                >Preconditions:</b></dt><dd>
+     *                </b></dt><dd>
      *                <ul><li><code>message != null</code>
      *                </ul></dd></dl>
      *
@@ -99,7 +99,7 @@ public class XMLParseException
      * @param lineNr  The number of the line in the input.
      * @param message A message describing what went wrong.
      *                <p>
-     *                >Preconditions:</b></dt><dd>
+     *                </b></dt><dd>
      *                <ul><li><code>message != null</code>
      *                    <li><code>lineNr &gt; 0</code>
      *                </ul></dd></dl>

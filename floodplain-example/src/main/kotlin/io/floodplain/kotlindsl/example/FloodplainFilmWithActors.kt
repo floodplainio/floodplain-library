@@ -2,7 +2,6 @@ package io.floodplain.kotlindsl.example
 
 import io.floodplain.kotlindsl.*
 import io.floodplain.kotlindsl.message.IMessage
-import io.floodplain.kotlindsl.message.empty
 import java.net.URL
 import java.util.*
 
@@ -19,8 +18,8 @@ fun filmWithActorList(generation: String) {
         // Start with the 'film' collection
         postgresSource("public", "film", postgresConfig) {
             // Clear the last_update field, it makes no sense in a denormalized situation
-            set {
-                film,_ ->film["last_update"] = null; film
+            set { film, _ ->
+                film["last_update"] = null; film
             }
             // Join with something that also uses the film_id key space.
             // optional = true so films without any actors (animation?) will propagate
@@ -38,7 +37,7 @@ fun filmWithActorList(generation: String) {
                         actor_film["last_name"] = actor["last_name"]
                         actor_film["first_name"] = actor["first_name"]
                         actor_film["actor_id"] = actor["actor_id"]
-                        actor_film["last_update"]=null
+                        actor_film["last_update"] = null
                         actor_film
                     }
                     // group the film_actor stream by film_id

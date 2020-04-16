@@ -115,7 +115,7 @@ fun PartialPipe.sink(topic: String) {
  * @param optional: If set to true, it will also emit a value if there is no counterpart (yet) in the supplied source.
  * Note that setting this to true can cause a performance penalty, as more items could be emitted.
  */
-fun PartialPipe.join(optional: Boolean = false,source: () -> Source) {
+fun PartialPipe.join(optional: Boolean = false, source: () -> Source) {
     val jrt = JoinWithTransformer(optional, false, source.invoke().toReactivePipe())
     addTransformer(Transformer(jrt))
 }
@@ -126,7 +126,7 @@ fun PartialPipe.join(optional: Boolean = false,source: () -> Source) {
  * @param optional: If set to true, it will also emit a value if there is no counterpart (yet) in the supplied source.
  * Note that setting this to true can cause a performance penalty, as more items could be emitted.
  */
-fun PartialPipe.joinGrouped(optional: Boolean = false,source: () -> Source) {
+fun PartialPipe.joinGrouped(optional: Boolean = false, source: () -> Source) {
     val jrt = JoinWithTransformer(optional, true, source.invoke().toReactivePipe())
     addTransformer(Transformer(jrt))
 }

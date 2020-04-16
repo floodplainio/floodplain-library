@@ -13,7 +13,6 @@ import io.reactivex.functions.Action;
 import io.reactivex.functions.Predicate;
 
 import javax.servlet.AsyncContext;
-import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;

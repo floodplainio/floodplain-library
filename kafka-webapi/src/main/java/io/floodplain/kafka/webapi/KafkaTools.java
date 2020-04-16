@@ -5,14 +5,12 @@ import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
-import io.reactivex.functions.Predicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletException;
 import java.io.Writer;
 import java.util.Set;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class KafkaTools {
