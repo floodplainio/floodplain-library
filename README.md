@@ -1,6 +1,6 @@
 # Welcome to Floodplain!
 
-Floodplain is a Kotlin based stream processing framework, check [https://floodplain.io](https://floodplain.io) for in-depth documentation.
+Floodplain is a Kotlin based stream processing framework, check [https://www.floodplain.io/](https://www.floodplain.io/) for in-depth documentation.
 
 ## Building
 
