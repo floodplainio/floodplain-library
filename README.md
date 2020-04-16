@@ -33,5 +33,5 @@ Right-click and run, this should create some log messages and then keep running.
 
 Open a MongoDB client, point it to localhost:27017, and it will have created a new database. When you keep the FloodplainAddresses running, you can make changes to Postgres, and see the changes reflected in MongoDB.
 
-TODO setup CircleCI / GitHub actions for CI
-TODO Separate examples into another project
+- TODO setup CircleCI / GitHub actions for CI
+- TODO Separate examples into another project
