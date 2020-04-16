@@ -137,13 +137,14 @@ fun PartialPipe.joinGrouped(optional: Boolean = false, source: () -> Source) {
  * It is a little bit more complicated than a regular reduce operator, as it also allows deleting items
  *
  */
-fun PartialPipe.scan(key: (IMessage) -> String, initial: () -> IMessage, onAdd: Block.() -> Transformer, onRemove: Block.() -> Transformer) {
+fun PartialPipe.scan(key: (IMessage) -> String, initial: (IMessage) -> IMessage, onAdd: Block.() -> Transformer, onRemove: Block.() -> Transformer) {
     val keyExtractor: (ImmutableMessage, ImmutableMessage) -> String = { msg, _ -> key.invoke(fromImmutable(msg)) }
+    val initialConstructor: (ImmutableMessage) -> ImmutableMessage = { msg -> initial.invoke(fromImmutable(msg)).toImmutable() }
     val onAddBlock = Block()
     onAdd.invoke(onAddBlock)
     val onRemoveBlock = Block()
     onRemove.invoke(onRemoveBlock)
-    addTransformer(Transformer(ScanTransformer(keyExtractor, initial.invoke().toImmutable(), onAddBlock.transformers.map { e -> e.component }, onRemoveBlock.transformers.map { e -> e.component })))
+    addTransformer(Transformer(ScanTransformer(keyExtractor, initialConstructor, onAddBlock.transformers.map { e -> e.component }, onRemoveBlock.transformers.map { e -> e.component })))
 }
 
 /**

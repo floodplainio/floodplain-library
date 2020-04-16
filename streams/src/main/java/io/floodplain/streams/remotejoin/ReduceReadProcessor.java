@@ -10,17 +10,18 @@ import org.apache.kafka.streams.state.KeyValueStore;
 
 import java.util.Optional;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public class ReduceReadProcessor extends AbstractProcessor<String, ReplicationMessage> {
 
     private final String accumulatorStoreName;
     private final String inputStoreName;
-    private final ImmutableMessage initial;
+    private final Function<ImmutableMessage,ImmutableMessage> initial;
     private final Optional<BiFunction<ImmutableMessage, ImmutableMessage, String>> keyExtractor;
     private KeyValueStore<String, ImmutableMessage> accumulatorStore;
     private KeyValueStore<String, ReplicationMessage> inputStore;
 
-    public ReduceReadProcessor(String inputStoreName, String accumulatorStoreName, ImmutableMessage initial, Optional<BiFunction<ImmutableMessage, ImmutableMessage, String>> keyExtractor) {
+    public ReduceReadProcessor(String inputStoreName, String accumulatorStoreName, Function<ImmutableMessage,ImmutableMessage> initial, Optional<BiFunction<ImmutableMessage, ImmutableMessage, String>> keyExtractor) {
         this.accumulatorStoreName = accumulatorStoreName;
         this.inputStoreName = inputStoreName;
         this.initial = initial;
@@ -45,9 +46,11 @@ public class ReduceReadProcessor extends AbstractProcessor<String, ReplicationMe
             if (inputValue == null || inputValue.operation() == Operation.DELETE) {
                 throw new RuntimeException("Issue: Deleting (?) a message that isn't there. Is this bad?");
             }
-            extracted = keyExtractor.orElse((m, s) -> StoreStateProcessor.COMMONKEY).apply(inputValue.message(), inputValue.paramMessage().orElse(ImmutableFactory.empty()));
+            extracted = keyExtractor.orElse((m, s) -> StoreStateProcessor.COMMONKEY)
+                    .apply(inputValue.message(), inputValue.paramMessage().orElse(ImmutableFactory.empty()));
         } else {
-            extracted = keyExtractor.orElse((m, s) -> StoreStateProcessor.COMMONKEY).apply(stored.message(), stored.paramMessage().orElse(ImmutableFactory.empty()));
+            extracted = keyExtractor.orElse((m, s) -> StoreStateProcessor.COMMONKEY)
+                    .apply(stored.message(), stored.paramMessage().orElse(ImmutableFactory.empty()));
         }
         ImmutableMessage msg = this.accumulatorStore.get(extracted);
         ReplicationMessage value = inputValue;
@@ -57,18 +60,21 @@ public class ReduceReadProcessor extends AbstractProcessor<String, ReplicationMe
                 throw new RuntimeException("Issue: Deleting a message that isn't there. Is this bad?");
             }
             // delete
-            ImmutableMessage param = msg == null ? initial : msg;
+            ImmutableMessage param = msg == null ? initial.apply(stored.message()) : msg;
             value = stored.withOperation(Operation.DELETE).withParamMessage(param);
             inputStore.delete(key);
         } else {
-            value = value.withParamMessage(msg != null ? msg : initial);
+            if(msg==null) {
+                msg = initial.apply(inputValue.message());
+            }
+            value = value.withParamMessage(msg);
             if (stored != null) {
                 // already present, propagate old value first as delete
-                context().forward(key, stored.withOperation(Operation.DELETE).withParamMessage(msg != null ? msg : initial));
+                context().forward(key, stored.withOperation(Operation.DELETE).withParamMessage(msg != null ? msg : initial.apply(inputValue.message())));
                 System.err.println("Forwarding update: " + key);
                 msg = this.accumulatorStore.get(extracted);
             }
-            value = value.withParamMessage(msg != null ? msg : initial);
+            value = value.withParamMessage(msg);
         }
         context().forward(key, value);
 

@@ -11,10 +11,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Stack;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public class ScanTransformer implements TopologyPipeComponent {
 
-    private final ImmutableMessage initial;
+    private final Function<ImmutableMessage, ImmutableMessage> initial;
     private final List<TopologyPipeComponent> onAdd;
     private final List<TopologyPipeComponent> onRemove;
     private boolean materialize;
@@ -24,7 +25,7 @@ public class ScanTransformer implements TopologyPipeComponent {
     //	public ScanTransformer(ImmutableMessage initial, List<TopologyPipeComponent> onAdd, List<TopologyPipeComponent> onRemove) {
 //		this(null,initial,onAdd,onRemove);
 //	}
-    public ScanTransformer(BiFunction<ImmutableMessage, ImmutableMessage, String> keyExtractor, ImmutableMessage initial, List<TopologyPipeComponent> onAdd, List<TopologyPipeComponent> onRemove) {
+    public ScanTransformer(BiFunction<ImmutableMessage, ImmutableMessage, String> keyExtractor, Function<ImmutableMessage,ImmutableMessage> initial, List<TopologyPipeComponent> onAdd, List<TopologyPipeComponent> onRemove) {
         this.keyExtractor = Optional.ofNullable(keyExtractor);
         this.initial = initial;
         this.onAdd = onAdd;

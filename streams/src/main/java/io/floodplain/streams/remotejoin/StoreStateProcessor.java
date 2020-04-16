@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public class StoreStateProcessor extends AbstractProcessor<String, ReplicationMessage> {
 
@@ -19,12 +20,12 @@ public class StoreStateProcessor extends AbstractProcessor<String, ReplicationMe
     private final static Logger logger = LoggerFactory.getLogger(StoreStateProcessor.class);
     private final String name;
     private final String lookupStoreName;
-    private final ImmutableMessage initial;
+    private final Function<ImmutableMessage,ImmutableMessage> initial;
     private KeyValueStore<String, ImmutableMessage> lookupStore;
     private final Optional<BiFunction<ImmutableMessage, ImmutableMessage, String>> keyExtractor;
     public static final String COMMONKEY = "singlerestore";
 
-    public StoreStateProcessor(String name, String lookupStoreName, ImmutableMessage initial, Optional<BiFunction<ImmutableMessage, ImmutableMessage, String>> keyExtractor) {
+    public StoreStateProcessor(String name, String lookupStoreName, Function<ImmutableMessage,ImmutableMessage> initial, Optional<BiFunction<ImmutableMessage, ImmutableMessage, String>> keyExtractor) {
         this.name = name;
         this.lookupStoreName = lookupStoreName;
         this.initial = initial;
@@ -65,12 +66,12 @@ public class StoreStateProcessor extends AbstractProcessor<String, ReplicationMe
 //			System.err.println("Found: "+vl.toFlatString(ImmutableFactory.createParser()));
 //			System.err.println("Input msg: "+value.message().toFlatString(ImmutableFactory.createParser()));
 //			System.err.println("Input param: "+value.paramMessage().orElse(ImmutableFactory.empty()).toFlatString(ImmutableFactory.createParser()));
-        ImmutableMessage paramMessage = inputValue.paramMessage().get();
+        ImmutableMessage paramMessage = inputValue.message(); //.get();
 //			paramMessage.with(UUID.randomUUID().toString(), RandomUtils.nextInt(), "integer");
 //			l = lookupStore.approximateNumEntries();
 //			System.err.println("Number of entries: "+l);
         lookupStore.put(extracted, paramMessage);
-//			l = lookupStore.approximateNumEntries();
+        //			l = lookupStore.approximateNumEntries();
 //			System.err.println("After number of entries: "+l);
 //			System.err.println("Storing key: "+COMMONKEY+" into store: "+lookupStoreName);
 //		}
