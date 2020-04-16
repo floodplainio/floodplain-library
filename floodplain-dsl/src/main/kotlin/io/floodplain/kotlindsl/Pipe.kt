@@ -3,11 +3,17 @@ package io.floodplain.kotlindsl
 import io.floodplain.reactive.topology.ReactivePipeParser
 import io.floodplain.streams.api.CoreOperators
 import io.floodplain.streams.api.TopologyContext
-import io.floodplain.streams.base.StreamInstance
+import io.floodplain.streams.base.RocksDBConfigurationSetter
+import io.floodplain.streams.base.StreamOperators
 import io.floodplain.streams.remotejoin.ReplicationTopologyParser
 import io.floodplain.streams.remotejoin.TopologyConstructor
+import org.apache.kafka.clients.consumer.ConsumerConfig
+import org.apache.kafka.clients.producer.ProducerConfig
+import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.KafkaStreams
+import org.apache.kafka.streams.StreamsConfig
 import org.apache.kafka.streams.Topology
+import org.apache.kafka.streams.processor.WallclockTimestampExtractor
 import java.io.IOException
 import java.net.URL
 import java.util.*
@@ -104,7 +110,7 @@ class Pipe(val context: TopologyContext, private val topologyConstructor: Topolo
 
     @Throws(InterruptedException::class, IOException::class)
     fun runTopology(topology: Topology, applicationId: String, kafkaHosts: String, storagePath: String): KafkaStreams? {
-        val props = StreamInstance.createProperties(applicationId, kafkaHosts, storagePath)
+        val props = createProperties(applicationId, kafkaHosts, storagePath)
         val stream = KafkaStreams(topology, props)
         println("CurrentTopology:\n ${topology.describe()}")
         stream.setUncaughtExceptionHandler { thread: Thread, exception: Throwable? ->
@@ -115,4 +121,48 @@ class Pipe(val context: TopologyContext, private val topologyConstructor: Topolo
         stream.start()
         return stream
     }
+
+    private fun createProperties(applicationId: String?, brokers: String?, storagePath: String?): Properties? {
+        val streamsConfiguration = Properties()
+        // Give the Streams application a unique name.  The name must be unique in the Kafka cluster
+        // against which the application is run.
+        logger.info("Creating application with name: {}", applicationId)
+        logger.info("Creating application id: {}", applicationId)
+        logger.info("Starting instance in storagePath: {}", storagePath)
+        streamsConfiguration[StreamsConfig.APPLICATION_ID_CONFIG] = applicationId
+        streamsConfiguration[StreamsConfig.BOOTSTRAP_SERVERS_CONFIG] = brokers
+        streamsConfiguration[StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG] = Serdes.String().javaClass
+        streamsConfiguration[StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG] = StreamOperators.replicationSerde.javaClass
+        streamsConfiguration[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = "earliest"
+        streamsConfiguration[ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG] = 30000
+        streamsConfiguration[ConsumerConfig.REQUEST_TIMEOUT_MS_CONFIG] = 40000
+        streamsConfiguration[ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG] = 5000
+        streamsConfiguration[ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG] = 7200000
+        streamsConfiguration[ConsumerConfig.MAX_POLL_RECORDS_CONFIG] = 100
+        streamsConfiguration[ProducerConfig.COMPRESSION_TYPE_CONFIG] = "lz4"
+        streamsConfiguration[StreamsConfig.STATE_DIR_CONFIG] = storagePath
+        streamsConfiguration[StreamsConfig.NUM_STREAM_THREADS_CONFIG] = 1
+        streamsConfiguration[StreamsConfig.NUM_STANDBY_REPLICAS_CONFIG] = 0
+        streamsConfiguration[StreamsConfig.RETRIES_CONFIG] = 50
+        streamsConfiguration[StreamsConfig.REPLICATION_FACTOR_CONFIG] = CoreOperators.topicReplicationCount()
+        streamsConfiguration[StreamsConfig.DEFAULT_TIMESTAMP_EXTRACTOR_CLASS_CONFIG] = WallclockTimestampExtractor::class.java
+
+        // 24h for now
+        streamsConfiguration["retention.ms"] = 3600 * 24 * 1000
+
+        // 10 weeks for now
+        streamsConfiguration["message.timestamp.difference.max.ms"] = 604800000 * 10
+        streamsConfiguration["log.message.timestamp.difference.max.ms"] = 604800000 * 11
+
+//	    StreamsConfig.
+        streamsConfiguration[StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG] = 10 * 1024 * 1024L;
+
+        streamsConfiguration[StreamsConfig.COMMIT_INTERVAL_MS_CONFIG] = 1000
+        streamsConfiguration[ProducerConfig.MAX_REQUEST_SIZE_CONFIG] = 7900000
+        streamsConfiguration[ConsumerConfig.MAX_PARTITION_FETCH_BYTES_CONFIG] = 7900000
+        streamsConfiguration[StreamsConfig.ROCKSDB_CONFIG_SETTER_CLASS_CONFIG] = RocksDBConfigurationSetter::class.java
+        return streamsConfiguration
+    }
+
+
 }

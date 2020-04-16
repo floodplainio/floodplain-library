@@ -3,17 +3,13 @@ package io.floodplain.streams.testdata;
 import io.floodplain.replication.api.ReplicationMessage;
 import io.floodplain.replication.factory.ReplicationFactory;
 import io.floodplain.replication.impl.protobuf.FallbackReplicationMessageParser;
-import io.floodplain.streams.api.StreamConfiguration;
 import io.floodplain.streams.base.Filters;
-import io.floodplain.streams.base.StreamInstance;
-import org.apache.kafka.clients.admin.AdminClient;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
 import java.util.Optional;
 
 public class TestFilters {
@@ -27,9 +23,9 @@ public class TestFilters {
 
     @Before
     public void setup() throws IOException {
-        StreamConfiguration config = new StreamConfiguration("localhost:9092", Optional.of("http://connect:8081"), Collections.emptyMap(), 100, 100, 1);
-        AdminClient adminClient = AdminClient.create(config.config());
-        new StreamInstance("test", config, adminClient, Collections.emptyMap());
+//        StreamConfiguration config = new StreamConfiguration("localhost:9092", Optional.of("http://connect:8081"), Collections.emptyMap(), 100, 100, 1);
+//        AdminClient adminClient = AdminClient.create(config.config());
+//        new StreamInstance("test", config, adminClient, Collections.emptyMap());
         ReplicationFactory.setInstance(new FallbackReplicationMessageParser());
 
         try (InputStream resourceAsStream = TestTransformations.class.getClassLoader().getResourceAsStream("address1.json")) {

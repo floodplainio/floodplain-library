@@ -41,7 +41,6 @@ dependencies {
     implementation project(':replication-protobuf')
     implementation project(':streams-api')
     implementation project(':streams')
-    implementation project(':kafka-rx2')
     implementation project(':pubsub-rx2')
     implementation project(':kafka-converter')
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'

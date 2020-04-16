@@ -10,7 +10,6 @@ dependencies {
     implementation project(':streams-api')
     implementation project(':replication-json')
     implementation project(':replication-protobuf')
-    implementation project(':replication-http')
     implementation project(':pubsub-rx2')
     compile dependencies.servletApi
     testCompile dependencies.jUnit
@@ -23,7 +22,6 @@ dependencies {
     compile dependencies.kafkaStreams
     compile dependencies.reactiveStreams
     compile dependencies.rxJava
-    compile "org.apache.commons:commons-text:1.8"
     compile dependencies.cdiApi
     compile dependencies.microProfileConfig
 

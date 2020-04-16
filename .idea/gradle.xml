@@ -20,11 +20,9 @@
             <option value="$PROJECT_DIR$/immutable-api" />
             <option value="$PROJECT_DIR$/immutable-impl" />
             <option value="$PROJECT_DIR$/kafka-converter" />
-            <option value="$PROJECT_DIR$/kafka-rx2" />
             <option value="$PROJECT_DIR$/kafka-webapi" />
             <option value="$PROJECT_DIR$/pubsub-rx2" />
             <option value="$PROJECT_DIR$/replication-api" />
-            <option value="$PROJECT_DIR$/replication-http" />
             <option value="$PROJECT_DIR$/replication-impl" />
             <option value="$PROJECT_DIR$/replication-json" />
             <option value="$PROJECT_DIR$/replication-protobuf" />

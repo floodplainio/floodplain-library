@@ -1,6 +1,5 @@
 package io.floodplain.streams.testdata;
 
-import io.floodplain.streams.base.StreamRuntime;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,15 +13,4 @@ public class TestFileOperations {
     public void setUp() throws Exception {
 //		runtime = new StreamRuntime();
     }
-
-    @Test
-    public void testNameMulti() {
-        Assert.assertEquals("mies", StreamRuntime.nameFromFileName("/aap/noot/mies.xml"));
-    }
-
-    @Test
-    public void testNameSingle() {
-        Assert.assertEquals("mies", StreamRuntime.nameFromFileName("mies.xml"));
-    }
-
 }

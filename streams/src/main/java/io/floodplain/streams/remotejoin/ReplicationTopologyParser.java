@@ -5,10 +5,8 @@ import io.floodplain.reactive.source.topology.api.TopologyPipeComponent;
 import io.floodplain.replication.api.ReplicationMessage;
 import io.floodplain.replication.api.ReplicationMessage.Operation;
 import io.floodplain.streams.api.CoreOperators;
-import io.floodplain.streams.api.StreamConfiguration;
 import io.floodplain.streams.api.TopologyContext;
 import io.floodplain.streams.base.Filters;
-import io.floodplain.streams.processor.generic.GenericProcessorBuilder;
 import io.floodplain.streams.remotejoin.ranged.GroupedUpdateProcessor;
 import io.floodplain.streams.remotejoin.ranged.ManyToManyGroupedProcessor;
 import io.floodplain.streams.remotejoin.ranged.ManyToOneGroupedProcessor;
@@ -75,14 +73,6 @@ public class ReplicationTopologyParser {
         }
         parts.add(processor);
     }
-
-    private static void addGenericProcessor(Topology current, TopologyContext context,
-                                            TopologyConstructor topologyConstructor, GenericProcessorBuilder genericBuilder, Map<String, String> settings, StreamConfiguration config) {
-
-        genericBuilder.build(current, settings, context, config);
-
-    }
-
 
     public static void materializeStateStores(TopologyConstructor topologyConstructor, Topology current) {
         for (Entry<String, List<String>> element : topologyConstructor.processorStateStoreMapper.entrySet()) {

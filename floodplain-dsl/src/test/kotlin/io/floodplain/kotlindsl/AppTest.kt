@@ -8,6 +8,7 @@ import io.floodplain.immutable.factory.ImmutableFactory
 import io.floodplain.kotlindsl.message.IMessage
 import io.floodplain.kotlindsl.message.fromImmutable
 import kotlin.test.Test
+import kotlin.test.assertNotNull
 
 class AppTest {
     @Test
@@ -17,6 +18,6 @@ class AppTest {
         val m2 = msg.toImmutable()
         println("Aap: ${m2.value("aap")}")
 //        val classUnderTest = App()
-        //      assertNotNull(classUnderTest.greeting, "app should have a greeting")
+        assertNotNull(m2, "app conversion has failed")
     }
 }
