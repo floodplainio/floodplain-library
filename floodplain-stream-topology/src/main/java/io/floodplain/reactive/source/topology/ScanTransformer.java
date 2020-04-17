@@ -21,10 +21,6 @@ public class ScanTransformer implements TopologyPipeComponent {
     private boolean materialize;
     private final Optional<BiFunction<ImmutableMessage, ImmutableMessage, String>> keyExtractor;
 
-
-    //	public ScanTransformer(ImmutableMessage initial, List<TopologyPipeComponent> onAdd, List<TopologyPipeComponent> onRemove) {
-//		this(null,initial,onAdd,onRemove);
-//	}
     public ScanTransformer(BiFunction<ImmutableMessage, ImmutableMessage, String> keyExtractor, Function<ImmutableMessage,ImmutableMessage> initial, List<TopologyPipeComponent> onAdd, List<TopologyPipeComponent> onRemove) {
         this.keyExtractor = Optional.ofNullable(keyExtractor);
         this.initial = initial;
@@ -35,10 +31,6 @@ public class ScanTransformer implements TopologyPipeComponent {
     @Override
     public void addToTopology(Stack<String> transformerNames, int currentPipeId, Topology topology,
                               TopologyContext topologyContext, TopologyConstructor topologyConstructor) {
-//		Function<ReplicationMessage,String> keyXtr = msg->{
-//			return this.keyExtractor.apply(msg.message(),msg.paramMessage().orElse(ImmutableFactory.empty()));
-//		};
-//		Optional<ContextExpression> keyExtractor = Optional.ofNullable(parameters.named.get("key"));
         String reducerName = ReplicationTopologyParser.addReducer(topology, topologyContext, topologyConstructor, topologyContext.instance, transformerNames, currentPipeId, onAdd, onRemove, initial, materialize, keyExtractor);
         transformerNames.push(reducerName);
     }

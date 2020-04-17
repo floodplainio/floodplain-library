@@ -119,6 +119,9 @@ public interface ImmutableMessage {
         Object apply(String key, ValueType type, Object value);
     }
 
+    public static interface TriConsumer {
+        public void apply(ImmutableMessage message, ImmutableMessage secondary, String key);
+    }
     public class TypedData {
         public final ValueType type;
         public final Object value;

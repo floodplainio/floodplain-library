@@ -2,6 +2,7 @@ package io.floodplain.streams.remotejoin;
 
 import io.floodplain.replication.api.ReplicationMessage;
 import io.floodplain.replication.api.ReplicationMessage.Operation;
+import io.floodplain.replication.factory.ReplicationFactory;
 import org.apache.kafka.streams.kstream.Predicate;
 import org.apache.kafka.streams.processor.AbstractProcessor;
 import org.apache.kafka.streams.processor.ProcessorContext;
@@ -22,6 +23,7 @@ public class OneToOneProcessor extends AbstractProcessor<String, ReplicationMess
 
     private final BiFunction<ReplicationMessage, ReplicationMessage, ReplicationMessage> joinFunction;
     private boolean optional;
+    private boolean debug = true;
     private Predicate<String, ReplicationMessage> filterPredicate;
 
     private static final Logger logger = LoggerFactory.getLogger(OneToOneProcessor.class);
@@ -32,9 +34,7 @@ public class OneToOneProcessor extends AbstractProcessor<String, ReplicationMess
         this.reverseLookupStoreName = reverseLookupStoreName;
         this.optional = optional;
         this.joinFunction = joinFunction;
-
         this.filterPredicate = filterPredicate.orElse((k, v) -> true);
-
     }
 
 
@@ -62,6 +62,9 @@ public class OneToOneProcessor extends AbstractProcessor<String, ReplicationMess
             key = key.substring(0, key.length() - PreJoinProcessor.REVERSE_IDENTIFIER.length());
             lookupStore = forwardLookupStore;
         }
+        if(debug) {
+            logger.info("Joining key: {} reverse: {}",key,reverse);
+        }
 
         if (!filterPredicate.test(key, innerMessage)) {
             // filter says no
@@ -70,6 +73,14 @@ public class OneToOneProcessor extends AbstractProcessor<String, ReplicationMess
             return;
         }
         ReplicationMessage counterpart = lookupStore.get(key);
+        if(debug) {
+            if (counterpart==null) {
+                logger.info("Null Join Result: {}",key);
+            } else {
+                logger.info("Join Result: {} {}",key,counterpart.toFlatString(ReplicationFactory.getInstance()));
+            }
+        }
+
         if (counterpart == null) {
             if (reverse) {
                 // We are doing a reverse join, but the original message isn't there.

@@ -68,7 +68,6 @@ public class ReplicationMessageConverter implements Converter {
 
     @Override
     public SchemaAndValue toConnectData(String topic, byte[] value) {
-        logger.info("toConnectData topic: {}, value: {}", topic, value == null ? 0 : new String(value));
         if (value == null) {
             return new SchemaAndValue(null, null);
         }
@@ -77,8 +76,6 @@ public class ReplicationMessageConverter implements Converter {
         } else {
             ReplicationMessage replMessage = ReplicationFactory.getInstance().parseBytes(Optional.empty(), value);
             Map<String, Object> valueMap = replMessage.valueMap(true, Collections.emptySet());
-            logger.info("Generated replication message. Schema? {}. Values: {}", schemaEnable, valueMap);
-
             if (this.schemaEnable) {
                 Map<String, Object> valueWithPayload = new HashMap<String, Object>();
                 valueWithPayload.put("payload", valueMap);
@@ -88,7 +85,6 @@ public class ReplicationMessageConverter implements Converter {
                 return new SchemaAndValue(null, objectMapper.writeValueAsString(valueMap));
             } catch (JsonProcessingException e) {
                 throw new RuntimeException("Json issue", e);
-//				e.printStackTrace();
             }
         }
     }
@@ -97,24 +93,6 @@ public class ReplicationMessageConverter implements Converter {
         String valueString = new String(value);
         String converted = "{key:\"" + valueString + "\"}";
         return new SchemaAndValue(null, converted);
-//		try {
-//			JsonNode jn = objectMapper.readTree(value);
-//			logger.info("toConnect type: {}",jn.getClass().getName());
-//			if(jn instanceof ObjectNode) {
-//				return new SchemaAndValue(null, objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jn));
-//			} else {
-//				ObjectNode on = objectMapper.createObjectNode();
-//				on.put("key", jn.asText());
-////					;
-//				return new SchemaAndValue(null,objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(on));
-//			}
-//
-//		} catch (IOException e) {
-//			if(value!=null) {
-//				logger.error("Error writing value: "+new String(value));
-//			}
-//			throw new RuntimeException("Error parsing key bytes: ",e);
-//		}
     }
 
 }

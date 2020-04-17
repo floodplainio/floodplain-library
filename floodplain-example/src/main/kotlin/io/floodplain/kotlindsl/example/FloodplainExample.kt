@@ -22,7 +22,7 @@ fun main() {
 
                     scan({ msg -> msg["customer_id"].toString() }, { empty().set("total", 0.0).set("customer_id", 0) },
                             {
-                                each { msg, state ->
+                                each { msg, state,_ ->
                                     logger.info { "inmsg: ${msg.toString()}" }
                                     logger.info { "instate: ${state.toString()}" }
                                 }
@@ -36,7 +36,7 @@ fun main() {
                         result["customer_id"] = state["customer_id"] as Int
                         result
                     }
-                    each { msg, state ->
+                    each { msg, state, _ ->
                         logger.info { "msg: ${msg.toString()}" }
                     }
                     set { msg, state ->

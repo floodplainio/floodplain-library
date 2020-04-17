@@ -7,6 +7,7 @@ import java.util.*
 private val logger = mu.KotlinLogging.logger {}
 
 fun main() {
+
     val generation = "generation1"
     pipe(generation) {
         val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")

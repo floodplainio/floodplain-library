@@ -197,7 +197,7 @@ public class TestDiff {
             if (ignoredFields.contains(e.getKey())) {
                 continue;
             }
-//			Object other = newDoc.get(e.getKey());
+			Object other = newDoc.get(e.getKey());
             boolean diff = objectEquals(e.getValue(), other, ignoredFields);
             if (!diff) {
                 logger.info("Not equal! Key: " + e.getKey() + " type: " + e.getValue().getClass() + " this: " + e.getValue() + " other: " + other);

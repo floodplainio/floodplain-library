@@ -391,7 +391,7 @@ public class ReplicationTopologyParser {
 
         String reduceName = topologyContext.qualifiedName("reduce", transformerNames.size(), currentPipeId);
 
-        String reduceStoreName = STORE_PREFIX + reduceName;
+        String reduceStoreName = STORE_PREFIX +"accumulator_"+ reduceName;
         String inputStoreName = STORE_PREFIX + parentName + "_reduce_inputstore";
 
         topology.addProcessor(reduceReader, () -> new ReduceReadProcessor(inputStoreName, reduceStoreName, initialMessage, keyExtractor), parentName);
@@ -417,7 +417,7 @@ public class ReplicationTopologyParser {
         }
 //		topologyConstructor
         topology.addProcessor(materialize ? "_proc" + reduceName : reduceName, () -> new StoreStateProcessor(reduceName, reduceStoreName, initialMessage, keyExtractor), addProcessorStack.peek(), removeProcessorStack.peek());
-        addStateStoreMapping(topologyConstructor.processorStateStoreMapper, reduceName, reduceStoreName);
+        addStateStoreMapping(topologyConstructor.processorStateStoreMapper, materialize ? "_proc" + reduceName : reduceName, reduceStoreName);
         addStateStoreMapping(topologyConstructor.processorStateStoreMapper, reduceReader, reduceStoreName);
         addStateStoreMapping(topologyConstructor.processorStateStoreMapper, reduceReader, inputStoreName);
 

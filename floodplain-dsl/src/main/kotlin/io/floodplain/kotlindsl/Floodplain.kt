@@ -43,8 +43,8 @@ fun PartialPipe.filter(flt: (IMessage, IMessage) -> Boolean) {
 /**
  * Perform the supplied lambda for each message. You can use this for logging or other side effects, this function should not influence the semantics of the stream
  */
-fun PartialPipe.each(transform: (IMessage, IMessage) -> Unit): Transformer {
-    val transformer: (ImmutableMessage, ImmutableMessage) -> Unit = { msg: ImmutableMessage, param: ImmutableMessage -> transform.invoke(fromImmutable(msg), fromImmutable(param)) }
+fun PartialPipe.each(transform: (IMessage, IMessage, String) -> Unit): Transformer {
+    val transformer: (ImmutableMessage, ImmutableMessage, String) -> Unit = { msg: ImmutableMessage, param: ImmutableMessage, key: String -> transform.invoke(fromImmutable(msg), fromImmutable(param), key) }
     val each = EachTransformer(transformer)
     return addTransformer(Transformer(each))
 
@@ -98,7 +98,7 @@ fun Pipe.source(topic: String, init: Source.() -> Unit): Source {
     val source = Source(sourceElement)
 
     source.init()
-    this.addSource(source)
+//    this.addSource(source)
     return source
 }
 
@@ -155,7 +155,7 @@ fun PartialPipe.scan(key: (IMessage) -> String, initial: (IMessage) -> IMessage,
  * To make sure all data gets reprocessed, change the generation. It is a string, with no further meaning within the framework, you can choose what
  * meaning you want to attach. You can increment a number, use a sort of time stamp, or even a git commit.
  */
-fun pipe(generation: String, init: Pipe.() -> Unit): Pipe {
+fun pipe(generation: String, init: Pipe.() -> Source): Pipe {
     val tenant = "tenant"
     val deployment = "deployment"
     // this is basically the name of the pipe instance, to make sure no names clash
@@ -163,9 +163,23 @@ fun pipe(generation: String, init: Pipe.() -> Unit): Pipe {
     var topologyConstructor = TopologyConstructor() // TopologyConstructor(Optional.of(AdminClient.create(mapOf("bootstrap.servers" to kafkaBrokers, "client.id" to clientId))))
     var topologyContext = TopologyContext(Optional.ofNullable(tenant), deployment, instance, generation)
     val pipe = Pipe(topologyContext, topologyConstructor)
-    pipe.init()
-    return pipe
 
+    return pipe.addSource(pipe.init())
+}
+
+fun pipes(generation: String, init: Pipe.() -> List<Source>): Pipe {
+    val tenant = "tenant"
+    val deployment = "deployment"
+    // this is basically the name of the pipe instance, to make sure no names clash
+    val instance = "instance"
+    var topologyConstructor = TopologyConstructor() // TopologyConstructor(Optional.of(AdminClient.create(mapOf("bootstrap.servers" to kafkaBrokers, "client.id" to clientId))))
+    var topologyContext = TopologyContext(Optional.ofNullable(tenant), deployment, instance, generation)
+    val pipe = Pipe(topologyContext, topologyConstructor)
+    val sources = pipe.init()
+    sources.forEach {
+        e->pipe.addSource(e)
+    }
+    return pipe
 }
 
 /**

@@ -12,15 +12,16 @@ import java.util.function.BiConsumer;
 public class EachProcessor extends AbstractProcessor<String, ReplicationMessage> {
 
     private final static Logger logger = LoggerFactory.getLogger(EachProcessor.class);
-    private final BiConsumer<ImmutableMessage, ImmutableMessage> lambda;
+    private final ImmutableMessage.TriConsumer lambda;
 
-    public EachProcessor(BiConsumer<ImmutableMessage, ImmutableMessage> lambda) {
+    public EachProcessor(ImmutableMessage.TriConsumer lambda) {
         this.lambda = lambda;
     }
 
+
     @Override
     public void process(String key, ReplicationMessage value) {
-        lambda.accept(value.message(), value.paramMessage().orElse(ImmutableFactory.empty()));
+        lambda.apply(value.message(), value.paramMessage().orElse(ImmutableFactory.empty()),key);
         super.context().forward(key, value);
     }
 

@@ -30,8 +30,9 @@ class Pipe(val context: TopologyContext, private val topologyConstructor: Topolo
     /**
      * Adds a source instance, should only be called from source implementations
      */
-    fun addSource(source: Source) {
+    fun addSource(source: Source): Pipe {
         sources.add(source)
+        return this
     }
 
 

@@ -40,7 +40,7 @@ fun Pipe.postgresSource(schema: String, table: String, config: PostgresConfig, i
     config.addSourceElement(DebeziumSourceElement(topicName, table, schema))
     val databaseSource = Source(topicSource)
     databaseSource.init()
-    this.addSource(databaseSource)
+//    this.addSource(databaseSource)
     return databaseSource
 }
 

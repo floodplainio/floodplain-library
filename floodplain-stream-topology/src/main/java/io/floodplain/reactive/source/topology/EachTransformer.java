@@ -14,7 +14,7 @@ import java.util.function.BiConsumer;
 
 public class EachTransformer implements TopologyPipeComponent {
 
-    private final BiConsumer<ImmutableMessage, ImmutableMessage> lambda;
+//    private final BiConsumer<ImmutableMessage, ImmutableMessage> lambda;
     private boolean materialize = false;
 
 
@@ -22,8 +22,8 @@ public class EachTransformer implements TopologyPipeComponent {
 
     public static final String SINK_PREFIX = "SINK_";
     public static final String SINKLOG_PREFIX = "SINK_LOG_";
-
-    public EachTransformer(BiConsumer<ImmutableMessage, ImmutableMessage> lambda) {
+    ImmutableMessage.TriConsumer lambda;
+    public EachTransformer(ImmutableMessage.TriConsumer lambda) {
         this.lambda = lambda;
     }
 

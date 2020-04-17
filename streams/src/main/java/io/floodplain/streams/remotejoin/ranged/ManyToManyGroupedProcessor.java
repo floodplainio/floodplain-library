@@ -40,21 +40,7 @@ public class ManyToManyGroupedProcessor extends AbstractProcessor<String, Replic
         this.withProcessorName = withProcessor;
         this.optional = optional;
         this.associationBypass = associationBypass.orElse((k, v) -> true);
-
-//		switc
         manyToManyJoinFunction = CoreOperators.getListJoinFunctionToParam(false);
-        // TODO refactor this
-//        switch (flatten) {
-//            case FIRST:
-//                manyToManyJoinFunction = CoreOperators.getListJoinFunctionFirstOnly(into);
-//                break;
-//            case LAST:
-//                manyToManyJoinFunction = CoreOperators.getListJoinFunction(into, false, columns);
-//                break;
-//            case NONE:
-//                manyToManyJoinFunction = CoreOperators.getListJoinFunction(into, false, columns);
-//                break;
-//        }
     }
 
     @SuppressWarnings("unchecked")
