@@ -1,11 +1,11 @@
 package io.floodplain.replication.impl.protobuf.test;
 
-import com.dexels.replication.impl.protobuf.generated.Replication;
-import com.dexels.replication.impl.protobuf.generated.Replication.ReplicationMessageProtobuf;
 import com.google.protobuf.ByteString;
 import io.floodplain.immutable.api.ImmutableMessage;
 import io.floodplain.immutable.api.ImmutableMessage.ValueType;
 import io.floodplain.immutable.factory.ImmutableFactory;
+import io.floodplain.protobuf.generated.Replication;
+import io.floodplain.pubsub.rx2.factory.impl.internal.KafkaDumpSubscriber;
 import io.floodplain.replication.api.ReplicationMessage;
 import io.floodplain.replication.api.ReplicationMessageParser;
 import io.floodplain.replication.factory.ReplicationFactory;
@@ -14,6 +14,8 @@ import io.floodplain.replication.impl.protobuf.impl.ProtobufReplicationMessagePa
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -25,6 +27,8 @@ public class ReplicationProtobufTest {
 
     private ReplicationMessageParser protoBufParser = new ProtobufReplicationMessageParser();
     private ReplicationMessageParser jsonParser = new JSONReplicationMessageParserImpl();
+    private final static Logger logger = LoggerFactory.getLogger(ReplicationProtobufTest.class);
+
 
     @BeforeClass
     public static void setup() {
@@ -40,9 +44,9 @@ public class ReplicationProtobufTest {
         ReplicationMessage m = ReplicationFactory.fromMap("key", values, types);
         m = m.withSubMessage("subb", createSubMessage());
         byte[] bb = m.toBytes(protoBufParser);
-        System.err.println("Length: " + bb.length);
+        logger.info("Length: {}", bb.length);
         ReplicationMessage rm = protoBufParser.parseBytes(Optional.empty(), bb);
-        System.err.println("Astring: " + rm.columnValue("astring"));
+        logger.info("Astring: {}", rm.columnValue("astring"));
     }
 
     public ImmutableMessage createSubMessage() {
@@ -63,7 +67,7 @@ public class ReplicationProtobufTest {
         Object value = m.columnValue("anint");
         Assert.assertTrue(value instanceof Integer);
         byte[] bb = m.toBytes(protoBufParser);
-        System.err.println("Length: " + bb.length);
+        logger.info("Length: {}", bb.length);
         ReplicationMessage rm = protoBufParser.parseBytes(Optional.empty(), bb);
         Object value2 = rm.columnValue("anint");
         Assert.assertTrue(value2 instanceof Integer);
@@ -75,7 +79,7 @@ public class ReplicationProtobufTest {
         try (InputStream is = getClass().getResourceAsStream("submessage.json")) {
             ReplicationMessage rm = jsonParser.parseStream(is);
             Date dd = (Date) rm.columnValue("formdate");
-            System.err.println(">> " + dd);
+            logger.info(">> {}", dd);
         }
     }
 
@@ -85,12 +89,12 @@ public class ReplicationProtobufTest {
             ReplicationMessage rm = jsonParser.parseStream(is);
             Assert.assertEquals(25, rm.values().size());
             byte[] bb = protoBufParser.serialize(rm);
-            System.err.println("bytes: " + bb.length);
+            logger.info("bytes: {}", bb.length);
             ReplicationMessage rm2 = protoBufParser.parseBytes(Optional.empty(), bb);
             Assert.assertEquals(25, rm2.values().size());
             byte[] bb2 = jsonParser.serialize(rm2);
-            System.err.println("JSON again: " + bb2.length);
-            System.err.println(">>>>\n" + new String(bb2));
+            logger.info("JSON again: {}", bb2.length);
+            logger.info(">>>>\n{}", new String(bb2));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -103,13 +107,13 @@ public class ReplicationProtobufTest {
             Calendar c = Calendar.getInstance();
             c.set(1970, 0, 1, 17, 0, 0);
             final Date columnValue = (Date) rm.columnValue("starttime");
-            System.err.println("Comp: " + columnValue.compareTo(c.getTime()));
-            System.err.println("columnValue: " + columnValue);
-            System.err.println("columnValue: " + c.getTime());
+            logger.info("Comp: {}", columnValue.compareTo(c.getTime()));
+            logger.info("columnValue: {}", columnValue);
+            logger.info("columnValue: {}", c.getTime());
             Assert.assertTrue(Math.abs(c.getTime().getTime() - columnValue.getTime()) < 1000);
             Assert.assertEquals(7, rm.values().size());
             byte[] bb = protoBufParser.serialize(rm);
-            System.err.println("bytes: " + bb.length);
+            logger.info("bytes: " + bb.length);
             ReplicationMessage rm2 = protoBufParser.parseBytes(Optional.empty(), bb);
             Assert.assertEquals(7, rm2.values().size());
 
@@ -145,13 +149,13 @@ public class ReplicationProtobufTest {
         List<ReplicationMessage> list = jsonparser.parseMessageList(Optional.of("addresstopic"), stream);
         Assert.assertEquals(1, list.size());
         byte[] data = parser.serializeMessageList(list);
-        System.err.println("Datasize: " + data.length);
+        logger.info("Datasize: " + data.length);
         Assert.assertEquals(89, data.length);
-        System.err.println("First: " + data[0]);
-        System.err.println("Secon: " + data[1]);
+        logger.info("First: " + data[0]);
+        logger.info("Secon: " + data[1]);
         List<ReplicationMessage> list2 = parser.parseMessageList(data);
         byte[] data2 = jsonParser.serializeMessageList(list2);
-        System.err.println("DATA: " + new String(data2));
+        logger.info("DATA: " + new String(data2));
     }
 
     @Test
@@ -162,14 +166,14 @@ public class ReplicationProtobufTest {
         List<ReplicationMessage> list = jsonparser.parseMessageList(Optional.of("addresstopic"), stream);
         Assert.assertEquals(1, list.size());
         byte[] data = parser.serializeMessageList(list);
-        System.err.println("Datasize: " + data.length);
+        logger.info("Datasize: " + data.length);
         Assert.assertEquals(89, data.length);
         ByteArrayInputStream bais = new ByteArrayInputStream(data);
         List<ReplicationMessage> list2 = parser.parseMessageList(Optional.of("addresstopic"), bais);
         for (ReplicationMessage replicationMessage : list2) {
             Assert.assertFalse(replicationMessage.isErrorMessage());
         }
-        System.err.println("LEN: " + list.size());
+        logger.info("LEN: " + list.size());
     }
 
     @Test
@@ -190,21 +194,21 @@ public class ReplicationProtobufTest {
         ReplicationMessage reserialized = parser.parseBytes(Optional.empty(), protobytes);
         Assert.assertNull(reserialized.columnValue("empty"));
         String json2 = new String(reserialized.toBytes(jsonparser));
-        System.err.println("json: " + json2);
+        logger.info("json: " + json2);
     }
 
     @Test
     public void testParseProtobuf() {
         try (InputStream is = ReplicationProtobufTest.class.getResourceAsStream("organizationwithparam.json")) {
             ReplicationMessage rm = jsonParser.parseStream(is);
-            System.err.println("paramsize: " + rm.paramMessage().get().values().size());
+            logger.info("paramsize: " + rm.paramMessage().get().values().size());
             byte[] bb = protoBufParser.serialize(rm);
-            System.err.println("# of bytes: " + bb.length);
-            ReplicationMessageProtobuf rmp = Replication.ReplicationMessageProtobuf.parseFrom(bb);
-            System.err.println("magic? " + rmp.getMagic());
-            System.err.println("rmp: " + rmp.getParamMessage().getValuesCount());
+            logger.info("# of bytes: " + bb.length);
+            Replication.ReplicationMessageProtobuf rmp = Replication.ReplicationMessageProtobuf.parseFrom(bb);
+            logger.info("magic? " + rmp.getMagic());
+            logger.info("rmp: " + rmp.getParamMessage().getValuesCount());
             ReplicationMessage repl = protoBufParser.parseBytes(Optional.empty(), bb);
-            System.err.println("paramsize: " + repl.paramMessage().get().values().size());
+            logger.info("paramsize: " + repl.paramMessage().get().values().size());
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -222,7 +226,7 @@ public class ReplicationProtobufTest {
 
             Assert.assertTrue(repl.paramMessage().isPresent());
             Assert.assertEquals(12, repl.paramMessage().get().value("col2").get());
-            System.err.println("Names: " + repl.queueKey() + " names: " + repl.columnNames() + "\n sub: " + repl.subMessageNames() + " subli: " + repl.subMessageListNames());
+            logger.info("Names: " + repl.queueKey() + " names: " + repl.columnNames() + "\n sub: " + repl.subMessageNames() + " subli: " + repl.subMessageListNames());
 
 
         } catch (IOException e) {
@@ -243,7 +247,7 @@ public class ReplicationProtobufTest {
 
 //    		Assert.assertTrue(repl.paramMessage().isPresent());
 //    		Assert.assertEquals(12, repl.paramMessage().get().value("col2").get());
-            System.err.println("Names: " + repl.queueKey() + " names: " + repl.columnNames() + "\n sub: " + repl.subMessageNames() + " subli: " + repl.subMessageListNames());
+            logger.info("Names: " + repl.queueKey() + " names: " + repl.columnNames() + "\n sub: " + repl.subMessageNames() + " subli: " + repl.subMessageListNames());
 
 
         } catch (IOException e) {

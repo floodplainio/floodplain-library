@@ -38,7 +38,6 @@ public class KafkaDumpSubscriber implements PersistentSubscriber {
                 @Override
                 public boolean hasNext() {
                     final boolean b = hasMore.get();
-                    System.err.println("Calling hasNext: " + b);
                     return b;
                 }
 
@@ -70,7 +69,6 @@ public class KafkaDumpSubscriber implements PersistentSubscriber {
 
     public PubSubMessage parseLine(String input) {
         int i = input.indexOf('\t');
-        System.err.println("Type: " + i);
         String[] parts = input.split("\t");
         if (parts.length == 1) {
             throw new RuntimeException("Missing tab delimited keys in line");

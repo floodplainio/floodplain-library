@@ -35,10 +35,7 @@ public class StoreStateProcessor extends AbstractProcessor<String, ReplicationMe
     @SuppressWarnings("unchecked")
     @Override
     public void init(ProcessorContext context) {
-
         this.lookupStore = (KeyValueStore<String, ImmutableMessage>) context.getStateStore(lookupStoreName);
-
-
         super.init(context);
     }
 
@@ -46,40 +43,8 @@ public class StoreStateProcessor extends AbstractProcessor<String, ReplicationMe
     public void process(String key, ReplicationMessage inputValue) {
 
         String extracted = keyExtractor.orElse((msg, state) -> COMMONKEY).apply(inputValue.message(), inputValue.paramMessage().orElse(ImmutableFactory.empty())); //  keyExtractor.map(e->e.apply(Optional.of(inputValue.message()),inputValue.paramMessage())).map(e->(String)e.value);
-
-        //		for (int i = 0; i < 50; i++) {
-//			lookupStore.put(""+i, ImmutableFactory.empty().with("number", i, "integer").with("aap","noot", "string"));
-//		}
-
-//		ImmutableMessage vl = lookupStore.get(COMMONKEY);
-//		System.err.println("State store reduce. Key: "+COMMONKEY);
-//		long l = lookupStore.approximateNumEntries();
-//		System.err.println("|||>> GET: "+key+" store: "+lookupStoreName+" hash: "+store.hashCode()+" # of entries: "+l);
-//		if(vl==null) {
-//			System.err.println("not Found. # of entries: "+l);
-//			throw new RuntimeException("Missing value for key: "+COMMONKEY);
-//			vl = initial;
-//			lookupStore.put(COMMONKEY, vl);
-//			l = lookupStore.approximateNumEntries();
-//			System.err.println("not Found. # of entries now: "+l);
-//		} else {
-//			System.err.println("Found: "+vl.toFlatString(ImmutableFactory.createParser()));
-//			System.err.println("Input msg: "+value.message().toFlatString(ImmutableFactory.createParser()));
-//			System.err.println("Input param: "+value.paramMessage().orElse(ImmutableFactory.empty()).toFlatString(ImmutableFactory.createParser()));
         ImmutableMessage paramMessage = inputValue.message(); //.get();
-//			paramMessage.with(UUID.randomUUID().toString(), RandomUtils.nextInt(), "integer");
-//			l = lookupStore.approximateNumEntries();
-//			System.err.println("Number of entries: "+l);
         lookupStore.put(extracted, paramMessage);
-        //			l = lookupStore.approximateNumEntries();
-//			System.err.println("After number of entries: "+l);
-//			System.err.println("Storing key: "+COMMONKEY+" into store: "+lookupStoreName);
-//		}
-//		ImmutableMessage paramMessage = Optional.ofNullable(lookupStore.get(COMMONKEY)).map(e->e.paramMessage()).orElse(initial);
-//		ImmutableMessage msg = Optional.ofNullable(paramMessage.orElse(initial)).orElse(initial);
-//		String keyVal = this.key.map(e->)
-//		super.context().forward(extracted.orElse(COMMONKEY), inputValue);
-        super.context().forward(extracted, inputValue.withOperation(Operation.UPDATE));
     }
 
 }

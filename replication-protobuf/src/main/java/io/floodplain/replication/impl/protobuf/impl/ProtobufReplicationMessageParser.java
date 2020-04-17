@@ -80,8 +80,7 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
             case BINARY_DIGEST:
                 return (String) val;
             case BINARY:
-
-                System.err.println("Binary type: " + val.getClass());
+                logger.info("Binary type: {}", val.getClass());
                 return (String) val;
             case DATE:
                 if (val instanceof String) {
@@ -471,7 +470,6 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
             PushbackInputStream pis = new PushbackInputStream(data, 2);
             byte[] pre = new byte[2];
             int i = pis.read(pre);
-            System.err.println("i: " + i);
             if ((short) pre[0] != ProtobufReplicationMessageParser.MAGIC_BYTE_1) {
                 throw new IllegalArgumentException("Bad magic byte: " + (short) pre[0]);
             }

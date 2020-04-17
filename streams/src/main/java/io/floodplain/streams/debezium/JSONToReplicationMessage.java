@@ -80,7 +80,6 @@ public class JSONToReplicationMessage {
 
     public static ImmutableMessage convert(ObjectNode node, Consumer<String> callbackFieldList, boolean isKey, Optional<Operation> o, String table) {
         if (!isKey && o.isPresent() && o.get().equals(Operation.DELETE)) {
-//			System.err.println("DELETE DETECTED!");
             return ImmutableFactory.empty().with("table", table, ImmutableMessage.ValueType.STRING);
         }
         try {
@@ -88,7 +87,7 @@ public class JSONToReplicationMessage {
             final Optional<ObjectNode> payload = payLoad.isNull() ? Optional.empty() : Optional.of((ObjectNode) payLoad);
             final JsonNode schema = node.get("schema");
             if (schema.isNull()) {
-                System.err.println("WRITING FAILED: " + objectMapper.writeValueAsString(node));
+                logger.info("WRITING FAILED: {}", objectMapper.writeValueAsString(node));
             }
             ArrayNode fields = (ArrayNode) schema.get("fields");
             if (!isKey) {

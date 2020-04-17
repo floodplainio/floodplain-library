@@ -38,7 +38,6 @@ public class DestinationProcessorSupplier implements ProcessorSupplier<String, R
                     matched.incrementAndGet();
                 }
                 totalMatched.incrementAndGet();
-//				logger.info("Split Destination to {} matched ({}/{})",DestinationProcessorSupplier.this.topic,matched.get(),totalMatched.get());
             }
         };
     }

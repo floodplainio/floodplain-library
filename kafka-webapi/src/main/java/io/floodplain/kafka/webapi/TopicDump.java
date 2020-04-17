@@ -96,10 +96,6 @@ public class TopicDump {
 
         return Flowable.fromPublisher(kts.subscribeSingleRange(topic, UUID.randomUUID().toString(), fromTag, toTag))
                 .concatMapIterable(e -> e).doOnNext(m -> messageCount.incrementAndGet()).retry(5)
-                .doOnNext(e -> {
-                    if (e.value() != null) System.err.println("Bytes detected: " + e.value().length);
-                    else System.err.println("null msg");
-                })
                 .map(parser::parseBytes)
                 .doOnNext(e -> logger.info("-> {}", ReplicationFactory.getInstance().describe(e)))
                 .filter(filter)

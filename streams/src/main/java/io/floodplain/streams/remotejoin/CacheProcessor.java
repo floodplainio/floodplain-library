@@ -12,6 +12,7 @@ import org.apache.kafka.streams.state.KeyValueStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Duration;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
@@ -20,67 +21,32 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class CacheProcessor extends AbstractProcessor<String, ReplicationMessage> {
     private static final String CACHED_AT_KEY = "_cachedAt";
-    private static final Integer DEFAULT_CACHE_TIME = 10;
 
     private static final Logger logger = LoggerFactory.getLogger(CacheProcessor.class);
-
-
     private final Map<String, CacheEntry> cache;
     private KeyValueStore<String, ReplicationMessage> lookupStore;
     private ProcessorContext context;
-
-    private final int cacheTimeMs;
+    private final Duration cacheTime;
     private String cacheProcName;
     private Object sync = new Object();
-
     private boolean memoryCache = false;
     private boolean clearPersistentCache = false;
 
     private int maxSize;
 
-    public CacheProcessor(String cacheProcName, Optional<String> cacheTimeS, Optional<String> maxSizeS) {
-
+    public CacheProcessor(String cacheProcName, Duration cacheTime, int maxSize) {
         this.cacheProcName = cacheProcName;
-        Integer cacheTime = getCacheTime(cacheTimeS);
+        this.cacheTime = cacheTime;
         this.cache = new ConcurrentHashMap<>();
-        if (cacheTime < 10) {
+        if (cacheTime.toSeconds() < 10) {
             logger.info("Using memory caching for {}", cacheProcName);
             // Use memory cache
             this.memoryCache = true;
             this.maxSize = 10000;
+        } else {
+            this.maxSize = maxSize;
         }
         logger.info("Using a cache time of {} seconds for {}", cacheTime, cacheProcName);
-        this.cacheTimeMs = (cacheTime * 1000);
-    }
-
-    /*
-     * We can either pass no cache time, in which case we will return DEFAULT_CACHE_TIME
-     * If we do have a cacheTime set, check if its a number or not. If it's not a number
-     * then assume we want to use an environment variable. Try parsing it, and if all fails,
-     * return DEFAULT_CACHE_TIME.
-     */
-    private Integer getCacheTime(Optional<String> cacheTime) {
-        String cacheTimeS = null;
-        if (cacheTime.isPresent()) {
-            cacheTimeS = (String) cacheTime.get();
-        } else {
-            return DEFAULT_CACHE_TIME;
-        }
-
-        // Try parsing as integer. If this fails, it might be a environment var. if all fails, return default. 
-        Integer cacheTimeI;
-        try {
-            cacheTimeI = Integer.parseInt(cacheTimeS);
-        } catch (NumberFormatException e) {
-            try { // Isn't this weird?
-                cacheTimeI = Integer.parseInt(System.getenv(cacheTimeS));
-            } catch (NumberFormatException e2) {
-                logger.warn("Unable to parse cache time {}, using default", cacheTimeS);
-                cacheTimeI = DEFAULT_CACHE_TIME;
-            }
-        }
-        return cacheTimeI;
-
     }
 
     @SuppressWarnings("unchecked")
@@ -90,7 +56,7 @@ public class CacheProcessor extends AbstractProcessor<String, ReplicationMessage
         this.context = context;
         this.lookupStore = (KeyValueStore<String, ReplicationMessage>) context.getStateStore(cacheProcName);
 
-        int runInterval = Math.max((cacheTimeMs / 10), 1000);
+        long runInterval = Math.max((cacheTime.toMillis() / 10), 1000);
 
         this.context.schedule(runInterval, PunctuationType.WALL_CLOCK_TIME, this::checkCache);
         logger.info("Created persistentCache for {} with check interval of {}ms", this.cacheProcName, runInterval);
@@ -138,7 +104,6 @@ public class CacheProcessor extends AbstractProcessor<String, ReplicationMessage
         if (clearPersistentCache) {
             clearPersistentCache();
         }
-
         long started = System.currentTimeMillis();
         int entries = 0;
         int expiredEntries = 0;
@@ -164,7 +129,7 @@ public class CacheProcessor extends AbstractProcessor<String, ReplicationMessage
                     KeyValue<String, ReplicationMessage> keyValue = it.next();
                     entries++;
                     long cachedAt = (Long) keyValue.value.columnValue(CACHED_AT_KEY);
-                    if ((started - cachedAt) >= cacheTimeMs) {
+                    if ((started - cachedAt) >= cacheTime.toMillis()) {
                         possibleExpired.add(keyValue.key);
                     }
                 }
@@ -175,7 +140,7 @@ public class CacheProcessor extends AbstractProcessor<String, ReplicationMessage
                     ReplicationMessage message = lookupStore.get(key);
                     if (message == null) continue; // message is deleted
                     long cachedAt = (Long) message.columnValue(CACHED_AT_KEY);
-                    if ((started - cachedAt) >= cacheTimeMs) {
+                    if ((started - cachedAt) >= cacheTime.toMillis()) {
                         expiredEntries++;
                         context.forward(key, message.without(CACHED_AT_KEY));
                         lookupStore.delete(key);
@@ -220,7 +185,7 @@ public class CacheProcessor extends AbstractProcessor<String, ReplicationMessage
         }
 
         public boolean isExpired() {
-            return (System.currentTimeMillis() - added) > cacheTimeMs;
+            return (System.currentTimeMillis() - added) > cacheTime.toMillis();
         }
     }
 }

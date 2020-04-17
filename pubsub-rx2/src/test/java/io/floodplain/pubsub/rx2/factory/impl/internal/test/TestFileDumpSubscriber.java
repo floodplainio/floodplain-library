@@ -12,16 +12,6 @@ import java.io.InputStreamReader;
 
 public class TestFileDumpSubscriber {
 
-    @Test
-    @Ignore
-    public void testFileDirect() throws FileNotFoundException {
-        KafkaDumpSubscriber ts = new KafkaDumpSubscriber(new InputStreamReader(getClass().getResourceAsStream("customerslice.dump")));
-        ts.readLines()
-                .map(ts::parseLine)
-                .subscribe(e -> System.err.println("Message: >" + e.key() + "<"));
-
-    }
-
 
     @Test
     @Ignore

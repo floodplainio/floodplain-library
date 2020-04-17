@@ -7,6 +7,8 @@ import org.bson.Document;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -25,6 +27,7 @@ import java.util.stream.StreamSupport;
 
 public class TestDiff {
 
+    private static final Logger logger = LoggerFactory.getLogger(TestDiff.class);
     private static final List<String> IGNORE = Arrays.asList(new String[]{"replicated", "updateby", "lastupdate", "relationend", "info"});
 
     @Test
@@ -56,7 +59,6 @@ public class TestDiff {
 
     private MongoDatabase generationalDatabase(MongoClient mongoClient, String tenant, String deployment, String generation) {
         String dbName = tenant + "-" + deployment + "-generation-" + generation + "-total-replication";
-        System.err.println("Getting database: " + dbName);
         return mongoClient.getDatabase(dbName);
     }
 
@@ -84,19 +86,11 @@ public class TestDiff {
         List<String> newNames = StreamSupport.stream(newD.listCollectionNames().spliterator(), false)
                 .filter(includeCollection(onlyCollections))
                 .collect(Collectors.toList());
-
-//		if(oldNames.equals(newNames)) {
-//			System.err.println("Structural equal: "+oldNames);
-//			oldNames.forEach(e->{
-//				diffDatabasesForCollection(e, old, newD);
-//			});
-//		} else {
-
         final List<String> diffList = diffList(oldNames, newNames);
-        System.err.println("Structural not equal. Diff: " + diffList);
+        logger.info("Structural not equal. Diff: " + diffList);
         List<String> filteredDiff = diffList.stream().filter(e -> !e.contains("Debug")).collect(Collectors.toList());
         if (filteredDiff.isEmpty()) {
-            System.err.println("But empty after filtering. Continuing.");
+            logger.info("But empty after filtering. Continuing.");
             oldNames.forEach(e -> {
                 diffDatabasesForCollection(e, old, newD);
                 estimateDiffCollections(old, newD, e);
@@ -111,7 +105,7 @@ public class TestDiff {
     }
 
     private static void diffDatabasesForCollection(String collection, MongoDatabase old, MongoDatabase newD) {
-        System.err.println("Checking collection: " + collection);
+        logger.info("Checking collection: " + collection);
         MongoCollection<Document> oldC = old.getCollection(collection);
         MongoCollection<Document> newC = newD.getCollection(collection);
         diffCollections(oldC, newC, IGNORE, Optional.of(200));
@@ -131,26 +125,26 @@ public class TestDiff {
 
     private static void estimateDiffCollections(MongoDatabase old, MongoDatabase newD, String collectionName) {
         if (!collectionExists(old, collectionName) || !collectionExists(newD, collectionName)) {
-            System.err.println("Collection not found in both. Ignoring for the rest");
+            logger.info("Collection not found in both. Ignoring for the rest");
             return;
         }
 
         final Document oldStatsFull = old.runCommand(new Document("collStats", collectionName));
-//		System.err.println("OLDSTAT: "+oldStatsFull);
+//		logger.info("OLDSTAT: "+oldStatsFull);
         final Document newStatsFull = newD.runCommand(new Document("collStats", collectionName));
         long oldDocumentCount = oldStatsFull.getInteger("count");
         long newDocumentCount = newStatsFull.getInteger("count");
         if (oldDocumentCount != newDocumentCount) {
-            System.err.println("Document count difference. OldCount: " + oldDocumentCount + " newcount: " + newDocumentCount);
+            logger.info("Document count difference. OldCount: " + oldDocumentCount + " newcount: " + newDocumentCount);
             return;
         }
         int oldStats = oldStatsFull.getInteger("storageSize");
         int newStats = newStatsFull.getInteger("storageSize");
         double relativeDiff = (double) oldStats / (double) newStats;
         if (relativeDiff < 0.85 || relativeDiff > 1.15) {
-            System.err.println("Significant difference found: " + relativeDiff + " for collection: " + collectionName);
-            System.err.println("OLD EST: " + oldStats);
-            System.err.println("NEW EST: " + newStats);
+            logger.info("Significant difference found: " + relativeDiff + " for collection: " + collectionName);
+            logger.info("OLD EST: " + oldStats);
+            logger.info("NEW EST: " + newStats);
 //			diffCollections(old.getCollection(collectionName), newD.getCollection(collectionName), IGNORE);
         }
     }
@@ -165,7 +159,7 @@ public class TestDiff {
 
         long oldCount = oldC.countDocuments();
         long newCount = newC.countDocuments();
-        System.err.println("Old: " + oldCount + " New: " + newCount);
+        logger.info("Old: " + oldCount + " New: " + newCount);
 
 //		Document query = new Document("childorganizationid","D1C8S7R");
         AtomicLong counter = new AtomicLong(0);
@@ -179,15 +173,15 @@ public class TestDiff {
                         Document newDoc = find(newC, id);
                         long c = counter.incrementAndGet();
 //				if(c % 1000 == 0 ) {
-                        System.err.println("Progress: " + c + "/" + oldCount);
+                        logger.info("Progress: " + c + "/" + oldCount);
 //				}
                         if (newDoc == null) {
-                            System.err.println("No matching doc for id: " + id);
+                            logger.info("No matching doc for id: " + id);
                         } else {
                             boolean isEquals = symEquals(doc, newDoc, ignoredFields);
                             if (!isEquals) {
-                                System.err.println(">\n" + doc.toJson());
-                                System.err.println("<\n" + newDoc.toJson());
+                                logger.info(">\n" + doc.toJson());
+                                logger.info("<\n" + newDoc.toJson());
                             }
                         }
 
@@ -203,11 +197,10 @@ public class TestDiff {
             if (ignoredFields.contains(e.getKey())) {
                 continue;
             }
-//			System.err.println("Field: "+e.getKey()+" is not in "+ignoredFields);
-            Object other = newDoc.get(e.getKey());
+//			Object other = newDoc.get(e.getKey());
             boolean diff = objectEquals(e.getValue(), other, ignoredFields);
             if (!diff) {
-                System.err.println("Not equal! Key: " + e.getKey() + " type: " + e.getValue().getClass() + " this: " + e.getValue() + " other: " + other);
+                logger.info("Not equal! Key: " + e.getKey() + " type: " + e.getValue().getClass() + " this: " + e.getValue() + " other: " + other);
                 return false;
             }
         }
@@ -236,7 +229,7 @@ public class TestDiff {
                 return true;
             }
             if (o.size() != p.size()) {
-                System.err.println("different lengths: " + o.size() + " vs. " + p.size());
+                logger.info("different lengths: " + o.size() + " vs. " + p.size());
                 return false;
             }
             int i = 0;

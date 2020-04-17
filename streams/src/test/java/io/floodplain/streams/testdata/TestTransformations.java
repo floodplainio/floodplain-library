@@ -12,6 +12,8 @@ import io.floodplain.streams.base.StreamOperators;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,10 +29,11 @@ public class TestTransformations {
     private ReplicationMessage calendarDayMessage;
     private ReplicationMessage coordinatesMessage;
 
-    //	private ReplicationMessage playerMessage;
     private ReplicationMessage playerMessage2;
     private ReplicationMessage addressIdenticalMessage;
     private ReplicationMessage multikeys;
+
+    private final static Logger logger = LoggerFactory.getLogger(TestTransformations.class);
 
     @Before
     public void setUp() throws Exception {
@@ -87,10 +90,7 @@ public class TestTransformations {
 
         Assert.assertEquals("deployment-111-currentinstance-TOPICNAME", result);
 
-        System.err.println("Result: " + result);
-//		MYTENANT-deployment-TOPICNAME		
-//		MYTENANT-deployment-111-currentinstance-TOPICNAME		
-//		MYTENANT-deployment-111-currentinstance-OTHERINSTANCE:TOPICNAME
+        logger.info("Result: {}",result);
     }
 
     @Test
@@ -158,7 +158,7 @@ public class TestTransformations {
 
     @Test
     public void testMultikeys() {
-        System.err.println(">>> " + this.multikeys.queueKey());
+        logger.info(">>> " + this.multikeys.queueKey());
         Assert.assertEquals("123456<$>234567<$>345678", this.multikeys.queueKey());
     }
 
@@ -210,7 +210,6 @@ public class TestTransformations {
             list2.add(personMessage2);
 
             List<ReplicationMessage> mm = CoreOperators.addToReplicationList(list, list2, 100, (x, y) -> x.equalsByKey(y));
-            System.err.println("<>>>> " + mm.size());
             Assert.assertEquals(1, mm.size());
         }
     }
@@ -226,7 +225,7 @@ public class TestTransformations {
             list2.add(personMessage2);
 
             List<ReplicationMessage> mm = CoreOperators.addToReplicationList(list, list2, 1, (x, y) -> x.equalsByKey(y));
-            System.err.println("<>>>> " + mm.size());
+            logger.info(">>> {}",mm.size());
             Assert.assertEquals(1, mm.size());
         }
     }

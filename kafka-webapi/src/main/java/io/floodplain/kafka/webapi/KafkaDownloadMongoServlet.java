@@ -11,6 +11,8 @@ import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Action;
 import io.reactivex.functions.Predicate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.ServletException;
@@ -25,6 +27,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class KafkaDownloadMongoServlet extends HttpServlet {
 
     private static final long serialVersionUID = 9025834882284006898L;
+    private static final Logger logger = LoggerFactory.getLogger(KafkaDownloadMongoServlet.class);
 
     private PersistentSubscriber persistentSubscriber;
     private PersistentPublisher publisher;
@@ -97,9 +100,9 @@ public class KafkaDownloadMongoServlet extends HttpServlet {
         AtomicLong writtenMessageCount = new AtomicLong();
 
         final Disposable d = Flowable.interval(2, TimeUnit.SECONDS)
-                .doOnNext(e -> System.err.println("In progress. MessageCount: " + messageCount.get()
+                .doOnNext(e -> logger.info("In progress. MessageCount: " + messageCount.get()
                         + " writtenMessageCount: " + writtenMessageCount + " written data: " + writtenDataCount.get()))
-                .doOnTerminate(() -> System.err.println("Progress complete")).subscribe();
+                .doOnTerminate(() -> logger.info("Progress complete")).subscribe();
         final String generatedConsumerGroup = UUID.randomUUID().toString();
         Action onTerminate = () -> {
             d.dispose();

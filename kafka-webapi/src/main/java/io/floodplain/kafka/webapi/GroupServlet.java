@@ -83,13 +83,8 @@ public class GroupServlet extends HttpServlet implements Servlet {
 
     @Override
     public void init(ServletConfig config) throws ServletException {
-        System.err.println("Initialize...");
         super.init(config);
         final Enumeration<String> names = config.getServletContext().getAttributeNames();
-        while (names.hasMoreElements()) {
-            String name = names.nextElement();
-            System.err.println(" > " + name);
-        }
     }
 
     private void describeGroup(String group, HttpServletRequest req, HttpServletResponse resp, boolean pretty) throws IOException, ServletException {

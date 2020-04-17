@@ -2,15 +2,20 @@ package io.floodplain.streams.serializer;
 
 import io.floodplain.replication.api.ReplicationMessage;
 import io.floodplain.replication.impl.json.ReplicationJSON;
+import io.floodplain.streams.remotejoin.ReplicationTopologyParser;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serializer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ConnectReplicationMessageSerde implements Serde<ReplicationMessage> {
 
+
+    private static final Logger logger = LoggerFactory.getLogger(ConnectReplicationMessageSerde.class);
 
     public ConnectReplicationMessageSerde() {
     }
@@ -35,7 +40,7 @@ public class ConnectReplicationMessageSerde implements Serde<ReplicationMessage>
 
             @Override
             public void configure(Map<String, ?> config, boolean isKey) {
-                System.err.println("Configuring deserializer: " + config);
+                logger.info("Configuring deserializer: {}", config);
 
             }
 
@@ -59,7 +64,7 @@ public class ConnectReplicationMessageSerde implements Serde<ReplicationMessage>
 
             @Override
             public void configure(Map<String, ?> configs, boolean isKey) {
-                System.err.println("Configuring: " + configs);
+                logger.info("Configuring: {}", configs);
                 this.isKey = isKey;
             }
 

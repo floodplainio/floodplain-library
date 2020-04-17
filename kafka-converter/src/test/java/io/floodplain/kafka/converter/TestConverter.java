@@ -3,6 +3,8 @@ package io.floodplain.kafka.converter;
 import org.apache.kafka.connect.data.SchemaAndValue;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -10,6 +12,8 @@ import java.io.InputStream;
 import java.util.Collections;
 
 public class TestConverter {
+
+    private final static Logger logger = LoggerFactory.getLogger(TestConverter.class);
 
     @Before
     public void setup() {
@@ -19,14 +23,10 @@ public class TestConverter {
 
     @Test
     public void testConverter() throws IOException {
-//		ReplicationMessage msg =  ReplicationFactory.getInstance().parseStream(TestConverter.class.getClassLoader().getResourceAsStream("example.json"));
         ReplicationMessageConverter converter = new ReplicationMessageConverter();
         converter.configure(Collections.emptyMap(), false);
         SchemaAndValue sav = converter.toConnectData("any", readStream(TestConverter.class.getClassLoader().getResourceAsStream("example.json")));
-//		byte[] data = converter.fromConnectData("any", null,msg);
-        ;
-        System.err.println("Result: " + sav.value());
-
+        logger.info("Result: {}",sav.value());
     }
 
     public byte[] readStream(InputStream is) throws IOException {

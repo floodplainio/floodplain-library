@@ -13,8 +13,6 @@ import java.util.stream.Collectors;
 
 public class TopologyConstructor {
 
-
-    //    public final Map<String, List<ConnectorTopicTuple>> connectorAssociations = new HashMap<>();
     public final Map<String, List<String>> processorStateStoreMapper = new HashMap<>();
     public final Map<String, StoreBuilder<KeyValueStore<String, ReplicationMessage>>> stateStoreSupplier = new HashMap<>();
     public final Map<String, StoreBuilder<KeyValueStore<String, ImmutableMessage>>> immutableStoreSupplier = new HashMap<>();
@@ -27,17 +25,6 @@ public class TopologyConstructor {
     private int pipeCounter = 1;
 
     public TopologyConstructor() {
-//        this(Optional.empty());
-//    }
-//    public TopologyConstructor(Optional<AdminClient> adminClient) {
-//        this.adminClient = adminClient;
-//        if (this.adminClient.isPresent()) {
-//            try {
-//                topics.addAll(adminClient.get().listTopics().names().get());
-//            } catch (InterruptedException | ExecutionException e) {
-//                throw new RuntimeException("Error listing topics", e);
-//            }
-//        }
     }
 
     public void addDesiredTopic(String topicName, Optional<Integer> partitions) {
@@ -74,13 +61,6 @@ public class TopologyConstructor {
             throw new RuntimeException("Issue creating topics: " + desiredTopics.keySet(), e);
         }
     }
-//
-//    public void addConnectSink(String connectorResourceName, String topicName, Map<String, String> sinkParameters) {
-//        System.err.println("addConnectSink>>>>>");
-//
-//        List<ConnectorTopicTuple> ctt = connectorAssociations.compute(connectorResourceName, (resourceName, list) -> list == null ? new ArrayList<>() : list);
-//        ctt.add(new ConnectorTopicTuple(connectorResourceName, topicName, sinkParameters));
-//    }
 
     public int generateNewPipeId() {
         return pipeCounter++;

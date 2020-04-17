@@ -40,7 +40,6 @@ public class ReduceReadProcessor extends AbstractProcessor<String, ReplicationMe
     public void process(String key, final ReplicationMessage inputValue) {
         ReplicationMessage stored = inputStore.get(key);
         String extracted;
-        System.err.println("Querying key from inputstore. Key: " + key + " store: " + inputStoreName + " accumulator store: " + accumulatorStoreName + " found? " + stored != null);
         if (stored == null) {
             // no stored value, so must be upsert.
             if (inputValue == null || inputValue.operation() == Operation.DELETE) {
@@ -71,7 +70,6 @@ public class ReduceReadProcessor extends AbstractProcessor<String, ReplicationMe
             if (stored != null) {
                 // already present, propagate old value first as delete
                 context().forward(key, stored.withOperation(Operation.DELETE).withParamMessage(msg != null ? msg : initial.apply(inputValue.message())));
-                System.err.println("Forwarding update: " + key);
                 msg = this.accumulatorStore.get(extracted);
             }
             value = value.withParamMessage(msg);

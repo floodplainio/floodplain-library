@@ -25,7 +25,6 @@ public class TestJsonDebeziumTransformation {
         final String serialized = new String(msg.toBytes(ReplicationFactory.getInstance()));
         Assert.assertEquals(11, msg.columnNames().size());
         Assert.assertTrue(serialized.length() > 20000);
-        System.err.println("Message: " + serialized);
 
     }
 
@@ -37,7 +36,6 @@ public class TestJsonDebeziumTransformation {
         ReplicationFactory.setInstance(new JSONReplicationMessageParserImpl());
         ReplicationMessage msg = JSONToReplicationMessage.convertToReplication(false, (ObjectNode) node, "photo");
         final String serialized = new String(msg.toBytes(ReplicationFactory.getInstance()));
-        System.err.println("Message: " + serialized);
 
     }
 }

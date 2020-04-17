@@ -45,18 +45,13 @@ public class OneToOneProcessor extends AbstractProcessor<String, ReplicationMess
         this.forwardLookupStore = (KeyValueStore<String, ReplicationMessage>) context.getStateStore(forwardLookupStoreName);
         logger.info("inner lookup Looking up: " + reverseLookupStoreName);
         this.reverseLookupStore = (KeyValueStore<String, ReplicationMessage>) context.getStateStore(reverseLookupStoreName);
-
-
         super.init(context);
-
-
         logger.info("One-to-one successfully started");
     }
 
     @Override
     public void process(String key, ReplicationMessage innerMessage) {
         boolean reverse = false;
-
         if (innerMessage == null) {
             context().forward(key, innerMessage);
             return;
@@ -105,8 +100,6 @@ public class OneToOneProcessor extends AbstractProcessor<String, ReplicationMess
             msg = joinFunction.apply(innerMessage, counterpart);
             context().forward(key, msg);
         }
-
-
     }
 
     @Override

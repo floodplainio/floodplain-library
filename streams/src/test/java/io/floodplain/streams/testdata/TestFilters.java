@@ -4,9 +4,12 @@ import io.floodplain.replication.api.ReplicationMessage;
 import io.floodplain.replication.factory.ReplicationFactory;
 import io.floodplain.replication.impl.protobuf.FallbackReplicationMessageParser;
 import io.floodplain.streams.base.Filters;
+import io.floodplain.streams.processor.programmatic.TestCreateTopology;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,6 +23,7 @@ public class TestFilters {
     private ReplicationMessage test_small_number;
     private ReplicationMessage testsubfacility;
 
+    private final static Logger logger = LoggerFactory.getLogger(TestFilters.class);
 
     @Before
     public void setup() throws IOException {
@@ -83,7 +87,7 @@ public class TestFilters {
     }
 
     private boolean testFilter(String definition, String key, ReplicationMessage msg) {
-        System.err.println(">>>>> " + msg + " def: " + definition);
+        logger.info(">>>>> {} def: {}", msg, definition);
         return Filters.getFilter(Optional.of(definition)).get().test(key, msg);
     }
 }

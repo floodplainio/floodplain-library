@@ -41,7 +41,6 @@ public class TestSer {
         byte[] encoded = r.toBytes(parser);
         ReplicationMessage s = parser.parseBytes(Optional.of("binary"), encoded);
         final byte[] deserialized = (byte[]) s.columnValue("binary");
-//		System.err.println("payload: "+new String(deserialized));
         return deserialized;
     }
 

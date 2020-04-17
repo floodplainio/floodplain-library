@@ -26,6 +26,7 @@ import org.apache.kafka.streams.state.Stores;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Duration;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.BiFunction;
@@ -50,7 +51,6 @@ public class ReplicationTopologyParser {
 
     public static final void addStateStoreMapping(Map<String, List<String>> processorStateStoreMapper, String processor, String stateStore) {
         logger.info("Adding processor: {} with statestore: {}", processor, stateStore);
-        System.err.println("Adding processor: " + processor + " with sttestore: " + stateStore);
         List<String> parts = processorStateStoreMapper.get(stateStore);
         if (parts == null) {
             parts = new ArrayList<>();
@@ -152,8 +152,6 @@ public class ReplicationTopologyParser {
         String storeTopic = CoreOperators.topicName(sourceTopicName, context);
         // TODO It might be better to fail if the topic does not exist? -> Well depends, if it is external yes, but if it is created by the same instance, then no.
         final String sourceProcessorName = storeTopic;
-        System.err.println("Source proc name: " + sourceProcessorName);
-
         if (storeTopic != null) {
             String sourceName;
             if (!topologyConstructor.sources.containsKey(storeTopic)) {
@@ -332,7 +330,7 @@ public class ReplicationTopologyParser {
 
         String mappingStoreName;
         if (!topologyConstructor.stores.contains(STORE_PREFIX + from)) {
-            System.err.println("Adding grouped with from, no source processor present for: " + from + " created: " + topologyConstructor.stateStoreSupplier.keySet() + " and from: " + from);
+            logger.error("Adding grouped with from, no source processor present for: " + from + " created: " + topologyConstructor.stateStoreSupplier.keySet() + " and from: " + from);
         }
         mappingStoreName = from + "_mapping";
 
@@ -351,8 +349,8 @@ public class ReplicationTopologyParser {
 
 
     public static void addPersistentCache(Topology current, TopologyContext topologyContext,
-                                          TopologyConstructor topologyConstructor, String name, String fromProcessorName, Optional<String> cacheTime,
-                                          Optional<String> maxSize, Optional<String> to, Optional<Integer> partitions,
+                                          TopologyConstructor topologyConstructor, String name, String fromProcessorName, Duration cacheTime,
+                                          int maxSize, Optional<String> to, Optional<Integer> partitions,
                                           final Optional<ProcessorSupplier<String, ReplicationMessage>> processorFromChildren) {
         if (topologyConstructor.stateStoreSupplier.get(fromProcessorName) == null) {
             addSourceStore(current, topologyContext, topologyConstructor, processorFromChildren, fromProcessorName, Optional.empty(), true);
@@ -473,17 +471,14 @@ public class ReplicationTopologyParser {
                     filterPredicate,
                     (msg, comsg) -> msg.withParamMessage(comsg.message()));
         }
-
         String procName = materialize ? "proc_" + name : name;
         current.addProcessor(
                 procName
                 , () -> proc
                 , firstNamePre, secondNamePre
         );
-
         addStateStoreMapping(topologyConstructor.processorStateStoreMapper, procName, STORE_PREFIX + withProcessorName);
         addStateStoreMapping(topologyConstructor.processorStateStoreMapper, procName, STORE_PREFIX + fromProcessorName);
-
         if (materialize) {
             topologyConstructor.stores.add(STORE_PREFIX + name);
             topologyConstructor.stateStoreSupplier.put(STORE_PREFIX + name, createMessageStoreSupplier(STORE_PREFIX + name, true));
@@ -493,7 +488,6 @@ public class ReplicationTopologyParser {
         }
         return current;
     }
-
 
     public static StoreBuilder<KeyValueStore<String, ReplicationMessage>> createMessageStoreSupplier(String name, boolean persistent) {
         logger.info("Creating messagestore supplier: {}", name);
@@ -516,9 +510,7 @@ public class ReplicationTopologyParser {
     public static String addKeyRowProcessor(Topology current, TopologyContext context,
                                             TopologyConstructor topologyConstructor, String fromProcessor,
                                             String name, boolean materialize) {
-//		String from = processorName(fromProcessor);
         current = current.addProcessor(name, () -> new RowNumberProcessor(STORE_PREFIX + name), fromProcessor);
-
         addStateStoreMapping(topologyConstructor.processorStateStoreMapper, name, STORE_PREFIX + name);
         logger.info("Granting access for processor: {} to store: {}", name, STORE_PREFIX + name);
         topologyConstructor.stateStoreSupplier.put(STORE_PREFIX + name, createMessageStoreSupplier(STORE_PREFIX + name, false));

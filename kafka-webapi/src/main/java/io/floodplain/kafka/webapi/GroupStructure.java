@@ -1,11 +1,14 @@
 package io.floodplain.kafka.webapi;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
 public class GroupStructure {
 
+    private static final Logger logger = LoggerFactory.getLogger(GroupStructure.class);
     public class Tenant {
         @JsonProperty
         private Map<String, Deployment> deployments = new HashMap<>();
@@ -179,7 +182,7 @@ public class GroupStructure {
     private void addWorkflowGroup(String groupName) {
         String[] parts = groupName.split("-workflow-");
         if (parts.length < 2) {
-            System.err.println("Error, not enough parts: " + groupName + " ignoring");
+            logger.error("Error, not enough parts: {} ignoring",groupName);
             return;
         }
         String instance = parts[0];

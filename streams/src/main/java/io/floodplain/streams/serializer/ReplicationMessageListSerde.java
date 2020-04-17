@@ -6,6 +6,8 @@ import io.floodplain.replication.impl.protobuf.FallbackReplicationMessageParser;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serializer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 import java.util.List;
@@ -14,6 +16,7 @@ import java.util.Map;
 public class ReplicationMessageListSerde implements Serde<List<ReplicationMessage>> {
 
     private final FallbackReplicationMessageParser parser = new FallbackReplicationMessageParser();
+    private static final Logger logger = LoggerFactory.getLogger(ReplicationMessageListSerde.class);
 
     public ReplicationMessageListSerde() {
         ReplicationFactory.setInstance(parser);
@@ -26,7 +29,7 @@ public class ReplicationMessageListSerde implements Serde<List<ReplicationMessag
 
     @Override
     public void configure(Map<String, ?> configs, boolean isKey) {
-        System.err.println("Configuring: " + configs);
+        logger.info("Configuring: {}", configs);
     }
 
     @Override
