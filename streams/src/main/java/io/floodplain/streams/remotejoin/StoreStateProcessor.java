@@ -45,6 +45,7 @@ public class StoreStateProcessor extends AbstractProcessor<String, ReplicationMe
         String extracted = keyExtractor.orElse((msg, state) -> COMMONKEY).apply(inputValue.message(), inputValue.paramMessage().orElse(ImmutableFactory.empty())); //  keyExtractor.map(e->e.apply(Optional.of(inputValue.message()),inputValue.paramMessage())).map(e->(String)e.value);
         ImmutableMessage paramMessage = inputValue.message(); //.get();
         lookupStore.put(extracted, paramMessage);
+        super.context().forward(extracted, inputValue.withOperation(Operation.UPDATE));
     }
 
 }

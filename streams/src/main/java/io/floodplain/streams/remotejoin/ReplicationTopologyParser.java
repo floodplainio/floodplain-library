@@ -51,6 +51,7 @@ public class ReplicationTopologyParser {
 
     public static final void addStateStoreMapping(Map<String, List<String>> processorStateStoreMapper, String processor, String stateStore) {
         logger.info("Adding processor: {} with statestore: {}", processor, stateStore);
+
         List<String> parts = processorStateStoreMapper.get(stateStore);
         if (parts == null) {
             parts = new ArrayList<>();
@@ -462,7 +463,6 @@ public class ReplicationTopologyParser {
                     filterPredicate,
                     CoreOperators.getListJoinFunctionToParam(false)
             );
-//                    ReplicationTopologyParser.createParamListJoinFunction(into.get()));
         } else {
             proc = new OneToOneProcessor(
                     STORE_PREFIX + fromProcessorName,

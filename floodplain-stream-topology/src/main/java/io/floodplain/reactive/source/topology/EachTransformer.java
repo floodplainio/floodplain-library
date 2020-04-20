@@ -36,7 +36,7 @@ public class EachTransformer implements TopologyPipeComponent {
 //		String logName = resolved.paramString("logName");
         logger.info("Stack top for transformer: " + transformerNames.peek());
 //		String name = createName(topologyContext, transformerNames.size(), pipeId);
-        String name = topologyContext.qualifiedName("log", transformerNames.size(), pipeId);
+        String name = topologyContext.qualifiedName("each", transformerNames.size(), pipeId);
         if (this.materialize()) {
 //			topology.addProcessor(filterName+"_prematerialize",filterProcessor, transformerNames.peek());
             topology.addProcessor(name + "_prematerialize", () -> new EachProcessor(lambda), transformerNames.peek());

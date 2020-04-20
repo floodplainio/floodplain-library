@@ -123,7 +123,7 @@ class Pipe(val context: TopologyContext, private val topologyConstructor: Topolo
         return stream
     }
 
-    private fun createProperties(applicationId: String?, brokers: String?, storagePath: String?): Properties? {
+    private fun createProperties(applicationId: String, brokers: String, storagePath: String): Properties? {
         val streamsConfiguration = Properties()
         // Give the Streams application a unique name.  The name must be unique in the Kafka cluster
         // against which the application is run.

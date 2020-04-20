@@ -42,8 +42,6 @@ public class JoinWithTransformer implements TopologyPipeComponent {
         String with = pipeStack.peek();
         String name = topologyContext.qualifiedName("joinWith", transformerNames.size(), pipeId);
         Optional<String> filter = Optional.empty();
-        final BiFunction<ReplicationMessage, ReplicationMessage, ReplicationMessage> joinFunction = (msg, comsg) -> msg.withParamMessage(comsg.message());
-
         Optional<Predicate<String, ReplicationMessage>> filterPredicate = Filters.getFilter(filter);
 
         ReplicationTopologyParser.addJoin(topology, topologyContext, topologyConstructor, from.get(), with, name, isOptional, multiple, filterPredicate, this.materialize);
