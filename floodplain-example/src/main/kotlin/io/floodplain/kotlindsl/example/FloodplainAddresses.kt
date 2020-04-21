@@ -9,9 +9,10 @@ private val logger = mu.KotlinLogging.logger {}
 fun main() {
 
     val generation = "generation1"
-    pipe(generation) {
+    pipes(generation) {
         val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")
         val mongoConfig = mongoConfig("mongosink", "mongodb://mongo", "@mongodump")
+        listOf(
         postgresSource("public", "address", postgresConfig) {
             joinRemote({ msg -> "${msg["city_id"]}" }, false) {
                 postgresSource("public", "city", postgresConfig) {
@@ -26,8 +27,8 @@ fun main() {
             set { msg, state ->
                 msg.set("city", state)
             }
-            sink("address")
-        }
+            sink("@address")
+        },
         postgresSource("public", "customer", postgresConfig) {
             joinRemote({ m -> "${m["address_id"]}" }, false) {
                 source("address") {}
@@ -35,8 +36,17 @@ fun main() {
             set { msg, state ->
                 msg.set("address", state)
             }
-            mongoSink("customer", "filtertopic", mongoConfig)
-        }
+            mongoSink("customer", "@customer", mongoConfig)
+        },
+        postgresSource("public", "store", postgresConfig) {
+            joinRemote({ m -> "${m["address_id"]}" }, false) {
+                source("address") {}
+            }
+            set { msg, state ->
+                msg.set("address", state)
+            }
+            mongoSink("store", "@store", mongoConfig)
+        },
         postgresSource("public", "staff", postgresConfig) {
             joinRemote({ m -> "${m["address_id"]}" }, false) {
                 source("address") {}
@@ -44,17 +54,8 @@ fun main() {
             set { msg, state ->
                 msg.set("address", state)
             }
-            mongoSink("staff", "stafftopic", mongoConfig)
-        }
-        postgresSource("public", "staff", postgresConfig) {
-            joinRemote({ m -> "${m["address_id"]}" }, false) {
-                source("address") {}
-            }
-            set { msg, state ->
-                msg.set("address", state)
-            }
-            mongoSink("store", "storetopic", mongoConfig)
-        }
-    }.renderAndStart(URL("http://localhost:8083/connectors"), "localhost:9092", UUID.randomUUID().toString())
+            mongoSink("staff", "@staff", mongoConfig)
+        })
+    }.renderAndStart(URL("http://localhost:8083/connectors"), "localhost:9092", "appId")
     logger.info { "done!" }
 }

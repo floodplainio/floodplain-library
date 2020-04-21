@@ -46,6 +46,7 @@ fun filmWithActorList(generation: String) {
             }
             // ugly hack: As lists of messages can't be toplevel, a grouped message always consist of a single, otherwise empty message, that only
             // contains one field, which is a list of the grouped messages, and that field is always named 'list'
+            // Ideas welcome
             set { film, actorlist ->
                 film["actors"] = actorlist["list"] ?: emptyList<IMessage>()
                 film

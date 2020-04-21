@@ -7,8 +7,6 @@ import java.util.*
 
 private val logger = mu.KotlinLogging.logger {}
 
-
-// Does not work well yet. TODO
 fun main() {
     val myPipe = pipe("gen_7") {
 
