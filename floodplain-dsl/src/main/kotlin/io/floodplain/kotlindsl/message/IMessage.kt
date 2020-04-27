@@ -3,10 +3,9 @@ package io.floodplain.kotlindsl.message
 import io.floodplain.immutable.api.ImmutableMessage
 import io.floodplain.immutable.factory.ImmutableFactory
 import java.util.stream.Collectors
+import kotlin.streams.toList
 
-class IMessage(input: Map<String, Any>) {
-
-    private val content = input.toMutableMap()
+data class IMessage(private val content: MutableMap<String, Any>) {
 
     //    val content = mapOf<String,Any>()
     operator fun get(path: String): Any? {
@@ -57,12 +56,25 @@ class IMessage(input: Map<String, Any>) {
         msg.content.remove(name)
     }
 
+    fun isEmpty(): Boolean {
+        return content.isEmpty()
+    }
+
     operator fun set(path: String, value: Any?): IMessage {
         val (msg, name) = parsePath(path.split("/"))
         if (value == null) {
             msg.content.remove(name)
         } else {
-            msg.content[name] = value
+            if(value is IMessage) {
+                if(!value.isEmpty()) {
+                    msg.content[name] = value
+                } else {
+                    // empty msg
+                }
+            } else {
+                // regular value
+                msg.content[name] = value
+            }
         }
         return this
     }
@@ -94,7 +106,7 @@ class IMessage(input: Map<String, Any>) {
     }
 }
 
-fun empty(): IMessage = IMessage(emptyMap())
+fun empty(): IMessage = IMessage(mutableMapOf())
 
 
 fun fromImmutable(msg: ImmutableMessage): IMessage {
@@ -105,10 +117,10 @@ fun fromImmutable(msg: ImmutableMessage): IMessage {
         }
     }
     for ((name, value) in msg.subMessageMap()) {
-        content[name] = value
+        content[name] =  fromImmutable(value)
     }
     for ((name, value) in msg.subMessageListMap()) {
-        content[name] = value
+        content[name] = value.stream().map { ::fromImmutable }.toList()
     }
     return IMessage(content)
 }

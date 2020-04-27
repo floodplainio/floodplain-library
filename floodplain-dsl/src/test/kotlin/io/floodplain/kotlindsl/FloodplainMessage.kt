@@ -4,11 +4,11 @@ import io.floodplain.immutable.factory.ImmutableFactory
 import io.floodplain.kotlindsl.message.empty
 import kotlin.test.Test
 
-class FloodplainTest {
+class FloodplainMessage {
 
 
     @Test
-    fun parsePipe() {
+    fun testMessageConversion() {
         val msg = empty()
         msg["bla"] = "ble"
         msg["blieb"] = 3

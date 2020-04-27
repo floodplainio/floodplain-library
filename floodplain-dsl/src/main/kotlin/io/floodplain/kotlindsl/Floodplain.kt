@@ -60,7 +60,9 @@ fun PartialPipe.each(transform: (IMessage, IMessage, String) -> Unit): Transform
  * Alternatively, you can create an all-new message and just add the things you are interested in, and return that.
  */
 fun PartialPipe.set(transform: (IMessage, IMessage) -> IMessage): Transformer {
-    val transformer: (ImmutableMessage, ImmutableMessage) -> ImmutableMessage = { msg: ImmutableMessage, param: ImmutableMessage -> transform.invoke(fromImmutable(msg), fromImmutable(param)).toImmutable() }
+    val transformer: (ImmutableMessage, ImmutableMessage) -> ImmutableMessage = {
+        msg: ImmutableMessage, param: ImmutableMessage -> transform.invoke(fromImmutable(msg), fromImmutable(param)).toImmutable()
+    }
     val set = SetTransformer(transformer)
     return addTransformer(Transformer(set))
 }
@@ -115,8 +117,8 @@ fun PartialPipe.sink(topic: String) {
  * @param optional: If set to true, it will also emit a value if there is no counterpart (yet) in the supplied source.
  * Note that setting this to true can cause a performance penalty, as more items could be emitted.
  */
-fun PartialPipe.join(optional: Boolean = false, source: () -> Source) {
-    val jrt = JoinWithTransformer(optional, false, source.invoke().toReactivePipe())
+fun PartialPipe.join(optional: Boolean = false,debug: Boolean = false, source: () -> Source) {
+    val jrt = JoinWithTransformer(optional, false, source.invoke().toReactivePipe(),debug)
     addTransformer(Transformer(jrt))
 }
 
@@ -126,8 +128,8 @@ fun PartialPipe.join(optional: Boolean = false, source: () -> Source) {
  * @param optional: If set to true, it will also emit a value if there is no counterpart (yet) in the supplied source.
  * Note that setting this to true can cause a performance penalty, as more items could be emitted.
  */
-fun PartialPipe.joinGrouped(optional: Boolean = false, source: () -> Source) {
-    val jrt = JoinWithTransformer(optional, true, source.invoke().toReactivePipe())
+fun PartialPipe.joinGrouped(optional: Boolean = false, debug: Boolean = false, source: () -> Source) {
+    val jrt = JoinWithTransformer(optional, true, source.invoke().toReactivePipe(),debug)
     addTransformer(Transformer(jrt))
 }
 

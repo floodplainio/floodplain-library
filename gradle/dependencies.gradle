@@ -37,6 +37,7 @@ ext {
             kafkaClient       : "org.apache.kafka:kafka-clients:$kafka_version",
             kafkaConnectApi   : "org.apache.kafka:connect-api:$kafka_version",
             kafkaStreams      : "org.apache.kafka:kafka-streams:$kafka_version",
+            kafkaStreamsTestUtils : "org.apache.kafka:kafka-streams-test-utils:$kafka_version"
     ]
 
 }

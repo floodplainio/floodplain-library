@@ -70,6 +70,12 @@ class Pipe(val context: TopologyContext, private val topologyConstructor: Topolo
         return topology;
     }
 
+    fun renderAndTest(testCmds: (TestContext)->Unit) {
+        val top = renderTopology()
+        logger.info ("Testing topology:\n${top.describe()}")
+        testTopology(top,testCmds,context)
+    }
+
     /**
      * Will create an executable definition of the stream (@see render), then will start the topology by starting a streams
      * instance pointing at the kafka cluster at kafkaHosts, using the supplied clientId.
@@ -118,10 +124,12 @@ class Pipe(val context: TopologyContext, private val topologyConstructor: Topolo
             logger.error("Error in streams. thread: ${thread.name} exception: ", exception)
             stream.close()
         }
-        stream.setStateListener { oldState: KafkaStreams.State?, newState: KafkaStreams.State? -> logger.info("State moving from {} to {}", oldState, newState) }
+        stream.setStateListener { newState: KafkaStreams.State?, oldState: KafkaStreams.State? ->
+            logger.info("State moving from {} to {}", oldState, newState,stream.state()) }
         stream.start()
         return stream
     }
+
 
     private fun createProperties(applicationId: String, brokers: String, storagePath: String): Properties? {
         val streamsConfiguration = Properties()

@@ -14,6 +14,7 @@ dependencies {
     compile dependencies.slf4j
     compile dependencies.kotlinLogging
     implementation dependencies.slf4jSimple
+    implementation dependencies.kafkaStreamsTestUtils
     compile dependencies.reactiveStreams
     testCompile dependencies.jUnit
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
