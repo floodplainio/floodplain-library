@@ -1,10 +1,14 @@
 package io.floodplain.kotlindsl.example
 
 import io.floodplain.kotlindsl.*
+import io.floodplain.kotlindsl.message.empty
 import java.net.URL
 import java.util.*
+private val logger = mu.KotlinLogging.logger {}
 
-fun main() = pipe("mygeneration") {
+fun main() {
+}
+fun mainAlsoOld() = pipe("mygeneration") {
     val pgConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")
     val mongoConfig = mongoConfig("mymongo", "mongodb://mongo", "mydatabase")
     postgresSource("public", "film", pgConfig) {
@@ -27,3 +31,4 @@ fun mainold() {
         }
     }.renderAndStart(URL("http://localhost:8083/connectors"), "localhost:9092", UUID.randomUUID().toString())
 }
+

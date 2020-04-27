@@ -20,17 +20,19 @@ public class JoinWithTransformer implements TopologyPipeComponent {
     private final ReactivePipe joinWith;
     private final boolean isOptional;
     private final boolean multiple;
+    private final boolean debug;
     private boolean materialize = false;
 
     public JoinWithTransformer(ReactivePipe joinWith) {
-        this(false, false, joinWith);
+        this(false, false, joinWith,false);
     }
 
     // 'into' will be the
-    public JoinWithTransformer(boolean isOptional, boolean multiple, ReactivePipe joinWith) {
+    public JoinWithTransformer(boolean isOptional, boolean multiple, ReactivePipe joinWith, boolean debug) {
         this.isOptional = isOptional;
         this.joinWith = joinWith;
         this.multiple = multiple;
+        this.debug = debug;
     }
 
     @Override
@@ -44,7 +46,7 @@ public class JoinWithTransformer implements TopologyPipeComponent {
         Optional<String> filter = Optional.empty();
         Optional<Predicate<String, ReplicationMessage>> filterPredicate = Filters.getFilter(filter);
 
-        ReplicationTopologyParser.addJoin(topology, topologyContext, topologyConstructor, from.get(), with, name, isOptional, multiple, filterPredicate, this.materialize);
+        ReplicationTopologyParser.addJoin(topology, topologyContext, topologyConstructor, from.get(), with, name, isOptional, multiple, filterPredicate, this.materialize,this.debug);
         transformerNames.push(name);
     }
 

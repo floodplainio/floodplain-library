@@ -72,6 +72,7 @@ public class OneToManyGroupedProcessor extends AbstractProcessor<String, Replica
     }
 
     private void forwardJoin(String key, ReplicationMessage msg) {
+        logger.info("Forwaring o2m join");
 
         try {
             if (!filterPredicate.test(key, msg)) {
@@ -93,10 +94,10 @@ public class OneToManyGroupedProcessor extends AbstractProcessor<String, Replica
 
 
         ReplicationMessage joined = msg;
-        if (msgs.size() > 0) {
-            joined = joinFunction.apply(msg, msgs);
-        }
-        if (optional || msgs.size() > 0) {
+        if (msgs.size() > 0 || optional) {
+//            joined = joinFunction.apply(msg, msgs);
+//        }
+//        if (optional || msgs.size() > 0) {
             forwardMessage(key, joined);
         } else {
             // We are not optional, and have not joined with any messages. Forward a delete

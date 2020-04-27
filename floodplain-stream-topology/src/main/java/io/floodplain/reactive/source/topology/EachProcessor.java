@@ -21,7 +21,11 @@ public class EachProcessor extends AbstractProcessor<String, ReplicationMessage>
 
     @Override
     public void process(String key, ReplicationMessage value) {
-        lambda.apply(value.message(), value.paramMessage().orElse(ImmutableFactory.empty()),key);
+        if(value==null || value.operation()== ReplicationMessage.Operation.DELETE) {
+            // skipping delete
+        } else {
+            lambda.apply(value.message(), value.paramMessage().orElse(ImmutableFactory.empty()),key);
+        }
         super.context().forward(key, value);
     }
 

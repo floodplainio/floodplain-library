@@ -31,16 +31,12 @@ public class SetTransformer implements TopologyPipeComponent {
                               TopologyContext topologyContext, TopologyConstructor topologyConstructor) {
         FunctionProcessor fp = new FunctionProcessor(this.transformer);
         String name = topologyContext.qualifiedName("set", transformerNames.size(), currentPipeId);
-//		String name = createName(topologyContext, this.metadata.name(),transformerNames.size(), currentPipeId);
         logger.info("Adding processor: {} to parent: {} hash: {}", name, transformerNames, transformerNames.hashCode());
-
-
         if (this.materialize()) {
             topology.addProcessor(name + "_prematerialize", () -> fp, transformerNames.peek());
             ReplicationTopologyParser.addMaterializeStore(topology, topologyContext, topologyConstructor, name, name + "_prematerialize");
         } else {
             topology.addProcessor(name, () -> fp, transformerNames.peek());
-
         }
         transformerNames.push(name);
     }

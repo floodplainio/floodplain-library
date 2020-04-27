@@ -19,12 +19,14 @@ public class FunctionProcessor extends AbstractProcessor<String, ReplicationMess
     @Override
     public void process(String key, ReplicationMessage value) {
         if (value == null) {
+            // forward nulls unchanged
+            super.context().forward(key,null);
             return;
         }
-//		if(value.operation()!=Operation.DELETE) {
-        ImmutableMessage applied = function.apply(value.message(), value.paramMessage().orElse(ImmutableFactory.empty()));
-        super.context().forward(key, ReplicationFactory.standardMessage(applied).withParamMessage(value.paramMessage().orElse(ImmutableFactory.empty())));
-//		}
+		if(value.operation()!= ReplicationMessage.Operation.DELETE) {
+            ImmutableMessage applied = function.apply(value.message(), value.paramMessage().orElse(ImmutableFactory.empty()));
+            super.context().forward(key, ReplicationFactory.standardMessage(applied).withParamMessage(value.paramMessage().orElse(ImmutableFactory.empty())));
+		}
     }
 
 }

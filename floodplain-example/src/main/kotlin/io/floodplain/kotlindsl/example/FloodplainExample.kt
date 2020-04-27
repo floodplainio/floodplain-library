@@ -34,36 +34,39 @@ fun main() {
                 },
                 postgresSource("public", "customer", postgresConfig) {
                     joinRemote({ m -> "${m["address_id"]}" }, false) {
-                        source("address") {}
+                        source("@address") {}
                     }
                     set { msg, state ->
                         msg.set("address", state)
                     }
-                    join {
-                        source("@consumertotals") {}
+                    each {
+                        customer,_,key -> logger.info("Customer: ${customer}")
+                    }
+                    join(optional = true,debug = true) {
+                        source("@customertotals") {}
                     }
                     set { customer, totals ->
                         customer["total"] = totals["total"]; customer
                     }
-                    mongoSink("customer", "@customer", mongoConfig)
+                    mongoSink("customer", "customer", mongoConfig)
                 },
                 postgresSource("public", "store", postgresConfig) {
                     joinRemote({ m -> "${m["address_id"]}" }, false) {
-                        source("address") {}
+                        source("@address") {}
                     }
                     set { msg, state ->
                         msg.set("address", state)
                     }
-                    mongoSink("store", "@store", mongoConfig)
+                    mongoSink("store", "store", mongoConfig)
                 },
                 postgresSource("public", "staff", postgresConfig) {
                     joinRemote({ m -> "${m["address_id"]}" }, false) {
-                        source("address") {}
+                        source("@address") {}
                     }
                     set { msg, state ->
                         msg.set("address", state)
                     }
-                    mongoSink("staff", "@staff", mongoConfig)
+                    mongoSink("staff", "staff", mongoConfig)
                 },
                 postgresSource("public", "payment", postgresConfig) {
                     scan({ msg -> msg["customer_id"].toString() }, { msg -> empty().set("total", 0.0).set("customer_id", msg["customer_id"]) },

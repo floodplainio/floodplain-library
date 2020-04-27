@@ -439,7 +439,8 @@ public class ReplicationTopologyParser {
                                    boolean optional,
                                    boolean multiple,
                                    Optional<Predicate<String, ReplicationMessage>> filterPredicate,
-                                   boolean materialize) {
+                                   boolean materialize,
+                                   boolean debug) {
         String firstNamePre = name + "-forwardpre";
         String secondNamePre = name + "-reversepre";
 
@@ -469,7 +470,7 @@ public class ReplicationTopologyParser {
                     STORE_PREFIX + withProcessorName,
                     optional,
                     filterPredicate,
-                    (msg, comsg) -> msg.withParamMessage(comsg.message()));
+                    (msg, comsg) -> msg.withParamMessage(comsg.message()),debug);
         }
         String procName = materialize ? "proc_" + name : name;
         current.addProcessor(

@@ -10,8 +10,11 @@ import org.apache.kafka.streams.state.KeyValueStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 
 
 public class OneToOneProcessor extends AbstractProcessor<String, ReplicationMessage> {
@@ -23,18 +26,19 @@ public class OneToOneProcessor extends AbstractProcessor<String, ReplicationMess
 
     private final BiFunction<ReplicationMessage, ReplicationMessage, ReplicationMessage> joinFunction;
     private boolean optional;
-    private boolean debug = true;
+    private boolean debug;
     private Predicate<String, ReplicationMessage> filterPredicate;
 
     private static final Logger logger = LoggerFactory.getLogger(OneToOneProcessor.class);
 
     public OneToOneProcessor(String forwardLookupStoreName, String reverseLookupStoreName, boolean optional, Optional<Predicate<String, ReplicationMessage>> filterPredicate,
-                             BiFunction<ReplicationMessage, ReplicationMessage, ReplicationMessage> joinFunction) {
+                             BiFunction<ReplicationMessage, ReplicationMessage, ReplicationMessage> joinFunction, boolean debug) {
         this.forwardLookupStoreName = forwardLookupStoreName;
         this.reverseLookupStoreName = reverseLookupStoreName;
         this.optional = optional;
         this.joinFunction = joinFunction;
         this.filterPredicate = filterPredicate.orElse((k, v) -> true);
+        this.debug = debug;
     }
 
 
@@ -53,7 +57,7 @@ public class OneToOneProcessor extends AbstractProcessor<String, ReplicationMess
     public void process(String key, ReplicationMessage innerMessage) {
         boolean reverse = false;
         if (innerMessage == null) {
-            context().forward(key, innerMessage);
+            context().forward(key, null);
             return;
         }
         KeyValueStore<String, ReplicationMessage> lookupStore = reverseLookupStore;
@@ -75,7 +79,10 @@ public class OneToOneProcessor extends AbstractProcessor<String, ReplicationMess
         ReplicationMessage counterpart = lookupStore.get(key);
         if(debug) {
             if (counterpart==null) {
-                logger.info("Null Join Result: {}",key);
+                logger.info("Null Join (reverse? {}) key: {} lookupsize: {}",reverse,key,lookupStore.approximateNumEntries());
+                List<String> keys = new ArrayList<>();
+                lookupStore.all().forEachRemaining(k->keys.add(k.key));
+                logger.info("Keys: {}",keys.stream().collect(Collectors.joining(",")));
             } else {
                 logger.info("Join Result: {} {}",key,counterpart.toFlatString(ReplicationFactory.getInstance()));
             }
@@ -108,6 +115,7 @@ public class OneToOneProcessor extends AbstractProcessor<String, ReplicationMess
         } else {
             // Operation DELETE doesn't really matter for forward join - we can join as usual
             // The DELETE operation will be preserved and forwarded
+            // TODO Shouldn't we delete from the store? I think now
             msg = joinFunction.apply(innerMessage, counterpart);
             context().forward(key, msg);
         }
