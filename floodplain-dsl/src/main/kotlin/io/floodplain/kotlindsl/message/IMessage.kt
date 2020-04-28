@@ -2,8 +2,11 @@ package io.floodplain.kotlindsl.message
 
 import io.floodplain.immutable.api.ImmutableMessage
 import io.floodplain.immutable.factory.ImmutableFactory
+import java.lang.RuntimeException
 import java.util.stream.Collectors
 import kotlin.streams.toList
+
+private val logger = mu.KotlinLogging.logger {}
 
 data class IMessage(private val content: MutableMap<String, Any>) {
 
@@ -72,6 +75,9 @@ data class IMessage(private val content: MutableMap<String, Any>) {
                     // empty msg
                 }
             } else {
+//                if (value is List<*>) {
+//                    logger.info { "L: $value" }
+//                }
                 // regular value
                 msg.content[name] = value
             }
@@ -87,7 +93,7 @@ data class IMessage(private val content: MutableMap<String, Any>) {
         for ((name, elt) in content) {
             when (elt) {
                 is IMessage -> subMessage[name] = elt.toImmutable()
-                is List<*> -> subMessageList[name] = subListToImmutable(elt)
+                is List<*> -> subMessageList[name] = subListToImmutable(elt as List<IMessage>)
                 is ImmutableMessage -> subMessage[name] = elt
                 else -> {
                     values[name] = elt; types.put(name, ImmutableFactory.resolveTypeFromValue(elt))
@@ -97,8 +103,10 @@ data class IMessage(private val content: MutableMap<String, Any>) {
         return ImmutableFactory.create(values, types, subMessage, subMessageList)
     }
 
-    private fun subListToImmutable(items: List<*>): List<ImmutableMessage> {
-        return items.stream().map { e -> e as ImmutableMessage }.collect(Collectors.toList())
+    private fun subListToImmutable(items: List<IMessage>): List<ImmutableMessage> {
+        return items.stream().map {
+            it.toImmutable()
+        }.collect(Collectors.toList())
     }
 
     override fun toString(): String {
@@ -120,7 +128,7 @@ fun fromImmutable(msg: ImmutableMessage): IMessage {
         content[name] =  fromImmutable(value)
     }
     for ((name, value) in msg.subMessageListMap()) {
-        content[name] = value.stream().map { ::fromImmutable }.toList()
+        content[name] = value.stream().map { e-> fromImmutable(e) }.toList()
     }
     return IMessage(content)
 }

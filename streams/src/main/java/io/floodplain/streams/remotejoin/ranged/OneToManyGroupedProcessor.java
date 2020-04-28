@@ -20,6 +20,7 @@ import java.util.function.BiFunction;
 
 public class OneToManyGroupedProcessor extends AbstractProcessor<String, ReplicationMessage> {
     private static final Logger logger = LoggerFactory.getLogger(OneToManyGroupedProcessor.class);
+    private final boolean debug;
 
     private String storeName;
     private String groupedStoreName;
@@ -34,12 +35,13 @@ public class OneToManyGroupedProcessor extends AbstractProcessor<String, Replica
 
     public OneToManyGroupedProcessor(String storeName, String groupedStoreName, boolean optional,
                                      Optional<Predicate<String, ReplicationMessage>> filterPredicate,
-                                     BiFunction<ReplicationMessage, List<ReplicationMessage>, ReplicationMessage> joinFunction) {
+                                     BiFunction<ReplicationMessage, List<ReplicationMessage>, ReplicationMessage> joinFunction, boolean debug) {
         this.storeName = storeName;
         this.groupedStoreName = groupedStoreName;
         this.optional = optional;
         this.joinFunction = joinFunction;
         this.filterPredicate = filterPredicate.orElse((k, v) -> true);
+        this.debug = debug;
     }
 
     @SuppressWarnings("unchecked")
@@ -72,8 +74,6 @@ public class OneToManyGroupedProcessor extends AbstractProcessor<String, Replica
     }
 
     private void forwardJoin(String key, ReplicationMessage msg) {
-        logger.info("Forwaring o2m join");
-
         try {
             if (!filterPredicate.test(key, msg)) {
                 // filter says no
@@ -95,12 +95,13 @@ public class OneToManyGroupedProcessor extends AbstractProcessor<String, Replica
 
         ReplicationMessage joined = msg;
         if (msgs.size() > 0 || optional) {
-//            joined = joinFunction.apply(msg, msgs);
-//        }
-//        if (optional || msgs.size() > 0) {
+            joined = joinFunction.apply(msg, msgs);
+        }
+        if (optional || msgs.size() > 0) {
             forwardMessage(key, joined);
         } else {
             // We are not optional, and have not joined with any messages. Forward a delete
+            // -> TODO Improve this. It does not necesarily need a delete. If it is a new key, it can simply be ignored
             forwardMessage(key, joined.withOperation(Operation.DELETE));
         }
 
@@ -110,6 +111,10 @@ public class OneToManyGroupedProcessor extends AbstractProcessor<String, Replica
 
         String actualKey = CoreOperators.ungroupKeyReverse(key);
         ReplicationMessage one = lookupStore.get(actualKey);
+        if(debug) {
+            long storeSize = lookupStore.approximateNumEntries();
+            logger.info("# of elements in reverse store: {}", storeSize);
+        }
         if (one == null) {
             // We are doing a reverse join, but the original message isn't there.
             // Nothing to do for us here

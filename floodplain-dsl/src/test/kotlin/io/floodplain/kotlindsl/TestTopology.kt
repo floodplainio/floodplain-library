@@ -114,18 +114,25 @@ class TestTopology {
                 sink("mysink")
             }
         }.renderAndTest {
-            it.input("src","key1", empty().set("subkey","subkey1"))
-            it.input("src","key2", empty().set("subkey","subkey2"))
+            val record1 = empty().set("subkey", "subkey1")
+            val record2 = empty().set("subkey", "subkey2")
+            it.input("src","key1", record1)
+            it.input("src","key2", record2)
             val (k1,v1) = it.output("mysink")
+            assertEquals("subkey1|key1",k1)
+            assertEquals(record1,v1)
             val (k2,v2) = it.output("mysink")
+            assertEquals("subkey2|key2",k2)
+            assertEquals(record2,v2)
+
             // TODO continue
         }
     }
     @Test
-    fun testSingleToManyJoin() {
+    fun testSingleToManyJoinOptional() {
         pipe("somegen") {
             source("@left") {
-                joinGrouped(optional = true) {
+                joinGrouped(optional = true,debug = true) {
                     source("@right") {
                         group { msg->msg["foreignkey"] as String }
                     }
@@ -135,19 +142,91 @@ class TestTopology {
                     left
                 }
                 each{ left,right,key->
-                        logger.info( "Message: ${left} + $right + $key")
+                        logger.info( "Message: ${left} RightMessage $right key: $key")
                 }
                 sink("@output")
             }
         }.renderAndTest {
             assertTrue(it.isEmpty("@output"))
-            it.input("@left", "key1", empty().set("name", "left1"))
+            val leftRecord = empty().set("name", "left1")
+            it.input("@left", "key1", leftRecord)
             assertTrue(!it.isEmpty("@output"))
+            val record1 = empty().set("foreignkey", "key1").set("recorddata","data1")
+            val record2 = empty().set("foreignkey", "key1").set("recorddata","data2")
+            it.input("@right","otherkey1", record1)
+            it.input("@right","otherkey2", record2)
+
             val (key,value) = it.output("@output")
             assertEquals("key1",key)
             val sublist: List<IMessage> = (value["rightsub"]?: emptyList<IMessage>()) as List<IMessage>
             assertTrue (sublist.isEmpty())
-//            it.input()
+
+            val outputs = it.outputSize("@output")
+            assertEquals(2,outputs,"should have 2 elements")
+            it.output("@output") // skip one
+            val (_,v3) = it.output("@output")
+            val subList = v3.get("rightsub") as List<*>
+            assertEquals(2,subList.size)
+            assertEquals(record1,subList[0])
+            assertEquals(record2,subList[1])
+            it.delete("@right","otherkey1")
+            val (_,v4) = it.output("@output")
+            val subList2 = v4.get("rightsub") as List<*>
+            assertEquals(1,subList2.size)
+            it.delete("@right","otherkey2")
+            val (_,v5) = it.output("@output")
+            val subList3 = v5.get("rightsub") as List<*>
+            assertEquals(0,subList3.size)
+            it.delete("@left","key1")
+            assertEquals("key1",it.deleted("@output"))
         }
     }
+    @Test
+    fun testSingleToManyJoin() {
+        pipe("somegen") {
+            source("@left") {
+                joinGrouped(debug = true) {
+                    source("@right") {
+                        group { msg->msg["foreignkey"] as String }
+                    }
+                }
+                set { left, right ->
+                    left["rightsub"] = right["list"]
+                    left
+                }
+                each{ left,right,key->
+                    logger.info( "Message: ${left} RightMessage $right key: $key")
+                }
+                sink("@output")
+            }
+        }.renderAndTest {
+            assertTrue(it.isEmpty("@output"))
+            val leftRecord = empty().set("name", "left1")
+            it.input("@left", "key1", leftRecord)
+//            assertTrue(!it.isEmpty("@output"))
+
+            val record1 = empty().set("foreignkey", "key1").set("recorddata","data1")
+            val record2 = empty().set("foreignkey", "key1").set("recorddata","data2")
+            it.input("@right","otherkey1", record1)
+            it.input("@right","otherkey2", record2)
+
+            // TODO skip the 'ghost delete' I'm not too fond of this, this one should be skippable
+            it.deleted("@output")
+            val outputs = it.outputSize("@output")
+            assertEquals(2,outputs,"should have 2 elements")
+            it.output("@output") // skip one
+            val (_,v3) = it.output("@output")
+            val subList = v3.get("rightsub") as List<*>
+            assertEquals(2,subList.size)
+            assertEquals(record1,subList[0])
+            assertEquals(record2,subList[1])
+            it.delete("@right","otherkey1")
+            val (_,v4) = it.output("@output")
+            val subList2 = v4.get("rightsub") as List<*>
+            assertEquals(1,subList2.size)
+            it.delete("@right","otherkey2")
+            assertEquals("key1",it.deleted("@output"))
+        }
+    }
+
 }

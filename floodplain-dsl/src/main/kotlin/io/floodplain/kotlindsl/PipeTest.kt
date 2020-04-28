@@ -32,6 +32,7 @@ interface TestContext {
     fun input(topic: String, key: String, msg: IMessage);
     fun delete(topic: String, key: String);
     fun output(topic: String): Pair<String,IMessage>;
+    fun outputSize(topic: String): Long;
     fun deleted(topic: String): String;
     fun isEmpty(topic: String): Boolean;
     fun stateStore(name: String): StateStore;
@@ -100,6 +101,12 @@ class TestDriverContext(private val driver: TopologyTestDriver, private val topo
         } else {
             return Pair(keyVal.key, fromImmutable(keyVal.value!!.message()))
         }
+    }
+
+    override fun outputSize(topic: String): Long {
+        val qualifiedTopicName = CoreOperators.topicName(topic,topologyContext)
+        val outputTopic = outputTopics.computeIfAbsent(qualifiedTopicName) {driver.createOutputTopic(qualifiedTopicName, Serdes.String().deserializer(),ReplicationMessageSerde().deserializer())}
+        return outputTopic.queueSize
     }
 
     override fun deleted(topic: String): String {

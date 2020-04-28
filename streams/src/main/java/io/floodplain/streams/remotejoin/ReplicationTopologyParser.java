@@ -462,7 +462,8 @@ public class ReplicationTopologyParser {
                     STORE_PREFIX + withProcessorName,
                     optional,
                     filterPredicate,
-                    CoreOperators.getListJoinFunctionToParam(false)
+                    CoreOperators.getListJoinFunctionToParam(false),
+                    debug
             );
         } else {
             proc = new OneToOneProcessor(

@@ -9,6 +9,8 @@ buildOutputCleanup
 .classpath
 sharedstore
 storagePath
+floodplain-dsl/teststorage
+lsp
 
 # Ignore Gradle build output directory
 build
