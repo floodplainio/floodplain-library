@@ -5,6 +5,7 @@ import io.floodplain.kotlindsl.message.empty
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import kotlin.test.fail
 
 
 private val logger = mu.KotlinLogging.logger {}
@@ -227,6 +228,16 @@ class TestTopology {
             it.delete("@right","otherkey2")
             assertEquals("key1",it.deleted("@output"))
         }
+    }
+
+    @Test
+    fun testRemoteJoin() {
+        fail("Implement")
+    }
+
+    @Test
+    fun testFilter() {
+        fail("Implement")
     }
 
 }
