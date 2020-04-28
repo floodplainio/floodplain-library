@@ -2,6 +2,10 @@
 
 Floodplain is a Kotlin based stream processing framework, check [https://www.floodplain.io/](https://www.floodplain.io/) for in-depth documentation.
 
+Circle CI Build Status:
+
+[![CircleCI](https://circleci.com/gh/floodplainio/floodplain-library.svg?style=svg)](https://circleci.com/gh/floodplainio/floodplain-library)
+
 ## Building
 
 Floodplain requires Gradle and Java 11+
