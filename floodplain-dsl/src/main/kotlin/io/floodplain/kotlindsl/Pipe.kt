@@ -160,8 +160,8 @@ class Pipe(val context: TopologyContext, private val topologyConstructor: Topolo
         streamsConfiguration["retention.ms"] = 3600 * 24 * 1000
 
         // 10 weeks for now
-        streamsConfiguration["message.timestamp.difference.max.ms"] = 604800000 * 10
-        streamsConfiguration["log.message.timestamp.difference.max.ms"] = 604800000 * 11
+        streamsConfiguration["message.timestamp.difference.max.ms"] = 604800000L * 10
+        streamsConfiguration["log.message.timestamp.difference.max.ms"] = 604800000L * 11
 
 //	    StreamsConfig.
         streamsConfiguration[StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG] = 10 * 1024 * 1024L;

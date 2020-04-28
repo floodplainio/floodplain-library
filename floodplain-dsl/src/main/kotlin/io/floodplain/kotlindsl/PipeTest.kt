@@ -7,12 +7,10 @@ import io.floodplain.replication.factory.ReplicationFactory
 import io.floodplain.streams.api.CoreOperators
 import io.floodplain.streams.api.TopologyContext
 import io.floodplain.streams.serializer.ReplicationMessageSerde
-import org.apache.kafka.common.protocol.types.Field
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.*
 import org.apache.kafka.streams.processor.StateStore
 import org.apache.kafka.streams.processor.WallclockTimestampExtractor
-import java.io.File
 import java.lang.RuntimeException
 import java.nio.file.Files
 import java.nio.file.Path
@@ -48,10 +46,10 @@ fun testTopology(topology: Topology, testCmds: (TestContext) -> Unit, context: T
     props.setProperty(StreamsConfig.STATE_DIR_CONFIG,storageFolder)
 
     val driver = TopologyTestDriver(topology,props)
-    val context = TestDriverContext(driver,context)
+    val contextInstance = TestDriverContext(driver,context)
     logger.info("FOLDER: {}",storageFolder)
     try {
-        testCmds.invoke(context)
+        testCmds.invoke(contextInstance)
     } finally {
         driver.allStateStores.forEach {store->store.value.close()}
         driver.close()
@@ -59,7 +57,7 @@ fun testTopology(topology: Topology, testCmds: (TestContext) -> Unit, context: T
         if(Files.exists(path)) {
             Files.walk(path)
                     .sorted(Comparator.reverseOrder())
-                    .forEach {Files::deleteIfExists};
+                    .forEach {Files.deleteIfExists(it)}
         }
         //Files.deleteIfExists(path)
     }

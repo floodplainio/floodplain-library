@@ -30,7 +30,7 @@ data class IMessage(private val content: MutableMap<String, Any>) {
         if (raw !is Int) {
             throw ClassCastException("Path element $path should be an integer but it is a ${raw::class}")
         }
-        return raw as Int
+        return raw
     }
 
     fun optionalString(path: String): String? {
@@ -38,7 +38,7 @@ data class IMessage(private val content: MutableMap<String, Any>) {
         if (raw !is String) {
             throw ClassCastException("Path element $path should be an string but it is a ${raw::class}")
         }
-        return raw as String
+        return raw
     }
 
     private fun parsePath(path: List<String>): Pair<IMessage, String> {
