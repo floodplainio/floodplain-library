@@ -6,12 +6,13 @@ import io.floodplain.replication.api.ReplicationMessage;
 import org.apache.kafka.streams.processor.AbstractProcessor;
 
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public class FilterProcessor extends AbstractProcessor<String, ReplicationMessage> {
 
-    private final BiFunction<ImmutableMessage, ImmutableMessage, Boolean> filterExpression;
+    private final BiFunction<String,ImmutableMessage, Boolean> filterExpression;
 
-    public FilterProcessor(BiFunction<ImmutableMessage, ImmutableMessage, Boolean> func) {
+    public FilterProcessor(BiFunction<String,ImmutableMessage, Boolean> func) {
         this.filterExpression = func;
     }
 
@@ -19,7 +20,7 @@ public class FilterProcessor extends AbstractProcessor<String, ReplicationMessag
     public void process(String key, ReplicationMessage value) {
 
 //		Operand o = filterExpression.apply(Optional.of(value.message()), value.paramMessage());
-        if (filterExpression.apply(value.message(), value.paramMessage().orElse(ImmutableFactory.empty()))) {
+        if (filterExpression.apply(key,value.message())) {
             super.context().forward(key, value);
         }
     }

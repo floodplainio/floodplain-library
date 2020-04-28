@@ -11,7 +11,7 @@ fun filter(generation: String) {
         val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")
         val mongoConfig = mongoConfig("mongosink", "mongodb://mongo", "mongodump")
         postgresSource("public", "actor", postgresConfig) {
-            filter { msg, _ ->
+            filter { _,msg ->
                 (msg["last_name"] as String).startsWith("G", true)
             }
             mongoSink("filtercollection", "filtertopic", mongoConfig)

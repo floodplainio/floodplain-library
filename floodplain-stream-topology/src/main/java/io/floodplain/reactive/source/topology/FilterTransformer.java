@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Stack;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public class FilterTransformer implements TopologyPipeComponent {
 
@@ -22,7 +23,7 @@ public class FilterTransformer implements TopologyPipeComponent {
     private final static Logger logger = LoggerFactory.getLogger(FilterTransformer.class);
 
 
-    public FilterTransformer(BiFunction<ImmutableMessage, ImmutableMessage, Boolean> func) {
+    public FilterTransformer(BiFunction<String,ImmutableMessage, Boolean> func) {
 
         this.filterProcessor = () -> new FilterProcessor(func);
     }

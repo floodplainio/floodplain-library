@@ -34,8 +34,8 @@ abstract class Config() {
 /**
  * Filter a source. The supplied lambda should return 'true' if the message should be propagated, 'false' if not.
  */
-fun PartialPipe.filter(flt: (IMessage, IMessage) -> Boolean) {
-    val transformerFilter: (ImmutableMessage, ImmutableMessage) -> Boolean = { msg: ImmutableMessage, param: ImmutableMessage -> flt.invoke(fromImmutable(msg), fromImmutable(param)) }
+fun PartialPipe.filter(flt: (String,IMessage)-> Boolean) {
+    val transformerFilter: (String,ImmutableMessage) -> Boolean = { key,msg: ImmutableMessage  -> flt.invoke(key,fromImmutable(msg)) }
     val transformer = FilterTransformer(transformerFilter)
     addTransformer(Transformer(transformer))
 }

@@ -2,6 +2,7 @@ package io.floodplain.kotlindsl
 
 import io.floodplain.kotlindsl.message.IMessage
 import io.floodplain.kotlindsl.message.empty
+import kotlin.math.sin
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -230,14 +231,27 @@ class TestTopology {
         }
     }
 
-    @Test
-    fun testRemoteJoin() {
-        fail("Implement")
-    }
+//    @Test
+//    fun testRemoteJoin() {
+//        fail("Implement")
+//    }
 
     @Test
     fun testFilter() {
-        fail("Implement")
+        pipe("anygen") {
+            source("@source") {
+                filter { key,value->
+                    value["name"]=="myname"
+                }
+                sink("@output")
+            }
+        }.renderAndTest {
+            it.input("@source","key1", empty().set("name","myname"))
+            it.input("@source","key2", empty().set("name","notmyname"))
+            it.input("@source","key3", empty().set("name","myname"))
+            assertEquals(2,it.outputSize("@output"))
+//            val (key,value) = it.output("@source")
+        }
     }
 
 }
