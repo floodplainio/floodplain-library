@@ -70,7 +70,7 @@ class Pipe(val context: TopologyContext, private val topologyConstructor: Topolo
         return topology;
     }
 
-    fun renderAndTest(testCmds: (TestContext)->Unit) {
+    fun renderAndTest(testCmds: TestContext.()->Unit) {
         val top = renderTopology()
         logger.info ("Testing topology:\n${top.describe()}")
         testTopology(top,testCmds,context)

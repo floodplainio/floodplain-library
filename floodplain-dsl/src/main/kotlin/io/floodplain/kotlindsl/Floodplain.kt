@@ -55,7 +55,7 @@ fun PartialPipe.each(transform: (IMessage, IMessage, String) -> Unit): Transform
  * You can use it as a simple stateless transformation: Add constant values, remove fields or transform fields.
  * A 'set' is also required for more complicated combinations. Typically after a join you use a 'set' to merge the messages
  * from both sources.
- * The first message is the original message from the join, the second message the result from the 'inner' source.
+ * The first message is the original message from the join, the second message the result from the 'secondary' source.
  * The second message will be lost after this operation, so you need to append anything you want to keep from the inner source to the outer source here.
  * Alternatively, you can create an all-new message and just add the things you are interested in, and return that.
  */

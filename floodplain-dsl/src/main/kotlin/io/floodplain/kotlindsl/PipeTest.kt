@@ -35,7 +35,7 @@ interface TestContext {
     fun isEmpty(topic: String): Boolean;
     fun stateStore(name: String): StateStore;
 }
-fun testTopology(topology: Topology, testCmds: (TestContext) -> Unit, context: TopologyContext) {
+fun testTopology(topology: Topology, testCmds: TestContext.() -> Unit, context: TopologyContext) {
     val storageFolder = "teststorage/store-"+UUID.randomUUID().toString();
     val props = Properties()
     props.setProperty(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "doesntmatter:9092")

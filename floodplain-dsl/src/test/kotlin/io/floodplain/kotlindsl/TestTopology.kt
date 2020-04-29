@@ -21,10 +21,10 @@ class TestTopology {
                 sink("@outputTopic")
             }
         }.renderAndTest {
-            it.input("@sometopic", "key1", empty().set("name", "gorilla"))
-            it.input("@sometopic", "key1", empty().set("name", "monkey"))
-            assertEquals("gorilla", it.output("@outputTopic").second["name"])
-            assertEquals("monkey", it.output("@outputTopic").second["name"])
+            input("@sometopic", "key1", empty().set("name", "gorilla"))
+            input("@sometopic", "key1", empty().set("name", "monkey"))
+            assertEquals("gorilla", output("@outputTopic").second["name"])
+            assertEquals("monkey", output("@outputTopic").second["name"])
         }
     }
 
@@ -37,12 +37,12 @@ class TestTopology {
                 sink("@outputtopic")
             }
         }.renderAndTest {
-            it.input("@sometopic", "key1", empty().set("name","gorilla"))
-            it.delete("@sometopic","key1")
-            it.output("@outputtopic")
-            val eq = it.deleted("@outputtopic").equals("key1");
+            input("@sometopic", "key1", empty().set("name","gorilla"))
+            delete("@sometopic","key1")
+            output("@outputtopic")
+            val eq = deleted("@outputtopic").equals("key1");
             logger.info("equal: $eq")
-            logger.info ("Topic now empty: ${it.isEmpty("@outputtopic")}")
+            logger.info ("Topic now empty: ${isEmpty("@outputtopic")}")
         }
     }
 
@@ -61,17 +61,17 @@ class TestTopology {
                 sink("@output")
             }
         }.renderAndTest {
-            assertTrue(it.isEmpty("@output"))
-            it.input("@left", "key1", empty().set("name", "left1"))
-            assertTrue(it.isEmpty("@output"))
-            it.input("@left", "wrongkey", empty().set("name", "nomatter"))
-            assertTrue(it.isEmpty("@output"))
-            it.input("@right", "key1", empty().set("subname", "monkey"))
-            val (_,result) = it.output("@output")
+            assertTrue(isEmpty("@output"))
+            input("@left", "key1", empty().set("name", "left1"))
+            assertTrue(isEmpty("@output"))
+            input("@left", "wrongkey", empty().set("name", "nomatter"))
+            assertTrue(isEmpty("@output"))
+            input("@right", "key1", empty().set("subname", "monkey"))
+            val (_,result) = output("@output")
             logger.info("Result: $result")
             assertEquals("monkey",result["rightsub/subname"])
-            it.delete("@left","key1")
-            assertEquals("key1",it.deleted("@output"))
+            delete("@left","key1")
+            assertEquals("key1",deleted("@output"))
         }
     }
 
@@ -91,20 +91,20 @@ class TestTopology {
                 sink("@output")
             }
         }.renderAndTest {
-            assertTrue(it.isEmpty("@output"))
+            assertTrue(isEmpty("@output"))
             val msg = empty().set("name", "left1")
-            it.input("@left", "key1", msg)
-            assertTrue(!it.isEmpty("@output"))
-            assertEquals(it.output("@output").second, msg)
-            it.input("@left", "otherkey", empty().set("name", "nomatter"))
-            assertTrue(!it.isEmpty("@output"))
-            assertEquals(it.output("@output").second, empty().set("name","nomatter"))
-            it.input("@right", "key1", empty().set("subname", "monkey"))
-            val (_,result) = it.output("@output")
+            input("@left", "key1", msg)
+            assertTrue(!isEmpty("@output"))
+            assertEquals(output("@output").second, msg)
+            input("@left", "otherkey", empty().set("name", "nomatter"))
+            assertTrue(!isEmpty("@output"))
+            assertEquals(output("@output").second, empty().set("name","nomatter"))
+            input("@right", "key1", empty().set("subname", "monkey"))
+            val (_,result) = output("@output")
             logger.info("Result: $result")
             assertEquals("monkey",result["rightsub/subname"])
-            it.delete("@left","key1")
-            assertEquals("key1",it.deleted("@output"))
+            delete("@left","key1")
+            assertEquals("key1",deleted("@output"))
         }
     }
 
@@ -118,12 +118,12 @@ class TestTopology {
         }.renderAndTest {
             val record1 = empty().set("subkey", "subkey1")
             val record2 = empty().set("subkey", "subkey2")
-            it.input("src","key1", record1)
-            it.input("src","key2", record2)
-            val (k1,v1) = it.output("mysink")
+            input("src","key1", record1)
+            input("src","key2", record2)
+            val (k1,v1) = output("mysink")
             assertEquals("subkey1|key1",k1)
             assertEquals(record1,v1)
-            val (k2,v2) = it.output("mysink")
+            val (k2,v2) = output("mysink")
             assertEquals("subkey2|key2",k2)
             assertEquals(record2,v2)
 
@@ -149,38 +149,38 @@ class TestTopology {
                 sink("@output")
             }
         }.renderAndTest {
-            assertTrue(it.isEmpty("@output"))
+            assertTrue(isEmpty("@output"))
             val leftRecord = empty().set("name", "left1")
-            it.input("@left", "key1", leftRecord)
-            assertTrue(!it.isEmpty("@output"))
+            input("@left", "key1", leftRecord)
+            assertTrue(!isEmpty("@output"))
             val record1 = empty().set("foreignkey", "key1").set("recorddata","data1")
             val record2 = empty().set("foreignkey", "key1").set("recorddata","data2")
-            it.input("@right","otherkey1", record1)
-            it.input("@right","otherkey2", record2)
+            input("@right","otherkey1", record1)
+            input("@right","otherkey2", record2)
 
-            val (key,value) = it.output("@output")
+            val (key,value) = output("@output")
             assertEquals("key1",key)
             val sublist: List<IMessage> = (value["rightsub"]?: emptyList<IMessage>()) as List<IMessage>
             assertTrue (sublist.isEmpty())
 
-            val outputs = it.outputSize("@output")
+            val outputs = outputSize("@output")
             assertEquals(2,outputs,"should have 2 elements")
-            it.output("@output") // skip one
-            val (_,v3) = it.output("@output")
+            output("@output") // skip one
+            val (_,v3) = output("@output")
             val subList = v3.get("rightsub") as List<*>
             assertEquals(2,subList.size)
             assertEquals(record1,subList[0])
             assertEquals(record2,subList[1])
-            it.delete("@right","otherkey1")
-            val (_,v4) = it.output("@output")
+            delete("@right","otherkey1")
+            val (_,v4) = output("@output")
             val subList2 = v4.get("rightsub") as List<*>
             assertEquals(1,subList2.size)
-            it.delete("@right","otherkey2")
-            val (_,v5) = it.output("@output")
+            delete("@right","otherkey2")
+            val (_,v5) = output("@output")
             val subList3 = v5.get("rightsub") as List<*>
             assertEquals(0,subList3.size)
-            it.delete("@left","key1")
-            assertEquals("key1",it.deleted("@output"))
+            delete("@left","key1")
+            assertEquals("key1",deleted("@output"))
         }
     }
     @Test
@@ -202,32 +202,32 @@ class TestTopology {
                 sink("@output")
             }
         }.renderAndTest {
-            assertTrue(it.isEmpty("@output"))
+            assertTrue(isEmpty("@output"))
             val leftRecord = empty().set("name", "left1")
-            it.input("@left", "key1", leftRecord)
-//            assertTrue(!it.isEmpty("@output"))
+            input("@left", "key1", leftRecord)
+//            assertTrue(!isEmpty("@output"))
 
             val record1 = empty().set("foreignkey", "key1").set("recorddata","data1")
             val record2 = empty().set("foreignkey", "key1").set("recorddata","data2")
-            it.input("@right","otherkey1", record1)
-            it.input("@right","otherkey2", record2)
+            input("@right","otherkey1", record1)
+            input("@right","otherkey2", record2)
 
             // TODO skip the 'ghost delete' I'm not too fond of this, this one should be skippable
-            it.deleted("@output")
-            val outputs = it.outputSize("@output")
+            deleted("@output")
+            val outputs = outputSize("@output")
             assertEquals(2,outputs,"should have 2 elements")
-            it.output("@output") // skip one
-            val (_,v3) = it.output("@output")
+            output("@output") // skip one
+            val (_,v3) = output("@output")
             val subList = v3.get("rightsub") as List<*>
             assertEquals(2,subList.size)
             assertEquals(record1,subList[0])
             assertEquals(record2,subList[1])
-            it.delete("@right","otherkey1")
-            val (_,v4) = it.output("@output")
+            delete("@right","otherkey1")
+            val (_,v4) = output("@output")
             val subList2 = v4.get("rightsub") as List<*>
             assertEquals(1,subList2.size)
-            it.delete("@right","otherkey2")
-            assertEquals("key1",it.deleted("@output"))
+            delete("@right","otherkey2")
+            assertEquals("key1",deleted("@output"))
         }
     }
 
@@ -246,11 +246,11 @@ class TestTopology {
                 sink("@output")
             }
         }.renderAndTest {
-            it.input("@source","key1", empty().set("name","myname"))
-            it.input("@source","key2", empty().set("name","notmyname"))
-            it.input("@source","key3", empty().set("name","myname"))
-            assertEquals(2,it.outputSize("@output"))
-//            val (key,value) = it.output("@source")
+            input("@source","key1", empty().set("name","myname"))
+            input("@source","key2", empty().set("name","notmyname"))
+            input("@source","key3", empty().set("name","myname"))
+            assertEquals(2,outputSize("@output"))
+//            val (key,value) = output("@source")
         }
     }
 
