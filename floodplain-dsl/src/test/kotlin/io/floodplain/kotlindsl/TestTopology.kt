@@ -254,4 +254,48 @@ class TestTopology {
         }
     }
 
+    // TODO Can we remove the extra 'block' braces?
+    // TODO Can we implement += and ++ like operators?
+    // TODO Introduce 'eachDelete(key)
+    @Test
+    fun testScan() {
+        pipe("generation") {
+            source("@source") {
+                scan({msg->msg["groupKey"] as String},{msg->msg["total"]=0; msg},{
+                    set { msg, acc -> acc["total"] = acc["total"] as Int + 1; acc }
+                },{
+                    set { msg, acc -> acc["total"] = acc["total"] as Int - 1; acc }
+                })
+                each{msg,acc,key-> logger.info("Each: $key -> $msg -> $acc")}
+
+                sink("@output")
+            }
+        }.renderAndTest {
+            input("@source","key1", empty().set("groupKey","group1"))
+            input("@source","key1", empty().set("groupKey","group1"))
+            output("@output")
+            val (_,value) = output("@output")
+            logger.info("Value: $value")
+        }.renderAndTest {
+            input("@source","key1", empty().set("groupKey","group1"))
+            input("@source","key2", empty().set("groupKey","group1"))
+            output("@output")
+
+            val (_,value) = output("@output")
+            logger.info("Value: $value")
+            assertEquals(2,value["total"],"Entries with different keys should add")
+
+        }.renderAndTest {
+            input("@source","key1", empty().set("groupKey","group1"))
+            delete("@source","key1")
+            val (_,value) = output("@output")
+            logger.info("Value: $value")
+            assertEquals(1,value["total"],"Entries with different keys should add")
+
+            val (_,value2) = output("@output")
+            logger.info("Value: $value2")
+            assertEquals(0,value2["total"],"Delete should subtract")
+        }
+    }
+
 }

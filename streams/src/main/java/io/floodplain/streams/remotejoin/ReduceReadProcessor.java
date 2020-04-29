@@ -51,7 +51,7 @@ public class ReduceReadProcessor extends AbstractProcessor<String, ReplicationMe
             extracted = keyExtractor.orElse((m, s) -> StoreStateProcessor.COMMONKEY)
                     .apply(stored.message(), stored.paramMessage().orElse(ImmutableFactory.empty()));
         }
-        ImmutableMessage msg = this.accumulatorStore.get(extracted);
+        ImmutableMessage storedAccumulator = this.accumulatorStore.get(extracted);
         ReplicationMessage value = inputValue;
         inputStore.put(key, inputValue);
         if (inputValue == null || inputValue.operation() == Operation.DELETE) {
@@ -59,23 +59,27 @@ public class ReduceReadProcessor extends AbstractProcessor<String, ReplicationMe
                 throw new RuntimeException("Issue: Deleting a message that isn't there. Is this bad?");
             }
             // delete
-            ImmutableMessage param = msg == null ? initial.apply(stored.message()) : msg;
+            ImmutableMessage param = storedAccumulator == null ? initial.apply(stored.message()) : storedAccumulator;
             value = stored.withOperation(Operation.DELETE).withParamMessage(param);
             inputStore.delete(key);
         } else {
-            if(msg==null) {
-                msg = initial.apply(inputValue.message());
+            if(storedAccumulator==null) {
+                storedAccumulator = initial.apply(inputValue.message());
             }
-            value = value.withParamMessage(msg);
+            value = value.withParamMessage(storedAccumulator);
             if (stored != null) {
                 // already present, propagate old value first as delete
-                context().forward(key, stored.withOperation(Operation.DELETE).withParamMessage(msg != null ? msg : initial.apply(inputValue.message())));
-                msg = this.accumulatorStore.get(extracted);
+//                context().forward(key, stored.withOperation(Operation.DELETE).withParamMessage(storedAccumulator != null ? storedAccumulator : initial.apply(inputValue.message())));
+                forwardMessage(key,stored.withOperation(Operation.DELETE).withParamMessage(storedAccumulator != null ? storedAccumulator : initial.apply(inputValue.message())));
+                storedAccumulator = this.accumulatorStore.get(extracted);
             }
-            value = value.withParamMessage(msg);
+            value = value.withParamMessage(storedAccumulator);
         }
-        context().forward(key, value);
+        forwardMessage(key,value);
 
     }
 
+    private void forwardMessage(String key, ReplicationMessage msg) {
+        context().forward(key, msg);
+    }
 }

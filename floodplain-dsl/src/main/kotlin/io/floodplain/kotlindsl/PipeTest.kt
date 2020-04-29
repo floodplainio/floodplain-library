@@ -114,7 +114,10 @@ class TestDriverContext(private val driver: TopologyTestDriver, private val topo
         val keyVal = outputTopic.readKeyValue()
         logger.info { "Found key ${keyVal.key} operation: ${keyVal.value?.operation()}" }
         if(keyVal.value!=null) {
-            logger.error { "Unexpected content: ${replicationMessageParser.describe(keyVal.value)}" }
+            if(keyVal.value.operation()==ReplicationMessage.Operation.DELETE) {
+                return deleted(topic);
+            }
+            logger.error { "Unexpected content: ${replicationMessageParser.describe(keyVal.value)} remaining queue: ${outputTopic.queueSize}" }
             throw RuntimeException("Expected delete message for key: ${keyVal.key}, but got a value: ${keyVal.value}")
         }
         return keyVal.key

@@ -134,9 +134,13 @@ fun PartialPipe.joinGrouped(optional: Boolean = false, debug: Boolean = false, s
 }
 
 /**
- * Scan is effectively a 'reduce' operator (The 'scan' name is used in Rx). A real reduce makes no sense in infinite streams (as it would emit
+ * Scan is effectively a 'reduce' operator (The 'scan' name is used in Rx, which means a reduce operator that emits a 'running aggregate' every time
+ * it consumes a message). A real reduce makes no sense in infinite streams (as it would emit
  * a single item when the stream completes, which never happens).
  * It is a little bit more complicated than a regular reduce operator, as it also allows deleting items
+ * @param key This lambda extracts the aggregate key from the message. In SQL terminology, it is the 'group by'. Scan will create a aggregation
+ * bucket for each distinct key
+ * @param initial
  *
  */
 fun PartialPipe.scan(key: (IMessage) -> String, initial: (IMessage) -> IMessage, onAdd: Block.() -> Transformer, onRemove: Block.() -> Transformer) {
@@ -162,9 +166,8 @@ fun pipe(generation: String, init: Pipe.() -> Source): Pipe {
     val deployment = "deployment"
     // this is basically the name of the pipe instance, to make sure no names clash
     val instance = "instance"
-    var topologyConstructor = TopologyConstructor() // TopologyConstructor(Optional.of(AdminClient.create(mapOf("bootstrap.servers" to kafkaBrokers, "client.id" to clientId))))
     var topologyContext = TopologyContext(Optional.ofNullable(tenant), deployment, instance, generation)
-    val pipe = Pipe(topologyContext, topologyConstructor)
+    val pipe = Pipe(topologyContext)
 
     return pipe.addSource(pipe.init())
 }
@@ -174,9 +177,8 @@ fun pipes(generation: String, init: Pipe.() -> List<Source>): Pipe {
     val deployment = "deployment"
     // this is basically the name of the pipe instance, to make sure no names clash
     val instance = "instance"
-    var topologyConstructor = TopologyConstructor() // TopologyConstructor(Optional.of(AdminClient.create(mapOf("bootstrap.servers" to kafkaBrokers, "client.id" to clientId))))
     var topologyContext = TopologyContext(Optional.ofNullable(tenant), deployment, instance, generation)
-    val pipe = Pipe(topologyContext, topologyConstructor)
+    val pipe = Pipe(topologyContext)
     val sources = pipe.init()
     sources.forEach {
         e->pipe.addSource(e)

@@ -21,7 +21,7 @@ import kotlin.collections.ArrayList
 
 private val logger = mu.KotlinLogging.logger {}
 
-class Pipe(val context: TopologyContext, private val topologyConstructor: TopologyConstructor) {
+class Pipe(val context: TopologyContext) {
 
     private val sources: MutableList<Source> = ArrayList()
     private val sinkConfigurations: MutableList<Config> = mutableListOf()
@@ -59,7 +59,7 @@ class Pipe(val context: TopologyContext, private val topologyConstructor: Topolo
         return sourceConfigurations.toList()
     }
 
-    private fun renderTopology(): Topology {
+    private fun renderTopology(topologyConstructor: TopologyConstructor): Topology {
         val topology = Topology()
         val reactivePipes = sources.map { e -> e.toReactivePipe() }
         val stack = Stack<String>()
@@ -70,10 +70,11 @@ class Pipe(val context: TopologyContext, private val topologyConstructor: Topolo
         return topology;
     }
 
-    fun renderAndTest(testCmds: TestContext.()->Unit) {
-        val top = renderTopology()
+    fun renderAndTest(testCmds: TestContext.()->Unit): Pipe {
+        val top = renderTopology(TopologyConstructor())
         logger.info ("Testing topology:\n${top.describe()}")
         testTopology(top,testCmds,context)
+        return this
     }
 
     /**
@@ -82,7 +83,8 @@ class Pipe(val context: TopologyContext, private val topologyConstructor: Topolo
      * Finally, it will POST the supplied
      */
     fun renderAndStart(connectorURL: URL, kafkaHosts: String, clientId: String) {
-        val (topology, sources, sinks) = render()
+        val topologyConstructor = TopologyConstructor()
+        val (topology, sources, sinks) = render(topologyConstructor)
         topologyConstructor.createTopicsAsNeeded(kafkaHosts, clientId)
         sources.forEach { (name, json) ->
             startConstructor(name, context, connectorURL, json, true)
@@ -101,8 +103,8 @@ class Pipe(val context: TopologyContext, private val topologyConstructor: Topolo
      * - A list of kafka connect source pairs (name to json definition)
      * - A list of kafka connect sink pairs (name to json definition)
      */
-    fun render(): Triple<Topology, List<Pair<String, String>>, List<Pair<String, String>>> {
-        val topology = renderTopology()
+    fun render(topologyConstructor: TopologyConstructor): Triple<Topology, List<Pair<String, String>>, List<Pair<String, String>>> {
+        val topology = renderTopology(topologyConstructor)
         val sources = sourceConfigurations().map { element ->
             val (name, config) = element.materializeConnectorConfig(context)
             name to constructConnectorJson(context, name, config)
