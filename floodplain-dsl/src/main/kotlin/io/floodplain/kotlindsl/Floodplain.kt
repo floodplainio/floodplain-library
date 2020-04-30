@@ -5,11 +5,11 @@ package io.floodplain.kotlindsl
 import io.floodplain.immutable.api.ImmutableMessage
 import io.floodplain.kotlindsl.message.IMessage
 import io.floodplain.kotlindsl.message.fromImmutable
+import io.floodplain.kotlindsl.transformer.ForkTransformer
 import io.floodplain.reactive.source.topology.*
 import io.floodplain.reactive.source.topology.api.TopologyPipeComponent
 import io.floodplain.reactive.topology.ReactivePipe
 import io.floodplain.streams.api.TopologyContext
-import io.floodplain.streams.remotejoin.TopologyConstructor
 import java.util.*
 
 private val logger = mu.KotlinLogging.logger {}
@@ -67,6 +67,8 @@ fun PartialPipe.set(transform: (IMessage, IMessage) -> IMessage): Transformer {
     return addTransformer(Transformer(set))
 }
 
+
+
 //fun PartialPipe.copy()
 /**
  * Join the current source with another source, that has a different key.
@@ -105,11 +107,11 @@ fun Pipe.source(topic: String, init: Source.() -> Unit): Source {
 }
 
 /**
- * Creates a simple sink that will contain the result of the current transformation. Multiple sinks may be added.
+ * Creates a simple sink that will contain the result of the current transformation. Multiple sinks may not be added.
  */
-fun PartialPipe.sink(topic: String) {
+fun PartialPipe.sink(topic: String): Transformer {
     val sink = SinkTransformer(topic, Optional.empty())
-    addTransformer(Transformer(sink))
+    return addTransformer(Transformer(sink))
 }
 
 /**
@@ -153,6 +155,20 @@ fun PartialPipe.scan(key: (IMessage) -> String, initial: (IMessage) -> IMessage,
     addTransformer(Transformer(ScanTransformer(keyExtractor, initialConstructor, onAddBlock.transformers.map { e -> e.component }, onRemoveBlock.transformers.map { e -> e.component })))
 }
 
+fun PartialPipe.scan(initial: (IMessage) -> IMessage, onAdd: Block.() -> Transformer, onRemove: Block.() -> Transformer) {
+    val initialConstructor: (ImmutableMessage) -> ImmutableMessage = { msg -> initial.invoke(fromImmutable(msg)).toImmutable() }
+    val onAddBlock = Block()
+    onAdd.invoke(onAddBlock)
+    val onRemoveBlock = Block()
+    onRemove.invoke(onRemoveBlock)
+    addTransformer(Transformer(ScanTransformer(null, initialConstructor, onAddBlock.transformers.map { e -> e.component }, onRemoveBlock.transformers.map { e -> e.component })))
+}
+
+fun PartialPipe.fork(vararg destinations: Block.() -> Transformer): Transformer {
+    val blocks = destinations.map { dd->val b = Block(); dd.invoke(b); b }.toList()
+    val sink = ForkTransformer(blocks)
+    return addTransformer( Transformer(sink))
+}
 /**
  * Create a new top level stream instance
  * @param generation This is a string that indicates this current run. If you stop this run and restart it, it will continue where it left off.

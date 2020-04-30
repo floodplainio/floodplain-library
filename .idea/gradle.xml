@@ -15,7 +15,6 @@
             <option value="$PROJECT_DIR$/config-runtime" />
             <option value="$PROJECT_DIR$/floodplain-dsl" />
             <option value="$PROJECT_DIR$/floodplain-example" />
-            <option value="$PROJECT_DIR$/floodplain-quarkus" />
             <option value="$PROJECT_DIR$/floodplain-stream-topology" />
             <option value="$PROJECT_DIR$/immutable-api" />
             <option value="$PROJECT_DIR$/immutable-impl" />

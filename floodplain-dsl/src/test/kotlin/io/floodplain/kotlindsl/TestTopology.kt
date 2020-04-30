@@ -2,6 +2,7 @@ package io.floodplain.kotlindsl
 
 import io.floodplain.kotlindsl.message.IMessage
 import io.floodplain.kotlindsl.message.empty
+import io.floodplain.streams.remotejoin.StoreStateProcessor
 import kotlin.math.sin
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -254,6 +255,33 @@ class TestTopology {
         }
     }
 
+
+    @Test
+    fun testSimpleScan() {
+        pipe("generation") {
+            source("@source") {
+                scan({ msg -> msg["total"] = 0; msg }, {
+                    set { msg, acc -> acc["total"] = acc["total"] as Int + 1; acc }
+                }, {
+                    set { msg, acc -> acc["total"] = acc["total"] as Int - 1; acc }
+                })
+                each { msg, acc, key -> logger.info("Each: $key -> $msg -> $acc") }
+
+                sink("@output")
+            }
+        }.renderAndTest {
+            input("@source","key1", empty())
+            input("@source","key1", empty())
+            output("@output") // initial key, total = 1
+            output("@output") // delete previous key, total = 0
+            val (key,value) = output("@output") // insert key again, total = 1
+            assertTrue(outputSize("@output")==0L)
+            logger.info("Key: $key Value: $value")
+            assertEquals(StoreStateProcessor.COMMONKEY,key)
+            assertEquals(1,value["total"],"Entries with the same key should replace")
+
+        }
+    }
     // TODO Can we remove the extra 'block' braces?
     // TODO Can we implement += and ++ like operators?
     // TODO Introduce 'eachDelete(key)
@@ -273,9 +301,13 @@ class TestTopology {
         }.renderAndTest {
             input("@source","key1", empty().set("groupKey","group1"))
             input("@source","key1", empty().set("groupKey","group1"))
-            output("@output")
-            val (_,value) = output("@output")
+            output("@output") // initial key, total = 1
+            output("@output") // delete previous key, total = 0
+            val (_,value) = output("@output") // insert key again, total = 1
+            assertTrue(outputSize("@output")==0L)
             logger.info("Value: $value")
+            assertEquals(1,value["total"],"Entries with the same key should replace")
+
         }.renderAndTest {
             input("@source","key1", empty().set("groupKey","group1"))
             input("@source","key2", empty().set("groupKey","group1"))
@@ -298,4 +330,30 @@ class TestTopology {
         }
     }
 
+    @Test
+    fun testFork() {
+        pipe("gen") {
+            source("@source") {
+                fork(
+                        {
+                            filter {key,value-> value["category"]=="category1"}
+                            sink("@category1")
+                        },
+                        {
+                            filter {key,value-> value["category"]=="category2"}
+                            sink("@category2")
+                        },
+                        {
+                            sink("@all")
+                        }
+                )
+            }
+        }.renderAndTest {
+            input("@source", "key1", empty().set("category","category1"))
+            assertEquals(1,outputSize("@category1"))
+            assertEquals(0,outputSize("@category2"))
+            input("@source", "key2", empty().set("category","category2"))
+            assertEquals(2,outputSize("@all"))
+        }
+    }
 }

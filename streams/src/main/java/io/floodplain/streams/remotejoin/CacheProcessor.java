@@ -58,7 +58,7 @@ public class CacheProcessor extends AbstractProcessor<String, ReplicationMessage
 
         long runInterval = Math.max((cacheTime.toMillis() / 10), 1000);
 
-        this.context.schedule(runInterval, PunctuationType.WALL_CLOCK_TIME, this::checkCache);
+        this.context.schedule(Duration.ofMillis(runInterval), PunctuationType.WALL_CLOCK_TIME, this::checkCache);
         logger.info("Created persistentCache for {} with check interval of {}ms", this.cacheProcName, runInterval);
 
         if (memoryCache) {

@@ -2,18 +2,37 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel>
+      <module name="floodplain-library.config-runtime.native-test" target="11" />
       <module name="floodplain-library.floodplain-authentication-api.main" target="11" />
       <module name="floodplain-library.floodplain-authentication-api.native-test" target="11" />
       <module name="floodplain-library.floodplain-authentication-api.test" target="11" />
+      <module name="floodplain-library.floodplain-dsl.native-test" target="11" />
+      <module name="floodplain-library.floodplain-example.native-test" target="11" />
+      <module name="floodplain-library.floodplain-quarkus.main" target="11" />
+      <module name="floodplain-library.floodplain-quarkus.native-test" target="11" />
+      <module name="floodplain-library.floodplain-quarkus.test" target="11" />
       <module name="floodplain-library.floodplain-reactive-topology.main" target="11" />
       <module name="floodplain-library.floodplain-reactive-topology.native-test" target="11" />
       <module name="floodplain-library.floodplain-reactive-topology.test" target="11" />
+      <module name="floodplain-library.floodplain-stream-topology.native-test" target="11" />
+      <module name="floodplain-library.immutable-api.native-test" target="11" />
+      <module name="floodplain-library.immutable-impl.native-test" target="11" />
+      <module name="floodplain-library.kafka-converter.native-test" target="11" />
       <module name="floodplain-library.kafka-rx2.main" target="11" />
       <module name="floodplain-library.kafka-rx2.native-test" target="11" />
       <module name="floodplain-library.kafka-rx2.test" target="11" />
+      <module name="floodplain-library.kafka-webapi.native-test" target="11" />
+      <module name="floodplain-library.native-test" target="11" />
+      <module name="floodplain-library.pubsub-rx2.native-test" target="11" />
+      <module name="floodplain-library.replication-api.native-test" target="11" />
       <module name="floodplain-library.replication-http.main" target="11" />
       <module name="floodplain-library.replication-http.native-test" target="11" />
       <module name="floodplain-library.replication-http.test" target="11" />
+      <module name="floodplain-library.replication-impl.native-test" target="11" />
+      <module name="floodplain-library.replication-json.native-test" target="11" />
+      <module name="floodplain-library.replication-protobuf.native-test" target="11" />
+      <module name="floodplain-library.streams-api.native-test" target="11" />
+      <module name="floodplain-library.streams.native-test" target="11" />
       <module name="floodplain.repository.com.dexels.config.runtime.main" target="1.8" />
       <module name="floodplain.repository.com.dexels.config.runtime.test" target="1.8" />
       <module name="floodplain.repository.com.dexels.immutable.api.main" target="1.8" />

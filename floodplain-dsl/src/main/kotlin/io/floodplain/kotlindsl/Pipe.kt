@@ -64,7 +64,7 @@ class Pipe(val context: TopologyContext) {
         val reactivePipes = sources.map { e -> e.toReactivePipe() }
         val stack = Stack<String>()
         for (reactivePipe in reactivePipes) {
-            ReactivePipeParser.processPipe(context, topologyConstructor, topology, topologyConstructor.generateNewPipeId(), stack, reactivePipe, true)
+            ReactivePipeParser.processPipe(context, topologyConstructor, topology, topologyConstructor.generateNewPipeId(), stack, reactivePipe, false)
         }
         ReplicationTopologyParser.materializeStateStores(topologyConstructor, topology)
         return topology;
