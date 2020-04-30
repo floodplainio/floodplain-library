@@ -1,7 +1,6 @@
 package io.floodplain.streams.debezium.impl;
 
 import io.floodplain.pubsub.rx2.api.PubSubMessage;
-import io.floodplain.streams.debezium.JSONToReplicationMessage;
 import io.floodplain.streams.remotejoin.TopologyConstructor;
 import org.apache.kafka.streams.processor.RecordContext;
 import org.apache.kafka.streams.processor.TopicNameExtractor;

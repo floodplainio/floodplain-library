@@ -3,11 +3,9 @@ package io.floodplain.kotlindsl
 import io.floodplain.kotlindsl.message.IMessage
 import io.floodplain.kotlindsl.message.empty
 import io.floodplain.streams.remotejoin.StoreStateProcessor
-import kotlin.math.sin
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
-import kotlin.test.fail
 
 
 private val logger = mu.KotlinLogging.logger {}

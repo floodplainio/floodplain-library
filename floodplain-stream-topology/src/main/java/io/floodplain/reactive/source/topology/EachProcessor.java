@@ -7,8 +7,6 @@ import org.apache.kafka.streams.processor.AbstractProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.function.BiConsumer;
-
 public class EachProcessor extends AbstractProcessor<String, ReplicationMessage> {
 
     private final static Logger logger = LoggerFactory.getLogger(EachProcessor.class);

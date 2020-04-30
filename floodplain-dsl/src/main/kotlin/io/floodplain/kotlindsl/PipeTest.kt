@@ -11,11 +11,11 @@ import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.*
 import org.apache.kafka.streams.processor.StateStore
 import org.apache.kafka.streams.processor.WallclockTimestampExtractor
-import java.lang.RuntimeException
 import java.nio.file.Files
 import java.nio.file.Path
 import java.time.Duration
 import java.util.*
+
 private val logger = mu.KotlinLogging.logger {}
 
 interface TestCommand {

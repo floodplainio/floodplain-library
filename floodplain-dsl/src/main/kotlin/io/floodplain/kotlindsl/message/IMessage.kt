@@ -2,7 +2,6 @@ package io.floodplain.kotlindsl.message
 
 import io.floodplain.immutable.api.ImmutableMessage
 import io.floodplain.immutable.factory.ImmutableFactory
-import java.lang.RuntimeException
 import java.util.stream.Collectors
 import kotlin.streams.toList
 

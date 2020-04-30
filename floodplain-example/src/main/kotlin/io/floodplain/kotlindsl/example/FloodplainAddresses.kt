@@ -2,7 +2,6 @@ package io.floodplain.kotlindsl.example
 
 import io.floodplain.kotlindsl.*
 import java.net.URL
-import java.util.*
 
 private val logger = mu.KotlinLogging.logger {}
 

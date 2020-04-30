@@ -4,7 +4,6 @@ import io.floodplain.replication.api.ReplicationMessage;
 import io.floodplain.replication.factory.ReplicationFactory;
 import io.floodplain.replication.impl.protobuf.FallbackReplicationMessageParser;
 import io.floodplain.streams.base.Filters;
-import io.floodplain.streams.processor.programmatic.TestCreateTopology;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

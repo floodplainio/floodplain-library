@@ -1,12 +1,10 @@
 package io.floodplain.reactive.source.topology;
 
 import io.floodplain.immutable.api.ImmutableMessage;
-import io.floodplain.immutable.factory.ImmutableFactory;
 import io.floodplain.replication.api.ReplicationMessage;
 import org.apache.kafka.streams.processor.AbstractProcessor;
 
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 public class FilterProcessor extends AbstractProcessor<String, ReplicationMessage> {
 

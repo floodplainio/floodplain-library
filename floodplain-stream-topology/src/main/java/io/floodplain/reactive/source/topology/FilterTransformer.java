@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Stack;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 public class FilterTransformer implements TopologyPipeComponent {
 

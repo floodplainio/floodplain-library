@@ -5,7 +5,6 @@ import io.floodplain.reactive.source.topology.api.TopologyPipeComponent
 import io.floodplain.streams.api.TopologyContext
 import io.floodplain.streams.remotejoin.TopologyConstructor
 import org.apache.kafka.streams.Topology
-import java.lang.RuntimeException
 import java.util.*
 
 // Implemented this one in Kotlin (most are in Java, just to see if there were any complications, there seem to be none

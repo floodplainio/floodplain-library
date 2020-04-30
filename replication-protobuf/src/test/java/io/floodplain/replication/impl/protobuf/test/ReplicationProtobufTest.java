@@ -5,7 +5,6 @@ import io.floodplain.immutable.api.ImmutableMessage;
 import io.floodplain.immutable.api.ImmutableMessage.ValueType;
 import io.floodplain.immutable.factory.ImmutableFactory;
 import io.floodplain.protobuf.generated.Replication;
-import io.floodplain.pubsub.rx2.factory.impl.internal.KafkaDumpSubscriber;
 import io.floodplain.replication.api.ReplicationMessage;
 import io.floodplain.replication.api.ReplicationMessageParser;
 import io.floodplain.replication.factory.ReplicationFactory;

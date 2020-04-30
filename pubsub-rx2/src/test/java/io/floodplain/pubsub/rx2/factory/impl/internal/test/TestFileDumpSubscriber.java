@@ -1,7 +1,6 @@
 package io.floodplain.pubsub.rx2.factory.impl.internal.test;
 
 import io.floodplain.pubsub.rx2.factory.PubSubTools;
-import io.floodplain.pubsub.rx2.factory.impl.internal.KafkaDumpSubscriber;
 import io.reactivex.Flowable;
 import org.junit.Assert;
 import org.junit.Ignore;

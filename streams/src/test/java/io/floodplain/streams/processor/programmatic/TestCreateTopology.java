@@ -1,7 +1,6 @@
 package io.floodplain.streams.processor.programmatic;
 
 import io.floodplain.streams.api.TopologyContext;
-import io.floodplain.streams.debezium.impl.PubSubTopicNameExtractor;
 import io.floodplain.streams.remotejoin.ReplicationTopologyParser;
 import io.floodplain.streams.remotejoin.TopologyConstructor;
 import org.apache.kafka.clients.admin.AdminClient;

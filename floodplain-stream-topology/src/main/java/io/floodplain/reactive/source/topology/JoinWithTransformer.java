@@ -13,7 +13,6 @@ import org.apache.kafka.streams.kstream.Predicate;
 
 import java.util.Optional;
 import java.util.Stack;
-import java.util.function.BiFunction;
 
 public class JoinWithTransformer implements TopologyPipeComponent {
 

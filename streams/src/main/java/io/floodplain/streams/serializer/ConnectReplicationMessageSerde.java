@@ -2,7 +2,6 @@ package io.floodplain.streams.serializer;
 
 import io.floodplain.replication.api.ReplicationMessage;
 import io.floodplain.replication.impl.json.ReplicationJSON;
-import io.floodplain.streams.remotejoin.ReplicationTopologyParser;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serializer;

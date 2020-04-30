@@ -3,7 +3,6 @@ package io.floodplain.reactive.source.topology;
 import io.floodplain.immutable.api.ImmutableMessage;
 import io.floodplain.reactive.source.topology.api.TopologyPipeComponent;
 import io.floodplain.replication.api.ReplicationMessage;
-import io.floodplain.replication.factory.ReplicationFactory;
 import io.floodplain.streams.api.TopologyContext;
 import io.floodplain.streams.remotejoin.TopologyConstructor;
 import org.apache.kafka.streams.Topology;
