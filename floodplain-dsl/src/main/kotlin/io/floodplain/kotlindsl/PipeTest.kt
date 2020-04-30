@@ -14,6 +14,7 @@ import org.apache.kafka.streams.processor.WallclockTimestampExtractor
 import java.lang.RuntimeException
 import java.nio.file.Files
 import java.nio.file.Path
+import java.time.Duration
 import java.util.*
 private val logger = mu.KotlinLogging.logger {}
 
@@ -34,6 +35,8 @@ interface TestContext {
     fun deleted(topic: String): String;
     fun isEmpty(topic: String): Boolean;
     fun stateStore(name: String): StateStore;
+    fun advanceWallClockTime(duration: Duration);
+
 }
 fun testTopology(topology: Topology, testCmds: TestContext.() -> Unit, context: TopologyContext) {
     val storageFolder = "teststorage/store-"+UUID.randomUUID().toString();
@@ -132,6 +135,10 @@ class TestDriverContext(private val driver: TopologyTestDriver, private val topo
 
     override fun stateStore(name: String): StateStore {
         return driver.getStateStore(name)
+    }
+
+    override fun advanceWallClockTime(duration: Duration) {
+        driver.advanceWallClockTime(duration)
     }
 
 }

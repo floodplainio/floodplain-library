@@ -13,6 +13,7 @@ import kotlin.test.fail
 private val logger = mu.KotlinLogging.logger {}
 
 
+@Suppress("UNCHECKED_CAST")
 class TestTopology {
 
     @Test
@@ -241,7 +242,7 @@ class TestTopology {
     fun testFilter() {
         pipe("anygen") {
             source("@source") {
-                filter { key,value->
+                filter { _,value->
                     value["name"]=="myname"
                 }
                 sink("@output")
@@ -261,9 +262,9 @@ class TestTopology {
         pipe("generation") {
             source("@source") {
                 scan({ msg -> msg["total"] = 0; msg }, {
-                    set { msg, acc -> acc["total"] = acc["total"] as Int + 1; acc }
+                    set { _, acc -> acc["total"] = acc["total"] as Int + 1; acc }
                 }, {
-                    set { msg, acc -> acc["total"] = acc["total"] as Int - 1; acc }
+                    set { _, acc -> acc["total"] = acc["total"] as Int - 1; acc }
                 })
                 each { msg, acc, key -> logger.info("Each: $key -> $msg -> $acc") }
 
@@ -290,9 +291,9 @@ class TestTopology {
         pipe("generation") {
             source("@source") {
                 scan({msg->msg["groupKey"] as String},{msg->msg["total"]=0; msg},{
-                    set { msg, acc -> acc["total"] = acc["total"] as Int + 1; acc }
+                    set { _, acc -> acc["total"] = acc["total"] as Int + 1; acc }
                 },{
-                    set { msg, acc -> acc["total"] = acc["total"] as Int - 1; acc }
+                    set { _, acc -> acc["total"] = acc["total"] as Int - 1; acc }
                 })
                 each{msg,acc,key-> logger.info("Each: $key -> $msg -> $acc")}
 
@@ -336,11 +337,11 @@ class TestTopology {
             source("@source") {
                 fork(
                         {
-                            filter {key,value-> value["category"]=="category1"}
+                            filter {_,value-> value["category"]=="category1"}
                             sink("@category1")
                         },
                         {
-                            filter {key,value-> value["category"]=="category2"}
+                            filter {_,value-> value["category"]=="category2"}
                             sink("@category2")
                         },
                         {
@@ -354,6 +355,21 @@ class TestTopology {
             assertEquals(0,outputSize("@category2"))
             input("@source", "key2", empty().set("category","category2"))
             assertEquals(2,outputSize("@all"))
+        }
+    }
+
+    @Test
+    fun testDynamicSink() {
+        pipe("gen") {
+            source("@source") {
+                dynamicSink("somesink") {
+                    _,value->value["destination"] as String;
+                }
+            }
+        }.renderAndTest {
+            input("@source", "key1", empty().set("destination","mydestination"))
+            val size = outputSize("mydestination")
+            assertEquals(1,size)
         }
     }
 }

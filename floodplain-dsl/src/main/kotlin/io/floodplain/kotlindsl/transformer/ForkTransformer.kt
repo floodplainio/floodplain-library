@@ -8,14 +8,15 @@ import org.apache.kafka.streams.Topology
 import java.lang.RuntimeException
 import java.util.*
 
+// Implemented this one in Kotlin (most are in Java, just to see if there were any complications, there seem to be none
 class ForkTransformer(val blocks: List<Block>) : TopologyPipeComponent {
     var materialize = false;
 
     override fun addToTopology(transformerNames: Stack<String>, currentPipeId: Int, topology: Topology, topologyContext: TopologyContext, topologyConstructor: TopologyConstructor) {
  //       val currentTop = transformerNames.peek()
-//        if(materialize) {
-//            throw RuntimeException("Materialization hasn't been implemented TODO")
-//        }
+        if(materialize) {
+            throw RuntimeException("Materialization hasn't been implemented TODO")
+        }
         for (b in blocks) {
             val transformerList = b.transformers.map { e->e.component }.toList()
             // create a new stack, so we're sure it is unchanged:

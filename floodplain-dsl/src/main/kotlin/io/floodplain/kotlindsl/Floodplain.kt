@@ -115,6 +115,14 @@ fun PartialPipe.sink(topic: String): Transformer {
 }
 
 /**
+ * Creates a simple sink that will contain the result of the current transformation. Multiple sinks may not be added.
+ */
+fun PartialPipe.dynamicSink(name: String,extractor: (String,IMessage)->String): Transformer {
+    val sink = DynamicSinkTransformer(name, Optional.empty()) { key, value-> extractor.invoke(key, fromImmutable(value))}
+    return addTransformer(Transformer(sink))
+}
+
+/**
  * Joins with another source using the same key as this source.
  * @param optional: If set to true, it will also emit a value if there is no counterpart (yet) in the supplied source.
  * Note that setting this to true can cause a performance penalty, as more items could be emitted.
