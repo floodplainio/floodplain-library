@@ -3,6 +3,7 @@ package io.floodplain.kotlindsl
 import io.floodplain.kotlindsl.message.IMessage
 import io.floodplain.kotlindsl.message.empty
 import io.floodplain.streams.remotejoin.StoreStateProcessor
+import java.time.Duration
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -403,6 +404,49 @@ class TestTopology {
             stateStore.flush()
             assertEquals(0, stateStore.approximateNumEntries())
 
+        }
+    }
+
+    @Test
+    fun testBuffer() {
+        pipe("gen") {
+            source("@source") {
+                buffer(Duration.ofSeconds(9), 10)
+                sink("@output")
+            }
+        }.renderAndTest {
+            val msg = empty().set("value", "value1")
+            input("@source", "key1", msg)
+            // shouldn't have arrived yet:
+            assertTrue(isEmpty("@output"))
+            // advance time
+            advanceWallClockTime(Duration.ofSeconds(15))
+            // should have result:
+            assertTrue(!isEmpty("@output"))
+            // same message:
+            assertEquals(msg,output("@output").second)
+            // now make sure only one gets through
+            val otherMsg = empty().set("value", "value2")
+            input("@source", "key1", msg)
+            input("@source", "key1", otherMsg)
+            advanceWallClockTime(Duration.ofSeconds(15))
+            assertEquals(1,outputSize("@output"))
+            assertEquals(otherMsg,output("@output").second)
+            // now check size restriction. Max size is 10. Insert 20. expect 10 to come out.
+            for (i in 0..19) {
+                input("@source", "newkey${i}", empty().set("value", "value${i}"))
+            }
+            logger.info("statestores: ${getStateStoreNames()}");
+            // quick check if I'm not making unnecessary stores
+            assertEquals(1,getStateStoreNames().size)
+//            stateStore(getStateStoreNames().first()).flush()
+            val storeSize = stateStore(getStateStoreNames().first()).approximateNumEntries();
+            // TODO test size limit, works slightly different than I expected, isn't using the statestore,
+            // TODO investigate if there is some 'native' cache store
+
+
+            logger.info("Store szie: ${storeSize}")
+//            assertEquals(10L,storeSize)
         }
     }
 }

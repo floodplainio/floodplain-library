@@ -38,9 +38,7 @@ public class ReplicationTopologyParser {
     private static final Serde<ReplicationMessage> messageSerde = new ReplicationMessageSerde();
     private static final Serde<ImmutableMessage> immutableMessageSerde = new ImmutableMessageSerde();
 
-    public enum Flatten {FIRST, LAST, NONE}
-
-    ;
+    public enum Flatten {FIRST, LAST, NONE};
 
     private static final Logger logger = LoggerFactory.getLogger(ReplicationTopologyParser.class);
 
@@ -51,7 +49,6 @@ public class ReplicationTopologyParser {
 
     public static final void addStateStoreMapping(Map<String, List<String>> processorStateStoreMapper, String processor, String stateStore) {
         logger.info("Adding processor: {} with statestore: {}", processor, stateStore);
-
         List<String> parts = processorStateStoreMapper.get(stateStore);
         if (parts == null) {
             parts = new ArrayList<>();
@@ -252,24 +249,18 @@ public class ReplicationTopologyParser {
 
     public static void addPersistentCache(Topology current, TopologyContext topologyContext,
                                           TopologyConstructor topologyConstructor, String name, String fromProcessorName, Duration cacheTime,
-                                          int maxSize, Optional<Integer> partitions,
-                                          final Optional<ProcessorSupplier<String, ReplicationMessage>> processorFromChildren) {
-        if (topologyConstructor.stateStoreSupplier.get(fromProcessorName) == null) {
-            addSourceStore(current, topologyContext, topologyConstructor, processorFromChildren, fromProcessorName, true);
-        }
-
-        String nameCache = name + "-cache";
-
+                                          int maxSize, boolean inMemory) {
+//        if (topologyConstructor.stateStoreSupplier.get(fromProcessorName) == null) {
+//            addSourceStore(current, topologyContext, topologyConstructor, Optional.empty(), fromProcessorName, true);
+//        }
         current.addProcessor(
-                nameCache
-                , () -> new CacheProcessor(nameCache, cacheTime, maxSize)
+                name
+                , () -> new CacheProcessor(name, cacheTime, maxSize, inMemory)
                 , fromProcessorName
         );
-        addStateStoreMapping(topologyConstructor.processorStateStoreMapper, nameCache, nameCache);
-        addStateStoreMapping(topologyConstructor.processorStateStoreMapper, name, name);
-        topologyConstructor.stateStoreSupplier.put(name, createMessageStoreSupplier(name, true));
-        topologyConstructor.stateStoreSupplier.put(nameCache, createMessageStoreSupplier(nameCache, true));
-        current.addProcessor(name, () -> new StoreProcessor(STORE_PREFIX + name), nameCache);
+        logger.info("Buffer using statestore: {}",STORE_PREFIX+name);
+        addStateStoreMapping(topologyConstructor.processorStateStoreMapper, name, STORE_PREFIX+name);
+        topologyConstructor.stateStoreSupplier.put(STORE_PREFIX+name, createMessageStoreSupplier(STORE_PREFIX+name, true));
     }
 
     public static String addReducer(final Topology topology, TopologyContext topologyContext, TopologyConstructor topologyConstructor,

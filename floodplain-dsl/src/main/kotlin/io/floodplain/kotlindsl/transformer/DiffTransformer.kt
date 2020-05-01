@@ -18,6 +18,9 @@ class DiffTransformer: TopologyPipeComponent {
     }
 
     override fun addToTopology(transformerNames: Stack<String>, currentPipeId: Int, topology: Topology, topologyContext: TopologyContext, topologyConstructor: TopologyConstructor) {
+        if(materialize) {
+            throw RuntimeException("Materialization hasn't been implemented TODO")
+        }
         var top = transformerNames.peek()
         val name = topologyContext.qualifiedName("diff", transformerNames.size, currentPipeId)
 

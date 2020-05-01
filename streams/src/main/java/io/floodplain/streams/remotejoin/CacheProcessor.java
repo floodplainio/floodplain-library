@@ -18,6 +18,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static io.floodplain.streams.remotejoin.ReplicationTopologyParser.STORE_PREFIX;
+
 public class CacheProcessor extends AbstractProcessor<String, ReplicationMessage> {
     private static final String CACHED_AT_KEY = "_cachedAt";
 
@@ -28,23 +30,17 @@ public class CacheProcessor extends AbstractProcessor<String, ReplicationMessage
     private final Duration cacheTime;
     private String cacheProcName;
     private Object sync = new Object();
-    private boolean memoryCache = false;
+    private final boolean memoryCache;
     private boolean clearPersistentCache = false;
-
+    private long startedAt;
     private int maxSize;
 
-    public CacheProcessor(String cacheProcName, Duration cacheTime, int maxSize) {
+    public CacheProcessor(String cacheProcName, Duration cacheTime, int maxSize, boolean inMemory) {
         this.cacheProcName = cacheProcName;
         this.cacheTime = cacheTime;
         this.cache = new ConcurrentHashMap<>();
-        if (cacheTime.toSeconds() < 10) {
-            logger.info("Using memory caching for {}", cacheProcName);
-            // Use memory cache
-            this.memoryCache = true;
-            this.maxSize = 10000;
-        } else {
-            this.maxSize = maxSize;
-        }
+        this.memoryCache = inMemory;
+        this.maxSize = maxSize;
         logger.info("Using a cache time of {} seconds for {}", cacheTime, cacheProcName);
     }
 
@@ -53,7 +49,9 @@ public class CacheProcessor extends AbstractProcessor<String, ReplicationMessage
     public void init(ProcessorContext context) {
         super.init(context);
         this.context = context;
-        this.lookupStore = (KeyValueStore<String, ReplicationMessage>) context.getStateStore(cacheProcName);
+        this.startedAt = System.currentTimeMillis();
+//        STORE_tenant-deployment-gen-instance-buffer_1_1
+        this.lookupStore = (KeyValueStore<String, ReplicationMessage>) context.getStateStore(STORE_PREFIX+cacheProcName);
 
         long runInterval = Math.max((cacheTime.toMillis() / 10), 1000);
 
@@ -78,7 +76,7 @@ public class CacheProcessor extends AbstractProcessor<String, ReplicationMessage
                     logger.warn("Reached max cache size!");
                     context.forward(key, message);
                 } else {
-                    cache.put(key, new CacheEntry(message));
+                    cache.put(key, new CacheEntry(message,context.timestamp()));
                 }
             } else {
                 lookupStore.put(key, message.with(CACHED_AT_KEY, System.currentTimeMillis(), ImmutableMessage.ValueType.LONG));
@@ -103,14 +101,13 @@ public class CacheProcessor extends AbstractProcessor<String, ReplicationMessage
         if (clearPersistentCache) {
             clearPersistentCache();
         }
-        long started = System.currentTimeMillis();
         int entries = 0;
         int expiredEntries = 0;
         if (memoryCache) {
             Set<String> toForward = new HashSet<>();
             for (String key : cache.keySet()) {
                 CacheEntry entry = cache.get(key);
-                if (entry.isExpired()) {
+                if (entry.isExpired(ms)) {
                     toForward.add(key);
                 }
             }
@@ -128,7 +125,7 @@ public class CacheProcessor extends AbstractProcessor<String, ReplicationMessage
                     KeyValue<String, ReplicationMessage> keyValue = it.next();
                     entries++;
                     long cachedAt = (Long) keyValue.value.columnValue(CACHED_AT_KEY);
-                    if ((started - cachedAt) >= cacheTime.toMillis()) {
+                    if ((ms - cachedAt) >= cacheTime.toMillis()) {
                         possibleExpired.add(keyValue.key);
                     }
                 }
@@ -139,7 +136,7 @@ public class CacheProcessor extends AbstractProcessor<String, ReplicationMessage
                     ReplicationMessage message = lookupStore.get(key);
                     if (message == null) continue; // message is deleted
                     long cachedAt = (Long) message.columnValue(CACHED_AT_KEY);
-                    if ((started - cachedAt) >= cacheTime.toMillis()) {
+                    if ((ms - cachedAt) >= cacheTime.toMillis()) {
                         expiredEntries++;
                         context.forward(key, message.without(CACHED_AT_KEY));
                         lookupStore.delete(key);
@@ -148,7 +145,7 @@ public class CacheProcessor extends AbstractProcessor<String, ReplicationMessage
             }
         }
 
-        long duration = System.currentTimeMillis() - started;
+        long duration = System.currentTimeMillis() - ms;
         if (entries > 0 && !memoryCache) {
             logger.info("Checked cache {} - {} entries, {} expired entries in {}ms", this.cacheProcName, entries, expiredEntries, duration);
         }
@@ -174,8 +171,8 @@ public class CacheProcessor extends AbstractProcessor<String, ReplicationMessage
         private final long added;
         private final ReplicationMessage entry;
 
-        public CacheEntry(ReplicationMessage entry) {
-            this.added = System.currentTimeMillis();
+        public CacheEntry(ReplicationMessage entry, long timestamp) {
+            this.added = timestamp;
             this.entry = entry;
         }
 
@@ -183,8 +180,8 @@ public class CacheProcessor extends AbstractProcessor<String, ReplicationMessage
             return entry;
         }
 
-        public boolean isExpired() {
-            return (System.currentTimeMillis() - added) > cacheTime.toMillis();
+        public boolean isExpired(long timestamp) {
+            return (timestamp - added) > cacheTime.toMillis();
         }
     }
 }

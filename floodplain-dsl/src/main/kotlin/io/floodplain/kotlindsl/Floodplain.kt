@@ -5,12 +5,14 @@ package io.floodplain.kotlindsl
 import io.floodplain.immutable.api.ImmutableMessage
 import io.floodplain.kotlindsl.message.IMessage
 import io.floodplain.kotlindsl.message.fromImmutable
+import io.floodplain.kotlindsl.transformer.BufferTransformer
 import io.floodplain.kotlindsl.transformer.DiffTransformer
 import io.floodplain.kotlindsl.transformer.ForkTransformer
 import io.floodplain.reactive.source.topology.*
 import io.floodplain.reactive.source.topology.api.TopologyPipeComponent
 import io.floodplain.reactive.topology.ReactivePipe
 import io.floodplain.streams.api.TopologyContext
+import java.time.Duration
 import java.util.*
 
 private val logger = mu.KotlinLogging.logger {}
@@ -55,6 +57,12 @@ fun PartialPipe.diff(): Transformer {
     val diffTransformer = DiffTransformer()
     return addTransformer(Transformer(diffTransformer))
 }
+
+fun PartialPipe.buffer(duration: Duration, maxSize: Int = 10000, inMemory: Boolean = false): Transformer {
+    val bufferTransformer = BufferTransformer(duration,maxSize,inMemory)
+    return addTransformer(Transformer(bufferTransformer))
+}
+
 
 /**
  * Modifies the incoming message before passing it on.
