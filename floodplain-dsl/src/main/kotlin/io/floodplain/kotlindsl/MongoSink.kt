@@ -3,7 +3,7 @@ package io.floodplain.kotlindsl
 import io.floodplain.reactive.source.topology.SinkTransformer
 import io.floodplain.streams.api.CoreOperators
 import io.floodplain.streams.api.TopologyContext
-import java.util.*
+import java.util.Optional
 
 private val logger = mu.KotlinLogging.logger {}
 
@@ -34,11 +34,9 @@ class MongoConfig(val name: String, val uri: String, val database: String) : Con
                 "topics" to topics)
         settings.putAll(additional)
         settings.forEach { (key, value) ->
-            logger.info { "Setting: ${key} value: ${value}" }
+            logger.info { "Setting: $key value: $value" }
         }
         return name to settings
-
-
     }
 }
 
@@ -52,9 +50,8 @@ fun Pipe.mongoConfig(name: String, uri: String, database: String): MongoConfig {
     return c
 }
 
-
 fun PartialPipe.mongoSink(collection: String, topic: String, config: MongoConfig) {
     config.sinkInstancePair.add(collection to topic)
-    val sink = SinkTransformer(topic, Optional.empty())
+    val sink = SinkTransformer(topic, false, Optional.empty())
     addTransformer(Transformer(sink))
 }

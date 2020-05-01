@@ -3,7 +3,6 @@ package io.floodplain.kotlindsl
 import io.floodplain.reactive.source.topology.DebeziumTopicSource
 import io.floodplain.streams.api.TopologyContext
 
-
 class PostgresConfig(val name: String, val hostname: String, val port: Int, val username: String, val password: String, val database: String) : Config() {
 
     private val sourceElements: MutableList<DebeziumSourceElement> = mutableListOf()
@@ -25,7 +24,6 @@ class PostgresConfig(val name: String, val hostname: String, val port: Int, val 
         sourceElements.add(elt)
     }
 }
-
 
 fun Pipe.postgresSourceConfig(name: String, hostname: String, port: Int, username: String, password: String, database: String): PostgresConfig {
     val postgresConfig = PostgresConfig(name, hostname, port, username, password, database)

@@ -40,7 +40,6 @@ public class Filters {
         Filters.registerPredicate("equalToNoneIn", (id, params, message) -> !equalToAnyIn().apply(id, params, message));
         Filters.registerPredicate("equalToInt", (id, params, message) -> new Integer(Integer.parseInt(params.get(1))).equals(message.columnValue(params.get(0))));
         Filters.registerPredicate("notEqualToString", (id, params, message) -> !params.get(1).equals(message.columnValue(params.get(0))));
-        Filters.registerPredicate("validZip", Filters::isValidZipCode);
     }
 
     private static Function3<String, List<String>, ReplicationMessage, Boolean> equalToAnyIn() {
@@ -56,107 +55,4 @@ public class Filters {
     public static void registerPredicate(String name, Function3<String, List<String>, ReplicationMessage, Boolean> predicate) {
         predicates.put(name, predicate);
     }
-
-    public static Optional<Predicate<String, ReplicationMessage>> getFilter(Optional<String> filter) {
-        if (!filter.isPresent()) {
-            return Optional.empty();
-        }
-        String filterString = filter.get();
-        logger.info("Parsing filter: " + filterString);
-        if (filterString.startsWith("!")) {
-            final Predicate<String, ReplicationMessage> predicate = getCoreFilter(filterString.substring(1));
-            return Optional.of((key, value) -> !predicate.test(key, value));
-        }
-        return Optional.of(getCoreFilter(filterString));
-
-    }
-
-    public static Predicate<String, ReplicationMessage> getCoreFilter(String filterString) {
-        logger.info("Core Parsing filter: " + filterString);
-
-        String[] splitForOr = filterString.split("\\|");
-        List<Predicate<String, ReplicationMessage>> allPredicates = new ArrayList<>();
-        for (String p : splitForOr) {
-            String[] parts = p.split(",");
-            List<Predicate<String, ReplicationMessage>> predicateList = new ArrayList<>();
-            for (String part : parts) {
-                Predicate<String, ReplicationMessage> parsed = parseReplicationFilter(part);
-                predicateList.add(parsed);
-            }
-            // use and
-            allPredicates.add((key, value) -> {
-                for (Predicate<String, ReplicationMessage> pred : predicateList) {
-                    boolean res;
-                    try {
-                        res = pred.test(key, value);
-                    } catch (Throwable t) {
-                        logger.error("Exception on checking key: {}, value: {}", key, value, t);
-                        res = true;
-                    }
-                    if (!res) {
-                        return false;
-                    }
-                }
-                return true;
-            });
-        }
-
-        return (key, value) -> {
-            for (Predicate<String, ReplicationMessage> pred : allPredicates) {
-                boolean res = pred.test(key, value);
-                if (res) {
-                    return true;
-                }
-            }
-            return false;
-        };
-    }
-
-    private static Predicate<String, ReplicationMessage> parseReplicationFilter(String filterDefinition) {
-        String[] parts = filterDefinition.split(":");
-        String command = parts[0];
-        List<String> params;
-        if (parts.length > 1) {
-            String rest = filterDefinition.substring(command.length() + 1);
-            params = Arrays.asList(rest.split(":"));
-        } else {
-            params = Collections.emptyList();
-        }
-        Function3<String, List<String>, ReplicationMessage, Boolean> cmd = predicates.get(command);
-        if (cmd == null) {
-            logger.error("Unable to locate predicate with name: " + command);
-            logger.info("Available predicates: " + predicates.keySet());
-        }
-        return (key, msg) -> {
-            try {
-                return cmd.apply(key, params, msg);
-            } catch (Exception e) {
-                throw new RuntimeException("Error processing message filter", e);
-            }
-        };
-    }
-
-
-    private static boolean isValidZipCode(String id, List<String> params, ReplicationMessage msg) {
-        String zipColumn = params.get(0);
-        Object val = msg.columnValue(zipColumn);
-        if (val == null) {
-            return false;
-        }
-        if (!(val instanceof String)) {
-            return false;
-        }
-        String zipString = (String) val;
-        if (zipString.length() == 6) {
-            String numbers = zipString.substring(0, 4);
-            return numbers.chars().allMatch(Character::isDigit);
-        } else if (zipString.length() == 7) {
-            String numbers = zipString.substring(0, 4);
-            return numbers.chars().allMatch(Character::isDigit);
-        } else {
-            return false;
-        }
-    }
-
-
 }

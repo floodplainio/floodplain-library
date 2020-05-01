@@ -1,6 +1,14 @@
 package io.floodplain.kotlindsl.example
 
-import io.floodplain.kotlindsl.*
+import io.floodplain.kotlindsl.joinRemote
+import io.floodplain.kotlindsl.mongoConfig
+import io.floodplain.kotlindsl.mongoSink
+import io.floodplain.kotlindsl.pipes
+import io.floodplain.kotlindsl.postgresSource
+import io.floodplain.kotlindsl.postgresSourceConfig
+import io.floodplain.kotlindsl.set
+import io.floodplain.kotlindsl.sink
+import io.floodplain.kotlindsl.source
 import java.net.URL
 
 private val logger = mu.KotlinLogging.logger {}

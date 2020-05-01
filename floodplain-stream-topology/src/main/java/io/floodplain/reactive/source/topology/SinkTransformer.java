@@ -16,6 +16,7 @@ public class SinkTransformer implements TopologyPipeComponent {
 
     private final String name;
     private final Optional<Integer> partitions;
+    private final boolean materializeParent;
 
     private boolean create = true;
 
@@ -26,9 +27,10 @@ public class SinkTransformer implements TopologyPipeComponent {
 
     public static final String SINK_PREFIX = "SINK_";
 
-    public SinkTransformer(String name, Optional<Integer> partitions) {
+    public SinkTransformer(String name, boolean materializeParent, Optional<Integer> partitions) {
         this.name = name;
         this.partitions = partitions;
+        this.materializeParent = materializeParent;
     }
 
     @Override
@@ -47,7 +49,7 @@ public class SinkTransformer implements TopologyPipeComponent {
 
     @Override
     public boolean materializeParent() {
-        return false;
+        return materializeParent;
     }
 
     @Override

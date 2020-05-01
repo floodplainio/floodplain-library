@@ -50,7 +50,6 @@ data class IMessage(private val content: MutableMap<String, Any>) {
             return subelement.parsePath(path.subList(1, path.size))
         }
         return Pair(this, path[0])
-
     }
 
     fun clear(path: String) {
@@ -67,8 +66,8 @@ data class IMessage(private val content: MutableMap<String, Any>) {
         if (value == null) {
             msg.content.remove(name)
         } else {
-            if(value is IMessage) {
-                if(!value.isEmpty()) {
+            if (value is IMessage) {
+                if (!value.isEmpty()) {
                     msg.content[name] = value
                 } else {
                     // empty msg
@@ -115,7 +114,6 @@ data class IMessage(private val content: MutableMap<String, Any>) {
 
 fun empty(): IMessage = IMessage(mutableMapOf())
 
-
 fun fromImmutable(msg: ImmutableMessage): IMessage {
     val content = mutableMapOf<String, Any>()
     for ((name, value: Any?) in msg.values()) {
@@ -124,10 +122,10 @@ fun fromImmutable(msg: ImmutableMessage): IMessage {
         }
     }
     for ((name, value) in msg.subMessageMap()) {
-        content[name] =  fromImmutable(value)
+        content[name] = fromImmutable(value)
     }
     for ((name, value) in msg.subMessageListMap()) {
-        content[name] = value.stream().map { e-> fromImmutable(e) }.toList()
+        content[name] = value.stream().map { e -> fromImmutable(e) }.toList()
     }
     return IMessage(content)
 }

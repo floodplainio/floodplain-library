@@ -27,17 +27,15 @@ public class OneToOneProcessor extends AbstractProcessor<String, ReplicationMess
     private final BiFunction<ReplicationMessage, ReplicationMessage, ReplicationMessage> joinFunction;
     private boolean optional;
     private boolean debug;
-    private Predicate<String, ReplicationMessage> filterPredicate;
 
     private static final Logger logger = LoggerFactory.getLogger(OneToOneProcessor.class);
 
-    public OneToOneProcessor(String forwardLookupStoreName, String reverseLookupStoreName, boolean optional, Optional<Predicate<String, ReplicationMessage>> filterPredicate,
+    public OneToOneProcessor(String forwardLookupStoreName, String reverseLookupStoreName, boolean optional,
                              BiFunction<ReplicationMessage, ReplicationMessage, ReplicationMessage> joinFunction, boolean debug) {
         this.forwardLookupStoreName = forwardLookupStoreName;
         this.reverseLookupStoreName = reverseLookupStoreName;
         this.optional = optional;
         this.joinFunction = joinFunction;
-        this.filterPredicate = filterPredicate.orElse((k, v) -> true);
         this.debug = debug;
     }
 
@@ -70,12 +68,6 @@ public class OneToOneProcessor extends AbstractProcessor<String, ReplicationMess
             logger.info("Joining key: {} reverse: {}",key,reverse);
         }
 
-        if (!filterPredicate.test(key, innerMessage)) {
-            // filter says no
-            context().forward(key, innerMessage.withOperation(Operation.DELETE));
-            context().forward(key, null);
-            return;
-        }
         ReplicationMessage counterpart = lookupStore.get(key);
         if(debug) {
             if (counterpart==null) {

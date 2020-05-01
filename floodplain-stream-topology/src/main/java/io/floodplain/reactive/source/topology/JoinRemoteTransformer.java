@@ -48,7 +48,6 @@ public class JoinRemoteTransformer implements TopologyPipeComponent {
 
         String name = topologyContext.instance + "_" + pipeId + "_" + "joinRemote" + "_" + transformerNames.size();
         Optional<String> into = Optional.of("list");
-//        boolean optional = false;
 
         ReplicationTopologyParser.addSingleJoinGrouped(topology, topologyContext, topologyConstructor, from.get(), name, Optional.empty(), isList, with, isOptional);
         transformerNames.push(name);

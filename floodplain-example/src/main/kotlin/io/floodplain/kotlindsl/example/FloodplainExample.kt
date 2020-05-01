@@ -1,9 +1,20 @@
 package io.floodplain.kotlindsl.example
 
-import io.floodplain.kotlindsl.*
+import io.floodplain.kotlindsl.each
+import io.floodplain.kotlindsl.join
+import io.floodplain.kotlindsl.joinRemote
 import io.floodplain.kotlindsl.message.empty
+import io.floodplain.kotlindsl.mongoConfig
+import io.floodplain.kotlindsl.mongoSink
+import io.floodplain.kotlindsl.pipes
+import io.floodplain.kotlindsl.postgresSource
+import io.floodplain.kotlindsl.postgresSourceConfig
+import io.floodplain.kotlindsl.scan
+import io.floodplain.kotlindsl.set
+import io.floodplain.kotlindsl.sink
+import io.floodplain.kotlindsl.source
 import java.net.URL
-import java.util.*
+import java.util.UUID
 
 private val logger = mu.KotlinLogging.logger {}
 
@@ -40,9 +51,9 @@ fun main() {
                         msg.set("address", state)
                     }
                     each {
-                        customer,_,key -> logger.info("Customer: ${customer}")
+                        customer, _, key -> logger.info("Customer: $customer")
                     }
-                    join(optional = true,debug = true) {
+                    join(optional = true, debug = true) {
                         source("@customertotals") {}
                     }
                     set { customer, totals ->
@@ -72,8 +83,8 @@ fun main() {
                     scan({ msg -> msg["customer_id"].toString() }, { msg -> empty().set("total", 0.0).set("customer_id", msg["customer_id"]) },
                             {
                                 set { msg, state ->
-                                    state["total"] = state["total"] as Double + msg["amount"] as Double;
-                                    state["customer_id"] = msg["customer_id"]!!;
+                                    state["total"] = state["total"] as Double + msg["amount"] as Double
+                                    state["customer_id"] = msg["customer_id"]!!
                                     state
                                 }
                             },

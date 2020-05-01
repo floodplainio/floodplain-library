@@ -12,7 +12,7 @@ import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.ProtocolException
 import java.net.URL
-import java.util.*
+import java.util.Collections
 import java.util.function.Consumer
 
 private val logger = mu.KotlinLogging.logger {}
@@ -65,14 +65,12 @@ fun startConstructor(connectorName: String, topologyContext: TopologyContext, co
     postToHttp(connectURL, jsonString)
 }
 
-
 private fun existingConnectors(url: URL): List<String> {
     val an = objectMapper.readTree(url.openStream()) as ArrayNode
     val result: MutableList<String> = ArrayList()
     an.forEach(Consumer { j: JsonNode -> result.add(j.asText()) })
     return Collections.unmodifiableList(result)
 }
-
 
 @Throws(IOException::class)
 private fun deleteConnector(name: String, connectURL: URL) {
@@ -86,11 +84,11 @@ private fun deleteConnector(name: String, connectURL: URL) {
 // TODO replace with Java 11 client when we can go to graal 19.3
 @Throws(ProtocolException::class, IOException::class)
 private fun postToHttp(url: URL, jsonString: String) {
-//		URL url = new URL(this.connectURL);
+// 		URL url = new URL(this.connectURL);
     logger.info("Posting to: {}", url)
     val con = url.openConnection() as HttpURLConnection
 
-//		-H "Accept:application/json" -H "Content-Type:application/json"
+// 		-H "Accept:application/json" -H "Content-Type:application/json"
     con.requestMethod = "POST"
     con.setRequestProperty("Content-Type", "application/json")
     con.setRequestProperty("Accept", "application/json")

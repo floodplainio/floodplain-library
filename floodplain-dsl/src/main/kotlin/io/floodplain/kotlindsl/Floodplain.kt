@@ -8,17 +8,25 @@ import io.floodplain.kotlindsl.message.fromImmutable
 import io.floodplain.kotlindsl.transformer.BufferTransformer
 import io.floodplain.kotlindsl.transformer.DiffTransformer
 import io.floodplain.kotlindsl.transformer.ForkTransformer
-import io.floodplain.reactive.source.topology.*
+import io.floodplain.reactive.source.topology.DynamicSinkTransformer
+import io.floodplain.reactive.source.topology.EachTransformer
+import io.floodplain.reactive.source.topology.FilterTransformer
+import io.floodplain.reactive.source.topology.GroupTransformer
+import io.floodplain.reactive.source.topology.JoinRemoteTransformer
+import io.floodplain.reactive.source.topology.JoinWithTransformer
+import io.floodplain.reactive.source.topology.ScanTransformer
+import io.floodplain.reactive.source.topology.SetTransformer
+import io.floodplain.reactive.source.topology.SinkTransformer
+import io.floodplain.reactive.source.topology.TopicSource
 import io.floodplain.reactive.source.topology.api.TopologyPipeComponent
 import io.floodplain.reactive.topology.ReactivePipe
 import io.floodplain.streams.api.TopologyContext
 import java.time.Duration
-import java.util.*
+import java.util.Optional
 
 private val logger = mu.KotlinLogging.logger {}
 
-open class Transformer(val component: TopologyPipeComponent) : PartialPipe() {
-}
+open class Transformer(val component: TopologyPipeComponent) : PartialPipe()
 
 /**
  * Base class for connector configurations
@@ -31,14 +39,13 @@ abstract class Config() {
      * For some
      */
     abstract fun materializeConnectorConfig(topologyContext: TopologyContext): Pair<String, Map<String, String>>
-
 }
 
 /**
  * Filter a source. The supplied lambda should return 'true' if the message should be propagated, 'false' if not.
  */
-fun PartialPipe.filter(flt: (String,IMessage)-> Boolean) {
-    val transformerFilter: (String,ImmutableMessage) -> Boolean = { key,msg: ImmutableMessage  -> flt.invoke(key,fromImmutable(msg)) }
+fun PartialPipe.filter(flt: (String, IMessage) -> Boolean) {
+    val transformerFilter: (String, ImmutableMessage) -> Boolean = { key, msg: ImmutableMessage -> flt.invoke(key, fromImmutable(msg)) }
     val transformer = FilterTransformer(transformerFilter)
     addTransformer(Transformer(transformer))
 }
@@ -50,7 +57,6 @@ fun PartialPipe.each(transform: (IMessage, IMessage, String) -> Unit): Transform
     val transformer: (ImmutableMessage, ImmutableMessage, String) -> Unit = { msg: ImmutableMessage, param: ImmutableMessage, key: String -> transform.invoke(fromImmutable(msg), fromImmutable(param), key) }
     val each = EachTransformer(transformer)
     return addTransformer(Transformer(each))
-
 }
 
 fun PartialPipe.diff(): Transformer {
@@ -59,10 +65,9 @@ fun PartialPipe.diff(): Transformer {
 }
 
 fun PartialPipe.buffer(duration: Duration, maxSize: Int = 10000, inMemory: Boolean = false): Transformer {
-    val bufferTransformer = BufferTransformer(duration,maxSize,inMemory)
+    val bufferTransformer = BufferTransformer(duration, maxSize, inMemory)
     return addTransformer(Transformer(bufferTransformer))
 }
-
 
 /**
  * Modifies the incoming message before passing it on.
@@ -81,9 +86,7 @@ fun PartialPipe.set(transform: (IMessage, IMessage) -> IMessage): Transformer {
     return addTransformer(Transformer(set))
 }
 
-
-
-//fun PartialPipe.copy()
+// fun PartialPipe.copy()
 /**
  * Join the current source with another source, that has a different key.
  * @param key This lambda should extract the key we want to use from the current source. Keys are always strings in floodplain
@@ -123,16 +126,16 @@ fun Pipe.source(topic: String, init: Source.() -> Unit): Source {
 /**
  * Creates a simple sink that will contain the result of the current transformation. Multiple sinks may not be added.
  */
-fun PartialPipe.sink(topic: String): Transformer {
-    val sink = SinkTransformer(topic, Optional.empty())
+fun PartialPipe.sink(topic: String, materializeParent: Boolean = false): Transformer {
+    val sink = SinkTransformer(topic, materializeParent, Optional.empty())
     return addTransformer(Transformer(sink))
 }
 
 /**
  * Creates a simple sink that will contain the result of the current transformation. Multiple sinks may not be added.
  */
-fun PartialPipe.dynamicSink(name: String,extractor: (String,IMessage)->String): Transformer {
-    val sink = DynamicSinkTransformer(name, Optional.empty()) { key, value-> extractor.invoke(key, fromImmutable(value))}
+fun PartialPipe.dynamicSink(name: String, extractor: (String, IMessage) -> String): Transformer {
+    val sink = DynamicSinkTransformer(name, Optional.empty()) { key, value -> extractor.invoke(key, fromImmutable(value)) }
     return addTransformer(Transformer(sink))
 }
 
@@ -141,8 +144,8 @@ fun PartialPipe.dynamicSink(name: String,extractor: (String,IMessage)->String): 
  * @param optional: If set to true, it will also emit a value if there is no counterpart (yet) in the supplied source.
  * Note that setting this to true can cause a performance penalty, as more items could be emitted.
  */
-fun PartialPipe.join(optional: Boolean = false,debug: Boolean = false, source: () -> Source) {
-    val jrt = JoinWithTransformer(optional, false, source.invoke().toReactivePipe(),debug)
+fun PartialPipe.join(optional: Boolean = false, debug: Boolean = false, source: () -> Source) {
+    val jrt = JoinWithTransformer(optional, false, source.invoke().toReactivePipe(), debug)
     addTransformer(Transformer(jrt))
 }
 
@@ -153,7 +156,7 @@ fun PartialPipe.join(optional: Boolean = false,debug: Boolean = false, source: (
  * Note that setting this to true can cause a performance penalty, as more items could be emitted.
  */
 fun PartialPipe.joinGrouped(optional: Boolean = false, debug: Boolean = false, source: () -> Source) {
-    val jrt = JoinWithTransformer(optional, true, source.invoke().toReactivePipe(),debug)
+    val jrt = JoinWithTransformer(optional, true, source.invoke().toReactivePipe(), debug)
     addTransformer(Transformer(jrt))
 }
 
@@ -199,9 +202,9 @@ fun PartialPipe.scan(initial: (IMessage) -> IMessage, onAdd: Block.() -> Transfo
  * Fork the current stream to other downstreams
  */
 fun PartialPipe.fork(vararg destinations: Block.() -> Transformer): Transformer {
-    val blocks = destinations.map { dd->val b = Block(); dd.invoke(b); b }.toList()
+    val blocks = destinations.map { dd -> val b = Block(); dd.invoke(b); b }.toList()
     val forkTransformer = ForkTransformer(blocks)
-    return addTransformer( Transformer(forkTransformer))
+    return addTransformer(Transformer(forkTransformer))
 }
 /**
  * Create a new top level stream instance
@@ -231,7 +234,7 @@ fun pipes(generation: String, init: Pipe.() -> List<Source>): Pipe {
     val pipe = Pipe(topologyContext)
     val sources = pipe.init()
     sources.forEach {
-        e->pipe.addSource(e)
+        e -> pipe.addSource(e)
     }
     return pipe
 }
@@ -244,7 +247,6 @@ open class Source(val component: TopologyPipeComponent) : PartialPipe() {
         return ReactivePipe(component, transformers.map { e -> e.component })
     }
 }
-
 
 /**
  * Common superclass for sources or 'pipe segments', either a source, transformer or block
@@ -261,5 +263,4 @@ abstract class PartialPipe {
 /**
  * Concrete version of a partial pipe
  */
-class Block() : PartialPipe() {
-}
+class Block() : PartialPipe()

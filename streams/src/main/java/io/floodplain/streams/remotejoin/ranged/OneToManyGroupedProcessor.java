@@ -31,16 +31,12 @@ public class OneToManyGroupedProcessor extends AbstractProcessor<String, Replica
     private KeyValueStore<String, ReplicationMessage> lookupStore;
     private BiFunction<ReplicationMessage, List<ReplicationMessage>, ReplicationMessage> joinFunction;
 
-    private Predicate<String, ReplicationMessage> filterPredicate;
-
     public OneToManyGroupedProcessor(String storeName, String groupedStoreName, boolean optional,
-                                     Optional<Predicate<String, ReplicationMessage>> filterPredicate,
                                      BiFunction<ReplicationMessage, List<ReplicationMessage>, ReplicationMessage> joinFunction, boolean debug) {
         this.storeName = storeName;
         this.groupedStoreName = groupedStoreName;
         this.optional = optional;
         this.joinFunction = joinFunction;
-        this.filterPredicate = filterPredicate.orElse((k, v) -> true);
         this.debug = debug;
     }
 
@@ -74,16 +70,6 @@ public class OneToManyGroupedProcessor extends AbstractProcessor<String, Replica
     }
 
     private void forwardJoin(String key, ReplicationMessage msg) {
-        try {
-            if (!filterPredicate.test(key, msg)) {
-                // filter says no
-                forwardMessage(key, msg.withOperation(Operation.DELETE));
-                return;
-            }
-        } catch (Throwable t) {
-            logger.error("Error on checking filter predicate: {}", t);
-        }
-
         List<ReplicationMessage> msgs = new ArrayList<>();
         try (KeyValueIterator<String, ReplicationMessage> it = groupedLookupStore.range(key + "|", key + "}")) {
             while (it.hasNext()) {

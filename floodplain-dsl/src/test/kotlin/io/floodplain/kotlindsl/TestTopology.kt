@@ -8,9 +8,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-
 private val logger = mu.KotlinLogging.logger {}
-
 
 @Suppress("UNCHECKED_CAST")
 class TestTopology {
@@ -29,7 +27,6 @@ class TestTopology {
         }
     }
 
-
     @Test
     fun testDelete() {
         pipe("somegen") {
@@ -40,12 +37,11 @@ class TestTopology {
             input("@sometopic", "key1", empty().set("name", "gorilla"))
             delete("@sometopic", "key1")
             output("@outputtopic")
-            val eq = deleted("@outputtopic").equals("key1");
+            val eq = deleted("@outputtopic").equals("key1")
             logger.info("equal: $eq")
             logger.info("Topic now empty: ${isEmpty("@outputtopic")}")
         }
     }
-
 
     @Test
     fun testSimpleJoin() {
@@ -81,7 +77,6 @@ class TestTopology {
             source("@left") {
                 join(optional = true) {
                     source("@right") {
-
                     }
                 }
                 set { left, right ->
@@ -145,7 +140,7 @@ class TestTopology {
                     left
                 }
                 each { left, right, key ->
-                    logger.info("Message: ${left} RightMessage $right key: $key")
+                    logger.info("Message: $left RightMessage $right key: $key")
                 }
                 sink("@output")
             }
@@ -199,7 +194,7 @@ class TestTopology {
                     left
                 }
                 each { left, right, key ->
-                    logger.info("Message: ${left} RightMessage $right key: $key")
+                    logger.info("Message: $left RightMessage $right key: $key")
                 }
                 sink("@output")
             }
@@ -256,7 +251,6 @@ class TestTopology {
         }
     }
 
-
     @Test
     fun testSimpleScan() {
         pipe("generation") {
@@ -280,7 +274,6 @@ class TestTopology {
             logger.info("Key: $key Value: $value")
             assertEquals(StoreStateProcessor.COMMONKEY, key)
             assertEquals(1, value["total"], "Entries with the same key should replace")
-
         }
     }
 
@@ -309,7 +302,6 @@ class TestTopology {
             assertTrue(outputSize("@output") == 0L)
             logger.info("Value: $value")
             assertEquals(1, value["total"], "Entries with the same key should replace")
-
         }.renderAndTest {
             input("@source", "key1", empty().set("groupKey", "group1"))
             input("@source", "key2", empty().set("groupKey", "group1"))
@@ -318,7 +310,6 @@ class TestTopology {
             val (_, value) = output("@output")
             logger.info("Value: $value")
             assertEquals(2, value["total"], "Entries with different keys should add")
-
         }.renderAndTest {
             input("@source", "key1", empty().set("groupKey", "group1"))
             delete("@source", "key1")
@@ -366,7 +357,7 @@ class TestTopology {
         pipe("gen") {
             source("@source") {
                 dynamicSink("somesink") { _, value ->
-                    value["destination"] as String;
+                    value["destination"] as String
                 }
             }
         }.renderAndTest {
@@ -403,7 +394,6 @@ class TestTopology {
             }
             stateStore.flush()
             assertEquals(0, stateStore.approximateNumEntries())
-
         }
     }
 
@@ -412,7 +402,7 @@ class TestTopology {
         pipe("gen") {
             source("@source") {
                 buffer(Duration.ofSeconds(9), 10)
-                sink("@output")
+                sink("@output", true)
             }
         }.renderAndTest {
             val msg = empty().set("value", "value1")
@@ -424,28 +414,27 @@ class TestTopology {
             // should have result:
             assertTrue(!isEmpty("@output"))
             // same message:
-            assertEquals(msg,output("@output").second)
+            assertEquals(msg, output("@output").second)
             // now make sure only one gets through
             val otherMsg = empty().set("value", "value2")
             input("@source", "key1", msg)
             input("@source", "key1", otherMsg)
             advanceWallClockTime(Duration.ofSeconds(15))
-            assertEquals(1,outputSize("@output"))
-            assertEquals(otherMsg,output("@output").second)
+            assertEquals(1, outputSize("@output"))
+            assertEquals(otherMsg, output("@output").second)
             // now check size restriction. Max size is 10. Insert 20. expect 10 to come out.
             for (i in 0..19) {
-                input("@source", "newkey${i}", empty().set("value", "value${i}"))
+                input("@source", "newkey$i", empty().set("value", "value$i"))
             }
-            logger.info("statestores: ${getStateStoreNames()}");
+            logger.info("statestores: ${getStateStoreNames()}")
             // quick check if I'm not making unnecessary stores
-            assertEquals(1,getStateStoreNames().size)
+//            assertEquals(2,getStateStoreNames().size)
 //            stateStore(getStateStoreNames().first()).flush()
-            val storeSize = stateStore(getStateStoreNames().first()).approximateNumEntries();
+            val storeSize = stateStore(getStateStoreNames().first()).approximateNumEntries()
             // TODO test size limit, works slightly different than I expected, isn't using the statestore,
             // TODO investigate if there is some 'native' cache store
 
-
-            logger.info("Store szie: ${storeSize}")
+            logger.info("Store szie: $storeSize")
 //            assertEquals(10L,storeSize)
         }
     }

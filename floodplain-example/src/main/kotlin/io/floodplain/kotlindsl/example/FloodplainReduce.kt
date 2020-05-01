@@ -1,7 +1,14 @@
 package io.floodplain.kotlindsl.example
 
-import io.floodplain.kotlindsl.*
+import io.floodplain.kotlindsl.join
 import io.floodplain.kotlindsl.message.empty
+import io.floodplain.kotlindsl.mongoConfig
+import io.floodplain.kotlindsl.mongoSink
+import io.floodplain.kotlindsl.pipe
+import io.floodplain.kotlindsl.postgresSource
+import io.floodplain.kotlindsl.postgresSourceConfig
+import io.floodplain.kotlindsl.scan
+import io.floodplain.kotlindsl.set
 import java.net.URL
 
 private val logger = mu.KotlinLogging.logger {}
@@ -17,8 +24,8 @@ fun main() {
                     scan({ msg -> msg["customer_id"].toString() }, { msg -> empty().set("total", 0.0).set("customer_id", msg["customer_id"]) },
                             {
                                 set { msg, state ->
-                                    state["total"] = state["total"] as Double + msg["amount"] as Double;
-                                    state["customer_id"] = msg["customer_id"]!!;
+                                    state["total"] = state["total"] as Double + msg["amount"] as Double
+                                    state["customer_id"] = msg["customer_id"]!!
                                     state
                                 }
                             },
@@ -35,7 +42,6 @@ fun main() {
                 msg["payments"] = state; msg
             }
             mongoSink("justtotal", "myfinaltopic", mongoConfig)
-
         }
     }.renderAndStart(URL("http://localhost:8083/connectors"), "localhost:9092", "reduceExample")
 }

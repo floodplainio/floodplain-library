@@ -26,9 +26,7 @@ public class GroupTransformer implements TopologyPipeComponent {
     @Override
     public void addToTopology(Stack<String> transformerNames, int pipeId, Topology topology,
                               TopologyContext topologyContext, TopologyConstructor topologyConstructor) {
-        Function<ReplicationMessage, String> keyExtractor = msg -> {
-            return this.keyExtractor.apply(msg.message(), msg.paramMessage().orElse(ImmutableFactory.empty()));
-        };
+        Function<ReplicationMessage, String> keyExtractor = msg -> this.keyExtractor.apply(msg.message(), msg.paramMessage().orElse(ImmutableFactory.empty()));
 
         addGroupTransformer(transformerNames, pipeId, topology, topologyContext, topologyConstructor, keyExtractor, "group");
 
@@ -37,7 +35,6 @@ public class GroupTransformer implements TopologyPipeComponent {
     public static void addGroupTransformer(Stack<String> transformerNames, int pipeId, Topology topology,
                                            TopologyContext topologyContext, TopologyConstructor topologyConstructor, Function<ReplicationMessage, String> keyExtractor, String transformerName) {
         String from = transformerNames.peek();
-//		String name = createName(topologyContext, transformerName,transformerNames.size(),pipeId);
         String name = topologyContext.qualifiedName(transformerName, transformerNames.size(), pipeId);
         boolean ignoreOriginalKey = false;
         String grouped = ReplicationTopologyParser.addGroupedProcessor(topology, topologyContext, topologyConstructor, name, from, ignoreOriginalKey, keyExtractor, Optional.empty());

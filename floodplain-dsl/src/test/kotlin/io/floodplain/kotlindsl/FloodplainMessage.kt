@@ -6,7 +6,6 @@ import kotlin.test.Test
 
 class FloodplainMessage {
 
-
     @Test
     fun testMessageConversion() {
         val msg = empty()

@@ -250,9 +250,6 @@ public class ReplicationTopologyParser {
     public static void addPersistentCache(Topology current, TopologyContext topologyContext,
                                           TopologyConstructor topologyConstructor, String name, String fromProcessorName, Duration cacheTime,
                                           int maxSize, boolean inMemory) {
-//        if (topologyConstructor.stateStoreSupplier.get(fromProcessorName) == null) {
-//            addSourceStore(current, topologyContext, topologyConstructor, Optional.empty(), fromProcessorName, true);
-//        }
         current.addProcessor(
                 name
                 , () -> new CacheProcessor(name, cacheTime, maxSize, inMemory)
@@ -326,7 +323,6 @@ public class ReplicationTopologyParser {
                                    TopologyConstructor topologyConstructor, String fromProcessorName, String withProcessorName, String name,
                                    boolean optional,
                                    boolean multiple,
-                                   Optional<Predicate<String, ReplicationMessage>> filterPredicate,
                                    boolean materialize,
                                    boolean debug) {
         String firstNamePre = name + "-forwardpre";
@@ -349,7 +345,6 @@ public class ReplicationTopologyParser {
                     STORE_PREFIX + fromProcessorName,
                     STORE_PREFIX + withProcessorName,
                     optional,
-                    filterPredicate,
                     CoreOperators.getListJoinFunctionToParam(false),
                     debug
             );
@@ -358,7 +353,6 @@ public class ReplicationTopologyParser {
                     STORE_PREFIX + fromProcessorName,
                     STORE_PREFIX + withProcessorName,
                     optional,
-                    filterPredicate,
                     (msg, comsg) -> msg.withParamMessage(comsg.message()),debug);
         }
         String procName = materialize ? "proc_" + name : name;

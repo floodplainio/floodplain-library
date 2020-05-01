@@ -7,6 +7,11 @@ import io.floodplain.streams.base.RocksDBConfigurationSetter
 import io.floodplain.streams.base.StreamOperators
 import io.floodplain.streams.remotejoin.ReplicationTopologyParser
 import io.floodplain.streams.remotejoin.TopologyConstructor
+import java.io.IOException
+import java.net.URL
+import java.util.Properties
+import java.util.Stack
+import kotlin.collections.ArrayList
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.common.serialization.Serdes
@@ -14,10 +19,6 @@ import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.StreamsConfig
 import org.apache.kafka.streams.Topology
 import org.apache.kafka.streams.processor.WallclockTimestampExtractor
-import java.io.IOException
-import java.net.URL
-import java.util.*
-import kotlin.collections.ArrayList
 
 private val logger = mu.KotlinLogging.logger {}
 
@@ -35,7 +36,6 @@ class Pipe(val context: TopologyContext) {
         return this
     }
 
-
     /**
      * Adds a sink config, should only be called from a sink implementation
      */
@@ -49,7 +49,6 @@ class Pipe(val context: TopologyContext) {
     fun addSourceConfiguration(c: Config) {
         sourceConfigurations.add(c)
     }
-
 
     private fun sinkConfigurations(): List<Config> {
         return sinkConfigurations.toList()
@@ -67,13 +66,13 @@ class Pipe(val context: TopologyContext) {
             ReactivePipeParser.processPipe(context, topologyConstructor, topology, topologyConstructor.generateNewPipeId(), stack, reactivePipe, false)
         }
         ReplicationTopologyParser.materializeStateStores(topologyConstructor, topology)
-        return topology;
+        return topology
     }
 
-    fun renderAndTest(testCmds: TestContext.()->Unit): Pipe {
+    fun renderAndTest(testCmds: TestContext.() -> Unit): Pipe {
         val top = renderTopology(TopologyConstructor())
-        logger.info ("Testing topology:\n${top.describe()}")
-        testTopology(top,testCmds,context)
+        logger.info("Testing topology:\n${top.describe()}")
+        testTopology(top, testCmds, context)
         return this
     }
 
@@ -114,7 +113,6 @@ class Pipe(val context: TopologyContext) {
             name to constructConnectorJson(context, name, config)
         }
         return Triple(topology, sources, sinks)
-
     }
 
     @Throws(InterruptedException::class, IOException::class)
@@ -127,11 +125,10 @@ class Pipe(val context: TopologyContext) {
             stream.close()
         }
         stream.setStateListener { newState: KafkaStreams.State?, oldState: KafkaStreams.State? ->
-            logger.info("State moving from {} to {}", oldState, newState,stream.state()) }
+            logger.info("State moving from {} to {}", oldState, newState, stream.state()) }
         stream.start()
         return stream
     }
-
 
     private fun createProperties(applicationId: String, brokers: String, storagePath: String): Properties? {
         val streamsConfiguration = Properties()
@@ -165,8 +162,8 @@ class Pipe(val context: TopologyContext) {
         streamsConfiguration["message.timestamp.difference.max.ms"] = 604800000L * 10
         streamsConfiguration["log.message.timestamp.difference.max.ms"] = 604800000L * 11
 
-//	    StreamsConfig.
-        streamsConfiguration[StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG] = 10 * 1024 * 1024L;
+// 	    StreamsConfig.
+        streamsConfiguration[StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG] = 10 * 1024 * 1024L
 
         streamsConfiguration[StreamsConfig.COMMIT_INTERVAL_MS_CONFIG] = 1000
         streamsConfiguration[ProducerConfig.MAX_REQUEST_SIZE_CONFIG] = 7900000
@@ -174,6 +171,4 @@ class Pipe(val context: TopologyContext) {
         streamsConfiguration[StreamsConfig.ROCKSDB_CONFIG_SETTER_CLASS_CONFIG] = RocksDBConfigurationSetter::class.java
         return streamsConfiguration
     }
-
-
 }

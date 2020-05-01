@@ -20,6 +20,6 @@ class AppTest {
         println("Aap: ${m2.value("aap")}")
 //        val classUnderTest = App()
         assertNotNull(m2.value("aap"), "app conversion has failed")
-        assertEquals("vla",m2.value("aap").get() as String)
+        assertEquals("vla", m2.value("aap").get() as String)
     }
 }
