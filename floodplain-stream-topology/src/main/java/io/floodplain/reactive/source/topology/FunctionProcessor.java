@@ -10,9 +10,9 @@ import java.util.function.BiFunction;
 
 public class FunctionProcessor extends AbstractProcessor<String, ReplicationMessage> {
 
-    private final BiFunction<ImmutableMessage, ImmutableMessage, ImmutableMessage> function;
+    private final SetTransformer.TriFunction function;
 
-    public FunctionProcessor(BiFunction<ImmutableMessage, ImmutableMessage, ImmutableMessage> func) {
+    public FunctionProcessor(SetTransformer.TriFunction func) {
         this.function = func;
     }
 
@@ -26,7 +26,7 @@ public class FunctionProcessor extends AbstractProcessor<String, ReplicationMess
         ReplicationMessage.Operation operation = value.operation();
 
 //		if(value.operation()!= ReplicationMessage.Operation.DELETE) {
-            ImmutableMessage applied = function.apply(value.message(), value.paramMessage().orElse(ImmutableFactory.empty()));
+            ImmutableMessage applied = function.apply(key,value.message(), value.paramMessage().orElse(ImmutableFactory.empty()));
             super.context().forward(key, ReplicationFactory.standardMessage(applied).withParamMessage(value.paramMessage().orElse(ImmutableFactory.empty())).withOperation(operation));
 //		} else {
 //            super.context().forward(key, value);

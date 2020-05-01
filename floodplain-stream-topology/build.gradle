@@ -26,7 +26,6 @@ dependencies {
     implementation project(':replication-api')
     implementation project(':replication-impl')
     implementation project(':replication-json')
-    implementation project(':config-runtime')
     implementation project(':pubsub-rx2')
     implementation project(':streams')
     implementation project(':streams-api')

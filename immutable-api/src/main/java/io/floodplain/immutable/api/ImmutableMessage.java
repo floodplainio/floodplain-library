@@ -120,7 +120,7 @@ public interface ImmutableMessage {
     }
 
     public static interface TriConsumer {
-        public void apply(ImmutableMessage message, ImmutableMessage secondary, String key);
+        public void apply(String key,ImmutableMessage message, ImmutableMessage secondary);
     }
     public class TypedData {
         public final ValueType type;

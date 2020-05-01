@@ -14,8 +14,11 @@ private val logger = mu.KotlinLogging.logger {}
 class TestTopology {
 
     @Test
+        /**
+         * Test the simplest imaginable pipe: One source and one sink.
+         */
     fun testSimple() {
-        pipe("somegen") {
+        pipe {
             source("@sometopic") {
                 sink("@outputTopic")
             }
@@ -38,11 +41,25 @@ class TestTopology {
             delete("@sometopic", "key1")
             output("@outputtopic")
             val eq = deleted("@outputtopic").equals("key1")
-            logger.info("equal: $eq")
             logger.info("Topic now empty: ${isEmpty("@outputtopic")}")
         }
     }
 
+    @Test
+    fun simpleTransformation() {
+        pipe {
+            source("mysource" ) {
+                set {
+                    _,primary,_->primary.set("name","Frank")
+                }
+                sink("people")
+            }
+        }.renderAndTest {
+            input("mysource", "1",empty().set("species","human"))
+            val (key,value) = output("people")
+            logger.info("Person found: ${value}")
+        }
+    }
     @Test
     fun testSimpleJoin() {
         pipe("somegen") {
@@ -50,7 +67,7 @@ class TestTopology {
                 join {
                     source("@right") {}
                 }
-                set { left, right ->
+                set { _,left, right ->
                     left["rightsub"] = right
                     left
                 }
@@ -79,7 +96,7 @@ class TestTopology {
                     source("@right") {
                     }
                 }
-                set { left, right ->
+                set { _,left, right ->
                     left["rightsub"] = right
                     left
                 }
@@ -135,11 +152,11 @@ class TestTopology {
                         group { msg -> msg["foreignkey"] as String }
                     }
                 }
-                set { left, right ->
+                set { _,left, right ->
                     left["rightsub"] = right["list"]
                     left
                 }
-                each { left, right, key ->
+                each { key, left, right ->
                     logger.info("Message: $left RightMessage $right key: $key")
                 }
                 sink("@output")
@@ -189,11 +206,11 @@ class TestTopology {
                         group { msg -> msg["foreignkey"] as String }
                     }
                 }
-                set { left, right ->
+                set { _,left, right ->
                     left["rightsub"] = right["list"]
                     left
                 }
-                each { left, right, key ->
+                each { key, left, right ->
                     logger.info("Message: $left RightMessage $right key: $key")
                 }
                 sink("@output")
@@ -256,11 +273,11 @@ class TestTopology {
         pipe("generation") {
             source("@source") {
                 scan({ msg -> msg["total"] = 0; msg }, {
-                    set { _, acc -> acc["total"] = acc["total"] as Int + 1; acc }
+                    set { _,_, acc -> acc["total"] = acc["total"] as Int + 1; acc }
                 }, {
-                    set { _, acc -> acc["total"] = acc["total"] as Int - 1; acc }
+                    set { _,_, acc -> acc["total"] = acc["total"] as Int - 1; acc }
                 })
-                each { msg, acc, key -> logger.info("Each: $key -> $msg -> $acc") }
+                each { key, msg, acc -> logger.info("Each: $key -> $msg -> $acc") }
 
                 sink("@output")
             }
@@ -285,11 +302,11 @@ class TestTopology {
         pipe("generation") {
             source("@source") {
                 scan({ msg -> msg["groupKey"] as String }, { msg -> msg["total"] = 0; msg }, {
-                    set { _, acc -> acc["total"] = acc["total"] as Int + 1; acc }
+                    set { _,_, acc -> acc["total"] = acc["total"] as Int + 1; acc }
                 }, {
-                    set { _, acc -> acc["total"] = acc["total"] as Int - 1; acc }
+                    set { _,_, acc -> acc["total"] = acc["total"] as Int - 1; acc }
                 })
-                each { msg, acc, key -> logger.info("Each: $key -> $msg -> $acc") }
+                each { key, msg, acc -> logger.info("Each: $key -> $msg -> $acc") }
 
                 sink("@output")
             }
@@ -399,10 +416,10 @@ class TestTopology {
 
     @Test
     fun testBuffer() {
-        pipe("gen") {
+        pipe {
             source("@source") {
                 buffer(Duration.ofSeconds(9), 10)
-                sink("@output", true)
+                sink("@output")
             }
         }.renderAndTest {
             val msg = empty().set("value", "value1")

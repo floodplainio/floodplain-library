@@ -15,13 +15,17 @@ import java.util.function.BiFunction;
 public class SetTransformer implements TopologyPipeComponent {
 
     private boolean materialize;
+
+    public static interface TriFunction {
+        ImmutableMessage apply(String key, ImmutableMessage primary, ImmutableMessage secondary);
+    }
+
     //	private final boolean fromEmpty;
-    private final BiFunction<ImmutableMessage, ImmutableMessage, ImmutableMessage> transformer;
+    private final TriFunction transformer;
 
 
     private final static Logger logger = LoggerFactory.getLogger(SetTransformer.class);
-
-    public SetTransformer(BiFunction<ImmutableMessage, ImmutableMessage, ImmutableMessage> transformer) {
+    public SetTransformer(TriFunction transformer) {
         this.transformer = transformer;
     }
 

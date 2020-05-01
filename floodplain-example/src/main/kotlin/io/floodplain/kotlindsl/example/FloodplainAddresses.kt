@@ -26,12 +26,12 @@ fun main() {
                     joinRemote({ msg -> "${msg["country_id"]}" }, false) {
                         postgresSource("public", "country", postgresConfig) {}
                     }
-                    set { msg, state ->
+                    set { _,msg, state ->
                         msg.set("country", state)
                     }
                 }
             }
-            set { msg, state ->
+            set { _,msg, state ->
                 msg.set("city", state)
             }
             sink("@address")
@@ -40,7 +40,7 @@ fun main() {
             joinRemote({ m -> "${m["address_id"]}" }, false) {
                 source("address") {}
             }
-            set { msg, state ->
+            set { _,msg, state ->
                 msg.set("address", state)
             }
             mongoSink("customer", "@customer", mongoConfig)
@@ -49,7 +49,7 @@ fun main() {
             joinRemote({ m -> "${m["address_id"]}" }, false) {
                 source("address") {}
             }
-            set { msg, state ->
+            set { _,msg, state ->
                 msg.set("address", state)
             }
             mongoSink("store", "@store", mongoConfig)
@@ -58,7 +58,7 @@ fun main() {
             joinRemote({ m -> "${m["address_id"]}" }, false) {
                 source("address") {}
             }
-            set { msg, state ->
+            set { _,msg, state ->
                 msg.set("address", state)
             }
             mongoSink("staff", "@staff", mongoConfig)
