@@ -5,6 +5,7 @@ package io.floodplain.kotlindsl
 import io.floodplain.immutable.api.ImmutableMessage
 import io.floodplain.kotlindsl.message.IMessage
 import io.floodplain.kotlindsl.message.fromImmutable
+import io.floodplain.kotlindsl.transformer.DiffTransformer
 import io.floodplain.kotlindsl.transformer.ForkTransformer
 import io.floodplain.reactive.source.topology.*
 import io.floodplain.reactive.source.topology.api.TopologyPipeComponent
@@ -48,6 +49,11 @@ fun PartialPipe.each(transform: (IMessage, IMessage, String) -> Unit): Transform
     val each = EachTransformer(transformer)
     return addTransformer(Transformer(each))
 
+}
+
+fun PartialPipe.diff(): Transformer {
+    val diffTransformer = DiffTransformer()
+    return addTransformer(Transformer(diffTransformer))
 }
 
 /**
@@ -150,7 +156,7 @@ fun PartialPipe.joinGrouped(optional: Boolean = false, debug: Boolean = false, s
  * It is a little bit more complicated than a regular reduce operator, as it also allows deleting items
  * @param key This lambda extracts the aggregate key from the message. In SQL terminology, it is the 'group by'. Scan will create a aggregation
  * bucket for each distinct key
- * @param initial
+ * @param initial Create the initial value for the aggregator
  *
  */
 fun PartialPipe.scan(key: (IMessage) -> String, initial: (IMessage) -> IMessage, onAdd: Block.() -> Transformer, onRemove: Block.() -> Transformer) {
@@ -163,6 +169,15 @@ fun PartialPipe.scan(key: (IMessage) -> String, initial: (IMessage) -> IMessage,
     addTransformer(Transformer(ScanTransformer(keyExtractor, initialConstructor, onAddBlock.transformers.map { e -> e.component }, onRemoveBlock.transformers.map { e -> e.component })))
 }
 
+/**
+ * Scan is effectively a 'reduce' operator (The 'scan' name is used in Rx, which means a reduce operator that emits a 'running aggregate' every time
+ * it consumes a message). A real reduce makes no sense in infinite streams (as it would emit
+ * a single item when the stream completes, which never happens).
+ * It is a little bit more complicated than a regular reduce operator, as it also allows deleting items
+ * This version of scan has no key, it does an aggregate over the entire topic, so it ends up being a single-key topic
+ * @param initial Create the initial value for the aggregator
+ *
+ */
 fun PartialPipe.scan(initial: (IMessage) -> IMessage, onAdd: Block.() -> Transformer, onRemove: Block.() -> Transformer) {
     val initialConstructor: (ImmutableMessage) -> ImmutableMessage = { msg -> initial.invoke(fromImmutable(msg)).toImmutable() }
     val onAddBlock = Block()
@@ -172,10 +187,13 @@ fun PartialPipe.scan(initial: (IMessage) -> IMessage, onAdd: Block.() -> Transfo
     addTransformer(Transformer(ScanTransformer(null, initialConstructor, onAddBlock.transformers.map { e -> e.component }, onRemoveBlock.transformers.map { e -> e.component })))
 }
 
+/**
+ * Fork the current stream to other downstreams
+ */
 fun PartialPipe.fork(vararg destinations: Block.() -> Transformer): Transformer {
     val blocks = destinations.map { dd->val b = Block(); dd.invoke(b); b }.toList()
-    val sink = ForkTransformer(blocks)
-    return addTransformer( Transformer(sink))
+    val forkTransformer = ForkTransformer(blocks)
+    return addTransformer( Transformer(forkTransformer))
 }
 /**
  * Create a new top level stream instance

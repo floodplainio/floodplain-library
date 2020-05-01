@@ -11,6 +11,7 @@ import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.*
 import org.apache.kafka.streams.processor.StateStore
 import org.apache.kafka.streams.processor.WallclockTimestampExtractor
+import org.apache.kafka.streams.state.KeyValueStore
 import java.nio.file.Files
 import java.nio.file.Path
 import java.time.Duration
@@ -34,8 +35,9 @@ interface TestContext {
     fun outputSize(topic: String): Long;
     fun deleted(topic: String): String;
     fun isEmpty(topic: String): Boolean;
-    fun stateStore(name: String): StateStore;
     fun advanceWallClockTime(duration: Duration);
+    fun stateStore(name: String): KeyValueStore<String,ReplicationMessage>
+    fun getStateStoreNames(): Set<String>
 
 }
 fun testTopology(topology: Topology, testCmds: TestContext.() -> Unit, context: TopologyContext) {
@@ -80,6 +82,7 @@ class TestDriverContext(private val driver: TopologyTestDriver, private val topo
         val inputTopic = inputTopics.computeIfAbsent(qualifiedTopicName) {driver.createInputTopic(qualifiedTopicName, Serdes.String().serializer(),ReplicationMessageSerde().serializer())}
         inputTopic.pipeInput(key,ReplicationFactory.standardMessage(msg.toImmutable()))
     }
+
 
     override fun delete(topic: String, key: String) {
         val qualifiedTopicName = CoreOperators.topicName(topic,topologyContext)
@@ -133,8 +136,12 @@ class TestDriverContext(private val driver: TopologyTestDriver, private val topo
         return outputTopic.isEmpty
     }
 
-    override fun stateStore(name: String): StateStore {
-        return driver.getStateStore(name)
+    override fun stateStore(name: String): KeyValueStore<String,ReplicationMessage> {
+        return driver.getKeyValueStore(name)
+    }
+
+    override fun getStateStoreNames(): Set<String> {
+        return driver.allStateStores.keys
     }
 
     override fun advanceWallClockTime(duration: Duration) {

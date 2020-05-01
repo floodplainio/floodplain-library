@@ -37,7 +37,7 @@ public class TestCreateTopology {
         Topology topology = new Topology();
         TopologyContext context = new TopologyContext(Optional.of("Generic"), "test", "my_instance", "20191214");
         TopologyConstructor topologyConstructor = new TopologyConstructor();
-        ReplicationTopologyParser.addSourceStore(topology, context, topologyConstructor, Optional.empty(), "PHOTO", Optional.empty(), false);
+        ReplicationTopologyParser.addSourceStore(topology, context, topologyConstructor, Optional.empty(), "PHOTO",false);
         ReplicationTopologyParser.materializeStateStores(topologyConstructor, topology);
         logger.info("{}",topology.describe().toString());
 
