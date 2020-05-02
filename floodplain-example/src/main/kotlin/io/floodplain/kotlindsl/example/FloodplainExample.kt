@@ -1,6 +1,5 @@
 package io.floodplain.kotlindsl.example
 
-import io.floodplain.kotlindsl.each
 import io.floodplain.kotlindsl.join
 import io.floodplain.kotlindsl.joinRemote
 import io.floodplain.kotlindsl.message.empty
@@ -17,8 +16,6 @@ import java.net.URL
 import java.util.UUID
 
 private val logger = mu.KotlinLogging.logger {}
-
-// Scan has issues, TODO
 
 fun main() {
     val generation = "mygeneration"
@@ -50,10 +47,7 @@ fun main() {
                     set { _, msg, state ->
                         msg.set("address", state)
                     }
-                    each {
-                        _, customer, _ -> logger.info("Customer: $customer")
-                    }
-                    join(optional = true, debug = true) {
+                    join(optional = true) {
                         source("@customertotals") {}
                     }
                     set { _, customer, totals ->

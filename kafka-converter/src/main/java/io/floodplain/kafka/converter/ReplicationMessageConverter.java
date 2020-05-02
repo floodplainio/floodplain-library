@@ -29,6 +29,7 @@ public class ReplicationMessageConverter implements Converter {
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     private final static Logger logger = LoggerFactory.getLogger(ReplicationMessageConverter.class);
+    private boolean debug = false;
 
     @Override
     public void configure(Map<String, ?> configs, boolean isKey) {
@@ -37,28 +38,40 @@ public class ReplicationMessageConverter implements Converter {
         logger.info("Configuration: {}", configs);
         Object o = configs.get("schemas.enable");
         if (o instanceof String) {
-            this.schemaEnable = Boolean.parseBoolean((String) o); //. Optional.ofNullable((String) o).orElse(false);
+            this.schemaEnable = Boolean.parseBoolean((String) o);
         } else if (o instanceof Boolean) {
             this.schemaEnable = Optional.ofNullable((Boolean) o).orElse(false);
         } else {
             this.schemaEnable = false;
         }
+        Object debug = configs.get("debug");
+        this.debug = true; // debug!=null;
+        logger.info("Debug enabled: {}",this.debug);
         this.isKey = isKey;
     }
 
     @Override
     public byte[] fromConnectData(String topic, Schema schema, Object value) {
-        logger.info("fromConnectData topic: {}, value: {}", topic, value);
+//        logger.info("fromConnectData topic: {}, value: {}", topic, value);
         if (isKey) {
             if (value instanceof String) {
                 String val = (String) value;
-                String converted = "{key:\"" + val + "\"}";
+                String converted = "{\"key\": \"" + val + "\"}";
+                if(debug) {
+                    logger.info("Key from connect topic: {} value {}",topic, converted);
+                }
                 return converted.getBytes(Charset.defaultCharset());
             } else if (value instanceof Struct) {
                 Struct val = (Struct) value;
                 String result = schema.fields().stream().map(e -> "" + val.get(e)).collect(Collectors.joining(ReplicationMessage.KEYSEPARATOR));
+                if(debug) {
+                    logger.info("Key struct from connect topic: {} value {}",topic, result);
+                }
                 return result.getBytes(Charset.defaultCharset());
             } else {
+                if(debug) {
+                    logger.info("Key other from connect topic: {} value {}",topic, value);
+                }
                 return ("" + value).getBytes(Charset.defaultCharset());
             }
         }
@@ -68,11 +81,19 @@ public class ReplicationMessageConverter implements Converter {
 
     @Override
     public SchemaAndValue toConnectData(String topic, byte[] value) {
+
         if (value == null) {
+            if(debug) {
+                logger.info("to Connect. topic: {} value null",topic);
+            }
             return new SchemaAndValue(null, null);
         }
         if (isKey) {
-            return toConnectDataKey(value);
+            SchemaAndValue schemaAndValue = toConnectDataKey(value);
+            if(debug) {
+                logger.info("to Connect key. topic: {} value {}}",topic,schemaAndValue.value());
+            }
+            return schemaAndValue;
         } else {
             ReplicationMessage replMessage = ReplicationFactory.getInstance().parseBytes(Optional.empty(), value);
             Map<String, Object> valueMap = replMessage.valueMap(true, Collections.emptySet());
@@ -82,7 +103,11 @@ public class ReplicationMessageConverter implements Converter {
                 valueMap = valueWithPayload;
             }
             try {
-                return new SchemaAndValue(null, objectMapper.writeValueAsString(valueMap));
+                String val = objectMapper.writeValueAsString(valueMap);
+                if(debug) {
+                    logger.info("to Connect value. topic: {} value {}}",topic,val);
+                }
+                return new SchemaAndValue(null, val);
             } catch (JsonProcessingException e) {
                 throw new RuntimeException("Json issue", e);
             }
@@ -91,7 +116,7 @@ public class ReplicationMessageConverter implements Converter {
 
     private SchemaAndValue toConnectDataKey(byte[] value) {
         String valueString = new String(value);
-        String converted = "{key:\"" + valueString + "\"}";
+        String converted = "{\"key\":\" " + valueString + "\" }";
         return new SchemaAndValue(null, converted);
     }
 

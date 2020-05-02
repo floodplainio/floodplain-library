@@ -1,5 +1,6 @@
 package io.floodplain.kotlindsl.example
 
+import io.floodplain.kotlindsl.each
 import io.floodplain.kotlindsl.filter
 import io.floodplain.kotlindsl.joinRemote
 import io.floodplain.kotlindsl.mongoConfig
@@ -13,9 +14,18 @@ import java.util.UUID
 
 private val logger = mu.KotlinLogging.logger {}
 
-fun main() {
-}
-fun mainAlsoOld() = pipe("mygeneration") {
+fun main() = pipe {
+    val pgConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")
+    val mongoConfig = mongoConfig("mymongo", "mongodb://mongo", "mydatabase")
+    postgresSource("public", "film", pgConfig) {
+        each {
+            key,message,sec -> logger.info ("Key: $key")
+        }
+        mongoSink("justfilm", "justfilm", mongoConfig)
+    }
+}.renderAndStart(URL("http://localhost:8083/connectors"), "localhost:9092", UUID.randomUUID().toString())
+
+fun main2() = pipe {
     val pgConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")
     val mongoConfig = mongoConfig("mymongo", "mongodb://mongo", "mydatabase")
     postgresSource("public", "film", pgConfig) {

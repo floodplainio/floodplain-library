@@ -44,7 +44,7 @@ public class JSONToReplicationMessage {
         return !node.get("schema").isNull();
     }
 
-    public static byte[] parse(TopologyContext context, String keyInput, byte[] data, boolean appendTenant, boolean appendSchema, boolean appendTable) {
+    public static KeyValue parse(TopologyContext context, String keyInput, byte[] data, boolean appendTenant, boolean appendSchema, boolean appendTable) {
         try {
             ObjectNode keynode = (ObjectNode) objectMapper.readTree(keyInput);
             ObjectNode valuenode = (ObjectNode) objectMapper.readTree(data);
@@ -54,7 +54,7 @@ public class JSONToReplicationMessage {
                 ReplicationMessage replMsg = ReplicationFactory.empty().withOperation(Operation.DELETE);
                 final ReplicationMessage converted = appendTenant ? replMsg.with("_tenant", key.tenant, ValueType.STRING) : replMsg;
                 final ReplicationMessage convertedWTable = appendTable ? converted.with("_tenant", key.tenant, ValueType.STRING) : converted;
-                return ReplicationFactory.getInstance().serialize(convertedWTable);
+                return new KeyValue(key.combinedKey, ReplicationFactory.getInstance().serialize(convertedWTable));
 //                return PubSubTools.create(key.combinedKey, ReplicationFactory.getInstance().serialize(convertedWTable), msg.timestamp(), Optional.empty());
             }
             final ReplicationMessage convOptional = convertToReplication(false, valuenode, key.table);
@@ -68,7 +68,7 @@ public class JSONToReplicationMessage {
 
 //			logger.info("Forwarding to: {}",context.topicName(key.table));
 //            return PubSubTools.create(key.combinedKey, serialized, msg.timestamp(), Optional.of(CoreOperators.topicName(key.table, context)), msg.partition(), msg.offset());
-            return serialized;
+            return new KeyValue(key.combinedKey,serialized);
         } catch (JsonProcessingException e) {
             logger.error("Error: ", e);
         } catch (IOException e) {
@@ -96,7 +96,6 @@ public class JSONToReplicationMessage {
             }
 
             Map<String, ValueType> types = new HashMap<>();
-//			Map<String,ValueType> typeNames = new HashMap<>();
             Map<String, Object> jsonValues = new HashMap<>();
 
             fields.forEach(e -> {
@@ -105,9 +104,6 @@ public class JSONToReplicationMessage {
                 JsonNode name = e.get("name");
                 Optional<String> typeName = name == null ? Optional.empty() : Optional.of(name.asText());
                 Optional<JsonNode> typeParameters = Optional.ofNullable(e.get("parameters"));
-//				if(typeName.isPresent()) {
-//					typeNames.put(field, ImmutableTypeParser.parseType(typeName.get()) );
-//				}
                 String rawType = e.get("type").asText();
                 ValueType type = resolveType(rawType, typeName, typeParameters);
                 types.put(field, type);

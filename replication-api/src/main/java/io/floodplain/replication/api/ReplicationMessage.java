@@ -115,7 +115,7 @@ public interface ReplicationMessage {
 
     public ReplicationMessage merge(ReplicationMessage other, Optional<List<String>> only);
 
-    public static final boolean usePretty = System.getenv(PRETTY_JSON) != null || System.getProperty(PRETTY_JSON) != null;
+    public static final boolean usePretty = true; // System.getenv(PRETTY_JSON) != null || System.getProperty(PRETTY_JSON) != null;
 
     public static boolean usePrettyPrint() {
         return usePretty;

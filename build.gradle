@@ -30,22 +30,75 @@ subprojects {
     if (name == 'replication-protobuf') {
         apply plugin: 'com.google.protobuf'
     }
+    tasks.withType(Jar) {
+        from(project.projectDir) {
+            include 'LICENSE-2.0.txt'
+            into 'META-INF'
+        }
+    }
     publishing {
         publications {
             "$project.name"(MavenPublication) {
                 groupId = "io.floodplain"
                 artifactId = project.name
                 version = rootProject.ext.floodplain_version
+
                 from components.java
+                pom.withXml {
+                    asNode().with {
+                        appendNode('packaging', 'jar')
+                        appendNode('name', 'Floodplain')
+                        appendNode('description', 'Floodplain Framework')
+                        appendNode('url', 'https://floodplain.io')
+                        appendNode('scm').with {
+                            appendNode('url', 'scm:git:https://github.com/floodplainio/floodplain-library')
+                            appendNode('connection', 'scm:git:git://github.com/floodplainio/floodplain-library.git')
+                            appendNode('developerConnection', 'scm:git:git@github.com:floodplainio/floodplain-library.git')
+                        }
+                        appendNode('ciManagement').with {
+                            appendNode('system', 'Circle CI')
+                            appendNode('url', 'https://circleci.com/gh/floodplainio/floodplain-library')
+
+                        }
+                        appendNode('issueManagement').with {
+                            appendNode('url', 'https://github.com/floodplainio/floodplain-library/issues')
+                            appendNode('system', 'GitHub Issues')
+                        }
+                        appendNode('licenses').with {
+                            appendNode('license').with {
+                                appendNode('name', 'Apache 2.0')
+                                appendNode('url', 'http://www.apache.org/licenses/LICENSE-2.0.txt')
+                                appendNode('distribution', 'repo')
+                                appendNode('comments', 'A business-friendly OSS license')
+                            }
+                        }
+
+                        appendNode('organization').with {
+                            appendNode('name', 'Floodplain')
+                            appendNode('url', 'https://floodplain.io')
+                        }
+                        appendNode('developers').with {
+                            appendNode('developer').with {
+                                appendNode('id', 'flyaruu')
+                                appendNode('name', 'Frank Lyaruu')
+                                appendNode('email', 'flyaruu@gmail.com')
+                                appendNode('organization', 'Floodplain')
+                                appendNode('organizationUrl', 'https://floodplain.io')
+                                appendNode('timezone', 'CEST')
+                            }
+                        }
+                    }
+                }
             }
         }
         repositories {
             maven {
-                name = "GitHubPackages"
-                url = uri("https://maven.pkg.github.com/floodplainio/floodplain-library")
+                name = "CentralSnapshots"
+                url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
+
                 credentials {
-                    username = project.findProperty("gpr.user") ?: System.getenv("GITHUB_USERNAME")
-                    password = project.findProperty("gpr.key") ?: System.getenv("GITHUB_PACKAGES_PAN")
+                    username = project.findProperty("gpr.user") ?: System.getenv("CENTRAL_USERNAME")
+                    password = project.findProperty("gpr.key") ?: System.getenv("CENTRAL_PASSWORD")
                 }
             }
         }

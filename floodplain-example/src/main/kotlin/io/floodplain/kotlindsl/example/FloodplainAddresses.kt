@@ -38,7 +38,7 @@ fun main() {
         },
         postgresSource("public", "customer", postgresConfig) {
             joinRemote({ m -> "${m["address_id"]}" }, false) {
-                source("address") {}
+                source("@address") {}
             }
             set { _, msg, state ->
                 msg.set("address", state)
@@ -47,7 +47,7 @@ fun main() {
         },
         postgresSource("public", "store", postgresConfig) {
             joinRemote({ m -> "${m["address_id"]}" }, false) {
-                source("address") {}
+                source("@address") {}
             }
             set { _, msg, state ->
                 msg.set("address", state)
@@ -56,7 +56,7 @@ fun main() {
         },
         postgresSource("public", "staff", postgresConfig) {
             joinRemote({ m -> "${m["address_id"]}" }, false) {
-                source("address") {}
+                source("@address") {}
             }
             set { _, msg, state ->
                 msg.set("address", state)

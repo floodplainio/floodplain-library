@@ -4,6 +4,7 @@ import io.floodplain.replication.api.ReplicationMessage;
 import io.floodplain.replication.impl.protobuf.FallbackReplicationMessageParser;
 import io.floodplain.streams.api.TopologyContext;
 import io.floodplain.streams.debezium.JSONToReplicationMessage;
+import io.floodplain.streams.debezium.KeyValue;
 import org.apache.kafka.streams.processor.Processor;
 import org.apache.kafka.streams.processor.ProcessorContext;
 
@@ -43,10 +44,10 @@ public class DebeziumConversionProcessor implements Processor<String, byte[]> {
             return;
         }
 //        PubSubMessage psm = PubSubTools.create(key, value, this.processorContext.timestamp(), Optional.of(topic), Optional.of(this.processorContext.partition()), Optional.of(this.processorContext.offset()));
-        byte[] data = JSONToReplicationMessage.parse(this.context, key,value, appendTenant, appendSchema, appendTable);
+        KeyValue keyValue = JSONToReplicationMessage.parse(this.context, key,value, appendTenant, appendSchema, appendTable);
         FallbackReplicationMessageParser ftm = new FallbackReplicationMessageParser(true);
-        ReplicationMessage msg = ftm.parseBytes(data);
-        processorContext.forward(key, msg);
+        ReplicationMessage msg = ftm.parseBytes(keyValue.value);
+        processorContext.forward(keyValue.key, msg);
     }
 
 }

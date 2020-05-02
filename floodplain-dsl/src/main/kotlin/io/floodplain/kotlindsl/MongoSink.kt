@@ -28,6 +28,7 @@ class MongoConfig(val name: String, val uri: String, val database: String) : Con
                 "value.converter" to "io.floodplain.kafka.converter.ReplicationMessageConverter",
                 "key.converter" to "io.floodplain.kafka.converter.ReplicationMessageConverter",
                 "document.id.strategy" to "com.mongodb.kafka.connect.sink.processor.id.strategy.FullKeyStrategy",
+                "debug" to "true",
                 "connection.uri" to uri,
                 "database" to generationalDatabase,
                 "collection" to collections,
