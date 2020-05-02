@@ -23,7 +23,6 @@ import java.util.Optional;
 
 import static io.floodplain.immutable.api.ImmutableMessage.ValueType;
 
-//@Component(name="dexels.replication.parser.json", enabled=false)
 @Named("ndjson")
 @ApplicationScoped
 public class JSONDumpReplicationMessageParserImpl implements ReplicationMessageParser {

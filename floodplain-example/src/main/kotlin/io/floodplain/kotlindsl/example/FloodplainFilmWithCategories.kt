@@ -29,14 +29,14 @@ fun joinFilms(generation: String) {
                     joinRemote({ msg -> "${msg["category_id"]}" }, true) {
                         postgresSource("public", "category", postgresConfig) {}
                     }
-                    set { _,msg, state ->
+                    set { _, msg, state ->
                         msg["category"] = state["name"] ?: "unknown"
                         msg
                     }
                     group { msg -> "${msg["film_id"]}" }
                 }
             }
-            set { _,msg, state ->
+            set { _, msg, state ->
                 msg["categories"] = state["list"] ?: empty()
                 msg
             }

@@ -14,8 +14,7 @@ import java.net.URL
 private val logger = mu.KotlinLogging.logger {}
 
 fun main() {
-    val myPipe = pipe("gen_7") {
-
+    pipe("gen_7") {
         val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")
         val mongoConfig = mongoConfig("mongosink", "mongodb://mongo", "mongodump")
         postgresSource("public", "customer", postgresConfig) {
@@ -23,22 +22,22 @@ fun main() {
                 postgresSource("public", "payment", postgresConfig) {
                     scan({ msg -> msg["customer_id"].toString() }, { msg -> empty().set("total", 0.0).set("customer_id", msg["customer_id"]) },
                             {
-                                set { _,msg, state ->
+                                set { _, msg, state ->
                                     state["total"] = state["total"] as Double + msg["amount"] as Double
                                     state["customer_id"] = msg["customer_id"]!!
                                     state
                                 }
                             },
                             {
-                                set { _,msg, state -> state["total"] = state["total"] as Double - msg["amount"] as Double; state }
+                                set { _, msg, state -> state["total"] = state["total"] as Double - msg["amount"] as Double; state }
                             }
                     )
-                    set { _,customer, totals ->
+                    set { _, customer, totals ->
                         customer["total"] = totals["total"]; customer
                     }
                 }
             }
-            set { _,msg, state ->
+            set { _, msg, state ->
                 msg["payments"] = state; msg
             }
             mongoSink("justtotal", "myfinaltopic", mongoConfig)

@@ -48,16 +48,16 @@ class TestTopology {
     @Test
     fun simpleTransformation() {
         pipe {
-            source("mysource" ) {
+            source("mysource") {
                 set {
-                    _,primary,_->primary.set("name","Frank")
+                    _, primary, _ -> primary.set("name", "Frank")
                 }
                 sink("people")
             }
         }.renderAndTest {
-            input("mysource", "1",empty().set("species","human"))
-            val (key,value) = output("people")
-            logger.info("Person found: ${value}")
+            input("mysource", "1", empty().set("species", "human"))
+            val (key, value) = output("people")
+            logger.info("Person found: $value")
         }
     }
     @Test
@@ -67,7 +67,7 @@ class TestTopology {
                 join {
                     source("@right") {}
                 }
-                set { _,left, right ->
+                set { _, left, right ->
                     left["rightsub"] = right
                     left
                 }
@@ -96,7 +96,7 @@ class TestTopology {
                     source("@right") {
                     }
                 }
-                set { _,left, right ->
+                set { _, left, right ->
                     left["rightsub"] = right
                     left
                 }
@@ -152,7 +152,7 @@ class TestTopology {
                         group { msg -> msg["foreignkey"] as String }
                     }
                 }
-                set { _,left, right ->
+                set { _, left, right ->
                     left["rightsub"] = right["list"]
                     left
                 }
@@ -206,7 +206,7 @@ class TestTopology {
                         group { msg -> msg["foreignkey"] as String }
                     }
                 }
-                set { _,left, right ->
+                set { _, left, right ->
                     left["rightsub"] = right["list"]
                     left
                 }
@@ -273,9 +273,9 @@ class TestTopology {
         pipe("generation") {
             source("@source") {
                 scan({ msg -> msg["total"] = 0; msg }, {
-                    set { _,_, acc -> acc["total"] = acc["total"] as Int + 1; acc }
+                    set { _, _, acc -> acc["total"] = acc["total"] as Int + 1; acc }
                 }, {
-                    set { _,_, acc -> acc["total"] = acc["total"] as Int - 1; acc }
+                    set { _, _, acc -> acc["total"] = acc["total"] as Int - 1; acc }
                 })
                 each { key, msg, acc -> logger.info("Each: $key -> $msg -> $acc") }
 
@@ -302,9 +302,9 @@ class TestTopology {
         pipe("generation") {
             source("@source") {
                 scan({ msg -> msg["groupKey"] as String }, { msg -> msg["total"] = 0; msg }, {
-                    set { _,_, acc -> acc["total"] = acc["total"] as Int + 1; acc }
+                    set { _, _, acc -> acc["total"] = acc["total"] as Int + 1; acc }
                 }, {
-                    set { _,_, acc -> acc["total"] = acc["total"] as Int - 1; acc }
+                    set { _, _, acc -> acc["total"] = acc["total"] as Int - 1; acc }
                 })
                 each { key, msg, acc -> logger.info("Each: $key -> $msg -> $acc") }
 

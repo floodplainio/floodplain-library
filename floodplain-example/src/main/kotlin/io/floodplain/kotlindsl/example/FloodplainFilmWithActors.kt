@@ -26,7 +26,7 @@ fun filmWithActorList(generation: String) {
         // Start with the 'film' collection
         postgresSource("public", "film", postgresConfig) {
             // Clear the last_update field, it makes no sense in a denormalized situation
-            set { _,film, _ ->
+            set { _, film, _ ->
                 film["last_update"] = null; film
             }
             // Join with something that also uses the film_id key space.
@@ -41,7 +41,7 @@ fun filmWithActorList(generation: String) {
                         }
                     }
                     // copy the first_name, last_name and actor_id to the film_actor message, drop the last update
-                    set { _,actor_film, actor ->
+                    set { _, actor_film, actor ->
                         actor_film["last_name"] = actor["last_name"]
                         actor_film["first_name"] = actor["first_name"]
                         actor_film["actor_id"] = actor["actor_id"]
@@ -55,7 +55,7 @@ fun filmWithActorList(generation: String) {
             // ugly hack: As lists of messages can't be toplevel, a grouped message always consist of a single, otherwise empty message, that only
             // contains one field, which is a list of the grouped messages, and that field is always named 'list'
             // Ideas welcome
-            set { _,film, actorlist ->
+            set { _, film, actorlist ->
                 film["actors"] = actorlist["list"] ?: emptyList<IMessage>()
                 film
             }

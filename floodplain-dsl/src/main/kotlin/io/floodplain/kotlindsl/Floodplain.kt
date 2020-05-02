@@ -54,7 +54,7 @@ fun PartialPipe.filter(flt: (String, IMessage) -> Boolean) {
  * Perform the supplied lambda for each message. You can use this for logging or other side effects, this function should not influence the semantics of the stream
  */
 fun PartialPipe.each(transform: (String, IMessage, IMessage) -> Unit): Transformer {
-    val transformer: (String,ImmutableMessage, ImmutableMessage) -> Unit = { key: String, msg: ImmutableMessage, param: ImmutableMessage -> transform.invoke(key, fromImmutable(msg), fromImmutable(param)) }
+    val transformer: (String, ImmutableMessage, ImmutableMessage) -> Unit = { key: String, msg: ImmutableMessage, param: ImmutableMessage -> transform.invoke(key, fromImmutable(msg), fromImmutable(param)) }
     val each = EachTransformer(transformer)
     return addTransformer(Transformer(each))
 }
@@ -78,9 +78,9 @@ fun PartialPipe.buffer(duration: Duration, maxSize: Int = 10000, inMemory: Boole
  * The second message will be lost after this operation, so you need to append anything you want to keep from the inner source to the outer source here.
  * Alternatively, you can create an all-new message and just add the things you are interested in, and return that.
  */
-fun PartialPipe.set(transform: (String,IMessage, IMessage) -> IMessage): Transformer {
-    val transformer: (String,ImmutableMessage, ImmutableMessage) -> ImmutableMessage = {
-        key: String, msg: ImmutableMessage, param: ImmutableMessage -> transform.invoke(key,fromImmutable(msg), fromImmutable(param)).toImmutable()
+fun PartialPipe.set(transform: (String, IMessage, IMessage) -> IMessage): Transformer {
+    val transformer: (String, ImmutableMessage, ImmutableMessage) -> ImmutableMessage = {
+        key: String, msg: ImmutableMessage, param: ImmutableMessage -> transform.invoke(key, fromImmutable(msg), fromImmutable(param)).toImmutable()
     }
     val set = SetTransformer(transformer)
     return addTransformer(Transformer(set))
@@ -214,14 +214,14 @@ fun PartialPipe.fork(vararg destinations: Block.() -> Transformer): Transformer 
  * To make sure all data gets reprocessed, change the generation. It is a string, with no further meaning within the framework, you can choose what
  * meaning you want to attach. You can increment a number, use a sort of time stamp, or even a git commit.
  */
-fun pipe(generation: String = "any", instance: String="instance", tenant: String="tenant", deployment: String="deployment", init: Pipe.() -> Source): Pipe {
+fun pipe(generation: String = "any", instance: String = "instance", tenant: String = "tenant", deployment: String = "deployment", init: Pipe.() -> Source): Pipe {
     var topologyContext = TopologyContext(Optional.ofNullable(tenant), deployment, instance, generation)
     val pipe = Pipe(topologyContext)
 
     return pipe.addSource(pipe.init())
 }
 
-fun pipes(generation: String = "any", instance: String="instance", tenant: String="tenant", deployment: String="deployment",  init: Pipe.() -> List<Source>): Pipe {
+fun pipes(generation: String = "any", instance: String = "instance", tenant: String = "tenant", deployment: String = "deployment", init: Pipe.() -> List<Source>): Pipe {
     var topologyContext = TopologyContext(Optional.ofNullable(tenant), deployment, instance, generation)
     val pipe = Pipe(topologyContext)
     val sources = pipe.init()

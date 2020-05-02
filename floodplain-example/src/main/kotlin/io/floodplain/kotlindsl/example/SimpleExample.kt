@@ -20,7 +20,7 @@ fun mainAlsoOld() = pipe("mygeneration") {
     val mongoConfig = mongoConfig("mymongo", "mongodb://mongo", "mydatabase")
     postgresSource("public", "film", pgConfig) {
         joinRemote({ msg -> msg["language_id"].toString() }) { postgresSource("public", "language", pgConfig) {} }
-        set { _,film, language ->
+        set { _, film, language ->
             film["language"] = language["name"]; film
         }
         mongoSink("filmwithlanguage", "filmwithlanguage", mongoConfig)
@@ -32,7 +32,7 @@ fun mainold() {
         val pgConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")
         val mongoConfig = mongoConfig("mymongo", "mongodb://mongo", "mydatabase")
         postgresSource("public", "actor", pgConfig) {
-            set { _,msg, _ -> msg["last_update"] = null; msg }
+            set { _, msg, _ -> msg["last_update"] = null; msg }
             filter { _, msg -> (msg["actor_id"] as Int) < 10 }
             mongoSink("mycollection", "sometopic", mongoConfig)
         }

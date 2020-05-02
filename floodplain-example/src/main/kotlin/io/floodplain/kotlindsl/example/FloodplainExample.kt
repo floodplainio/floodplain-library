@@ -33,12 +33,12 @@ fun main() {
                             joinRemote({ msg -> "${msg["country_id"]}" }, false) {
                                 postgresSource("public", "country", postgresConfig) {}
                             }
-                            set { _,msg, state ->
+                            set { _, msg, state ->
                                 msg.set("country", state)
                             }
                         }
                     }
-                    set { _,msg, state ->
+                    set { _, msg, state ->
                         msg.set("city", state)
                     }
                     sink("@address")
@@ -47,16 +47,16 @@ fun main() {
                     joinRemote({ m -> "${m["address_id"]}" }, false) {
                         source("@address") {}
                     }
-                    set { _,msg, state ->
+                    set { _, msg, state ->
                         msg.set("address", state)
                     }
                     each {
-                        customer, _, key -> logger.info("Customer: $customer")
+                        _, customer, _ -> logger.info("Customer: $customer")
                     }
                     join(optional = true, debug = true) {
                         source("@customertotals") {}
                     }
-                    set { _,customer, totals ->
+                    set { _, customer, totals ->
                         customer["total"] = totals["total"]; customer
                     }
                     mongoSink("customer", "customer", mongoConfig)
@@ -65,7 +65,7 @@ fun main() {
                     joinRemote({ m -> "${m["address_id"]}" }, false) {
                         source("@address") {}
                     }
-                    set { _,msg, state ->
+                    set { _, msg, state ->
                         msg.set("address", state)
                     }
                     mongoSink("store", "store", mongoConfig)
@@ -74,7 +74,7 @@ fun main() {
                     joinRemote({ m -> "${m["address_id"]}" }, false) {
                         source("@address") {}
                     }
-                    set { _,msg, state ->
+                    set { _, msg, state ->
                         msg.set("address", state)
                     }
                     mongoSink("staff", "staff", mongoConfig)
@@ -82,17 +82,17 @@ fun main() {
                 postgresSource("public", "payment", postgresConfig) {
                     scan({ msg -> msg["customer_id"].toString() }, { msg -> empty().set("total", 0.0).set("customer_id", msg["customer_id"]) },
                             {
-                                set { _,msg, state ->
+                                set { _, msg, state ->
                                     state["total"] = state["total"] as Double + msg["amount"] as Double
                                     state["customer_id"] = msg["customer_id"]!!
                                     state
                                 }
                             },
                             {
-                                set { _,msg, state -> state["total"] = state["total"] as Double - msg["amount"] as Double; state }
+                                set { _, msg, state -> state["total"] = state["total"] as Double - msg["amount"] as Double; state }
                             }
                     )
-                    set { _,customer, totals ->
+                    set { _, customer, totals ->
                         customer["total"] = totals["total"]; customer
                     }
                     sink("@customertotals")

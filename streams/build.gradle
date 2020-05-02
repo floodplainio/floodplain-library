@@ -21,7 +21,6 @@ dependencies {
     compile dependencies.kafkaClient
     compile dependencies.kafkaStreams
     compile dependencies.reactiveStreams
-    compile dependencies.rxJava
     compile dependencies.cdiApi
     compile dependencies.microProfileConfig
 }

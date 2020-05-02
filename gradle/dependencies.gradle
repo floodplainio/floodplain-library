@@ -2,7 +2,6 @@ ext {
     floodplain_version = "0.8.8"
     jackson_version = "2.10.3"
     kafka_version = "2.4.0"
-    osgi_version = "7.0.0"
     mongodb_version = "3.12.2"
     slf4j_version = "1.7.30"
     mysql_version = "8.0.18"
@@ -27,8 +26,6 @@ ext {
             commonsIo         : "commons-io:commons-io:2.6",
             jacksonCore       : "com.fasterxml.jackson.core:jackson-core:$jackson_version",
             jacksonDatabind   : "com.fasterxml.jackson.core:jackson-databind:$jackson_version",
-            osgiCompendium    : "org.osgi:osgi.cmpn:$osgi_version",
-            osgiCore          : "org.osgi:osgi.core:$osgi_version",
             mongoCore         : "org.mongodb:mongodb-driver-core:$mongodb_version",
             mongoBson         : "org.mongodb:bson:$mongodb_version",
             mongoDriver       : "org.mongodb:mongodb-driver:$mongodb_version",
