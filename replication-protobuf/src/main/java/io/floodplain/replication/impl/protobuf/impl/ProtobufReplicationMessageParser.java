@@ -7,7 +7,6 @@ import io.floodplain.immutable.api.ImmutableMessage;
 import io.floodplain.immutable.api.customtypes.CoordinateType;
 import io.floodplain.immutable.factory.ImmutableFactory;
 import io.floodplain.protobuf.generated.Replication;
-import io.floodplain.pubsub.rx2.api.PubSubMessage;
 import io.floodplain.replication.api.ReplicationMessage;
 import io.floodplain.replication.api.ReplicationMessageParser;
 import io.floodplain.replication.factory.ReplicationFactory;
@@ -493,22 +492,4 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
     public List<ReplicationMessage> parseMessageList(byte[] data) {
         return parseMessageList(Optional.empty(), data);
     }
-
-    @Override
-    public ReplicationMessage parseBytes(PubSubMessage data) {
-        ReplicationMessage initial = (data.value() != null ? parseBytes(data.value()) : ReplicationFactory.empty().withOperation(ReplicationMessage.Operation.DELETE));
-        if (ReplicationMessage.includeKafkaMetadata()) {
-            return initial
-                    .withPartition(data.partition())
-                    .withOffset(data.offset())
-                    .withSource(data.topic())
-                    .with("_kafkapartition", data.partition().orElse(-1), ImmutableMessage.ValueType.INTEGER)
-                    .with("_kafkaoffset", data.offset().orElse(-1L), ImmutableMessage.ValueType.LONG)
-                    .with("_kafkakey", data.key(), ImmutableMessage.ValueType.STRING)
-                    .with("_kafkatopic", data.topic().orElse(null), ImmutableMessage.ValueType.STRING);
-        }
-        return initial;
-    }
-
-
 }

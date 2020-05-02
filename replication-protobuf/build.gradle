@@ -6,7 +6,6 @@ dependencies {
     implementation project(':replication-api')
     implementation project(':replication-impl')
     implementation project(':replication-json')
-    implementation project(':pubsub-rx2')
     implementation project('::streams-api')
     compile dependencies.protobuf
     testCompile dependencies.jUnit

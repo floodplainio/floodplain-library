@@ -26,15 +26,11 @@ dependencies {
     implementation project(':replication-api')
     implementation project(':replication-impl')
     implementation project(':replication-json')
-    implementation project(':pubsub-rx2')
     implementation project(':streams')
     implementation project(':streams-api')
     implementation project(':kafka-converter')
     compile dependencies.slf4j
-    compile dependencies.jacksonCore
-    compile dependencies.jacksonDatabind
     compile dependencies.cdiApi
-    compile dependencies.reactiveStreams
     testCompile dependencies.jUnit
     testImplementation dependencies.slf4jLog4j
 }

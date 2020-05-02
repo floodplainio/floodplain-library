@@ -13,7 +13,6 @@ dependencies {
     implementation project(':immutable-api')
     implementation project(':immutable-impl')
     implementation project(':replication-api')
-    implementation project(':pubsub-rx2')
     testCompile dependencies.jUnit
 }
 

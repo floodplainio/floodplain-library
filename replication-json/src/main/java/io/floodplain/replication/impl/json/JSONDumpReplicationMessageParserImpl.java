@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import io.floodplain.pubsub.rx2.api.PubSubMessage;
 import io.floodplain.replication.api.ReplicationMessage;
 import io.floodplain.replication.api.ReplicationMessageParser;
 import io.floodplain.replication.factory.ReplicationFactory;
@@ -175,23 +174,4 @@ public class JSONDumpReplicationMessageParserImpl implements ReplicationMessageP
     public List<ReplicationMessage> parseMessageList(byte[] data) {
         return parseMessageList(Optional.empty(), data);
     }
-
-    @Override
-    public ReplicationMessage parseBytes(PubSubMessage data) {
-
-        ReplicationMessage initial = (data.value() != null ? parseBytes(data.value()) : ReplicationFactory.empty().withOperation(ReplicationMessage.Operation.DELETE));
-        if (ReplicationMessage.includeKafkaMetadata()) {
-            return initial
-                    .withPartition(data.partition())
-                    .withOffset(data.offset())
-                    .withSource(data.topic())
-                    .with("_kafkapartition", data.partition().orElse(-1), ValueType.INTEGER)
-                    .with("_kafkaoffset", data.offset().orElse(-1L), ValueType.LONG)
-                    .with("_kafkakey", data.key(), ValueType.STRING)
-                    .with("_kafkatopic", data.topic().orElse(null), ValueType.STRING);
-        }
-        return initial;
-    }
-
-
 }

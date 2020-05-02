@@ -1,7 +1,0 @@
-wait=10000
-max=200
-hosts=mysql-test1.sportlink-infra.net:9092
-groupid=discovery
-commitStyle=sync
-instance = KNVB
-tables=ORGANIZATION,ORGANIZATIONADDRESS,ADDRESS,ZIPCODEPOSITION

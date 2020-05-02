@@ -9,8 +9,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.floodplain.immutable.api.ImmutableMessage;
 import io.floodplain.immutable.api.ImmutableMessage.ValueType;
 import io.floodplain.immutable.factory.ImmutableFactory;
-import io.floodplain.pubsub.rx2.api.PubSubMessage;
-import io.floodplain.pubsub.rx2.factory.PubSubTools;
 import io.floodplain.replication.api.ReplicationMessage;
 import io.floodplain.replication.api.ReplicationMessage.Operation;
 import io.floodplain.replication.factory.ReplicationFactory;
@@ -46,17 +44,18 @@ public class JSONToReplicationMessage {
         return !node.get("schema").isNull();
     }
 
-    public static PubSubMessage parse(TopologyContext context, PubSubMessage msg, boolean appendTenant, boolean appendSchema, boolean appendTable) {
+    public static byte[] parse(TopologyContext context, String keyInput, byte[] data, boolean appendTenant, boolean appendSchema, boolean appendTable) {
         try {
-            ObjectNode keynode = (ObjectNode) objectMapper.readTree(msg.key());
-            ObjectNode valuenode = (ObjectNode) objectMapper.readTree(msg.value());
+            ObjectNode keynode = (ObjectNode) objectMapper.readTree(keyInput);
+            ObjectNode valuenode = (ObjectNode) objectMapper.readTree(data);
             TableIdentifier key = processDebeziumKey(keynode, appendTenant, appendSchema);
 
             if (!valuenode.has("payload") || valuenode.get("payload").isNull()) {
                 ReplicationMessage replMsg = ReplicationFactory.empty().withOperation(Operation.DELETE);
                 final ReplicationMessage converted = appendTenant ? replMsg.with("_tenant", key.tenant, ValueType.STRING) : replMsg;
                 final ReplicationMessage convertedWTable = appendTable ? converted.with("_tenant", key.tenant, ValueType.STRING) : converted;
-                return PubSubTools.create(key.combinedKey, ReplicationFactory.getInstance().serialize(convertedWTable), msg.timestamp(), Optional.empty());
+                return ReplicationFactory.getInstance().serialize(convertedWTable);
+//                return PubSubTools.create(key.combinedKey, ReplicationFactory.getInstance().serialize(convertedWTable), msg.timestamp(), Optional.empty());
             }
             final ReplicationMessage convOptional = convertToReplication(false, valuenode, key.table);
             ReplicationMessage conv = convOptional.withPrimaryKeys(key.fields);
@@ -68,7 +67,8 @@ public class JSONToReplicationMessage {
             byte[] serialized = ReplicationFactory.getInstance().serialize(converted);
 
 //			logger.info("Forwarding to: {}",context.topicName(key.table));
-            return PubSubTools.create(key.combinedKey, serialized, msg.timestamp(), Optional.of(CoreOperators.topicName(key.table, context)), msg.partition(), msg.offset());
+//            return PubSubTools.create(key.combinedKey, serialized, msg.timestamp(), Optional.of(CoreOperators.topicName(key.table, context)), msg.partition(), msg.offset());
+            return serialized;
         } catch (JsonProcessingException e) {
             logger.error("Error: ", e);
         } catch (IOException e) {

@@ -1,7 +1,5 @@
 package io.floodplain.streams.debezium.impl;
 
-import io.floodplain.pubsub.rx2.api.PubSubMessage;
-import io.floodplain.pubsub.rx2.factory.PubSubTools;
 import io.floodplain.replication.api.ReplicationMessage;
 import io.floodplain.replication.impl.protobuf.FallbackReplicationMessageParser;
 import io.floodplain.streams.api.TopologyContext;
@@ -44,11 +42,11 @@ public class DebeziumConversionProcessor implements Processor<String, byte[]> {
         if (value == null) {
             return;
         }
-        PubSubMessage psm = PubSubTools.create(key, value, this.processorContext.timestamp(), Optional.of(topic), Optional.of(this.processorContext.partition()), Optional.of(this.processorContext.offset()));
-        final PubSubMessage parse = JSONToReplicationMessage.parse(this.context, psm, appendTenant, appendSchema, appendTable);
+//        PubSubMessage psm = PubSubTools.create(key, value, this.processorContext.timestamp(), Optional.of(topic), Optional.of(this.processorContext.partition()), Optional.of(this.processorContext.offset()));
+        byte[] data = JSONToReplicationMessage.parse(this.context, key,value, appendTenant, appendSchema, appendTable);
         FallbackReplicationMessageParser ftm = new FallbackReplicationMessageParser(true);
-        ReplicationMessage msg = ftm.parseBytes(parse);
-        processorContext.forward(parse.key(), msg);
+        ReplicationMessage msg = ftm.parseBytes(data);
+        processorContext.forward(key, msg);
     }
 
 }

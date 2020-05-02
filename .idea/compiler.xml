@@ -23,9 +23,13 @@
       <module name="floodplain-library.kafka-rx2.main" target="11" />
       <module name="floodplain-library.kafka-rx2.native-test" target="11" />
       <module name="floodplain-library.kafka-rx2.test" target="11" />
+      <module name="floodplain-library.kafka-webapi.main" target="11" />
       <module name="floodplain-library.kafka-webapi.native-test" target="11" />
+      <module name="floodplain-library.kafka-webapi.test" target="11" />
       <module name="floodplain-library.native-test" target="11" />
+      <module name="floodplain-library.pubsub-rx2.main" target="11" />
       <module name="floodplain-library.pubsub-rx2.native-test" target="11" />
+      <module name="floodplain-library.pubsub-rx2.test" target="11" />
       <module name="floodplain-library.replication-api.native-test" target="11" />
       <module name="floodplain-library.replication-http.main" target="11" />
       <module name="floodplain-library.replication-http.native-test" target="11" />

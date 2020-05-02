@@ -1,7 +1,6 @@
 package io.floodplain.streams.base;
 
 import io.floodplain.replication.api.ReplicationMessage;
-import io.reactivex.functions.Function3;
 import org.apache.kafka.streams.kstream.Predicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,8 +12,11 @@ public class Filters {
 
     private final static Logger logger = LoggerFactory.getLogger(Filters.class);
 
+    public static interface TriFunction {
+        public boolean apply(String id, List<String> params, ReplicationMessage message);
+    }
 
-    private static Map<String, Function3<String, List<String>, ReplicationMessage, Boolean>> predicates = new HashMap<>();
+    private static Map<String, TriFunction> predicates = new HashMap<>();
 
     static {
         Filters.registerPredicate("clublogo", (id, params, message) -> "CLUBLOGO".equals(message.columnValue("objecttype")) && message.columnValue("data") != null);
@@ -42,17 +44,17 @@ public class Filters {
         Filters.registerPredicate("notEqualToString", (id, params, message) -> !params.get(1).equals(message.columnValue(params.get(0))));
     }
 
-    private static Function3<String, List<String>, ReplicationMessage, Boolean> equalToAnyIn() {
+    private static TriFunction equalToAnyIn() {
         return (id, params, message) -> {
             if (params.size() < 2) {
-                throw new Exception("Need some more arguments, at least two. I got: " + params);
+                throw new RuntimeException("Need some more arguments, at least two. I got: " + params);
             }
             String columnValue = (String) message.columnValue(params.get(0));
             return params.stream().skip(1).anyMatch(item -> item.equals(columnValue));
         };
     }
 
-    public static void registerPredicate(String name, Function3<String, List<String>, ReplicationMessage, Boolean> predicate) {
+    public static void registerPredicate(String name,TriFunction predicate) {
         predicates.put(name, predicate);
     }
 }

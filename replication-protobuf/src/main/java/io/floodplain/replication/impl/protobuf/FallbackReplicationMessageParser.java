@@ -1,11 +1,8 @@
 package io.floodplain.replication.impl.protobuf;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import io.floodplain.immutable.api.ImmutableMessage.ValueType;
-import io.floodplain.pubsub.rx2.api.PubSubMessage;
 import io.floodplain.replication.api.ReplicationMessage;
 import io.floodplain.replication.api.ReplicationMessageParser;
-import io.floodplain.replication.factory.ReplicationFactory;
 import io.floodplain.replication.impl.json.JSONReplicationMessageParserImpl;
 import io.floodplain.replication.impl.protobuf.impl.ProtobufReplicationMessageParser;
 import org.slf4j.Logger;
@@ -150,32 +147,6 @@ public class FallbackReplicationMessageParser implements ReplicationMessageParse
     public List<ReplicationMessage> parseMessageList(Optional<String> source, byte[] data) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Not implemented");
-    }
-
-    @Override
-    public ReplicationMessage parseBytes(PubSubMessage data) {
-        ReplicationMessage result = data.value() != null ? parseBytes(data.value()) : ReplicationFactory.empty().withOperation(ReplicationMessage.Operation.DELETE);
-        if (ReplicationMessage.includeKafkaMetadata()) {
-            return result
-                    .withPartition(data.partition())
-                    .withOffset(data.offset())
-                    .withSource(data.topic())
-                    .with("_kafkapartition", data.partition().orElse(-1), ValueType.INTEGER)
-                    .with("_kafkaoffset", data.offset().orElse(-1L), ValueType.INTEGER)
-                    .with("_kafkakey", data.key(), ValueType.STRING)
-                    .with("_kafkatopic", data.topic().orElse(null), ValueType.STRING);
-        } else {
-            return result;
-        }
-
-//		return (data.value()!=null ? parseBytes(data.value()) : ReplicationFactory.empty().withOperation(Operation.DELETE))
-//				.withPartition(data.partition())
-//				.withOffset(data.offset())
-//				.withSource(data.topic())
-//				.with("_kafkapartition", data.partition().orElse(-1), "integer")
-//				.with("_kafkaoffset", data.offset().orElse(-1L), "long")
-//				.with("_kafkakey", data.key(), "string")
-//				.with("_kafkatopic",data.topic().orElse(null),"string");
     }
 
 }

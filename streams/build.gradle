@@ -10,17 +10,11 @@ dependencies {
     implementation project(':streams-api')
     implementation project(':replication-json')
     implementation project(':replication-protobuf')
-    implementation project(':pubsub-rx2')
-    compile dependencies.servletApi
     testCompile dependencies.jUnit
     testRuntime dependencies.slf4jSimple
     compile dependencies.kafkaClient
-    compile dependencies.mongoCore
-    compile dependencies.mongoBson
-    compile dependencies.mongoDriver
     compile dependencies.kafkaClient
     compile dependencies.kafkaStreams
-    compile dependencies.reactiveStreams
     compile dependencies.cdiApi
     compile dependencies.microProfileConfig
 }

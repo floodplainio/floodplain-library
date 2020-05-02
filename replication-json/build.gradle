@@ -6,7 +6,6 @@ dependencies {
     implementation project(':immutable-impl')
     implementation project(':replication-api')
     implementation project(':replication-impl')
-    implementation project(':pubsub-rx2')
     implementation project('::streams-api')
     testCompile dependencies.jUnit
     testRuntime dependencies.slf4jSimple

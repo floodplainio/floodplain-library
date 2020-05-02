@@ -1,6 +1,5 @@
 package io.floodplain.replication.api;
 
-import io.floodplain.pubsub.rx2.api.PubSubMessage;
 
 import java.io.InputStream;
 import java.util.List;
@@ -10,7 +9,6 @@ public interface ReplicationMessageParser {
     @Deprecated
     public ReplicationMessage parseBytes(byte[] data);
 
-    public ReplicationMessage parseBytes(PubSubMessage data);
 
     public ReplicationMessage parseBytes(Optional<String> source, byte[] data);
 
