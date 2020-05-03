@@ -20,7 +20,10 @@ package io.floodplain.kotlindsl
 
 import io.floodplain.kotlindsl.message.IMessage
 import io.floodplain.kotlindsl.message.empty
+import io.floodplain.replication.api.ReplicationMessage
 import io.floodplain.streams.remotejoin.StoreStateProcessor
+import org.apache.kafka.streams.processor.StateStore
+import org.apache.kafka.streams.state.KeyValueStore
 import java.time.Duration
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -419,8 +422,7 @@ class TestTopology {
             assertEquals(2, outputSize("@output"))
             input("@source", "key1", empty().set("value", "value2"))
             assertEquals(3, outputSize("@output"))
-            stateStore.flush()
-            assertEquals(2, stateStore.approximateNumEntries())
+            assertEquals(2, countStateStoreSize(stateStore))
             delete("@source", "key1")
             assertEquals(4, outputSize("@output"))
             delete("@source", "key2")
@@ -429,8 +431,14 @@ class TestTopology {
                 logger.info("Key: $k")
             }
             stateStore.flush()
-            assertEquals(0, stateStore.approximateNumEntries())
+            assertEquals(0, countStateStoreSize(stateStore))
         }
+    }
+
+    private fun countStateStoreSize(store: KeyValueStore<String,ReplicationMessage>): Long {
+        var i = 0L;
+        store.all().forEach { i++ }
+        return i
     }
 
     @Test
