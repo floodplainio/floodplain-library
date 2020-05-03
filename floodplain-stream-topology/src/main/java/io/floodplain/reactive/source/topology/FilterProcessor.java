@@ -34,8 +34,6 @@ public class FilterProcessor extends AbstractProcessor<String, ReplicationMessag
 
     @Override
     public void process(String key, ReplicationMessage value) {
-
-//		Operand o = filterExpression.apply(Optional.of(value.message()), value.paramMessage());
         if (filterExpression.apply(key,value.message())) {
             super.context().forward(key, value);
         }

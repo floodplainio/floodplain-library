@@ -31,14 +31,11 @@ import java.util.Stack;
 
 public class EachTransformer implements TopologyPipeComponent {
 
-//    private final BiConsumer<ImmutableMessage, ImmutableMessage> lambda;
     private boolean materialize = false;
 
 
     private final static Logger logger = LoggerFactory.getLogger(EachTransformer.class);
 
-    public static final String SINK_PREFIX = "SINK_";
-    public static final String SINKLOG_PREFIX = "SINK_LOG_";
     ImmutableMessage.TriConsumer lambda;
     public EachTransformer(ImmutableMessage.TriConsumer lambda) {
         this.lambda = lambda;
@@ -46,16 +43,9 @@ public class EachTransformer implements TopologyPipeComponent {
 
     @Override
     public void addToTopology(Stack<String> transformerNames, int pipeId, Topology topology, TopologyContext topologyContext, TopologyConstructor topologyConstructor) {
-//		boolean dumpStack = resolved.optionalBoolean("dumpStack").orElse(false);
-//		if(every.isPresent()) {
-//			throw new UnsupportedOperationException("'every' param not yet implemented in LogTransformer");
-//		}
-//		String logName = resolved.paramString("logName");
         logger.info("Stack top for transformer: " + transformerNames.peek());
-//		String name = createName(topologyContext, transformerNames.size(), pipeId);
         String name = topologyContext.qualifiedName("each", transformerNames.size(), pipeId);
         if (this.materialize()) {
-//			topology.addProcessor(filterName+"_prematerialize",filterProcessor, transformerNames.peek());
             topology.addProcessor(name + "_prematerialize", () -> new EachProcessor(lambda), transformerNames.peek());
             ReplicationTopologyParser.addMaterializeStore(topology, topologyContext, topologyConstructor, name, name + "_prematerialize");
         } else {

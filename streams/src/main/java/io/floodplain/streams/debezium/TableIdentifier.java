@@ -38,9 +38,6 @@ public class TableIdentifier {
 
 
     public TableIdentifier(String tableId, ImmutableMessage keyMessage, List<String> fields, boolean appendTenant, boolean appendSchema) {
-//		dev.knvb_bbbb04b.sport
-//		demo-dvd-2.public.inventory
-//		logger.info("TableId: {}",tableId);
         final String[] primary = tableId.split("\\.");
         this.keyMessage = keyMessage;
         List<String> l = new LinkedList<>(fields);
@@ -86,8 +83,6 @@ public class TableIdentifier {
             }
             sb.append(primarykeys);
             combinedKey = sb.toString();
-//			(appendTenant ? tenant + ReplicationMessage.KEYSEPARATOR : "") + databaseInstance + ReplicationMessage.KEYSEPARATOR + 
-//				primarykeys;
         }
 
     }

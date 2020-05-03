@@ -37,8 +37,6 @@ public class TestTransformations {
         ReplicationMessageParser tp = new FallbackReplicationMessageParser();
 
         ReplicationFactory.setInstance(tp);
-//        transformerRegistry.put("createcoordinatedoc", new CreateCoordinateTransformer());
-//        transformerRegistry.put("formatcommunication", new CommunicationTransformer());
         try (InputStream resourceAsStream = TestTransformations.class.getClassLoader().getResourceAsStream("address1.json")) {
             addressMessage = ReplicationFactory.getInstance().parseStream(resourceAsStream);
         }
@@ -51,9 +49,6 @@ public class TestTransformations {
         try (InputStream resourceAsStream = TestTransformations.class.getClassLoader().getResourceAsStream("person.json")) {
             personMessage = ReplicationFactory.getInstance().parseStream(resourceAsStream);
         }
-//		try(InputStream resourceAsStream = TestTransformations.class.getResourceAsStream("player.json")) {
-//			playerMessage = ReplicationFactory.getInstance().parseStream(resourceAsStream);
-//		} 
         try (InputStream resourceAsStream = TestTransformations.class.getClassLoader().getResourceAsStream("player2.json")) {
             playerMessage2 = ReplicationFactory.getInstance().parseStream(resourceAsStream);
         }
@@ -169,18 +164,6 @@ public class TestTransformations {
         Assert.assertEquals(2, list.size());
     }
 
-    @Test
-    public void mergeToListTest() {
-        List<ReplicationMessage> a = new ArrayList<>();
-//		sset.p
-        a.add(addressMessage);
-        List<ReplicationMessage> b = new ArrayList<>();
-//		sset.p
-        b.add(addressIdenticalMessage);
-        List<ReplicationMessage> c = CoreOperators.addToReplicationList(a, b, StreamOperators.DEFAULT_MAX_LIST_SIZE, (x, y) -> x.equalsByKey(y));
-        Assert.assertEquals(1, c.size());
-    }
-
     // need to think about this one
     @Test
     public void testDeepEquality() {
@@ -188,35 +171,7 @@ public class TestTransformations {
         Assert.assertFalse(addressMessage.equalsToMessage(differentAddressMessage));
     }
 
-    @Test
-    public void testJoinLists() throws IOException {
-        try (InputStream resourceAsStream = TestTransformations.class.getClassLoader().getResourceAsStream("person.json")) {
-            ReplicationMessage personMessage2 = ReplicationFactory.getInstance().parseStream(resourceAsStream);
-            List<ReplicationMessage> list = new ArrayList<>();
-            list.add(personMessage);
-//			list.add(playerMessage2);
-            List<ReplicationMessage> list2 = new ArrayList<>();
-            list2.add(personMessage2);
-
-            List<ReplicationMessage> mm = CoreOperators.addToReplicationList(list, list2, 100, (x, y) -> x.equalsByKey(y));
-            Assert.assertEquals(1, mm.size());
-        }
-    }
 
 
-    @Test
-    public void testJoinListMax() throws IOException {
-        try (InputStream resourceAsStream = TestTransformations.class.getResourceAsStream("person.json")) {
-            ReplicationMessage personMessage2 = ReplicationFactory.getInstance().parseStream(resourceAsStream);
-            List<ReplicationMessage> list = new ArrayList<>();
-            list.add(playerMessage2);
-            List<ReplicationMessage> list2 = new ArrayList<>();
-            list2.add(personMessage2);
-
-            List<ReplicationMessage> mm = CoreOperators.addToReplicationList(list, list2, 1, (x, y) -> x.equalsByKey(y));
-            logger.info(">>> {}",mm.size());
-            Assert.assertEquals(1, mm.size());
-        }
-    }
 
 }

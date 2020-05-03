@@ -50,9 +50,4 @@ public class TopologyContext {
         return CoreOperators.topicName("@" + name + "_" + currentPipe + "_" + currentTransformer, this);
     }
 
-//	private static String processorName(String sourceTopicName) {
-//		return sourceTopicName.replace(':',  '_').replace('@', '.');
-//	}
-
-
 }

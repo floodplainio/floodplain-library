@@ -54,8 +54,7 @@ public class JoinRemoteTransformer implements TopologyPipeComponent {
                               TopologyContext topologyContext, TopologyConstructor topologyConstructor) {
 
         Function<ReplicationMessage, String> keyXtr = msg -> {
-            String extracted = this.keyExtractor.apply(msg.message(), msg.paramMessage().orElse(ImmutableFactory.empty()));
-            return extracted;
+            return this.keyExtractor.apply(msg.message(), msg.paramMessage().orElse(ImmutableFactory.empty()));
         };
         GroupTransformer.addGroupTransformer(transformerNames, pipeId, topology, topologyContext, topologyConstructor, keyXtr, "joinRemote");
 
@@ -65,8 +64,6 @@ public class JoinRemoteTransformer implements TopologyPipeComponent {
         String with = pipeStack.peek();
 
         String name = topologyContext.instance + "_" + pipeId + "_" + "joinRemote" + "_" + transformerNames.size();
-        Optional<String> into = Optional.of("list");
-
         ReplicationTopologyParser.addSingleJoinGrouped(topology, topologyContext, topologyConstructor, from.get(), name, Optional.empty(), isList, with, isOptional);
         transformerNames.push(name);
     }
