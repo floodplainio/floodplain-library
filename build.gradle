@@ -6,7 +6,9 @@ plugins {
     id "org.jlleitschuh.gradle.ktlint" version "9.2.1"
     id "com.github.hierynomus.license-base" version "0.15.0"
 }
+
 apply from: 'gradle/dependencies.gradle'
+apply from: 'gradle/shared.gradle'
 
 
 allprojects {
@@ -28,7 +30,6 @@ allprojects {
 
 
 }
-
 
 subprojects {
     version = rootProject.ext.floodplain_version
@@ -53,6 +54,10 @@ subprojects {
                 version = rootProject.ext.floodplain_version
 
                 from components.java
+
+                artifact sourceJar
+                artifact javadocJar
+
                 pom.withXml {
                     asNode().with {
                         appendNode('packaging', 'jar')
@@ -78,7 +83,6 @@ subprojects {
                                 appendNode('name', 'Apache 2.0')
                                 appendNode('url', 'http://www.apache.org/licenses/LICENSE-2.0.txt')
                                 appendNode('distribution', 'repo')
-                                appendNode('comments', 'A business-friendly OSS license')
                             }
                         }
 
@@ -102,8 +106,17 @@ subprojects {
         }
         repositories {
             maven {
-                name = "CentralSnapshots"
+                name = "Snapshots"
                 url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
+
+                credentials {
+                    username = project.findProperty("gpr.user") ?: System.getenv("CENTRAL_USERNAME")
+                    password = project.findProperty("gpr.key") ?: System.getenv("CENTRAL_PASSWORD")
+                }
+            }
+            maven {
+                name = "Staging"
+                url = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
 
                 credentials {
                     username = project.findProperty("gpr.user") ?: System.getenv("CENTRAL_USERNAME")

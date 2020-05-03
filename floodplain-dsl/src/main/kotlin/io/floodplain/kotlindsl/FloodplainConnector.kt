@@ -29,7 +29,6 @@ import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.ProtocolException
 import java.net.URL
-import java.net.http.HttpClient
 import java.util.Collections
 import java.util.function.Consumer
 
