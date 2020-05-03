@@ -55,8 +55,6 @@ public class SinkTransformer implements TopologyPipeComponent {
     public void addToTopology(Stack<String> transformerNames, int pipeId, Topology topology, TopologyContext topologyContext, TopologyConstructor topologyConstructor) {
 
         String sinkTopic = topicName(name, topologyContext);
-        // TODO shouldn't we use the createName?
-        // TODO still weird if we use multiple
         if (create) {
             topologyConstructor.ensureTopicExists(sinkTopic, partitions);
         }

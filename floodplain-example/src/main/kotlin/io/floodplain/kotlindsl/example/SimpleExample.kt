@@ -37,7 +37,7 @@ fun main() = pipe {
     val mongoConfig = mongoConfig("mymongo", "mongodb://mongo", "mydatabase")
     postgresSource("public", "film", pgConfig) {
         each {
-            key, message, sec -> logger.info("Key: $key")
+            key, _, _ -> logger.info("Key: $key")
         }
         mongoSink("justfilm", "justfilm", mongoConfig)
     }

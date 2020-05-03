@@ -5,3 +5,10 @@ license {
     ext.year = '2020'
     ext.name = 'Frank Lyaruu'
 }
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "11"
+}
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "11"
+}

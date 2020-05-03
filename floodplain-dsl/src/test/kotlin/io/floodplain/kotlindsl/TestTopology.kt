@@ -22,12 +22,11 @@ import io.floodplain.kotlindsl.message.IMessage
 import io.floodplain.kotlindsl.message.empty
 import io.floodplain.replication.api.ReplicationMessage
 import io.floodplain.streams.remotejoin.StoreStateProcessor
-import org.apache.kafka.streams.processor.StateStore
-import org.apache.kafka.streams.state.KeyValueStore
 import java.time.Duration
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import org.apache.kafka.streams.state.KeyValueStore
 
 private val logger = mu.KotlinLogging.logger {}
 
@@ -435,8 +434,8 @@ class TestTopology {
         }
     }
 
-    private fun countStateStoreSize(store: KeyValueStore<String,ReplicationMessage>): Long {
-        var i = 0L;
+    private fun countStateStoreSize(store: KeyValueStore<String, ReplicationMessage>): Long {
+        var i = 0L
         store.all().forEach { i++ }
         return i
     }
@@ -474,7 +473,7 @@ class TestTopology {
             // quick check if I'm not making unnecessary stores
 //            assertEquals(2,getStateStoreNames().size)
 //            stateStore(getStateStoreNames().first()).flush()
-            val storeSize = stateStore(getStateStoreNames().first()).approximateNumEntries()
+            val storeSize = countStateStoreSize(stateStore(getStateStoreNames().first())) // stateStore(getStateStoreNames().first()).approximateNumEntries()
             // TODO test size limit, works slightly different than I expected, isn't using the statestore,
             // TODO investigate if there is some 'native' cache store
 

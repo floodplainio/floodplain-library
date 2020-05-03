@@ -35,7 +35,7 @@ class DiffTransformer : TopologyPipeComponent {
         if (materialize) {
             throw RuntimeException("Materialization hasn't been implemented TODO")
         }
-        var top = transformerNames.peek()
+        val top = transformerNames.peek()
         val name = topologyContext.qualifiedName("diff", transformerNames.size, currentPipeId)
 
 //        public static void addDiffProcessor(Topology current, TopologyContext context,

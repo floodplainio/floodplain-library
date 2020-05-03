@@ -59,13 +59,6 @@ public class DynamicSinkTransformer implements TopologyPipeComponent {
     @Override
     public void addToTopology(Stack<String> transformerNames, int pipeId, Topology topology, TopologyContext topologyContext, TopologyConstructor topologyConstructor) {
         TopicNameExtractor<String, ReplicationMessage> topicNameExtractor = (key, msg, recordContext)->topicName( extractor.apply(key, msg.message()),topologyContext);
-
-//        String sinkTopic = topicName(name, topologyContext);
-        // TODO shouldn't we use the createName?
-        // TODO still weird if we use multiple
-//        if (create) {
-//            topologyConstructor.ensureTopicExists(sinkTopic, partitions);
-//        }
         logger.info("Stack top for transformer: " + transformerNames.peek());
         topology.addSink(SINK_PREFIX + sinkName, topicNameExtractor, transformerNames.peek());
     }

@@ -233,14 +233,14 @@ fun PartialPipe.fork(vararg destinations: Block.() -> Transformer): Transformer 
  * meaning you want to attach. You can increment a number, use a sort of time stamp, or even a git commit.
  */
 fun pipe(generation: String = "any", instance: String = "instance", tenant: String = "tenant", deployment: String = "deployment", init: Pipe.() -> Source): Pipe {
-    var topologyContext = TopologyContext(Optional.ofNullable(tenant), deployment, instance, generation)
+    val topologyContext = TopologyContext(Optional.ofNullable(tenant), deployment, instance, generation)
     val pipe = Pipe(topologyContext)
 
     return pipe.addSource(pipe.init())
 }
 
 fun pipes(generation: String = "any", instance: String = "instance", tenant: String = "tenant", deployment: String = "deployment", init: Pipe.() -> List<Source>): Pipe {
-    var topologyContext = TopologyContext(Optional.ofNullable(tenant), deployment, instance, generation)
+    val topologyContext = TopologyContext(Optional.ofNullable(tenant), deployment, instance, generation)
     val pipe = Pipe(topologyContext)
     val sources = pipe.init()
     sources.forEach {

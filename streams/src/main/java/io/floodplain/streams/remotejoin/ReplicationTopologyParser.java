@@ -102,7 +102,6 @@ public class ReplicationTopologyParser {
     public static void addDiffProcessor(Topology current, TopologyContext context,
                                          TopologyConstructor topologyConstructor, String fromProcessor,
                                          String diffProcessorNamePrefix) {
-            // TODO shouldn't the processorFromChildren be added here too?
         current = current.addProcessor(diffProcessorNamePrefix, () -> new DiffProcessor(diffProcessorNamePrefix), fromProcessor);
         addStateStoreMapping(topologyConstructor.processorStateStoreMapper, diffProcessorNamePrefix, diffProcessorNamePrefix);
         logger.info("Granting access for processor: {} to store: {}", diffProcessorNamePrefix, diffProcessorNamePrefix);
@@ -111,10 +110,6 @@ public class ReplicationTopologyParser {
 
     public static String addLazySourceStore(final Topology currentBuilder, TopologyContext context,
                                             TopologyConstructor topologyConstructor, String topicName, Deserializer<?> keyDeserializer, Deserializer<?> valueDeserializer) {
-//		String storeTopic = topicName(topicName, context);
-        // TODO It might be better to fail if the topic does not exist? -> Well depends,
-        // if it is external yes, but if it is created by the same instance, then no.
-        // No: if the topic is dynamic, it won't exist at first, so better to ensure.
         topologyConstructor.addDesiredTopic(topicName, Optional.empty());
         if (!topologyConstructor.sources.containsKey(topicName)) {
             currentBuilder.addSource(topicName, keyDeserializer, valueDeserializer, topicName);

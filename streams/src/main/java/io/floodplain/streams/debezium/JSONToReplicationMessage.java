@@ -57,11 +57,6 @@ public class JSONToReplicationMessage {
     //TODO Beware of threading issues
     private final static DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SS");
 
-
-    public static boolean isValid(ObjectNode node) {
-        return !node.get("schema").isNull();
-    }
-
     public static KeyValue parse(TopologyContext context, String keyInput, byte[] data, boolean appendTenant, boolean appendSchema, boolean appendTable) {
         try {
             ObjectNode keynode = (ObjectNode) objectMapper.readTree(keyInput);
@@ -87,8 +82,6 @@ public class JSONToReplicationMessage {
 //			logger.info("Forwarding to: {}",context.topicName(key.table));
 //            return PubSubTools.create(key.combinedKey, serialized, msg.timestamp(), Optional.of(CoreOperators.topicName(key.table, context)), msg.partition(), msg.offset());
             return new KeyValue(key.combinedKey,serialized);
-        } catch (JsonProcessingException e) {
-            logger.error("Error: ", e);
         } catch (IOException e) {
             logger.error("Error: ", e);
         }

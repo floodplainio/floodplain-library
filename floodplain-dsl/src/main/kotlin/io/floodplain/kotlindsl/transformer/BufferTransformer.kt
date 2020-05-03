@@ -37,10 +37,10 @@ class BufferTransformer(val duration: Duration, val maxSize: Int, val inMemory: 
 //        if (materialize) {
 //            throw RuntimeException("Materialization hasn't been implemented TODO")
 //        }
-        var top = transformerNames.peek()
+        val top = transformerNames.peek()
         val name = topologyContext.qualifiedName("buffer", transformerNames.size, currentPipeId)
         if (materialize) {
-            val prematerialize = topologyContext.qualifiedName("buffer-prematerialize", transformerNames.size, currentPipeId)
+            // val prematerialize = topologyContext.qualifiedName("buffer-prematerialize", transformerNames.size, currentPipeId)
             addPersistentCache(topology, topologyContext, topologyConstructor, name + "_prematerialize", top, duration, maxSize, inMemory)
             addMaterializeStore(topology, topologyContext, topologyConstructor, name, name + "_prematerialize")
         } else {

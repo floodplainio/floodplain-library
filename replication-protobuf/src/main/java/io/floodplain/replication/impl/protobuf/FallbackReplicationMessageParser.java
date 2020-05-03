@@ -163,7 +163,6 @@ public class FallbackReplicationMessageParser implements ReplicationMessageParse
 
     @Override
     public List<ReplicationMessage> parseMessageList(Optional<String> source, byte[] data) {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Not implemented");
     }
 

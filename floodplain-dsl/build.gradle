@@ -21,11 +21,3 @@ dependencies {
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit"
 
 }
-
-// TODO move to centralized location:
-compileKotlin {
-    kotlinOptions.jvmTarget = "11"
-}
-compileTestKotlin {
-    kotlinOptions.jvmTarget = "11"
-}
