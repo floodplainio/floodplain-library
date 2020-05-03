@@ -5,7 +5,6 @@ import io.floodplain.replication.api.ReplicationMessage;
 import io.floodplain.replication.api.ReplicationMessageParser;
 import io.floodplain.replication.factory.ReplicationFactory;
 import io.floodplain.replication.impl.protobuf.FallbackReplicationMessageParser;
-import io.floodplain.replication.transformer.api.MessageTransformer;
 import io.floodplain.streams.api.CoreOperators;
 import io.floodplain.streams.api.TopologyContext;
 import io.floodplain.streams.base.StreamOperators;
@@ -24,10 +23,7 @@ public class TestTransformations {
 
     private ReplicationMessage addressMessage;
     private ReplicationMessage differentAddressMessage;
-    private Map<String, MessageTransformer> transformerRegistry;
     private ReplicationMessage personMessage;
-    private ReplicationMessage calendarDayMessage;
-    private ReplicationMessage coordinatesMessage;
 
     private ReplicationMessage playerMessage2;
     private ReplicationMessage addressIdenticalMessage;
@@ -37,7 +33,6 @@ public class TestTransformations {
 
     @Before
     public void setUp() throws Exception {
-        transformerRegistry = new HashMap<>();
         System.setProperty("PRETTY_JSON", "true");
         ReplicationMessageParser tp = new FallbackReplicationMessageParser();
 
@@ -56,9 +51,6 @@ public class TestTransformations {
         try (InputStream resourceAsStream = TestTransformations.class.getClassLoader().getResourceAsStream("person.json")) {
             personMessage = ReplicationFactory.getInstance().parseStream(resourceAsStream);
         }
-        try (InputStream resourceAsStream = TestTransformations.class.getClassLoader().getResourceAsStream("calendarday.json")) {
-            calendarDayMessage = ReplicationFactory.getInstance().parseStream(resourceAsStream);
-        }
 //		try(InputStream resourceAsStream = TestTransformations.class.getResourceAsStream("player.json")) {
 //			playerMessage = ReplicationFactory.getInstance().parseStream(resourceAsStream);
 //		} 
@@ -67,9 +59,6 @@ public class TestTransformations {
         }
         try (InputStream resourceAsStream = TestTransformations.class.getClassLoader().getResourceAsStream("multikeys.json")) {
             multikeys = ReplicationFactory.getInstance().parseStream(resourceAsStream);
-        }
-        try (InputStream resourceAsStream = TestTransformations.class.getClassLoader().getResourceAsStream("testsfacilitylocation.json")) {
-            coordinatesMessage = ReplicationFactory.getInstance().parseStream(resourceAsStream);
         }
 
 

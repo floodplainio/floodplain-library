@@ -1,7 +1,7 @@
 ext {
     floodplain_version = "0.8.11-SNAPSHOT"
     jackson_version = "2.10.3"
-    kafka_version = "2.4.0"
+    kafka_version = "2.5.0"
     mongodb_version = "3.12.2"
     slf4j_version = "1.7.30"
     mysql_version = "8.0.18"

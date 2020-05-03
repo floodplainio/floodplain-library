@@ -25,25 +25,25 @@ import java.util.Optional;
 
 public interface ReplicationMessageParser {
     @Deprecated
-    public ReplicationMessage parseBytes(byte[] data);
+    ReplicationMessage parseBytes(byte[] data);
 
 
-    public ReplicationMessage parseBytes(Optional<String> source, byte[] data);
+    ReplicationMessage parseBytes(Optional<String> source, byte[] data);
 
-    public List<ReplicationMessage> parseMessageList(byte[] data);
+    List<ReplicationMessage> parseMessageList(byte[] data);
 
-    public ReplicationMessage parseStream(InputStream data);
+    ReplicationMessage parseStream(InputStream data);
 
-    public ReplicationMessage parseStream(Optional<String> source, InputStream data);
+    ReplicationMessage parseStream(Optional<String> source, InputStream data);
 
-    public List<ReplicationMessage> parseMessageList(Optional<String> source, InputStream data);
+    List<ReplicationMessage> parseMessageList(Optional<String> source, InputStream data);
 
-    public List<ReplicationMessage> parseMessageList(Optional<String> source, byte[] data);
+    List<ReplicationMessage> parseMessageList(Optional<String> source, byte[] data);
 
-    public byte[] serializeMessageList(List<ReplicationMessage> msg);
+    byte[] serializeMessageList(List<ReplicationMessage> msg);
 
-    public byte[] serialize(ReplicationMessage msg);
+    byte[] serialize(ReplicationMessage msg);
 
-    public String describe(ReplicationMessage msg);
+    String describe(ReplicationMessage msg);
 }
 

@@ -30,143 +30,142 @@ import java.util.stream.Collectors;
 
 public interface ReplicationMessage {
 
-    public static final String KEYSEPARATOR = "<$>";
-    public static final String PRETTY_JSON = "PRETTY_JSON";
-    public static final String INCLUDE_KAFKA_METADATA = "INCLUDE_KAFKA_METADATA";
+    String KEYSEPARATOR = "<$>";
+    String PRETTY_JSON = "PRETTY_JSON";
 
-    public String transactionId();
+    String transactionId();
 
-    public Optional<String> source();
+    Optional<String> source();
 
-    public Optional<Integer> partition();
+    Optional<Integer> partition();
 
-    public Optional<Long> offset();
+    Optional<Long> offset();
 
-    public long timestamp();
+    long timestamp();
 
-    public Operation operation();
+    Operation operation();
 
-    public List<String> primaryKeys();
+    List<String> primaryKeys();
 
-    public Set<String> columnNames();
+    Set<String> columnNames();
 
-    public Object columnValue(String name);
+    Object columnValue(String name);
 
-    public ValueType columnType(String name);
+    ValueType columnType(String name);
 
-    public boolean equals(Object o);
+    boolean equals(Object o);
 
-    public enum Operation {
+    enum Operation {
         INSERT, UPDATE, DELETE, NONE, COMMIT, MERGE, INITIAL
     }
 
-    public String queueKey();
+    String queueKey();
 
-    public void commit();
+    void commit();
 
     boolean isErrorMessage();
 
-    public Map<String, Map<String, Object>> toDataMap();
+    Map<String, Map<String, Object>> toDataMap();
 
-    public Map<String, Object> valueMap(boolean ignoreNull, Set<String> ignore);
+    Map<String, Object> valueMap(boolean ignoreNull, Set<String> ignore);
 
-    public Map<String, Object> valueMap(boolean ignoreNull, Set<String> ignore, List<String> currentPath);
+    Map<String, Object> valueMap(boolean ignoreNull, Set<String> ignore, List<String> currentPath);
 
-    public Map<String, Object> flatValueMap(boolean ignoreNull, Set<String> ignore, String prefix);
-//	public Map<String, Object> flatValueMap(String prefix,Func3<String, String, Object, Object> processType);
+    Map<String, Object> flatValueMap(boolean ignoreNull, Set<String> ignore, String prefix);
+//	Map<String, Object> flatValueMap(String prefix,Func3<String, String, Object, Object> processType);
 
-    public boolean equalsToMessage(ReplicationMessage c);
+    boolean equalsToMessage(ReplicationMessage c);
 
-    public boolean equalsByKey(ReplicationMessage c);
+    boolean equalsByKey(ReplicationMessage c);
 
-    public byte[] toBytes(ReplicationMessageParser c);
+    byte[] toBytes(ReplicationMessageParser c);
 
-    public Map<String, ValueType> types();
+    Map<String, ValueType> types();
 
-    public Optional<List<ImmutableMessage>> subMessages(String field);
+    Optional<List<ImmutableMessage>> subMessages(String field);
 
-    public Optional<ImmutableMessage> subMessage(String field);
+    Optional<ImmutableMessage> subMessage(String field);
 
-    public ReplicationMessage withImmutableMessage(ImmutableMessage msg);
+    ReplicationMessage withImmutableMessage(ImmutableMessage msg);
 
-    public ReplicationMessage withSubMessages(String field, List<ImmutableMessage> message);
+    ReplicationMessage withSubMessages(String field, List<ImmutableMessage> message);
 
-    public ReplicationMessage withSubMessage(String field, ImmutableMessage message);
+    ReplicationMessage withSubMessage(String field, ImmutableMessage message);
 
-    public ReplicationMessage withAddedSubMessage(String field, ImmutableMessage message);
+    ReplicationMessage withAddedSubMessage(String field, ImmutableMessage message);
 
-    public ReplicationMessage withoutSubMessageInList(String field, Predicate<ImmutableMessage> s);
+    ReplicationMessage withoutSubMessageInList(String field, Predicate<ImmutableMessage> s);
 
-    public ReplicationMessage withoutSubMessages(String field);
+    ReplicationMessage withoutSubMessages(String field);
 
-    public ReplicationMessage withoutSubMessage(String field);
+    ReplicationMessage withoutSubMessage(String field);
 
-    public Set<String> subMessageListNames();
+    Set<String> subMessageListNames();
 
-    public Set<String> subMessageNames();
+    Set<String> subMessageNames();
 
-    public ReplicationMessage without(String columnName);
+    ReplicationMessage without(String columnName);
 
-    public ReplicationMessage without(List<String> columns);
+    ReplicationMessage without(List<String> columns);
 
-    public ReplicationMessage with(String key, Object value, ValueType type);
+    ReplicationMessage with(String key, Object value, ValueType type);
 
-    public ReplicationMessage withOnlyColumns(List<String> columns);
+    ReplicationMessage withOnlyColumns(List<String> columns);
 
-    public ReplicationMessage withOnlySubMessages(List<String> subMessages);
+    ReplicationMessage withOnlySubMessages(List<String> subMessages);
 
-    public ReplicationMessage rename(String columnName, String newName);
+    ReplicationMessage rename(String columnName, String newName);
 
-    public ReplicationMessage withPrimaryKeys(List<String> primary);
+    ReplicationMessage withPrimaryKeys(List<String> primary);
 
-    public ReplicationMessage withSource(Optional<String> primary);
+    ReplicationMessage withSource(Optional<String> primary);
 
-    public ReplicationMessage withPartition(Optional<Integer> partition);
+    ReplicationMessage withPartition(Optional<Integer> partition);
 
-    public ReplicationMessage withOffset(Optional<Long> offset);
+    ReplicationMessage withOffset(Optional<Long> offset);
 
-    public ReplicationMessage now();
+    ReplicationMessage now();
 
-    public ReplicationMessage atTime(long timestamp);
+    ReplicationMessage atTime(long timestamp);
 
-    public String toFlatString(ReplicationMessageParser parser);
+    String toFlatString(ReplicationMessageParser parser);
 
-    public ReplicationMessage merge(ReplicationMessage other, Optional<List<String>> only);
+    ReplicationMessage merge(ReplicationMessage other, Optional<List<String>> only);
 
-    public static final boolean usePretty = true; // System.getenv(PRETTY_JSON) != null || System.getProperty(PRETTY_JSON) != null;
+    static final boolean usePretty =  System.getenv(PRETTY_JSON) != null || System.getProperty(PRETTY_JSON) != null;
 
-    public static boolean usePrettyPrint() {
+    static boolean usePrettyPrint() {
         return usePretty;
     }
 
     //	private static final boolean includeKafkaMetadata = System.getenv(INCLUDE_KAFKA_METADATA)!=null || System.getProperty(INCLUDE_KAFKA_METADATA)!=null;
-    public static boolean includeKafkaMetadata() {
+    static boolean includeKafkaMetadata() {
         return false;
     }
 
-    public Map<String, ImmutableMessage> subMessageMap();
+    Map<String, ImmutableMessage> subMessageMap();
 
-    public Map<String, List<ImmutableMessage>> subMessageListMap();
+    Map<String, List<ImmutableMessage>> subMessageListMap();
 
-    public ReplicationMessage withAllSubMessageLists(Map<String, List<ImmutableMessage>> subMessageListMap);
+    ReplicationMessage withAllSubMessageLists(Map<String, List<ImmutableMessage>> subMessageListMap);
 
-    public ReplicationMessage withAllSubMessage(Map<String, ImmutableMessage> subMessageMap);
+    ReplicationMessage withAllSubMessage(Map<String, ImmutableMessage> subMessageMap);
 
-    public ReplicationMessage withOperation(Operation operation);
+    ReplicationMessage withOperation(Operation operation);
 
-    public Map<String, Object> values();
+    Map<String, Object> values();
 
-    public ReplicationMessage withCommitAction(Runnable commitAction);
+    ReplicationMessage withCommitAction(Runnable commitAction);
 
-    public ImmutableMessage message();
+    ImmutableMessage message();
 
-    public Optional<ImmutableMessage> paramMessage();
+    Optional<ImmutableMessage> paramMessage();
 
-    public ReplicationMessage withParamMessage(ImmutableMessage msg);
+    ReplicationMessage withParamMessage(ImmutableMessage msg);
 
-    public ReplicationMessage withoutParamMessage();
+    ReplicationMessage withoutParamMessage();
 
-    default public String combinedKey() {
+    default String combinedKey() {
         return primaryKeys().stream().map(k -> columnValue(k).toString()).collect(Collectors.joining(KEYSEPARATOR));
     }
 }
