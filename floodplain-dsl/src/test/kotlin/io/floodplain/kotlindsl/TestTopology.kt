@@ -419,6 +419,7 @@ class TestTopology {
             assertEquals(2, outputSize("@output"))
             input("@source", "key1", empty().set("value", "value2"))
             assertEquals(3, outputSize("@output"))
+            stateStore.flush()
             assertEquals(2, stateStore.approximateNumEntries())
             delete("@source", "key1")
             assertEquals(4, outputSize("@output"))

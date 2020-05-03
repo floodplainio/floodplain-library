@@ -38,8 +38,6 @@ private val objectMapper = ObjectMapper()
 
 fun constructConnectorJson(topologyContext: TopologyContext, connectorName: String, parameters: Map<String, Any>): String {
     val generatedName = CoreOperators.topicName(connectorName, topologyContext)
-    val connector = parameters["connector.class"] as String?
-            ?: throw TopologyDefinitionException("Error creating connector message for connector: $connectorName it has no connector.class setting")
     val node = objectMapper.createObjectNode()
     node.put("name", generatedName)
     val configNode = objectMapper.createObjectNode()
