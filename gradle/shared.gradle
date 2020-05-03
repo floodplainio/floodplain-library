@@ -1,0 +1,7 @@
+license {
+    header rootProject.file('gradle/LICENSE_HEADER.txt')
+    mapping('java', 'SLASHSTAR_STYLE')
+    mapping('kt', 'SLASHSTAR_STYLE')
+    ext.year = '2020'
+    ext.name = 'Frank Lyaruu'
+}

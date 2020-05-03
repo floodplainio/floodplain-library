@@ -8,6 +8,7 @@ plugins {
 }
 apply from: 'gradle/dependencies.gradle'
 
+
 allprojects {
     repositories {
         mavenLocal()
@@ -16,18 +17,18 @@ allprojects {
         gradlePluginPortal()
         google()
     }
-    apply plugin: 'com.github.hierynomus.license-base'
 
     license {
         header rootProject.file('gradle/LICENSE_HEADER.txt')
-        includes(['**/*.java','**/*.kt'])
-        strictCheck true
         mapping('java', 'SLASHSTAR_STYLE')
         mapping('kt', 'SLASHSTAR_STYLE')
         ext.year = '2020'
         ext.name = 'Frank Lyaruu'
     }
+
+
 }
+
 
 subprojects {
     version = rootProject.ext.floodplain_version
@@ -42,6 +43,7 @@ subprojects {
     if (name == 'replication-protobuf') {
         apply plugin: 'com.google.protobuf'
     }
+    apply plugin: 'com.github.hierynomus.license-base'
 
     publishing {
         publications {

@@ -40,7 +40,7 @@ class TestTopology {
             input("@sometopic", "key1", empty().set("name", "gorilla"))
             delete("@sometopic", "key1")
             output("@outputtopic")
-            val eq = deleted("@outputtopic").equals("key1")
+            deleted("@outputtopic").equals("key1")
             logger.info("Topic now empty: ${isEmpty("@outputtopic")}")
         }
     }
@@ -56,7 +56,7 @@ class TestTopology {
             }
         }.renderAndTest {
             input("mysource", "1", empty().set("species", "human"))
-            val (key, value) = output("people")
+            val (_, value) = output("people")
             logger.info("Person found: $value")
         }
     }

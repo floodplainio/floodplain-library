@@ -1,3 +1,0 @@
-|>database(resource='dvd',schema='public',table='film_category')
-	->set(last_update=null)
-	->sink('@SIMPLE_CATEGORY3')

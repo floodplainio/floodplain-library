@@ -1,3 +1,4 @@
+apply from: "$rootProject.projectDir/gradle/shared.gradle"
 def globalConf = rootProject.ext
 
 dependencies {
@@ -21,6 +22,7 @@ dependencies {
 
 }
 
+// TODO move to centralized location:
 compileKotlin {
     kotlinOptions.jvmTarget = "11"
 }
