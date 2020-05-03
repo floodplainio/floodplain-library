@@ -19,11 +19,12 @@
 package io.floodplain.streams.base;
 
 import io.floodplain.replication.api.ReplicationMessage;
-import org.apache.kafka.streams.kstream.Predicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Filters {
 

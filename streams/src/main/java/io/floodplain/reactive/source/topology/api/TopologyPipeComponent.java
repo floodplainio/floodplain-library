@@ -25,12 +25,12 @@ import org.apache.kafka.streams.Topology;
 import java.util.Stack;
 
 public interface TopologyPipeComponent {
-    public void addToTopology(Stack<String> transformerNames, int currentPipeId, Topology topology, TopologyContext topologyContext, TopologyConstructor topologyConstructor);
+    void addToTopology(Stack<String> transformerNames, int currentPipeId, Topology topology, TopologyContext topologyContext, TopologyConstructor topologyConstructor);
 
-    public boolean materializeParent();
+    boolean materializeParent();
 
-    public void setMaterialize();
+    void setMaterialize();
 
-    public boolean materialize();
+    boolean materialize();
 
 }

@@ -21,13 +21,10 @@ package io.floodplain.reactive.source.topology;
 import io.floodplain.reactive.source.topology.api.TopologyPipeComponent;
 import io.floodplain.reactive.topology.ReactivePipe;
 import io.floodplain.reactive.topology.ReactivePipeParser;
-import io.floodplain.replication.api.ReplicationMessage;
 import io.floodplain.streams.api.TopologyContext;
-import io.floodplain.streams.base.Filters;
 import io.floodplain.streams.remotejoin.ReplicationTopologyParser;
 import io.floodplain.streams.remotejoin.TopologyConstructor;
 import org.apache.kafka.streams.Topology;
-import org.apache.kafka.streams.kstream.Predicate;
 
 import java.util.Optional;
 import java.util.Stack;

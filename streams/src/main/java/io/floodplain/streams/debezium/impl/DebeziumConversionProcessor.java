@@ -26,8 +26,6 @@ import io.floodplain.streams.debezium.KeyValue;
 import org.apache.kafka.streams.processor.Processor;
 import org.apache.kafka.streams.processor.ProcessorContext;
 
-import java.util.Optional;
-
 public class DebeziumConversionProcessor implements Processor<String, byte[]> {
 
     private ProcessorContext processorContext;

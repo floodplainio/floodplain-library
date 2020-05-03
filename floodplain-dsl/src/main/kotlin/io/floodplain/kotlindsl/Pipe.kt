@@ -25,11 +25,6 @@ import io.floodplain.streams.base.RocksDBConfigurationSetter
 import io.floodplain.streams.base.StreamOperators
 import io.floodplain.streams.remotejoin.ReplicationTopologyParser
 import io.floodplain.streams.remotejoin.TopologyConstructor
-import java.io.IOException
-import java.net.URL
-import java.util.Properties
-import java.util.Stack
-import kotlin.collections.ArrayList
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.common.serialization.Serdes
@@ -37,6 +32,10 @@ import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.StreamsConfig
 import org.apache.kafka.streams.Topology
 import org.apache.kafka.streams.processor.WallclockTimestampExtractor
+import java.io.IOException
+import java.net.URL
+import java.util.Properties
+import java.util.Stack
 
 private val logger = mu.KotlinLogging.logger {}
 

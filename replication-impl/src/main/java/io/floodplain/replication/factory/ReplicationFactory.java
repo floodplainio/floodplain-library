@@ -32,15 +32,6 @@ public class ReplicationFactory {
     };
 
 
-    public void setReplicationMessageParser(ReplicationMessageParser rmp) {
-        setInstance(rmp);
-    }
-
-
-    public void clearReplicationMessageParser(ReplicationMessageParser rmp) {
-        setInstance(null);
-    }
-
     public static ReplicationMessageParser getInstance() {
         return ReplicationFactory.instance;
     }
@@ -94,6 +85,4 @@ public class ReplicationFactory {
     public static ReplicationMessage standardMessage(ImmutableMessage msg) {
         return new ReplicationImmutableMessageImpl(Optional.<String>empty(), Optional.empty(), Optional.empty(), (String) null, ReplicationMessage.Operation.NONE, -1L, msg, Collections.<String>emptyList(), Optional.empty(), Optional.empty());
     }
-
-
 }

@@ -23,7 +23,6 @@ import io.floodplain.replication.api.ReplicationMessage.Operation;
 import io.floodplain.streams.api.CoreOperators;
 import io.floodplain.streams.remotejoin.PreJoinProcessor;
 import org.apache.kafka.streams.KeyValue;
-import org.apache.kafka.streams.kstream.Predicate;
 import org.apache.kafka.streams.processor.AbstractProcessor;
 import org.apache.kafka.streams.processor.ProcessorContext;
 import org.apache.kafka.streams.state.KeyValueIterator;
@@ -33,7 +32,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.BiFunction;
 
 public class OneToManyGroupedProcessor extends AbstractProcessor<String, ReplicationMessage> {

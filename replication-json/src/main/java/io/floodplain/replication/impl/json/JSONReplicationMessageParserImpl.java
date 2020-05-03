@@ -38,8 +38,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-import static io.floodplain.immutable.api.ImmutableMessage.ValueType;
-
 @Named("json")
 @ApplicationScoped
 public class JSONReplicationMessageParserImpl implements ReplicationMessageParser {
@@ -63,8 +61,6 @@ public class JSONReplicationMessageParserImpl implements ReplicationMessageParse
         }
         try {
             return ReplicationJSON.parseReplicationMessage(data, Optional.empty(), ReplicationJSON.objectMapper);
-        } catch (JsonProcessingException e) {
-            return ReplicationFactory.createErrorReplicationMessage(e);
         } catch (Throwable e) {
             return ReplicationFactory.createErrorReplicationMessage(e);
         }
@@ -141,7 +137,7 @@ public class JSONReplicationMessageParserImpl implements ReplicationMessageParse
     @Override
     public byte[] serializeMessageList(List<ReplicationMessage> data) {
         ArrayNode list = ReplicationJSON.objectMapper.createArrayNode();
-        data.stream().map(msg -> ReplicationJSON.toJSON(msg, includeNullValues)).forEach(e -> list.add(e));
+        data.stream().map(msg -> ReplicationJSON.toJSON(msg, includeNullValues)).forEach(list::add);
         try {
             ObjectWriter w = ReplicationMessage.usePrettyPrint() ? ReplicationJSON.objectMapper.writerWithDefaultPrettyPrinter() : ReplicationJSON.objectMapper.writer();
             return w.writeValueAsBytes(list);

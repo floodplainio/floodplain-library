@@ -38,8 +38,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-import static io.floodplain.immutable.api.ImmutableMessage.ValueType;
-
 @Named("ndjson")
 @ApplicationScoped
 public class JSONDumpReplicationMessageParserImpl implements ReplicationMessageParser {
@@ -47,15 +45,6 @@ public class JSONDumpReplicationMessageParserImpl implements ReplicationMessageP
     private final static Logger logger = LoggerFactory.getLogger(JSONDumpReplicationMessageParserImpl.class);
 
     private final boolean includeNullValues = true;
-
-
-//	public JSONReplicationMessageParserImpl() {
-//		this(false);
-//	}
-//	
-//	
-//	public JSONReplicationMessageParserImpl() {
-//	}
 
     public ReplicationMessage parseJson(Optional<String> source, ObjectNode on) {
         return ReplicationJSON.parseJSON(source, on);

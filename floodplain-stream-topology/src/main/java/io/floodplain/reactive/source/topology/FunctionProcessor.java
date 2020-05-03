@@ -24,8 +24,6 @@ import io.floodplain.replication.api.ReplicationMessage;
 import io.floodplain.replication.factory.ReplicationFactory;
 import org.apache.kafka.streams.processor.AbstractProcessor;
 
-import java.util.function.BiFunction;
-
 public class FunctionProcessor extends AbstractProcessor<String, ReplicationMessage> {
 
     private final SetTransformer.TriFunction function;

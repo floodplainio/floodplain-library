@@ -19,7 +19,6 @@
 package io.floodplain.replication.impl;
 
 import io.floodplain.immutable.api.ImmutableMessage;
-import io.floodplain.immutable.api.ImmutableMessage.Trifunction;
 import io.floodplain.immutable.factory.ImmutableFactory;
 import io.floodplain.replication.api.ReplicationMessage;
 import io.floodplain.replication.api.ReplicationMessageParser;
@@ -203,15 +202,7 @@ public class ReplicationImmutableMessageImpl implements ReplicationMessage {
         return t;
     }
 
-//
-//	private Map<String, String> combineTypes(Map<String, String> typesa, Map<String, String> typesb) {
-//		HashMap<String,String> combine = new HashMap<>(typesa);
-//		for (Entry<String,String> e : typesb.entrySet()) {
-//			// TODO sanity check types?
-//			combine.put(e.getKey(), e.getValue());
-//		}
-//		return Collections.unmodifiableMap(combine);
-//	}
+
 
     @Override
     public Map<String, ValueType> types() {
@@ -227,15 +218,6 @@ public class ReplicationImmutableMessageImpl implements ReplicationMessage {
     public Map<String, Object> valueMap(boolean ignoreNull, Set<String> ignore) {
         return valueMap(ignoreNull, ignore, Collections.emptyList());
     }
-//	
-//	private static BiFunction<String,List<String>,Boolean> checkIgnoreList(Set<String> ignoreList) {
-//		return (item,currentPath)->{
-//			if(ignoreList.contains(item)) {
-//				return false;
-//			}
-//			return true;
-//		};
-//	}
 
     @Override
     public Map<String, Object> valueMap(boolean ignoreNull, Set<String> ignore, List<String> currentPath) {
@@ -429,11 +411,6 @@ public class ReplicationImmutableMessageImpl implements ReplicationMessage {
         return Collections.unmodifiableMap(combined);
     }
 
-    public Map<String, Object> flatValueMap(String prefix, Trifunction processType) {
-        return message().flatValueMap(prefix, processType);
-    }
-
-
     public boolean equalsToMessage(ReplicationMessage c) {
         Map<String, Object> other = c.flatValueMap(false, Collections.emptySet(), "");
         final Map<String, Object> myMap = this.flatValueMap(false, Collections.emptySet(), "");
@@ -486,10 +463,7 @@ public class ReplicationImmutableMessageImpl implements ReplicationMessage {
 
     @Override
     public ReplicationMessage withPartition(Optional<Integer> partition) {
-
         return new ReplicationImmutableMessageImpl(source, partition, this.offset, this.transactionId, this.operation, timestamp, message(), this.primaryKeys, this.commitAction, this.paramMessage);
-//		public ReplicationImmutableMessageImpl(Optional<String> source, Optional<Integer> partition, Optional<Long> offset, String transactionId, Operation operation, long timestamp, Map<String,Object> values, Map<String,String> types,Map<String,ImmutableMessage> submessage, Map<String,List<ImmutableMessage>> submessages, List<String> primaryKeys, Optional<Runnable> commitAction) {
-
     }
 
 
