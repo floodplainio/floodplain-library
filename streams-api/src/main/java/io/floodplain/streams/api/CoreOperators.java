@@ -158,7 +158,7 @@ public class CoreOperators {
         if (index == -1) {
             return key;
         }
-        return key.substring(index + 1, key.length());
+        return key.substring(index + 1);
     }
 
     public static String ungroupKeyReverse(String key) {

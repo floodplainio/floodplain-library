@@ -190,7 +190,7 @@ public class ImmutableJSON {
                 if (value instanceof String[]) {
                     ArrayNode arrayNode = m.putArray(key);
                     @SuppressWarnings("rawtypes")
-                    ArrayNode valueToTree = objectMapper.valueToTree((List) value);
+                    ArrayNode valueToTree = objectMapper.valueToTree(value);
                     arrayNode.addAll(valueToTree);
                 } else {
                     logger.warn("Bad type mapping, key: {} of type: list has actual class: {}. Treating as string for now.", key, value.getClass());

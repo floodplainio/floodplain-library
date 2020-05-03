@@ -44,7 +44,7 @@ public class TestJoin {
         Assert.assertEquals(8, organization.columnNames().size());
         logger.info(">>>>>>> {}",organization.values());
 
-        int count = organization.without(Arrays.asList(new String[]{"updateby", "lastupdate"})).columnNames().size();
+        int count = organization.without(Arrays.asList("updateby", "lastupdate")).columnNames().size();
         Assert.assertEquals(6, count);
     }
 
@@ -180,8 +180,8 @@ public class TestJoin {
         stream = TestJoin.class.getClassLoader().getResourceAsStream("organization.json");
         ReplicationMessage input2 = parser.parseStream(stream);
 
-        ReplicationMessage merged = input1.merge(input2, Optional.of(Arrays.asList(new String[]{"shortname"})));
-        logger.info("FLATJSON: " + new String(merged.toFlatString(parser)));
+        ReplicationMessage merged = input1.merge(input2, Optional.of(Arrays.asList("shortname")));
+        logger.info("FLATJSON: " + merged.toFlatString(parser));
         Assert.assertNull(merged.columnValue("typeoforganization"));
         Assert.assertNotNull(merged.columnValue("city"));
         Assert.assertEquals(12, merged.columnNames().size());
@@ -267,7 +267,7 @@ public class TestJoin {
         values.put("Key", 1);
         values.put("NullString", null);
         ReplicationMessage rms = ReplicationFactory.createReplicationMessage(Optional.empty(), Optional.empty(),
-                Optional.empty(), null, 1, ReplicationMessage.Operation.INITIAL, Arrays.asList(new String[]{"Key"}), types, values,
+                Optional.empty(), null, 1, ReplicationMessage.Operation.INITIAL, Arrays.asList("Key"), types, values,
                 Collections.emptyMap(), Collections.emptyMap(), Optional.empty(), Optional.empty());
         logger.info("Replication: " + rms.toFlatString(ReplicationFactory.getInstance()));
         logger.info("Replication: " + new String(rms.toBytes(ReplicationFactory.getInstance())));

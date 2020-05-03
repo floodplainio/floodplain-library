@@ -293,7 +293,7 @@ public class JSONToReplicationMessage {
             case "list":
             case "array":
                 List<String> ar = new ArrayList<>();
-                ((ArrayNode) value).forEach(e -> ar.add(e.asText()));
+                value.forEach(e -> ar.add(e.asText()));
                 return Collections.unmodifiableList(ar);
             default:
                 throw new RuntimeException("Unknown type: " + type);

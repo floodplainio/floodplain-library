@@ -16,7 +16,7 @@ import java.io.IOException;
 
 public class TestJsonDebeziumTransformation {
     @Test
-    public void testPhoto() throws JsonProcessingException, IOException {
+    public void testPhoto() throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode node = mapper.readTree(this.getClass().getClassLoader().getResourceAsStream("photo.json"));
         System.setProperty(ReplicationMessage.PRETTY_JSON, "true");
@@ -29,7 +29,7 @@ public class TestJsonDebeziumTransformation {
     }
 
     @Test
-    public void testDecimal() throws JsonProcessingException, IOException {
+    public void testDecimal() throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode node = mapper.readTree(this.getClass().getClassLoader().getResourceAsStream("decimalwithscale.json"));
         System.setProperty(ReplicationMessage.PRETTY_JSON, "true");

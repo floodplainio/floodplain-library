@@ -79,7 +79,7 @@ public class ReplicationImmutableMessageImpl implements ReplicationMessage {
         this.transactionId = null; // message1.transactionId()+"-"+message2.transactionId();
         this.timestamp = System.currentTimeMillis();
         this.operation = Operation.MERGE;
-        this.primaryKeys = Collections.unmodifiableList(Arrays.asList(new String[]{key}));
+        this.primaryKeys = Collections.unmodifiableList(Arrays.asList(key));
         this.immutableMessage = message1.message().merge(message2.message(), Optional.empty());
         this.source = Optional.empty();
         this.partition = Optional.empty();

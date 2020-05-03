@@ -56,7 +56,7 @@ public class ReplicationTopologyParser {
     private static final Serde<ReplicationMessage> messageSerde = new ReplicationMessageSerde();
     private static final Serde<ImmutableMessage> immutableMessageSerde = new ImmutableMessageSerde();
 
-    public enum Flatten {FIRST, LAST, NONE};
+    public enum Flatten {FIRST, LAST, NONE}
 
     private static final Logger logger = LoggerFactory.getLogger(ReplicationTopologyParser.class);
 

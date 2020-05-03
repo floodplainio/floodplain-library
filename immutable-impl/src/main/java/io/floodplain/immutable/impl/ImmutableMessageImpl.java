@@ -218,7 +218,7 @@ public class ImmutableMessageImpl implements ImmutableMessage {
             return values.get(name);
         }
         String submp = name.substring(0, path);
-        final Optional<Object> value = subMessage(submp).orElse(ImmutableFactory.empty()).value(name.substring(path + 1, name.length()));
+        final Optional<Object> value = subMessage(submp).orElse(ImmutableFactory.empty()).value(name.substring(path + 1));
         return value.orElse(null);
     }
 
@@ -559,7 +559,7 @@ public class ImmutableMessageImpl implements ImmutableMessage {
         Map<String, Object> localValues = getFlatValueMap(prefix, processType);
         for (Entry<String, ImmutableMessage> e : this.subMessageMap.entrySet()) {
             String newPrefix = !"".equals(prefix) ? prefix + "_" + e.getKey() : e.getKey();
-            localValues.putAll(((ImmutableMessageImpl) e.getValue()).flatValueMap(newPrefix, processType));
+            localValues.putAll(e.getValue().flatValueMap(newPrefix, processType));
         }
         return Collections.unmodifiableMap(localValues);
     }

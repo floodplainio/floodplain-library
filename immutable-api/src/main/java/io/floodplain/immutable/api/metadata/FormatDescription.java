@@ -20,6 +20,7 @@ package io.floodplain.immutable.api.metadata;
 
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -206,11 +207,7 @@ public class FormatDescription implements Comparable<FormatDescription>, Seriali
                 newValue.charAt(0) == '"' &&
                 newValue.charAt(newValue.length() - 1) == '"') {
             newValue = newValue.substring(1, newValue.length() - 1);
-            try {
-                magicBytes = newValue.getBytes("iso-8859-1");
-            } catch (UnsupportedEncodingException uee) {
-                magicBytes = null;
-            }
+            magicBytes = newValue.getBytes(StandardCharsets.ISO_8859_1);
             return;
         }
         if ((newValue.length() % 2) == 0) {

@@ -132,7 +132,7 @@ public interface ReplicationMessage {
 
     ReplicationMessage merge(ReplicationMessage other, Optional<List<String>> only);
 
-    static final boolean usePretty =  System.getenv(PRETTY_JSON) != null || System.getProperty(PRETTY_JSON) != null;
+    boolean usePretty =  System.getenv(PRETTY_JSON) != null || System.getProperty(PRETTY_JSON) != null;
 
     static boolean usePrettyPrint() {
         return usePretty;

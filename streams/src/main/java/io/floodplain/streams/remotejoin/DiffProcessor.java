@@ -62,7 +62,7 @@ public class DiffProcessor extends AbstractProcessor<String, ReplicationMessage>
         value.put("key", key);
         Map<String, ValueType> types = new HashMap<>();
         types.put("key", ValueType.STRING);
-        return ReplicationFactory.fromMap(key, value, types).withPrimaryKeys(Arrays.asList(new String[]{"key"}));
+        return ReplicationFactory.fromMap(key, value, types).withPrimaryKeys(Arrays.asList("key"));
     }
 
     @Override

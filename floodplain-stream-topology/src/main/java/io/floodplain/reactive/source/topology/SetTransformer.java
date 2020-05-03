@@ -33,7 +33,7 @@ public class SetTransformer implements TopologyPipeComponent {
 
     private boolean materialize;
 
-    public static interface TriFunction {
+    public interface TriFunction {
         ImmutableMessage apply(String key, ImmutableMessage primary, ImmutableMessage secondary);
     }
 

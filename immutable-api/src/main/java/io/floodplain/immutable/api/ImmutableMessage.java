@@ -51,10 +51,10 @@ public interface ImmutableMessage {
         REACTIVEPARTIALPIPE,
         MAPPER,
         ENUM,
-        STRINGLIST;
+        STRINGLIST
     }
 
-    public Set<String> columnNames();
+    Set<String> columnNames();
 
     /**
      * Use value(name) instead
@@ -63,84 +63,84 @@ public interface ImmutableMessage {
      * @return
      */
     @Deprecated
-    public Object columnValue(String name);
+    Object columnValue(String name);
 
-    public ValueType columnType(String name);
+    ValueType columnType(String name);
 
-    public byte[] toBytes(ImmutableMessageParser c);
+    byte[] toBytes(ImmutableMessageParser c);
 
-    default public Optional<Object> value(String name) {
+    default Optional<Object> value(String name) {
         return Optional.ofNullable(columnValue(name));
     }
 
-    public Map<String, ValueType> types();
+    Map<String, ValueType> types();
 
-    public Set<String> subMessageListNames();
+    Set<String> subMessageListNames();
 
-    public Set<String> subMessageNames();
+    Set<String> subMessageNames();
 
-    public Map<String, Object> values();
+    Map<String, Object> values();
 
-    public Map<String, TypedData> toTypedDataMap();
+    Map<String, TypedData> toTypedDataMap();
 
-    public Map<String, Map<String, Object>> toDataMap();
+    Map<String, Map<String, Object>> toDataMap();
 
-    public Map<String, Object> valueMap(boolean ignoreNull, Set<String> ignore);
+    Map<String, Object> valueMap(boolean ignoreNull, Set<String> ignore);
 
-    public Map<String, Object> valueMap(boolean ignoreNull, Set<String> ignore, List<String> currentPath);
+    Map<String, Object> valueMap(boolean ignoreNull, Set<String> ignore, List<String> currentPath);
 
-    public Map<String, Object> flatValueMap(boolean ignoreNull, Set<String> ignore, String prefix);
+    Map<String, Object> flatValueMap(boolean ignoreNull, Set<String> ignore, String prefix);
 
-    public ImmutableMessage merge(ImmutableMessage other, Optional<List<String>> only);
+    ImmutableMessage merge(ImmutableMessage other, Optional<List<String>> only);
 
-    public String toFlatString(ImmutableMessageParser parser);
+    String toFlatString(ImmutableMessageParser parser);
 
-    public Optional<List<ImmutableMessage>> subMessages(String field);
+    Optional<List<ImmutableMessage>> subMessages(String field);
 
-    public Optional<ImmutableMessage> subMessage(String field);
+    Optional<ImmutableMessage> subMessage(String field);
 
-    public Map<String, ImmutableMessage> subMessageMap();
+    Map<String, ImmutableMessage> subMessageMap();
 
-    public Map<String, List<ImmutableMessage>> subMessageListMap();
+    Map<String, List<ImmutableMessage>> subMessageListMap();
 
-    public ImmutableMessage withAllSubMessageLists(Map<String, List<ImmutableMessage>> subMessageListMap);
+    ImmutableMessage withAllSubMessageLists(Map<String, List<ImmutableMessage>> subMessageListMap);
 
-    public ImmutableMessage withAllSubMessage(Map<String, ImmutableMessage> subMessageMap);
+    ImmutableMessage withAllSubMessage(Map<String, ImmutableMessage> subMessageMap);
 
-    public ImmutableMessage withSubMessages(String field, List<ImmutableMessage> message);
+    ImmutableMessage withSubMessages(String field, List<ImmutableMessage> message);
 
-    public ImmutableMessage withSubMessage(String field, ImmutableMessage message);
+    ImmutableMessage withSubMessage(String field, ImmutableMessage message);
 
-    public ImmutableMessage withAddedSubMessage(String field, ImmutableMessage message);
+    ImmutableMessage withAddedSubMessage(String field, ImmutableMessage message);
 
-    public ImmutableMessage withoutSubMessageInList(String field, Predicate<ImmutableMessage> s);
+    ImmutableMessage withoutSubMessageInList(String field, Predicate<ImmutableMessage> s);
 
-    public ImmutableMessage withoutSubMessages(String field);
+    ImmutableMessage withoutSubMessages(String field);
 
-    public ImmutableMessage withoutSubMessage(String field);
+    ImmutableMessage withoutSubMessage(String field);
 
-    public ImmutableMessage without(String columnName);
+    ImmutableMessage without(String columnName);
 
-    public ImmutableMessage without(List<String> columns);
+    ImmutableMessage without(List<String> columns);
 
-    public ImmutableMessage with(String key, Object value, ValueType type);
+    ImmutableMessage with(String key, Object value, ValueType type);
 
-    public ImmutableMessage withOnlyColumns(List<String> columns);
+    ImmutableMessage withOnlyColumns(List<String> columns);
 
-    public ImmutableMessage withOnlySubMessages(List<String> subMessages);
+    ImmutableMessage withOnlySubMessages(List<String> subMessages);
 
-    public ImmutableMessage rename(String columnName, String newName);
+    ImmutableMessage rename(String columnName, String newName);
 
     Map<String, Object> flatValueMap(String prefix, Trifunction processType);
 
-    public static interface Trifunction {
+    interface Trifunction {
         Object apply(String key, ValueType type, Object value);
     }
 
-    public static interface TriConsumer {
-        public void apply(String key,ImmutableMessage message, ImmutableMessage secondary);
+    interface TriConsumer {
+        void apply(String key, ImmutableMessage message, ImmutableMessage secondary);
     }
-    public class TypedData {
+    class TypedData {
         public final ValueType type;
         public final Object value;
 

@@ -102,7 +102,7 @@ public class TestTransformations {
 
     @Test
     public void testSpecificKey() {
-        ReplicationMessage id = addressMessage.withPrimaryKeys(Arrays.asList(new String[]{"zipcode"}));
+        ReplicationMessage id = addressMessage.withPrimaryKeys(Arrays.asList("zipcode"));
         Assert.assertEquals(1, id.primaryKeys().size());
         Assert.assertEquals("zipcode", id.primaryKeys().stream().findFirst().get());
         Assert.assertEquals(id.columnValue("zipcode"), id.queueKey());

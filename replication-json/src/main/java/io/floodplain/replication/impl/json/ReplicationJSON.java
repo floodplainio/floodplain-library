@@ -52,11 +52,11 @@ public class ReplicationJSON {
     public static final ObjectMapper objectMapper = new ObjectMapper();
 
 
-    public static ReplicationMessage parseReplicationMessage(byte[] data, Optional<String> source, ObjectMapper objectMapper) throws JsonProcessingException, IOException {
+    public static ReplicationMessage parseReplicationMessage(byte[] data, Optional<String> source, ObjectMapper objectMapper) throws IOException {
         return ReplicationJSON.parseJSON(source, (ObjectNode) parseJSON(data, objectMapper));
     }
 
-    public static ReplicationMessage parseReplicationMessage(InputStream stream, Optional<String> source, ObjectMapper objectMapper) throws JsonProcessingException, IOException {
+    public static ReplicationMessage parseReplicationMessage(InputStream stream, Optional<String> source, ObjectMapper objectMapper) throws IOException {
         return ReplicationJSON.parseJSON(source, (ObjectNode) parseJSON(stream, objectMapper));
     }
 
@@ -88,7 +88,7 @@ public class ReplicationJSON {
 
             }
 
-            return (new String("{}")).getBytes();
+            return ("{}").getBytes();
         } catch (IOException e) {
             throw new RuntimeException("Weird json problem", e);
         }
@@ -98,7 +98,7 @@ public class ReplicationJSON {
         return msg.flatValueMap(true, Collections.emptySet(), "").toString();
     }
 
-    private static JsonNode parseJSON(byte[] data, ObjectMapper objectMapper) throws JsonProcessingException, IOException {
+    private static JsonNode parseJSON(byte[] data, ObjectMapper objectMapper) throws IOException {
         try {
             JsonNode res = objectMapper.readTree(data);
             return res;
@@ -109,7 +109,7 @@ public class ReplicationJSON {
 
     }
 
-    private static JsonNode parseJSON(InputStream stream, ObjectMapper objectMapper) throws JsonProcessingException, IOException {
+    private static JsonNode parseJSON(InputStream stream, ObjectMapper objectMapper) throws IOException {
         return objectMapper.readTree(stream);
     }
 
@@ -182,13 +182,13 @@ public class ReplicationJSON {
             case LIST:
                 ArrayNode arrayNode = m.putArray("Value");
                 @SuppressWarnings("rawtypes")
-                ArrayNode valueToTree = objectMapper.valueToTree((List) value);
+                ArrayNode valueToTree = objectMapper.valueToTree(value);
                 arrayNode.addAll(valueToTree);
                 break;
             case STRINGLIST:
                 ArrayNode stringArrayNode = m.putArray("Value");
                 if (value instanceof String[]) {
-                    ArrayNode conf = objectMapper.valueToTree((String[]) value);
+                    ArrayNode conf = objectMapper.valueToTree(value);
                     stringArrayNode.addAll(conf);
                 } else if (value instanceof List) {
                     ArrayNode conf = objectMapper.valueToTree(value);
@@ -199,7 +199,7 @@ public class ReplicationJSON {
                 m.put("Value", Base64.getEncoder().encodeToString((byte[]) value));
                 break;
             case COORDINATE:
-                m.put("Value", ((CoordinateType) value).toString());
+                m.put("Value", value.toString());
                 break;
             case ENUM:
                 m.put("Value", (String) value);
@@ -356,7 +356,7 @@ public class ReplicationJSON {
         }
     }
 
-    public static ImmutableMessage parseReplicationMessage(byte[] data, ObjectMapper objectMapper) throws JsonProcessingException, IOException {
+    public static ImmutableMessage parseReplicationMessage(byte[] data, ObjectMapper objectMapper) throws IOException {
         return parseImmutable((ObjectNode) parseJSON(data, objectMapper));
     }
 
@@ -391,7 +391,6 @@ public class ReplicationJSON {
                     for (String element : rs) {
                         alist.add(element);
                     }
-                    ;
                     node.set(key, alist);
                     break;
 
@@ -520,11 +519,11 @@ public class ReplicationJSON {
 
         ImmutableMessage flatMessage = parseImmutable(node);
         ObjectNode paramMsg = (ObjectNode) node.get("ParamMessage");
-        return ReplicationFactory.createReplicationMessage(source, Optional.<Integer>empty(), Optional.<Long>empty(), transactionId, timestamp, operation, primaryKeys, flatMessage, Optional.<Runnable>empty(), Optional.ofNullable(paramMsg).map(ReplicationJSON::parseImmutable));
+        return ReplicationFactory.createReplicationMessage(source, Optional.empty(), Optional.empty(), transactionId, timestamp, operation, primaryKeys, flatMessage, Optional.empty(), Optional.ofNullable(paramMsg).map(ReplicationJSON::parseImmutable));
 
     }
 
-    public static ImmutableMessage parseImmutable(byte[] data) throws JsonProcessingException, IOException {
+    public static ImmutableMessage parseImmutable(byte[] data) throws IOException {
         return parseImmutable((ObjectNode) parseJSON(data, objectMapper));
 
     }

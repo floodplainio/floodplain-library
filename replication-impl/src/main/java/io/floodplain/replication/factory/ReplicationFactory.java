@@ -57,7 +57,7 @@ public class ReplicationFactory {
     }
 
     public static ReplicationMessage fromMap(String key, Map<String, Object> values, Map<String, ValueType> types) {
-        List<String> keys = key == null ? Collections.emptyList() : Arrays.asList(new String[]{key});
+        List<String> keys = key == null ? Collections.emptyList() : Arrays.asList(key);
         return ReplicationFactory.createReplicationMessage(Optional.empty(), Optional.empty(), Optional.empty(), null, System.currentTimeMillis(), ReplicationMessage.Operation.NONE, keys, types, values, Collections.emptyMap(), Collections.emptyMap(), Optional.of(noopCommit), Optional.empty());
     }
 
@@ -83,6 +83,6 @@ public class ReplicationFactory {
     }
 
     public static ReplicationMessage standardMessage(ImmutableMessage msg) {
-        return new ReplicationImmutableMessageImpl(Optional.<String>empty(), Optional.empty(), Optional.empty(), (String) null, ReplicationMessage.Operation.NONE, -1L, msg, Collections.<String>emptyList(), Optional.empty(), Optional.empty());
+        return new ReplicationImmutableMessageImpl(Optional.empty(), Optional.empty(), Optional.empty(), null, ReplicationMessage.Operation.NONE, -1L, msg, Collections.emptyList(), Optional.empty(), Optional.empty());
     }
 }

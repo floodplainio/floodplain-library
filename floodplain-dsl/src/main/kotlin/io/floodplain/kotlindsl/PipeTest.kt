@@ -66,7 +66,7 @@ fun testTopology(topology: Topology, testCmds: TestContext.() -> Unit, context: 
     val storageFolder = "teststorage/store-" + UUID.randomUUID().toString()
     val props = Properties()
     props.setProperty(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "doesntmatter:9092")
-    props.setProperty(StreamsConfig.DEFAULT_TIMESTAMP_EXTRACTOR_CLASS_CONFIG, WallclockTimestampExtractor::class.java.getName())
+    props.setProperty(StreamsConfig.DEFAULT_TIMESTAMP_EXTRACTOR_CLASS_CONFIG, WallclockTimestampExtractor::class.java.name)
     props.setProperty(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().javaClass.name)
     props.setProperty(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, ReplicationMessageSerde::class.java.name)
     props.setProperty(StreamsConfig.APPLICATION_ID_CONFIG, "doesntmatterid")

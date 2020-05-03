@@ -26,7 +26,7 @@ public class CoordinateType extends CustomType {
 
     @Override
     public String toString() {
-        return "[" + Double.toString(this.longitude) + "," + Double.toString(this.latitude) + "]";
+        return "[" + this.longitude + "," + this.latitude + "]";
     }
 
     @Override
@@ -83,7 +83,7 @@ public class CoordinateType extends CustomType {
         } else if (latitude instanceof Double) {
             this.latitude = (Double) latitude;
         } else if (latitude instanceof Integer) {
-            this.latitude = new Double((Integer) latitude + "");
+            this.latitude = new Double(latitude + "");
         } else {
             this.latitude = new Double(latitude + "");
         }
@@ -101,7 +101,7 @@ public class CoordinateType extends CustomType {
         } else if (longitude instanceof Double) {
             this.longitude = (Double) longitude;
         } else if (longitude instanceof Integer) {
-            this.longitude = new Double((Integer) longitude + "");
+            this.longitude = new Double(longitude + "");
         } else {
             this.longitude = new Double(longitude + "");
         }

@@ -133,7 +133,7 @@ public class FormatIdentification implements Serializable {
         String fileName = uuid.toString();
         File file = File.createTempFile(fileName, ".zip");
 
-        try (OutputStream fos = new FileOutputStream(file);) {
+        try (OutputStream fos = new FileOutputStream(file)) {
             fos.write(data);
             fos.flush();
         }

@@ -38,24 +38,24 @@ public class ReactivePipeParser {
         if (size == 0) {
             // no transformers
             if (materializeTop) {
-                TopologyPipeComponent source = (TopologyPipeComponent) pipe.source;
+                TopologyPipeComponent source = pipe.source;
                 source.setMaterialize();
             }
         } else {
             if (materializeTop) {
-                TopologyPipeComponent top = (TopologyPipeComponent) pipe.transformers.get(size - 1);
+                TopologyPipeComponent top = pipe.transformers.get(size - 1);
                 top.setMaterialize();
             }
         }
         for (int i = size; i >= 0; i--) {
-            TopologyPipeComponent source = (TopologyPipeComponent) pipe.source;
+            TopologyPipeComponent source = pipe.source;
             if (i == 0) {
                 logger.info("processing source");
             } else {
                 Object type = pipe.transformers.get(i - 1);
                 if (type instanceof TopologyPipeComponent) {
                     TopologyPipeComponent tpc = (TopologyPipeComponent) type;
-                    TopologyPipeComponent parent = i - 2 < 0 ? source : (TopologyPipeComponent) pipe.transformers.get(i - 2);
+                    TopologyPipeComponent parent = i - 2 < 0 ? source : pipe.transformers.get(i - 2);
                     logger.info("processing transformer: " + (i - 1));
                     if (tpc.materializeParent()) {
                         logger.info("Materializing parent");
@@ -67,7 +67,7 @@ public class ReactivePipeParser {
             }
         }
 
-        TopologyPipeComponent sourceTopologyComponent = (TopologyPipeComponent) pipe.source;
+        TopologyPipeComponent sourceTopologyComponent = pipe.source;
         sourceTopologyComponent.addToTopology(pipeStack, pipeNr, topology, topologyContext, topologyConstructor);
         for (Object e : pipe.transformers) {
             logger.info("Transformer: {} pipestack: {}", e, pipeStack);

@@ -49,7 +49,7 @@ open class Transformer(val component: TopologyPipeComponent) : PartialPipe()
 /**
  * Base class for connector configurations
  */
-abstract class Config() {
+abstract class Config {
 
     /**
      * Connector configs must implement this method, returning a name + map.
@@ -273,4 +273,4 @@ abstract class PartialPipe {
 /**
  * Concrete version of a partial pipe
  */
-class Block() : PartialPipe()
+class Block : PartialPipe()
