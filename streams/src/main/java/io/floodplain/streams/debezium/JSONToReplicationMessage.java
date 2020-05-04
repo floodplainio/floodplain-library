@@ -136,7 +136,7 @@ public class JSONToReplicationMessage {
         ObjectNode payload = (ObjectNode) node.get("payload");
         long millis = payload.get("ts_ms").asLong();
         Operation o = resolveOperation(payload, payload.get("op").asText());
-        ImmutableMessage core = convert(node, field -> fields.add(field), isKey, Optional.of(o), table);
+        ImmutableMessage core = convert(node, fields::add, isKey, Optional.of(o), table);
         return ReplicationFactory.standardMessage(core).withOperation(o).atTime(millis);
     }
 
@@ -347,20 +347,10 @@ public class JSONToReplicationMessage {
 
     public static TableIdentifier processDebeziumKey(ObjectNode on, boolean appendTenant, boolean appendSchema) {
         List<String> fields = new ArrayList<>();
-        ImmutableMessage converted = convert(on, field -> fields.add(field), true, Optional.empty(), null);
-        String tableId = (String) converted.columnValue("__dbz__physicalTableIdentifier");
+        ImmutableMessage converted = convert(on, fields::add, true, Optional.empty(), null);
+        Optional<Object> tableId = converted.value("__dbz__physicalTableIdentifier");
         fields.remove("__dbz__physicalTableIdentifier");
         // for demo, shouldn't do any harm
-        if (tableId == null) {
-            tableId = on.get("schema").get("name").asText();
-        }
-//		String key = fields.stream()
-//			.map(field->converted.columnValue(field).toString())
-//			.collect(Collectors.joining(ReplicationMessage.KEYSEPARATOR));
-
-        // prepend:
-        TableIdentifier tid = new TableIdentifier(tableId, converted, fields, appendTenant, appendSchema);
-//		key = tid.combinedKey;
-        return tid;
+        return new TableIdentifier(tableId.map(e->(String)e).orElse(on.get("schema").get("name").asText()), converted, fields, appendTenant, appendSchema);
     }
 }

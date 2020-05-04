@@ -22,7 +22,6 @@ import io.floodplain.streams.serializer.ReplicationMessageSerde;
 
 public class StreamOperators {
 
-    public static final int DEFAULT_MAX_LIST_SIZE = 500;
     public static final ReplicationMessageSerde replicationSerde = new ReplicationMessageSerde();
 
     private StreamOperators() {

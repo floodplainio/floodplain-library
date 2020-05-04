@@ -19,7 +19,6 @@
 package io.floodplain.immutable.api.metadata;
 
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Iterator;

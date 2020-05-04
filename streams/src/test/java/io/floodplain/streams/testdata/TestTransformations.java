@@ -7,14 +7,12 @@ import io.floodplain.replication.factory.ReplicationFactory;
 import io.floodplain.replication.impl.protobuf.FallbackReplicationMessageParser;
 import io.floodplain.streams.api.CoreOperators;
 import io.floodplain.streams.api.TopologyContext;
-import io.floodplain.streams.base.StreamOperators;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 

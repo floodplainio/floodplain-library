@@ -44,6 +44,9 @@ import java.util.Optional
 
 private val logger = mu.KotlinLogging.logger {}
 
+@DslMarker
+annotation class FloodplainTagMarker
+
 open class Transformer(val component: TopologyPipeComponent) : PartialPipe()
 
 /**
