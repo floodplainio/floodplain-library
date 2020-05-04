@@ -88,9 +88,10 @@ subprojects {
             }
         }
     }
-
-    signing {
-        sign publishing.publications."$project.name"(MavenPublication)
+    if (project.hasProperty("release")){
+        signing {
+            sign publishing.publications."$project.name"(MavenPublication)
+        }
     }
 
 }

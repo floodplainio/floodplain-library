@@ -25,6 +25,11 @@ import io.floodplain.replication.factory.ReplicationFactory
 import io.floodplain.streams.api.CoreOperators
 import io.floodplain.streams.api.TopologyContext
 import io.floodplain.streams.serializer.ReplicationMessageSerde
+import java.nio.file.Files
+import java.nio.file.Path
+import java.time.Duration
+import java.util.Properties
+import java.util.UUID
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.KeyValue
 import org.apache.kafka.streams.StreamsConfig
@@ -34,11 +39,6 @@ import org.apache.kafka.streams.Topology
 import org.apache.kafka.streams.TopologyTestDriver
 import org.apache.kafka.streams.processor.WallclockTimestampExtractor
 import org.apache.kafka.streams.state.KeyValueStore
-import java.nio.file.Files
-import java.nio.file.Path
-import java.time.Duration
-import java.util.Properties
-import java.util.UUID
 
 private val logger = mu.KotlinLogging.logger {}
 

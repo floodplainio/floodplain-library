@@ -22,8 +22,8 @@ import io.floodplain.reactive.source.topology.api.TopologyPipeComponent
 import io.floodplain.streams.api.TopologyContext
 import io.floodplain.streams.remotejoin.ReplicationTopologyParser.addDiffProcessor
 import io.floodplain.streams.remotejoin.TopologyConstructor
-import org.apache.kafka.streams.Topology
 import java.util.Stack
+import org.apache.kafka.streams.Topology
 
 class DiffTransformer : TopologyPipeComponent {
     var materialize = false
