@@ -63,13 +63,13 @@ class MongoConfig(val name: String, val uri: String, val database: String) : Con
  * Creates a config for this specific connector type, add the required params as needed. This config object will be passed
  * to all sink objects
  */
-fun Pipe.mongoConfig(name: String, uri: String, database: String): MongoConfig {
+fun Stream.mongoConfig(name: String, uri: String, database: String): MongoConfig {
     val c = MongoConfig(name, uri, database)
     this.addSinkConfiguration(c)
     return c
 }
 
-fun PartialPipe.mongoSink(collection: String, topic: String, config: MongoConfig) {
+fun PartialStream.mongoSink(collection: String, topic: String, config: MongoConfig) {
     config.sinkInstancePair.add(collection to topic)
     val sink = SinkTransformer(topic, false, Optional.empty())
     addTransformer(Transformer(sink))

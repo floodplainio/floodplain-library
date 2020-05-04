@@ -21,12 +21,12 @@ package io.floodplain.kotlindsl.example
 import io.floodplain.kotlindsl.joinRemote
 import io.floodplain.kotlindsl.mongoConfig
 import io.floodplain.kotlindsl.mongoSink
-import io.floodplain.kotlindsl.pipes
 import io.floodplain.kotlindsl.postgresSource
 import io.floodplain.kotlindsl.postgresSourceConfig
 import io.floodplain.kotlindsl.set
 import io.floodplain.kotlindsl.sink
 import io.floodplain.kotlindsl.source
+import io.floodplain.kotlindsl.streams
 import java.net.URL
 
 private val logger = mu.KotlinLogging.logger {}
@@ -34,7 +34,7 @@ private val logger = mu.KotlinLogging.logger {}
 fun main() {
 
     val generation = "generation1"
-    pipes(generation) {
+    streams(generation) {
         val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")
         val mongoConfig = mongoConfig("mongosink", "mongodb://mongo", "@mongodump")
         listOf(

@@ -60,7 +60,7 @@ public class JoinRemoteTransformer implements TopologyPipeComponent {
 
         Optional<String> from = Optional.of(transformerNames.peek());
         Stack<String> pipeStack = new Stack<>();
-        ReactivePipeParser.processPipe(topologyContext, topologyConstructor, topology, topologyConstructor.generateNewPipeId(), pipeStack, remoteJoin, true);
+        ReactivePipeParser.processPipe(topologyContext, topologyConstructor, topology, topologyConstructor.generateNewStreamId(), pipeStack, remoteJoin, true);
         String with = pipeStack.peek();
 
         String name = topologyContext.instance + "_" + pipeId + "_" + "joinRemote" + "_" + transformerNames.size();

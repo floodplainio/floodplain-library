@@ -24,10 +24,10 @@ import io.floodplain.kotlindsl.joinRemote
 import io.floodplain.kotlindsl.message.empty
 import io.floodplain.kotlindsl.mongoConfig
 import io.floodplain.kotlindsl.mongoSink
-import io.floodplain.kotlindsl.pipe
 import io.floodplain.kotlindsl.postgresSource
 import io.floodplain.kotlindsl.postgresSourceConfig
 import io.floodplain.kotlindsl.set
+import io.floodplain.kotlindsl.stream
 import java.net.URL
 import java.util.UUID
 
@@ -38,7 +38,7 @@ fun main() {
 }
 
 fun joinFilms(generation: String) {
-    pipe(generation) {
+    stream(generation) {
         val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")
         val mongoConfig = mongoConfig("mongosink", "mongodb://mongo", "@mongodump")
         postgresSource("public", "film", postgresConfig) {

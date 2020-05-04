@@ -43,13 +43,13 @@ class PostgresConfig(val name: String, val hostname: String, val port: Int, val 
     }
 }
 
-fun Pipe.postgresSourceConfig(name: String, hostname: String, port: Int, username: String, password: String, database: String): PostgresConfig {
+fun Stream.postgresSourceConfig(name: String, hostname: String, port: Int, username: String, password: String, database: String): PostgresConfig {
     val postgresConfig = PostgresConfig(name, hostname, port, username, password, database)
     addSourceConfiguration(postgresConfig)
     return postgresConfig
 }
 
-fun Pipe.postgresSource(schema: String, table: String, config: PostgresConfig, init: Source.() -> Unit): Source {
+fun Stream.postgresSource(schema: String, table: String, config: PostgresConfig, init: Source.() -> Unit): Source {
 
     val topicSource = DebeziumTopicSource(config.name, table, schema, true, true)
     val topicName = topicSource.topicName(this.context)

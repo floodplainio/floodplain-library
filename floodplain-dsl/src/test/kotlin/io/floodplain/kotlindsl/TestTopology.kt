@@ -38,7 +38,7 @@ class TestTopology {
          * Test the simplest imaginable pipe: One source and one sink.
          */
     fun testSimple() {
-        pipe {
+        stream {
             source("@sometopic") {
                 sink("@outputTopic")
             }
@@ -52,7 +52,7 @@ class TestTopology {
 
     @Test
     fun testDelete() {
-        pipe("somegen") {
+        stream("somegen") {
             source("@sometopic") {
                 sink("@outputtopic")
             }
@@ -67,7 +67,7 @@ class TestTopology {
 
     @Test
     fun simpleTransformation() {
-        pipe {
+        stream {
             source("mysource") {
                 set {
                     _, primary, _ -> primary.set("name", "Frank")
@@ -82,7 +82,7 @@ class TestTopology {
     }
     @Test
     fun testSimpleJoin() {
-        pipe("somegen") {
+        stream("somegen") {
             source("@left") {
                 join {
                     source("@right") {}
@@ -110,7 +110,7 @@ class TestTopology {
 
     @Test
     fun testOptionalSingleJoin() {
-        pipe("somegen") {
+        stream("somegen") {
             source("@left") {
                 join(optional = true) {
                     source("@right") {
@@ -142,7 +142,7 @@ class TestTopology {
 
     @Test
     fun testGroup() {
-        pipe("somegen") {
+        stream("somegen") {
             source("src") {
                 group { message -> message["subkey"] as String }
                 sink("mysink")
@@ -165,7 +165,7 @@ class TestTopology {
 
     @Test
     fun testSingleToManyJoinOptional() {
-        pipe("somegen") {
+        stream("somegen") {
             source("@left") {
                 joinGrouped(optional = true, debug = true) {
                     source("@right") {
@@ -219,7 +219,7 @@ class TestTopology {
 
     @Test
     fun testSingleToManyJoin() {
-        pipe("somegen") {
+        stream("somegen") {
             source("@left") {
                 joinGrouped(debug = true) {
                     source("@right") {
@@ -272,7 +272,7 @@ class TestTopology {
 
     @Test
     fun testFilter() {
-        pipe("anygen") {
+        stream("anygen") {
             source("@source") {
                 filter { _, value ->
                     value["name"] == "myname"
@@ -290,7 +290,7 @@ class TestTopology {
 
     @Test
     fun testSimpleScan() {
-        pipe("generation") {
+        stream("generation") {
             source("@source") {
                 scan({ msg -> msg["total"] = 0; msg }, {
                     set { _, _, acc -> acc["total"] = acc["total"] as Int + 1; acc }
@@ -319,7 +319,7 @@ class TestTopology {
     // TODO Introduce 'eachDelete(key)
     @Test
     fun testScan() {
-        pipe("generation") {
+        stream("generation") {
             source("@source") {
                 scan({ msg -> msg["groupKey"] as String }, { msg -> msg["total"] = 0; msg }, {
                     set { _, _, acc -> acc["total"] = acc["total"] as Int + 1; acc }
@@ -362,7 +362,7 @@ class TestTopology {
 
     @Test
     fun testFork() {
-        pipe("gen") {
+        stream("gen") {
             source("@source") {
                 fork(
                         {
@@ -391,7 +391,7 @@ class TestTopology {
 
     @Test
     fun testDynamicSink() {
-        pipe("gen") {
+        stream("gen") {
             source("@source") {
                 dynamicSink("somesink") { _, value ->
                     value["destination"] as String
@@ -407,7 +407,7 @@ class TestTopology {
 
     @Test
     fun testDiff() {
-        pipe("gen") {
+        stream("gen") {
             source("@source") {
                 diff()
                 sink("@output")
@@ -442,7 +442,7 @@ class TestTopology {
 
     @Test
     fun testBuffer() {
-        pipe {
+        stream {
             source("@source") {
                 buffer(Duration.ofSeconds(9), 10)
                 sink("@output")

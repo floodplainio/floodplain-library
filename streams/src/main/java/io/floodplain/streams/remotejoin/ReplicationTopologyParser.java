@@ -282,8 +282,8 @@ public class ReplicationTopologyParser {
         transformerNames.push(reduceReader);
         String ifElseName = topologyContext.qualifiedName("ifelse", transformerNames.size(), currentPipeId);
         transformerNames.push(ifElseName);
-        int trueBranchPipeId = topologyConstructor.generateNewPipeId();
-        int falseBranchPipeId = topologyConstructor.generateNewPipeId();
+        int trueBranchPipeId = topologyConstructor.generateNewStreamId();
+        int falseBranchPipeId = topologyConstructor.generateNewStreamId();
 
         String trueBranchName = topologyContext.qualifiedName("addbranch", transformerNames.size(), currentPipeId);
         String falseBranchName = topologyContext.qualifiedName("removeBranch", transformerNames.size(), currentPipeId);

@@ -39,7 +39,7 @@ import org.apache.kafka.streams.processor.WallclockTimestampExtractor
 
 private val logger = mu.KotlinLogging.logger {}
 
-class Pipe(val context: TopologyContext) {
+class Stream(val context: TopologyContext) {
 
     private val sources: MutableList<Source> = ArrayList()
     private val sinkConfigurations: MutableList<Config> = mutableListOf()
@@ -48,7 +48,7 @@ class Pipe(val context: TopologyContext) {
     /**
      * Adds a source instance, should only be called from source implementations
      */
-    fun addSource(source: Source): Pipe {
+    fun addSource(source: Source): Stream {
         sources.add(source)
         return this
     }
@@ -80,13 +80,13 @@ class Pipe(val context: TopologyContext) {
         val reactivePipes = sources.map { e -> e.toReactivePipe() }
         val stack = Stack<String>()
         for (reactivePipe in reactivePipes) {
-            ReactivePipeParser.processPipe(context, topologyConstructor, topology, topologyConstructor.generateNewPipeId(), stack, reactivePipe, false)
+            ReactivePipeParser.processPipe(context, topologyConstructor, topology, topologyConstructor.generateNewStreamId(), stack, reactivePipe, false)
         }
         ReplicationTopologyParser.materializeStateStores(topologyConstructor, topology)
         return topology
     }
 
-    fun renderAndTest(testCmds: TestContext.() -> Unit): Pipe {
+    fun renderAndTest(testCmds: TestContext.() -> Unit): Stream {
         val top = renderTopology(TopologyConstructor())
         logger.info("Testing topology:\n${top.describe()}")
         testTopology(top, testCmds, context)

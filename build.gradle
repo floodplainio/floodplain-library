@@ -10,7 +10,6 @@ plugins {
 apply from: 'gradle/dependencies.gradle'
 apply from: 'gradle/shared.gradle'
 
-
 allprojects {
     repositories {
         mavenLocal()
@@ -46,11 +45,6 @@ subprojects {
         apply plugin: 'com.google.protobuf'
     }
     apply plugin: 'com.github.hierynomus.license-base'
-
-
-
-
-
     publishing {
         publications {
             "$project.name"(MavenPublication) {

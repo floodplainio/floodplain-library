@@ -39,7 +39,7 @@ class ForkTransformer(val blocks: List<Block>) : TopologyPipeComponent {
             val stackCopy: Stack<String> = Stack()
             stackCopy.addAll(transformerNames)
             for (tpc in transformerList) {
-                tpc.addToTopology(stackCopy, topologyConstructor.generateNewPipeId(), topology, topologyContext, topologyConstructor)
+                tpc.addToTopology(stackCopy, topologyConstructor.generateNewStreamId(), topology, topologyContext, topologyConstructor)
             }
         }
     }

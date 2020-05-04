@@ -40,7 +40,7 @@ public class TopologyConstructor {
     // TODO could race conditions happen? If so, would that be a problem?
 
     private final Map<String, Optional<Integer>> desiredTopics = new HashMap<>();
-    private int pipeCounter = 1;
+    private int streamCounter = 1;
 
     public TopologyConstructor() {
     }
@@ -80,8 +80,8 @@ public class TopologyConstructor {
         }
     }
 
-    public int generateNewPipeId() {
-        return pipeCounter++;
+    public int generateNewStreamId() {
+        return streamCounter++;
     }
 
 }

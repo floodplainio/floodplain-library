@@ -22,17 +22,17 @@ import io.floodplain.kotlindsl.join
 import io.floodplain.kotlindsl.message.empty
 import io.floodplain.kotlindsl.mongoConfig
 import io.floodplain.kotlindsl.mongoSink
-import io.floodplain.kotlindsl.pipe
 import io.floodplain.kotlindsl.postgresSource
 import io.floodplain.kotlindsl.postgresSourceConfig
 import io.floodplain.kotlindsl.scan
 import io.floodplain.kotlindsl.set
+import io.floodplain.kotlindsl.stream
 import java.net.URL
 
 private val logger = mu.KotlinLogging.logger {}
 
 fun main() {
-    pipe("gen_7") {
+    stream("gen_7") {
         val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")
         val mongoConfig = mongoConfig("mongosink", "mongodb://mongo", "mongodump")
         postgresSource("public", "customer", postgresConfig) {
