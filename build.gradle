@@ -39,6 +39,7 @@ subprojects {
     apply plugin: 'org.jetbrains.kotlin.jvm'
     apply plugin: "org.jlleitschuh.gradle.ktlint"
     apply from: "$rootProject.projectDir/gradle/common.gradle"
+    apply plugin: 'signing'
     group = "io.floodplain"
 
     if (name == 'replication-protobuf') {
@@ -46,9 +47,14 @@ subprojects {
     }
     apply plugin: 'com.github.hierynomus.license-base'
 
+
+
+
+
     publishing {
         publications {
             "$project.name"(MavenPublication) {
+                customizePom(pom)
                 groupId = "io.floodplain"
                 artifactId = project.name
                 version = rootProject.ext.floodplain_version
@@ -58,50 +64,7 @@ subprojects {
                 artifact sourceJar
                 artifact javadocJar
 
-                pom.withXml {
-                    asNode().with {
-                        appendNode('packaging', 'jar')
-                        appendNode('name', 'Floodplain')
-                        appendNode('description', 'Floodplain Framework')
-                        appendNode('url', 'https://floodplain.io')
-                        appendNode('scm').with {
-                            appendNode('url', 'scm:git:https://github.com/floodplainio/floodplain-library')
-                            appendNode('connection', 'scm:git:git://github.com/floodplainio/floodplain-library.git')
-                            appendNode('developerConnection', 'scm:git:git@github.com:floodplainio/floodplain-library.git')
-                        }
-                        appendNode('ciManagement').with {
-                            appendNode('system', 'Circle CI')
-                            appendNode('url', 'https://circleci.com/gh/floodplainio/floodplain-library')
 
-                        }
-                        appendNode('issueManagement').with {
-                            appendNode('url', 'https://github.com/floodplainio/floodplain-library/issues')
-                            appendNode('system', 'GitHub Issues')
-                        }
-                        appendNode('licenses').with {
-                            appendNode('license').with {
-                                appendNode('name', 'Apache 2.0')
-                                appendNode('url', 'http://www.apache.org/licenses/LICENSE-2.0.txt')
-                                appendNode('distribution', 'repo')
-                            }
-                        }
-
-                        appendNode('organization').with {
-                            appendNode('name', 'Floodplain')
-                            appendNode('url', 'https://floodplain.io')
-                        }
-                        appendNode('developers').with {
-                            appendNode('developer').with {
-                                appendNode('id', 'flyaruu')
-                                appendNode('name', 'Frank Lyaruu')
-                                appendNode('email', 'flyaruu@gmail.com')
-                                appendNode('organization', 'Floodplain')
-                                appendNode('organizationUrl', 'https://floodplain.io')
-                                appendNode('timezone', 'CEST')
-                            }
-                        }
-                    }
-                }
             }
         }
         repositories {
@@ -125,5 +88,56 @@ subprojects {
             }
         }
     }
+
+    signing {
+        sign publishing.publications."$project.name"(MavenPublication)
+    }
+
 }
+def customizePom(pom) {
+    pom.withXml {
+        def root = asNode()
+
+        // eliminate test-scoped dependencies (no need in maven central POMs)
+        root.dependencies.removeAll { dep ->
+            dep.scope == "test"
+        }
+
+        // add all items necessary for maven central publication
+        root.children().last() + {
+            resolveStrategy = Closure.DELEGATE_FIRST
+
+            description 'Serialize and Deserialize Json-LD into Java entities'
+            name 'Schema.org Java'
+            url 'https://floodplain.io'
+            organization {
+                name 'Floodplain'
+                url 'https://floodplain.io'
+            }
+            issueManagement {
+                system 'GitHub'
+                url 'https://github.com/floodplainio/floodplain-library/issues'
+            }
+            licenses {
+                license {
+                    name 'Apache License 2.0'
+                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    distribution 'repo'
+                }
+            }
+
+            scm {
+                url 'https://github.com/mautini/floodplainio/floodplain-library'
+                connection 'scm:git:git://github.com/floodplainio/floodplain-library.git'
+                developerConnection 'scm:git:ssh://git@github.com:floodplainio/floodplain-library.git'
+            }
+            developers {
+                developer {
+                    name 'Mautini'
+                }
+            }
+        }
+    }
+}
+
 
