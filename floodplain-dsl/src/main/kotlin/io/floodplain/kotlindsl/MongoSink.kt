@@ -43,8 +43,8 @@ class MongoConfig(val name: String, val uri: String, val database: String) : Con
         val settings = mutableMapOf("connector.class" to "com.mongodb.kafka.connect.MongoSinkConnector",
                 "value.converter.schemas.enable" to "false",
                 "key.converter.schemas.enable" to "false",
-                "value.converter" to "io.floodplain.kafka.converter.ReplicationMessageConverter",
-                "key.converter" to "io.floodplain.kafka.converter.ReplicationMessageConverter",
+                "value.converter" to "org.apache.kafka.connect.json.JsonConverter",
+                "key.converter" to "org.apache.kafka.connect.json.JsonConverter",
                 "document.id.strategy" to "com.mongodb.kafka.connect.sink.processor.id.strategy.FullKeyStrategy",
                 "debug" to "true",
                 "connection.uri" to uri,
@@ -71,6 +71,6 @@ fun Stream.mongoConfig(name: String, uri: String, database: String): MongoConfig
 
 fun PartialStream.mongoSink(collection: String, topic: String, config: MongoConfig) {
     config.sinkInstancePair.add(collection to topic)
-    val sink = SinkTransformer(topic, false, Optional.empty())
+    val sink = SinkTransformer(topic, false, Optional.empty(), true)
     addTransformer(Transformer(sink))
 }

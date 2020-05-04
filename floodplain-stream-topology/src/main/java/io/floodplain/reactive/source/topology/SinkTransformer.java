@@ -19,8 +19,12 @@
 package io.floodplain.reactive.source.topology;
 
 import io.floodplain.reactive.source.topology.api.TopologyPipeComponent;
+import io.floodplain.replication.api.ReplicationMessage;
 import io.floodplain.streams.api.TopologyContext;
 import io.floodplain.streams.remotejoin.TopologyConstructor;
+import io.floodplain.streams.serializer.ConnectKeySerde;
+import io.floodplain.streams.serializer.ConnectReplicationMessageSerde;
+import org.apache.kafka.common.serialization.Serializer;
 import org.apache.kafka.streams.Topology;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +39,7 @@ public class SinkTransformer implements TopologyPipeComponent {
     private final String name;
     private final Optional<Integer> partitions;
     private final boolean materializeParent;
+    private final boolean connectFormat;
 
     private boolean create = true;
 
@@ -45,10 +50,11 @@ public class SinkTransformer implements TopologyPipeComponent {
 
     public static final String SINK_PREFIX = "SINK_";
 
-    public SinkTransformer(String name, boolean materializeParent, Optional<Integer> partitions) {
+    public SinkTransformer(String name, boolean materializeParent, Optional<Integer> partitions, boolean connectFormat) {
         this.name = name;
         this.partitions = partitions;
         this.materializeParent = materializeParent;
+        this.connectFormat = connectFormat;
     }
 
     @Override
@@ -59,7 +65,13 @@ public class SinkTransformer implements TopologyPipeComponent {
             topologyConstructor.ensureTopicExists(sinkTopic, partitions);
         }
         logger.info("Stack top for transformer: " + transformerNames.peek());
-        topology.addSink(SINK_PREFIX + sinkTopic, sinkTopic, transformerNames.peek());
+        if(connectFormat) {
+            Serializer<String> connectKeySerde = new ConnectKeySerde().serializer();
+            Serializer<ReplicationMessage> connectValueSerde = new ConnectReplicationMessageSerde().serializer();
+            topology.addSink(SINK_PREFIX + sinkTopic, sinkTopic, connectKeySerde, connectValueSerde, transformerNames.peek());
+        } else {
+            topology.addSink(SINK_PREFIX + sinkTopic, sinkTopic, transformerNames.peek());
+        }
     }
 
 

@@ -148,7 +148,15 @@ fun Stream.source(topic: String, init: Source.() -> Unit): Source {
  * Creates a simple sink that will contain the result of the current transformation. Multiple sinks may not be added.
  */
 fun PartialStream.sink(topic: String, materializeParent: Boolean = false): Transformer {
-    val sink = SinkTransformer(topic, materializeParent, Optional.empty())
+    val sink = SinkTransformer(topic, materializeParent, Optional.empty(), false)
+    return addTransformer(Transformer(sink))
+}
+
+/**
+ * Creates a simple sink that will contain the result of the current transformation. Multiple sinks may not be added.
+ */
+fun PartialStream.connectSink(topic: String, materializeParent: Boolean = false): Transformer {
+    val sink = SinkTransformer(topic, materializeParent, Optional.empty(), true)
     return addTransformer(Transformer(sink))
 }
 
