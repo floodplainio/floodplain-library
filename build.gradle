@@ -83,12 +83,9 @@ subprojects {
             }
         }
     }
-//    if (project.hasProperty("release")){
-
+//    signing {
+//        sign publishing.publications."$project.name"(MavenPublication)
 //    }
-    signing {
-        sign publishing.publications."$project.name"(MavenPublication)
-    }
 }
 
 def customizePom(pom) {
