@@ -71,6 +71,6 @@ fun Stream.mongoConfig(name: String, uri: String, database: String): MongoConfig
 
 fun PartialStream.mongoSink(collection: String, topic: String, config: MongoConfig) {
     config.sinkInstancePair.add(collection to topic)
-    val sink = SinkTransformer(topic, false, Optional.empty(), true)
+    val sink = SinkTransformer(Optional.of(config.name), topic, false, Optional.empty(), true)
     addTransformer(Transformer(sink))
 }

@@ -19,6 +19,7 @@
 package io.floodplain.kotlindsl.example
 
 import io.floodplain.kotlindsl.each
+import io.floodplain.kotlindsl.externalSource
 import io.floodplain.kotlindsl.filter
 import io.floodplain.kotlindsl.joinRemote
 import io.floodplain.kotlindsl.mongoConfig
@@ -28,11 +29,41 @@ import io.floodplain.kotlindsl.postgresSourceConfig
 import io.floodplain.kotlindsl.set
 import io.floodplain.kotlindsl.stream
 import java.net.URL
-import java.util.UUID
 
 private val logger = mu.KotlinLogging.logger {}
 
-fun main() = stream {
+
+fun main(args: Array<String>) {
+    stream("nextgen6") {
+        val mongodb = mongoConfig("@mongo","mongodb://mongo","mydatabase")
+        val pgConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")
+        postgresSource("public","actor",pgConfig) {
+        // externalSource("local.public.actor") {
+            each {
+                    _,msg,_->println("Record: ${msg}")
+            }
+            set {
+                _,msg,_ -> msg.clear("last_update"); msg;
+            }
+            mongoSink("actorz","actorz",mongodb)
+        }
+    }.renderAndStart(URL("http://localhost:8083/connectors"),"localhost:9092")
+}
+
+fun mainold(args: Array<String>) {
+    stream {
+        val postgres = postgresSourceConfig("local","postgres",5432,"postgres","mysecretpassword","dvdrental")
+        val mongodb = mongoConfig("mongo","mongodb://mongo","mydatabase")
+        postgresSource("public","payment",postgres) {
+            each {
+                    _,msg,_->println("Record: ${msg}")
+            }
+            mongoSink("payments","mytopic",mongodb)
+        }
+    }.renderAndStart(URL("http://localhost:8083/connectors"),"localhost:9092")
+}
+
+fun maino() = stream {
     val pgConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")
     val mongoConfig = mongoConfig("mymongo", "mongodb://mongo", "mydatabase")
     postgresSource("public", "film", pgConfig) {
@@ -41,7 +72,7 @@ fun main() = stream {
         }
         mongoSink("justfilm", "justfilm", mongoConfig)
     }
-}.renderAndStart(URL("http://localhost:8083/connectors"), "localhost:9092", UUID.randomUUID().toString())
+}.renderAndStart(URL("http://localhost:8083/connectors"), "localhost:9092")
 
 fun main2() = stream {
     val pgConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")
@@ -53,7 +84,7 @@ fun main2() = stream {
         }
         mongoSink("filmwithlanguage", "filmwithlanguage", mongoConfig)
     }
-}.renderAndStart(URL("http://localhost:8083/connectors"), "localhost:9092", UUID.randomUUID().toString())
+}.renderAndStart(URL("http://localhost:8083/connectors"), "localhost:9092")
 
 fun mainold() {
     stream("mygeneration") {
@@ -64,5 +95,5 @@ fun mainold() {
             filter { _, msg -> (msg["actor_id"] as Int) < 10 }
             mongoSink("mycollection", "sometopic", mongoConfig)
         }
-    }.renderAndStart(URL("http://localhost:8083/connectors"), "localhost:9092", UUID.randomUUID().toString())
+    }.renderAndStart(URL("http://localhost:8083/connectors"), "localhost:9092")
 }

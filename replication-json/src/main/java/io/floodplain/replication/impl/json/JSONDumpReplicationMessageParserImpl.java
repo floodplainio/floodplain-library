@@ -60,7 +60,7 @@ public class JSONDumpReplicationMessageParserImpl implements ReplicationMessageP
             return null;
         }
         try {
-            return ReplicationJSON.parseReplicationMessage(data, Optional.empty(), ReplicationJSON.objectMapper);
+            return ReplicationJSON.parseReplicationMessage(data, Optional.empty());
         } catch (JsonProcessingException e) {
             return ReplicationFactory.createErrorReplicationMessage(e);
         } catch (Throwable e) {
@@ -75,7 +75,7 @@ public class JSONDumpReplicationMessageParserImpl implements ReplicationMessageP
             return null;
         }
         try {
-            return ReplicationJSON.parseReplicationMessage(data, source, ReplicationJSON.objectMapper);
+            return ReplicationJSON.parseReplicationMessage(data, source);
         } catch (JsonProcessingException e) {
             return ReplicationFactory.createErrorReplicationMessage(e);
         } catch (Throwable e) {

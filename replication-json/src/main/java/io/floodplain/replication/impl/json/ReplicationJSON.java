@@ -52,11 +52,11 @@ public class ReplicationJSON {
     public static final ObjectMapper objectMapper = new ObjectMapper();
 
 
-    public static ReplicationMessage parseReplicationMessage(byte[] data, Optional<String> source, ObjectMapper objectMapper) throws IOException {
+    public static ReplicationMessage parseReplicationMessage(byte[] data, Optional<String> source) throws IOException {
         return ReplicationJSON.parseJSON(source, (ObjectNode) parseJSON(data, objectMapper));
     }
 
-    public static ReplicationMessage parseReplicationMessage(InputStream stream, Optional<String> source, ObjectMapper objectMapper) throws IOException {
+    public static ReplicationMessage parseReplicationMessage(InputStream stream, Optional<String> source) throws IOException {
         return ReplicationJSON.parseJSON(source, (ObjectNode) parseJSON(stream, objectMapper));
     }
 

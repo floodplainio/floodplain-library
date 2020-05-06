@@ -30,17 +30,19 @@ import java.util.Stack;
 public class TopicSource implements TopologyPipeComponent {
 
     private final String topicName;
+    private final boolean connectFormat;
 
     private boolean materialize = false;
 
-    public TopicSource(String topicName) {
+    public TopicSource(String topicName, boolean connectFormat) {
         this.topicName = topicName;
+        this.connectFormat = connectFormat;
     }
 
     @Override
     public void addToTopology(Stack<String> transformerNames, int pipeId, Topology topology, TopologyContext topologyContext, TopologyConstructor topologyConstructor) {
 //        String source = ReplicationTopologyParser.addLazySourceStore(topology, topologyContext, topologyConstructor, topicName, this.materialize());
-        String source = ReplicationTopologyParser.addSourceStore(topology, topologyContext, topologyConstructor, Optional.empty(), topicName, this.materialize());
+        String source = ReplicationTopologyParser.addSourceStore(topology, topologyContext, topologyConstructor, topicName,connectFormat, this.materialize());
         topologyConstructor.addDesiredTopic(source, Optional.empty());
         transformerNames.push(source);
     }

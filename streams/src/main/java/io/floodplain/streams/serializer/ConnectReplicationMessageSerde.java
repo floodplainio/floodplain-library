@@ -20,15 +20,20 @@ package io.floodplain.streams.serializer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.floodplain.kafka.converter.ReplicationMessageConverter;
 import io.floodplain.replication.api.ReplicationMessage;
 import io.floodplain.replication.factory.ReplicationFactory;
 import io.floodplain.replication.impl.protobuf.FallbackReplicationMessageParser;
+import io.floodplain.streams.debezium.JSONToReplicationMessage;
+import io.floodplain.streams.debezium.TableIdentifier;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,9 +42,10 @@ public class ConnectReplicationMessageSerde implements Serde<ReplicationMessage>
 
     private final FallbackReplicationMessageParser parser = new FallbackReplicationMessageParser();
     private static final Logger logger = LoggerFactory.getLogger(ConnectReplicationMessageSerde.class);
+//    ReplicationMessageConverter keyConverter = new ReplicationMessageConverter();
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
-
+    private boolean isKey = false;
     @Override
     public void close() {
 
@@ -47,9 +53,41 @@ public class ConnectReplicationMessageSerde implements Serde<ReplicationMessage>
 
     @Override
     public void configure(Map<String, ?> configs, boolean isKey) {
-
+        this.isKey = isKey;
+//        keyConverter.configure(Collections.emptyMap(),true);
     }
 
+
+    private static String parseConnectKey(byte[] input) throws IOException {
+        ObjectNode node = (ObjectNode) objectMapper.readTree(input);
+        TableIdentifier id = JSONToReplicationMessage.processDebeziumKey(node,false,false);
+        return id.combinedKey;
+    }
+
+    public static Deserializer<String> keyDeserialize() {
+        return new Deserializer<>() {
+
+            @Override
+            public void close() {
+            }
+
+            @Override
+            public void configure(Map<String, ?> config, boolean isKey) {
+                logger.info("Configuring key deserializer: {}",config);
+
+            }
+
+            @Override
+            public String deserialize(String topic, byte[] data) {
+                try {
+                    return parseConnectKey(data);
+                } catch (IOException e) {
+                    String raw = new String(data);
+                    throw new RuntimeException("Error deserializing key: "+raw,e);
+                }
+            }
+        };
+    }
     @Override
     public Deserializer<ReplicationMessage> deserializer() {
         return new Deserializer<>() {
@@ -66,6 +104,7 @@ public class ConnectReplicationMessageSerde implements Serde<ReplicationMessage>
 
             @Override
             public ReplicationMessage deserialize(String topic, byte[] data) {
+
                 return parser.parseBytes(data);
             }
         };
@@ -91,7 +130,7 @@ public class ConnectReplicationMessageSerde implements Serde<ReplicationMessage>
 
             @Override
             public byte[] serialize(String topic, ReplicationMessage replMessage) {
-                if (replMessage == null) {
+                if (replMessage == null || replMessage.operation()== ReplicationMessage.Operation.DELETE) {
                     return null;
                 }
                 Map<String, Object> valueMap = replMessage.valueMap(true, Collections.emptySet());
@@ -112,5 +151,4 @@ public class ConnectReplicationMessageSerde implements Serde<ReplicationMessage>
             }
         };
     }
-
 }

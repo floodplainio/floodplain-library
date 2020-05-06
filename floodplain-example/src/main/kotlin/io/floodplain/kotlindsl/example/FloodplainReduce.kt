@@ -60,5 +60,5 @@ fun main() {
             }
             mongoSink("justtotal", "myfinaltopic", mongoConfig)
         }
-    }.renderAndStart(URL("http://localhost:8083/connectors"), "localhost:9092", "reduceExample")
+    }.renderAndStart(URL("http://localhost:8083/connectors"), "localhost:9092")
 }

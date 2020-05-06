@@ -82,11 +82,11 @@ subprojects {
             }
         }
     }
-    if (project.hasProperty("release")){
+//    if (project.hasProperty("release")){
         signing {
             sign publishing.publications."$project.name"(MavenPublication)
         }
-    }
+//    }
 
 }
 def customizePom(pom) {
@@ -102,8 +102,8 @@ def customizePom(pom) {
         root.children().last() + {
             resolveStrategy = Closure.DELEGATE_FIRST
 
-            description 'Serialize and Deserialize Json-LD into Java entities'
-            name 'Schema.org Java'
+            description 'Transforms CDC streams in Kotlin'
+            name 'Floodplain'
             url 'https://floodplain.io'
             organization {
                 name 'Floodplain'
@@ -128,7 +128,7 @@ def customizePom(pom) {
             }
             developers {
                 developer {
-                    name 'Mautini'
+                    name 'Frank Lyaruu'
                 }
             }
         }

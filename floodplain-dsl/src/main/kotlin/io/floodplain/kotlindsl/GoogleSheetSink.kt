@@ -24,7 +24,7 @@ import java.util.Optional
 
 fun PartialStream.googleSheetsSink(config: GoogleSheetConfiguration) {
     val configMap: Map<String, String> = mapOf(Pair("connector.class", "io.floodplain.sink.SheetSinkConnector"))
-    val sink = SinkTransformer(config.topic, false, Optional.empty(), true)
+    val sink = SinkTransformer(Optional.of(config.name), config.topic, false, Optional.empty(), true)
     addTransformer(Transformer(sink))
 }
 

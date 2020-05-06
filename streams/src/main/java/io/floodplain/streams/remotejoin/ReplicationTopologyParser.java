@@ -24,10 +24,12 @@ import io.floodplain.replication.api.ReplicationMessage;
 import io.floodplain.replication.api.ReplicationMessage.Operation;
 import io.floodplain.streams.api.CoreOperators;
 import io.floodplain.streams.api.TopologyContext;
+import io.floodplain.streams.debezium.JSONToReplicationMessage;
 import io.floodplain.streams.remotejoin.ranged.GroupedUpdateProcessor;
 import io.floodplain.streams.remotejoin.ranged.ManyToManyGroupedProcessor;
 import io.floodplain.streams.remotejoin.ranged.ManyToOneGroupedProcessor;
 import io.floodplain.streams.remotejoin.ranged.OneToManyGroupedProcessor;
+import io.floodplain.streams.serializer.ConnectReplicationMessageSerde;
 import io.floodplain.streams.serializer.ImmutableMessageSerde;
 import io.floodplain.streams.serializer.ReplicationMessageSerde;
 import org.apache.kafka.common.serialization.Deserializer;
@@ -130,9 +132,7 @@ public class ReplicationTopologyParser {
         return name;
     }
 
-    public static String addSourceStore(final Topology currentBuilder, TopologyContext context, TopologyConstructor topologyConstructor, Optional<ProcessorSupplier<String, ReplicationMessage>> processorFromChildren,
-                                        String sourceTopicName,
-                                        boolean materializeStore) {
+    public static String addSourceStore(final Topology currentBuilder, TopologyContext context, TopologyConstructor topologyConstructor, String sourceTopicName,boolean connectSourceFormat, boolean materializeStore) {
         String storeTopic = CoreOperators.topicName(sourceTopicName, context);
         // TODO It might be better to fail if the topic does not exist? -> Well depends, if it is external yes, but if it is created by the same instance, then no.
         final String sourceProcessorName = storeTopic;
@@ -140,23 +140,17 @@ public class ReplicationTopologyParser {
             String sourceName;
             if (!topologyConstructor.sources.containsKey(storeTopic)) {
                 sourceName = sourceProcessorName + "_src";
-                currentBuilder.addSource(sourceName, storeTopic);
-                topologyConstructor.sources.put(storeTopic, sourceName);
-                if (processorFromChildren.isPresent()) {
-                    if (materializeStore) {
-                        currentBuilder.addProcessor(sourceProcessorName + "_transform", processorFromChildren.get(), sourceName);
-                        currentBuilder.addProcessor(sourceProcessorName, () -> new StoreProcessor(STORE_PREFIX + sourceProcessorName), sourceProcessorName + "_transform");
-                    } else {
-                        currentBuilder.addProcessor(sourceProcessorName, processorFromChildren.get(), sourceName);
-
-                    }
+                if (connectSourceFormat) {
+                    currentBuilder.addSource(sourceName, ConnectReplicationMessageSerde.keyDeserialize(), JSONToReplicationMessage.replicationFromConnect(), storeTopic);
                 } else {
-                    if (materializeStore) {
-                        currentBuilder.addProcessor(sourceProcessorName, () -> new StoreProcessor(STORE_PREFIX + sourceProcessorName), sourceName);
-                    } else {
-                        currentBuilder.addProcessor(sourceProcessorName, () -> new IdentityProcessor(), sourceName);
+                    currentBuilder.addSource(sourceName, storeTopic);
+                }
+                topologyConstructor.sources.put(storeTopic, sourceName);
+                if (materializeStore) {
+                    currentBuilder.addProcessor(sourceProcessorName, () -> new StoreProcessor(STORE_PREFIX + sourceProcessorName), sourceName);
+                } else {
+                    currentBuilder.addProcessor(sourceProcessorName, () -> new IdentityProcessor(), sourceName);
 
-                    }
                 }
 
             } else {

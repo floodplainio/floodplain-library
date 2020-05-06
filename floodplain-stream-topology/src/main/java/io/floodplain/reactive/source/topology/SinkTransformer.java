@@ -20,6 +20,7 @@ package io.floodplain.reactive.source.topology;
 
 import io.floodplain.reactive.source.topology.api.TopologyPipeComponent;
 import io.floodplain.replication.api.ReplicationMessage;
+import io.floodplain.streams.api.CoreOperators;
 import io.floodplain.streams.api.TopologyContext;
 import io.floodplain.streams.remotejoin.TopologyConstructor;
 import io.floodplain.streams.serializer.ConnectKeySerde;
@@ -36,10 +37,11 @@ import static io.floodplain.streams.api.CoreOperators.topicName;
 
 public class SinkTransformer implements TopologyPipeComponent {
 
-    private final String name;
+    private final Optional<String> name;
     private final Optional<Integer> partitions;
     private final boolean materializeParent;
     private final boolean connectFormat;
+    private final String topic;
 
     private boolean create = true;
 
@@ -48,10 +50,11 @@ public class SinkTransformer implements TopologyPipeComponent {
 
     private final static Logger logger = LoggerFactory.getLogger(SinkTransformer.class);
 
-    public static final String SINK_PREFIX = "SINK_";
+//    public static final String SINK_PREFIX = "SINK_";
 
-    public SinkTransformer(String name, boolean materializeParent, Optional<Integer> partitions, boolean connectFormat) {
+    public SinkTransformer(Optional<String> name, String topic, boolean materializeParent, Optional<Integer> partitions, boolean connectFormat) {
         this.name = name;
+        this.topic = topic;
         this.partitions = partitions;
         this.materializeParent = materializeParent;
         this.connectFormat = connectFormat;
@@ -60,17 +63,24 @@ public class SinkTransformer implements TopologyPipeComponent {
     @Override
     public void addToTopology(Stack<String> transformerNames, int pipeId, Topology topology, TopologyContext topologyContext, TopologyConstructor topologyConstructor) {
 
-        String sinkTopic = topicName(name, topologyContext);
+        String sinkTopic = topicName(topic, topologyContext);
         if (create) {
             topologyConstructor.ensureTopicExists(sinkTopic, partitions);
         }
+        String qualifiedName;
+        if(name.isPresent()) {
+            qualifiedName = CoreOperators.generationalGroup(name.get(),topologyContext);
+        } else {
+            qualifiedName = topologyContext.applicationId();
+        }
+
         logger.info("Stack top for transformer: " + transformerNames.peek());
         if(connectFormat) {
             Serializer<String> connectKeySerde = new ConnectKeySerde().serializer();
             Serializer<ReplicationMessage> connectValueSerde = new ConnectReplicationMessageSerde().serializer();
-            topology.addSink(SINK_PREFIX + sinkTopic, sinkTopic, connectKeySerde, connectValueSerde, transformerNames.peek());
+            topology.addSink(qualifiedName, sinkTopic, connectKeySerde, connectValueSerde, transformerNames.peek());
         } else {
-            topology.addSink(SINK_PREFIX + sinkTopic, sinkTopic, transformerNames.peek());
+            topology.addSink(qualifiedName, sinkTopic, transformerNames.peek());
         }
     }
 

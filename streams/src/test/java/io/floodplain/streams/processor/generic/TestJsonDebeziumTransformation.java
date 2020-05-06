@@ -11,6 +11,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.Optional;
 
 
 public class TestJsonDebeziumTransformation {
@@ -20,7 +21,7 @@ public class TestJsonDebeziumTransformation {
         JsonNode node = mapper.readTree(this.getClass().getClassLoader().getResourceAsStream("photo.json"));
         System.setProperty(ReplicationMessage.PRETTY_JSON, "true");
         ReplicationFactory.setInstance(new JSONReplicationMessageParserImpl());
-        ReplicationMessage msg = JSONToReplicationMessage.convertToReplication(false, (ObjectNode) node, "photo");
+        ReplicationMessage msg = JSONToReplicationMessage.convertToReplication(false, (ObjectNode) node, Optional.of("photo"));
         final String serialized = new String(msg.toBytes(ReplicationFactory.getInstance()));
         Assert.assertEquals(11, msg.columnNames().size());
         Assert.assertTrue(serialized.length() > 20000);
@@ -33,7 +34,7 @@ public class TestJsonDebeziumTransformation {
         JsonNode node = mapper.readTree(this.getClass().getClassLoader().getResourceAsStream("decimalwithscale.json"));
         System.setProperty(ReplicationMessage.PRETTY_JSON, "true");
         ReplicationFactory.setInstance(new JSONReplicationMessageParserImpl());
-        ReplicationMessage msg = JSONToReplicationMessage.convertToReplication(false, (ObjectNode) node, "photo");
+        ReplicationMessage msg = JSONToReplicationMessage.convertToReplication(false, (ObjectNode) node, Optional.of("photo"));
         final String serialized = new String(msg.toBytes(ReplicationFactory.getInstance()));
 
     }

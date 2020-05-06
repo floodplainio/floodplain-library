@@ -55,7 +55,7 @@ public class TopologyConstructor {
         desiredTopics.put(topicName, partitionCount);
     }
 
-    public void createTopicsAsNeeded(String kafkaHosts, String clientId) {
+    public void createTopicsAsNeeded(String kafkaHosts) {
         Map<String, Object> config = new HashMap<>();
         config.put("bootstrap.servers", kafkaHosts);
         config.put("client.id", UUID.randomUUID().toString());

@@ -31,6 +31,7 @@ import io.floodplain.replication.api.ReplicationMessage;
 import io.floodplain.replication.api.ReplicationMessage.Operation;
 import io.floodplain.replication.factory.ReplicationFactory;
 import io.floodplain.streams.api.TopologyContext;
+import org.apache.kafka.common.serialization.Deserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,27 +60,24 @@ public class JSONToReplicationMessage {
     public static KeyValue parse(TopologyContext context, String keyInput, byte[] data, boolean appendTenant, boolean appendSchema, boolean appendTable) {
         try {
             ObjectNode keynode = (ObjectNode) objectMapper.readTree(keyInput);
-            ObjectNode valuenode = (ObjectNode) objectMapper.readTree(data);
             TableIdentifier key = processDebeziumKey(keynode, appendTenant, appendSchema);
 
+            ObjectNode valuenode = (ObjectNode) objectMapper.readTree(data);
             if (!valuenode.has("payload") || valuenode.get("payload").isNull()) {
                 ReplicationMessage replMsg = ReplicationFactory.empty().withOperation(Operation.DELETE);
                 final ReplicationMessage converted = appendTenant ? replMsg.with("_tenant", key.tenant, ValueType.STRING) : replMsg;
                 final ReplicationMessage convertedWTable = appendTable ? converted.with("_tenant", key.tenant, ValueType.STRING) : converted;
                 return new KeyValue(key.combinedKey, ReplicationFactory.getInstance().serialize(convertedWTable));
-//                return PubSubTools.create(key.combinedKey, ReplicationFactory.getInstance().serialize(convertedWTable), msg.timestamp(), Optional.empty());
             }
-            final ReplicationMessage convOptional = convertToReplication(false, valuenode, key.table);
+            final ReplicationMessage convOptional = convertToReplication(false, valuenode, Optional.ofNullable(key.table));
             ReplicationMessage conv = convOptional.withPrimaryKeys(key.fields);
             if (appendTable) {
                 conv = conv.with("_table", key.table, ImmutableMessage.ValueType.STRING);
 
             }
             final ReplicationMessage converted = appendTenant ? conv.with("_tenant", key.tenant, ImmutableMessage.ValueType.STRING) : conv;
-            byte[] serialized = ReplicationFactory.getInstance().serialize(converted);
 
-//			logger.info("Forwarding to: {}",context.topicName(key.table));
-//            return PubSubTools.create(key.combinedKey, serialized, msg.timestamp(), Optional.of(CoreOperators.topicName(key.table, context)), msg.partition(), msg.offset());
+            byte[] serialized = ReplicationFactory.getInstance().serialize(converted);
             return new KeyValue(key.combinedKey,serialized);
         } catch (IOException e) {
             logger.error("Error: ", e);
@@ -87,10 +85,33 @@ public class JSONToReplicationMessage {
         return null;
     }
 
+    public static Deserializer<ReplicationMessage> replicationFromConnect() {
+        return new Deserializer<ReplicationMessage>() {
+            @Override
+            public ReplicationMessage deserialize(String topic, byte[] data) {
+                return parseConnectMessage(data);
+            }
+        };
+    }
 
-    public static ImmutableMessage convert(ObjectNode node, Consumer<String> callbackFieldList, boolean isKey, Optional<Operation> o, String table) {
-        if (!isKey && o.isPresent() && o.get().equals(Operation.DELETE)) {
-            return ImmutableFactory.empty().with("table", table, ImmutableMessage.ValueType.STRING);
+    public static ReplicationMessage parseConnectMessage(byte[] data) {
+        ObjectNode valuenode = null;
+        try {
+            valuenode = (ObjectNode) objectMapper.readTree(data);
+            if (!valuenode.has("payload") || valuenode.get("payload").isNull()) {
+                return null;
+            }
+            final ReplicationMessage convOptional = convertToReplication(false, valuenode, Optional.empty());
+            return convOptional;
+        } catch (IOException e) {
+            throw new RuntimeException("JSON parse issue while parsing expected json to replication message: "+new String(data),e);
+        }
+
+    }
+
+    public static ImmutableMessage convert(ObjectNode node, Consumer<String> callbackFieldList, boolean isKey, Optional<Operation> o, Optional<String> table) {
+        if (!isKey && o.isPresent() && o.get().equals(Operation.DELETE) && table.isPresent()) {
+            return ImmutableFactory.empty().with("table", table.get(), ImmutableMessage.ValueType.STRING);
         }
         try {
             JsonNode payLoad = node.get("payload");
@@ -131,7 +152,7 @@ public class JSONToReplicationMessage {
         return ImmutableFactory.empty();
     }
 
-    public static ReplicationMessage convertToReplication(boolean isKey, ObjectNode node, String table) {
+    public static ReplicationMessage convertToReplication(boolean isKey, ObjectNode node, Optional<String> table) {
         List<String> fields = new ArrayList<>();
         ObjectNode payload = (ObjectNode) node.get("payload");
         long millis = payload.get("ts_ms").asLong();

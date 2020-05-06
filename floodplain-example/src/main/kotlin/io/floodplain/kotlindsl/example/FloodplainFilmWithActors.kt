@@ -80,6 +80,6 @@ fun filmWithActorList(generation: String) {
             // pass this message to the mongo sink
             mongoSink("filmwithactors", "filmwithcat", mongoConfig)
         }
-    }.renderAndStart(URL("http://localhost:8083/connectors"), "localhost:9092", UUID.randomUUID().toString())
+    }.renderAndStart(URL("http://localhost:8083/connectors"), "localhost:9092")
     logger.info { "done!" }
 }
