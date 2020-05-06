@@ -26,11 +26,11 @@ allprojects {
         ext.year = '2020'
         ext.name = 'Frank Lyaruu'
     }
-
-
 }
 
+
 subprojects {
+//    systemProperty "release", findProperty("release")
     version = rootProject.ext.floodplain_version
     apply plugin: "java"
     apply plugin: "eclipse"
@@ -59,6 +59,7 @@ subprojects {
                 artifact javadocJar
 
 
+
             }
         }
         repositories {
@@ -82,13 +83,14 @@ subprojects {
             }
         }
     }
-    if (project.hasProperty("release")){
-        signing {
-            sign publishing.publications."$project.name"(MavenPublication)
-        }
-    }
+//    if (project.hasProperty("release")){
 
+//    }
+    signing {
+        sign publishing.publications."$project.name"(MavenPublication)
+    }
 }
+
 def customizePom(pom) {
     pom.withXml {
         def root = asNode()
