@@ -71,7 +71,7 @@ public class SinkTransformer implements TopologyPipeComponent {
         if(name.isPresent()) {
             qualifiedName = CoreOperators.generationalGroup(name.get(),topologyContext);
         } else {
-            qualifiedName = topologyContext.applicationId();
+            qualifiedName = sinkTopic; //topologyContext.applicationId();
         }
 
         logger.info("Stack top for transformer: " + transformerNames.peek());
