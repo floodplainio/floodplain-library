@@ -136,7 +136,7 @@ fun PartialStream.group(key: (IMessage) -> String) {
  * Use an existing source
  */
 fun Stream.source(topic: String, init: Source.() -> Unit): Source {
-    val sourceElement = TopicSource(topic,false)
+    val sourceElement = TopicSource(topic, false)
     val source = Source(sourceElement)
 
     source.init()
@@ -145,7 +145,7 @@ fun Stream.source(topic: String, init: Source.() -> Unit): Source {
 }
 
 fun Stream.externalSource(topic: String, init: Source.() -> Unit): Source {
-    val sourceElement = TopicSource(topic,true)
+    val sourceElement = TopicSource(topic, true)
     val source = Source(sourceElement)
 
     source.init()
@@ -157,7 +157,7 @@ fun Stream.externalSource(topic: String, init: Source.() -> Unit): Source {
  * Creates a simple sink that will contain the result of the current transformation. Multiple sinks may not be added.
  */
 fun PartialStream.sink(topic: String, materializeParent: Boolean = false): Transformer {
-    val sink = SinkTransformer(Optional.empty(), topic,  materializeParent, Optional.empty(), false)
+    val sink = SinkTransformer(Optional.empty(), topic, materializeParent, Optional.empty(), false)
     return addTransformer(Transformer(sink))
 }
 

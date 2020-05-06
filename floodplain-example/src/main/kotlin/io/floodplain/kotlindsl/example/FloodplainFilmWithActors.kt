@@ -29,7 +29,6 @@ import io.floodplain.kotlindsl.postgresSourceConfig
 import io.floodplain.kotlindsl.set
 import io.floodplain.kotlindsl.stream
 import java.net.URL
-import java.util.UUID
 
 private val logger = mu.KotlinLogging.logger {}
 

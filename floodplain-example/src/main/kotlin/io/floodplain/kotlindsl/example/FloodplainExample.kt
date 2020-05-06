@@ -31,7 +31,6 @@ import io.floodplain.kotlindsl.sink
 import io.floodplain.kotlindsl.source
 import io.floodplain.kotlindsl.streams
 import java.net.URL
-import java.util.UUID
 
 private val logger = mu.KotlinLogging.logger {}
 

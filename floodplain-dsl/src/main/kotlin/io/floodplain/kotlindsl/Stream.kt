@@ -109,7 +109,7 @@ class Stream(val context: TopologyContext) {
         sinks.forEach { (name, json) ->
             startConstructor(name, context, connectorURL, json, true)
         }
-        val appId =  context.applicationId();
+        val appId = context.applicationId()
         runTopology(topology, appId, kafkaHosts, "storagePath")
         logger.info { "Topology running!" }
     }
