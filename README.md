@@ -7,7 +7,7 @@ Circle CI Build Status:
 [![CircleCI](https://circleci.com/gh/floodplainio/floodplain-library.svg?style=svg)](https://circleci.com/gh/floodplainio/floodplain-library)
 
 Available on Maven Central:
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/cz.jirutka.rsql/rsql-parser/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.floodplain/floodplain-dsl)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/o.floodplain/floodplain-dsl/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.floodplain/floodplain-dsl)
 
 ## Building
 
