@@ -35,9 +35,7 @@ import java.net.URL
 private val logger = mu.KotlinLogging.logger {}
 
 fun main() {
-    val generation = "mygeneration"
-
-    streams(generation) {
+    streams {
         val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")
         val mongoConfig = mongoConfig("mongosink", "mongodb://mongo", "@mongodump")
         listOf(

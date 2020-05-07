@@ -114,7 +114,7 @@ public class ConnectReplicationMessageSerde implements Serde<ReplicationMessage>
     public Serializer<ReplicationMessage> serializer() {
 
         boolean schemaEnable = false;
-        boolean debug = true;
+        boolean debug = false;
 
         return new Serializer<>() {
 
