@@ -7,7 +7,8 @@ Circle CI Build Status:
 [![CircleCI](https://circleci.com/gh/floodplainio/floodplain-library.svg?style=svg)](https://circleci.com/gh/floodplainio/floodplain-library)
 
 Available on Maven Central:
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/o.floodplain/floodplain-dsl/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.floodplain/floodplain-dsl)
+
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.floodplain/floodplain-dsl/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.floodplain/floodplain-dsl)
 
 ## Building
 
@@ -33,7 +34,7 @@ CTRL+C
 docker-compose rm
 ```
 
-Import this project into IntelliJ, other IDE's should be easy to import (assuming there is some kind of gradle integration).
+Import this project into IntelliJ. Other IDE's should be easy to import (assuming there is some kind of gradle integration).
 
 Find, for example, the FloodplainAddresses.kt example file.
 Right-click and run, this should create some log messages and then keep running.
