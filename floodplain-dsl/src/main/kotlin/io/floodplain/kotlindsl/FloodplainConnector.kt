@@ -96,10 +96,8 @@ private fun deleteConnector(name: String, connectURL: URL) {
     logger.info("Delete result: {}", code)
 }
 
-// TODO replace with Java 11 client when we can go to graal 19.3
-@Throws(ProtocolException::class, IOException::class)
+// TODO replace with Java 11 http client
 private fun postToHttp(url: URL, jsonString: String) {
-// 		URL url = new URL(this.connectURL);
     logger.info("Posting to: {}", url)
     val con = url.openConnection() as HttpURLConnection
 

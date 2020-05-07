@@ -290,7 +290,7 @@ class TestTopology {
 
     @Test
     fun testSimpleScan() {
-        stream("generation") {
+        stream {
             source("@source") {
                 scan({ msg -> msg["total"] = 0; msg }, {
                     set { _, _, acc -> acc["total"] = acc["total"] as Int + 1; acc }
@@ -319,7 +319,7 @@ class TestTopology {
     // TODO Introduce 'eachDelete(key)
     @Test
     fun testScan() {
-        stream("generation") {
+        stream {
             source("@source") {
                 scan({ msg -> msg["groupKey"] as String }, { msg -> msg["total"] = 0; msg }, {
                     set { _, _, acc -> acc["total"] = acc["total"] as Int + 1; acc }
@@ -362,7 +362,7 @@ class TestTopology {
 
     @Test
     fun testFork() {
-        stream("gen") {
+        stream {
             source("@source") {
                 fork(
                         {
@@ -391,7 +391,7 @@ class TestTopology {
 
     @Test
     fun testDynamicSink() {
-        stream("gen") {
+        stream {
             source("@source") {
                 dynamicSink("somesink") { _, value ->
                     value["destination"] as String
@@ -407,13 +407,13 @@ class TestTopology {
 
     @Test
     fun testDiff() {
-        stream("gen") {
+        stream {
             source("@source") {
                 diff()
                 sink("@output")
             }
         }.renderAndTest {
-            val stateStore = stateStore("tenant-deployment-gen-instance-diff_1_1")
+            val stateStore = stateStore("tenant-deployment-any-instance-diff_1_1")
             input("@source", "key1", empty().set("value", "value1"))
             input("@source", "key1", empty().set("value", "value1"))
             assertEquals(1, outputSize("@output"))

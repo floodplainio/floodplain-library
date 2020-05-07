@@ -36,7 +36,6 @@ fun main(args: Array<String>) {
         val mongodb = mongoConfig("@mongo", "mongodb://mongo", "mydatabase")
         val pgConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")
         postgresSource("public", "actor", pgConfig) {
-        // externalSource("local.public.actor") {
             each {
                     _, msg, _ -> println("Record: $msg")
             }
