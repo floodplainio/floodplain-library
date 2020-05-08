@@ -41,7 +41,7 @@ public class TopicSource implements TopologyPipeComponent {
 
     @Override
     public void addToTopology(Stack<String> transformerNames, int pipeId, Topology topology, TopologyContext topologyContext, TopologyConstructor topologyConstructor) {
-        String source = ReplicationTopologyParser.addSourceStore(topology, topologyContext, topologyConstructor, topicName,connectFormat, this.materialize());
+        String source = ReplicationTopologyParser.addSourceStore(topology, topologyContext, topologyConstructor, topicName,connectFormat, this.materialize);
         topologyConstructor.addDesiredTopic(source, Optional.empty());
         transformerNames.push(source);
     }
@@ -54,11 +54,6 @@ public class TopicSource implements TopologyPipeComponent {
     @Override
     public void setMaterialize() {
         this.materialize = true;
-    }
-
-    @Override
-    public boolean materialize() {
-        return this.materialize;
     }
 
 }

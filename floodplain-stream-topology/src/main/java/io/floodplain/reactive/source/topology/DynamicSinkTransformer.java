@@ -39,8 +39,6 @@ public class DynamicSinkTransformer implements TopologyPipeComponent {
     private final Optional<Integer> partitions;
     private final String sinkName;
 
-    private boolean create = true;
-
     private boolean materialize = false;
 
 
@@ -72,11 +70,6 @@ public class DynamicSinkTransformer implements TopologyPipeComponent {
     @Override
     public void setMaterialize() {
         this.materialize = true;
-    }
-
-    @Override
-    public boolean materialize() {
-        return this.materialize;
     }
 
 }

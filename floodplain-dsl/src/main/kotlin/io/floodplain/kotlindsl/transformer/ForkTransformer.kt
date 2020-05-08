@@ -44,10 +44,6 @@ class ForkTransformer(val blocks: List<Block>) : TopologyPipeComponent {
         }
     }
 
-    override fun materialize(): Boolean {
-        return materialize
-    }
-
     override fun materializeParent(): Boolean {
         return false
     }

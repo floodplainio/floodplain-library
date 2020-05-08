@@ -309,7 +309,7 @@ public class ReplicationTopologyParser {
             removePipeComponents.addToTopology(removeProcessorStack, falseBranchPipeId, topology, topologyContext, topologyConstructor);
         }
 //		topologyConstructor
-        topology.addProcessor(materialize ? "_proc" + reduceName : reduceName, () -> new StoreStateProcessor(reduceName, reduceStoreName, initialMessage, keyExtractor), addProcessorStack.peek(), removeProcessorStack.peek());
+        topology.addProcessor(materialize ? "_proc" + reduceName : reduceName, () -> new StoreStateProcessor(reduceStoreName, keyExtractor), addProcessorStack.peek(), removeProcessorStack.peek());
         addStateStoreMapping(topologyConstructor.processorStateStoreMapper, materialize ? "_proc" + reduceName : reduceName, reduceStoreName);
         addStateStoreMapping(topologyConstructor.processorStateStoreMapper, reduceReader, reduceStoreName);
         addStateStoreMapping(topologyConstructor.processorStateStoreMapper, reduceReader, inputStoreName);
@@ -352,7 +352,6 @@ public class ReplicationTopologyParser {
                     STORE_PREFIX + fromProcessorName,
                     STORE_PREFIX + withProcessorName,
                     optional,
-                    CoreOperators.getListJoinFunctionToParam(false),
                     debug
             );
         } else {

@@ -70,9 +70,4 @@ public class GroupTransformer implements TopologyPipeComponent {
         this.materialize = true;
     }
 
-
-    @Override
-    public boolean materialize() {
-        return this.materialize;
-    }
 }

@@ -35,18 +35,13 @@ import java.util.function.Function;
 public class StoreStateProcessor extends AbstractProcessor<String, ReplicationMessage> {
 
 
-    private final static Logger logger = LoggerFactory.getLogger(StoreStateProcessor.class);
-    private final String name;
     private final String lookupStoreName;
-    private final Function<ImmutableMessage,ImmutableMessage> initial;
     private KeyValueStore<String, ImmutableMessage> lookupStore;
     private final Optional<BiFunction<ImmutableMessage, ImmutableMessage, String>> keyExtractor;
     public static final String COMMONKEY = "singlerestore";
 
-    public StoreStateProcessor(String name, String lookupStoreName, Function<ImmutableMessage,ImmutableMessage> initial, Optional<BiFunction<ImmutableMessage, ImmutableMessage, String>> keyExtractor) {
-        this.name = name;
+    public StoreStateProcessor(String lookupStoreName, Optional<BiFunction<ImmutableMessage, ImmutableMessage, String>> keyExtractor) {
         this.lookupStoreName = lookupStoreName;
-        this.initial = initial;
         this.keyExtractor = keyExtractor;
     }
 

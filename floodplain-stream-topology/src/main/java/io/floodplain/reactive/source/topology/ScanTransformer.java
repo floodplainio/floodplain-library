@@ -63,10 +63,4 @@ public class ScanTransformer implements TopologyPipeComponent {
         this.materialize = true;
     }
 
-    @Override
-    public boolean materialize() {
-        return this.materialize;
-    }
-
-
 }

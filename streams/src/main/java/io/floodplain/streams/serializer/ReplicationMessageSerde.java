@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
+import java.util.Optional;
 
 public class ReplicationMessageSerde implements Serde<ReplicationMessage> {
 
@@ -50,7 +51,7 @@ public class ReplicationMessageSerde implements Serde<ReplicationMessage> {
 
     @Override
     public Deserializer<ReplicationMessage> deserializer() {
-        return new Deserializer<ReplicationMessage>() {
+        return new Deserializer<>() {
 
             @Override
             public void close() {
@@ -64,14 +65,14 @@ public class ReplicationMessageSerde implements Serde<ReplicationMessage> {
 
             @Override
             public ReplicationMessage deserialize(String topic, byte[] data) {
-                return parser.parseBytes(data);
+                return parser.parseBytes(Optional.of(topic),data);
             }
         };
     }
 
     @Override
     public Serializer<ReplicationMessage> serializer() {
-        return new Serializer<ReplicationMessage>() {
+        return new Serializer<>() {
 
             @Override
             public void close() {

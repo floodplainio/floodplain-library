@@ -22,7 +22,6 @@ package io.floodplain.replication.impl.protobuf.impl;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import io.floodplain.immutable.api.ImmutableMessage;
-import io.floodplain.immutable.api.customtypes.CoordinateType;
 import io.floodplain.immutable.factory.ImmutableFactory;
 import io.floodplain.protobuf.generated.Replication;
 import io.floodplain.replication.api.ReplicationMessage;
@@ -160,13 +159,6 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
                 }
             case LIST:
                 return value;
-            case COORDINATE:
-                try {
-                    return new CoordinateType(value);
-                } catch (Exception e) {
-                    logger.warn("Error parsing coordinate: " + value, e);
-                    return null;
-                }
             case ENUM:
                 return value;
             default:
@@ -422,11 +414,6 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
     }
 
     @Override
-    public ReplicationMessage parseBytes(byte[] data) {
-        return parseBytes(Optional.empty(), data);
-    }
-
-    @Override
     public ReplicationMessage parseBytes(Optional<String> source, byte[] data) {
         if (data == null) {
             return null;
@@ -483,7 +470,7 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
             // make small pushback
             PushbackInputStream pis = new PushbackInputStream(data, 2);
             byte[] pre = new byte[2];
-            int i = pis.read(pre);
+            pis.read(pre);
             if ((short) pre[0] != ProtobufReplicationMessageParser.MAGIC_BYTE_1) {
                 throw new IllegalArgumentException("Bad magic byte: " + (short) pre[0]);
             }

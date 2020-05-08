@@ -38,10 +38,6 @@ public class TopologyContext {
 //		this.brokers = brokers;
     }
 
-    public TopologyContext withInstance(String newInstance) {
-        return new TopologyContext(tenant, deployment, newInstance, generation);
-    }
-
     public String applicationId() {
         return tenant.orElse(DEFAULT_TENANT) + "-" + deployment + "-" + generation + "-" + instance;
     }

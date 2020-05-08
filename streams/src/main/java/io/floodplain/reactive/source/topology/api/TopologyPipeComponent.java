@@ -31,6 +31,4 @@ public interface TopologyPipeComponent {
 
     void setMaterialize();
 
-    boolean materialize();
-
 }

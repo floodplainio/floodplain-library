@@ -45,7 +45,7 @@ public class EachTransformer implements TopologyPipeComponent {
     public void addToTopology(Stack<String> transformerNames, int pipeId, Topology topology, TopologyContext topologyContext, TopologyConstructor topologyConstructor) {
         logger.info("Stack top for transformer: " + transformerNames.peek());
         String name = topologyContext.qualifiedName("each", transformerNames.size(), pipeId);
-        if (this.materialize()) {
+        if (this.materialize) {
             topology.addProcessor(name + "_prematerialize", () -> new EachProcessor(lambda), transformerNames.peek());
             ReplicationTopologyParser.addMaterializeStore(topology, topologyContext, topologyConstructor, name, name + "_prematerialize");
         } else {
@@ -62,11 +62,6 @@ public class EachTransformer implements TopologyPipeComponent {
     @Override
     public void setMaterialize() {
         this.materialize = true;
-    }
-
-    @Override
-    public boolean materialize() {
-        return this.materialize;
     }
 
 }

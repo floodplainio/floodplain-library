@@ -53,7 +53,7 @@ public class SetTransformer implements TopologyPipeComponent {
         FunctionProcessor fp = new FunctionProcessor(this.transformer);
         String name = topologyContext.qualifiedName("set", transformerNames.size(), currentPipeId);
         logger.info("Adding processor: {} to parent: {} hash: {}", name, transformerNames, transformerNames.hashCode());
-        if (this.materialize()) {
+        if (this.materialize) {
             topology.addProcessor(name + "_prematerialize", () -> fp, transformerNames.peek());
             ReplicationTopologyParser.addMaterializeStore(topology, topologyContext, topologyConstructor, name, name + "_prematerialize");
         } else {
@@ -70,11 +70,6 @@ public class SetTransformer implements TopologyPipeComponent {
     @Override
     public void setMaterialize() {
         this.materialize = true;
-    }
-
-    @Override
-    public boolean materialize() {
-        return materialize;
     }
 
 

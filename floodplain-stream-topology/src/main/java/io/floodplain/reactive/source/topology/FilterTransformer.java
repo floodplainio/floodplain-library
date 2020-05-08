@@ -69,9 +69,5 @@ public class FilterTransformer implements TopologyPipeComponent {
         this.materialized = true;
     }
 
-    @Override
-    public boolean materialize() {
-        return this.materialized;
-    }
 
 }

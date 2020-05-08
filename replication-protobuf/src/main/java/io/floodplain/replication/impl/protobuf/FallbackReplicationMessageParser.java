@@ -98,12 +98,6 @@ public class FallbackReplicationMessageParser implements ReplicationMessageParse
     }
 
     @Override
-    public ReplicationMessage parseBytes(byte[] data) {
-        return determineType(data).parseBytes(Optional.empty(), data);
-    }
-
-
-    @Override
     public ReplicationMessage parseBytes(Optional<String> source, byte[] data) {
         return determineType(data).parseBytes(source, data);
     }

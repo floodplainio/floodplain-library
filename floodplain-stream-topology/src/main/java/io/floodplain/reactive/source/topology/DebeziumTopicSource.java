@@ -63,7 +63,7 @@ public class DebeziumTopicSource implements TopologyPipeComponent {
         final String convertProcessorName = topologyContext.qualifiedName(metadataName + "_debconv", transformerNames.size(), pipeId);
         final String finalProcessorName = topologyContext.qualifiedName(metadataName + "_deb", transformerNames.size(), pipeId);
         ReplicationTopologyParser.addLazySourceStore(topology, topologyContext, topologyConstructor, topicName, Serdes.String().deserializer(), Serdes.ByteArray().deserializer());
-        topology.addProcessor(convertProcessorName, () -> new DebeziumConversionProcessor(topologyContext, appendTenant, appendSchema, appendTable), topicName);
+        topology.addProcessor(convertProcessorName, () -> new DebeziumConversionProcessor(appendTenant, appendSchema, appendTable), topicName);
 
         if (materialize) {
             topology.addProcessor(finalProcessorName, () -> new StoreProcessor(ReplicationTopologyParser.STORE_PREFIX + finalProcessorName), convertProcessorName);
@@ -79,10 +79,6 @@ public class DebeziumTopicSource implements TopologyPipeComponent {
         }
         transformerNames.push(finalProcessorName);
     }
-//
-//    private static String processorName(String sourceTopicName) {
-//        return sourceTopicName.replace(':', '_').replace('@', '.');
-//    }
 
     @Override
     public boolean materializeParent() {
@@ -92,11 +88,6 @@ public class DebeziumTopicSource implements TopologyPipeComponent {
     @Override
     public void setMaterialize() {
         this.materialize = true;
-    }
-
-    @Override
-    public boolean materialize() {
-        return this.materialize;
     }
 
 }

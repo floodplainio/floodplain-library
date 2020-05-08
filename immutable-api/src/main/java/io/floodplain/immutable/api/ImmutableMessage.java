@@ -67,8 +67,6 @@ public interface ImmutableMessage {
 
     ValueType columnType(String name);
 
-    byte[] toBytes(ImmutableMessageParser c);
-
     default Optional<Object> value(String name) {
         return Optional.ofNullable(columnValue(name));
     }
@@ -82,10 +80,6 @@ public interface ImmutableMessage {
     Map<String, Object> values();
 
     Map<String, TypedData> toTypedDataMap();
-
-    Map<String, Map<String, Object>> toDataMap();
-
-    Map<String, Object> valueMap(boolean ignoreNull, Set<String> ignore);
 
     Map<String, Object> valueMap(boolean ignoreNull, Set<String> ignore, List<String> currentPath);
 
@@ -124,10 +118,6 @@ public interface ImmutableMessage {
     ImmutableMessage without(List<String> columns);
 
     ImmutableMessage with(String key, Object value, ValueType type);
-
-    ImmutableMessage withOnlyColumns(List<String> columns);
-
-    ImmutableMessage withOnlySubMessages(List<String> subMessages);
 
     ImmutableMessage rename(String columnName, String newName);
 

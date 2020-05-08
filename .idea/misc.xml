@@ -1,5 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="EntryPointsManager">
+    <entry_points version="2.0">
+      <entry_point TYPE="field" FQNAME="io.floodplain.reactive.source.topology.DynamicSinkTransformer create" />
+    </entry_points>
+    <pattern value="io.floodplain.reactive.source.topology.DynamicSinkTransformer" />
+    <pattern value="io.floodplain.reactive.source.topology.EachProcessor" method="EachProcessor" />
+    <pattern value="io.floodplain.kotlindsl.FloodplainKt" />
+    <pattern value="io.floodplain.streams.remotejoin.ReplicationTopologyParser" />
+    <pattern value="io.floodplain.streams.remotejoin.CacheProcessor" method="CacheProcessor" />
+    <pattern value="io.floodplain.streams.debezium.impl.DebeziumConversionProcessor" method="DebeziumConversionProcessor" />
+  </component>
   <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="ProjectRootManager" version="2" languageLevel="JDK_11" project-jdk-name="11.0.5" project-jdk-type="JavaSDK" />
 </project>

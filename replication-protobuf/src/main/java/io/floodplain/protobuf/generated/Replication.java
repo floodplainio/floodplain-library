@@ -352,7 +352,7 @@ public final class Replication {
 
       private final int value;
 
-      private ValueType(int value) {
+      ValueType(int value) {
         this.value = value;
       }
 
@@ -683,30 +683,30 @@ public final class Replication {
       }
 
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof io.floodplain.protobuf.generated.Replication.ValueProtobuf) {
@@ -1445,7 +1445,7 @@ public final class Replication {
 
       private final int value;
 
-      private Operation(int value) {
+      Operation(int value) {
         this.value = value;
       }
 
@@ -1555,7 +1555,7 @@ public final class Replication {
       static final com.google.protobuf.MapEntry<
           java.lang.String, io.floodplain.protobuf.generated.Replication.ValueProtobuf> defaultEntry =
               com.google.protobuf.MapEntry
-              .<java.lang.String, io.floodplain.protobuf.generated.Replication.ValueProtobuf>newDefaultInstance(
+              .newDefaultInstance(
                   io.floodplain.protobuf.generated.Replication.internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_ValuesEntry_descriptor, 
                   com.google.protobuf.WireFormat.FieldType.STRING,
                   "",
@@ -1631,7 +1631,7 @@ public final class Replication {
       static final com.google.protobuf.MapEntry<
           java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf> defaultEntry =
               com.google.protobuf.MapEntry
-              .<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf>newDefaultInstance(
+              .newDefaultInstance(
                   io.floodplain.protobuf.generated.Replication.internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_SubmessageListEntry_descriptor, 
                   com.google.protobuf.WireFormat.FieldType.STRING,
                   "",
@@ -1707,7 +1707,7 @@ public final class Replication {
       static final com.google.protobuf.MapEntry<
           java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf> defaultEntry =
               com.google.protobuf.MapEntry
-              .<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf>newDefaultInstance(
+              .newDefaultInstance(
                   io.floodplain.protobuf.generated.Replication.internal_static_io_floodplain_protobuf_generated_ReplicationMessageProtobuf_SubmessageEntry_descriptor, 
                   com.google.protobuf.WireFormat.FieldType.STRING,
                   "",
@@ -2214,30 +2214,30 @@ public final class Replication {
       }
 
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf) {
@@ -2580,7 +2580,7 @@ public final class Replication {
       }
       private com.google.protobuf.MapField<java.lang.String, io.floodplain.protobuf.generated.Replication.ValueProtobuf>
       internalGetMutableValues() {
-        onChanged();;
+        onChanged();
         if (values_ == null) {
           values_ = com.google.protobuf.MapField.newMapField(
               ValuesDefaultEntryHolder.defaultEntry);
@@ -2703,7 +2703,7 @@ public final class Replication {
       }
       private com.google.protobuf.MapField<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf>
       internalGetMutableSubmessageList() {
-        onChanged();;
+        onChanged();
         if (submessageList_ == null) {
           submessageList_ = com.google.protobuf.MapField.newMapField(
               SubmessageListDefaultEntryHolder.defaultEntry);
@@ -2826,7 +2826,7 @@ public final class Replication {
       }
       private com.google.protobuf.MapField<java.lang.String, io.floodplain.protobuf.generated.Replication.ReplicationMessageProtobuf>
       internalGetMutableSubmessage() {
-        onChanged();;
+        onChanged();
         if (submessage_ == null) {
           submessage_ = com.google.protobuf.MapField.newMapField(
               SubmessageDefaultEntryHolder.defaultEntry);
@@ -3508,30 +3508,30 @@ public final class Replication {
       }
 
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof io.floodplain.protobuf.generated.Replication.ReplicationMessageListProtobuf) {

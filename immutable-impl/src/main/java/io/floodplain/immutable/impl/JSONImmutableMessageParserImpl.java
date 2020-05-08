@@ -42,14 +42,4 @@ public class JSONImmutableMessageParserImpl implements ImmutableMessageParser {
         return new String(ImmutableJSON.jsonSerializer(msg, INCLUDENULLVALUES, false));
     }
 
-    public void activate() {
-        logger.info("Immutable parser constructed");
-//		logger.
-        ImmutableFactory.setInstance(this);
-    }
-
-    public void deactivate() {
-        ImmutableFactory.setInstance(null);
-    }
-
 }

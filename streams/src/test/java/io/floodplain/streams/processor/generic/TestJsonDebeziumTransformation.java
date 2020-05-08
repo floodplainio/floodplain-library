@@ -9,12 +9,17 @@ import io.floodplain.replication.impl.json.JSONReplicationMessageParserImpl;
 import io.floodplain.streams.debezium.JSONToReplicationMessage;
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Optional;
 
 
 public class TestJsonDebeziumTransformation {
+
+    private static final Logger logger = LoggerFactory.getLogger(TestJsonDebeziumTransformation.class);
+
     @Test
     public void testPhoto() throws IOException {
         ObjectMapper mapper = new ObjectMapper();
@@ -36,6 +41,6 @@ public class TestJsonDebeziumTransformation {
         ReplicationFactory.setInstance(new JSONReplicationMessageParserImpl());
         ReplicationMessage msg = JSONToReplicationMessage.convertToReplication(false, (ObjectNode) node, Optional.of("photo"));
         final String serialized = new String(msg.toBytes(ReplicationFactory.getInstance()));
-
+        logger.info("serialized: {}",serialized);
     }
 }

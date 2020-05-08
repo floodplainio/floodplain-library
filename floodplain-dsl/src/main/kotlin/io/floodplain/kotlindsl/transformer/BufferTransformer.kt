@@ -29,9 +29,6 @@ import java.util.Stack
 
 class BufferTransformer(private val duration: Duration, private val maxSize: Int, private val inMemory: Boolean) : TopologyPipeComponent {
     var materialize = false
-    override fun materialize(): Boolean {
-        return materialize
-    }
 
     override fun addToTopology(transformerNames: Stack<String>, currentPipeId: Int, topology: Topology, topologyContext: TopologyContext, topologyConstructor: TopologyConstructor) {
         val top = transformerNames.peek()

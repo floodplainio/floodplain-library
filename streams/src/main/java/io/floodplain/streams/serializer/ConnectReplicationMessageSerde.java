@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class ConnectReplicationMessageSerde implements Serde<ReplicationMessage> {
 
@@ -43,7 +44,6 @@ public class ConnectReplicationMessageSerde implements Serde<ReplicationMessage>
 //    ReplicationMessageConverter keyConverter = new ReplicationMessageConverter();
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
-    private boolean isKey = false;
     @Override
     public void close() {
 
@@ -51,8 +51,6 @@ public class ConnectReplicationMessageSerde implements Serde<ReplicationMessage>
 
     @Override
     public void configure(Map<String, ?> configs, boolean isKey) {
-        this.isKey = isKey;
-//        keyConverter.configure(Collections.emptyMap(),true);
     }
 
 
@@ -103,7 +101,7 @@ public class ConnectReplicationMessageSerde implements Serde<ReplicationMessage>
             @Override
             public ReplicationMessage deserialize(String topic, byte[] data) {
 
-                return parser.parseBytes(data);
+                return parser.parseBytes(Optional.of(topic), data);
             }
         };
     }

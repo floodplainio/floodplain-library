@@ -55,21 +55,6 @@ public class JSONDumpReplicationMessageParserImpl implements ReplicationMessageP
     }
 
     @Override
-    public ReplicationMessage parseBytes(byte[] data) {
-        if (data == null) {
-            return null;
-        }
-        try {
-            return ReplicationJSON.parseReplicationMessage(data, Optional.empty());
-        } catch (JsonProcessingException e) {
-            return ReplicationFactory.createErrorReplicationMessage(e);
-        } catch (Throwable e) {
-            return ReplicationFactory.createErrorReplicationMessage(e);
-        }
-    }
-
-
-    @Override
     public ReplicationMessage parseBytes(Optional<String> source, byte[] data) {
         if (data == null) {
             return null;

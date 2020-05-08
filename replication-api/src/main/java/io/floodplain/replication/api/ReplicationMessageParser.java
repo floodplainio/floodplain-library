@@ -24,9 +24,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ReplicationMessageParser {
-    @Deprecated
-    ReplicationMessage parseBytes(byte[] data);
-
 
     ReplicationMessage parseBytes(Optional<String> source, byte[] data);
 

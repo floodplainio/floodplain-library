@@ -28,7 +28,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.floodplain.immutable.api.ImmutableMessage;
 import io.floodplain.immutable.api.ImmutableMessage.TypedData;
 import io.floodplain.immutable.api.ImmutableTypeParser;
-import io.floodplain.immutable.api.customtypes.CoordinateType;
 import io.floodplain.immutable.factory.ImmutableFactory;
 import io.floodplain.replication.api.ReplicationMessage;
 import io.floodplain.replication.api.ReplicationMessageParser;
@@ -270,17 +269,10 @@ public class ReplicationJSON {
             case CLOCKTIME:
                 //"15:01:06"
                 try {
+                    // TODO refactor this, this is pretty expensive, use DateTimeFormatter
                     return new SimpleDateFormat("HH:mm:ss").parse(jsonNode.asText());
                 } catch (ParseException e) {
                     logger.warn("Cannot parse clocktime {} = returning null", jsonNode.asText());
-
-                    return null;
-                }
-            case COORDINATE:
-                try {
-                    return new CoordinateType(jsonNode.asText());
-                } catch (Exception e) {
-                    logger.warn("Cannot parse coordinate {} = returning null", jsonNode.asText());
 
                     return null;
                 }

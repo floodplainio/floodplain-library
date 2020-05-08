@@ -57,10 +57,4 @@ public class RowNumberTransformer implements TopologyPipeComponent {
     }
 
 
-    @Override
-    public boolean materialize() {
-        return this.materialize;
-    }
-
-
 }

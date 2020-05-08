@@ -27,7 +27,6 @@ import org.slf4j.LoggerFactory;
 
 public class EachProcessor extends AbstractProcessor<String, ReplicationMessage> {
 
-    private final static Logger logger = LoggerFactory.getLogger(EachProcessor.class);
     private final ImmutableMessage.TriConsumer lambda;
 
     public EachProcessor(ImmutableMessage.TriConsumer lambda) {

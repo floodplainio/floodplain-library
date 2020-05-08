@@ -27,9 +27,6 @@ import java.util.Stack
 
 class DiffTransformer : TopologyPipeComponent {
     var materialize = false
-    override fun materialize(): Boolean {
-        return materialize
-    }
 
     override fun addToTopology(transformerNames: Stack<String>, currentPipeId: Int, topology: Topology, topologyContext: TopologyContext, topologyConstructor: TopologyConstructor) {
         if (materialize) {

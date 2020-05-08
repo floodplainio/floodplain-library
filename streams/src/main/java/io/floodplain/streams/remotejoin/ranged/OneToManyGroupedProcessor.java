@@ -47,12 +47,11 @@ public class OneToManyGroupedProcessor extends AbstractProcessor<String, Replica
     private KeyValueStore<String, ReplicationMessage> lookupStore;
     private BiFunction<ReplicationMessage, List<ReplicationMessage>, ReplicationMessage> joinFunction;
 
-    public OneToManyGroupedProcessor(String storeName, String groupedStoreName, boolean optional,
-                                     BiFunction<ReplicationMessage, List<ReplicationMessage>, ReplicationMessage> joinFunction, boolean debug) {
+    public OneToManyGroupedProcessor(String storeName, String groupedStoreName, boolean optional, boolean debug) {
         this.storeName = storeName;
         this.groupedStoreName = groupedStoreName;
         this.optional = optional;
-        this.joinFunction = joinFunction;
+        this.joinFunction = CoreOperators.getListJoinFunctionToParam(false);
         this.debug = debug;
     }
 

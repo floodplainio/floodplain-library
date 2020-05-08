@@ -38,6 +38,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static io.floodplain.streams.remotejoin.ReplicationTopologyParser.STORE_PREFIX;
 
+// TODO refactor. Remove map usage, replace with non-persistent state store.
 public class CacheProcessor extends AbstractProcessor<String, ReplicationMessage> {
     private static final String CACHED_AT_KEY = "_cachedAt";
 
@@ -47,10 +48,9 @@ public class CacheProcessor extends AbstractProcessor<String, ReplicationMessage
     private ProcessorContext context;
     private final Duration cacheTime;
     private String cacheProcName;
-    private Object sync = new Object();
+    private final Object sync = new Object();
     private final boolean memoryCache;
     private boolean clearPersistentCache = false;
-    private long startedAt;
     private int maxSize;
 
     public CacheProcessor(String cacheProcName, Duration cacheTime, int maxSize, boolean inMemory) {
@@ -67,7 +67,7 @@ public class CacheProcessor extends AbstractProcessor<String, ReplicationMessage
     public void init(ProcessorContext context) {
         super.init(context);
         this.context = context;
-        this.startedAt = System.currentTimeMillis();
+//        this.startedAt = System.currentTimeMillis();
 //        STORE_tenant-deployment-gen-instance-buffer_1_1
         this.lookupStore = (KeyValueStore<String, ReplicationMessage>) context.getStateStore(STORE_PREFIX+cacheProcName);
 

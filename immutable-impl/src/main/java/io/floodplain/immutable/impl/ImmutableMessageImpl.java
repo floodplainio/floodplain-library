@@ -40,69 +40,11 @@ public class ImmutableMessageImpl implements ImmutableMessage {
     private final Map<String, List<ImmutableMessage>> subMessagesMap;
 
 
-    public ImmutableMessageImpl(Map<String, ? extends Object> values, Map<String, ValueType> types, Map<String, ImmutableMessage> submessage, Map<String, List<ImmutableMessage>> submessages) {
+    public ImmutableMessageImpl(Map<String, ?> values, Map<String, ValueType> types, Map<String, ImmutableMessage> submessage, Map<String, List<ImmutableMessage>> submessages) {
         this.values = Collections.unmodifiableMap(values);
         this.types = Collections.unmodifiableMap(types);
         this.subMessageMap = Collections.unmodifiableMap(submessage);
         this.subMessagesMap = Collections.unmodifiableMap(submessages);
-    }
-
-    public ImmutableMessageImpl(ImmutableMessage message1, ImmutableMessage message2, String key) {
-        Map<String, Object> values = new HashMap<>();
-        for (String c : message1.columnNames()) {
-            Optional<Object> value = message1.value(c);
-            if (value.isPresent()) {
-                values.put(c, value);
-            }
-        }
-        for (String c : message2.columnNames()) {
-            Optional<Object> newValue = message2.value(c);
-            if (values.containsKey(c)) {
-                Object original = values.get(c);
-                if (!newValue.isPresent()) {
-                    continue;
-                }
-                if (!original.equals(newValue.get())) {
-                    logger.debug("Conflict in values. Value {} is present in both messages, but different: {} vs {}", c, original, newValue);
-                }
-            }
-            values.put(c, newValue);
-        }
-        this.values = Collections.unmodifiableMap(values);
-        Map<String, ValueType> types1 = message1.types();
-        Map<String, ValueType> types2 = message2.types();
-        this.types = combineTypes(types1, types2);
-        if (message1.subMessageNames().isEmpty()) {
-            if (message2.subMessageMap().isEmpty()) {
-                this.subMessageMap = Collections.emptyMap();
-            } else {
-                this.subMessageMap = message2.subMessageMap();
-            }
-        } else {
-            if (message2.subMessageMap().isEmpty()) {
-                this.subMessageMap = message1.subMessageMap();
-            } else {
-                // combine. somehow.
-                HashMap<String, ImmutableMessage> m = new HashMap<>(message1.subMessageMap());
-                m.putAll(message2.subMessageMap());
-                this.subMessageMap = Collections.unmodifiableMap(m);
-            }
-        }
-        if (message1.subMessageListMap().isEmpty()) {
-            if (message2.subMessageListMap().isEmpty()) {
-                this.subMessagesMap = Collections.emptyMap();
-            } else {
-                this.subMessagesMap = message2.subMessageListMap();
-            }
-        } else {
-            if (message2.subMessageListMap().isEmpty()) {
-                this.subMessagesMap = message1.subMessageListMap();
-            } else {
-                HashMap<String, List<ImmutableMessage>> m = new HashMap<>(message1.subMessageListMap());
-                m.putAll(message2.subMessageListMap());
-                this.subMessagesMap = Collections.unmodifiableMap(m);
-            }
-        }
     }
 
     @Override
@@ -122,49 +64,8 @@ public class ImmutableMessageImpl implements ImmutableMessage {
     }
 
     @Override
-    public byte[] toBytes(ImmutableMessageParser c) {
-        return c.serialize(this);
-    }
-
-    private Map<String, ValueType> resolveTypesFromValues(Map<String, ? extends Object> values) {
-        Map<String, ValueType> t = new HashMap<>();
-        for (Entry<String, ? extends Object> e : values.entrySet()) {
-            t.put(e.getKey(), ImmutableFactory.resolveTypeFromValue(e.getValue()));
-        }
-        return t;
-    }
-
-
-    private Map<String, ValueType> combineTypes(Map<String, ValueType> typesa, Map<String, ValueType> typesb) {
-        HashMap<String, ValueType> combine = new HashMap<>(typesa);
-        for (Entry<String, ValueType> e : typesb.entrySet()) {
-            // TODO sanity check types?
-            combine.put(e.getKey(), e.getValue());
-        }
-        return Collections.unmodifiableMap(combine);
-    }
-
-    @Override
     public Map<String, ValueType> types() {
         return this.types;
-    }
-
-    @Override
-    public Map<String, Map<String, Object>> toDataMap() {
-        Map<String, Map<String, Object>> columns = new HashMap<>();
-
-        this.values.entrySet().stream().forEach(element -> {
-            Map<String, Object> m = new HashMap<>();
-            m.put("Type", types.get(element.getKey()));
-            m.put("Value", values.get(element.getKey()));
-            columns.put(element.getKey(), m);
-        });
-        return columns;
-    }
-
-    @Override
-    public Map<String, Object> valueMap(boolean ignoreNull, Set<String> ignore) {
-        return valueMap(ignoreNull, ignore, Collections.emptyList());
     }
 
     private static Function<String, Boolean> checkIgnoreList(Set<String> ignoreList) {
@@ -303,7 +204,7 @@ public class ImmutableMessageImpl implements ImmutableMessage {
         if (firstSlash != -1) {
             String[] parts = key.split("/");
             Optional<ImmutableMessage> subm = subMessage(parts[0]);
-            if (!subm.isPresent()) {
+            if (subm.isEmpty()) {
                 logger.warn("Path: {} not found", key);
                 ImmutableMessage newSub = ImmutableFactory.empty().with(key.substring(firstSlash + 1), value, type);
                 return withSubMessage(parts[0], newSub);
@@ -391,7 +292,7 @@ public class ImmutableMessageImpl implements ImmutableMessage {
                         }
                     }
 
-                    Object found = null;
+                    Object found;
                     if (lookupMsg != null) {
                         found = lookupMsg.columnValue(key);
                         if (found != null) {
@@ -426,78 +327,6 @@ public class ImmutableMessageImpl implements ImmutableMessage {
 
 
         return msg.withAllSubMessageLists(mergedSubMessagesMap).withAllSubMessage(mergedSubMessageMap);
-    }
-
-
-    @Override
-    public ImmutableMessage withOnlySubMessages(List<String> subMessages) {
-        Map<String, ImmutableMessage> newSubMessages = new HashMap<>(this.subMessageMap);
-        Map<String, List<ImmutableMessage>> newSubMessageList = new HashMap<>(this.subMessagesMap);
-
-        for (String elt : subMessageMap.keySet()) {
-            if (!subMessages.contains(elt)) {
-                newSubMessages.remove(elt);
-            }
-        }
-        for (String elt : subMessagesMap.keySet()) {
-            if (!subMessages.contains(elt)) {
-                newSubMessageList.remove(elt);
-            }
-        }
-        return new ImmutableMessageImpl(this.values, this.types, Collections.unmodifiableMap(newSubMessages), Collections.unmodifiableMap(newSubMessageList));
-    }
-
-    @Override
-    public ImmutableMessage withOnlyColumns(List<String> columns) {
-        Map<String, Object> newValues = new HashMap<>(this.values);
-        Map<String, ValueType> newTypes = new HashMap<>(this.types);
-        for (String elt : values.keySet()) {
-            if (!columns.contains(elt)) {
-                newValues.remove(elt);
-                newTypes.remove(elt);
-            }
-        }
-
-        Map<String, ImmutableMessage> newsubmessage = new HashMap<>(Collections.emptyMap());
-        Map<String, List<ImmutableMessage>> newSubmessages = new HashMap<>(Collections.emptyMap());
-
-        // Submessage columns
-        for (String key : columns) {
-            if (!key.contains(".")) {
-                continue;
-            }
-            ImmutableMessage lookupMsg = this;
-            while (key.contains(".") && lookupMsg != null) {
-
-                String submsgName = key.substring(0, key.indexOf("."));
-                key = key.substring(submsgName.length() + 1);
-                Optional<ImmutableMessage> subMessage = lookupMsg.subMessage(submsgName);
-                if (subMessage.isPresent()) {
-                    lookupMsg = subMessage.get();
-                } else {
-                    lookupMsg = null;
-                }
-            }
-            Object found = null;
-            if (lookupMsg != null) {
-                found = lookupMsg.columnValue(key);
-                if (found != null) {
-                    newValues.put(key, found);
-                    newTypes.put(key, lookupMsg.columnType(key));
-                } else {
-                    Optional<ImmutableMessage> subMessage = lookupMsg.subMessage(key);
-                    if (subMessage.isPresent()) {
-                        newsubmessage.put(key, subMessage.get());
-                    }
-
-                    Optional<List<ImmutableMessage>> subMessages = lookupMsg.subMessages(key);
-                    if (subMessages.isPresent()) {
-                        newSubmessages.put(key, subMessages.get());
-                    }
-                }
-            }
-        }
-        return new ImmutableMessageImpl(newValues, newTypes, newsubmessage, newSubmessages);
     }
 
     public ImmutableMessage withAllSubMessageLists(Map<String, List<ImmutableMessage>> subMessageListMap) {
@@ -545,7 +374,7 @@ public class ImmutableMessageImpl implements ImmutableMessage {
                 for (ImmutableMessage msg : e.getValue()) {
                     String pr = e.getKey() + "@" + i;
                     String newPrefix = !"".equals(prefix) ? prefix + "/" + pr : pr;
-                    msg.flatValueMap(ignoreNull, ignore, newPrefix).entrySet().forEach(ee -> localValues.put(ee.getKey(), ee.getValue()));
+                    msg.flatValueMap(ignoreNull, ignore, newPrefix).forEach(localValues::put);
                     i++;
                 }
             }
@@ -588,13 +417,6 @@ public class ImmutableMessageImpl implements ImmutableMessage {
         return localValues;
     }
 
-
-    public boolean equalsToMessage(ImmutableMessage c) {
-        Map<String, Object> other = c.flatValueMap(false, Collections.emptySet(), "");
-        final Map<String, Object> myMap = this.flatValueMap(false, Collections.emptySet(), "");
-        return myMap.equals(other);
-    }
-
     @Override
     public Map<String, Object> values() {
         return this.values;
@@ -603,10 +425,7 @@ public class ImmutableMessageImpl implements ImmutableMessage {
     @Override
     public Map<String, TypedData> toTypedDataMap() {
         Map<String, TypedData> columns = new HashMap<>();
-        this.values.entrySet().stream().forEach(element -> {
-            ValueType t = this.columnType(element.getKey());
-            columns.put(element.getKey(), new TypedData(t, element.getValue()));
-        });
+        this.values.forEach((key,value) -> columns.put(key, new TypedData(this.columnType(key), value)));
         return columns;
     }
 
