@@ -34,38 +34,19 @@ import java.util.stream.Collectors;
 public class CoreOperators {
     private static final int TOPIC_PARTITION_COUNT = 1;
     private static final int TOPIC_REPLICATION_COUNT = 1;
-
-    private static ObjectMapper objectMapper = new ObjectMapper();
-    private static ObjectWriter objectWriter = objectMapper.writer().withDefaultPrettyPrinter();
-
     private static final Logger logger = LoggerFactory.getLogger(CoreOperators.class);
 
     private CoreOperators() {
     }
 
-    public static int topicPartitionCount() {
-        String env = System.getenv("TOPIC_PARTITION_COUNT");
-        if (env != null) {
-            return Integer.valueOf(env);
-        }
-        return TOPIC_PARTITION_COUNT;
-    }
-
     public static int topicReplicationCount() {
         String env = System.getenv("TOPIC_REPLICATION_COUNT");
         if (env != null) {
-            return Integer.valueOf(env);
+            return Integer.parseInt(env);
         }
         return TOPIC_REPLICATION_COUNT;
     }
 
-
-    public static ReplicationMessage merge(String key, ReplicationMessage a, ReplicationMessage b) {
-        if (b == null) {
-            return a;
-        }
-        return ReplicationFactory.joinReplicationMessage(key, a, b);
-    }
 
     public static String topicName(String topicName, TopologyContext context) {
         if (topicName.contains("-generation-")) {
@@ -91,9 +72,7 @@ public class CoreOperators {
 
         if (name.startsWith("@")) {
             StringBuffer sb = new StringBuffer();
-            if (context.tenant.isPresent()) {
-                sb.append(context.tenant.get() + "-");
-            }
+            context.tenant.ifPresent(s -> sb.append(s + "-"));
             String[] withInstance = name.split(":");
             if (withInstance.length > 1) {
                 sb.append(context.deployment + "-" + context.generation + "-" + withInstance[0].substring(1) + "-" + withInstance[1]);
@@ -103,11 +82,7 @@ public class CoreOperators {
             }
             return sb.toString();
         }
-        if (context.tenant.isPresent()) {
-            return context.tenant.get() + "-" + context.deployment + "-" + name;
-        } else {
-            return context.deployment + "-" + name;
-        }
+        return context.tenant.map(s -> s + "-" + context.deployment + "-" + name).orElseGet(() -> context.deployment + "-" + name);
     }
 
     public static String generationalGroup(String name, TopologyContext context) {
@@ -127,16 +102,7 @@ public class CoreOperators {
                 }
             }
         }
-        if (context.tenant.isPresent()) {
-            return context.tenant.get() + "-" + context.deployment + "-" + context.generation + "-" + context.instance + "-" + name;
-        } else {
-            return context.deployment + "-" + context.generation + "-" + context.instance + "-" + name;
-        }
-    }
-
-
-    public static BiFunction<ReplicationMessage, ReplicationMessage, ReplicationMessage> getParamJoinFunction() {
-        return (a, b) -> a.withParamMessage(b.message());
+        return context.tenant.map(s -> s + "-" + context.deployment + "-" + context.generation + "-" + context.instance + "-" + name).orElseGet(() -> context.deployment + "-" + context.generation + "-" + context.instance + "-" + name);
     }
 
     public static BiFunction<ReplicationMessage, List<ReplicationMessage>, ReplicationMessage> getListJoinFunctionToParam(boolean skipEmpty) {
@@ -145,7 +111,7 @@ public class CoreOperators {
                 return message;
             } else {
                 List<ImmutableMessage> withList;
-                withList = list.stream().map(e -> e.message()).collect(Collectors.toList());
+                withList = list.stream().map(ReplicationMessage::message).collect(Collectors.toList());
                 return message.withParamMessage(ImmutableFactory.empty().withSubMessages("list", withList));
 //                return message.withSubMessages(into, withList);
             }

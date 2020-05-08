@@ -37,10 +37,6 @@ public interface ReplicationMessage {
 
     Optional<String> source();
 
-    Optional<Integer> partition();
-
-    Optional<Long> offset();
-
     long timestamp();
 
     Operation operation();
@@ -56,31 +52,24 @@ public interface ReplicationMessage {
     boolean equals(Object o);
 
     enum Operation {
-        INSERT, UPDATE, DELETE, NONE, COMMIT, MERGE, INITIAL
+        UPDATE, DELETE, NONE, COMMIT, MERGE
     }
 
     String queueKey();
 
-    void commit();
-
     boolean isErrorMessage();
-
-    Map<String, Map<String, Object>> toDataMap();
 
     Map<String, Object> valueMap(boolean ignoreNull, Set<String> ignore);
 
     Map<String, Object> valueMap(boolean ignoreNull, Set<String> ignore, List<String> currentPath);
 
     Map<String, Object> flatValueMap(boolean ignoreNull, Set<String> ignore, String prefix);
-//	Map<String, Object> flatValueMap(String prefix,Func3<String, String, Object, Object> processType);
 
     boolean equalsToMessage(ReplicationMessage c);
 
     boolean equalsByKey(ReplicationMessage c);
 
     byte[] toBytes(ReplicationMessageParser c);
-
-    Map<String, ValueType> types();
 
     Optional<List<ImmutableMessage>> subMessages(String field);
 
@@ -102,27 +91,15 @@ public interface ReplicationMessage {
 
     Set<String> subMessageListNames();
 
-    Set<String> subMessageNames();
-
     ReplicationMessage without(String columnName);
 
     ReplicationMessage without(List<String> columns);
 
     ReplicationMessage with(String key, Object value, ValueType type);
 
-    ReplicationMessage withOnlyColumns(List<String> columns);
-
-    ReplicationMessage withOnlySubMessages(List<String> subMessages);
-
     ReplicationMessage rename(String columnName, String newName);
 
     ReplicationMessage withPrimaryKeys(List<String> primary);
-
-    ReplicationMessage withSource(Optional<String> primary);
-
-    ReplicationMessage withPartition(Optional<Integer> partition);
-
-    ReplicationMessage withOffset(Optional<Long> offset);
 
     ReplicationMessage now();
 
@@ -130,32 +107,15 @@ public interface ReplicationMessage {
 
     String toFlatString(ReplicationMessageParser parser);
 
-    ReplicationMessage merge(ReplicationMessage other, Optional<List<String>> only);
-
     boolean usePretty =  System.getenv(PRETTY_JSON) != null || System.getProperty(PRETTY_JSON) != null;
 
     static boolean usePrettyPrint() {
         return usePretty;
     }
 
-    //	private static final boolean includeKafkaMetadata = System.getenv(INCLUDE_KAFKA_METADATA)!=null || System.getProperty(INCLUDE_KAFKA_METADATA)!=null;
-    static boolean includeKafkaMetadata() {
-        return false;
-    }
-
-    Map<String, ImmutableMessage> subMessageMap();
-
-    Map<String, List<ImmutableMessage>> subMessageListMap();
-
-    ReplicationMessage withAllSubMessageLists(Map<String, List<ImmutableMessage>> subMessageListMap);
-
-    ReplicationMessage withAllSubMessage(Map<String, ImmutableMessage> subMessageMap);
-
     ReplicationMessage withOperation(Operation operation);
 
     Map<String, Object> values();
-
-    ReplicationMessage withCommitAction(Runnable commitAction);
 
     ImmutableMessage message();
 

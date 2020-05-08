@@ -42,15 +42,10 @@ public class SinkTransformer implements TopologyPipeComponent {
     private final boolean materializeParent;
     private final boolean connectFormat;
     private final String topic;
-
-    private boolean create = true;
-
     private boolean materialize = false;
 
 
     private final static Logger logger = LoggerFactory.getLogger(SinkTransformer.class);
-
-//    public static final String SINK_PREFIX = "SINK_";
 
     public SinkTransformer(Optional<String> name, String topic, boolean materializeParent, Optional<Integer> partitions, boolean connectFormat) {
         this.name = name;
@@ -64,9 +59,7 @@ public class SinkTransformer implements TopologyPipeComponent {
     public void addToTopology(Stack<String> transformerNames, int pipeId, Topology topology, TopologyContext topologyContext, TopologyConstructor topologyConstructor) {
 
         String sinkTopic = topicName(topic, topologyContext);
-        if (create) {
-            topologyConstructor.ensureTopicExists(sinkTopic, partitions);
-        }
+        topologyConstructor.ensureTopicExists(sinkTopic, partitions);
         String qualifiedName;
         if(name.isPresent()) {
             qualifiedName = CoreOperators.generationalGroup(name.get()+"_"+sinkTopic,topologyContext);

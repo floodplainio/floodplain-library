@@ -40,10 +40,6 @@ public class ReplicationFactory {
         ReplicationFactory.instance = parser;
     }
 
-    public void clearInstance(ReplicationMessageParser parser) {
-        ReplicationFactory.instance = parser;
-    }
-
     public static ReplicationMessage createReplicationMessage(Optional<String> source, Optional<Integer> partition, Optional<Long> offset, final String transactionId, final long timestamp,
                                                               final ReplicationMessage.Operation operation, final List<String> primaryKeys, Map<String, ValueType> types,
                                                               Map<String, Object> values, Map<String, ImmutableMessage> subMessageMap,
@@ -72,10 +68,6 @@ public class ReplicationFactory {
 
     public static ReplicationMessage empty() {
         return ReplicationFactory.createReplicationMessage(Optional.empty(), Optional.empty(), Optional.empty(), null, System.currentTimeMillis(), ReplicationMessage.Operation.NONE, Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap(), Optional.of(noopCommit), Optional.empty());
-    }
-
-    public static ReplicationMessage joinReplicationMessage(String key, ReplicationMessage a, ReplicationMessage b) {
-        return new ReplicationImmutableMessageImpl(a, b, key);
     }
 
     public static ReplicationMessage createErrorReplicationMessage(Throwable t) {

@@ -57,8 +57,7 @@ public class DebeziumConversionProcessor implements Processor<String, byte[]> {
         if (value == null) {
             return;
         }
-//        PubSubMessage psm = PubSubTools.create(key, value, this.processorContext.timestamp(), Optional.of(topic), Optional.of(this.processorContext.partition()), Optional.of(this.processorContext.offset()));
-        KeyValue keyValue = JSONToReplicationMessage.parse(this.context, key,value, appendTenant, appendSchema, appendTable);
+        KeyValue keyValue = JSONToReplicationMessage.parse(key,value, appendTenant, appendSchema, appendTable);
         FallbackReplicationMessageParser ftm = new FallbackReplicationMessageParser(true);
         ReplicationMessage msg = ftm.parseBytes(keyValue.value);
         processorContext.forward(keyValue.key, msg);

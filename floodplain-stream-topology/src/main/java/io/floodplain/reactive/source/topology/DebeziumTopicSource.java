@@ -60,11 +60,6 @@ public class DebeziumTopicSource implements TopologyPipeComponent {
         final String metadataName = "debezium";
 
         String topicName = topicName(topologyContext);
-
-
-//        topologyConstructor.addConnectSink(resource, topicName, associatedSettings);
-
-//        final String sourceProcessorName = topologyContext.qualifiedName(metadataName + "_debsrc", transformerNames.size(), pipeId);
         final String convertProcessorName = topologyContext.qualifiedName(metadataName + "_debconv", transformerNames.size(), pipeId);
         final String finalProcessorName = topologyContext.qualifiedName(metadataName + "_deb", transformerNames.size(), pipeId);
         ReplicationTopologyParser.addLazySourceStore(topology, topologyContext, topologyConstructor, topicName, Serdes.String().deserializer(), Serdes.ByteArray().deserializer());

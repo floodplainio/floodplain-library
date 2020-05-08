@@ -37,13 +37,8 @@ class DiffTransformer : TopologyPipeComponent {
         }
         val top = transformerNames.peek()
         val name = topologyContext.qualifiedName("diff", transformerNames.size, currentPipeId)
-
-//        public static void addDiffProcessor(Topology current, TopologyContext context,
-//        TopologyConstructor topologyConstructor, String fromProcessor,
-//        String diffProcessorNamePrefix) {
         addDiffProcessor(topology, topologyContext, topologyConstructor, top, name)
         transformerNames.push(name)
-//        topology.addProcessor(name, ProcessorSupplier<String, ReplicationMessage> {DiffProcessor(STORE_PREFIX + name)}, top)
     }
 
     override fun materializeParent(): Boolean {

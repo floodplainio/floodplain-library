@@ -37,11 +37,6 @@ public class JoinWithTransformer implements TopologyPipeComponent {
     private final boolean debug;
     private boolean materialize = false;
 
-    public JoinWithTransformer(ReactivePipe joinWith) {
-        this(false, false, joinWith,false);
-    }
-
-    // 'into' will be the
     public JoinWithTransformer(boolean isOptional, boolean multiple, ReactivePipe joinWith, boolean debug) {
         this.isOptional = isOptional;
         this.joinWith = joinWith;

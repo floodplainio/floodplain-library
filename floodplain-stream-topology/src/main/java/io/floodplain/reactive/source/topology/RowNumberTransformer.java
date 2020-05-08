@@ -32,9 +32,6 @@ public class RowNumberTransformer implements TopologyPipeComponent {
 
     private boolean materialize;
 
-    public RowNumberTransformer() {
-    }
-
     @Override
     public void addToTopology(Stack<String> transformerNames, int pipeId, Topology topology,
                               TopologyContext topologyContext, TopologyConstructor topologyConstructor) {

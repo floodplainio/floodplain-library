@@ -52,17 +52,12 @@ public class ReactivePipeParser {
             if (i == 0) {
                 logger.info("processing source");
             } else {
-                Object type = pipe.transformers.get(i - 1);
-                if (type instanceof TopologyPipeComponent) {
-                    TopologyPipeComponent tpc = (TopologyPipeComponent) type;
-                    TopologyPipeComponent parent = i - 2 < 0 ? source : pipe.transformers.get(i - 2);
-                    logger.info("processing transformer: " + (i - 1));
-                    if (tpc.materializeParent()) {
-                        logger.info("Materializing parent");
-                        parent.setMaterialize();
-                    }
-                } else {
-                    logger.warn("Weird type found: {}", type);
+                TopologyPipeComponent type = pipe.transformers.get(i - 1);
+                TopologyPipeComponent parent = i - 2 < 0 ? source : pipe.transformers.get(i - 2);
+                logger.info("processing transformer: " + (i - 1));
+                if (type.materializeParent()) {
+                    logger.info("Materializing parent");
+                    parent.setMaterialize();
                 }
             }
         }

@@ -76,7 +76,7 @@ public class ReplicationJSON {
             baos.write('\n');
             return baos.toByteArray();
         } catch (JsonProcessingException e) {
-            logger.error("JSON parsing failing with key: {} value: {} types: {} submessagenames: {}", msg.queueKey(), msg.values(), msg.types(), msg.subMessageMap().keySet());
+            logger.error("JSON parsing failing with key: {} value: {} submessagenames: {}", msg.queueKey(), msg.values(), msg.message().subMessageMap().keySet());
             logger.error("Error serializing, got json error:", e);
             if (e.getCause() != null) {
                 logger.error("Error serializing cause:", e.getCause());

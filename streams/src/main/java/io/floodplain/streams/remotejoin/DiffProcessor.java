@@ -97,7 +97,7 @@ public class DiffProcessor extends AbstractProcessor<String, ReplicationMessage>
                 lookupStore.put(key, incoming);
                 context().forward(key, createMessage(key)
                         .withSubMessage("new", incoming.message())
-                        .withOperation(Operation.INSERT));
+                        .withOperation(Operation.UPDATE));
             }
 
             lookupStore.put(key, incoming);

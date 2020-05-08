@@ -75,27 +75,9 @@ public class ReplicationImmutableMessageImpl implements ReplicationMessage {
         this.paramMessage = paramMessage;
     }
 
-    public ReplicationImmutableMessageImpl(ReplicationMessage message1, ReplicationMessage message2, String key) {
-        this.transactionId = null; // message1.transactionId()+"-"+message2.transactionId();
-        this.timestamp = System.currentTimeMillis();
-        this.operation = Operation.MERGE;
-        this.primaryKeys = Collections.unmodifiableList(Arrays.asList(key));
-        this.immutableMessage = message1.message().merge(message2.message(), Optional.empty());
-        this.source = Optional.empty();
-        this.partition = Optional.empty();
-        this.offset = Optional.empty();
-        this.paramMessage = Optional.empty();
-
-    }
-
     @Override
     public ImmutableMessage message() {
         return immutableMessage;
-    }
-
-    @Override
-    public Set<String> subMessageNames() {
-        return message().subMessageNames();
     }
 
     @Override
@@ -163,7 +145,7 @@ public class ReplicationImmutableMessageImpl implements ReplicationMessage {
         this.timestamp = (long) initial.get("Timestamp");
         this.operation = Operation.valueOf((String) initial.get("Operation"));
         this.primaryKeys = Collections.unmodifiableList(((List<String>) initial.get("PrimaryKeys")));
-        Map<String, Object> initialValues = Collections.unmodifiableMap((Map<? extends String, ? extends Object>) initial.get("Columns"));
+        Map<String, Object> initialValues = Collections.unmodifiableMap((Map<? extends String, ?>) initial.get("Columns"));
         this.immutableMessage = ImmutableFactory.create(initialValues, resolveTypesFromValues(initialValues), Collections.emptyMap(), Collections.emptyMap());
         this.source = Optional.empty();
         this.partition = Optional.empty();
@@ -205,16 +187,6 @@ public class ReplicationImmutableMessageImpl implements ReplicationMessage {
 
 
     @Override
-    public Map<String, ValueType> types() {
-        return message().types();
-    }
-
-    @Override
-    public Map<String, Map<String, Object>> toDataMap() {
-        return message().toDataMap();
-    }
-
-    @Override
     public Map<String, Object> valueMap(boolean ignoreNull, Set<String> ignore) {
         return valueMap(ignoreNull, ignore, Collections.emptyList());
     }
@@ -254,6 +226,7 @@ public class ReplicationImmutableMessageImpl implements ReplicationMessage {
         return message().columnNames();
     }
 
+    @Deprecated
     @Override
     public Object columnValue(String name) {
         return message().columnValue(name);
@@ -267,13 +240,6 @@ public class ReplicationImmutableMessageImpl implements ReplicationMessage {
     @Override
     public String toString() {
         return "Operation: " + this.operation.toString() + " Ts: " + this.timestamp + "Transactionid: " + this.transactionId + " pk: " + primaryKeys + "Value:\n" + message().toString();
-    }
-
-    @Override
-    public void commit() {
-        if (this.commitAction != null && this.commitAction.isPresent()) {
-            this.commitAction.get().run();
-        }
     }
 
     @Override
@@ -354,40 +320,6 @@ public class ReplicationImmutableMessageImpl implements ReplicationMessage {
     }
 
     @Override
-    public Map<String, ImmutableMessage> subMessageMap() {
-        return message().subMessageMap();
-    }
-
-    @Override
-    public Map<String, List<ImmutableMessage>> subMessageListMap() {
-        return message().subMessageListMap();
-    }
-
-    @Override
-    public ReplicationMessage merge(ReplicationMessage other, Optional<List<String>> only) {
-        return withImmutableMessage(message().merge(other.message(), only));
-    }
-
-
-    @Override
-    public ReplicationMessage withOnlySubMessages(List<String> subMessages) {
-        return withImmutableMessage(message().withOnlySubMessages(subMessages));
-    }
-
-    @Override
-    public ReplicationMessage withOnlyColumns(List<String> columns) {
-        return withImmutableMessage(message().withOnlyColumns(columns));
-    }
-
-    public ReplicationMessage withAllSubMessageLists(Map<String, List<ImmutableMessage>> subMessageListMap) {
-        return withImmutableMessage(message().withAllSubMessageLists(subMessageListMap));
-    }
-
-    public ReplicationMessage withAllSubMessage(Map<String, ImmutableMessage> subMessageMap) {
-        return withImmutableMessage(message().withAllSubMessage(subMessageMap));
-    }
-
-    @Override
     public ReplicationMessage withAddedSubMessage(String field, ImmutableMessage message) {
         return withImmutableMessage(message().withAddedSubMessage(field, message));
     }
@@ -406,7 +338,7 @@ public class ReplicationImmutableMessageImpl implements ReplicationMessage {
     public Map<String, Object> flatValueMap(boolean ignoreNull, Set<String> ignore, String prefix) {
         Map<String, Object> param = paramMessage.map(prm -> prm.flatValueMap(ignoreNull, ignore, prefix + "@param")).orElse(Collections.emptyMap());
         Map<String, Object> flatValueMap = message().flatValueMap(ignoreNull, ignore, prefix);
-        Map<String, Object> combined = new HashMap<String, Object>(flatValueMap);
+        Map<String, Object> combined = new HashMap<>(flatValueMap);
         combined.putAll(param);
         return Collections.unmodifiableMap(combined);
     }
@@ -432,44 +364,9 @@ public class ReplicationImmutableMessageImpl implements ReplicationMessage {
         return message().values();
     }
 
-    public ReplicationMessage withCommitAction(Runnable commitAction) {
-        return new ReplicationImmutableMessageImpl(this.source, this.partition, this.offset, this.transactionId, this.operation, timestamp, message(), this.primaryKeys, Optional.of(commitAction), this.paramMessage);
-    }
-
-
     @Override
     public Optional<String> source() {
         return this.source;
-    }
-
-
-    @Override
-    public ReplicationMessage withSource(Optional<String> source) {
-        return new ReplicationImmutableMessageImpl(source, this.partition, this.offset, this.transactionId, this.operation, timestamp, message(), this.primaryKeys, this.commitAction, this.paramMessage);
-    }
-
-
-    @Override
-    public Optional<Integer> partition() {
-        return this.partition;
-    }
-
-
-    @Override
-    public Optional<Long> offset() {
-        return this.offset;
-    }
-
-
-    @Override
-    public ReplicationMessage withPartition(Optional<Integer> partition) {
-        return new ReplicationImmutableMessageImpl(source, partition, this.offset, this.transactionId, this.operation, timestamp, message(), this.primaryKeys, this.commitAction, this.paramMessage);
-    }
-
-
-    @Override
-    public ReplicationMessage withOffset(Optional<Long> offset) {
-        return new ReplicationImmutableMessageImpl(source, this.partition, offset, this.transactionId, this.operation, timestamp, message(), this.primaryKeys, this.commitAction, this.paramMessage);
     }
 
     public Optional<ImmutableMessage> paramMessage() {

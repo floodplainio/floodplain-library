@@ -57,7 +57,7 @@ public class JSONToReplicationMessage {
     //TODO Beware of threading issues
     private final static DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SS");
 
-    public static KeyValue parse(TopologyContext context, String keyInput, byte[] data, boolean appendTenant, boolean appendSchema, boolean appendTable) {
+    public static KeyValue parse(String keyInput, byte[] data, boolean appendTenant, boolean appendSchema, boolean appendTable) {
         try {
             ObjectNode keynode = (ObjectNode) objectMapper.readTree(keyInput);
             TableIdentifier key = processDebeziumKey(keynode, appendTenant, appendSchema);
@@ -86,23 +86,17 @@ public class JSONToReplicationMessage {
     }
 
     public static Deserializer<ReplicationMessage> replicationFromConnect() {
-        return new Deserializer<ReplicationMessage>() {
-            @Override
-            public ReplicationMessage deserialize(String topic, byte[] data) {
-                return parseConnectMessage(data);
-            }
-        };
+        return (topic, data) -> parseConnectMessage(data);
     }
 
     public static ReplicationMessage parseConnectMessage(byte[] data) {
-        ObjectNode valuenode = null;
+        ObjectNode valuenode;
         try {
             valuenode = (ObjectNode) objectMapper.readTree(data);
             if (!valuenode.has("payload") || valuenode.get("payload").isNull()) {
                 return null;
             }
-            final ReplicationMessage convOptional = convertToReplication(false, valuenode, Optional.empty());
-            return convOptional;
+            return convertToReplication(false, valuenode, Optional.empty());
         } catch (IOException e) {
             throw new RuntimeException("JSON parse issue while parsing expected json to replication message: "+new String(data),e);
         }
@@ -153,11 +147,10 @@ public class JSONToReplicationMessage {
     }
 
     public static ReplicationMessage convertToReplication(boolean isKey, ObjectNode node, Optional<String> table) {
-        List<String> fields = new ArrayList<>();
         ObjectNode payload = (ObjectNode) node.get("payload");
         long millis = payload.get("ts_ms").asLong();
         Operation o = resolveOperation(payload, payload.get("op").asText());
-        ImmutableMessage core = convert(node, fields::add, isKey, Optional.of(o), table);
+        ImmutableMessage core = convert(node, s->{}, isKey, Optional.of(o), table);
         return ReplicationFactory.standardMessage(core).withOperation(o).atTime(millis);
     }
 
@@ -179,7 +172,7 @@ public class JSONToReplicationMessage {
     }
 
     public static ValueType resolveType(String type, Optional<String> namedType, Optional<JsonNode> parameters) {
-        if (!namedType.isPresent()) {
+        if (namedType.isEmpty()) {
             return resolveSimpleType(type);
         }
         switch (namedType.get()) {
@@ -212,7 +205,7 @@ public class JSONToReplicationMessage {
         if (value.isNull()) {
             return null;
         }
-        if (!namedType.isPresent()) {
+        if (namedType.isEmpty()) {
             return resolveSimple(type, value);
         }
         switch (namedType.get()) {
@@ -260,35 +253,13 @@ public class JSONToReplicationMessage {
         Optional<Integer> scale = scaleNode.filter(e -> !e.isNull()).map(e -> Integer.parseInt(e.asText()));
 //		Optional<Integer> scale = typeParams.map(t->t.get("scale").asText()).map(Integer::parseInt);
 
-        final BigDecimal decoded = scale.isPresent() ? new BigDecimal(new BigInteger(bytes), scale.get()) : new BigDecimal(new BigInteger(bytes));
+        final BigDecimal decoded = scale.map(integer -> new BigDecimal(new BigInteger(bytes), integer)).orElseGet(() -> new BigDecimal(new BigInteger(bytes)));
         if (decoded.scale() > 0) {
             return decoded.doubleValue();
         } else {
             return decoded.longValue();
 
         }
-//		switch(bytes.length) {
-//		case 1:
-//		    ByteBuffer bytebuffer = ByteBuffer.allocate(Long.BYTES);
-//		    bytebuffer.put(bytes);
-//		    bytebuffer.flip();//need flip 
-//		    return bytebuffer.get();
-//		case 2:
-//		    ByteBuffer shortbuffer = ByteBuffer.allocate(Long.BYTES);
-//		    shortbuffer.put(bytes);
-//		    shortbuffer.flip();//need flip 
-//		    return shortbuffer.getShort();
-//		case 4:
-//		    ByteBuffer intbuffer = ByteBuffer.allocate(Long.BYTES);
-//		    intbuffer.put(bytes);
-//		    intbuffer.flip();//need flip 
-//		    return intbuffer.getInt();
-//		default:
-//		    ByteBuffer longbuffer = ByteBuffer.allocate(Long.BYTES);
-//		    longbuffer.put(bytes);
-//		    longbuffer.flip();//need flip 
-//		    return longbuffer.getInt();
-//		}
 
     }
 
@@ -308,7 +279,6 @@ public class JSONToReplicationMessage {
             case "double":
                 return value.asDouble();
             case "binary":
-                return Base64.getDecoder().decode(value.asText());
             case "bytes":
                 return Base64.getDecoder().decode(value.asText());
             case "list":
@@ -356,9 +326,8 @@ public class JSONToReplicationMessage {
         switch (opName) {
             case "u":
             case "r":
-                return Operation.UPDATE;
             case "c":
-                return Operation.INSERT;
+                return Operation.UPDATE;
             case "d":
                 return Operation.DELETE;
             default:
@@ -368,7 +337,7 @@ public class JSONToReplicationMessage {
 
     public static TableIdentifier processDebeziumKey(ObjectNode on, boolean appendTenant, boolean appendSchema) {
         List<String> fields = new ArrayList<>();
-        ImmutableMessage converted = convert(on, fields::add, true, Optional.empty(), null);
+        ImmutableMessage converted = convert(on, fields::add, true, Optional.empty(), Optional.empty());
         Optional<Object> tableId = converted.value("__dbz__physicalTableIdentifier");
         fields.remove("__dbz__physicalTableIdentifier");
         // for demo, shouldn't do any harm

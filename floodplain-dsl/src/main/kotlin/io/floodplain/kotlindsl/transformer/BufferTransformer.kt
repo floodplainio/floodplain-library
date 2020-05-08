@@ -27,16 +27,13 @@ import java.time.Duration
 import java.util.Stack
 import org.apache.kafka.streams.Topology
 
-class BufferTransformer(val duration: Duration, val maxSize: Int, val inMemory: Boolean) : TopologyPipeComponent {
+class BufferTransformer(private val duration: Duration, private val maxSize: Int, private val inMemory: Boolean) : TopologyPipeComponent {
     var materialize = false
     override fun materialize(): Boolean {
         return materialize
     }
 
     override fun addToTopology(transformerNames: Stack<String>, currentPipeId: Int, topology: Topology, topologyContext: TopologyContext, topologyConstructor: TopologyConstructor) {
-//        if (materialize) {
-//            throw RuntimeException("Materialization hasn't been implemented TODO")
-//        }
         val top = transformerNames.peek()
         val name = topologyContext.qualifiedName("buffer", transformerNames.size, currentPipeId)
         if (materialize) {

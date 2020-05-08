@@ -28,14 +28,10 @@ import java.util.Optional;
 public class ReactivePipe {
     public final TopologyPipeComponent source;
     public final List<TopologyPipeComponent> transformers;
-    Optional<String> binaryMime = Optional.empty();
-
-    private static final Logger logger = LoggerFactory.getLogger(ReactivePipe.class);
 
     public ReactivePipe(TopologyPipeComponent source, List<TopologyPipeComponent> transformers) {
         this.source = source;
         this.transformers = transformers;
-//		typecheck();
     }
 
 }

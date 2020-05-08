@@ -63,11 +63,11 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
         }
     }
 
-    private static final SimpleDateFormat dateFormat() {
+    private static SimpleDateFormat dateFormat() {
         return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SS");
     }
 
-    private static final SimpleDateFormat clocktimeFormat() {
+    private static SimpleDateFormat clocktimeFormat() {
         return new SimpleDateFormat("HH:mm:ss");
     }
 
@@ -346,9 +346,6 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
 
                             if (parseType == Replication.ValueProtobuf.ValueType.UNRECOGNIZED) {
                                 logger.warn("Unknown type for key {}, value {}, type {}", e.getKey(), value, type);
-                                if (type.equals("null")) {
-                                    parseType = Replication.ValueProtobuf.ValueType.STRING;
-                                }
                             }
                             if (parseType.equals(Replication.ValueProtobuf.ValueType.BINARY)) {
                                 if (value != null) {

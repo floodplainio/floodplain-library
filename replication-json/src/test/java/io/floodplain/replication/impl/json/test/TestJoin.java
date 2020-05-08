@@ -147,47 +147,7 @@ public class TestJoin {
         InputStream stream = TestJoin.class.getClassLoader().getResourceAsStream("composed.json");
         ReplicationMessage repl = parser.parseStream(stream);
         logger.info("Names: " + repl.queueKey() + " names: " + repl.columnNames() + "\n sub: "
-                + repl.subMessageNames() + " subli: " + repl.subMessageListNames());
-    }
-
-    @Test
-    public void testMergeMessage() {
-        ReplicationMessageParser parser = new JSONReplicationMessageParserImpl();
-        InputStream stream = TestJoin.class.getClassLoader().getResourceAsStream("address.json");
-        ReplicationMessage input1 = parser.parseStream(stream);
-
-        stream = TestJoin.class.getClassLoader().getResourceAsStream("organization.json");
-        ReplicationMessage input2 = parser.parseStream(stream);
-
-        ReplicationMessage merged = input1.merge(input2, Optional.empty());
-        logger.info("FLATJSON: " + new String(merged.toBytes(parser)));
-        Assert.assertNotNull(merged.columnValue("typeoforganization"));
-        Assert.assertNotNull(merged.columnValue("city"));
-        logger.info(">>>>\n" + merged.columnNames().size());
-        Assert.assertEquals(16, merged.columnNames().size());
-
-        // logger.info("Names: "+repl.queueKey()+" names:
-        // "+repl.columnNames()+"\n sub: "+repl.subMessageNames()+" subli:
-        // "+repl.subMessageListNames());
-    }
-
-    @Test
-    public void testMergeMessageWithSelection() {
-        ReplicationMessageParser parser = new JSONReplicationMessageParserImpl();
-        InputStream stream = TestJoin.class.getClassLoader().getResourceAsStream("address.json");
-        ReplicationMessage input1 = parser.parseStream(stream);
-
-        stream = TestJoin.class.getClassLoader().getResourceAsStream("organization.json");
-        ReplicationMessage input2 = parser.parseStream(stream);
-
-        ReplicationMessage merged = input1.merge(input2, Optional.of(Arrays.asList("shortname")));
-        logger.info("FLATJSON: " + merged.toFlatString(parser));
-        Assert.assertNull(merged.columnValue("typeoforganization"));
-        Assert.assertNotNull(merged.columnValue("city"));
-        Assert.assertEquals(12, merged.columnNames().size());
-        // logger.info("Names: "+repl.queueKey()+" names:
-        // "+repl.columnNames()+"\n sub: "+repl.subMessageNames()+" subli:
-        // "+repl.subMessageListNames());
+                + repl.message().subMessageNames() + " subli: " + repl.subMessageListNames());
     }
 
     @Test
@@ -222,7 +182,6 @@ public class TestJoin {
         InputStream stream = TestJoin.class.getClassLoader().getResourceAsStream("composed.json");
         ReplicationMessage repl = ReplicationFactory.getInstance().parseStream(stream);
         Map<String, Object> ss = repl.flatValueMap(true, Collections.emptySet(), "");
-        ss.entrySet().stream().forEach(e -> logger.info("Key: " + e.getKey() + " value: " + e.getValue()));
         Assert.assertEquals(388, ss.size());
     }
 
@@ -267,7 +226,7 @@ public class TestJoin {
         values.put("Key", 1);
         values.put("NullString", null);
         ReplicationMessage rms = ReplicationFactory.createReplicationMessage(Optional.empty(), Optional.empty(),
-                Optional.empty(), null, 1, ReplicationMessage.Operation.INITIAL, Arrays.asList("Key"), types, values,
+                Optional.empty(), null, 1, ReplicationMessage.Operation.UPDATE, Arrays.asList("Key"), types, values,
                 Collections.emptyMap(), Collections.emptyMap(), Optional.empty(), Optional.empty());
         logger.info("Replication: " + rms.toFlatString(ReplicationFactory.getInstance()));
         logger.info("Replication: " + new String(rms.toBytes(ReplicationFactory.getInstance())));
@@ -281,7 +240,7 @@ public class TestJoin {
         Assert.assertTrue(repl.paramMessage().isPresent());
         Assert.assertEquals(12, repl.paramMessage().get().value("col2").get());
         logger.info("Names: " + repl.queueKey() + " names: " + repl.columnNames() + "\n sub: "
-                + repl.subMessageNames() + " subli: " + repl.subMessageListNames());
+                + repl.message().subMessageNames() + " subli: " + repl.subMessageListNames());
     }
 
 }
