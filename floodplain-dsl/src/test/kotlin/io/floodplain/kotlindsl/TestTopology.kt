@@ -22,11 +22,11 @@ import io.floodplain.kotlindsl.message.IMessage
 import io.floodplain.kotlindsl.message.empty
 import io.floodplain.replication.api.ReplicationMessage
 import io.floodplain.streams.remotejoin.StoreStateProcessor
+import org.apache.kafka.streams.state.KeyValueStore
 import java.time.Duration
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
-import org.apache.kafka.streams.state.KeyValueStore
 
 private val logger = mu.KotlinLogging.logger {}
 

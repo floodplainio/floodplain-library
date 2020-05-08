@@ -18,12 +18,9 @@
  */
 package io.floodplain.streams.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import io.floodplain.immutable.api.ImmutableMessage;
 import io.floodplain.immutable.factory.ImmutableFactory;
 import io.floodplain.replication.api.ReplicationMessage;
-import io.floodplain.replication.factory.ReplicationFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

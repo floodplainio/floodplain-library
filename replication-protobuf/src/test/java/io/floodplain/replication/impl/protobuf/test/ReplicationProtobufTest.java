@@ -1,6 +1,5 @@
 package io.floodplain.replication.impl.protobuf.test;
 
-import com.google.protobuf.ByteString;
 import io.floodplain.immutable.api.ImmutableMessage;
 import io.floodplain.immutable.api.ImmutableMessage.ValueType;
 import io.floodplain.immutable.factory.ImmutableFactory;
