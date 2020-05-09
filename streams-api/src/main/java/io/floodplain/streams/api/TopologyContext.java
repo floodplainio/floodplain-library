@@ -27,31 +27,29 @@ public class TopologyContext {
 
     private static final String DEFAULT_TENANT = "DEFAULT";
     private final Optional<String> tenant;
-    private final String deployment;
     private final String instance;
     private final String generation;
 
     private static final Logger logger = LoggerFactory.getLogger(TopologyContext.class);
 
-    public static TopologyContext context(String tenant, String deployment, String instance, String generation) {
-        return new TopologyContext(Optional.of(tenant),deployment,instance,generation);
+    public static TopologyContext context(String tenant, String instance, String generation) {
+        return new TopologyContext(Optional.of(tenant),instance,generation);
     }
 
-    public static TopologyContext context(String deployment, String instance, String generation) {
-        return new TopologyContext(Optional.empty(),deployment,instance,generation);
+    public static TopologyContext context(String instance, String generation) {
+        return new TopologyContext(Optional.empty(),instance,generation);
     }
 
 
 
-    private TopologyContext(Optional<String> tenant, String deployment, String instance, String generation) {
+    private TopologyContext(Optional<String> tenant, String instance, String generation) {
         this.tenant = tenant;
-        this.deployment = deployment;
         this.instance = instance;
         this.generation = generation;
     }
 
     public String applicationId() {
-        return tenant.orElse(DEFAULT_TENANT) + "-" + deployment + "-" + generation + "-" + instance;
+        return tenant.orElse(DEFAULT_TENANT) + "-" + generation + "-" + instance;
     }
 
     public String qualifiedName(String name, int currentTransformer, int currentPipe) {
@@ -69,7 +67,7 @@ public class TopologyContext {
         }
         String topic = topicNameForReal(topicName);
         if (topic.indexOf('@') != -1) {
-            throw new UnsupportedOperationException("Bad topic: " + topic + " from instance: " + instance + " tenant: " + tenant + " deployment: " + deployment + " generation: " + generation);
+            throw new UnsupportedOperationException("Bad topic: " + topic + " from instance: " + instance + " tenant: " + tenant + " generation: " + generation);
         }
         return topic;
     }
@@ -79,34 +77,34 @@ public class TopologyContext {
             String[] withInstance = name.split(":");
             if (tenant.isPresent()) {
                 if (withInstance.length > 1) {
-                    return tenant.get() + "-" + deployment + "-" + generation + "-" + withInstance[0].substring(1) + "-" + withInstance[1];
+                    return tenant.get() + "-" + generation + "-" + withInstance[0].substring(1) + "-" + withInstance[1];
                 } else {
-                    return tenant.get() + "-" + deployment + "-" + generation + "-" + instance + "-" + name.substring(1);
+                    return tenant.get() + "-" + generation + "-" + instance + "-" + name.substring(1);
                 }
             } else {
                 if (withInstance.length > 1) {
-                    return deployment + "-" + generation + "-" + withInstance[0].substring(1) + "-" + withInstance[1];
+                    return generation + "-" + withInstance[0].substring(1) + "-" + withInstance[1];
                 } else {
-                    return deployment + "-" + generation + "-" + instance + "-" + name.substring(1);
+                    return generation + "-" + instance + "-" + name.substring(1);
                 }
             }
         }
-        return tenant.map(s -> s + "-" + deployment + "-" + generation + "-" + instance + "-" + name).orElseGet(() -> deployment + "-" + generation + "-" + instance + "-" + name);
+        return tenant.map(s -> s + "-" + generation + "-" + instance + "-" + name).orElseGet(() -> generation + "-" + instance + "-" + name);
     }
 
 
     private String topicNameForReal(String name) {
         if (name == null) {
-            throw new NullPointerException("Can not create topic name when name is null. tenant: " + tenant.orElse("<no tenant>") + " deployment: " + deployment + " generation: " + generation);
+            throw new NullPointerException("Can not create topic name when name is null. tenant: " + tenant.orElse("<no tenant>") + " generation: " + generation);
         }
         if (name.startsWith("@")) {
             StringBuffer sb = new StringBuffer();
             tenant.ifPresent(s -> sb.append(s + "-"));
-            sb.append(deployment + "-" + generation + "-" + instance + "-" + name.substring(1));
+            sb.append(generation + "-" + instance + "-" + name.substring(1));
             return sb.toString();
         } else {
-aaa
+//aaa
         }
-        return tenant.map(s -> s + "-" + deployment + "-" + name).orElseGet(() -> deployment + "-" + name);
+        return tenant.map(s -> s + "-" + name).orElseGet(() -> instance + "-" + name);
     }
 }
