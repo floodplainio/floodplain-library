@@ -39,7 +39,7 @@ class MongoConfig(val name: String, val uri: String, val database: String) : Con
 
 //        topic.override.sourceB.collection=sourceB
 
-        val generationalDatabase = topologyContext.generationalGroup(database)
+        val generationalDatabase = topologyContext.topicName(database)
         val settings = mutableMapOf("connector.class" to "com.mongodb.kafka.connect.MongoSinkConnector",
                 "value.converter.schemas.enable" to "false",
                 "key.converter.schemas.enable" to "false",

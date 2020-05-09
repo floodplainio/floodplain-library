@@ -27,14 +27,16 @@ import java.util.function.Function;
 
 public class TopologyContext {
 
-    private static final String DEFAULT_TENANT = "DEFAULT";
-    private final Optional<String> tenant;
-    private final String instance;
-    private final String generation;
+//    private static final String DEFAULT_TENANT = "DEFAULT";
+//    private final Optional<String> tenant;
+//    private final String instance;
+//    private final String generation;
 
     private static final Logger logger = LoggerFactory.getLogger(TopologyContext.class);
+    private final Function<String, String> qualifier;
 
-    public class NameQualifier implements Function<String,String> {
+
+    private static class NameQualifier implements Function<String,String> {
 
         private final Optional<String> tenant;
         private final String instance;
@@ -62,30 +64,30 @@ public class TopologyContext {
                         return generation + "-" + instance + "-" + name.substring(1);
                     }
                 }
+            } else {
+                if(tenant.isPresent()) {
+                    return tenant.get() + "-" + instance + "-" + name;
+                } else {
+                    return instance + "-" + name;
+                }
             }
-            return tenant.map(s -> s + "-" + generation + "-" + instance + "-" + name).orElseGet(() -> generation + "-" + instance + "-" + name);
         }
-
-
     }
 
-//    public static TopologyContext context(Function<String,String> qualifier) {
-//        return new TopologyContext(qualifier);
-//    }
+    public static TopologyContext context(Function<String,String> qualifier) {
+        return new TopologyContext(qualifier);
+    }
     public static TopologyContext context(String tenant, String instance, String generation) {
-        return new TopologyContext(Optional.of(tenant),instance,generation);
+        return new TopologyContext(new NameQualifier(Optional.of(tenant),instance,generation));
     }
 
     public static TopologyContext context(String instance, String generation) {
-        return new TopologyContext(Optional.empty(),instance,generation);
+        return new TopologyContext(new NameQualifier(Optional.empty(),instance,generation));
     }
 
 
-
-    private TopologyContext(Optional<String> tenant, String instance, String generation) {
-        this.tenant = tenant;
-        this.instance = instance;
-        this.generation = generation;
+    public TopologyContext(Function<String, String> qualifier) {
+        this.qualifier = qualifier;
     }
 
     public String applicationId() {
@@ -98,57 +100,7 @@ public class TopologyContext {
 
 
     public String topicName(String topicName) {
-        if (topicName.contains("-generation-")) {
-            logger.warn("Warning: Re-resolving topic: {}", topicName);
-            Thread.dumpStack();
-        }
-        if(topicName.indexOf("-")!=-1 || topicName.indexOf(":")!=-1) {
-            throw new RuntimeException("Can't use topic names containing a '-' or a ':'");
-        }
-        String topic = topicNameForReal(topicName);
-        if (topic.indexOf('@') != -1) {
-            throw new UnsupportedOperationException("Bad topic: " + topic + " from instance: " + instance + " tenant: " + tenant + " generation: " + generation);
-        }
-        return topic;
+        return this.qualifier.apply(topicName);
     }
 
-    public String generationalGroup(String name) {
-        if (name.startsWith("@")) {
-            String[] withInstance = name.split(":");
-            if (tenant.isPresent()) {
-                if (withInstance.length > 1) {
-                    return tenant.get() + "-" + generation + "-" + withInstance[0].substring(1) + "-" + withInstance[1];
-                } else {
-                    return tenant.get() + "-" + generation + "-" + instance + "-" + name.substring(1);
-                }
-            } else {
-                if (withInstance.length > 1) {
-                    return generation + "-" + withInstance[0].substring(1) + "-" + withInstance[1];
-                } else {
-                    return generation + "-" + instance + "-" + name.substring(1);
-                }
-            }
-        }
-        return tenant.map(s -> s + "-" + generation + "-" + instance + "-" + name).orElseGet(() -> generation + "-" + instance + "-" + name);
-    }
-
-
-    private String topicNameForReal(String name) {
-        if (name == null) {
-            throw new NullPointerException("Can not create topic name when name is null. tenant: " + tenant.orElse("<no tenant>") + " generation: " + generation);
-        }
-        if (name.startsWith("@")) {
-            StringBuffer sb = new StringBuffer();
-            tenant.ifPresent(s -> sb.append(s + "-"));
-            sb.append(generation + "-" + instance + "-" + name.substring(1));
-            return sb.toString();
-        } else {
-            StringBuffer sb = new StringBuffer();
-            tenant.ifPresent(s -> sb.append(s + "-"));
-            sb.append(instance + "-" + name);
-            return sb.toString();
-//aaa
-        }
-//        return tenant.map(s -> s + "-" + name).orElseGet(() -> instance + "-" + name);
-    }
 }
