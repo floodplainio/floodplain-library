@@ -25,6 +25,11 @@ import io.floodplain.replication.factory.ReplicationFactory
 import io.floodplain.streams.api.CoreOperators
 import io.floodplain.streams.api.TopologyContext
 import io.floodplain.streams.serializer.ReplicationMessageSerde
+import java.nio.file.Files
+import java.nio.file.Path
+import java.time.Duration
+import java.util.Properties
+import java.util.UUID
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.KeyValue
 import org.apache.kafka.streams.StreamsConfig
@@ -34,11 +39,6 @@ import org.apache.kafka.streams.Topology
 import org.apache.kafka.streams.TopologyTestDriver
 import org.apache.kafka.streams.processor.WallclockTimestampExtractor
 import org.apache.kafka.streams.state.KeyValueStore
-import java.nio.file.Files
-import java.nio.file.Path
-import java.time.Duration
-import java.util.Properties
-import java.util.UUID
 
 private val logger = mu.KotlinLogging.logger {}
 
@@ -99,19 +99,19 @@ class TestDriverContext(private val driver: TopologyTestDriver, private val topo
     private val replicationMessageParser = ReplicationFactory.getInstance()
 
     override fun input(topic: String, key: String, msg: IMessage) {
-        val qualifiedTopicName = CoreOperators.topicName(topic, topologyContext)
+        val qualifiedTopicName = topologyContext.topicName(topic)
         val inputTopic = inputTopics.computeIfAbsent(qualifiedTopicName) { driver.createInputTopic(qualifiedTopicName, Serdes.String().serializer(), ReplicationMessageSerde().serializer()) }
         inputTopic.pipeInput(key, ReplicationFactory.standardMessage(msg.toImmutable()))
     }
 
     override fun delete(topic: String, key: String) {
-        val qualifiedTopicName = CoreOperators.topicName(topic, topologyContext)
+        val qualifiedTopicName = topologyContext.topicName(topic)
         val inputTopic = inputTopics.computeIfAbsent(qualifiedTopicName) { driver.createInputTopic(qualifiedTopicName, Serdes.String().serializer(), ReplicationMessageSerde().serializer()) }
         inputTopic.pipeInput(key, null)
     }
 
     override fun output(topic: String): Pair<String, IMessage> {
-        val qualifiedTopicName = CoreOperators.topicName(topic, topologyContext)
+        val qualifiedTopicName = topologyContext.topicName(topic)
         val outputTopic = outputTopics.computeIfAbsent(qualifiedTopicName) { driver.createOutputTopic(qualifiedTopicName, Serdes.String().deserializer(), ReplicationMessageSerde().deserializer()) }
         val keyVal: KeyValue<String, ReplicationMessage?> = outputTopic.readKeyValue()
 //        outputTopic.
@@ -127,13 +127,13 @@ class TestDriverContext(private val driver: TopologyTestDriver, private val topo
     }
 
     override fun outputSize(topic: String): Long {
-        val qualifiedTopicName = CoreOperators.topicName(topic, topologyContext)
+        val qualifiedTopicName = topologyContext.topicName(topic)
         val outputTopic = outputTopics.computeIfAbsent(qualifiedTopicName) { driver.createOutputTopic(qualifiedTopicName, Serdes.String().deserializer(), ReplicationMessageSerde().deserializer()) }
         return outputTopic.queueSize
     }
 
     override fun deleted(topic: String): String {
-        val qualifiedTopicName = CoreOperators.topicName(topic, topologyContext)
+        val qualifiedTopicName = topologyContext.topicName(topic)
         val outputTopic = outputTopics.computeIfAbsent(qualifiedTopicName) { driver.createOutputTopic(qualifiedTopicName, Serdes.String().deserializer(), ReplicationMessageSerde().deserializer()) }
         logger.info("Looking for a tombstone message for topic $qualifiedTopicName")
         val keyVal = outputTopic.readKeyValue()
@@ -149,7 +149,7 @@ class TestDriverContext(private val driver: TopologyTestDriver, private val topo
     }
 
     override fun isEmpty(topic: String): Boolean {
-        val qualifiedTopicName = CoreOperators.topicName(topic, topologyContext)
+        val qualifiedTopicName = topologyContext.topicName(topic)
         val outputTopic = outputTopics.computeIfAbsent(qualifiedTopicName) { driver.createOutputTopic(qualifiedTopicName, Serdes.String().deserializer(), ReplicationMessageSerde().deserializer()) }
         return outputTopic.isEmpty
     }

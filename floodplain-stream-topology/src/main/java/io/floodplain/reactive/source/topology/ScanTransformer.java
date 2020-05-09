@@ -49,7 +49,7 @@ public class ScanTransformer implements TopologyPipeComponent {
     @Override
     public void addToTopology(Stack<String> transformerNames, int currentPipeId, Topology topology,
                               TopologyContext topologyContext, TopologyConstructor topologyConstructor) {
-        String reducerName = ReplicationTopologyParser.addReducer(topology, topologyContext, topologyConstructor, topologyContext.instance, transformerNames, currentPipeId, onAdd, onRemove, initial, materialize, keyExtractor);
+        String reducerName = ReplicationTopologyParser.addReducer(topology, topologyContext, topologyConstructor, transformerNames, currentPipeId, onAdd, onRemove, initial, materialize, keyExtractor);
         transformerNames.push(reducerName);
     }
 

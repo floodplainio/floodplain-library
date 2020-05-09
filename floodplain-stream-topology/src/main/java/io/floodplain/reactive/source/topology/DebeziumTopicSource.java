@@ -50,7 +50,7 @@ public class DebeziumTopicSource implements TopologyPipeComponent {
 
 
     public String topicName(TopologyContext topologyContext) {
-        return CoreOperators.topicName(resource + "." + schema + "." + table, topologyContext);
+        return topologyContext.topicName(resource + "." + schema + "." + table);
 
     }
 

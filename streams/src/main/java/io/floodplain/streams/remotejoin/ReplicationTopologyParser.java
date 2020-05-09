@@ -133,7 +133,7 @@ public class ReplicationTopologyParser {
     }
 
     public static String addSourceStore(final Topology currentBuilder, TopologyContext context, TopologyConstructor topologyConstructor, String sourceTopicName,boolean connectSourceFormat, boolean materializeStore) {
-        String storeTopic = CoreOperators.topicName(sourceTopicName, context);
+        String storeTopic = context.topicName(sourceTopicName);
         // TODO It might be better to fail if the topic does not exist? -> Well depends, if it is external yes, but if it is created by the same instance, then no.
         final String sourceProcessorName = "SOURCE_"+storeTopic;
         if (storeTopic != null) {
@@ -268,7 +268,7 @@ public class ReplicationTopologyParser {
     }
 
     public static String addReducer(final Topology topology, TopologyContext topologyContext, TopologyConstructor topologyConstructor,
-                                    String namespace, Stack<String> transformerNames, int currentPipeId, List<TopologyPipeComponent> onAdd, List<TopologyPipeComponent> onRemove,
+                                    Stack<String> transformerNames, int currentPipeId, List<TopologyPipeComponent> onAdd, List<TopologyPipeComponent> onRemove,
                                     Function<ImmutableMessage,ImmutableMessage> initialMessage, boolean materialize, Optional<BiFunction<ImmutableMessage, ImmutableMessage, String>> keyExtractor) {
 
         String parentName = transformerNames.peek();

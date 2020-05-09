@@ -21,21 +21,27 @@ package io.floodplain.kotlindsl
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ArrayNode
-import io.floodplain.streams.api.CoreOperators
 import io.floodplain.streams.api.TopologyContext
-import java.io.BufferedReader
 import java.io.IOException
-import java.io.InputStreamReader
-import java.net.HttpURLConnection
 import java.net.URL
+import java.net.http.HttpClient
+import java.net.http.HttpRequest
+import java.net.http.HttpResponse
+import java.net.http.HttpResponse.BodyHandlers
+import java.time.Duration
 import java.util.Collections
 import java.util.function.Consumer
 
 private val logger = mu.KotlinLogging.logger {}
 private val objectMapper = ObjectMapper()
+private val httpClient: HttpClient = HttpClient.newBuilder()
+    .version(HttpClient.Version.HTTP_1_1)
+    .followRedirects(HttpClient.Redirect.NORMAL)
+    .connectTimeout(Duration.ofSeconds(10))
+    .build()
 
 fun constructConnectorJson(topologyContext: TopologyContext, connectorName: String, parameters: Map<String, Any>): String {
-    val generatedName = CoreOperators.topicName(connectorName, topologyContext)
+    val generatedName = topologyContext.topicName(connectorName)
     val node = objectMapper.createObjectNode()
     node.put("name", generatedName)
     val configNode = objectMapper.createObjectNode()
@@ -57,16 +63,12 @@ fun constructConnectorJson(topologyContext: TopologyContext, connectorName: Stri
     }
     // override name to match general name
     configNode.put("name", generatedName)
-    // TODO this seems debezium specific
     configNode.put("database.server.name", generatedName)
-    val jsonString = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(node)
-    logger.info(">> {}", jsonString)
-//    postToHttp(connectURL, jsonString)
-    return jsonString
+    return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(node)
 }
 
 fun startConstructor(connectorName: String, topologyContext: TopologyContext, connectURL: URL, jsonString: String, force: Boolean) {
-    val generatedName = CoreOperators.topicName(connectorName, topologyContext)
+    val generatedName = topologyContext.topicName(connectorName)
     val current = existingConnectors(connectURL)
     if (current.contains(generatedName)) {
         if (force) {
@@ -76,11 +78,12 @@ fun startConstructor(connectorName: String, topologyContext: TopologyContext, co
             logger.warn("Connector: {} already present, ignoring", generatedName)
         }
     }
-    postToHttp(connectURL, jsonString)
+    postToHttpJava11(connectURL, jsonString)
 }
 
 private fun existingConnectors(url: URL): List<String> {
-    val an = objectMapper.readTree(url.openStream()) as ArrayNode
+    val response = httpClient.send(HttpRequest.newBuilder().uri(url.toURI()).build(),BodyHandlers.ofInputStream());
+    val an = objectMapper.readTree(response.body()) as ArrayNode
     val result: MutableList<String> = ArrayList()
     an.forEach(Consumer { j: JsonNode -> result.add(j.asText()) })
     return Collections.unmodifiableList(result)
@@ -89,35 +92,25 @@ private fun existingConnectors(url: URL): List<String> {
 @Throws(IOException::class)
 private fun deleteConnector(name: String, connectURL: URL) {
     val url = URL("$connectURL/$name")
-    val con = url.openConnection() as HttpURLConnection
-    con.requestMethod = "DELETE"
-    val code = con.responseCode
-    logger.info("Delete result: {}", code)
+    val request: HttpRequest = HttpRequest.newBuilder()
+        .uri(url.toURI())
+        .DELETE()
+        .build();
+    val response = httpClient.send(request, BodyHandlers.ofString())
+    if(response.statusCode()>=400) {
+        throw IOException("Error deleting connector: ${response.uri()}")
+    }
 }
 
-// TODO replace with Java 11 http client
-private fun postToHttp(url: URL, jsonString: String) {
-    logger.info("Posting to: {}", url)
-    val con = url.openConnection() as HttpURLConnection
-
-// 		-H "Accept:application/json" -H "Content-Type:application/json"
-    con.requestMethod = "POST"
-    con.setRequestProperty("Content-Type", "application/json")
-    con.setRequestProperty("Accept", "application/json")
-    con.doOutput = true
-    con.outputStream.use { os ->
-        val input = jsonString.toByteArray(charset("utf-8"))
-        os.write(input, 0, input.size)
-    }
-    logger.info("Result code: {} and message: {}", con.responseCode, con.responseMessage)
-    logger.info("JSON:\n$jsonString")
-    BufferedReader(
-            InputStreamReader(con.inputStream, "utf-8")).use { br ->
-        val response = StringBuilder()
-        var responseLine: String? = null
-        while (br.readLine().also { responseLine = it } != null) {
-            response.append(responseLine!!.trim { it <= ' ' })
-        }
-        println(response.toString())
+private fun postToHttpJava11(url: URL, jsonString: String) {
+    val request: HttpRequest = HttpRequest.newBuilder()
+        .uri(url.toURI())
+        .header("Content-Type", "application/json")
+        .header("Accept", "application/json")
+        .POST(HttpRequest.BodyPublishers.ofString(jsonString))
+        .build();
+    val response: HttpResponse<String> = httpClient.send(request, BodyHandlers.ofString())
+    if(response.statusCode()>=400) {
+        throw IOException("Error calling connector: ${response.uri()} code: ${response.statusCode()}")
     }
 }

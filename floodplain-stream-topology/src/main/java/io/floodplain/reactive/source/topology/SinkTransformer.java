@@ -33,8 +33,6 @@ import org.slf4j.LoggerFactory;
 import java.util.Optional;
 import java.util.Stack;
 
-import static io.floodplain.streams.api.CoreOperators.topicName;
-
 public class SinkTransformer implements TopologyPipeComponent {
 
     private final Optional<String> name;
@@ -58,11 +56,11 @@ public class SinkTransformer implements TopologyPipeComponent {
     @Override
     public void addToTopology(Stack<String> transformerNames, int pipeId, Topology topology, TopologyContext topologyContext, TopologyConstructor topologyConstructor) {
 
-        String sinkTopic = topicName(topic, topologyContext);
+        String sinkTopic = topologyContext.topicName(topic);
         topologyConstructor.ensureTopicExists(sinkTopic, partitions);
         String qualifiedName;
         if(name.isPresent()) {
-            qualifiedName = CoreOperators.generationalGroup(name.get()+"_"+sinkTopic,topologyContext);
+            qualifiedName = topologyContext.generationalGroup(name.get()+"_"+sinkTopic);
         } else {
             qualifiedName = sinkTopic; //topologyContext.applicationId();
         }

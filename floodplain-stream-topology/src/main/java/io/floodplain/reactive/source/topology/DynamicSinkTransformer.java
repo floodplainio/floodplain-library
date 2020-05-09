@@ -32,8 +32,6 @@ import java.util.Optional;
 import java.util.Stack;
 import java.util.function.BiFunction;
 
-import static io.floodplain.streams.api.CoreOperators.topicName;
-
 public class DynamicSinkTransformer implements TopologyPipeComponent {
 
     private final Optional<Integer> partitions;
@@ -56,7 +54,7 @@ public class DynamicSinkTransformer implements TopologyPipeComponent {
 
     @Override
     public void addToTopology(Stack<String> transformerNames, int pipeId, Topology topology, TopologyContext topologyContext, TopologyConstructor topologyConstructor) {
-        TopicNameExtractor<String, ReplicationMessage> topicNameExtractor = (key, msg, recordContext)->topicName( extractor.apply(key, msg.message()),topologyContext);
+        TopicNameExtractor<String, ReplicationMessage> topicNameExtractor = (key, msg, recordContext)->topologyContext.topicName( extractor.apply(key, msg.message()));
         logger.info("Stack top for transformer: " + transformerNames.peek());
         topology.addSink(SINK_PREFIX + sinkName, topicNameExtractor, transformerNames.peek());
     }
