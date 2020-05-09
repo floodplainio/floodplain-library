@@ -109,7 +109,7 @@ class Stream(val context: TopologyContext) {
         sinks.forEach { (name, json) ->
             startConstructor(name, context, connectorURL, json, true)
         }
-        val appId = context.applicationId()
+        val appId = context.topicName("@applicationId")
         runTopology(topology, appId, kafkaHosts, "storagePath")
         logger.info { "Topology running!" }
     }
@@ -137,7 +137,7 @@ class Stream(val context: TopologyContext) {
     fun runTopology(topology: Topology, applicationId: String, kafkaHosts: String, storagePath: String): KafkaStreams? {
         val props = createProperties(applicationId, kafkaHosts, storagePath)
         val stream = KafkaStreams(topology, props)
-        println("CurrentTopology:\n ${topology.describe()}")
+        logger.info("CurrentTopology:\n ${topology.describe()}")
         stream.setUncaughtExceptionHandler { thread: Thread, exception: Throwable? ->
             logger.error("Error in streams. thread: ${thread.name} exception: ", exception)
             stream.close()

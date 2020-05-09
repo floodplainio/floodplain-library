@@ -123,23 +123,6 @@ public class ReplicationProtobufTest {
     }
 
     @Test
-    public void testCoordinate() {
-        try (InputStream is = getClass().getResourceAsStream("addresslist.json")) {
-            ReplicationMessage rm = jsonParser.parseStream(is);
-
-            byte[] bb = protoBufParser.serialize(rm);
-
-            ReplicationMessage rm2 = protoBufParser.parseBytes(Optional.empty(), bb);
-
-            System.out.println(rm2);
-
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Test
     public void testMessageListParser() {
         ReplicationMessageParser jsonparser = new JSONReplicationMessageParserImpl();
         ReplicationMessageParser parser = new ProtobufReplicationMessageParser();

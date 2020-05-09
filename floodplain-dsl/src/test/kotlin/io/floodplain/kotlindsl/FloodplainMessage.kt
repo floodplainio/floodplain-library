@@ -22,6 +22,8 @@ import io.floodplain.immutable.factory.ImmutableFactory
 import io.floodplain.kotlindsl.message.empty
 import kotlin.test.Test
 
+private val logger = mu.KotlinLogging.logger {}
+
 class FloodplainMessage {
 
     @Test
@@ -30,6 +32,6 @@ class FloodplainMessage {
         msg["bla"] = "ble"
         msg["blieb"] = 3
         val serialized = msg.toImmutable().toFlatString(ImmutableFactory.createParser())
-        println("Serialized: $serialized")
+        logger.info("Serialized: $serialized")
     }
 }

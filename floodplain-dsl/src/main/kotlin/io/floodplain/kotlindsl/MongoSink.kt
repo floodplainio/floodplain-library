@@ -31,11 +31,11 @@ class MongoConfig(val name: String, val uri: String, val database: String) : Con
     override fun materializeConnectorConfig(topologyContext: TopologyContext): Pair<String, Map<String, String>> {
         val additional = mutableMapOf<String, String>()
         sinkInstancePair.forEach { (key, value) -> additional.put("topic.override.${topologyContext.topicName(value)}.collection", key) }
-        println("Pairs: $sinkInstancePair")
+        logger.debug("Pairs: $sinkInstancePair")
         val collections: String = sinkInstancePair.map { e -> e.first }.joinToString(",")
-        println("Collections: $collections")
+        logger.debug("Collections: $collections")
         val topics: String = sinkInstancePair.map { r -> topologyContext.topicName(r.second) }.joinToString(",")
-        println("Topics: $topics")
+        logger.debug("Topics: $topics")
 
 //        topic.override.sourceB.collection=sourceB
 

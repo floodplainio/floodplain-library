@@ -22,6 +22,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
+import java.util.concurrent.Callable;
+import java.util.function.Function;
 
 public class TopologyContext {
 
@@ -32,6 +34,44 @@ public class TopologyContext {
 
     private static final Logger logger = LoggerFactory.getLogger(TopologyContext.class);
 
+    public class NameQualifier implements Function<String,String> {
+
+        private final Optional<String> tenant;
+        private final String instance;
+        private final String generation;
+
+        public NameQualifier(Optional<String> tenant, String instance, String generation) {
+            this.tenant = tenant;
+            this.instance = instance;
+            this.generation = generation;
+        }
+        @Override
+        public String apply(String name) {
+            if (name.startsWith("@")) {
+                String[] withInstance = name.split(":");
+                if (tenant.isPresent()) {
+                    if (withInstance.length > 1) {
+                        return tenant.get() + "-" + generation + "-" + withInstance[0].substring(1) + "-" + withInstance[1];
+                    } else {
+                        return tenant.get() + "-" + generation + "-" + instance + "-" + name.substring(1);
+                    }
+                } else {
+                    if (withInstance.length > 1) {
+                        return generation + "-" + withInstance[0].substring(1) + "-" + withInstance[1];
+                    } else {
+                        return generation + "-" + instance + "-" + name.substring(1);
+                    }
+                }
+            }
+            return tenant.map(s -> s + "-" + generation + "-" + instance + "-" + name).orElseGet(() -> generation + "-" + instance + "-" + name);
+        }
+
+
+    }
+
+//    public static TopologyContext context(Function<String,String> qualifier) {
+//        return new TopologyContext(qualifier);
+//    }
     public static TopologyContext context(String tenant, String instance, String generation) {
         return new TopologyContext(Optional.of(tenant),instance,generation);
     }
@@ -49,7 +89,7 @@ public class TopologyContext {
     }
 
     public String applicationId() {
-        return tenant.orElse(DEFAULT_TENANT) + "-" + generation + "-" + instance;
+        return topicName("@applicationId");
     }
 
     public String qualifiedName(String name, int currentTransformer, int currentPipe) {
@@ -62,8 +102,8 @@ public class TopologyContext {
             logger.warn("Warning: Re-resolving topic: {}", topicName);
             Thread.dumpStack();
         }
-        if(topicName.indexOf("-")!=-1) {
-            throw new RuntimeException("Can't use topic names containing a '-'");
+        if(topicName.indexOf("-")!=-1 || topicName.indexOf(":")!=-1) {
+            throw new RuntimeException("Can't use topic names containing a '-' or a ':'");
         }
         String topic = topicNameForReal(topicName);
         if (topic.indexOf('@') != -1) {

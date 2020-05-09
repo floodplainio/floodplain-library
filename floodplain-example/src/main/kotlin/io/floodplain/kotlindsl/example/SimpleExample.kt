@@ -37,7 +37,7 @@ fun main(args: Array<String>) {
         val pgConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")
         postgresSource("public", "actor", pgConfig) {
             each {
-                    _, msg, _ -> println("Record: $msg")
+                    _, msg, _ -> logger.info("Record: $msg")
             }
             set {
                 _, msg, _ -> msg.clear("last_update"); msg
@@ -53,7 +53,7 @@ fun mainold(args: Array<String>) {
         val mongodb = mongoConfig("mongo", "mongodb://mongo", "mydatabase")
         postgresSource("public", "payment", postgres) {
             each {
-                    _, msg, _ -> println("Record: $msg")
+                    _, msg, _ -> logger.info("Record: $msg")
             }
             mongoSink("payments", "mytopic", mongodb)
         }

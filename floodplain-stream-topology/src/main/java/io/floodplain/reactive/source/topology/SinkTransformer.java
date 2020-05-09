@@ -20,7 +20,6 @@ package io.floodplain.reactive.source.topology;
 
 import io.floodplain.reactive.source.topology.api.TopologyPipeComponent;
 import io.floodplain.replication.api.ReplicationMessage;
-import io.floodplain.streams.api.CoreOperators;
 import io.floodplain.streams.api.TopologyContext;
 import io.floodplain.streams.remotejoin.TopologyConstructor;
 import io.floodplain.streams.serializer.ConnectKeySerde;
@@ -40,7 +39,6 @@ public class SinkTransformer implements TopologyPipeComponent {
     private final boolean materializeParent;
     private final boolean connectFormat;
     private final String topic;
-    private boolean materialize = false;
 
 
     private final static Logger logger = LoggerFactory.getLogger(SinkTransformer.class);
@@ -60,7 +58,8 @@ public class SinkTransformer implements TopologyPipeComponent {
         topologyConstructor.ensureTopicExists(sinkTopic, partitions);
         String qualifiedName;
         if(name.isPresent()) {
-            qualifiedName = topologyContext.generationalGroup(name.get()+"_"+sinkTopic);
+            // TODO effective deconflicting but ugly
+            qualifiedName = topologyContext.topicName(name.get()+"_"+sinkTopic);
         } else {
             qualifiedName = sinkTopic; //topologyContext.applicationId();
         }
@@ -83,7 +82,7 @@ public class SinkTransformer implements TopologyPipeComponent {
 
     @Override
     public void setMaterialize() {
-        this.materialize = true;
+        throw new UnsupportedOperationException("Sinks should never be materialized");
     }
 
 
