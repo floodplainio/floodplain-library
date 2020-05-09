@@ -103,8 +103,12 @@ public class TopologyContext {
             sb.append(generation + "-" + instance + "-" + name.substring(1));
             return sb.toString();
         } else {
+            StringBuffer sb = new StringBuffer();
+            tenant.ifPresent(s -> sb.append(s + "-"));
+            sb.append(instance + "-" + name);
+            return sb.toString();
 //aaa
         }
-        return tenant.map(s -> s + "-" + name).orElseGet(() -> instance + "-" + name);
+//        return tenant.map(s -> s + "-" + name).orElseGet(() -> instance + "-" + name);
     }
 }
