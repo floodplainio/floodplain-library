@@ -6,10 +6,10 @@ dependencies {
     compile dependencies.jacksonCore
     compile dependencies.jacksonDatabind
     compile dependencies.slf4j
-    implementation project(':immutable-api')
-    implementation project(':immutable-impl')
-    implementation project(':replication-api')
-    implementation project(':replication-impl')
+    implementation project(":immutable-api")
+    implementation project(":immutable-impl")
+    implementation project(":replication-api")
+    implementation project(":replication-impl")
     testCompile dependencies.jUnit
 }
 

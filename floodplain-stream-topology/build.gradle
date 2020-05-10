@@ -1,32 +1,32 @@
 plugins {
     // Apply the java-library plugin to add support for Java Library
-    id 'java'
-    id 'distribution'
-    id 'application'
-    id 'com.github.johnrengelman.shadow'
-    id 'maven-publish'
+    id "java"
+    id "distribution"
+    id "application"
+    id "com.github.johnrengelman.shadow"
+    id "maven-publish"
 }
 apply from: "$rootProject.projectDir/gradle/shared.gradle"
-apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: "com.github.johnrengelman.shadow"
 def globalConf = rootProject.ext
 
 
 // TODO remove shadow jar, maybe add to FloodplainExample
-mainClassName = 'io.floodplain.runtime.Main'
+mainClassName = "io.floodplain.runtime.Main"
 
 
 
 dependencies {
 
     Map<String, String> dependencies = globalConf.commonDependencies
-    implementation project(':immutable-api')
-    implementation project(':immutable-impl')
-    implementation project(':replication-api')
-    implementation project(':replication-impl')
-    implementation project(':replication-json')
-    implementation project(':streams')
-    implementation project(':streams-api')
-    implementation project(':kafka-converter')
+    implementation project(":immutable-api")
+    implementation project(":immutable-impl")
+    implementation project(":replication-api")
+    implementation project(":replication-impl")
+    implementation project(":replication-json")
+    implementation project(":streams")
+    implementation project(":streams-api")
+    implementation project(":kafka-converter")
     compile dependencies.slf4j
     compile dependencies.cdiApi
     testCompile dependencies.jUnit
@@ -35,8 +35,8 @@ dependencies {
 
 shadowJar {
     mergeServiceFiles {
-        path = 'META-INF/custom'
-        exclude 'META-INF/services/javax.xml.stream.*'
+        path = "META-INF/custom"
+        exclude "META-INF/services/javax.xml.stream.*"
     }
 }
 

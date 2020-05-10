@@ -1,8 +1,8 @@
 plugins {
     // Apply the java-library plugin to add support for Java Library
-    id 'java'
-    id 'application'
-    id 'com.github.johnrengelman.shadow'
+    id "java"
+    id "application"
+    id "com.github.johnrengelman.shadow"
     id "com.palantir.graal"
 }
 apply from: "$rootProject.projectDir/gradle/shared.gradle"
@@ -14,16 +14,16 @@ graal {
     mainClass("io.floodplain.kotlindsl.example.FloodplainFilmWithActorsKt")
     outputName("Floodplain")
 }
-mainClassName = 'io.floodplain.kotlindsl.example.FloodplainFilmWithActorsKt'
+mainClassName = "io.floodplain.kotlindsl.example.FloodplainFilmWithActorsKt"
 
-apply plugin: 'com.github.johnrengelman.shadow'
-apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: "com.github.johnrengelman.shadow"
+apply plugin: "com.github.johnrengelman.shadow"
 
 dependencies {
     Map<String, String> dependencies = globalConf.commonDependencies
-    implementation project(':floodplain-dsl')
-    implementation project(':streams-api')
-    implementation project(':streams')
+    implementation project(":floodplain-dsl")
+    implementation project(":streams-api")
+    implementation project(":streams")
     compile dependencies.slf4j
     implementation dependencies.slf4jSimple
     testCompile dependencies.jUnit
@@ -34,8 +34,8 @@ dependencies {
 }
 shadowJar {
     mergeServiceFiles {
-        path = 'META-INF/custom'
-        exclude 'META-INF/services/javax.xml.stream.*'
+        path = "META-INF/custom"
+        exclude "META-INF/services/javax.xml.stream.*"
     }
 }
 
