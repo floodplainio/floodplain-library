@@ -244,14 +244,14 @@ fun PartialStream.fork(vararg destinations: Block.() -> Transformer): Transforme
  * To make sure all data gets reprocessed, change the generation. It is a string, with no further meaning within the framework, you can choose what
  * meaning you want to attach. You can increment a number, use a sort of time stamp, or even a git commit.
  */
-fun stream(generation: String = "any", instance: String = "instance", tenant: String = "tenant", init: Stream.() -> Source): Stream {
-    val topologyContext = TopologyContext.context (tenant, instance, generation)
+fun stream(generation: String = "any", instance: String = "instance", tenant: String? = null, init: Stream.() -> Source): Stream {
+    val topologyContext = TopologyContext.context (Optional.ofNullable(tenant), instance, generation)
     val pipe = Stream(topologyContext)
     return pipe.addSource(pipe.init())
 }
 
-fun streams(generation: String = "any", instance: String = "instance", tenant: String = "tenant", init: Stream.() -> List<Source>): Stream {
-    val topologyContext = TopologyContext.context (tenant, instance, generation)
+fun streams(generation: String = "any", instance: String = "instance", tenant: String? = null, init: Stream.() -> List<Source>): Stream {
+    val topologyContext = TopologyContext.context (Optional.ofNullable(tenant), instance, generation)
     val pipe = Stream(topologyContext)
     val sources = pipe.init()
     sources.forEach {

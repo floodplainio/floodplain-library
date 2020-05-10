@@ -59,7 +59,7 @@ public class SinkTransformer implements TopologyPipeComponent {
         String qualifiedName;
         if(name.isPresent()) {
             // TODO effective deconflicting but ugly
-            qualifiedName = topologyContext.topicName(name.get()+"_"+sinkTopic);
+            qualifiedName = topologyContext.topicName(name.get()+"_"+topic);
         } else {
             qualifiedName = sinkTopic; //topologyContext.applicationId();
         }

@@ -49,6 +49,9 @@ public class TopologyContext {
         }
         @Override
         public String apply(String name) {
+            if(name.contains("-") || name.contains(":")) {
+                throw new IllegalArgumentException("Can't use '-' or ':' in topic name. name: "+name);
+            }
             if (name.startsWith("@")) {
                 String[] withInstance = name.split(":");
                 if (tenant.isPresent()) {
@@ -77,8 +80,8 @@ public class TopologyContext {
     public static TopologyContext context(Function<String,String> qualifier) {
         return new TopologyContext(qualifier);
     }
-    public static TopologyContext context(String tenant, String instance, String generation) {
-        return new TopologyContext(new NameQualifier(Optional.of(tenant),instance,generation));
+    public static TopologyContext context(Optional<String> tenant, String instance, String generation) {
+        return new TopologyContext(new NameQualifier(tenant,instance,generation));
     }
 
     public static TopologyContext context(String instance, String generation) {

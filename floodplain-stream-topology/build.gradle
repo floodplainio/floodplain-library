@@ -7,6 +7,7 @@ plugins {
     id 'maven-publish'
 }
 apply from: "$rootProject.projectDir/gradle/shared.gradle"
+apply plugin: 'com.github.johnrengelman.shadow'
 def globalConf = rootProject.ext
 
 

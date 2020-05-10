@@ -104,10 +104,10 @@ class Stream(val context: TopologyContext) {
         val (topology, sources, sinks) = render(topologyConstructor)
         topologyConstructor.createTopicsAsNeeded(kafkaHosts)
         sources.forEach { (name, json) ->
-            startConstructor(name, context, connectorURL, json, true)
+            startConstructor(name, context, connectorURL, json, false)
         }
         sinks.forEach { (name, json) ->
-            startConstructor(name, context, connectorURL, json, true)
+            startConstructor(name, context, connectorURL, json, false)
         }
         val appId = context.topicName("@applicationId")
         runTopology(topology, appId, kafkaHosts, "storagePath")
