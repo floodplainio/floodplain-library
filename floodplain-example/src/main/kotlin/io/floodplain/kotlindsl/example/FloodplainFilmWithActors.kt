@@ -33,7 +33,7 @@ import java.net.URL
 private val logger = mu.KotlinLogging.logger {}
 
 fun main() {
-    filmWithActorList("generation2")
+    filmWithActorList("generation3")
 }
 
 fun filmWithActorList(generation: String) {
@@ -77,7 +77,7 @@ fun filmWithActorList(generation: String) {
                 film
             }
             // pass this message to the mongo sink
-            mongoSink("filmwithactors", "filmwithcat", mongoConfig)
+            mongoSink("filmwithactors", "@filmwithcat", mongoConfig)
         }
     }.renderAndStart(URL("http://localhost:8083/connectors"), "localhost:9092")
     logger.info { "done!" }
