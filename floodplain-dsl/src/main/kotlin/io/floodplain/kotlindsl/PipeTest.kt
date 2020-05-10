@@ -41,15 +41,6 @@ import org.apache.kafka.streams.state.KeyValueStore
 
 private val logger = mu.KotlinLogging.logger {}
 
-interface TestCommand {
-    fun execute()
-}
-
-class InputCommand : TestCommand {
-    override fun execute() {
-    }
-}
-
 interface TestContext {
     fun input(topic: String, key: String, msg: IMessage)
     fun delete(topic: String, key: String)
@@ -61,7 +52,6 @@ interface TestContext {
     fun stateStore(name: String): KeyValueStore<String, ReplicationMessage>
     fun getStateStoreNames(): Set<String>
     fun topologyContext(): TopologyContext
-
 }
 fun testTopology(topology: Topology, testCmds: TestContext.() -> Unit, context: TopologyContext) {
     val storageFolder = "teststorage/store-" + UUID.randomUUID().toString()
@@ -81,7 +71,7 @@ fun testTopology(topology: Topology, testCmds: TestContext.() -> Unit, context: 
     } finally {
         driver.allStateStores.forEach { store -> store.value.close() }
         driver.close()
-        var path = Path.of(storageFolder).toAbsolutePath()
+        val path = Path.of(storageFolder).toAbsolutePath()
         if (Files.exists(path)) {
             Files.walk(path)
                     .sorted(Comparator.reverseOrder())
@@ -156,11 +146,11 @@ class TestDriverContext(private val driver: TopologyTestDriver, private val topo
     }
 
     override fun stateStore(name: String): KeyValueStore<String, ReplicationMessage> {
-        var kv: KeyValueStore<String, ReplicationMessage>? = driver.getKeyValueStore(name)
-        if(kv==null) {
-            var stores = driver.allStateStores.map { (k,v)->k as String }.toList()
-            logger.error("Can't find state store. Available stores: ${stores}")
-            throw IllegalStateException("Missing state store: ${name}")
+        val kv: KeyValueStore<String, ReplicationMessage>? = driver.getKeyValueStore(name)
+        if (kv == null) {
+            val stores = driver.allStateStores.map { (k, _) -> k as String }.toList()
+            logger.error("Can't find state store. Available stores: $stores")
+            throw IllegalStateException("Missing state store: $name")
         }
         return kv
     }
