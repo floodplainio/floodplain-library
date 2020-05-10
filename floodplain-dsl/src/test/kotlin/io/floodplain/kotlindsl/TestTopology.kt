@@ -413,7 +413,8 @@ class TestTopology {
                 sink("@output")
             }
         }.renderAndTest {
-            val stateStore = stateStore("tenant-any-instance-diff_1_1")
+
+            val stateStore = stateStore(topologyContext().topicName("@diff_1_1"))
             input("@source", "key1", empty().set("value", "value1"))
             input("@source", "key1", empty().set("value", "value1"))
             assertEquals(1, outputSize("@output"))

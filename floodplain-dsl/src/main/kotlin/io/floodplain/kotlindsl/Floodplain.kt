@@ -245,13 +245,13 @@ fun PartialStream.fork(vararg destinations: Block.() -> Transformer): Transforme
  * meaning you want to attach. You can increment a number, use a sort of time stamp, or even a git commit.
  */
 fun stream(generation: String = "any", instance: String = "instance", tenant: String? = null, init: Stream.() -> Source): Stream {
-    val topologyContext = TopologyContext.context (Optional.ofNullable(tenant), instance, generation)
+    val topologyContext = TopologyContext.context(Optional.ofNullable(tenant), instance, generation)
     val pipe = Stream(topologyContext)
     return pipe.addSource(pipe.init())
 }
 
 fun streams(generation: String = "any", instance: String = "instance", tenant: String? = null, init: Stream.() -> List<Source>): Stream {
-    val topologyContext = TopologyContext.context (Optional.ofNullable(tenant), instance, generation)
+    val topologyContext = TopologyContext.context(Optional.ofNullable(tenant), instance, generation)
     val pipe = Stream(topologyContext)
     val sources = pipe.init()
     sources.forEach {

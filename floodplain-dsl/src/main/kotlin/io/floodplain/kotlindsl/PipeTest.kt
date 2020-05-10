@@ -22,7 +22,6 @@ import io.floodplain.kotlindsl.message.IMessage
 import io.floodplain.kotlindsl.message.fromImmutable
 import io.floodplain.replication.api.ReplicationMessage
 import io.floodplain.replication.factory.ReplicationFactory
-import io.floodplain.streams.api.CoreOperators
 import io.floodplain.streams.api.TopologyContext
 import io.floodplain.streams.serializer.ReplicationMessageSerde
 import java.nio.file.Files
@@ -61,6 +60,8 @@ interface TestContext {
     fun advanceWallClockTime(duration: Duration)
     fun stateStore(name: String): KeyValueStore<String, ReplicationMessage>
     fun getStateStoreNames(): Set<String>
+    fun topologyContext(): TopologyContext
+
 }
 fun testTopology(topology: Topology, testCmds: TestContext.() -> Unit, context: TopologyContext) {
     val storageFolder = "teststorage/store-" + UUID.randomUUID().toString()
@@ -155,11 +156,21 @@ class TestDriverContext(private val driver: TopologyTestDriver, private val topo
     }
 
     override fun stateStore(name: String): KeyValueStore<String, ReplicationMessage> {
-        return driver.getKeyValueStore(name)
+        var kv: KeyValueStore<String, ReplicationMessage>? = driver.getKeyValueStore(name)
+        if(kv==null) {
+            var stores = driver.allStateStores.map { (k,v)->k as String }.toList()
+            logger.error("Can't find state store. Available stores: ${stores}")
+            throw IllegalStateException("Missing state store: ${name}")
+        }
+        return kv
     }
 
     override fun getStateStoreNames(): Set<String> {
         return driver.allStateStores.keys
+    }
+
+    override fun topologyContext(): TopologyContext {
+        return topologyContext
     }
 
     override fun advanceWallClockTime(duration: Duration) {

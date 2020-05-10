@@ -19,7 +19,6 @@
 package io.floodplain.kotlindsl
 
 import io.floodplain.reactive.source.topology.SinkTransformer
-import io.floodplain.streams.api.CoreOperators
 import io.floodplain.streams.api.TopologyContext
 import java.util.Optional
 

@@ -82,7 +82,7 @@ fun startConstructor(connectorName: String, topologyContext: TopologyContext, co
 }
 
 private fun existingConnectors(url: URL): List<String> {
-    val response = httpClient.send(HttpRequest.newBuilder().uri(url.toURI()).build(),BodyHandlers.ofInputStream());
+    val response = httpClient.send(HttpRequest.newBuilder().uri(url.toURI()).build(), BodyHandlers.ofInputStream())
     val an = objectMapper.readTree(response.body()) as ArrayNode
     val result: MutableList<String> = ArrayList()
     an.forEach(Consumer { j: JsonNode -> result.add(j.asText()) })
@@ -95,9 +95,9 @@ private fun deleteConnector(name: String, connectURL: URL) {
     val request: HttpRequest = HttpRequest.newBuilder()
         .uri(url.toURI())
         .DELETE()
-        .build();
+        .build()
     val response = httpClient.send(request, BodyHandlers.ofString())
-    if(response.statusCode()>=400) {
+    if (response.statusCode() >= 400) {
         throw IOException("Error deleting connector: ${response.uri()}")
     }
 }
@@ -108,9 +108,9 @@ private fun postToHttpJava11(url: URL, jsonString: String) {
         .header("Content-Type", "application/json")
         .header("Accept", "application/json")
         .POST(HttpRequest.BodyPublishers.ofString(jsonString))
-        .build();
+        .build()
     val response: HttpResponse<String> = httpClient.send(request, BodyHandlers.ofString())
-    if(response.statusCode()>=400) {
+    if (response.statusCode() >= 400) {
         throw IOException("Error calling connector: ${response.uri()} code: ${response.statusCode()}")
     }
 }
