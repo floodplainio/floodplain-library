@@ -21,16 +21,15 @@ apply plugin: "com.github.johnrengelman.shadow"
 
 dependencies {
     Map<String, String> dependencies = globalConf.commonDependencies
-    implementation project(":floodplain-dsl")
-    implementation project(":streams-api")
-    implementation project(":streams")
-    compile dependencies.slf4j
-    implementation dependencies.slf4jSimple
-    testCompile dependencies.jUnit
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    testImplementation "org.jetbrains.kotlin:kotlin-test"
-    testImplementation "org.jetbrains.kotlin:kotlin-test-junit"
-
+    implementation(project(":floodplain-dsl"))
+    implementation(project(":streams-api"))
+    implementation(project(":streams"))
+    compile(dependencies.slf4j)
+    implementation(dependencies.slf4jSimple)
+    testCompile(dependencies.jUnit)
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    testImplementation("org.jetbrains.kotlin:kotlin-test")
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
 }
 shadowJar {
     mergeServiceFiles {

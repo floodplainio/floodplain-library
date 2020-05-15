@@ -13,6 +13,11 @@ compileTestKotlin {
     kotlinOptions.jvmTarget = "11"
 }
 
+dokka {
+    outputFormat = "gfm"
+    outputDirectory = "$buildDir/dokka"
+}
+
 task sourceJar(type: Jar, dependsOn: classes) {
     classifier 'sources'
     from sourceSets.main.allSource

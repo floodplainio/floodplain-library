@@ -19,15 +19,15 @@ shadowJar {
 
 dependencies {
     Map<String, String> dependencies = globalConf.commonDependencies
-    implementation project(":immutable-api")
-    implementation project(":immutable-impl")
-    implementation project(":replication-api")
-    implementation project(":replication-impl")
-    implementation project(":replication-json")
-    implementation project(":replication-protobuf")
-    testCompile dependencies.jUnit
-    testRuntime dependencies.slf4jSimple
-    compile dependencies.kafkaStreams
-    compile dependencies.kafkaConnectApi
+    implementation(project(":immutable-api"))
+    implementation(project(":immutable-impl"))
+    implementation(project(":replication-api"))
+    implementation(project(":replication-impl"))
+    implementation(project(":replication-json"))
+    implementation(project(":replication-protobuf"))
+    testCompile(dependencies.jUnit)
+    testRuntime(dependencies.slf4jSimple)
+    compile(dependencies.kafkaStreams)
+    compile(dependencies.kafkaConnectApi)
 }
 

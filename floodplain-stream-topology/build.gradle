@@ -19,18 +19,18 @@ mainClassName = "io.floodplain.runtime.Main"
 dependencies {
 
     Map<String, String> dependencies = globalConf.commonDependencies
-    implementation project(":immutable-api")
-    implementation project(":immutable-impl")
-    implementation project(":replication-api")
-    implementation project(":replication-impl")
-    implementation project(":replication-json")
-    implementation project(":streams")
-    implementation project(":streams-api")
-    implementation project(":kafka-converter")
-    compile dependencies.slf4j
-    compile dependencies.cdiApi
-    testCompile dependencies.jUnit
-    testImplementation dependencies.slf4jLog4j
+    implementation(project(":immutable-api"))
+    implementation(project(":immutable-impl"))
+    implementation(project(":replication-api"))
+    implementation(project(":replication-impl"))
+    implementation(project(":replication-json"))
+    implementation(project(":streams"))
+    implementation(project(":streams-api"))
+    implementation(project(":kafka-converter"))
+    compile(dependencies.slf4j)
+    compile(dependencies.cdiApi)
+    testCompile(dependencies.jUnit)
+    testImplementation(dependencies.slf4jLog4j)
 }
 
 shadowJar {

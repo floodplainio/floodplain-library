@@ -13,10 +13,10 @@ repositories {
 
 dependencies {
     Map<String, String> dependencies = globalConf.commonDependencies
-    implementation project(":immutable-api")
-    implementation project(":immutable-impl")
-    implementation project(":replication-api")
-    testCompile dependencies.jUnit
+    implementation(project(":immutable-api"))
+    implementation(project(":immutable-impl"))
+    implementation(project(":replication-api"))
+    testCompile(dependencies.jUnit)
 }
 
 // TODO remove?
