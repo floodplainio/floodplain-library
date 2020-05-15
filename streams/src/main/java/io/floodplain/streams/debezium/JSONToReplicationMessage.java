@@ -186,7 +186,7 @@ public class JSONToReplicationMessage {
                 if (parameters.isPresent()) {
                     JsonNode scaleNode = parameters.get().get("scale");
                     if (scaleNode != null) {
-                        return Integer.parseInt(scaleNode.asText()) > 0 ? ValueType.DOUBLE : ValueType.LONG;
+                        return Integer.parseInt(scaleNode.asText()) > 0 ? ValueType.DECIMAL : ValueType.LONG;
                     }
                 }
                 return ValueType.LONG;
@@ -254,7 +254,8 @@ public class JSONToReplicationMessage {
 
         final BigDecimal decoded = scale.map(integer -> new BigDecimal(new BigInteger(bytes), integer)).orElseGet(() -> new BigDecimal(new BigInteger(bytes)));
         if (decoded.scale() > 0) {
-            return decoded.doubleValue();
+            return decoded;
+//            return decoded.doubleValue();
         } else {
             return decoded.longValue();
 

@@ -54,6 +54,8 @@ public class ImmutableTypeParser {
                 return "immutable";
             case ENUM:
                 return "enum";
+            case DECIMAL:
+                return "decimal";
             default:
                 break;
         }
@@ -73,6 +75,8 @@ public class ImmutableTypeParser {
                 return ValueType.LONG;
             case "double":
                 return ValueType.DOUBLE;
+            case "decimal":
+                return ValueType.DECIMAL;
             case "float":
                 return ValueType.FLOAT;
             case "boolean":

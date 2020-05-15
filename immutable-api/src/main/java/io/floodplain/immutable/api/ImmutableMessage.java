@@ -32,6 +32,7 @@ public interface ImmutableMessage {
         INTEGER,
         LONG,
         DOUBLE,
+        DECIMAL,
         FLOAT,
         BOOLEAN,
         BINARY_DIGEST,

@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -139,6 +140,9 @@ public class ReplicationJSON {
             case STRING:
                 m.put("Value", (String) value);
                 return;
+            case DECIMAL:
+                m.put("Value",((BigDecimal)value).toPlainString());
+                return;
             case INTEGER:
                 m.put("Value", (Integer) value);
                 return;
@@ -223,6 +227,9 @@ public class ReplicationJSON {
             case BINARY_DIGEST:
             case ENUM:
                 return jsonNode.asText();
+            case DECIMAL:
+                // No idea if this is correct
+                return new BigDecimal(jsonNode.asText());
             case INTEGER:
                 return jsonNode.asInt();
             case LONG:
@@ -370,6 +377,8 @@ public class ReplicationJSON {
                 case DATE:
                     node.put(key, ((Date) o).toGMTString());
                     break;
+                case DECIMAL:
+                    node.put(key,((BigDecimal)o).toPlainString());
                 case DOUBLE:
                 case FLOAT:
                     node.put(key, (Double) o);

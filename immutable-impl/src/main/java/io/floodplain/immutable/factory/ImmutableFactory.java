@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.ApplicationScoped;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -81,6 +82,8 @@ public class ImmutableFactory {
             return ValueType.BINARY;
         } else if (val instanceof String[]) {
             return ValueType.STRINGLIST;
+        } else if (val instanceof BigDecimal) {
+            return ValueType.DECIMAL;
         } else {
             logger.warn("Unknown type::: {}", val.getClass());
             throw new IllegalArgumentException("Unknown type: " + val.getClass());
