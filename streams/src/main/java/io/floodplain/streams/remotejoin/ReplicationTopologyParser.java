@@ -296,18 +296,30 @@ public class ReplicationTopologyParser {
         topology.addProcessor(trueBranchName, () -> new IdentityProcessor(), addProcessorStack.peek());
         addProcessorStack.push(trueBranchName);
 
-
+        // Copy stack to have an independant stack
         Stack<String> removeProcessorStack = new Stack<>();
         removeProcessorStack.addAll(transformerNames);
+
         topology.addProcessor(falseBranchName, () -> new IdentityProcessor(), removeProcessorStack.peek());
         removeProcessorStack.push(falseBranchName);
 
         for (TopologyPipeComponent addBranchComponents : onAdd) {
             addBranchComponents.addToTopology(addProcessorStack, trueBranchPipeId, topology, topologyContext, topologyConstructor);
         }
+
+        String primToSecondaryAddProcessor = topologyContext.qualifiedName("primToSecondaryAdd", transformerNames.size(), currentPipeId);
+
+        topology.addProcessor(primToSecondaryAddProcessor, () -> new PrimaryToSecondaryProcessor(), addProcessorStack.peek());
+        addProcessorStack.push(primToSecondaryAddProcessor);
+
         for (TopologyPipeComponent removePipeComponents : onRemove) {
             removePipeComponents.addToTopology(removeProcessorStack, falseBranchPipeId, topology, topologyContext, topologyConstructor);
         }
+        String primToSecondaryRemoveProcessor = topologyContext.qualifiedName("primToSecondaryRemove", transformerNames.size(), currentPipeId);
+
+        topology.addProcessor(primToSecondaryRemoveProcessor, () -> new PrimaryToSecondaryProcessor(), removeProcessorStack.peek());
+        removeProcessorStack.push(primToSecondaryRemoveProcessor);
+
 //		topologyConstructor
         topology.addProcessor(materialize ? "_proc" + reduceName : reduceName, () -> new StoreStateProcessor(reduceStoreName, keyExtractor), addProcessorStack.peek(), removeProcessorStack.peek());
         addStateStoreMapping(topologyConstructor.processorStateStoreMapper, materialize ? "_proc" + reduceName : reduceName, reduceStoreName);

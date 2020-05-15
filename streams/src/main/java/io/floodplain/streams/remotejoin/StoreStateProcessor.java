@@ -22,6 +22,7 @@ import io.floodplain.immutable.api.ImmutableMessage;
 import io.floodplain.immutable.factory.ImmutableFactory;
 import io.floodplain.replication.api.ReplicationMessage;
 import io.floodplain.replication.api.ReplicationMessage.Operation;
+import io.floodplain.replication.factory.ReplicationFactory;
 import org.apache.kafka.streams.processor.AbstractProcessor;
 import org.apache.kafka.streams.processor.ProcessorContext;
 import org.apache.kafka.streams.state.KeyValueStore;
@@ -54,11 +55,16 @@ public class StoreStateProcessor extends AbstractProcessor<String, ReplicationMe
 
     @Override
     public void process(String key, ReplicationMessage inputValue) {
+//        String extracted = keyExtractor.orElse((msg, state) -> COMMONKEY).apply(inputValue.message(), inputValue.paramMessage().orElse(ImmutableFactory.empty())); //  keyExtractor.map(e->e.apply(Optional.of(inputValue.message()),inputValue.paramMessage())).map(e->(String)e.value);
+        Optional<ImmutableMessage> paramMessage = inputValue.paramMessage();
 
-        String extracted = keyExtractor.orElse((msg, state) -> COMMONKEY).apply(inputValue.message(), inputValue.paramMessage().orElse(ImmutableFactory.empty())); //  keyExtractor.map(e->e.apply(Optional.of(inputValue.message()),inputValue.paramMessage())).map(e->(String)e.value);
-        ImmutableMessage paramMessage = inputValue.message(); //.get();
-        lookupStore.put(extracted, paramMessage);
-        super.context().forward(extracted, inputValue.withOperation(Operation.UPDATE));
+        // Use .get() here, I prefer to fail when that is missing//.get();
+        if(paramMessage.isEmpty()) {
+            throw new RuntimeException("In store state there should definitely be a secondary message");
+        }
+        ImmutableMessage storeMessage = paramMessage.get();
+        lookupStore.put(key, storeMessage);
+        super.context().forward(key, ReplicationFactory.standardMessage(storeMessage));
     }
 
 }

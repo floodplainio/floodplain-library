@@ -27,6 +27,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import org.apache.kafka.streams.state.KeyValueStore
+import java.math.BigDecimal
 
 private val logger = mu.KotlinLogging.logger {}
 
@@ -104,6 +105,7 @@ class TestTopology {
             logger.info("Result: $result")
             assertEquals("monkey", result["rightsub/subname"])
             delete("@left", "key1")
+            // TODO add tests to check store sizes
             assertEquals("key1", deleted("@output"))
         }
     }
@@ -314,6 +316,41 @@ class TestTopology {
         }
     }
 
+    @Test
+    fun testSimpleScanWithDecimals() {
+        stream {
+            source("@source") {
+                scan({
+                        msg -> empty().set("total",BigDecimal.valueOf(0))
+                }, {
+                    set {
+                        _, _, acc -> acc["total"] = (acc["total"] as BigDecimal).add(BigDecimal.valueOf(1));
+                        acc
+                    }
+                }, {
+                    set { _, mm, acc ->
+                        if(acc["total"]!=null) {
+                           println("A: ${acc}")
+                        }
+                        acc["total"] = (acc["total"] as BigDecimal).subtract(BigDecimal.valueOf(1));
+                        acc
+                    }
+                })
+                each { key, msg, acc -> logger.info("Each: $key -> $msg -> $acc") }
+                sink("@output")
+            }
+        }.renderAndTest {
+            input("@source", "key1", empty().set("message","message1"))
+            input("@source", "key1", empty().set("message","message1"))
+            output("@output") // initial key, total = 1
+            output("@output") // delete previous key, total = 0
+            val (key, value) = output("@output") // insert key again, total = 1
+            assertTrue(outputSize("@output") == 0L)
+            logger.info("Key: $key Value: $value")
+            assertEquals(StoreStateProcessor.COMMONKEY, key)
+            assertEquals(BigDecimal(1), value["total"], "Entries with the same key should replace")
+        }
+    }
     // TODO Can we remove the extra 'block' braces?
     // TODO Can we implement += and ++ like operators?
     // TODO Introduce 'eachDelete(key)
@@ -339,6 +376,10 @@ class TestTopology {
             assertTrue(outputSize("@output") == 0L)
             logger.info("Value: $value")
             assertEquals(1, value["total"], "Entries with the same key should replace")
+            delete("@source","key1")
+            val (groupkey, afterDelete) = output("@output") // key1 deleted, so total should be 0 again
+            assertEquals("group1",groupkey)
+            assertEquals(0,afterDelete["total"])
         }.renderAndTest {
             input("@source", "key1", empty().set("groupKey", "group1"))
             input("@source", "key2", empty().set("groupKey", "group1"))

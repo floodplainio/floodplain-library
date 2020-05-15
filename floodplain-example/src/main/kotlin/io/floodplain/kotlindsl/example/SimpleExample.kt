@@ -31,8 +31,8 @@ import java.net.URL
 
 private val logger = mu.KotlinLogging.logger {}
 
-fun main(args: Array<String>) {
-    stream("nextgen6") {
+fun mainaaa(args: Array<String>) {
+    stream("nextgen7") {
         val mongodb = mongoConfig("@mongo", "mongodb://mongo", "mydatabase")
         val pgConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")
         postgresSource("public", "actor", pgConfig) {
@@ -60,13 +60,20 @@ fun mainold(args: Array<String>) {
     }.renderAndStart(URL("http://localhost:8083/connectors"), "localhost:9092")
 }
 
-fun maino() = stream {
+fun main() = stream {
+    // create a config, named 'mypostgres', pointing to host "postgres" at port 5432, with username "postgres", password: "mysecretpassword" and use database "dvdrental"
     val pgConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")
+
+    // create a mongodb config, named 'mymongo' pointing to uri: 'mongodb://mongo' using database: "mydatabase"
     val mongoConfig = mongoConfig("mymongo", "mongodb://mongo", "mydatabase")
-    postgresSource("public", "film", pgConfig) {
+
+    // create a source, using schema "public" and table "film" and use the postgres
+    postgresSource("public", "payment", pgConfig) {
+        // For each key, message, and secondary message, log the key
         each {
             key, _, _ -> logger.info("Key: $key")
         }
+        // ... add more transformers
         mongoSink("justfilm", "justfilm", mongoConfig)
     }
 }.renderAndStart(URL("http://localhost:8083/connectors"), "localhost:9092")

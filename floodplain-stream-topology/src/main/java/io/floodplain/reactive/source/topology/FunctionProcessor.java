@@ -41,12 +41,14 @@ public class FunctionProcessor extends AbstractProcessor<String, ReplicationMess
         }
         ReplicationMessage.Operation operation = value.operation();
 
-//		if(value.operation()!= ReplicationMessage.Operation.DELETE) {
+		if(value.operation()!= ReplicationMessage.Operation.DELETE) {
             ImmutableMessage applied = function.apply(key,value.message(), value.paramMessage().orElse(ImmutableFactory.empty()));
-            super.context().forward(key, ReplicationFactory.standardMessage(applied).withParamMessage(value.paramMessage().orElse(ImmutableFactory.empty())).withOperation(operation));
-//		} else {
-//            super.context().forward(key, value);
-//        }
+            super.context().forward(key, ReplicationFactory.standardMessage(applied)); //.withParamMessage(value.paramMessage()); //.orElse(ImmutableFactory.empty())).withOperation(operation));
+
+		} else {
+		    // Skip processing message if it is a delete
+            super.context().forward(key, value);
+        }
     }
 
 }

@@ -19,16 +19,19 @@
 package io.floodplain.streams.remotejoin;
 
 import io.floodplain.replication.api.ReplicationMessage;
+import io.floodplain.replication.factory.ReplicationFactory;
 import org.apache.kafka.streams.processor.AbstractProcessor;
 
 /**
  *
  */
-public class IdentityProcessor extends AbstractProcessor<String, ReplicationMessage> {
+public class PrimaryToSecondaryProcessor extends AbstractProcessor<String, ReplicationMessage> {
 
     @Override
     public void process(String key, ReplicationMessage value) {
-        super.context().forward(key, value);
+        // force operation NONE, as scans only update
+        ReplicationMessage applied = ReplicationFactory.empty().withOperation(ReplicationMessage.Operation.UPDATE).withParamMessage(value.message());
+        super.context().forward(key, applied);
     }
 
 }

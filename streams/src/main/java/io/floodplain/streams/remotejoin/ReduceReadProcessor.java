@@ -54,6 +54,7 @@ public class ReduceReadProcessor extends AbstractProcessor<String, ReplicationMe
         super.init(context);
     }
 
+
     @Override
     public void process(String key, final ReplicationMessage inputValue) {
         ReplicationMessage stored = inputStore.get(key);
@@ -88,12 +89,12 @@ public class ReduceReadProcessor extends AbstractProcessor<String, ReplicationMe
             if (stored != null) {
                 // already present, propagate old value first as delete
 //                context().forward(key, stored.withOperation(Operation.DELETE).withParamMessage(storedAccumulator != null ? storedAccumulator : initial.apply(inputValue.message())));
-                forwardMessage(key,stored.withOperation(Operation.DELETE).withParamMessage(storedAccumulator != null ? storedAccumulator : initial.apply(inputValue.message())));
+                forwardMessage(extracted,stored.withOperation(Operation.DELETE).withParamMessage(storedAccumulator != null ? storedAccumulator : initial.apply(inputValue.message())));
                 storedAccumulator = this.accumulatorStore.get(extracted);
             }
             value = value.withParamMessage(storedAccumulator);
         }
-        forwardMessage(key,value);
+        forwardMessage(extracted,value);
 
     }
 

@@ -27,14 +27,8 @@ import java.util.function.Function;
 
 public class TopologyContext {
 
-//    private static final String DEFAULT_TENANT = "DEFAULT";
-//    private final Optional<String> tenant;
-//    private final String instance;
-//    private final String generation;
-
     private static final Logger logger = LoggerFactory.getLogger(TopologyContext.class);
     private final Function<String, String> qualifier;
-
 
     private static class NameQualifier implements Function<String,String> {
 

@@ -47,6 +47,9 @@ private val logger = mu.KotlinLogging.logger {}
 @DslMarker
 annotation class FloodplainTagMarker
 
+/**
+ * Super (wrapper) class for all components (source, transformer or sink)
+ */
 open class Transformer(val component: TopologyPipeComponent) : PartialStream()
 
 /**

@@ -98,16 +98,16 @@ class Stream(val context: TopologyContext) {
      * instance pointing at the kafka cluster at kafkaHosts, using the supplied clientId.
      * Finally, it will POST the supplied
      */
-    fun renderAndStart(connectorURL: URL, kafkaHosts: String) {
+    fun renderAndStart(connectorURL: URL, kafkaHosts: String, force: Boolean=false) {
         val topologyConstructor = TopologyConstructor()
         context.applicationId()
         val (topology, sources, sinks) = render(topologyConstructor)
         topologyConstructor.createTopicsAsNeeded(kafkaHosts)
         sources.forEach { (name, json) ->
-            startConstructor(name, context, connectorURL, json, false)
+            startConstructor(name, context, connectorURL, json, force)
         }
         sinks.forEach { (name, json) ->
-            startConstructor(name, context, connectorURL, json, false)
+            startConstructor(name, context, connectorURL, json, force)
         }
         val appId = context.topicName("@applicationId")
         runTopology(topology, appId, kafkaHosts, "storagePath")

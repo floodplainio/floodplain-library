@@ -56,7 +56,7 @@ public class IfElseProcessor extends AbstractProcessor<String, ReplicationMessag
     }
 
     private void forwardToFalse(String key, ReplicationMessage value, String e) {
-        context().forward(key, value, To.child(e));
+        context().forward(key, value.withOperation(ReplicationMessage.Operation.NONE), To.child(e));
     }
 
 }
