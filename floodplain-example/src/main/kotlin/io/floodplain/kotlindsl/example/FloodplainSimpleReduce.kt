@@ -18,7 +18,6 @@
  */
 package io.floodplain.kotlindsl.example
 
-import io.floodplain.kotlindsl.join
 import io.floodplain.kotlindsl.message.empty
 import io.floodplain.kotlindsl.mongoConfig
 import io.floodplain.kotlindsl.mongoSink
@@ -46,13 +45,12 @@ fun main() {
                 },
                 {
                     set { _, msg, state ->
-                        state["total"] = (state["total"] as BigDecimal).subtract(msg["amount"] as BigDecimal);
+                        state["total"] = (state["total"] as BigDecimal).subtract(msg["amount"] as BigDecimal)
                         state
                     }
                 }
             )
             mongoSink("justtotal", "@myfinaltopic", mongoConfig)
         }
-
     }.renderAndStart(URL("http://localhost:8083/connectors"), "localhost:9092")
 }
