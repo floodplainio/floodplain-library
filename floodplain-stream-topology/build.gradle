@@ -10,12 +10,6 @@ apply from: "$rootProject.projectDir/gradle/shared.gradle"
 apply plugin: "com.github.johnrengelman.shadow"
 def globalConf = rootProject.ext
 
-
-// TODO remove shadow jar, maybe add to FloodplainExample
-mainClassName = "io.floodplain.runtime.Main"
-
-
-
 dependencies {
 
     Map<String, String> dependencies = globalConf.commonDependencies

@@ -213,7 +213,6 @@ public class ImmutableMessageImpl implements ImmutableMessage {
         }
         Map<String, Object> localValues = new HashMap<>(this.values);
         Map<String, ValueType> localTypes = new HashMap<>(this.types);
-        // TODO check if the key does not change?
         switch (type) {
             case IMMUTABLE:
                 ImmutableMessage im = (ImmutableMessage) value;

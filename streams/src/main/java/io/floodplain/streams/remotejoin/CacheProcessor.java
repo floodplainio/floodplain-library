@@ -86,6 +86,7 @@ public class CacheProcessor extends AbstractProcessor<String, ReplicationMessage
     public void process(String key, ReplicationMessage message) {
         synchronized (sync) {
             if (message == null || message.operation() == Operation.DELETE) {
+
                 cache.remove(key);
                 lookupStore.delete(key);
                 context.forward(key, message);

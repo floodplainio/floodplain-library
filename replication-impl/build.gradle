@@ -18,9 +18,3 @@ dependencies {
     implementation(project(":replication-api"))
     testCompile(dependencies.jUnit)
 }
-
-// TODO remove?
-task copyToLib(type: Copy) {
-    into "$buildDir/output/lib"
-    from configurations.runtime
-}
