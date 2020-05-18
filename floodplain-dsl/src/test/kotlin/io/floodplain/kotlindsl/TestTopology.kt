@@ -31,6 +31,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import org.apache.kafka.streams.state.KeyValueStore
+import org.junit.Ignore
 
 private val logger = mu.KotlinLogging.logger {}
 
@@ -527,10 +528,10 @@ class TestTopology {
         }
     }
 
-    @Test
         /**
          * Test the simplest imaginable pipe: One source and one sink.
          */
+    @Test @Ignore
     fun testPostgresSource() {
         stream {
             val pgConfig = postgresSourceConfig("mypostgres", "localhost", 5432, "postgres", "mysecretpassword", "dvdrental","public")
