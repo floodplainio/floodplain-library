@@ -17,7 +17,6 @@ graal {
 mainClassName = "io.floodplain.kotlindsl.example.FloodplainFilmWithActorsKt"
 
 apply plugin: "com.github.johnrengelman.shadow"
-apply plugin: "com.github.johnrengelman.shadow"
 
 dependencies {
     Map<String, String> dependencies = globalConf.commonDependencies

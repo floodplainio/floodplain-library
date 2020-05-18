@@ -22,6 +22,9 @@ import io.floodplain.kotlindsl.message.IMessage
 import io.floodplain.kotlindsl.message.empty
 import io.floodplain.replication.api.ReplicationMessage
 import io.floodplain.streams.remotejoin.StoreStateProcessor
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
 import java.math.BigDecimal
 import java.time.Duration
 import kotlin.test.Test
@@ -521,6 +524,37 @@ class TestTopology {
 
             logger.info("Store szie: $storeSize")
 //            assertEquals(10L,storeSize)
+        }
+    }
+
+    @Test
+        /**
+         * Test the simplest imaginable pipe: One source and one sink.
+         */
+    fun testPostgresSource() {
+        stream {
+            val pgConfig = postgresSourceConfig("mypostgres", "localhost", 5432, "postgres", "mysecretpassword", "dvdrental","public")
+            pgConfig.source(null,"store") {
+                sink("topic")
+            }
+        }.renderAndTest {
+            val ctx = this
+            var count: Int = 0
+            runBlocking {
+                withTimeout(10000L) {
+                    ctx.sources().forEach {
+                            (k, v) ->logger.info("soure: $k")
+                        v.collect {
+                                record->println(">>> ${record.topic} ${record.key} ${record.value}"); count++
+                        }
+                    }
+                }
+            }
+
+            logger.info("TopologySources: ${topologyConstructor().desiredTopicNames()}")
+
+            // TODO Continue
+
         }
     }
 }

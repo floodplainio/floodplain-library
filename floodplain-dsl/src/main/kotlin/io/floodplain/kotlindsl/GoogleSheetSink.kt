@@ -18,9 +18,12 @@
  */
 package io.floodplain.kotlindsl
 
+import io.floodplain.ChangeRecord
 import io.floodplain.reactive.source.topology.SinkTransformer
 import io.floodplain.streams.api.TopologyContext
+import kotlinx.coroutines.CoroutineScope
 import java.util.Optional
+import kotlinx.coroutines.flow.Flow
 
 fun PartialStream.googleSheetsSink(config: GoogleSheetConfiguration) {
     val configMap: Map<String, String> = mapOf(Pair("connector.class", "io.floodplain.sink.SheetSinkConnector"))
@@ -34,6 +37,10 @@ fun Stream.googleSheetConfig(topic: String, name: String, spreadsheetId: String,
 
 class GoogleSheetConfiguration(val name: String, val topic: String, val spreadsheetId: String, val columns: List<String>) : Config() {
     override fun materializeConnectorConfig(topologyContext: TopologyContext): Pair<String, Map<String, String>> {
+        TODO("Not yet implemented")
+    }
+
+    override fun allSources(scope: CoroutineScope, offsetFilePath: String): Map<String, Flow<ChangeRecord>> {
         TODO("Not yet implemented")
     }
 }

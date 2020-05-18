@@ -25,10 +25,11 @@ import io.floodplain.streams.base.RocksDBConfigurationSetter
 import io.floodplain.streams.base.StreamOperators
 import io.floodplain.streams.remotejoin.ReplicationTopologyParser
 import io.floodplain.streams.remotejoin.TopologyConstructor
-import java.io.IOException
+import kotlinx.coroutines.cancel
 import java.net.URL
 import java.util.Properties
 import java.util.Stack
+import kotlinx.coroutines.runBlocking
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.common.serialization.Serdes
@@ -36,6 +37,9 @@ import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.StreamsConfig
 import org.apache.kafka.streams.Topology
 import org.apache.kafka.streams.processor.WallclockTimestampExtractor
+import java.nio.file.Path
+import java.nio.file.Paths
+import java.util.UUID
 
 private val logger = mu.KotlinLogging.logger {}
 
@@ -85,16 +89,27 @@ class Stream(val context: TopologyContext) {
         ReplicationTopologyParser.materializeStateStores(topologyConstructor, topology)
         return topology
     }
-
     fun renderAndTest(testCmds: TestContext.() -> Unit): Stream {
-        val top = renderTopology(TopologyConstructor())
-        logger.info("Testing topology:\n${top.describe()}")
-        testTopology(top, testCmds, context)
+        val topologyConstructor = TopologyConstructor()
+        val (topology, sources, sinks) = render(topologyConstructor)
+        val offsetPath = Paths.get("offset_"+ UUID.randomUUID())
+        runBlocking {
+            val allSources = this@Stream.sourceConfigurations.map { k -> k.allSources(this,offsetPath.toString()) }
+                .flatMap { e -> e.entries }
+                .map { Pair(it.key, it.value) }
+                .toMap()
+            logger.info("Testing topology:\n${topology.describe()}")
+            logger.info("Testing sources:\n$sources")
+            logger.info("Testing sinks:\n$sinks")
+            logger.info("Sourcetopics: \n${topologyConstructor.desiredTopicNames()}")
+            testTopology(topology, testCmds, topologyConstructor, context, allSources)
+        }
         return this
     }
 
     /**
-     * Will create an executable definition of the stream (@see render), then will start the topology by starting a streams
+     * Will create an executable definition of the str
+     * eam (@see render), then will start the topology by starting a streams
      * instance pointing at the kafka cluster at kafkaHosts, using the supplied clientId.
      * Finally, it will POST the supplied
      */
@@ -133,7 +148,6 @@ class Stream(val context: TopologyContext) {
         return Triple(topology, sources, sinks)
     }
 
-    @Throws(InterruptedException::class, IOException::class)
     fun runTopology(topology: Topology, applicationId: String, kafkaHosts: String, storagePath: String): KafkaStreams? {
         val props = createProperties(applicationId, kafkaHosts, storagePath)
         val stream = KafkaStreams(topology, props)
@@ -148,7 +162,7 @@ class Stream(val context: TopologyContext) {
         return stream
     }
 
-    private fun createProperties(applicationId: String, brokers: String, storagePath: String): Properties? {
+    private fun createProperties(applicationId: String, brokers: String, storagePath: String): Properties {
         val streamsConfiguration = Properties()
         // Give the Streams application a unique name.  The name must be unique in the Kafka cluster
         // against which the application is run.

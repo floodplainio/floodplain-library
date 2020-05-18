@@ -36,16 +36,12 @@ public class DebeziumTopicSource implements TopologyPipeComponent {
     private final String table;
     private final String schema;
     private final String resource;
-    private final boolean appendTenant;
-    private final boolean appendSchema;
     private boolean materialize;
 
-    public DebeziumTopicSource(String resource, String table, String schema, boolean appendTenant, boolean appendSchema) {
+    public DebeziumTopicSource(String resource, String table, String schema) {
         this.resource = resource;
         this.table = table;
         this.schema = schema;
-        this.appendTenant = appendTenant;
-        this.appendSchema = appendSchema;
     }
 
 
@@ -63,7 +59,7 @@ public class DebeziumTopicSource implements TopologyPipeComponent {
         final String convertProcessorName = topologyContext.qualifiedName(metadataName + "_debconv", transformerNames.size(), pipeId);
         final String finalProcessorName = topologyContext.qualifiedName(metadataName + "_deb", transformerNames.size(), pipeId);
         ReplicationTopologyParser.addLazySourceStore(topology, topologyContext, topologyConstructor, topicName, Serdes.String().deserializer(), Serdes.ByteArray().deserializer());
-        topology.addProcessor(convertProcessorName, () -> new DebeziumConversionProcessor(appendTenant, appendSchema, appendTable), topicName);
+        topology.addProcessor(convertProcessorName, () -> new DebeziumConversionProcessor(), topicName);
 
         if (materialize) {
             topology.addProcessor(finalProcessorName, () -> new StoreProcessor(ReplicationTopologyParser.STORE_PREFIX + finalProcessorName), convertProcessorName);

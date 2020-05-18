@@ -10,9 +10,7 @@
       <module name="floodplain-library.floodplain-authentication-api.test" target="11" />
       <module name="floodplain-library.floodplain-dsl.native-test" target="11" />
       <module name="floodplain-library.floodplain-example.native-test" target="11" />
-      <module name="floodplain-library.floodplain-quarkus.main" target="11" />
       <module name="floodplain-library.floodplain-quarkus.native-test" target="11" />
-      <module name="floodplain-library.floodplain-quarkus.test" target="11" />
       <module name="floodplain-library.floodplain-reactive-topology.main" target="11" />
       <module name="floodplain-library.floodplain-reactive-topology.native-test" target="11" />
       <module name="floodplain-library.floodplain-reactive-topology.test" target="11" />

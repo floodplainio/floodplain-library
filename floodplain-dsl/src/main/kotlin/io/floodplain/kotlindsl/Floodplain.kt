@@ -20,6 +20,7 @@
 
 package io.floodplain.kotlindsl
 
+import io.floodplain.ChangeRecord
 import io.floodplain.immutable.api.ImmutableMessage
 import io.floodplain.kotlindsl.message.IMessage
 import io.floodplain.kotlindsl.message.fromImmutable
@@ -41,11 +42,10 @@ import io.floodplain.reactive.topology.ReactivePipe
 import io.floodplain.streams.api.TopologyContext
 import java.time.Duration
 import java.util.Optional
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
 
 private val logger = mu.KotlinLogging.logger {}
-
-@DslMarker
-annotation class FloodplainTagMarker
 
 /**
  * Super (wrapper) class for all components (source, transformer or sink)
@@ -63,6 +63,7 @@ abstract class Config {
      * For some
      */
     abstract fun materializeConnectorConfig(topologyContext: TopologyContext): Pair<String, Map<String, String>>
+    abstract fun allSources(coroutineScope: CoroutineScope, offsetFilePath: String): Map<String, Flow<ChangeRecord>>
 }
 
 /**
