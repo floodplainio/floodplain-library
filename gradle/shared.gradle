@@ -16,6 +16,7 @@ compileTestKotlin {
 dokka {
     outputFormat = "gfm"
     outputDirectory = "$buildDir/dokka"
+
 }
 
 task sourceJar(type: Jar, dependsOn: classes) {

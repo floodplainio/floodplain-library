@@ -1,0 +1,47 @@
+{
+  "Version": 2,
+  "TransactionId": null,
+  "Table": "ADDRESS",
+  "DataSource": "sportlinkkernel",
+  "Tenant": "KNVB",
+  "Timestamp": 1474467350081,
+  "Operation": "UPDATE",
+  "Status": "PENDING",
+  "PrimaryKeys": [
+    "addressid",
+    "addressid2",
+    "addressid3"
+  ],
+  "Columns": {
+    "zipcode": {
+      "Name": "zipcode",
+      "Type": "string",
+      "Value": "4565AB"
+    },
+    "streetname": {
+      "Name": "streetname",
+      "Type": "string",
+      "Value": "Konijnenbergweg"
+    },
+    "housenumber": {
+      "Name": "housenumber",
+      "Type": "string",
+      "Value": "49"
+    },
+    "addressid": {
+      "Name": "addressid",
+      "Type": "integer",
+      "Value": "123456"
+    },
+    "addressid2": {
+      "Name": "addressid",
+      "Type": "integer",
+      "Value": "234567"
+    },
+    "addressid3": {
+      "Name": "addressid",
+      "Type": "integer",
+      "Value": "345678"
+    }
+  }
+}

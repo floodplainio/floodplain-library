@@ -1,11 +1,11 @@
 ext {
     floodplain_version = "0.8.29-SNAPSHOT"
-    jackson_version = "2.10.3"
+    jackson_version = "2.11.0"
     kafka_version = "2.5.0"
     mongodb_version = "3.12.2"
     slf4j_version = "1.7.30"
-    mysql_version = "8.0.18"
-    debezium_version = "1.0.0.Final"
+    mysql_version = "8.0.20"
+    debezium_version = "1.2.0-SNAPSHOT"
     commonDependencies = [
             cdiApi            : "jakarta.enterprise:jakarta.enterprise.cdi-api:2.0.2",
             microProfileConfig: "org.eclipse.microprofile.config:microprofile-config-api:1.3",

@@ -56,27 +56,19 @@ public class JSONToReplicationMessage {
     //TODO Beware of threading issues
     private final static DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SS");
 
-    public static KeyValue parse(String keyInput, byte[] data, boolean appendTenant, boolean appendSchema, boolean appendTable) {
+    public static KeyValue parse(String keyInput, byte[] data) {
         try {
             ObjectNode keynode = (ObjectNode) objectMapper.readTree(keyInput);
-            TableIdentifier key = processDebeziumKey(keynode, appendTenant, appendSchema);
+            TableIdentifier key = processDebeziumKey(keynode);
 
             ObjectNode valuenode = (ObjectNode) objectMapper.readTree(data);
             if (!valuenode.has("payload") || valuenode.get("payload").isNull()) {
                 ReplicationMessage replMsg = ReplicationFactory.empty().withOperation(Operation.DELETE);
-                final ReplicationMessage converted = appendTenant ? replMsg.with("_tenant", key.tenant, ValueType.STRING) : replMsg;
-                final ReplicationMessage convertedWTable = appendTable ? converted.with("_tenant", key.tenant, ValueType.STRING) : converted;
-                return new KeyValue(key.combinedKey, ReplicationFactory.getInstance().serialize(convertedWTable));
+                return new KeyValue(key.combinedKey, ReplicationFactory.getInstance().serialize(replMsg));
             }
             final ReplicationMessage convOptional = convertToReplication(false, valuenode, Optional.ofNullable(key.table));
-            ReplicationMessage conv = convOptional.withPrimaryKeys(key.fields);
-            if (appendTable) {
-                conv = conv.with("_table", key.table, ImmutableMessage.ValueType.STRING);
 
-            }
-            final ReplicationMessage converted = appendTenant ? conv.with("_tenant", key.tenant, ImmutableMessage.ValueType.STRING) : conv;
-
-            byte[] serialized = ReplicationFactory.getInstance().serialize(converted);
+            byte[] serialized = ReplicationFactory.getInstance().serialize(convOptional);
             return new KeyValue(key.combinedKey,serialized);
         } catch (IOException e) {
             logger.error("Error: ", e);
@@ -335,12 +327,12 @@ public class JSONToReplicationMessage {
         }
     }
 
-    public static TableIdentifier processDebeziumKey(ObjectNode on, boolean appendTenant, boolean appendSchema) {
+    public static TableIdentifier processDebeziumKey(ObjectNode on) {
         List<String> fields = new ArrayList<>();
         ImmutableMessage converted = convert(on, fields::add, true, Optional.empty(), Optional.empty());
         Optional<Object> tableId = converted.value("__dbz__physicalTableIdentifier");
         fields.remove("__dbz__physicalTableIdentifier");
         // for demo, shouldn't do any harm
-        return new TableIdentifier(tableId.map(e->(String)e).orElse(on.get("schema").get("name").asText()), converted, fields, appendTenant, appendSchema);
+        return new TableIdentifier(tableId.map(e->(String)e).orElse(on.get("schema").get("name").asText()), converted, fields);
     }
 }

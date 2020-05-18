@@ -56,7 +56,7 @@ public class ConnectReplicationMessageSerde implements Serde<ReplicationMessage>
 
     private static String parseConnectKey(byte[] input) throws IOException {
         ObjectNode node = (ObjectNode) objectMapper.readTree(input);
-        TableIdentifier id = JSONToReplicationMessage.processDebeziumKey(node,false,false);
+        TableIdentifier id = JSONToReplicationMessage.processDebeziumKey(node);
         return id.combinedKey;
     }
 

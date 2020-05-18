@@ -51,6 +51,10 @@ public class TopologyConstructor {
             desiredTopics.put(topicName, partitions);
     }
 
+    public Set<String> desiredTopicNames() {
+        return desiredTopics.keySet();
+    }
+
     public void ensureTopicExists(String topicName, Optional<Integer> partitionCount) {
         desiredTopics.put(topicName, partitionCount);
     }

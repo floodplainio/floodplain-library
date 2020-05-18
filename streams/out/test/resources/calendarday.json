@@ -1,0 +1,60 @@
+{
+  "Tenant": "KNBSB",
+  "Timestamp": 1488961345765,
+  "Operation": "UPDATE",
+  "PrimaryKeys": [
+    "calendardayid"
+  ],
+  "Columns": {
+    "activityid": {
+      "Name": "activityid",
+      "Type": "integer",
+      "Value": "3"
+    },
+    "calendarid": {
+      "Name": "calendarid",
+      "Type": "integer",
+      "Value": "2366"
+    },
+    "updateby": {
+      "Name": "updateby",
+      "Type": "string",
+      "Value": "jacco.lansbergen"
+    },
+    "calendardayid": {
+      "Name": "calendardayid",
+      "Type": "integer",
+      "Value": "108268"
+    },
+    "endtime": {
+      "Name": "endtime",
+      "Type": "string",
+      "Value": null
+    },
+    "starttime": {
+      "Name": "starttime",
+      "Type": "clocktime",
+      "Value": "14:48:00"
+    },
+    "starttimedate": {
+      "Name": "calendardate",
+      "Type": "date",
+      "Value": "2016-05-01 14:48:00.00"
+    },
+    "lastupdate": {
+      "Name": "lastupdate",
+      "Type": "date",
+      "Value": "2015-11-05 00:00:00.00"
+    },
+    "calendardate": {
+      "Name": "calendardate",
+      "Type": "date",
+      "Value": "2016-05-05 00:00:00.00"
+    },
+    "info": {
+      "Name": "info",
+      "Type": "string",
+      "Value": null
+    }
+  }
+}
