@@ -64,6 +64,7 @@ abstract class Config {
      */
     abstract fun materializeConnectorConfig(topologyContext: TopologyContext): Pair<String, Map<String, String>>
     abstract fun allSources(coroutineScope: CoroutineScope, offsetFilePath: String): Map<String, Flow<ChangeRecord>>
+    abstract fun closeSource()
 }
 
 /**

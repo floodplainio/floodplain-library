@@ -43,4 +43,8 @@ class GoogleSheetConfiguration(val name: String, val topic: String, val spreadsh
     override fun allSources(scope: CoroutineScope, offsetFilePath: String): Map<String, Flow<ChangeRecord>> {
         TODO("Not yet implemented")
     }
+
+    override fun closeSource() {
+        TODO("Not yet implemented")
+    }
 }

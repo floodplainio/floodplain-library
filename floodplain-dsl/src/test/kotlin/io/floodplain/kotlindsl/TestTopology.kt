@@ -20,9 +20,14 @@ package io.floodplain.kotlindsl
 
 import io.floodplain.kotlindsl.message.IMessage
 import io.floodplain.kotlindsl.message.empty
+import io.floodplain.postgresDataSource
 import io.floodplain.replication.api.ReplicationMessage
 import io.floodplain.streams.remotejoin.StoreStateProcessor
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.broadcastIn
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import java.math.BigDecimal
@@ -32,6 +37,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import org.apache.kafka.streams.state.KeyValueStore
 import org.junit.Ignore
+import kotlin.coroutines.EmptyCoroutineContext
 
 private val logger = mu.KotlinLogging.logger {}
 
@@ -384,20 +390,20 @@ class TestTopology {
             val (groupkey, afterDelete) = output("@output") // key1 deleted, so total should be 0 again
             assertEquals("group1", groupkey)
             assertEquals(0, afterDelete["total"])
-        }.renderAndTest {
+        // }.renderAndTest {
             input("@source", "key1", empty().set("groupKey", "group1"))
             input("@source", "key2", empty().set("groupKey", "group1"))
             output("@output")
 
-            val (_, value) = output("@output")
-            logger.info("Value: $value")
-            assertEquals(2, value["total"], "Entries with different keys should add")
-        }.renderAndTest {
+            val (_, ovalue) = output("@output")
+            logger.info("Value: $ovalue")
+            assertEquals(2, ovalue["total"], "Entries with different keys should add")
+        // }.renderAndTest {
             input("@source", "key1", empty().set("groupKey", "group1"))
             delete("@source", "key1")
-            val (_, value) = output("@output")
-            logger.info("Value: $value")
-            assertEquals(1, value["total"], "Entries with different keys should add")
+            val (_, ivalue) = output("@output")
+            logger.info("Value: $ivalue")
+            assertEquals(1, ivalue["total"], "Entries with different keys should add")
 
             val (_, value2) = output("@output")
             logger.info("Value: $value2")
@@ -528,34 +534,94 @@ class TestTopology {
         }
     }
 
-        /**
+    @Test(expected=CancellationException::class) @Ignore
+    fun testPostgresSourceSimple() {
+        runBlocking {
+            launch {
+                postgresDataSource("mypostgres", "localhost", 5432, "dvdrental","postgres", "mysecretpassword", "someoffsetpath",
+                    emptyMap())
+                    .collect {
+                        println(it.topic)
+                    }
+            }
+            delay(20000)
+            cancel("done")
+        }
+    }
+
+    @Test @Ignore
+    fun testPostgresSourceBroadcast() {
+        // CoRoutine
+        val scope = CoroutineScope(EmptyCoroutineContext)
+        val broadcastFlow = postgresDataSource("mypostgres", "localhost", 5432, "dvdrental","postgres", "mysecretpassword", "someoffsetpath",
+            emptyMap())
+            .broadcastIn(scope)
+            .asFlow()
+
+        runBlocking {
+            val broadcastJob = launch {
+                broadcastFlow
+                    .broadcastIn(GlobalScope)
+                    .asFlow()
+
+            }
+            val connector = launch {
+                val job1 = GlobalScope.launch {
+                    broadcastFlow
+                        .filter { true }
+                        .collect {
+                        println("Flow 1 ${it.topic} : ${it.key}")
+                    }
+                }
+                println("Flow 1 kicked")
+                val job2 = GlobalScope.launch {
+                    broadcastFlow
+                        .filter { true }
+                        .collect {
+                        println("Flow 2 ${it.topic} : ${it.key}")
+                    }
+                }
+                delay(20000)
+                broadcastJob.cancel("done")
+            }
+            connector.join()
+            logger.info("done!!!")
+        }
+    }
+
+
+
+    /**
          * Test the simplest imaginable pipe: One source and one sink.
          */
-    @Test @Ignore
+    @Test
     fun testPostgresSource() {
         stream {
             val pgConfig = postgresSourceConfig("mypostgres", "localhost", 5432, "postgres", "mysecretpassword", "dvdrental","public")
-            pgConfig.source(null,"store") {
+            pgConfig.source("store") {
                 sink("topic")
             }
         }.renderAndTest {
             val ctx = this
             var count: Int = 0
-            runBlocking {
-                withTimeout(10000L) {
-                    ctx.sources().forEach {
-                            (k, v) ->logger.info("soure: $k")
-                        v.collect {
-                                record->println(">>> ${record.topic} ${record.key} ${record.value}"); count++
-                        }
-                    }
+            logger.info("Sources found: ${sources().keys}")
+
+            ctx.sources().forEach { (k, v) ->
+                logger.info("soure: $k")
+                v.collect { record ->
+                    println(">>> ${record.topic} ${record.key} ${record.value}"); count++
                 }
             }
-
             logger.info("TopologySources: ${topologyConstructor().desiredTopicNames()}")
+        }.start()
+            runBlocking {
+
+                delay(125000)
+                println("job started")
+                // cancel("cheerio")
+            }
 
             // TODO Continue
 
         }
-    }
 }

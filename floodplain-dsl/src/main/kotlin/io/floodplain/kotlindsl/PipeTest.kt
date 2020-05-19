@@ -68,9 +68,9 @@ interface TestContext {
     fun topologyConstructor(): TopologyConstructor
     fun sources(): Map<String, Flow<ChangeRecord>>
 }
-fun testTopology(
+suspend fun testTopology(
     topology: Topology,
-    testCmds: TestContext.() -> Unit,
+    testCmds: suspend TestContext.() -> Unit,
     topologyConstructor: TopologyConstructor,
     context: TopologyContext,
     allSources: Map<String, Flow<ChangeRecord>>
@@ -86,19 +86,20 @@ fun testTopology(
 
     val driver = TopologyTestDriver(topology, props)
     val contextInstance = TestDriverContext(driver, context, topologyConstructor,allSources)
-    runBlocking<Unit> {
-        allSources.forEach { (source, flow) ->
-            flow.map {
-                record ->
-                val kv = JSONToReplicationMessage.parse(record.key, record.value.toByteArray())
-                val msg = parser.parseBytes(Optional.empty<String>(), kv.value)
-                kv.key to msg
-            }.onEach { (key, msg) ->
-                contextInstance.input(source, key, fromImmutable(msg.message()))
-            }.collect()
+    allSources.forEach { (source, flow) ->
+        flow.map {
+            record ->
+            val kv = JSONToReplicationMessage.parse(record.key, record.value.toByteArray())
+            val msg = parser.parseBytes(Optional.empty<String>(), kv.value)
+            kv.key to msg
+        }.onEach { (key, msg) ->
+            logger.info("Adding key: $key")
+        }.collect {
+            (key,msg)->
+            contextInstance.input(source, key, fromImmutable(msg.message()))
         }
     }
-    try {
+try {
         testCmds.invoke(contextInstance)
     } finally {
         driver.allStateStores.forEach { store -> store.value.close() }
@@ -127,6 +128,7 @@ class TestDriverContext(
     private val replicationMessageParser = ReplicationFactory.getInstance()
 
     override fun input(topic: String, key: String, msg: IMessage) {
+        logger.info("Input found. Key: $key")
         val qualifiedTopicName = topologyContext.topicName(topic)
         val inputTopic = inputTopics.computeIfAbsent(qualifiedTopicName) { driver.createInputTopic(qualifiedTopicName, Serdes.String().serializer(), ReplicationMessageSerde().serializer()) }
         inputTopic.pipeInput(key, ReplicationFactory.standardMessage(msg.toImmutable()))

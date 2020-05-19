@@ -7,6 +7,7 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.Properties
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.sendBlocking
@@ -14,6 +15,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.yield
 
 private val logger = mu.KotlinLogging.logger {}
 
@@ -48,7 +50,7 @@ fun main(args: Array<String>) {
  */
 fun postgresDataSource(topicPrefix: String, hostname: String, port: Int, database: String, user: String, password: String, offsetFilePath: String, settings: Map<String, String> = emptyMap()): Flow<ChangeRecord> {
         val props = Properties()
-        props.setProperty("name", "engine")
+        props.setProperty("name", "engine2")
         props.setProperty("connector.class", "io.debezium.connector.postgresql.PostgresConnector")
         props.setProperty("database.hostname", hostname)
         props.setProperty("database.port", "$port")
@@ -58,8 +60,9 @@ fun postgresDataSource(topicPrefix: String, hostname: String, port: Int, databas
         props.setProperty("database.user", user)
         props.setProperty("database.password", password)
         props.setProperty("offset.storage.file.filename", offsetFilePath)
-        props.setProperty("offset.flush.interval.ms", "60000")
+        props.setProperty("offset.flush.interval.ms", "10000")
         settings.forEach { k, v -> props.put(k, v) }
+        logger.info("Starting source flow with name: ${props.getProperty("name")} offsetpath: ${offsetFilePath} ")
         return callbackFlow<ChangeRecord> {
             val engine = DebeziumEngine.create(Json::class.java)
                 .using(props)
@@ -67,14 +70,10 @@ fun postgresDataSource(topicPrefix: String, hostname: String, port: Int, databas
                     sendBlocking(ChangeRecord(record.destination(), record.key(), record.value()))
                 }
                 .build()
+            // ewww TODO
             Thread {
                 engine.run()
-                println("DONE!")
             }.start()
-            // Thread {
-            //     Thread.sleep(15000)
-            //     engine.close()
-            // }.start()
             awaitClose {
                 println("closin!")
                 engine.close()

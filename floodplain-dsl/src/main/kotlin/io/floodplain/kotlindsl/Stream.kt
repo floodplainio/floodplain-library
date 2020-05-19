@@ -25,11 +25,16 @@ import io.floodplain.streams.base.RocksDBConfigurationSetter
 import io.floodplain.streams.base.StreamOperators
 import io.floodplain.streams.remotejoin.ReplicationTopologyParser
 import io.floodplain.streams.remotejoin.TopologyConstructor
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.net.URL
 import java.util.Properties
 import java.util.Stack
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.common.serialization.Serdes
@@ -79,6 +84,7 @@ class Stream(val context: TopologyContext) {
         return sourceConfigurations.toList()
     }
 
+
     private fun renderTopology(topologyConstructor: TopologyConstructor): Topology {
         val topology = Topology()
         val reactivePipes = sources.map { e -> e.toReactivePipe() }
@@ -89,11 +95,12 @@ class Stream(val context: TopologyContext) {
         ReplicationTopologyParser.materializeStateStores(topologyConstructor, topology)
         return topology
     }
-    fun renderAndTest(testCmds: TestContext.() -> Unit): Stream {
-        val topologyConstructor = TopologyConstructor()
-        val (topology, sources, sinks) = render(topologyConstructor)
-        val offsetPath = Paths.get("offset_"+ UUID.randomUUID())
-        runBlocking {
+    fun renderAndTest(testCmds: suspend TestContext.() -> Unit): Job {
+        return GlobalScope.launch {
+            val topologyConstructor = TopologyConstructor()
+            val (topology, sources, sinks) = render(topologyConstructor)
+            val offsetPath = Paths.get("offset_"+ UUID.randomUUID())
+            logger.info("Using offset path: $offsetPath")
             val allSources = this@Stream.sourceConfigurations.map { k -> k.allSources(this,offsetPath.toString()) }
                 .flatMap { e -> e.entries }
                 .map { Pair(it.key, it.value) }
@@ -103,8 +110,8 @@ class Stream(val context: TopologyContext) {
             logger.info("Testing sinks:\n$sinks")
             logger.info("Sourcetopics: \n${topologyConstructor.desiredTopicNames()}")
             testTopology(topology, testCmds, topologyConstructor, context, allSources)
-        }
-        return this
+            }
+
     }
 
     /**

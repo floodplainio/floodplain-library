@@ -63,6 +63,10 @@ class MongoConfig(val name: String, val uri: String, val database: String) : Con
     override fun allSources(scope: CoroutineScope, fileOffsetPath: String): Map<String, Flow<ChangeRecord>> {
         TODO("Not yet implemented")
     }
+
+    override fun closeSource() {
+        TODO("Not yet implemented")
+    }
 }
 
 /**

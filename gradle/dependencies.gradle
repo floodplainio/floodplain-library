@@ -5,7 +5,7 @@ ext {
     mongodb_version = "3.12.2"
     slf4j_version = "1.7.30"
     mysql_version = "8.0.20"
-    debezium_version = "1.2.0-SNAPSHOT"
+    debezium_version = "1.2.0.Beta2"
     commonDependencies = [
             cdiApi            : "jakarta.enterprise:jakarta.enterprise.cdi-api:2.0.2",
             microProfileConfig: "org.eclipse.microprofile.config:microprofile-config-api:1.3",
