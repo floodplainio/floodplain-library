@@ -23,21 +23,25 @@ import io.floodplain.kotlindsl.message.empty
 import io.floodplain.postgresDataSource
 import io.floodplain.replication.api.ReplicationMessage
 import io.floodplain.streams.remotejoin.StoreStateProcessor
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import java.math.BigDecimal
+import java.time.Duration
+import kotlin.coroutines.EmptyCoroutineContext
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.broadcastIn
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withTimeout
-import java.math.BigDecimal
-import java.time.Duration
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 import org.apache.kafka.streams.state.KeyValueStore
 import org.junit.Ignore
-import kotlin.coroutines.EmptyCoroutineContext
 
 private val logger = mu.KotlinLogging.logger {}
 
@@ -534,11 +538,11 @@ class TestTopology {
         }
     }
 
-    @Test(expected=CancellationException::class) @Ignore
+    @Test(expected = CancellationException::class) @Ignore
     fun testPostgresSourceSimple() {
         runBlocking {
             launch {
-                postgresDataSource("mypostgres", "localhost", 5432, "dvdrental","postgres", "mysecretpassword", "someoffsetpath",
+                postgresDataSource("mypostgres", "localhost", 5432, "dvdrental", "postgres", "mysecretpassword", "someoffsetpath",
                     emptyMap())
                     .collect {
                         println(it.topic)
@@ -553,7 +557,7 @@ class TestTopology {
     fun testPostgresSourceBroadcast() {
         // CoRoutine
         val scope = CoroutineScope(EmptyCoroutineContext)
-        val broadcastFlow = postgresDataSource("mypostgres", "localhost", 5432, "dvdrental","postgres", "mysecretpassword", "someoffsetpath",
+        val broadcastFlow = postgresDataSource("mypostgres", "localhost", 5432, "dvdrental", "postgres", "mysecretpassword", "someoffsetpath",
             emptyMap())
             .broadcastIn(scope)
             .asFlow()
@@ -563,7 +567,6 @@ class TestTopology {
                 broadcastFlow
                     .broadcastIn(GlobalScope)
                     .asFlow()
-
             }
             val connector = launch {
                 val job1 = GlobalScope.launch {
@@ -589,15 +592,13 @@ class TestTopology {
         }
     }
 
-
-
     /**
          * Test the simplest imaginable pipe: One source and one sink.
          */
     @Test
     fun testPostgresSource() {
         stream {
-            val pgConfig = postgresSourceConfig("mypostgres", "localhost", 5432, "postgres", "mysecretpassword", "dvdrental","public")
+            val pgConfig = postgresSourceConfig("mypostgres", "localhost", 5432, "postgres", "mysecretpassword", "dvdrental", "public")
             pgConfig.source("store") {
                 sink("topic")
             }
@@ -622,6 +623,5 @@ class TestTopology {
             }
 
             // TODO Continue
-
         }
 }

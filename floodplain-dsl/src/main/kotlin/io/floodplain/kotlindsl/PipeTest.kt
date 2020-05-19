@@ -39,7 +39,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.runBlocking
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.KeyValue
 import org.apache.kafka.streams.StreamsConfig
@@ -85,7 +84,7 @@ suspend fun testTopology(
     props.setProperty(StreamsConfig.STATE_DIR_CONFIG, storageFolder)
 
     val driver = TopologyTestDriver(topology, props)
-    val contextInstance = TestDriverContext(driver, context, topologyConstructor,allSources)
+    val contextInstance = TestDriverContext(driver, context, topologyConstructor, allSources)
     allSources.forEach { (source, flow) ->
         flow.map {
             record ->
@@ -95,7 +94,7 @@ suspend fun testTopology(
         }.onEach { (key, msg) ->
             logger.info("Adding key: $key")
         }.collect {
-            (key,msg)->
+            (key, msg) ->
             contextInstance.input(source, key, fromImmutable(msg.message()))
         }
     }

@@ -23,7 +23,6 @@ import io.floodplain.postgresDataSource
 import io.floodplain.reactive.source.topology.DebeziumTopicSource
 import io.floodplain.streams.api.TopologyContext
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.NonCancellable.isActive
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.map
 import kotlinx.coroutines.flow.Flow
@@ -31,7 +30,6 @@ import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.broadcastIn
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.receiveAsFlow
 
 private val logger = mu.KotlinLogging.logger {}
 
@@ -67,7 +65,7 @@ class PostgresConfig(val topologyContext: TopologyContext, val name: String, val
     override fun allSources(coroutineScope: CoroutineScope, offsetFilePath: String): Map<String, Flow<ChangeRecord>> {
         val sourceFlow = directSource(offsetFilePath)
             .onEach {
-                record-> logger.info("Found key: ${record.key} for destination: ${record.topic}")
+                record -> logger.info("Found key: ${record.key} for destination: ${record.topic}")
             }
         // cancel previous scopes?
         val broadcast = sourceFlow.broadcastIn(coroutineScope).asFlow()
@@ -75,12 +73,12 @@ class PostgresConfig(val topologyContext: TopologyContext, val name: String, val
         return sourceElements.map {
             val downstream = broadcast
                 .filter { e -> e.topic == "${it.prefix}.${it.schema}.${it.table}" }
-                .onEach { e -> logger.info ("Checked if topic ${e.topic} matches expected: ${it.prefix}.${it.schema}.${it.table}") }
+                .onEach { e -> logger.info("Checked if topic ${e.topic} matches expected: ${it.prefix}.${it.schema}.${it.table}") }
             Pair(it.combinedName(), downstream)
         }.toMap()
     }
 
-    fun source(table: String,schema: String? = null, init: Source.() -> Unit): Source {
+    fun source(table: String, schema: String? = null, init: Source.() -> Unit): Source {
         val effectiveSchema = schema ?: defaultSchema ?: "public"
         val topicSource = DebeziumTopicSource(name, table, effectiveSchema)
         val topicName = topicSource.topicName(topologyContext)
