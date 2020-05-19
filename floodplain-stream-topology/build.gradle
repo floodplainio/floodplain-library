@@ -2,8 +2,6 @@ plugins {
     // Apply the java-library plugin to add support for Java Library
     id "java"
     id "distribution"
-    id "application"
-    id "com.github.johnrengelman.shadow"
     id "maven-publish"
 }
 apply from: "$rootProject.projectDir/gradle/shared.gradle"
@@ -24,12 +22,5 @@ dependencies {
     compile(dependencies.cdiApi)
     testCompile(dependencies.jUnit)
     testImplementation(dependencies.slf4jLog4j)
-}
-
-shadowJar {
-    mergeServiceFiles {
-        path = "META-INF/custom"
-        exclude "META-INF/services/javax.xml.stream.*"
-    }
 }
 
