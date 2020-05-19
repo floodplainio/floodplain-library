@@ -595,7 +595,7 @@ class TestTopology {
     /**
          * Test the simplest imaginable pipe: One source and one sink.
          */
-    @Test
+    @Test @Ignore
     fun testPostgresSource() {
         stream {
             val pgConfig = postgresSourceConfig("mypostgres", "localhost", 5432, "postgres", "mysecretpassword", "dvdrental", "public")
