@@ -38,7 +38,7 @@ data class IMessage(private val content: MutableMap<String, Any>) {
         val raw = get(path)
         if (raw == null) {
             val created = empty()
-            set(path,created)
+            set(path, created)
             return created
         }
         if (raw !is IMessage) {

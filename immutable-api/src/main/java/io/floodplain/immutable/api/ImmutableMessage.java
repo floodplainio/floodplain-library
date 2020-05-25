@@ -45,12 +45,6 @@ public interface ImmutableMessage {
         IMMUTABLE,
         UNKNOWN,
         IMMUTABLELIST,
-        POINT,
-        REACTIVE,
-        REACTIVESCRIPT,
-        REACTIVEPIPE,
-        REACTIVEPARTIALPIPE,
-        MAPPER,
         ENUM,
         STRINGLIST
     }

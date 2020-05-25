@@ -200,12 +200,6 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
             case IMMUTABLE:
             case UNKNOWN:
             case IMMUTABLELIST:
-            case POINT:
-            case REACTIVE:
-            case REACTIVESCRIPT:
-            case REACTIVEPIPE:
-            case REACTIVEPARTIALPIPE:
-            case MAPPER:
                 return Replication.ValueProtobuf.ValueType.UNRECOGNIZED;
         }
         return Replication.ValueProtobuf.ValueType.UNRECOGNIZED;
