@@ -24,6 +24,7 @@ import io.floodplain.streams.api.TopologyContext
 import java.util.Optional
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
+import java.nio.file.Path
 
 private val logger = mu.KotlinLogging.logger {}
 
@@ -60,7 +61,7 @@ class MongoConfig(val name: String, val uri: String, val database: String) : Con
         return name to settings
     }
 
-    override fun allSources(scope: CoroutineScope, fileOffsetPath: String): Map<String, Flow<ChangeRecord>> {
+    override fun allSources(topologyContext: TopologyContext,scope: CoroutineScope, fileOffsetPath: Path): Map<String, Flow<ChangeRecord>> {
         TODO("Not yet implemented")
     }
 

@@ -94,9 +94,13 @@ class Stream(val context: TopologyContext) {
             val topologyConstructor = TopologyConstructor()
             val (topology, sources, sinks) = render(topologyConstructor)
             val offsetPath = Paths.get("offset_" + UUID.randomUUID())
-            logger.info("Using offset path: $offsetPath")
-            val allSources = this@Stream.sourceConfigurations.map { k -> k.allSources(this, offsetPath.toString()) }
+            val Config  = this@Stream.sourceConfigurations.first()
+            logger.info("Using offset path: $offsetPath sources: ${ this@Stream.sourceConfigurations.first()}")
+            val allSources = this@Stream.sourceConfigurations.map { 
+                    k -> k.allSources(this@Stream.context,this, offsetPath)
+            }
                 .flatMap { e -> e.entries }
+                .onEach { e-> println(" |>>> ${e.key} value: ${e.value}") }
                 .map { Pair(it.key, it.value) }
                 .toMap()
             logger.info("Testing topology:\n${topology.describe()}")

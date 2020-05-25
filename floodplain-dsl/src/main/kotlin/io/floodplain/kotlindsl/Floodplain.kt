@@ -44,6 +44,7 @@ import java.time.Duration
 import java.util.Optional
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
+import java.nio.file.Path
 
 private val logger = mu.KotlinLogging.logger {}
 
@@ -63,7 +64,7 @@ abstract class Config {
      * For some
      */
     abstract fun materializeConnectorConfig(topologyContext: TopologyContext): Pair<String, Map<String, String>>
-    abstract fun allSources(coroutineScope: CoroutineScope, offsetFilePath: String): Map<String, Flow<ChangeRecord>>
+    abstract fun allSources(topologyContext: TopologyContext, coroutineScope: CoroutineScope, offsetFilePath: Path): Map<String, Flow<ChangeRecord>>
     abstract fun closeSource()
 }
 

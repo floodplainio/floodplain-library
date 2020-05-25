@@ -24,6 +24,7 @@ import io.floodplain.streams.api.TopologyContext
 import java.util.Optional
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
+import java.nio.file.Path
 
 fun PartialStream.googleSheetsSink(config: GoogleSheetConfiguration) {
     val configMap: Map<String, String> = mapOf(Pair("connector.class", "io.floodplain.sink.SheetSinkConnector"))
@@ -40,7 +41,7 @@ class GoogleSheetConfiguration(val name: String, val topic: String, val spreadsh
         TODO("Not yet implemented")
     }
 
-    override fun allSources(scope: CoroutineScope, offsetFilePath: String): Map<String, Flow<ChangeRecord>> {
+    override fun allSources(topologyContext: TopologyContext, scope: CoroutineScope, offsetFilePath: Path): Map<String, Flow<ChangeRecord>> {
         TODO("Not yet implemented")
     }
 

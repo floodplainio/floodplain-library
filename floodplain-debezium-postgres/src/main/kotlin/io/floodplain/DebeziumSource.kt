@@ -12,14 +12,16 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.runBlocking
+import java.nio.file.Path
+import java.util.UUID
 
 private val logger = mu.KotlinLogging.logger {}
 
 data class ChangeRecord(val topic: String, val key: String, val value: String)
 
 fun main(args: Array<String>) {
-    val offsetFilePath = "offset"
-    Files.deleteIfExists(Paths.get(offsetFilePath))
+    val offsetFilePath = Paths.get("offset")
+    Files.deleteIfExists(offsetFilePath)
     runBlocking {
         postgresDataSource("dvdrental", "localhost", 5432, "dvdrental", "postgres", "mysecretpassword", offsetFilePath)
 
@@ -34,7 +36,7 @@ fun main(args: Array<String>) {
 
 /**
  * @return A hot flow of ChangeRecord. Perhaps one day there might be a colder one.
- * @param topicPrefix: The prefix of the outgoing 'topic', basically the destination field of the changerecord is <topicprefix>.<schema>.<table>
+ * @param name: The prefix of the outgoing 'topic', basically the destination field of the changerecord is <topicprefix>.<schema>.<table>
  * @param hostname: The host of the postgres database
  * @param port: The port of the postgres database
  * @param username: The username of the postgres database
@@ -44,32 +46,29 @@ fun main(args: Array<String>) {
  * Defaults to empty map.
  *
  */
-fun postgresDataSource(topicPrefix: String, hostname: String, port: Int, database: String, user: String, password: String, offsetFilePath: String, settings: Map<String, String> = emptyMap()): Flow<ChangeRecord> {
+fun postgresDataSource(name: String, hostname: String, port: Int, database: String, user: String, password: String, offsetFilePath: Path, settings: Map<String, String> = emptyMap()): Flow<ChangeRecord> {
         val props = Properties()
-        props.setProperty("name", "engine2")
+        props.setProperty("name", "engine_"+UUID.randomUUID())
         props.setProperty("connector.class", "io.debezium.connector.postgresql.PostgresConnector")
         props.setProperty("database.hostname", hostname)
         props.setProperty("database.port", "$port")
-        props.setProperty("database.server.name", topicPrefix) // don't think this matters?
+        props.setProperty("database.server.name", name) // don't think this matters?
         props.setProperty("database.dbname", database)
         props.setProperty("connector.class", "io.debezium.connector.postgresql.PostgresConnector")
         props.setProperty("database.user", user)
         props.setProperty("database.password", password)
-        props.setProperty("offset.storage.file.filename", offsetFilePath)
+        props.setProperty("offset.storage.file.filename", offsetFilePath.toString())
         props.setProperty("offset.flush.interval.ms", "10000")
         settings.forEach { k, v -> props.put(k, v) }
         logger.info("Starting source flow with name: ${props.getProperty("name")} offsetpath: $offsetFilePath ")
-        return callbackFlow<ChangeRecord> {
+        return callbackFlow {
             val engine = DebeziumEngine.create(Json::class.java)
                 .using(props)
                 .notifying { record: ChangeEvent<String, String> ->
                     sendBlocking(ChangeRecord(record.destination(), record.key(), record.value()))
                 }
                 .build()
-            // ewww TODO
-            Thread {
-                engine.run()
-            }.start()
+            engine.run()
             awaitClose {
                 println("closin!")
                 engine.close()

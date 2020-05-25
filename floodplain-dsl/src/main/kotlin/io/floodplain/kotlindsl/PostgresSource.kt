@@ -30,6 +30,8 @@ import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.broadcastIn
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.onEach
+import java.lang.IllegalArgumentException
+import java.nio.file.Path
 
 private val logger = mu.KotlinLogging.logger {}
 
@@ -55,28 +57,37 @@ class PostgresConfig(val topologyContext: TopologyContext, val name: String, val
         sourceElements.add(elt)
     }
 
-    fun directSource(offsetFilePath: String): Flow<ChangeRecord> {
+    fun directSource(offsetFilePath: Path): Flow<ChangeRecord> {
         return postgresDataSource(topologyContext.topicName(name), hostname, port, database, username, password, offsetFilePath)
     }
 
     override fun closeSource() {
         broadcastScope?.cancel("doei")
     }
-    override fun allSources(coroutineScope: CoroutineScope, offsetFilePath: String): Map<String, Flow<ChangeRecord>> {
+    override fun allSources(topologyContext: TopologyContext, coroutineScope: CoroutineScope, offsetFilePath: Path): Map<String, Flow<ChangeRecord>> {
         val sourceFlow = directSource(offsetFilePath)
-            .onEach {
-                record -> logger.info("Found key: ${record.key} for destination: ${record.topic}")
-            }
+            // .onEach {
+            //     record -> logger.info("Found key: ${record.key} for destination: ${record.topic}")
+            // }
         // cancel previous scopes?
         val broadcast = sourceFlow.broadcastIn(coroutineScope).asFlow()
 
         return sourceElements.map {
             val downstream = broadcast
-                .filter { e -> e.topic == "${it.prefix}.${it.schema}.${it.table}" }
-                .onEach { e -> logger.info("Checked if topic ${e.topic} matches expected: ${it.prefix}.${it.schema}.${it.table}") }
+                .filter { e -> "${it.prefix}.${it.schema}.${it.table}" == e.topic }
+                .onEach {
+                        e ->
+                            val a = it
+                            println("Prefx: ${it.prefix}")
+                            println("Checking: ${it.prefix}.${it.schema}.${it.table} <-> ${e.topic}")
+                }
+                .onEach {
+                        e -> logger.info("Checked if topic ${e.topic} matches expected: ${it.prefix}.${it.schema}.${it.table}")
+                }
             Pair(it.combinedName(), downstream)
         }.toMap()
     }
+
 
     fun source(table: String, schema: String? = null, init: Source.() -> Unit): Source {
         val effectiveSchema = schema ?: defaultSchema ?: "public"
@@ -107,6 +118,11 @@ fun Stream.postgresSource(schema: String, table: String, config: PostgresConfig,
 }
 
 class DebeziumSourceElement(val prefix: String, val table: String, val schema: String) {
+    init {
+        if(prefix.contains('.')) {
+            throw IllegalArgumentException("DebeziumSource elements can not contains '.' Encountered: "+prefix)
+        }
+    }
     fun combinedName(): String {
         return "$prefix.$schema.$table"
     }
