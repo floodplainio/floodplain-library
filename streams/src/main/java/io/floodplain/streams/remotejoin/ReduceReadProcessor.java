@@ -25,12 +25,16 @@ import io.floodplain.replication.api.ReplicationMessage.Operation;
 import org.apache.kafka.streams.processor.AbstractProcessor;
 import org.apache.kafka.streams.processor.ProcessorContext;
 import org.apache.kafka.streams.state.KeyValueStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public class ReduceReadProcessor extends AbstractProcessor<String, ReplicationMessage> {
+
+    private static final Logger logger = LoggerFactory.getLogger(ReduceReadProcessor.class);
 
     private final String accumulatorStoreName;
     private final String inputStoreName;
@@ -62,7 +66,8 @@ public class ReduceReadProcessor extends AbstractProcessor<String, ReplicationMe
         if (stored == null) {
             // no stored value, so must be upsert.
             if (inputValue == null || inputValue.operation() == Operation.DELETE) {
-                throw new RuntimeException("Issue: Deleting (?) a message that isn't there. Is this bad?");
+                logger.warn("Issue: Deleting (?) a message that isn't there. Is this bad? Dropping message. key: {} inputvalue: {}",key,inputValue);
+                return;
             }
             extracted = keyExtractor.orElse((m, s) -> StoreStateProcessor.COMMONKEY)
                     .apply(inputValue.message(), inputValue.paramMessage().orElse(ImmutableFactory.empty()));

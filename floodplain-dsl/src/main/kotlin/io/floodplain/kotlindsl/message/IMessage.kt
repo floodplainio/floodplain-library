@@ -20,6 +20,7 @@ package io.floodplain.kotlindsl.message
 
 import io.floodplain.immutable.api.ImmutableMessage
 import io.floodplain.immutable.factory.ImmutableFactory
+import java.math.BigDecimal
 import java.util.stream.Collectors
 import kotlin.streams.toList
 
@@ -33,6 +34,18 @@ data class IMessage(private val content: MutableMap<String, Any>) {
         return msg.content.get(name)
     }
 
+    fun message(path: String): IMessage {
+        val raw = get(path)
+        if (raw == null) {
+            val created = empty()
+            set(path, created)
+            return created
+        }
+        if (raw !is IMessage) {
+            throw ClassCastException("Path element $path should be an message but it is a ${raw::class}")
+        }
+        return raw
+    }
     fun string(path: String): String {
         return optionalString(path)
                 ?: throw NullPointerException("Can't obtain string from path: $path as it is absent")
@@ -46,6 +59,42 @@ data class IMessage(private val content: MutableMap<String, Any>) {
         val raw = get(path) ?: return null
         if (raw !is Int) {
             throw ClassCastException("Path element $path should be an integer but it is a ${raw::class}")
+        }
+        return raw
+    }
+
+    fun decimal(path: String): BigDecimal {
+        return optionalDecimal(path) ?: throw NullPointerException("Can't obtain decimal from path: $path as it is absent")
+    }
+
+    fun optionalDecimal(path: String): BigDecimal? {
+        val raw = get(path) ?: return null
+        if (raw !is BigDecimal) {
+            throw ClassCastException("Path element $path should be an decimal but it is a ${raw::class}")
+        }
+        return raw
+    }
+
+    fun double(path: String): Double {
+        return optionalDouble(path) ?: throw NullPointerException("Can't obtain double from path: $path as it is absent")
+    }
+
+    fun optionalDouble(path: String): Double? {
+        val raw = get(path) ?: return null
+        if (raw !is Double) {
+            throw ClassCastException("Path element $path should be an double but it is a ${raw::class}")
+        }
+        return raw
+    }
+
+    fun boolean(path: String): Boolean {
+        return optionalBoolean(path) ?: throw NullPointerException("Can't obtain boolean from path: $path as it is absent")
+    }
+
+    fun optionalBoolean(path: String): Boolean? {
+        val raw = get(path) ?: return null
+        if (raw !is Boolean) {
+            throw ClassCastException("Path element $path should be an boolean but it is a ${raw::class}")
         }
         return raw
     }
