@@ -20,7 +20,6 @@
 
 package io.floodplain.kotlindsl
 
-import io.floodplain.ChangeRecord
 import io.floodplain.immutable.api.ImmutableMessage
 import io.floodplain.kotlindsl.message.IMessage
 import io.floodplain.kotlindsl.message.fromImmutable
@@ -40,11 +39,9 @@ import io.floodplain.reactive.source.topology.TopicSource
 import io.floodplain.reactive.source.topology.api.TopologyPipeComponent
 import io.floodplain.reactive.topology.ReactivePipe
 import io.floodplain.streams.api.TopologyContext
+import kotlinx.coroutines.Job
 import java.time.Duration
 import java.util.Optional
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.Flow
-import java.nio.file.Path
 
 private val logger = mu.KotlinLogging.logger {}
 
@@ -56,16 +53,20 @@ open class Transformer(val component: TopologyPipeComponent) : PartialStream()
 /**
  * Base class for connector configurations
  */
-abstract class Config {
+interface Config {
 
     /**
      * Connector configs must implement this method, returning a name + map.
      * The map is essentially a Kafka Connect configuration, and will be converted to JSON and posted to Kafka Connect
      * For some
      */
-    abstract fun materializeConnectorConfig(topologyContext: TopologyContext): Pair<String, Map<String, String>>
-    abstract fun allSources(topologyContext: TopologyContext, coroutineScope: CoroutineScope, offsetFilePath: Path): Map<String, Flow<ChangeRecord>>
-    abstract fun closeSource()
+    fun materializeConnectorConfig(topologyContext: TopologyContext): Pair<String, Map<String, String>>
+    fun sourceElements(): List<SourceTopic>
+    suspend fun connectSource(inputReceiver: InputReceiver)
+}
+
+interface SourceTopic {
+    fun topicName(): String
 }
 
 /**
@@ -144,9 +145,7 @@ fun PartialStream.group(key: (IMessage) -> String) {
 fun Stream.source(topic: String, init: Source.() -> Unit): Source {
     val sourceElement = TopicSource(topic, false)
     val source = Source(sourceElement)
-
     source.init()
-//    this.addSource(source)
     return source
 }
 

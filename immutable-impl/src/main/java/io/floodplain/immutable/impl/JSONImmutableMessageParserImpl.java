@@ -21,7 +21,6 @@ package io.floodplain.immutable.impl;
 
 import io.floodplain.immutable.api.ImmutableMessage;
 import io.floodplain.immutable.api.ImmutableMessageParser;
-import io.floodplain.immutable.factory.ImmutableFactory;
 import io.floodplain.immutable.json.ImmutableJSON;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

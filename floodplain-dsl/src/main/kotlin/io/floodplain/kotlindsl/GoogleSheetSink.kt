@@ -18,13 +18,9 @@
  */
 package io.floodplain.kotlindsl
 
-import io.floodplain.ChangeRecord
 import io.floodplain.reactive.source.topology.SinkTransformer
 import io.floodplain.streams.api.TopologyContext
 import java.util.Optional
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.Flow
-import java.nio.file.Path
 
 fun PartialStream.googleSheetsSink(config: GoogleSheetConfiguration) {
     val configMap: Map<String, String> = mapOf(Pair("connector.class", "io.floodplain.sink.SheetSinkConnector"))
@@ -36,16 +32,15 @@ fun Stream.googleSheetConfig(topic: String, name: String, spreadsheetId: String,
     return GoogleSheetConfiguration(topic, name, spreadsheetId, columns)
 }
 
-class GoogleSheetConfiguration(val name: String, val topic: String, val spreadsheetId: String, val columns: List<String>) : Config() {
+class GoogleSheetConfiguration(val name: String, val topic: String, val spreadsheetId: String, val columns: List<String>) : Config {
     override fun materializeConnectorConfig(topologyContext: TopologyContext): Pair<String, Map<String, String>> {
         TODO("Not yet implemented")
     }
 
-    override fun allSources(topologyContext: TopologyContext, scope: CoroutineScope, offsetFilePath: Path): Map<String, Flow<ChangeRecord>> {
-        TODO("Not yet implemented")
+    override fun sourceElements(): List<SourceTopic> {
+        return emptyList<SourceTopic>()
     }
 
-    override fun closeSource() {
-        TODO("Not yet implemented")
+    override suspend fun connectSource(inputReceiver: InputReceiver) {
     }
 }

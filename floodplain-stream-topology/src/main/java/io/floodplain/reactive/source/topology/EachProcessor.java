@@ -22,8 +22,6 @@ import io.floodplain.immutable.api.ImmutableMessage;
 import io.floodplain.immutable.factory.ImmutableFactory;
 import io.floodplain.replication.api.ReplicationMessage;
 import org.apache.kafka.streams.processor.AbstractProcessor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class EachProcessor extends AbstractProcessor<String, ReplicationMessage> {
 

@@ -18,7 +18,6 @@
  */
 package io.floodplain.kotlindsl
 
-import io.floodplain.ChangeRecord
 import io.floodplain.kotlindsl.message.IMessage
 import io.floodplain.kotlindsl.message.fromImmutable
 import io.floodplain.replication.api.ReplicationMessage
@@ -26,19 +25,11 @@ import io.floodplain.replication.api.ReplicationMessageParser
 import io.floodplain.replication.factory.ReplicationFactory
 import io.floodplain.replication.impl.json.JSONReplicationMessageParserImpl
 import io.floodplain.streams.api.TopologyContext
-import io.floodplain.streams.debezium.JSONToReplicationMessage
 import io.floodplain.streams.remotejoin.TopologyConstructor
 import io.floodplain.streams.serializer.ReplicationMessageSerde
-import java.nio.file.Files
-import java.nio.file.Path
-import java.time.Duration
-import java.util.Optional
-import java.util.Properties
-import java.util.UUID
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.KeyValue
 import org.apache.kafka.streams.StreamsConfig
@@ -48,15 +39,29 @@ import org.apache.kafka.streams.Topology
 import org.apache.kafka.streams.TopologyTestDriver
 import org.apache.kafka.streams.processor.WallclockTimestampExtractor
 import org.apache.kafka.streams.state.KeyValueStore
+import java.nio.file.Files
+import java.nio.file.Path
+import java.time.Duration
+import java.util.Properties
+import java.util.UUID
 
 private val logger = mu.KotlinLogging.logger {}
 
 private val parser: ReplicationMessageParser = JSONReplicationMessageParserImpl()
 
-interface TestContext {
+interface InputReceiver {
     fun input(topic: String, key: String, msg: IMessage)
     fun delete(topic: String, key: String)
+    fun inputs() : Set<String>
+}
+
+interface TestContext: InputReceiver {
     fun output(topic: String): Pair<String, IMessage>
+    fun skip(topic: String, number: Int)
+    /**
+     * Doesn't work, outputs get created lazily, so only sinks that have been accessed before are counted
+     */
+    fun outputs(): Set<String>
     fun outputSize(topic: String): Long
     fun deleted(topic: String): String
     fun isEmpty(topic: String): Boolean
@@ -65,14 +70,18 @@ interface TestContext {
     fun getStateStoreNames(): Set<String>
     fun topologyContext(): TopologyContext
     fun topologyConstructor(): TopologyConstructor
-    fun sources(): Map<String, Flow<ChangeRecord>>
+    fun sourceConfigurations(): List<Config>
+    fun sinkConfigurations(): List<Config>
+    suspend fun connectSource();
+
 }
-suspend fun testTopology(
+fun testTopology(
     topology: Topology,
-    testCmds: suspend TestContext.() -> Unit,
+    testCmds: TestContext.() -> Unit,
     topologyConstructor: TopologyConstructor,
     context: TopologyContext,
-    allSources: Map<String, Flow<ChangeRecord>>
+    sourceConfigs: List<Config>,
+    sinkConfigs: List<Config>
 ) {
     val storageFolder = "teststorage/store-" + UUID.randomUUID().toString()
     val props = Properties()
@@ -84,20 +93,7 @@ suspend fun testTopology(
     props.setProperty(StreamsConfig.STATE_DIR_CONFIG, storageFolder)
 
     val driver = TopologyTestDriver(topology, props)
-    val contextInstance = TestDriverContext(driver, context, topologyConstructor, allSources)
-    allSources.forEach { (source, flow) ->
-        flow.map {
-            record ->
-            val kv = JSONToReplicationMessage.parse(record.key, record.value.toByteArray())
-            val msg = parser.parseBytes(Optional.empty<String>(), kv.value)
-            kv.key to msg
-        }.onEach { (key, msg) ->
-            logger.info("Adding key: $key")
-        }.collect {
-            (key, msg) ->
-            contextInstance.input(source, key, fromImmutable(msg.message()))
-        }
-    }
+    val contextInstance = TestDriverContext(driver, context, topologyConstructor,sourceConfigs,sinkConfigs)
 try {
         testCmds.invoke(contextInstance)
     } finally {
@@ -109,27 +105,49 @@ try {
                     .sorted(Comparator.reverseOrder())
                     .forEach { Files.deleteIfExists(it) }
         }
-        // Files.deleteIfExists(path)
     }
-
-//        driver.createInputTopic("",Serdes.String().serializer(),ReplicationMessageSerde().serializer()).
 }
+
 class TestDriverContext(
     private val driver: TopologyTestDriver,
     private val topologyContext: TopologyContext,
     private val topologyConstructor: TopologyConstructor,
-    val allSources: Map<String, Flow<ChangeRecord>>
+    private val sourceConfigs: List<Config>,
+    private val sinkConfigs: List<Config>
 ) : TestContext {
 
     private val inputTopics = mutableMapOf<String, TestInputTopic<String, ReplicationMessage>>()
     private val outputTopics = mutableMapOf<String, TestOutputTopic<String, ReplicationMessage>>()
 
     private val replicationMessageParser = ReplicationFactory.getInstance()
+    override fun sourceConfigurations(): List<Config> {
+        return sourceConfigs
+    }
+    override fun sinkConfigurations(): List<Config> {
+        return sinkConfigs
+    }
+    override fun inputs(): Set<String> {
+        return inputTopics.keys
+    }
+    override fun outputs(): Set<String> {
+        return outputTopics.keys
+    }
+    override suspend fun connectSource() {
+        sourceConfigs.forEach { config ->
+            config.connectSource(this@TestDriverContext)
+        }
+    }
 
     override fun input(topic: String, key: String, msg: IMessage) {
-        logger.info("Input found. Key: $key")
+        if(!inputs().contains(topic)) {
+            logger.info("Missing topic: $topic available topics: ${inputs()}")
+        }
+        logger.info("Input found. Key: $key topic: $topic alltopics: "+inputTopics.keys)
+
         val qualifiedTopicName = topologyContext.topicName(topic)
-        val inputTopic = inputTopics.computeIfAbsent(qualifiedTopicName) { driver.createInputTopic(qualifiedTopicName, Serdes.String().serializer(), ReplicationMessageSerde().serializer()) }
+        val inputTopic = inputTopics.computeIfAbsent(qualifiedTopicName) {
+            driver.createInputTopic(qualifiedTopicName, Serdes.String().serializer(), ReplicationMessageSerde().serializer())
+        }
         inputTopic.pipeInput(key, ReplicationFactory.standardMessage(msg.toImmutable()))
     }
 
@@ -152,6 +170,12 @@ class TestDriverContext(
 //            throw RuntimeException("Expected message for key: ${keyVal.key}, but got a delete.")
         } else {
             return Pair(keyVal.key, fromImmutable(keyVal.value!!.message()))
+        }
+    }
+
+    override fun skip(topic: String,number: Int) {
+        repeat(number) {
+            output(topic)
         }
     }
 
@@ -203,10 +227,6 @@ class TestDriverContext(
 
     override fun topologyConstructor(): TopologyConstructor {
         return topologyConstructor
-    }
-
-    override fun sources(): Map<String, Flow<ChangeRecord>> {
-        return allSources
     }
 
     override fun advanceWallClockTime(duration: Duration) {

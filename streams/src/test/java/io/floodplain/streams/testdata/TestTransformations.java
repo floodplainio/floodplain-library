@@ -5,7 +5,6 @@ import io.floodplain.replication.api.ReplicationMessage;
 import io.floodplain.replication.api.ReplicationMessageParser;
 import io.floodplain.replication.factory.ReplicationFactory;
 import io.floodplain.replication.impl.protobuf.FallbackReplicationMessageParser;
-import io.floodplain.streams.api.CoreOperators;
 import io.floodplain.streams.api.TopologyContext;
 import org.junit.Assert;
 import org.junit.Before;

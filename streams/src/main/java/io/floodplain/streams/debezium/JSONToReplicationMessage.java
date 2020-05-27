@@ -66,7 +66,7 @@ public class JSONToReplicationMessage {
                 ReplicationMessage replMsg = ReplicationFactory.empty().withOperation(Operation.DELETE);
                 return new KeyValue(key.combinedKey, ReplicationFactory.getInstance().serialize(replMsg));
             }
-            final ReplicationMessage convOptional = convertToReplication(false, valuenode, Optional.ofNullable(key.table));
+            final ReplicationMessage convOptional = convertToReplication(false, valuenode, Optional.empty());
 
             byte[] serialized = ReplicationFactory.getInstance().serialize(convOptional);
             return new KeyValue(key.combinedKey,serialized);
@@ -325,6 +325,21 @@ public class JSONToReplicationMessage {
             default:
                 return Operation.NONE;
         }
+    }
+
+    public static String processDebeziumJSONKey(String keyInput) throws JsonProcessingException {
+        ObjectNode keynode = (ObjectNode) objectMapper.readTree(keyInput);
+        TableIdentifier ti = processDebeziumKey(keynode);
+        return ti.combinedKey;
+    }
+
+    public static ReplicationMessage processDebeziumBody(byte[] data) throws IOException {
+        ObjectNode valuenode = (ObjectNode) objectMapper.readTree(data);
+        if (!valuenode.has("payload") || valuenode.get("payload").isNull()) {
+            return ReplicationFactory.empty().withOperation(Operation.DELETE);
+        }
+        return convertToReplication(false, valuenode, Optional.empty());
+
     }
 
     public static TableIdentifier processDebeziumKey(ObjectNode on) {

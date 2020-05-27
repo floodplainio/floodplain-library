@@ -20,7 +20,6 @@ package io.floodplain.streams.debezium.impl;
 
 import io.floodplain.replication.api.ReplicationMessage;
 import io.floodplain.replication.impl.protobuf.FallbackReplicationMessageParser;
-import io.floodplain.streams.api.TopologyContext;
 import io.floodplain.streams.debezium.JSONToReplicationMessage;
 import io.floodplain.streams.debezium.KeyValue;
 import org.apache.kafka.streams.processor.Processor;

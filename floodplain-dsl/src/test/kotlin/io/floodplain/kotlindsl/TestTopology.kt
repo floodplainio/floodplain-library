@@ -18,40 +18,16 @@
  */
 package io.floodplain.kotlindsl
 
-import io.debezium.engine.ChangeEvent
-import io.debezium.engine.DebeziumEngine
 import io.floodplain.kotlindsl.message.IMessage
 import io.floodplain.kotlindsl.message.empty
-import io.floodplain.postgresDataSource
 import io.floodplain.replication.api.ReplicationMessage
-import io.floodplain.streams.api.TopologyContext
 import io.floodplain.streams.remotejoin.StoreStateProcessor
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
+import org.apache.kafka.streams.state.KeyValueStore
 import java.math.BigDecimal
 import java.time.Duration
-import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.broadcastIn
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import org.apache.kafka.streams.state.KeyValueStore
-import org.junit.Ignore
-import java.nio.file.Files
-import java.nio.file.Paths
-import java.util.UUID
-import java.util.UUID.*
-import java.util.concurrent.Executors
-import java.util.concurrent.atomic.AtomicLong
 
 private val logger = mu.KotlinLogging.logger {}
 
@@ -101,6 +77,7 @@ class TestTopology {
             }
         }.renderAndTest {
             input("mysource", "1", empty().set("species", "human"))
+            println("outputs: ${outputs()}")
             val (_, value) = output("people")
             logger.info("Person found: $value")
         }
@@ -414,12 +391,39 @@ class TestTopology {
             input("@source", "key1", empty().set("groupKey", "group1"))
             delete("@source", "key1")
             val (_, ivalue) = output("@output")
-            logger.info("Value: $ivalue")
-            assertEquals(1, ivalue["total"], "Entries with different keys should add")
+            logger.info("Value:> $ivalue")
+            delete("@source", "key2")
 
+            assertEquals(1, ivalue["total"], "Entries with different keys should add")
+            skip("@output",2)
             val (_, value2) = output("@output")
-            logger.info("Value: $value2")
+            logger.info("Value: $value2 outputsize: ${outputSize("@output")}")
             assertEquals(0, value2["total"], "Delete should subtract")
+        }
+    }
+
+    @Test
+    fun testScanGroupedSimple() {
+        stream {
+            source("@source") {
+                scan({ msg -> msg["groupKey"] as String }, { msg -> msg["total"] = 0; msg }, {
+                    set { _, _, acc -> acc["total"] = acc["total"] as Int + 1; acc }
+                }, {
+                    set { _, _, acc -> acc["total"] = acc["total"] as Int - 1; acc }
+                })
+                each {
+                        key, msg, acc -> logger.info("Each: $key -> $msg -> $acc")
+                }
+
+                sink("@output")
+            }
+        }.renderAndTest {
+            input("@source", "key1", empty().set("groupKey", "group1"))
+            delete("@source", "key1")
+            skip("@output",1)
+            val (_, value) = output("@output") // key1 deleted, so total should be 0 again
+            assertEquals(0, value["total"], "Entries with the same key should replace")
+
         }
     }
 

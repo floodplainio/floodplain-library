@@ -19,7 +19,6 @@
 package io.floodplain.reactive.source.topology;
 
 import io.floodplain.reactive.source.topology.api.TopologyPipeComponent;
-import io.floodplain.streams.api.CoreOperators;
 import io.floodplain.streams.api.TopologyContext;
 import io.floodplain.streams.debezium.impl.DebeziumConversionProcessor;
 import io.floodplain.streams.remotejoin.IdentityProcessor;
@@ -42,6 +41,10 @@ public class DebeziumTopicSource implements TopologyPipeComponent {
         this.resource = resource;
         this.table = table;
         this.schema = schema;
+    }
+
+    public String resourceName() {
+        return resource;
     }
 
 

@@ -1,13 +1,11 @@
 package io.floodplain.kotlindsl.transformer
 
-import io.floodplain.ChangeRecord
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.sendBlocking
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.runBlocking
 
 class Callback(val callback: (event: String)->Unit) {

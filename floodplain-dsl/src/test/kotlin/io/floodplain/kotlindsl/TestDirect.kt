@@ -1,6 +1,5 @@
 package io.floodplain.kotlindsl
 
-import io.floodplain.kotlindsl.message.fromImmutable
 import io.floodplain.postgresDataSource
 import io.floodplain.replication.api.ReplicationMessageParser
 import io.floodplain.replication.factory.ReplicationFactory
@@ -15,10 +14,11 @@ import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.broadcastIn
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import org.junit.Ignore
 import org.junit.Test
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -37,36 +37,47 @@ class TestDirect {
      * Test the simplest imaginable pipe: One source and one sink.
      */
     @Test
-    fun testPostgresSource() {
-        stream {
+    fun testPostgresSourceJustTheInfra() {
+        stream("any","myinstance") {
             val pgConfig = postgresSourceConfig("mypostgres", "localhost", 5432, "postgres", "mysecretpassword", "dvdrental", "public")
             pgConfig.source("city") {
                 sink("topic")
             }
         }.renderAndTest {
-            val ctx = this
-            var count: Int = 0
-            logger.info("Sources found: ${sources().keys}")
+            assertEquals(1,this.sourceConfigurations().size)
+            val postgresSource = this.sourceConfigurations().first()
+            assertEquals(1,postgresSource.sourceElements().size)
+            val topicSource = postgresSource.sourceElements().first()
 
-            ctx.sources().forEach { (k, v) ->
-                println("soure: $k")
-                v.collect { record ->
-                    println(">>> ${record.topic} ${record.key} ${record.value}"); count++
-                }
-            }
-            delay(38000)
-            assertEquals(2, outputSize("topic"))
-            logger.info("TopologySources: ${topologyConstructor().desiredTopicNames()}")
-        }.start()
-        runBlocking {
-            println("job started")
-            delay(12000)
+            assertEquals("myinstance-mypostgres.public.city",topicSource.topicName())
         }
-        // TODO Continue
     }
 
+    /**
+     * Test the simplest imaginable pipe: One source and one sink.
+     */
+    @Test
+    fun testPostgresSource() {
+        stream("any","myinstance") {
+            val pgConfig = postgresSourceConfig("mypostgres", "localhost", 5432, "postgres", "mysecretpassword", "dvdrental", "public")
+            pgConfig.source("city") {
+                sink("topic")
+            }
+        }.renderAndTest {
 
-    @Test(expected = CancellationException::class)
+            runBlocking {
+                val job = launch { connectSource() }
+                // repeat(1000) {
+                //     println("output size: "+outputSize("topic"))
+                //     delay(50)
+                // }
+                delay(100000)
+                job.cancel("whoooops")
+//                job.join()
+            }
+        }
+    }
+    @Test(expected = CancellationException::class) @Ignore
     fun testPostgresSourceSimple() {
         ReplicationFactory.setInstance(parser);
         val tempPath = Paths.get("path_${UUID.randomUUID()}")
@@ -85,14 +96,30 @@ class TestDirect {
                         println(it.first)
                     }
             }
-            delay(10000)
+            delay(100000)
             cancel("done")
         }
         Files.deleteIfExists(tempPath)
     }
 
 
-    @Test
+    @Test @Ignore
+    fun testPostgresSlowConsume() {
+        val path = Paths.get("_someoffsetpath" + UUID.randomUUID())
+        val broadcastFlow = postgresDataSource("mypostgres", "localhost", 5432, "dvdrental", "postgres", "mysecretpassword", path)
+        runBlocking {
+            val jv = launch {
+                broadcastFlow.collect {
+                    delay(1000)
+                    println("Record: ${it.topic} key: ${it.key}")
+                }
+            }
+            delay(10000)
+            jv.cancel("bye")
+        }
+    }
+
+    @Test @Ignore
     fun testPostgresSourceBroadcast() {
         // CoRoutine
         val path = Paths.get("_someoffsetpath"+ UUID.randomUUID())

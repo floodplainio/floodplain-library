@@ -22,7 +22,6 @@ import io.floodplain.immutable.api.ImmutableMessage;
 import io.floodplain.reactive.source.topology.api.TopologyPipeComponent;
 import io.floodplain.replication.api.ReplicationMessage;
 import io.floodplain.replication.api.ReplicationMessage.Operation;
-import io.floodplain.streams.api.CoreOperators;
 import io.floodplain.streams.api.TopologyContext;
 import io.floodplain.streams.debezium.JSONToReplicationMessage;
 import io.floodplain.streams.remotejoin.ranged.GroupedUpdateProcessor;

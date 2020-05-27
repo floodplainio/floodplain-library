@@ -19,26 +19,63 @@
 package io.floodplain.kotlindsl
 
 import io.floodplain.ChangeRecord
+import io.floodplain.kotlindsl.message.fromImmutable
 import io.floodplain.postgresDataSource
 import io.floodplain.reactive.source.topology.DebeziumTopicSource
+import io.floodplain.replication.api.ReplicationMessage
 import io.floodplain.streams.api.TopologyContext
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.channels.map
+import io.floodplain.streams.debezium.JSONToReplicationMessage
+import io.floodplain.streams.debezium.JSONToReplicationMessage.processDebeziumBody
+import io.floodplain.streams.debezium.JSONToReplicationMessage.processDebeziumJSONKey
+import io.floodplain.streams.debezium.impl.DebeziumConversionProcessor
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.broadcastIn
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.onEach
-import java.lang.IllegalArgumentException
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.nio.file.Path
+import java.nio.file.Paths
+import java.util.UUID
 
 private val logger = mu.KotlinLogging.logger {}
 
-class PostgresConfig(val topologyContext: TopologyContext, val name: String, val hostname: String, val port: Int, val username: String, val password: String, val database: String, val defaultSchema: String? = null) : Config() {
+class PostgresConfig(val topologyContext: TopologyContext, val name: String, val hostname: String, val port: Int, val username: String, val password: String, val database: String, val defaultSchema: String? = null) : Config {
 
-    private val sourceElements: MutableList<DebeziumSourceElement> = mutableListOf()
-    private var broadcastScope: CoroutineScope? = null
+    private val sourceElements: MutableList<SourceTopic> = mutableListOf()
+
+    val processor = DebeziumConversionProcessor()
+
+    override fun sourceElements(): List<SourceTopic> {
+        return sourceElements
+    }
+    override suspend fun connectSource(inputReceiver: InputReceiver) {
+        val elements = sourceElements.toSet()
+        val broadcastFlow = directSource(Paths.get("somepath"+UUID.randomUUID().toString()))
+        broadcastFlow.collect {
+            val availableSourceTopics = sourceElements.map { topologyContext.topicName(it.topicName()) }.toSet()
+            if(availableSourceTopics.contains(it.topic)) {
+                val parsedKey = processDebeziumJSONKey(it.key)
+                println("matched! Matching key: $parsedKey")
+                val rm = processDebeziumBody(it.value.toByteArray())
+                val operation = rm.operation()
+                try {
+                    when (operation) {
+                        ReplicationMessage.Operation.DELETE ->
+                            inputReceiver.delete(it.topic, parsedKey)
+                        else ->
+                            inputReceiver.input(it.topic, parsedKey, fromImmutable(rm.message()))
+                    }
+                    println("done!!")
+                } catch (e: Throwable) {
+                    e.printStackTrace()
+                }
+            // } else {
+            //     println("skipping topic: ${it.topic} as it hasn't been registered. Registrations: $availableSourceTopics")
+            }
+        }
+    }
 
     override fun materializeConnectorConfig(topologyContext: TopologyContext): Pair<String, Map<String, String>> {
         return name to mapOf(
@@ -49,7 +86,7 @@ class PostgresConfig(val topologyContext: TopologyContext, val name: String, val
                 "database.user" to username,
                 "database.password" to password,
                 // TODO
-                "tablewhitelistorsomething" to sourceElements.map { e -> e.schema + "." + e.table }.joinToString(",")
+                "tablewhitelistorsomething" to sourceElements.map { e -> e.topicName() }.joinToString(",")
         )
     }
 
@@ -61,38 +98,14 @@ class PostgresConfig(val topologyContext: TopologyContext, val name: String, val
         return postgresDataSource(topologyContext.topicName(name), hostname, port, database, username, password, offsetFilePath)
     }
 
-    override fun closeSource() {
-        broadcastScope?.cancel("doei")
-    }
-    override fun allSources(topologyContext: TopologyContext, coroutineScope: CoroutineScope, offsetFilePath: Path): Map<String, Flow<ChangeRecord>> {
-        val sourceFlow = directSource(offsetFilePath)
-            // .onEach {
-            //     record -> logger.info("Found key: ${record.key} for destination: ${record.topic}")
-            // }
-        // cancel previous scopes?
-        val broadcast = sourceFlow.broadcastIn(coroutineScope).asFlow()
-
-        return sourceElements.map {
-            val downstream = broadcast
-                .filter { e -> "${it.prefix}.${it.schema}.${it.table}" == e.topic }
-                .onEach {
-                        e ->
-                            val a = it
-                            println("Prefx: ${it.prefix}")
-                            println("Checking: ${it.prefix}.${it.schema}.${it.table} <-> ${e.topic}")
-                }
-                .onEach {
-                        e -> logger.info("Checked if topic ${e.topic} matches expected: ${it.prefix}.${it.schema}.${it.table}")
-                }
-            Pair(it.combinedName(), downstream)
-        }.toMap()
-    }
-
 
     fun source(table: String, schema: String? = null, init: Source.() -> Unit): Source {
         val effectiveSchema = schema ?: defaultSchema ?: "public"
         val topicSource = DebeziumTopicSource(name, table, effectiveSchema)
-        val topicName = topicSource.topicName(topologyContext)
+        //myinstance-mypostgres.public.city
+        // val assembledName = topicSource.topicName(topologyContext) + "."+effectiveSchema+"."+table
+        //
+        val topicName = topicSource.resourceName() // TODO double check topicName(topologyContext)
         addSourceElement(DebeziumSourceElement(topicName, table, effectiveSchema))
         val databaseSource = Source(topicSource)
         databaseSource.init()
@@ -117,13 +130,17 @@ fun Stream.postgresSource(schema: String, table: String, config: PostgresConfig,
     return databaseSource
 }
 
-class DebeziumSourceElement(val prefix: String, val table: String, val schema: String) {
+class DebeziumSourceElement(val prefix: String, val table: String, val schema: String): SourceTopic {
     init {
         if(prefix.contains('.')) {
-            throw IllegalArgumentException("DebeziumSource elements can not contains '.' Encountered: "+prefix)
+            throw IllegalArgumentException("DebeziumSource elements can not contain '.' Encountered: "+prefix)
+        }
+        if(prefix.contains('-')) {
+            throw IllegalArgumentException("DebeziumSource elements can not contain '-' Encountered: "+prefix)
         }
     }
-    fun combinedName(): String {
+
+    override fun topicName(): String {
         return "$prefix.$schema.$table"
     }
 }

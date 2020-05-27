@@ -22,7 +22,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
-import java.util.concurrent.Callable;
 import java.util.function.Function;
 
 public class TopologyContext {
@@ -44,7 +43,9 @@ public class TopologyContext {
         @Override
         public String apply(String name) {
             if(name.contains("-") || name.contains(":")) {
-                throw new IllegalArgumentException("Can't use '-' or ':' in topic name. name: "+name);
+                logger.warn("Can't use '-' or ':' in topic name. name: ${name}, not-requalifying,");
+                return name;
+//                throw new IllegalArgumentException("Can't use '-' or ':' in topic name. name: "+name);
             }
             if (name.startsWith("@")) {
                 String[] withInstance = name.split(":");

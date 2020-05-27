@@ -18,17 +18,13 @@
  */
 package io.floodplain.kotlindsl
 
-import io.floodplain.ChangeRecord
 import io.floodplain.reactive.source.topology.SinkTransformer
 import io.floodplain.streams.api.TopologyContext
 import java.util.Optional
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.Flow
-import java.nio.file.Path
 
 private val logger = mu.KotlinLogging.logger {}
 
-class MongoConfig(val name: String, val uri: String, val database: String) : Config() {
+class MongoConfig(val name: String, val uri: String, val database: String) : Config {
 
     val sinkInstancePair: MutableList<Pair<String, String>> = mutableListOf()
     override fun materializeConnectorConfig(topologyContext: TopologyContext): Pair<String, Map<String, String>> {
@@ -61,13 +57,13 @@ class MongoConfig(val name: String, val uri: String, val database: String) : Con
         return name to settings
     }
 
-    override fun allSources(topologyContext: TopologyContext,scope: CoroutineScope, fileOffsetPath: Path): Map<String, Flow<ChangeRecord>> {
-        TODO("Not yet implemented")
+    override fun sourceElements(): List<SourceTopic> {
+        return emptyList()
     }
 
-    override fun closeSource() {
-        TODO("Not yet implemented")
+    override suspend fun connectSource(inputReceiver: InputReceiver) {
     }
+
 }
 
 /**

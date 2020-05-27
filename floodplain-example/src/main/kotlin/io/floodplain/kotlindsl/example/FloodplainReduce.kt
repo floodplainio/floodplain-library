@@ -22,7 +22,6 @@ import io.floodplain.kotlindsl.join
 import io.floodplain.kotlindsl.message.empty
 import io.floodplain.kotlindsl.mongoConfig
 import io.floodplain.kotlindsl.mongoSink
-import io.floodplain.kotlindsl.postgresSource
 import io.floodplain.kotlindsl.postgresSourceConfig
 import io.floodplain.kotlindsl.scan
 import io.floodplain.kotlindsl.set

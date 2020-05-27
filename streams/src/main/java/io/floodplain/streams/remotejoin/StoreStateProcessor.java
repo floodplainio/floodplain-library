@@ -19,19 +19,14 @@
 package io.floodplain.streams.remotejoin;
 
 import io.floodplain.immutable.api.ImmutableMessage;
-import io.floodplain.immutable.factory.ImmutableFactory;
 import io.floodplain.replication.api.ReplicationMessage;
-import io.floodplain.replication.api.ReplicationMessage.Operation;
 import io.floodplain.replication.factory.ReplicationFactory;
 import org.apache.kafka.streams.processor.AbstractProcessor;
 import org.apache.kafka.streams.processor.ProcessorContext;
 import org.apache.kafka.streams.state.KeyValueStore;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 public class StoreStateProcessor extends AbstractProcessor<String, ReplicationMessage> {
 

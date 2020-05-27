@@ -3,16 +3,16 @@ package io.floodplain
 import io.debezium.engine.ChangeEvent
 import io.debezium.engine.DebeziumEngine
 import io.debezium.engine.format.Json
-import java.nio.file.Files
-import java.nio.file.Paths
-import java.util.Properties
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.sendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.runBlocking
+import java.nio.file.Files
 import java.nio.file.Path
+import java.nio.file.Paths
+import java.util.Properties
 import java.util.UUID
 
 private val logger = mu.KotlinLogging.logger {}
@@ -59,7 +59,7 @@ fun postgresDataSource(name: String, hostname: String, port: Int, database: Stri
         props.setProperty("database.password", password)
         props.setProperty("offset.storage.file.filename", offsetFilePath.toString())
         props.setProperty("offset.flush.interval.ms", "10000")
-        settings.forEach { k, v -> props.put(k, v) }
+        settings.forEach { k, v -> props[k] = v }
         logger.info("Starting source flow with name: ${props.getProperty("name")} offsetpath: $offsetFilePath ")
         return callbackFlow {
             val engine = DebeziumEngine.create(Json::class.java)
