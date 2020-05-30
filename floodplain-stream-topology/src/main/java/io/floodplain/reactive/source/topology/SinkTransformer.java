@@ -20,6 +20,8 @@ package io.floodplain.reactive.source.topology;
 
 import io.floodplain.reactive.source.topology.api.TopologyPipeComponent;
 import io.floodplain.replication.api.ReplicationMessage;
+import io.floodplain.streams.api.ProcessorName;
+import io.floodplain.streams.api.Topic;
 import io.floodplain.streams.api.TopologyContext;
 import io.floodplain.streams.remotejoin.TopologyConstructor;
 import io.floodplain.streams.serializer.ConnectKeySerde;
@@ -34,16 +36,16 @@ import java.util.Stack;
 
 public class SinkTransformer implements TopologyPipeComponent {
 
-    private final Optional<String> name;
+    private final Optional<ProcessorName> name;
     private final Optional<Integer> partitions;
     private final boolean materializeParent;
     private final boolean connectFormat;
-    private final String topic;
+    private final Topic topic;
 
 
     private final static Logger logger = LoggerFactory.getLogger(SinkTransformer.class);
 
-    public SinkTransformer(Optional<String> name, String topic, boolean materializeParent, Optional<Integer> partitions, boolean connectFormat) {
+    public SinkTransformer(Optional<ProcessorName> name, Topic topic, boolean materializeParent, Optional<Integer> partitions, boolean connectFormat) {
         this.name = name;
         this.topic = topic;
         this.partitions = partitions;
@@ -54,23 +56,23 @@ public class SinkTransformer implements TopologyPipeComponent {
     @Override
     public void addToTopology(Stack<String> transformerNames, int pipeId, Topology topology, TopologyContext topologyContext, TopologyConstructor topologyConstructor) {
 
-        String sinkTopic = topologyContext.topicName(topic);
-        topologyConstructor.ensureTopicExists(sinkTopic, partitions);
+        final String qualifiedSinkTopic = topic.qualifiedString(topologyContext);
+        topologyConstructor.ensureTopicExists(topic, partitions);
         String qualifiedName;
         if(name.isPresent()) {
             // TODO effective deconflicting but ugly
-            qualifiedName = topologyContext.topicName(name.get()+"_"+topic);
+            qualifiedName = name.get().definition() + "_" +  topologyContext.topicName(name.get()+"_"+topic);
         } else {
-            qualifiedName = sinkTopic; //topologyContext.applicationId();
+            qualifiedName = qualifiedSinkTopic; //topologyContext.applicationId();
         }
 
         logger.info("Stack top for transformer: " + transformerNames.peek());
         if(connectFormat) {
             Serializer<String> connectKeySerde = new ConnectKeySerde().serializer();
             Serializer<ReplicationMessage> connectValueSerde = new ConnectReplicationMessageSerde().serializer();
-            topology.addSink(qualifiedName, sinkTopic, connectKeySerde, connectValueSerde, transformerNames.peek());
+            topology.addSink(qualifiedName, qualifiedSinkTopic, connectKeySerde, connectValueSerde, transformerNames.peek());
         } else {
-            topology.addSink(qualifiedName, sinkTopic, transformerNames.peek());
+            topology.addSink(qualifiedName, qualifiedSinkTopic, transformerNames.peek());
         }
     }
 

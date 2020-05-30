@@ -22,6 +22,7 @@ import io.floodplain.immutable.api.ImmutableMessage;
 import io.floodplain.reactive.source.topology.api.TopologyPipeComponent;
 import io.floodplain.replication.api.ReplicationMessage;
 import io.floodplain.replication.api.ReplicationMessage.Operation;
+import io.floodplain.streams.api.Topic;
 import io.floodplain.streams.api.TopologyContext;
 import io.floodplain.streams.debezium.JSONToReplicationMessage;
 import io.floodplain.streams.remotejoin.ranged.GroupedUpdateProcessor;
@@ -109,15 +110,14 @@ public class ReplicationTopologyParser {
         topologyConstructor.stateStoreSupplier.put(diffProcessorNamePrefix, createMessageStoreSupplier(diffProcessorNamePrefix, true));
     }
 
-    public static String addLazySourceStore(final Topology currentBuilder, TopologyContext context,
-                                            TopologyConstructor topologyConstructor, String topicName, Deserializer<?> keyDeserializer, Deserializer<?> valueDeserializer) {
-        topologyConstructor.addDesiredTopic(topicName, Optional.empty());
-        if (!topologyConstructor.sources.containsKey(topicName)) {
-            currentBuilder.addSource(topicName, keyDeserializer, valueDeserializer, topicName);
-            topologyConstructor.sources.put(topicName, topicName);
+    public static void addLazySourceStore(final Topology currentBuilder, TopologyContext context,
+                                            TopologyConstructor topologyConstructor, Topic topic, Deserializer<?> keyDeserializer, Deserializer<?> valueDeserializer) {
+        topologyConstructor.addDesiredTopic(topic, Optional.empty());
+        if (!topologyConstructor.sources.containsKey(topic)) {
+            currentBuilder.addSource(topic.qualifiedString(context), keyDeserializer, valueDeserializer, topic.qualifiedString(context));
+            topologyConstructor.sources.put(topic, topic.qualifiedString(context));
             // TODO Optimize. The topology should be valid without adding identityprocessors
         }
-        return topicName;
     }
 
     //    ss
@@ -131,20 +131,20 @@ public class ReplicationTopologyParser {
         return name;
     }
 
-    public static String addSourceStore(final Topology currentBuilder, TopologyContext context, TopologyConstructor topologyConstructor, String sourceTopicName,boolean connectSourceFormat, boolean materializeStore) {
-        String storeTopic = context.topicName(sourceTopicName);
+    public static String addSourceStore(final Topology currentBuilder, TopologyContext context, TopologyConstructor topologyConstructor, Topic sourceTopicName,boolean connectSourceFormat, boolean materializeStore) {
+//        String storeTopic = context.topicName(sourceTopicName);
         // TODO It might be better to fail if the topic does not exist? -> Well depends, if it is external yes, but if it is created by the same instance, then no.
-        final String sourceProcessorName = "SOURCE_"+storeTopic;
-        if (storeTopic != null) {
+        final String sourceProcessorName =  sourceTopicName.prefixedString("SOURCE",context);
+        if (sourceTopicName != null) {
             String sourceName;
-            if (!topologyConstructor.sources.containsKey(storeTopic)) {
+            if (!topologyConstructor.sources.containsKey(sourceTopicName)) {
                 sourceName = sourceProcessorName + "_src";
                 if (connectSourceFormat) {
-                    currentBuilder.addSource(sourceName, ConnectReplicationMessageSerde.keyDeserialize(), JSONToReplicationMessage.replicationFromConnect(), storeTopic);
+                    currentBuilder.addSource(sourceName, ConnectReplicationMessageSerde.keyDeserialize(), JSONToReplicationMessage.replicationFromConnect(), sourceTopicName.qualifiedString(context));
                 } else {
-                    currentBuilder.addSource(sourceName, storeTopic);
+                    currentBuilder.addSource(sourceName, sourceTopicName.qualifiedString(context));
                 }
-                topologyConstructor.sources.put(storeTopic, sourceName);
+                topologyConstructor.sources.put(sourceTopicName, sourceName);
                 if (materializeStore) {
                     currentBuilder.addProcessor(sourceProcessorName, () -> new StoreProcessor(STORE_PREFIX + sourceProcessorName), sourceName);
                 } else {
@@ -153,7 +153,7 @@ public class ReplicationTopologyParser {
                 }
 
             } else {
-                sourceName = topologyConstructor.sources.get(storeTopic);
+                sourceName = topologyConstructor.sources.get(sourceTopicName);
             }
 
         }
@@ -163,7 +163,7 @@ public class ReplicationTopologyParser {
             topologyConstructor.stateStoreSupplier.put(STORE_PREFIX + sourceProcessorName, createMessageStoreSupplier(STORE_PREFIX + sourceProcessorName, true));
         }
 
-        logger.info("Granting access for processor: {} to store: {}", sourceProcessorName, STORE_PREFIX + storeTopic);
+        logger.info("Granting access for processor: {} to store: {}", sourceProcessorName, sourceProcessorName);
 
         return sourceProcessorName;
     }

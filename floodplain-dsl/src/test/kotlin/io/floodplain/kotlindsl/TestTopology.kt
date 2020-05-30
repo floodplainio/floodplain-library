@@ -22,12 +22,12 @@ import io.floodplain.kotlindsl.message.IMessage
 import io.floodplain.kotlindsl.message.empty
 import io.floodplain.replication.api.ReplicationMessage
 import io.floodplain.streams.remotejoin.StoreStateProcessor
-import org.apache.kafka.streams.state.KeyValueStore
 import java.math.BigDecimal
 import java.time.Duration
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import org.apache.kafka.streams.state.KeyValueStore
 
 private val logger = mu.KotlinLogging.logger {}
 
@@ -395,7 +395,7 @@ class TestTopology {
             delete("@source", "key2")
 
             assertEquals(1, ivalue["total"], "Entries with different keys should add")
-            skip("@output",2)
+            skip("@output", 2)
             val (_, value2) = output("@output")
             logger.info("Value: $value2 outputsize: ${outputSize("@output")}")
             assertEquals(0, value2["total"], "Delete should subtract")
@@ -420,10 +420,9 @@ class TestTopology {
         }.renderAndTest {
             input("@source", "key1", empty().set("groupKey", "group1"))
             delete("@source", "key1")
-            skip("@output",1)
+            skip("@output", 1)
             val (_, value) = output("@output") // key1 deleted, so total should be 0 again
             assertEquals(0, value["total"], "Entries with the same key should replace")
-
         }
     }
 
@@ -549,5 +548,4 @@ class TestTopology {
 //            assertEquals(10L,storeSize)
         }
     }
-
 }

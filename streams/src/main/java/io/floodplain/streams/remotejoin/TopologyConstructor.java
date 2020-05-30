@@ -20,6 +20,8 @@ package io.floodplain.streams.remotejoin;
 
 import io.floodplain.immutable.api.ImmutableMessage;
 import io.floodplain.replication.api.ReplicationMessage;
+import io.floodplain.streams.api.Topic;
+import io.floodplain.streams.api.TopologyContext;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.streams.state.KeyValueStore;
@@ -36,30 +38,30 @@ public class TopologyConstructor {
     public final Map<String, StoreBuilder<KeyValueStore<String, ImmutableMessage>>> immutableStoreSupplier = new HashMap<>();
     // TODO: Could be optional, only needed in xml based stream code
     public final Set<String> stores = new HashSet<>();
-    public final Map<String, String> sources = new HashMap<>();
+    public final Map<Topic, String> sources = new HashMap<>();
     // TODO could race conditions happen? If so, would that be a problem?
 
-    private final Map<String, Optional<Integer>> desiredTopics = new HashMap<>();
+    private final Map<Topic, Optional<Integer>> desiredTopics = new HashMap<Topic, Optional<Integer>>();
     private int streamCounter = 1;
 
     public TopologyConstructor() {
     }
 
-    public void addDesiredTopic(String topicName, Optional<Integer> partitions) {
+    public void addDesiredTopic(Topic topic, Optional<Integer> partitions) {
         // if requested with specific partition count, don't overwrite
-        if (!desiredTopics.containsKey(topicName) || partitions.isPresent())
-            desiredTopics.put(topicName, partitions);
+        if (!desiredTopics.containsKey(topic) || partitions.isPresent())
+            desiredTopics.put(topic, partitions);
     }
 
-    public Set<String> desiredTopicNames() {
+    public Set<Topic> desiredTopicNames() {
         return desiredTopics.keySet();
     }
 
-    public void ensureTopicExists(String topicName, Optional<Integer> partitionCount) {
+    public void ensureTopicExists(Topic topicName, Optional<Integer> partitionCount) {
         desiredTopics.put(topicName, partitionCount);
     }
 
-    public void createTopicsAsNeeded(String kafkaHosts) {
+    public void createTopicsAsNeeded(TopologyContext topologyContext, String kafkaHosts) {
         Map<String, Object> config = new HashMap<>();
         config.put("bootstrap.servers", kafkaHosts);
         config.put("client.id", UUID.randomUUID().toString());
@@ -75,7 +77,7 @@ public class TopologyConstructor {
         List<NewTopic> toBeCreated = desiredTopics.entrySet()
                 .stream()
                 .filter(e -> !topics.contains(e.getKey()))
-                .map(e -> new NewTopic(e.getKey(), e.getValue(), Optional.empty()))
+                .map(e -> new NewTopic(e.getKey().qualifiedString(topologyContext), e.getValue(), Optional.empty()))
                 .collect(Collectors.toList());
         try {
             adminClient.createTopics(toBeCreated).all().get();

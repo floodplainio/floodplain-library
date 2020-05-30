@@ -24,12 +24,15 @@ import io.floodplain.replication.api.ReplicationMessage
 import io.floodplain.replication.api.ReplicationMessageParser
 import io.floodplain.replication.factory.ReplicationFactory
 import io.floodplain.replication.impl.json.JSONReplicationMessageParserImpl
+import io.floodplain.streams.api.Topic
 import io.floodplain.streams.api.TopologyContext
 import io.floodplain.streams.remotejoin.TopologyConstructor
 import io.floodplain.streams.serializer.ReplicationMessageSerde
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import java.nio.file.Files
+import java.nio.file.Path
+import java.time.Duration
+import java.util.Properties
+import java.util.UUID
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.KeyValue
 import org.apache.kafka.streams.StreamsConfig
@@ -39,11 +42,6 @@ import org.apache.kafka.streams.Topology
 import org.apache.kafka.streams.TopologyTestDriver
 import org.apache.kafka.streams.processor.WallclockTimestampExtractor
 import org.apache.kafka.streams.state.KeyValueStore
-import java.nio.file.Files
-import java.nio.file.Path
-import java.time.Duration
-import java.util.Properties
-import java.util.UUID
 
 private val logger = mu.KotlinLogging.logger {}
 
@@ -51,11 +49,12 @@ private val parser: ReplicationMessageParser = JSONReplicationMessageParserImpl(
 
 interface InputReceiver {
     fun input(topic: String, key: String, msg: IMessage)
+    // fun input(topic: String, key: String, msg: ByteArray)
     fun delete(topic: String, key: String)
-    fun inputs() : Set<String>
+    fun inputs(): Set<String>
 }
 
-interface TestContext: InputReceiver {
+interface TestContext : InputReceiver {
     fun output(topic: String): Pair<String, IMessage>
     fun skip(topic: String, number: Int)
     /**
@@ -72,8 +71,7 @@ interface TestContext: InputReceiver {
     fun topologyConstructor(): TopologyConstructor
     fun sourceConfigurations(): List<Config>
     fun sinkConfigurations(): List<Config>
-    suspend fun connectSource();
-
+    suspend fun connectSource()
 }
 fun testTopology(
     topology: Topology,
@@ -93,7 +91,7 @@ fun testTopology(
     props.setProperty(StreamsConfig.STATE_DIR_CONFIG, storageFolder)
 
     val driver = TopologyTestDriver(topology, props)
-    val contextInstance = TestDriverContext(driver, context, topologyConstructor,sourceConfigs,sinkConfigs)
+    val contextInstance = TestDriverContext(driver, context, topologyConstructor, sourceConfigs, sinkConfigs)
 try {
         testCmds.invoke(contextInstance)
     } finally {
@@ -139,11 +137,12 @@ class TestDriverContext(
     }
 
     override fun input(topic: String, key: String, msg: IMessage) {
-        if(!inputs().contains(topic)) {
+        if (!inputs().contains(topic)) {
             logger.info("Missing topic: $topic available topics: ${inputs()}")
         }
-        logger.info("Input found. Key: $key topic: $topic alltopics: "+inputTopics.keys)
 
+        // logger.info("Input found. Key: $key topic: $topic alltopics: " + inputTopics.keys)
+        val topicSrc = Topic.from(topic)
         val qualifiedTopicName = topologyContext.topicName(topic)
         val inputTopic = inputTopics.computeIfAbsent(qualifiedTopicName) {
             driver.createInputTopic(qualifiedTopicName, Serdes.String().serializer(), ReplicationMessageSerde().serializer())
@@ -173,7 +172,7 @@ class TestDriverContext(
         }
     }
 
-    override fun skip(topic: String,number: Int) {
+    override fun skip(topic: String, number: Int) {
         repeat(number) {
             output(topic)
         }

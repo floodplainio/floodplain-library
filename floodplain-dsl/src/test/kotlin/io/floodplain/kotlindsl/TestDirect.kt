@@ -5,6 +5,13 @@ import io.floodplain.replication.api.ReplicationMessageParser
 import io.floodplain.replication.factory.ReplicationFactory
 import io.floodplain.replication.impl.json.JSONReplicationMessageParserImpl
 import io.floodplain.streams.debezium.JSONToReplicationMessage
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.util.Optional
+import java.util.UUID
+import java.util.concurrent.atomic.AtomicLong
+import kotlin.coroutines.EmptyCoroutineContext
+import kotlin.test.assertEquals
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
@@ -20,13 +27,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.junit.Ignore
 import org.junit.Test
-import java.nio.file.Files
-import java.nio.file.Paths
-import java.util.Optional
-import java.util.UUID
-import java.util.concurrent.atomic.AtomicLong
-import kotlin.coroutines.EmptyCoroutineContext
-import kotlin.test.assertEquals
 
 private val logger = mu.KotlinLogging.logger {}
 
@@ -38,18 +38,18 @@ class TestDirect {
      */
     @Test
     fun testPostgresSourceJustTheInfra() {
-        stream("any","myinstance") {
+        stream("any", "myinstance") {
             val pgConfig = postgresSourceConfig("mypostgres", "localhost", 5432, "postgres", "mysecretpassword", "dvdrental", "public")
             pgConfig.source("city") {
                 sink("topic")
             }
         }.renderAndTest {
-            assertEquals(1,this.sourceConfigurations().size)
+            assertEquals(1, this.sourceConfigurations().size)
             val postgresSource = this.sourceConfigurations().first()
-            assertEquals(1,postgresSource.sourceElements().size)
+            assertEquals(1, postgresSource.sourceElements().size)
             val topicSource = postgresSource.sourceElements().first()
 
-            assertEquals("myinstance-mypostgres.public.city",topicSource.topicName())
+            assertEquals("myinstance-mypostgres_public_city", topicSource.topic().qualifiedString(topologyContext()))
         }
     }
 
@@ -58,9 +58,10 @@ class TestDirect {
      */
     @Test
     fun testPostgresSource() {
-        stream("any","myinstance") {
+        stream("any", "myinstance") {
             val pgConfig = postgresSourceConfig("mypostgres", "localhost", 5432, "postgres", "mysecretpassword", "dvdrental", "public")
-            pgConfig.source("city") {
+            pgConfig.sourceSimple("city") {
+                each { key, iMessage, _ -> println("Whoop: $key \n$iMessage") }
                 sink("topic")
             }
         }.renderAndTest {
@@ -79,14 +80,14 @@ class TestDirect {
     }
     @Test(expected = CancellationException::class) @Ignore
     fun testPostgresSourceSimple() {
-        ReplicationFactory.setInstance(parser);
+        ReplicationFactory.setInstance(parser)
         val tempPath = Paths.get("path_${UUID.randomUUID()}")
         runBlocking {
             launch {
-                postgresDataSource( "mypostgres", "localhost", 5432, "dvdrental", "postgres", "mysecretpassword", tempPath)
-                     .map {
-                            record ->
-                        val kv = JSONToReplicationMessage.parse(record.key, record.value.toByteArray())
+                postgresDataSource("mypostgres", "localhost", 5432, "dvdrental", "postgres", "mysecretpassword", tempPath)
+                    .map {
+                        record ->
+                        val kv = JSONToReplicationMessage.parse(record.key, record.value)
                         println("<<<<|>>>> ${kv.key}")
 
                         val msg = parser.parseBytes(Optional.empty<String>(), kv.value)
@@ -101,7 +102,6 @@ class TestDirect {
         }
         Files.deleteIfExists(tempPath)
     }
-
 
     @Test @Ignore
     fun testPostgresSlowConsume() {
@@ -122,7 +122,7 @@ class TestDirect {
     @Test @Ignore
     fun testPostgresSourceBroadcast() {
         // CoRoutine
-        val path = Paths.get("_someoffsetpath"+ UUID.randomUUID())
+        val path = Paths.get("_someoffsetpath" + UUID.randomUUID())
 
         val scope = CoroutineScope(EmptyCoroutineContext)
         val broadcastFlow = postgresDataSource("mypostgres", "localhost", 5432, "dvdrental", "postgres", "mysecretpassword", path)
@@ -168,6 +168,4 @@ class TestDirect {
             Files.deleteIfExists(path)
         }
     }
-
-
 }

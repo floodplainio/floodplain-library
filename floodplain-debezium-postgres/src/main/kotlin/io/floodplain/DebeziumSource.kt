@@ -3,21 +3,21 @@ package io.floodplain
 import io.debezium.engine.ChangeEvent
 import io.debezium.engine.DebeziumEngine
 import io.debezium.engine.format.Json
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.Paths
+import java.util.Properties
+import java.util.UUID
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.sendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.runBlocking
-import java.nio.file.Files
-import java.nio.file.Path
-import java.nio.file.Paths
-import java.util.Properties
-import java.util.UUID
 
 private val logger = mu.KotlinLogging.logger {}
 
-data class ChangeRecord(val topic: String, val key: String, val value: String)
+data class ChangeRecord(val topic: String, val key: String, val value: ByteArray)
 
 fun main(args: Array<String>) {
     val offsetFilePath = Paths.get("offset")
@@ -48,7 +48,7 @@ fun main(args: Array<String>) {
  */
 fun postgresDataSource(name: String, hostname: String, port: Int, database: String, user: String, password: String, offsetFilePath: Path, settings: Map<String, String> = emptyMap()): Flow<ChangeRecord> {
         val props = Properties()
-        props.setProperty("name", "engine_"+UUID.randomUUID())
+        props.setProperty("name", "engine_" + UUID.randomUUID())
         props.setProperty("connector.class", "io.debezium.connector.postgresql.PostgresConnector")
         props.setProperty("database.hostname", hostname)
         props.setProperty("database.port", "$port")
@@ -65,7 +65,7 @@ fun postgresDataSource(name: String, hostname: String, port: Int, database: Stri
             val engine = DebeziumEngine.create(Json::class.java)
                 .using(props)
                 .notifying { record: ChangeEvent<String, String> ->
-                    sendBlocking(ChangeRecord(record.destination(), record.key(), record.value()))
+                    sendBlocking(ChangeRecord(record.destination(), record.key(), record.value().toByteArray()))
                 }
                 .build()
             engine.run()

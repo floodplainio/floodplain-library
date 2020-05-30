@@ -19,6 +19,7 @@
 package io.floodplain.reactive.source.topology;
 
 import io.floodplain.reactive.source.topology.api.TopologyPipeComponent;
+import io.floodplain.streams.api.Topic;
 import io.floodplain.streams.api.TopologyContext;
 import io.floodplain.streams.debezium.impl.DebeziumConversionProcessor;
 import io.floodplain.streams.remotejoin.IdentityProcessor;
@@ -35,34 +36,27 @@ public class DebeziumTopicSource implements TopologyPipeComponent {
     private final String table;
     private final String schema;
     private final String resource;
+    public final Topic topic;
     private boolean materialize;
+//    private static final String METADATANAME = "debezium";
 
     public DebeziumTopicSource(String resource, String table, String schema) {
         this.resource = resource;
         this.table = table;
         this.schema = schema;
+        this.topic = Topic.from(resource+"."+schema+"."+table);
     }
 
     public String resourceName() {
         return resource;
     }
 
-
-    public String topicName(TopologyContext topologyContext) {
-        return topologyContext.topicName(resource);
-
-    }
-
     @Override
     public void addToTopology(Stack<String> transformerNames, int pipeId, Topology topology, TopologyContext topologyContext, TopologyConstructor topologyConstructor) {
-        boolean appendTable = false;
-        final String metadataName = "debezium";
-
-        String topicName = topicName(topologyContext);
-        final String convertProcessorName = topologyContext.qualifiedName(metadataName + "_debconv", transformerNames.size(), pipeId);
-        final String finalProcessorName = topologyContext.qualifiedName(metadataName + "_deb", transformerNames.size(), pipeId);
-        ReplicationTopologyParser.addLazySourceStore(topology, topologyContext, topologyConstructor, topicName, Serdes.String().deserializer(), Serdes.ByteArray().deserializer());
-        topology.addProcessor(convertProcessorName, () -> new DebeziumConversionProcessor(), topicName);
+        final String convertProcessorName = topologyContext.qualifiedName("_debconv", transformerNames.size(), pipeId);
+        final String finalProcessorName = topologyContext.qualifiedName("_deb", transformerNames.size(), pipeId);
+        ReplicationTopologyParser.addLazySourceStore(topology, topologyContext, topologyConstructor, topic, Serdes.String().deserializer(), Serdes.ByteArray().deserializer());
+        topology.addProcessor(convertProcessorName, () -> new DebeziumConversionProcessor(), topic.qualifiedString(topologyContext));
 
         if (materialize) {
             topology.addProcessor(finalProcessorName, () -> new StoreProcessor(ReplicationTopologyParser.STORE_PREFIX + finalProcessorName), convertProcessorName);

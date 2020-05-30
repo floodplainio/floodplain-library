@@ -43,9 +43,13 @@ public class TopologyContext {
         @Override
         public String apply(String name) {
             if(name.contains("-") || name.contains(":")) {
-                logger.warn("Can't use '-' or ':' in topic name. name: ${name}, not-requalifying,");
+                logger.warn("Can't use '-' or ':' in topic name. name: {}, not-requalifying",name);
+//                Thread.dumpStack();
                 return name;
 //                throw new IllegalArgumentException("Can't use '-' or ':' in topic name. name: "+name);
+            }
+            if(!name.startsWith("@") && name.contains("@")) {
+                logger.warn("This is problematic: {}",name);
             }
             if (name.startsWith("@")) {
                 String[] withInstance = name.split(":");

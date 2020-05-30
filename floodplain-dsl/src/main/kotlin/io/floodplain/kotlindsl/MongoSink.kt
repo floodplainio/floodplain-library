@@ -19,6 +19,8 @@
 package io.floodplain.kotlindsl
 
 import io.floodplain.reactive.source.topology.SinkTransformer
+import io.floodplain.streams.api.ProcessorName
+import io.floodplain.streams.api.Topic
 import io.floodplain.streams.api.TopologyContext
 import java.util.Optional
 
@@ -63,7 +65,6 @@ class MongoConfig(val name: String, val uri: String, val database: String) : Con
 
     override suspend fun connectSource(inputReceiver: InputReceiver) {
     }
-
 }
 
 /**
@@ -78,6 +79,7 @@ fun Stream.mongoConfig(name: String, uri: String, database: String): MongoConfig
 
 fun PartialStream.mongoSink(collection: String, topic: String, config: MongoConfig) {
     config.sinkInstancePair.add(collection to topic)
-    val sink = SinkTransformer(Optional.of(config.name), topic, false, Optional.empty(), true)
+    val sinkName = ProcessorName.from(config.name)
+    val sink = SinkTransformer(Optional.of(sinkName), Topic.from(topic), false, Optional.empty(), true)
     addTransformer(Transformer(sink))
 }

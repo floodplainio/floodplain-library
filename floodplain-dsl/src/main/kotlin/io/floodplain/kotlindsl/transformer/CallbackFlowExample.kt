@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.runBlocking
 
-class Callback(val callback: (event: String)->Unit) {
+class Callback(val callback: (event: String) -> Unit) {
     fun run() {
         for (i in 0..10) {
             callback.invoke("event$i")
@@ -37,14 +37,14 @@ fun createFlow(): Flow<String> {
 
 fun main() {
     runBlocking {
-        val flow = createFlow();
+        val flow = createFlow()
         println("flow created")
         delay(10000)
-        flow.collect({e->println(e)})
+        flow.collect({ e -> println(e) })
     }
 }
 
 fun main3() {
-    val api = Callback{e->println("result>$e")}
+    val api = Callback { e -> println("result>$e") }
     api.run()
 }
