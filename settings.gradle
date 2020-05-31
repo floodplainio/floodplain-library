@@ -18,6 +18,7 @@ include 'immutable-api',
         'streams',
         'floodplain-stream-topology',
         'floodplain-dsl',
+        'floodplain-direct',
         'floodplain-debezium-postgres',
         'floodplain-example',
         'kafka-converter'
