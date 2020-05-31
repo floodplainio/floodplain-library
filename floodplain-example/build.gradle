@@ -11,6 +11,7 @@ def globalConf = rootProject.ext
 
 graal {
     graalVersion("19.3.2")
+    javaVersion("11")
     mainClass("io.floodplain.kotlindsl.example.FloodplainFilmWithActorsKt")
     outputName("Floodplain")
 }

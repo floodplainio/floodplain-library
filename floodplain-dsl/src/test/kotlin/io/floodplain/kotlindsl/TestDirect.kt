@@ -22,7 +22,10 @@ import kotlinx.coroutines.flow.broadcastIn
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.junit.Ignore
@@ -49,7 +52,7 @@ class TestDirect {
             assertEquals(1, postgresSource.sourceElements().size)
             val topicSource = postgresSource.sourceElements().first()
 
-            assertEquals("myinstance-mypostgres_public_city", topicSource.topic().qualifiedString(topologyContext()))
+            assertEquals("myinstance-mypostgres.public.city", topicSource.topic().qualifiedString(topologyContext()))
         }
     }
 
@@ -62,19 +65,19 @@ class TestDirect {
             val pgConfig = postgresSourceConfig("mypostgres", "localhost", 5432, "postgres", "mysecretpassword", "dvdrental", "public")
             pgConfig.sourceSimple("city") {
                 each { key, iMessage, _ -> println("Whoop: $key \n$iMessage") }
-                sink("topic")
+                sink("@topic")
             }
         }.renderAndTest {
-
+            logger.info("Detected sinks: ${topologyConstructor().sinks}")
             runBlocking {
-                val job = launch { connectSource() }
-                // repeat(1000) {
-                //     println("output size: "+outputSize("topic"))
-                //     delay(50)
-                // }
-                delay(100000)
-                job.cancel("whoooops")
-//                job.join()
+                    val job = launch { connectSource() }
+                    val cities = outputFlow()
+                        .take(50)
+                        .onCompletion { job.cancel("Cancelling source") }
+                        .map { (key, message) -> message.string("city") }
+                        .toList()
+
+                    println("Join output DONE. Size: ${cities.size} Cities: " + cities.joinToString(","))
             }
         }
     }

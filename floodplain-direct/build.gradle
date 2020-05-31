@@ -6,5 +6,4 @@ dependencies {
     compile(dependencies.kotlinLogging)
     implementation(dependencies.kafkaStreams)
     testCompile(dependencies.jUnit)
-    testCompile(dependencies.hamcrest)
 }

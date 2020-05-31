@@ -65,7 +65,7 @@ public class SinkTransformer implements TopologyPipeComponent {
         } else {
             qualifiedName = qualifiedSinkTopic; //topologyContext.applicationId();
         }
-
+        topologyConstructor.addSink(qualifiedName);
         logger.info("Stack top for transformer: " + transformerNames.peek());
         if(connectFormat) {
             Serializer<String> connectKeySerde = new ConnectKeySerde().serializer();

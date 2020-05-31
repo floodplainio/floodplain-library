@@ -24,7 +24,6 @@ ext {
             kafkaConnectApi   : "org.apache.kafka:connect-api:$kafka_version",
             kafkaConnectRuntime : "org.apache.kafka:connect-runtime:$kafka_version",
             kafkaStreams      : "org.apache.kafka:kafka-streams:$kafka_version",
-            kafkaStreamsTestUtils : "org.apache.kafka:kafka-streams-test-utils:$kafka_version"
     ]
 
 }

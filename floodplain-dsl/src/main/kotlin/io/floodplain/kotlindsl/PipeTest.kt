@@ -31,8 +31,14 @@ import io.floodplain.streams.serializer.ReplicationMessageSerde
 import java.nio.file.Files
 import java.nio.file.Path
 import java.time.Duration
+import java.util.Optional
 import java.util.Properties
 import java.util.UUID
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.channels.sendBlocking
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.isActive
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.KeyValue
 import org.apache.kafka.streams.StreamsConfig
@@ -72,6 +78,7 @@ interface TestContext : InputReceiver {
     fun sourceConfigurations(): List<Config>
     fun sinkConfigurations(): List<Config>
     suspend fun connectSource()
+    fun outputFlow(): Flow<Pair<String, IMessage>>
 }
 fun testTopology(
     topology: Topology,
@@ -92,7 +99,11 @@ fun testTopology(
 
     val driver = TopologyTestDriver(topology, props)
     val contextInstance = TestDriverContext(driver, context, topologyConstructor, sourceConfigs, sinkConfigs)
-try {
+    driver.setOutputListener {
+        logger.info("Output DETECTED: ")
+    }
+
+    try {
         testCmds.invoke(contextInstance)
     } finally {
         driver.allStateStores.forEach { store -> store.value.close() }
@@ -135,7 +146,20 @@ class TestDriverContext(
             config.connectSource(this@TestDriverContext)
         }
     }
-
+    override fun outputFlow(): Flow<Pair<String, IMessage>> {
+        return callbackFlow<Pair<String, IMessage>> {
+            driver.setOutputListener {
+                val key = Serdes.String().deserializer().deserialize(it.topic(), it.key())
+                val message = parser.parseBytes(Optional.of(it.topic()), it.value())
+                if (this.isActive) {
+                    sendBlocking(key to fromImmutable(message.message()))
+                }
+            }
+            awaitClose {
+                println("closing output flow!")
+            }
+        }
+    }
     override fun input(topic: String, key: String, msg: IMessage) {
         if (!inputs().contains(topic)) {
             logger.info("Missing topic: $topic available topics: ${inputs()}")
@@ -160,7 +184,6 @@ class TestDriverContext(
         val qualifiedTopicName = topologyContext.topicName(topic)
         val outputTopic = outputTopics.computeIfAbsent(qualifiedTopicName) { driver.createOutputTopic(qualifiedTopicName, Serdes.String().deserializer(), ReplicationMessageSerde().deserializer()) }
         val keyVal: KeyValue<String, ReplicationMessage?> = outputTopic.readKeyValue()
-//        outputTopic.
         val op = keyVal.value?.operation() ?: ReplicationMessage.Operation.DELETE
         if (op.equals(ReplicationMessage.Operation.DELETE)) {
             logger.info("delete detected! isnull? ${keyVal.value}")

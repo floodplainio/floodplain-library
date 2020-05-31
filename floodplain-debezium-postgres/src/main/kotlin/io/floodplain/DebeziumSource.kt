@@ -46,6 +46,7 @@ fun main(args: Array<String>) {
  * Defaults to empty map.
  *
  */
+@kotlinx.coroutines.ExperimentalCoroutinesApi
 fun postgresDataSource(name: String, hostname: String, port: Int, database: String, user: String, password: String, offsetFilePath: Path, settings: Map<String, String> = emptyMap()): Flow<ChangeRecord> {
         val props = Properties()
         props.setProperty("name", "engine_" + UUID.randomUUID())
@@ -68,6 +69,11 @@ fun postgresDataSource(name: String, hostname: String, port: Int, database: Stri
                     sendBlocking(ChangeRecord(record.destination(), record.key(), record.value().toByteArray()))
                 }
                 .build()
+            // TODO I'm unsure if it is wise to run this in the same thread
+            // Seems to work fine for my tests, so for the time being I'll keep it simple.
+            // Thread {
+            //     engine.run()
+            // }.start()
             engine.run()
             awaitClose {
                 println("closin!")

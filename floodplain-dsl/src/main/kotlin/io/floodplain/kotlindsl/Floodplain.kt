@@ -167,8 +167,7 @@ fun PartialStream.sink(topic: String, materializeParent: Boolean = false): Trans
 }
 
 /**
- * Creates a simple sink that will contain the result of the current transformation. Multiple sinks may not be added.
- */
+ * Creates a simple sink that takes a lambda that will  */
 fun PartialStream.dynamicSink(name: String, extractor: (String, IMessage) -> String): Transformer {
     val sink = DynamicSinkTransformer(name, Optional.empty()) { key, value -> extractor.invoke(key, fromImmutable(value)) }
     return addTransformer(Transformer(sink))

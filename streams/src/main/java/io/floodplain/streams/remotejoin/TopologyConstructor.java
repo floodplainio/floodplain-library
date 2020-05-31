@@ -38,6 +38,12 @@ public class TopologyConstructor {
     public final Map<String, StoreBuilder<KeyValueStore<String, ImmutableMessage>>> immutableStoreSupplier = new HashMap<>();
     // TODO: Could be optional, only needed in xml based stream code
     public final Set<String> stores = new HashSet<>();
+    public final Set<String> sinks = new HashSet<>();
+
+    /**
+     * Key is the topic object, value is the 'name' of the topic. Often the same as the topic name, but makes it possible to
+     * sink to the same topic multiple times
+     */
     public final Map<Topic, String> sources = new HashMap<>();
     // TODO could race conditions happen? If so, would that be a problem?
 
@@ -90,4 +96,7 @@ public class TopologyConstructor {
         return streamCounter++;
     }
 
+    public void addSink(String qualifiedName) {
+        sinks.add(qualifiedName);
+    }
 }
