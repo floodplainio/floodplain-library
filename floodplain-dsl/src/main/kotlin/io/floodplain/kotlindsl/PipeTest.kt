@@ -99,9 +99,6 @@ fun testTopology(
 
     val driver = TopologyTestDriver(topology, props)
     val contextInstance = TestDriverContext(driver, context, topologyConstructor, sourceConfigs, sinkConfigs)
-    driver.setOutputListener {
-        logger.info("Output DETECTED: ")
-    }
 
     try {
         testCmds.invoke(contextInstance)

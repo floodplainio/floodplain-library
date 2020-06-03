@@ -21,6 +21,9 @@ allprojects {
         jcenter()
         gradlePluginPortal()
         google()
+        maven {
+            url "http://packages.confluent.io/maven"
+        }
     }
 
     license {

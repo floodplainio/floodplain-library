@@ -177,6 +177,16 @@ data class IMessage(private val content: MutableMap<String, Any>) {
     override fun toString(): String {
         return this.content.toString()
     }
+
+    fun data(): Map<String, Any> {
+        return content.map { (key, value) ->
+            key to when (value) {
+                is IMessage -> value.data()
+                is List<*> -> (value as List<IMessage>).map { it.data() }
+                else -> value
+            }
+        }.toMap()
+    }
 }
 
 fun empty(): IMessage = IMessage(mutableMapOf())

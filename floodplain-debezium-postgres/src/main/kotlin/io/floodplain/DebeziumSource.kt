@@ -8,11 +8,14 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.Properties
 import java.util.UUID
+import kotlin.system.measureTimeMillis
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.sendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.runBlocking
 
 private val logger = mu.KotlinLogging.logger {}
@@ -46,9 +49,20 @@ fun main(args: Array<String>) {
  * Defaults to empty map.
  *
  */
+
+internal class EngineKillSwitch(var engine: DebeziumEngine<ChangeEvent<String, String>>? = null) {
+
+    fun kill() {
+        engine?.let {
+            println("Closing engine: $engine")
+            it.close()
+        }
+    }
+}
 @kotlinx.coroutines.ExperimentalCoroutinesApi
 fun postgresDataSource(name: String, hostname: String, port: Int, database: String, user: String, password: String, offsetFilePath: Path, settings: Map<String, String> = emptyMap()): Flow<ChangeRecord> {
         val props = Properties()
+    val startedAt = System.currentTimeMillis()
         props.setProperty("name", "engine_" + UUID.randomUUID())
         props.setProperty("connector.class", "io.debezium.connector.postgresql.PostgresConnector")
         props.setProperty("database.hostname", hostname)
@@ -62,22 +76,42 @@ fun postgresDataSource(name: String, hostname: String, port: Int, database: Stri
         props.setProperty("offset.flush.interval.ms", "10000")
         settings.forEach { k, v -> props[k] = v }
         logger.info("Starting source flow with name: ${props.getProperty("name")} offsetpath: $offsetFilePath ")
-        return callbackFlow {
+        val engineKillSwitch = EngineKillSwitch()
+        return callbackFlow<ChangeRecord> {
             val engine = DebeziumEngine.create(Json::class.java)
                 .using(props)
                 .notifying { record: ChangeEvent<String, String> ->
-                    sendBlocking(ChangeRecord(record.destination(), record.key(), record.value().toByteArray()))
+                    // if (isActive) {
+                        val perf = measureTimeMillis {
+                            Thread.sleep(10)
+                            try {
+                                sendBlocking(ChangeRecord(record.destination(), record.key(), record.value().toByteArray()))
+                            } catch (e: CancellationException) {
+                                engineKillSwitch.kill()
+                                Thread.currentThread().interrupt()
+                            }
+                        }
+                        if (perf > 1000) {
+                            println("Send blocking ran for: " + perf)
+                        }
+
+                    // }
                 }
                 .build()
             // TODO I'm unsure if it is wise to run this in the same thread
             // Seems to work fine for my tests, so for the time being I'll keep it simple.
+            engineKillSwitch.engine = engine
+            println("Engine ran for: " + measureTimeMillis {
+                engine.run() })
+            // engine.run()
+            println("Engine run completed")
             // Thread {
-            //     engine.run()
             // }.start()
-            engine.run()
+            // engine.run()
             awaitClose {
                 println("closin!")
                 engine.close()
             }
         }
+        .onCompletion { engineKillSwitch.kill() }
     }

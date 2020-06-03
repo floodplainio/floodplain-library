@@ -6,6 +6,7 @@ ext {
     slf4j_version = "1.7.30"
     mysql_version = "8.0.20"
     debezium_version = "1.2.0.Beta2"
+    testContainer_version = "1.14.3"
     commonDependencies = [
             debeziumPostgres  : "io.debezium:debezium-connector-postgres:$debezium_version",
             debeziumEmbedded  : "io.debezium:debezium-embedded:$debezium_version",
@@ -24,6 +25,8 @@ ext {
             kafkaConnectApi   : "org.apache.kafka:connect-api:$kafka_version",
             kafkaConnectRuntime : "org.apache.kafka:connect-runtime:$kafka_version",
             kafkaStreams      : "org.apache.kafka:kafka-streams:$kafka_version",
+            testContainer     : "org.testcontainers:testcontainers:$testContainer_version"
+
     ]
 
 }

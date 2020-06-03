@@ -6,11 +6,6 @@ plugins {
 apply from: "$rootProject.projectDir/gradle/shared.gradle"
 def globalConf = rootProject.ext
 
-repositories {
-    mavenCentral()
-}
-
-
 dependencies {
     Map<String, String> dependencies = globalConf.commonDependencies
     implementation(project(":immutable-api"))

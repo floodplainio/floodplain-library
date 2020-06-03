@@ -9,37 +9,77 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.Optional
 import java.util.UUID
-import java.util.concurrent.atomic.AtomicLong
-import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.assertEquals
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.broadcastIn
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import org.junit.After
 import org.junit.Ignore
 import org.junit.Test
+import org.testcontainers.containers.GenericContainer
 
 private val logger = mu.KotlinLogging.logger {}
 
 private val parser: ReplicationMessageParser = JSONReplicationMessageParserImpl()
 
+@kotlinx.coroutines.ExperimentalCoroutinesApi
 class TestDirect {
+
+    class KGenericContainer(imageName: String) : GenericContainer<KGenericContainer>(imageName)
+    var address: String? = "localhost"
+    var port: Int? = 5432
+
+    var container: GenericContainer<*>? = null
+
+    init {
+
+        // var envVar = System.getenv("EMBED_CONTAINER")
+        var envVar = "aap"
+        if (envVar != null) {
+            container = KGenericContainer("floodplain/floodplain-postgres-demo:1.0.0")
+                .apply { withExposedPorts(5432) }
+            container?.start()
+            address = container?.getHost()
+            port = container?.getFirstMappedPort()
+        } else {
+            address = "localhost"
+            port = 5432
+        }
+    }
+
     /**
      * Test the simplest imaginable pipe: One source and one sink.
      */
-    @Test
+
+    // @Before
+    // fun setup() {
+    //     if(false) {
+    //         container = GenericContainer<Nothing>("floodplain/floodplain-postgres-demo:1.0.0")
+    //             .apply{ withExposedPorts(5432) }
+    //         container?.start()
+    //         address = container?.getHost()
+    //         port = container?.getFirstMappedPort()
+    //     } else {
+    //         address = "localhost"
+    //         port = 5432
+    //     }
+    // }
+
+    @After
+    fun shutdown() {
+        container?.close()
+    }
+
+    @Test @Ignore
     fun testPostgresSourceJustTheInfra() {
         stream("any", "myinstance") {
             val pgConfig = postgresSourceConfig("mypostgres", "localhost", 5432, "postgres", "mysecretpassword", "dvdrental", "public")
@@ -49,35 +89,46 @@ class TestDirect {
         }.renderAndTest {
             assertEquals(1, this.sourceConfigurations().size)
             val postgresSource = this.sourceConfigurations().first()
-            assertEquals(1, postgresSource.sourceElements().size)
-            val topicSource = postgresSource.sourceElements().first()
+            // assertEquals(1, postgresSource.sourceElements().size)
+            // val topicSource = postgresSource.sourceElements().first()
 
-            assertEquals("myinstance-mypostgres.public.city", topicSource.topic().qualifiedString(topologyContext()))
+            // assertEquals("myinstance-mypostgres.public.city", topicSource.topic().qualifiedString(topologyContext()))
         }
     }
 
     /**
      * Test the simplest imaginable pipe: One source and one sink.
      */
-    @Test
+    @Test @Ignore
     fun testPostgresSource() {
+        println("Logger class: ${logger.underlyingLogger}")
+        logger.debug("startdebug")
         stream("any", "myinstance") {
-            val pgConfig = postgresSourceConfig("mypostgres", "localhost", 5432, "postgres", "mysecretpassword", "dvdrental", "public")
+            val pgConfig = postgresSourceConfig("mypostgres", address!!, port!!, "postgres", "mysecretpassword", "dvdrental", "public")
             pgConfig.sourceSimple("city") {
-                each { key, iMessage, _ -> println("Whoop: $key \n$iMessage") }
+                filter { _, msg
+                    -> msg.string("city").length == 8
+                }
                 sink("@topic")
             }
         }.renderAndTest {
             logger.info("Detected sinks: ${topologyConstructor().sinks}")
-            runBlocking {
+            val jb = GlobalScope.launch {
                     val job = launch { connectSource() }
                     val cities = outputFlow()
                         .take(50)
-                        .onCompletion { job.cancel("Cancelling source") }
+                        .onCompletion { delay(5000); job.cancel("Cancelling source") }
                         .map { (key, message) -> message.string("city") }
                         .toList()
 
-                    println("Join output DONE. Size: ${cities.size} Cities: " + cities.joinToString(","))
+                println("Join output DONE. Size: ${cities.size} Cities: " + cities.joinToString(","))
+                // delay(1000)
+                println("Job is active: ${job.isActive}")
+            }
+            runBlocking {
+                logger.info("jb starting. Status: ${jb.isActive}")
+                jb.join()
+                logger.info("Run blocking complete")
             }
         }
     }
@@ -113,62 +164,12 @@ class TestDirect {
         runBlocking {
             val jv = launch {
                 broadcastFlow.collect {
-                    delay(1000)
+                    delay(3000)
                     println("Record: ${it.topic} key: ${it.key}")
                 }
             }
             delay(10000)
             jv.cancel("bye")
-        }
-    }
-
-    @Test @Ignore
-    fun testPostgresSourceBroadcast() {
-        // CoRoutine
-        val path = Paths.get("_someoffsetpath" + UUID.randomUUID())
-
-        val scope = CoroutineScope(EmptyCoroutineContext)
-        val broadcastFlow = postgresDataSource("mypostgres", "localhost", 5432, "dvdrental", "postgres", "mysecretpassword", path)
-            .broadcastIn(scope)
-            .asFlow()
-            // .onEach {
-            //     println("topic::: ${it.topic}")
-            // }
-
-        val count = AtomicLong()
-        runBlocking {
-            val broadcastJob = launch {
-                broadcastFlow
-                    .broadcastIn(GlobalScope)
-                    .asFlow()
-            }
-            val connector = launch {
-                val job1 = GlobalScope.launch {
-                    broadcastFlow
-                        .filter { "mypostgres.public.city" == it.topic }
-                        .collect {
-                            println("Flow 1 ${it.topic} : ${it.key}")
-                        }
-                }
-                println("Flow 1 kicked")
-                val job2 = GlobalScope.launch {
-                    broadcastFlow
-                        .filter { "mypostgres.public.country" == it.topic }
-                        .onEach {
-                            val ll = count.incrementAndGet()
-                            // logger.info { "Broadcast count: $ll" }
-                        }
-                        .collect {
-                            println("Flow 2 ${it.topic} : ${it.key}")
-                        }
-                }
-
-                delay(15000)
-                broadcastJob.cancel("done")
-            }
-            connector.join()
-            logger.info("done!!!")
-            Files.deleteIfExists(path)
         }
     }
 }

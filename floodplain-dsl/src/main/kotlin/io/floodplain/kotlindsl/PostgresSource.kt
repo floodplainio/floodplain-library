@@ -40,11 +40,10 @@ class PostgresConfig(val topologyContext: TopologyContext, val name: String, val
 
     private val sourceElements: MutableList<SourceTopic> = mutableListOf()
 
-    // val processor = DebeziumConversionProcessor()
-
     override fun sourceElements(): List<SourceTopic> {
         return sourceElements
     }
+
     override suspend fun connectSource(inputReceiver: InputReceiver) {
         val elements = sourceElements.toSet()
         val broadcastFlow = directSource(Paths.get("somepath" + UUID.randomUUID().toString()))
@@ -69,6 +68,7 @@ class PostgresConfig(val topologyContext: TopologyContext, val name: String, val
                 }
             }
         }
+        logger.info("connectSource completed")
     }
 
     override fun materializeConnectorConfig(topologyContext: TopologyContext): Pair<String, Map<String, String>> {
@@ -120,9 +120,7 @@ fun Stream.postgresSourceConfig(name: String, hostname: String, port: Int, usern
 
 @Deprecated("Use the config object")
 fun Stream.postgresSource(schema: String, table: String, config: PostgresConfig, init: Source.() -> Unit): Source {
-
     val topicSource = DebeziumTopicSource(config.name, table, schema)
-    // val topicName = topicSource.topicName(this.context)
     config.addSourceElement(DebeziumSourceElement(topicSource.topic))
     val databaseSource = Source(topicSource)
     databaseSource.init()

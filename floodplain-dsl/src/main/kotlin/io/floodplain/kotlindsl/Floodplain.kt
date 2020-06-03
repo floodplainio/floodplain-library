@@ -69,6 +69,11 @@ interface SourceTopic {
     fun topic(): Topic
 }
 
+interface FloodplainSink {
+    fun send(docs: List<Pair<String, IMessage>>)
+    fun close()
+}
+
 /**
  * Filter a source. The supplied lambda should return 'true' if the message should be propagated, 'false' if not.
  */
