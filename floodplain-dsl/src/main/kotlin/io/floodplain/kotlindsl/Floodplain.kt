@@ -63,6 +63,7 @@ interface Config {
     fun materializeConnectorConfig(topologyContext: TopologyContext): Pair<String, Map<String, String>>
     fun sourceElements(): List<SourceTopic>
     suspend fun connectSource(inputReceiver: InputReceiver)
+    fun sinkElements(): Map<Topic, FloodplainSink>
 }
 
 interface SourceTopic {

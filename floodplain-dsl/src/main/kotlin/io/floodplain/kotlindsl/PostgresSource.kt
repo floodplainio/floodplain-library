@@ -71,6 +71,10 @@ class PostgresConfig(val topologyContext: TopologyContext, val name: String, val
         logger.info("connectSource completed")
     }
 
+    override fun sinkElements(): Map<Topic, FloodplainSink> {
+        TODO("Not yet implemented")
+    }
+
     override fun materializeConnectorConfig(topologyContext: TopologyContext): Pair<String, Map<String, String>> {
         return name to mapOf(
                 "connector.class" to "io.debezium.connector.postgresql.PostgresConnector",

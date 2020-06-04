@@ -78,7 +78,9 @@ interface TestContext : InputReceiver {
     fun sourceConfigurations(): List<Config>
     fun sinkConfigurations(): List<Config>
     suspend fun connectSource()
-    fun outputFlow(): Flow<Pair<String, IMessage>>
+    fun outputFlow(): Flow<Triple<Topic, String, IMessage>>
+    fun sinkConsumer(sinks: Map<Topic, List<FloodplainSink>>): (Triple<Topic, String, IMessage>) -> Unit
+    fun initializeSinks(): (Triple<Topic, String, IMessage>) -> Unit
 }
 fun testTopology(
     topology: Topology,
@@ -143,13 +145,40 @@ class TestDriverContext(
             config.connectSource(this@TestDriverContext)
         }
     }
-    override fun outputFlow(): Flow<Pair<String, IMessage>> {
-        return callbackFlow<Pair<String, IMessage>> {
+    override fun initializeSinks(): (Triple<Topic, String, IMessage>) -> Unit {
+        val map = mutableMapOf<Topic, MutableList<FloodplainSink>>()
+        this.sinkConfigurations().map {
+            it.sinkElements()
+        }.forEach {
+                sinkElements -> sinkElements.forEach {
+                (topic, message) ->
+            map.computeIfAbsent(topic) {
+                mutableListOf()
+            }.add(message)
+        }
+        }
+        return sinkConsumer(map)
+    }
+    override fun sinkConsumer(sinks: Map<Topic, List<FloodplainSink>>): (Triple<Topic, String, IMessage>) -> Unit {
+        return {
+                (topic, key, msg) ->
+            val sink = sinks.get(topic) ?: emptyList<FloodplainSink>()
+            logger.info("# of sinks found: ${sink.size}")
+            sink.forEach {
+                println("Key: $topic $key $msg")
+                it.send(listOf(key to msg))
+            }
+        }
+    }
+    override fun outputFlow(): Flow<Triple<Topic, String, IMessage>> {
+        return callbackFlow<Triple<Topic, String, IMessage>> {
             driver.setOutputListener {
                 val key = Serdes.String().deserializer().deserialize(it.topic(), it.key())
                 val message = parser.parseBytes(Optional.of(it.topic()), it.value())
+                val imessage = fromImmutable(message.message())
+                logger.info("Sending output $key topic: ${it.topic()} value: $imessage")
                 if (this.isActive) {
-                    sendBlocking(key to fromImmutable(message.message()))
+                    sendBlocking(Triple(Topic.fromQualified(it.topic()), key, imessage))
                 }
             }
             awaitClose {
@@ -161,8 +190,6 @@ class TestDriverContext(
         if (!inputs().contains(topic)) {
             logger.info("Missing topic: $topic available topics: ${inputs()}")
         }
-
-        // logger.info("Input found. Key: $key topic: $topic alltopics: " + inputTopics.keys)
         val topicSrc = Topic.from(topic)
         val qualifiedTopicName = topologyContext.topicName(topic)
         val inputTopic = inputTopics.computeIfAbsent(qualifiedTopicName) {

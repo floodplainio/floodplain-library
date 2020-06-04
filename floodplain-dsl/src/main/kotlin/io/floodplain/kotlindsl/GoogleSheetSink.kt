@@ -45,4 +45,8 @@ class GoogleSheetConfiguration(val name: String, val topic: String, val spreadsh
 
     override suspend fun connectSource(inputReceiver: InputReceiver) {
     }
+
+    override fun sinkElements(): Map<Topic, FloodplainSink> {
+        TODO("Not yet implemented")
+    }
 }

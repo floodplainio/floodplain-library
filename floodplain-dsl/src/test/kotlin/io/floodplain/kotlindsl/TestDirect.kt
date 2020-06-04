@@ -9,16 +9,17 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.Optional
 import java.util.UUID
+import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.assertEquals
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
-import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -43,7 +44,7 @@ class TestDirect {
     init {
 
         // var envVar = System.getenv("EMBED_CONTAINER")
-        var envVar = "aap"
+        var envVar = null // "aap"
         if (envVar != null) {
             container = KGenericContainer("floodplain/floodplain-postgres-demo:1.0.0")
                 .apply { withExposedPorts(5432) }
@@ -99,30 +100,37 @@ class TestDirect {
     /**
      * Test the simplest imaginable pipe: One source and one sink.
      */
-    @Test @Ignore
+    @Test
     fun testPostgresSource() {
         println("Logger class: ${logger.underlyingLogger}")
         logger.debug("startdebug")
         stream("any", "myinstance") {
             val pgConfig = postgresSourceConfig("mypostgres", address!!, port!!, "postgres", "mysecretpassword", "dvdrental", "public")
+            val elasticConfig = elasticSearchConfig("elastic", "http://localhost:9200")
+
             pgConfig.sourceSimple("city") {
-                filter { _, msg
-                    -> msg.string("city").length == 8
-                }
-                sink("@topic")
+                each { key, iMessage, iMessage2 -> logger.info("Keyyyyy: $key $iMessage") }
+                // filter { _, msg
+                //     -> msg.string("city").length == 8
+                // }
+                // sink("@topic")
+                elasticSearchSink("somelink", "someindex", "@topic", elasticConfig)
             }
         }.renderAndTest {
-            logger.info("Detected sinks: ${topologyConstructor().sinks}")
+            val consumer = initializeSinks()
+            // logger.info("Detected sinks: ${topologyConstructor().sinks}")
             val jb = GlobalScope.launch {
-                    val job = launch { connectSource() }
-                    val cities = outputFlow()
-                        .take(50)
-                        .onCompletion { delay(5000); job.cancel("Cancelling source") }
-                        .map { (key, message) -> message.string("city") }
-                        .toList()
-
+                val job = launch(EmptyCoroutineContext, CoroutineStart.UNDISPATCHED) { connectSource() }
+                val cities = outputFlow()
+                    .onEach { (topic, key, message) ->
+                        logger.info("|> ${topic.qualifiedString(topologyContext())}")
+                        consumer(Triple(topic, key, message))
+                    }
+                    .onCompletion { delay(5000); job.cancel("Cancelling source") }
+                    .map { (topic, key, message) -> message.string("city") }
+                    .toList()
+                job.start()
                 println("Join output DONE. Size: ${cities.size} Cities: " + cities.joinToString(","))
-                // delay(1000)
                 println("Job is active: ${job.isActive}")
             }
             runBlocking {

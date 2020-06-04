@@ -65,6 +65,10 @@ class MongoConfig(val name: String, val uri: String, val database: String) : Con
 
     override suspend fun connectSource(inputReceiver: InputReceiver) {
     }
+
+    override fun sinkElements(): Map<Topic, FloodplainSink> {
+        TODO("Not yet implemented")
+    }
 }
 
 /**

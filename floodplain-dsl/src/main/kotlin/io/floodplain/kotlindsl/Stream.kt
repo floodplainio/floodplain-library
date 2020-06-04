@@ -57,8 +57,9 @@ class Stream(val context: TopologyContext) {
     /**
      * Adds a sink config, should only be called from a sink implementation
      */
-    fun addSinkConfiguration(c: Config) {
+    fun addSinkConfiguration(c: Config): Config {
         sinkConfigurations.add(c)
+        return c
     }
 
     /**
