@@ -34,11 +34,15 @@ import java.time.Duration
 import java.util.Optional
 import java.util.Properties
 import java.util.UUID
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.sendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.KeyValue
@@ -78,10 +82,12 @@ interface TestContext : InputReceiver {
     fun topologyConstructor(): TopologyConstructor
     fun sourceConfigurations(): List<Config>
     fun sinkConfigurations(): List<Config>
+    fun connectJobs(): List<Job>
     suspend fun connectSource()
-    fun outputFlow(): Flow<Triple<Topic, String, IMessage>>
-    fun sinkConsumer(sinks: Map<Topic, List<FloodplainSink>>): (Triple<Topic, String, IMessage>) -> Unit
-    fun initializeSinks(): (Triple<Topic, String, IMessage>) -> Unit
+    fun outputFlow(): Flow<Triple<Topic, String, IMessage?>>
+    fun sinkConsumer(sinks: Map<Topic, List<FloodplainSink>>): (Triple<Topic, String, IMessage?>) -> Unit
+    fun initializeSinks(): (Triple<Topic, String, IMessage?>) -> Unit
+    fun connectSourceAndSink(): List<Job>
 }
 fun testTopology(
     topology: Topology,
@@ -103,7 +109,8 @@ fun testTopology(
 
     val driver = TopologyTestDriver(topology, props)
     val contextInstance = TestDriverContext(driver, context, topologyConstructor, sourceConfigs, sinkConfigs)
-
+    val jobs = contextInstance.connectSourceAndSink()
+    contextInstance.connectJobs.addAll(jobs)
     try {
         runBlocking {
             testCmds(contextInstance)
@@ -120,6 +127,7 @@ fun testTopology(
     }
 }
 
+@kotlinx.coroutines.ExperimentalCoroutinesApi
 class TestDriverContext(
     private val driver: TopologyTestDriver,
     private val topologyContext: TopologyContext,
@@ -128,6 +136,7 @@ class TestDriverContext(
     private val sinkConfigs: List<Config>
 ) : TestContext {
 
+    val connectJobs = mutableListOf<Job>()
     private val inputTopics = mutableMapOf<String, TestInputTopic<String, ReplicationMessage>>()
     private val outputTopics = mutableMapOf<String, TestOutputTopic<String, ReplicationMessage>>()
 
@@ -138,6 +147,11 @@ class TestDriverContext(
     override fun sinkConfigurations(): List<Config> {
         return sinkConfigs
     }
+
+    override fun connectJobs(): List<Job> {
+        return connectJobs
+    }
+
     override fun inputs(): Set<String> {
         return inputTopics.keys
     }
@@ -149,7 +163,24 @@ class TestDriverContext(
             config.connectSource(this@TestDriverContext)
         }
     }
-    override fun initializeSinks(): (Triple<Topic, String, IMessage>) -> Unit {
+
+    override fun connectSourceAndSink(): List<Job> {
+        val consumer = initializeSinks()
+        val outputFlow = outputFlow()
+        val outputJob = GlobalScope.launch {
+            outputFlow
+                .collect { trip: Triple<Topic, String, IMessage?> ->
+                    logger.info("Consuming topic: ${trip.first}")
+                    consumer(trip)
+                }
+        }
+        val inputJob = GlobalScope.launch {
+            connectSource()
+        }
+        return listOf(inputJob, outputJob)
+    }
+
+    override fun initializeSinks(): (Triple<Topic, String, IMessage?>) -> Unit {
         val map = mutableMapOf<Topic, MutableList<FloodplainSink>>()
         this.sinkConfigurations().map {
             it.sinkElements()
@@ -163,7 +194,7 @@ class TestDriverContext(
         }
         return sinkConsumer(map)
     }
-    override fun sinkConsumer(sinks: Map<Topic, List<FloodplainSink>>): (Triple<Topic, String, IMessage>) -> Unit {
+    override fun sinkConsumer(sinks: Map<Topic, List<FloodplainSink>>): (Triple<Topic, String, IMessage?>) -> Unit {
         return {
                 (topic, key, msg) ->
             val sink = sinks.get(topic) ?: emptyList<FloodplainSink>()
@@ -174,12 +205,12 @@ class TestDriverContext(
             }
         }
     }
-    override fun outputFlow(): Flow<Triple<Topic, String, IMessage>> {
-        return callbackFlow<Triple<Topic, String, IMessage>> {
+    override fun outputFlow(): Flow<Triple<Topic, String, IMessage?>> {
+        return callbackFlow<Triple<Topic, String, IMessage?>> {
             driver.setOutputListener {
                 val key = Serdes.String().deserializer().deserialize(it.topic(), it.key())
                 val message = parser.parseBytes(Optional.of(it.topic()), it.value())
-                val imessage = fromImmutable(message.message())
+                val imessage = message?.message()?.let { it1 -> fromImmutable(it1) }
                 logger.info("Sending output $key topic: ${it.topic()} value: $imessage")
                 if (this.isActive) {
                     sendBlocking(Triple(Topic.fromQualified(it.topic()), key, imessage))
@@ -213,13 +244,13 @@ class TestDriverContext(
         val outputTopic = outputTopics.computeIfAbsent(qualifiedTopicName) { driver.createOutputTopic(qualifiedTopicName, Serdes.String().deserializer(), ReplicationMessageSerde().deserializer()) }
         val keyVal: KeyValue<String, ReplicationMessage?> = outputTopic.readKeyValue()
         val op = keyVal.value?.operation() ?: ReplicationMessage.Operation.DELETE
-        if (op.equals(ReplicationMessage.Operation.DELETE)) {
+        if (op == ReplicationMessage.Operation.DELETE) {
             logger.info("delete detected! isnull? ${keyVal.value}")
             logger.info("retrying...")
             return output(topic)
 //            throw RuntimeException("Expected message for key: ${keyVal.key}, but got a delete.")
         } else {
-            return Pair(keyVal.key, fromImmutable(keyVal.value!!.message()))
+            return Pair(keyVal.key, fromImmutable(keyVal.value!!.message())!!)
         }
     }
 

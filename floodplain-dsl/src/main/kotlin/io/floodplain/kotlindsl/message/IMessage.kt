@@ -199,7 +199,10 @@ fun fromImmutable(msg: ImmutableMessage): IMessage {
         }
     }
     for ((name, value) in msg.subMessageMap()) {
-        content[name] = fromImmutable(value)
+        val submsg = fromImmutable(value)
+        if (submsg != null) {
+            content[name] = submsg
+        }
     }
     for ((name, value) in msg.subMessageListMap()) {
         content[name] = value.stream().map { e -> fromImmutable(e) }.toList()

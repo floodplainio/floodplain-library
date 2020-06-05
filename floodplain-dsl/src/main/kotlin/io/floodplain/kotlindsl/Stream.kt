@@ -26,10 +26,8 @@ import io.floodplain.streams.base.StreamOperators
 import io.floodplain.streams.remotejoin.ReplicationTopologyParser
 import io.floodplain.streams.remotejoin.TopologyConstructor
 import java.net.URL
-import java.nio.file.Paths
 import java.util.Properties
 import java.util.Stack
-import java.util.UUID
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.common.serialization.Serdes
@@ -90,7 +88,7 @@ class Stream(val context: TopologyContext) {
     fun renderAndTest(testCmds: suspend TestContext.() -> Unit) {
             val topologyConstructor = TopologyConstructor()
             val (topology, sources, sinks) = render(topologyConstructor)
-            val offsetPath = Paths.get("offset_" + UUID.randomUUID())
+            // val offsetPath = Paths.get("offset_" + UUID.randomUUID())
             val sourceConfigs = this@Stream.sourceConfigurations
             val sinkConfigs = this@Stream.sinkConfigurations
             // logger.info("Using offset path: $offsetPath sources: ${ this@Stream.sourceConfigurations.first()}")
@@ -98,10 +96,11 @@ class Stream(val context: TopologyContext) {
             logger.info("Testing sources:\n$sources")
             logger.info("Testing sinks:\n$sinks")
             logger.info("Sourcetopics: \n${topologyConstructor.desiredTopicNames().map { it.qualifiedString(context) }}")
+
             testTopology(topology, testCmds, topologyConstructor, context, sourceConfigs, sinkConfigs)
     }
 
-    /**
+        /**
      * Will create an executable definition of the str
      * eam (@see render), then will start the topology by starting a streams
      * instance pointing at the kafka cluster at kafkaHosts, using the supplied clientId.

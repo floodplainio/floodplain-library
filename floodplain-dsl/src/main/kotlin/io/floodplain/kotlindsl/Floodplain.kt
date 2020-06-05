@@ -71,7 +71,7 @@ interface SourceTopic {
 }
 
 interface FloodplainSink {
-    fun send(docs: List<Pair<String, IMessage>>)
+    fun send(docs: List<Pair<String, IMessage?>>)
     fun close()
 }
 

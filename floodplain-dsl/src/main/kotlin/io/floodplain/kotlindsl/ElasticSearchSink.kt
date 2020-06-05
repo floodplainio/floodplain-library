@@ -40,10 +40,10 @@ class ElasticSearchSinkConfig(val name: String, val uri: String, val context: To
 
 private class ElasticSearchSink(private val topic: String, private val task: SinkTask) : FloodplainSink {
     private val offsetCounter = AtomicLong(0)
-    override fun send(docs: List<Pair<String, IMessage>>) {
+    override fun send(docs: List<Pair<String, IMessage?>>) {
         val list = docs.map { (key, value) ->
             logger.info("Sending document to elastic. Key: $key message: $value")
-            SinkRecord(topic, 0, null, key, null, value.data(), offsetCounter.incrementAndGet())
+            SinkRecord(topic, 0, null, key, null, value?.data(), offsetCounter.incrementAndGet())
         }.toList()
         task.put(list)
     }

@@ -9,11 +9,8 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.Optional
 import java.util.UUID
-import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.assertEquals
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CoroutineStart
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
@@ -106,8 +103,8 @@ class TestDirect {
             val elasticConfig = elasticSearchConfig("elastic", "http://localhost:9200")
 
             pgConfig.sourceSimple("city") {
-                set { _, msg, _ -> msg["last_update"] = null; msg }
-                each { key, iMessage, _ -> logger.info("Keyyyyy: $key $iMessage") }
+                set { _, msg, _ -> msg!!["last_update"] = null; msg }
+                // each { key, iMessage, _ -> logger.info("Keyyyyy: $key $iMessage") }
                 // filter { _, msg
                 //     -> msg.string("city").length == 8
                 // }
@@ -115,22 +112,8 @@ class TestDirect {
                 elasticSearchSink("somelink", "someindex", "@topic", elasticConfig)
             }
         }.renderAndTest {
-
-            val consumer = initializeSinks()
-            val jb = GlobalScope.launch {
-                val job = launch(EmptyCoroutineContext, CoroutineStart.UNDISPATCHED) { connectSource() }
-                outputFlow()
-                    .collect {
-                        logger.info("Consuming topic: ${it.first}")
-                        consumer(it)
-                    }
-                job.start()
-            }
-            runBlocking {
-                logger.info("jb starting. Status: ${jb.isActive}")
-                jb.join()
-                logger.info("Run blocking complete")
-            }
+            delay(20000)
+            connectJobs().forEach { it.cancel("ciao!") }
         }
     }
     @Test(expected = CancellationException::class) @Ignore

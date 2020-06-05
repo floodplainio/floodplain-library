@@ -61,7 +61,7 @@ class PostgresConfig(val topologyContext: TopologyContext, val name: String, val
                         ReplicationMessage.Operation.DELETE ->
                             inputReceiver.delete(it.topic, parsedKey)
                         else ->
-                            inputReceiver.input(it.topic, parsedKey, fromImmutable(rm.message()))
+                            inputReceiver.input(it.topic, parsedKey, fromImmutable(rm.message())!!)
                     }
                 } catch (e: Throwable) {
                     e.printStackTrace()
