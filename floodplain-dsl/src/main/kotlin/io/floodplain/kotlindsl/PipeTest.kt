@@ -39,6 +39,7 @@ import kotlinx.coroutines.channels.sendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.isActive
+import kotlinx.coroutines.runBlocking
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.KeyValue
 import org.apache.kafka.streams.StreamsConfig
@@ -84,7 +85,8 @@ interface TestContext : InputReceiver {
 }
 fun testTopology(
     topology: Topology,
-    testCmds: TestContext.() -> Unit,
+    testCmds: suspend
+    TestContext.() -> Unit,
     topologyConstructor: TopologyConstructor,
     context: TopologyContext,
     sourceConfigs: List<Config>,
@@ -103,7 +105,9 @@ fun testTopology(
     val contextInstance = TestDriverContext(driver, context, topologyConstructor, sourceConfigs, sinkConfigs)
 
     try {
-        testCmds.invoke(contextInstance)
+        runBlocking {
+            testCmds(contextInstance)
+        }
     } finally {
         driver.allStateStores.forEach { store -> store.value.close() }
         driver.close()
@@ -150,7 +154,7 @@ class TestDriverContext(
         this.sinkConfigurations().map {
             it.sinkElements()
         }.forEach {
-                sinkElements -> sinkElements.forEach {
+            sinkElements -> sinkElements.forEach {
                 (topic, message) ->
             map.computeIfAbsent(topic) {
                 mutableListOf()

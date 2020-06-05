@@ -11,6 +11,8 @@ import java.util.concurrent.atomic.AtomicLong
 import org.apache.kafka.connect.sink.SinkRecord
 import org.apache.kafka.connect.sink.SinkTask
 
+private val logger = mu.KotlinLogging.logger {}
+
 fun Stream.elasticSearchConfig(name: String, uri: String): ElasticSearchSinkConfig {
     val c = ElasticSearchSinkConfig(name, uri, this.context, this)
     return this.addSinkConfiguration(c) as ElasticSearchSinkConfig
@@ -40,6 +42,7 @@ private class ElasticSearchSink(private val topic: String, private val task: Sin
     private val offsetCounter = AtomicLong(0)
     override fun send(docs: List<Pair<String, IMessage>>) {
         val list = docs.map { (key, value) ->
+            logger.info("Sending document to elastic. Key: $key message: $value")
             SinkRecord(topic, 0, null, key, null, value.data(), offsetCounter.incrementAndGet())
         }.toList()
         task.put(list)
@@ -54,8 +57,9 @@ private class ElasticSearchSink(private val topic: String, private val task: Sin
 fun PartialStream.elasticSearchSink(sinkName: String, index: String, topicName: String, config: ElasticSearchSinkConfig): FloodplainSink {
     val sinkProcessorName = ProcessorName.from(sinkName)
     val topic = Topic.from(topicName)
-    val sinkTransformer = SinkTransformer(Optional.of(sinkProcessorName), topic, false, Optional.empty(), true)
+    val sinkTransformer = SinkTransformer(Optional.of(sinkProcessorName), topic, false, Optional.empty(), false)
     addTransformer(Transformer(sinkTransformer))
+
     val sinkConfig = mapOf(
         "connector.class" to "io.confluent.connect.elasticsearch.ElasticsearchSinkConnector",
         "connection.url" to config.uri,

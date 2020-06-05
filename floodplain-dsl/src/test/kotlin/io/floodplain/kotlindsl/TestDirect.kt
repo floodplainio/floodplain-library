@@ -18,9 +18,6 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onCompletion
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.junit.After
@@ -109,7 +106,8 @@ class TestDirect {
             val elasticConfig = elasticSearchConfig("elastic", "http://localhost:9200")
 
             pgConfig.sourceSimple("city") {
-                each { key, iMessage, iMessage2 -> logger.info("Keyyyyy: $key $iMessage") }
+                set { _, msg, _ -> msg["last_update"] = null; msg }
+                each { key, iMessage, _ -> logger.info("Keyyyyy: $key $iMessage") }
                 // filter { _, msg
                 //     -> msg.string("city").length == 8
                 // }
@@ -117,21 +115,16 @@ class TestDirect {
                 elasticSearchSink("somelink", "someindex", "@topic", elasticConfig)
             }
         }.renderAndTest {
+
             val consumer = initializeSinks()
-            // logger.info("Detected sinks: ${topologyConstructor().sinks}")
             val jb = GlobalScope.launch {
                 val job = launch(EmptyCoroutineContext, CoroutineStart.UNDISPATCHED) { connectSource() }
-                val cities = outputFlow()
-                    .onEach { (topic, key, message) ->
-                        logger.info("|> ${topic.qualifiedString(topologyContext())}")
-                        consumer(Triple(topic, key, message))
+                outputFlow()
+                    .collect {
+                        logger.info("Consuming topic: ${it.first}")
+                        consumer(it)
                     }
-                    .onCompletion { delay(5000); job.cancel("Cancelling source") }
-                    .map { (topic, key, message) -> message.string("city") }
-                    .toList()
                 job.start()
-                println("Join output DONE. Size: ${cities.size} Cities: " + cities.joinToString(","))
-                println("Job is active: ${job.isActive}")
             }
             runBlocking {
                 logger.info("jb starting. Status: ${jb.isActive}")
