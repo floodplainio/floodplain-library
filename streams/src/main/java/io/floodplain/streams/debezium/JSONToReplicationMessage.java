@@ -58,7 +58,11 @@ public class JSONToReplicationMessage {
 
     public static KeyValue parse(String keyInput, byte[] data) {
         try {
-            ObjectNode keynode = (ObjectNode) objectMapper.readTree(keyInput);
+            JsonNode mapped = objectMapper.readTree(keyInput);
+            if(!(mapped instanceof ObjectNode)) {
+                throw new ClassCastException("Expected debezium style key. Not type: "+mapped.getClass()+" data: "+new String(data));
+            }
+            ObjectNode keynode = (ObjectNode) mapped;
             TableIdentifier key = processDebeziumKey(keynode);
 
             ObjectNode valuenode = (ObjectNode) objectMapper.readTree(data);
@@ -334,6 +338,9 @@ public class JSONToReplicationMessage {
     }
 
     public static ReplicationMessage processDebeziumBody(byte[] data) throws IOException {
+        if(data == null) {
+            return null;
+        }
         ObjectNode valuenode = (ObjectNode) objectMapper.readTree(data);
         if (!valuenode.has("payload") || valuenode.get("payload").isNull()) {
             return ReplicationFactory.empty().withOperation(Operation.DELETE);

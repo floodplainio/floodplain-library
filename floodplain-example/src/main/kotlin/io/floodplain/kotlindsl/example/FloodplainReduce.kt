@@ -20,8 +20,8 @@ package io.floodplain.kotlindsl.example
 
 import io.floodplain.kotlindsl.join
 import io.floodplain.kotlindsl.message.empty
-import io.floodplain.kotlindsl.mongoConfig
-import io.floodplain.kotlindsl.mongoSink
+import io.floodplain.kotlindsl.mongoConfigOld
+import io.floodplain.kotlindsl.mongoSinkOld
 import io.floodplain.kotlindsl.postgresSourceConfig
 import io.floodplain.kotlindsl.scan
 import io.floodplain.kotlindsl.set
@@ -34,7 +34,7 @@ private val logger = mu.KotlinLogging.logger {}
 fun main() {
     stream {
         val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")
-        val mongoConfig = mongoConfig("mongosink", "mongodb://mongo", "mongodump")
+        val mongoConfig = mongoConfigOld("mongosink", "mongodb://mongo", "mongodump")
         postgresConfig.source("public", "customer") {
             join {
                 postgresConfig.source("public", "payment") {
@@ -55,7 +55,7 @@ fun main() {
             set { _, customer, paymenttotal ->
                 customer["payments"] = paymenttotal["total"]; customer
             }
-            mongoSink("justtotal", "myfinaltopic", mongoConfig)
+            mongoSinkOld("justtotal", "myfinaltopic", mongoConfig)
         }
     }.renderAndStart(URL("http://localhost:8083/connectors"), "localhost:9092", true)
 }

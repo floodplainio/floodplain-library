@@ -131,11 +131,11 @@ class Stream(val context: TopologyContext) {
     fun render(topologyConstructor: TopologyConstructor): Triple<Topology, List<Pair<String, String>>, List<Pair<String, String>>> {
         val topology = renderTopology(topologyConstructor)
         val sources = sourceConfigurations().map { element ->
-            val (name, config) = element.materializeConnectorConfig(context)
+            val (name, config) = element.materializeConnectorConfig()
             name to constructConnectorJson(context, name, config)
         }
         val sinks = sinkConfigurations().map { element ->
-            val (name, config) = element.materializeConnectorConfig(context)
+            val (name, config) = element.materializeConnectorConfig()
             name to constructConnectorJson(context, name, config)
         }
         return Triple(topology, sources, sinks)

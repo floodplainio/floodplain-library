@@ -8,6 +8,7 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.Properties
 import java.util.UUID
+import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.system.measureTimeMillis
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.awaitClose
@@ -20,7 +21,7 @@ import kotlinx.coroutines.runBlocking
 
 private val logger = mu.KotlinLogging.logger {}
 
-data class ChangeRecord(val topic: String, val key: String, val value: ByteArray)
+data class ChangeRecord(val topic: String, val key: String, val value: ByteArray?)
 
 fun main(args: Array<String>) {
     val offsetFilePath = Paths.get("offset")
@@ -52,10 +53,13 @@ fun main(args: Array<String>) {
 
 internal class EngineKillSwitch(var engine: DebeziumEngine<ChangeEvent<String, String>>? = null) {
 
+    val killed = AtomicBoolean(false)
     fun kill() {
         engine?.let {
-            println("Closing engine: $engine")
-            it.close()
+            if (killed.compareAndSet(false, true)) {
+                println("Closing engine: $engine")
+                it.close()
+            }
         }
     }
 }
@@ -83,9 +87,8 @@ fun postgresDataSource(name: String, hostname: String, port: Int, database: Stri
                 .notifying { record: ChangeEvent<String, String> ->
                     // if (isActive) {
                         val perf = measureTimeMillis {
-                            Thread.sleep(10)
                             try {
-                                sendBlocking(ChangeRecord(record.destination(), record.key(), record.value().toByteArray()))
+                                sendBlocking(ChangeRecord(record.destination(), record.key(), record.value()?.toByteArray()))
                             } catch (e: CancellationException) {
                                 engineKillSwitch.kill()
                                 Thread.currentThread().interrupt()

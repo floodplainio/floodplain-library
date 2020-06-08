@@ -54,14 +54,14 @@ class PostgresConfig(val topologyContext: TopologyContext, val name: String, val
                 // println("matched! Matching key: $parsedKey unparsedKey : ${it.key}")
                 // println("value: ${String(it.value)}")
                 // inputReceiver.input(it.topic,it.key,it.value)
-                val rm = processDebeziumBody(it.value)
-                val operation = rm.operation()
+                val rm: ReplicationMessage? = processDebeziumBody(it.value)
+                val operation = rm?.operation() ?: ReplicationMessage.Operation.DELETE
                 try {
                     when (operation) {
                         ReplicationMessage.Operation.DELETE ->
                             inputReceiver.delete(it.topic, parsedKey)
                         else ->
-                            inputReceiver.input(it.topic, parsedKey, fromImmutable(rm.message())!!)
+                            inputReceiver.input(it.topic, parsedKey, fromImmutable(rm!!.message())!!)
                     }
                 } catch (e: Throwable) {
                     e.printStackTrace()
@@ -75,7 +75,7 @@ class PostgresConfig(val topologyContext: TopologyContext, val name: String, val
         TODO("Not yet implemented")
     }
 
-    override fun materializeConnectorConfig(topologyContext: TopologyContext): Pair<String, Map<String, String>> {
+    override fun materializeConnectorConfig(): Pair<String, Map<String, String>> {
         return name to mapOf(
                 "connector.class" to "io.debezium.connector.postgresql.PostgresConnector",
                 "database.hostname" to hostname,

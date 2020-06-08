@@ -22,8 +22,8 @@ import io.floodplain.kotlindsl.group
 import io.floodplain.kotlindsl.joinGrouped
 import io.floodplain.kotlindsl.joinRemote
 import io.floodplain.kotlindsl.message.IMessage
-import io.floodplain.kotlindsl.mongoConfig
-import io.floodplain.kotlindsl.mongoSink
+import io.floodplain.kotlindsl.mongoConfigOld
+import io.floodplain.kotlindsl.mongoSinkOld
 import io.floodplain.kotlindsl.postgresSource
 import io.floodplain.kotlindsl.postgresSourceConfig
 import io.floodplain.kotlindsl.set
@@ -39,7 +39,7 @@ fun main() {
 fun filmWithActorList(generation: String) {
     stream(generation) {
         val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")
-        val mongoConfig = mongoConfig("mongosink", "mongodb://mongo", "@mongodump")
+        val mongoConfig = mongoConfigOld("mongosink", "mongodb://mongo", "@mongodump")
         // Start with the 'film' collection
         postgresSource("public", "film", postgresConfig) {
             // Clear the last_update field, it makes no sense in a denormalized situation
@@ -77,7 +77,7 @@ fun filmWithActorList(generation: String) {
                 film
             }
             // pass this message to the mongo sink
-            mongoSink("filmwithactors", "@filmwithcat", mongoConfig)
+            mongoSinkOld("filmwithactors", "@filmwithcat", mongoConfig)
         }
     }.renderAndStart(URL("http://localhost:8083/connectors"), "localhost:9092")
     logger.info { "done!" }

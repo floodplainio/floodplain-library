@@ -21,7 +21,6 @@ package io.floodplain.kotlindsl
 import io.floodplain.reactive.source.topology.SinkTransformer
 import io.floodplain.streams.api.ProcessorName
 import io.floodplain.streams.api.Topic
-import io.floodplain.streams.api.TopologyContext
 import java.util.Optional
 
 fun PartialStream.googleSheetsSink(config: GoogleSheetConfiguration) {
@@ -35,7 +34,7 @@ fun Stream.googleSheetConfig(topic: String, name: String, spreadsheetId: String,
 }
 
 class GoogleSheetConfiguration(val name: String, val topic: String, val spreadsheetId: String, val columns: List<String>) : Config {
-    override fun materializeConnectorConfig(topologyContext: TopologyContext): Pair<String, Map<String, String>> {
+    override fun materializeConnectorConfig(): Pair<String, Map<String, String>> {
         TODO("Not yet implemented")
     }
 

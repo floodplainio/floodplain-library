@@ -19,8 +19,8 @@
 package io.floodplain.kotlindsl.example
 
 import io.floodplain.kotlindsl.joinRemote
-import io.floodplain.kotlindsl.mongoConfig
-import io.floodplain.kotlindsl.mongoSink
+import io.floodplain.kotlindsl.mongoConfigOld
+import io.floodplain.kotlindsl.mongoSinkOld
 import io.floodplain.kotlindsl.postgresSource
 import io.floodplain.kotlindsl.postgresSourceConfig
 import io.floodplain.kotlindsl.set
@@ -36,7 +36,7 @@ fun main() {
     val generation = "generation1"
     streams(generation) {
         val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")
-        val mongoConfig = mongoConfig("mongosink", "mongodb://mongo", "@mongodump")
+        val mongoConfig = mongoConfigOld("mongosink", "mongodb://mongo", "@mongodump")
         listOf(
         postgresSource("public", "address", postgresConfig) {
             joinRemote({ msg -> "${msg["city_id"]}" }, false) {
@@ -61,7 +61,7 @@ fun main() {
             set { _, msg, state ->
                 msg.set("address", state)
             }
-            mongoSink("customer", "@customer", mongoConfig)
+            mongoSinkOld("customer", "@customer", mongoConfig)
         },
         postgresSource("public", "store", postgresConfig) {
             joinRemote({ m -> "${m["address_id"]}" }, false) {
@@ -70,7 +70,7 @@ fun main() {
             set { _, msg, state ->
                 msg.set("address", state)
             }
-            mongoSink("store", "@store", mongoConfig)
+            mongoSinkOld("store", "@store", mongoConfig)
         },
         postgresSource("public", "staff", postgresConfig) {
             joinRemote({ m -> "${m["address_id"]}" }, false) {
@@ -79,7 +79,7 @@ fun main() {
             set { _, msg, state ->
                 msg.set("address", state)
             }
-            mongoSink("staff", "@staff", mongoConfig)
+            mongoSinkOld("staff", "@staff", mongoConfig)
         })
     }.renderAndStart(URL("http://localhost:8083/connectors"), "localhost:9092")
     logger.info { "done!" }

@@ -26,10 +26,10 @@ import java.util.Optional
 
 private val logger = mu.KotlinLogging.logger {}
 
-class MongoConfig(val name: String, val uri: String, val database: String) : Config {
+class MongoConfigOld(val name: String, val uri: String, val database: String, private val topologyContext: TopologyContext) : Config {
 
     val sinkInstancePair: MutableList<Pair<String, String>> = mutableListOf()
-    override fun materializeConnectorConfig(topologyContext: TopologyContext): Pair<String, Map<String, String>> {
+    override fun materializeConnectorConfig(): Pair<String, Map<String, String>> {
         val additional = mutableMapOf<String, String>()
         sinkInstancePair.forEach { (key, value) -> additional.put("topic.override.${topologyContext.topicName(value)}.collection", key) }
         logger.debug("Pairs: $sinkInstancePair")
@@ -75,13 +75,13 @@ class MongoConfig(val name: String, val uri: String, val database: String) : Con
  * Creates a config for this specific connector type, add the required params as needed. This config object will be passed
  * to all sink objects
  */
-fun Stream.mongoConfig(name: String, uri: String, database: String): MongoConfig {
-    val c = MongoConfig(name, uri, database)
+fun Stream.mongoConfigOld(name: String, uri: String, database: String): MongoConfigOld {
+    val c = MongoConfigOld(name, uri, database, this.context)
     this.addSinkConfiguration(c)
     return c
 }
 
-fun PartialStream.mongoSink(collection: String, topic: String, config: MongoConfig) {
+fun PartialStream.mongoSinkOld(collection: String, topic: String, config: MongoConfigOld) {
     config.sinkInstancePair.add(collection to topic)
     val sinkName = ProcessorName.from(config.name)
     val sink = SinkTransformer(Optional.of(sinkName), Topic.from(topic), false, Optional.empty(), true)

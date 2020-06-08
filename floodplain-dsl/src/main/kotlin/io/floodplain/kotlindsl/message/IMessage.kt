@@ -62,6 +62,17 @@ data class IMessage(private val content: MutableMap<String, Any>) {
         }
         return raw
     }
+    fun long(path: String): Long {
+        return optionalLong(path) ?: throw NullPointerException("Can't obtain int from path: $path as it is absent")
+    }
+
+    fun optionalLong(path: String): Long? {
+        val raw = get(path) ?: return null
+        if (raw !is Long) {
+            throw ClassCastException("Path element $path should be an long but it is a ${raw::class}")
+        }
+        return raw
+    }
 
     fun decimal(path: String): BigDecimal {
         return optionalDecimal(path) ?: throw NullPointerException("Can't obtain decimal from path: $path as it is absent")

@@ -48,6 +48,7 @@ public class TopologyContext {
             }
             if(!name.startsWith("@") && name.contains("@")) {
                 logger.warn("This is problematic: {}",name);
+                Thread.dumpStack();
             }
             if (name.startsWith("@")) {
                 String[] withInstance = name.split(":");

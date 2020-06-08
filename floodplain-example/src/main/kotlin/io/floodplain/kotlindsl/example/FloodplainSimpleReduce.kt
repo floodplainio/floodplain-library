@@ -19,8 +19,8 @@
 package io.floodplain.kotlindsl.example
 
 import io.floodplain.kotlindsl.message.empty
-import io.floodplain.kotlindsl.mongoConfig
-import io.floodplain.kotlindsl.mongoSink
+import io.floodplain.kotlindsl.mongoConfigOld
+import io.floodplain.kotlindsl.mongoSinkOld
 import io.floodplain.kotlindsl.postgresSource
 import io.floodplain.kotlindsl.postgresSourceConfig
 import io.floodplain.kotlindsl.scan
@@ -34,7 +34,7 @@ private val logger = mu.KotlinLogging.logger {}
 fun main() {
     stream("bla") {
         val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")
-        val mongoConfig = mongoConfig("mongosink", "mongodb://mongo", "mongodump")
+        val mongoConfig = mongoConfigOld("mongosink", "mongodb://mongo", "mongodump")
         postgresSource("public", "payment", postgresConfig) {
             scan({ msg -> empty().set("total", BigDecimal(0)) },
                 {
@@ -50,7 +50,7 @@ fun main() {
                     }
                 }
             )
-            mongoSink("justtotal", "@myfinaltopic", mongoConfig)
+            mongoSinkOld("justtotal", "@myfinaltopic", mongoConfig)
         }
     }.renderAndStart(URL("http://localhost:8083/connectors"), "localhost:9092")
 }

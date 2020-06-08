@@ -34,7 +34,7 @@ import java.util.function.Consumer
 
 private val logger = mu.KotlinLogging.logger {}
 private val objectMapper = ObjectMapper()
-private val httpClient: HttpClient = HttpClient.newBuilder()
+val httpClient: HttpClient = HttpClient.newBuilder()
     .version(HttpClient.Version.HTTP_1_1)
     .followRedirects(HttpClient.Redirect.NORMAL)
     .connectTimeout(Duration.ofSeconds(10))

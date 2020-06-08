@@ -91,31 +91,6 @@ class TestDirect {
         }
     }
 
-    /**
-     * Test the simplest imaginable pipe: One source and one sink.
-     */
-    @Test
-    fun testPostgresSource() {
-        println("Logger class: ${logger.underlyingLogger}")
-        logger.debug("startdebug")
-        stream("any", "myinstance") {
-            val pgConfig = postgresSourceConfig("mypostgres", address!!, port!!, "postgres", "mysecretpassword", "dvdrental", "public")
-            val elasticConfig = elasticSearchConfig("elastic", "http://localhost:9200")
-
-            pgConfig.sourceSimple("city") {
-                set { _, msg, _ -> msg!!["last_update"] = null; msg }
-                // each { key, iMessage, _ -> logger.info("Keyyyyy: $key $iMessage") }
-                // filter { _, msg
-                //     -> msg.string("city").length == 8
-                // }
-                // sink("@topic")
-                elasticSearchSink("somelink", "someindex", "@topic", elasticConfig)
-            }
-        }.renderAndTest {
-            delay(20000)
-            connectJobs().forEach { it.cancel("ciao!") }
-        }
-    }
     @Test(expected = CancellationException::class) @Ignore
     fun testPostgresSourceSimple() {
         ReplicationFactory.setInstance(parser)

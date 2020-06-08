@@ -83,6 +83,7 @@ interface TestContext : InputReceiver {
     fun sourceConfigurations(): List<Config>
     fun sinkConfigurations(): List<Config>
     fun connectJobs(): List<Job>
+    fun flushSinks()
     suspend fun connectSource()
     fun outputFlow(): Flow<Triple<Topic, String, IMessage?>>
     fun sinkConsumer(sinks: Map<Topic, List<FloodplainSink>>): (Triple<Topic, String, IMessage?>) -> Unit
@@ -114,6 +115,7 @@ fun testTopology(
     try {
         runBlocking {
             testCmds(contextInstance)
+            contextInstance.closeSinks()
         }
     } finally {
         driver.allStateStores.forEach { store -> store.value.close() }
@@ -170,7 +172,7 @@ class TestDriverContext(
         val outputJob = GlobalScope.launch {
             outputFlow
                 .collect { trip: Triple<Topic, String, IMessage?> ->
-                    logger.info("Consuming topic: ${trip.first}")
+                    // logger.info("Consuming topic: ${trip.first} message: ${trip.third}")
                     consumer(trip)
                 }
         }
@@ -178,6 +180,22 @@ class TestDriverContext(
             connectSource()
         }
         return listOf(inputJob, outputJob)
+    }
+
+    override fun flushSinks() {
+        this.sinkConfigurations().map { config ->
+            config.sinkElements()
+        }.forEach { configSinks ->
+            configSinks.map { sink -> sink.value.flush() }
+        }
+    }
+
+    fun closeSinks() {
+        this.sinkConfigurations().map { config ->
+            config.sinkElements()
+        }.forEach { configSinks ->
+            configSinks.map { sink -> sink.value.close() }
+        }
     }
 
     override fun initializeSinks(): (Triple<Topic, String, IMessage?>) -> Unit {
@@ -197,11 +215,11 @@ class TestDriverContext(
     override fun sinkConsumer(sinks: Map<Topic, List<FloodplainSink>>): (Triple<Topic, String, IMessage?>) -> Unit {
         return {
                 (topic, key, msg) ->
-            val sink = sinks.get(topic) ?: emptyList<FloodplainSink>()
-            logger.info("# of sinks found: ${sink.size}")
+            val sink = sinks[topic] ?: emptyList<FloodplainSink>()
+            // logger.info("# of sinks found: ${sink.size}")
             sink.forEach {
-                println("Key: $topic $key $msg")
-                it.send(listOf(key to msg))
+                // println("Key: $topic $key $msg")
+                it.send(listOf(Triple(topic, key, msg)))
             }
         }
     }
@@ -209,6 +227,8 @@ class TestDriverContext(
         return callbackFlow<Triple<Topic, String, IMessage?>> {
             driver.setOutputListener {
                 val key = Serdes.String().deserializer().deserialize(it.topic(), it.key())
+                // val valueString = String(it.value()) // TODO remove
+                // logger.info { "Some VALUE: $valueString" }
                 val message = parser.parseBytes(Optional.of(it.topic()), it.value())
                 val imessage = message?.message()?.let { it1 -> fromImmutable(it1) }
                 logger.info("Sending output $key topic: ${it.topic()} value: $imessage")
@@ -222,11 +242,10 @@ class TestDriverContext(
         }
     }
     override fun input(topic: String, key: String, msg: IMessage) {
-        if (!inputs().contains(topic)) {
+        val qualifiedTopicName = topologyContext.topicName(topic)
+        if (!inputs().contains(qualifiedTopicName)) {
             logger.info("Missing topic: $topic available topics: ${inputs()}")
         }
-        val topicSrc = Topic.from(topic)
-        val qualifiedTopicName = topologyContext.topicName(topic)
         val inputTopic = inputTopics.computeIfAbsent(qualifiedTopicName) {
             driver.createInputTopic(qualifiedTopicName, Serdes.String().serializer(), ReplicationMessageSerde().serializer())
         }

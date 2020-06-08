@@ -18,11 +18,11 @@ dependencies {
     implementation(dependencies.slf4jSimple)
     implementation(dependencies.debeziumPostgres)
     implementation(dependencies.debeziumEmbedded)
-    implementation("io.confluent:kafka-connect-elasticsearch:5.5.0")
     testCompile(dependencies.jUnit)
     testCompile(dependencies.testContainer)
+    testCompile(dependencies.okHttp)
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.7")
+    implementation(dependencies.kotlinCoroutines)
     testImplementation("org.jetbrains.kotlin:kotlin-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
 }
