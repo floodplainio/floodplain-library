@@ -4,12 +4,10 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.floodplain.elasticsearch.elasticSearchConfig
 import io.floodplain.elasticsearch.elasticSearchSink
-import io.floodplain.kotlindsl.each
 import io.floodplain.kotlindsl.joinRemote
 import io.floodplain.kotlindsl.postgresSourceConfig
 import io.floodplain.kotlindsl.set
 import io.floodplain.kotlindsl.source
-import io.floodplain.kotlindsl.stream
 import io.floodplain.kotlindsl.streams
 import java.net.URI
 import java.net.http.HttpClient
@@ -21,7 +19,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeout
 import org.junit.After
 import org.junit.Assert
-import org.junit.Ignore
 import org.junit.Test
 
 private val logger = mu.KotlinLogging.logger {}
@@ -108,8 +105,8 @@ class TestCombined {
                     try {
                         val node = query("http://${elasticSearchContainer.host}:${elasticSearchContainer.exposedPort}/$index", "q=Amersfoort")
                         logger.info("Resulting node: {}", node)
-                        val found = node.get("hits").get("total").get("value").asInt()
-                        if (found > 0) {
+                        val found = node.get("hits")?.get("total")?.get("value")?.asInt()
+                        if (found != null && found > 0) {
                             hits = found
                             return@withTimeout
                         }
@@ -136,40 +133,6 @@ class TestCombined {
             // delay(30000)
             // query("http://${postgresContainer.host}:${postgresContainer.exposedPort}/${index}","q=Amersfoort")
             // connectJobs().forEach { it.cancel("ciao!") }
-        }
-    }
-
-    /**
-     * Test the simplest imaginable pipe: One source and one sink.
-     */
-    @Test @Ignore
-    fun testPostgresSourceSimple() {
-        println("Logger class: ${logger.underlyingLogger}")
-        logger.debug("startdebug")
-        stream("any") {
-            val postgresConfig = postgresSourceConfig("mypostgres", postgresContainer.host, postgresContainer.exposedPort, "postgres", "mysecretpassword", "dvdrental", "public")
-            val elasticConfig = elasticSearchConfig("elastic", "http://localhost:9200")
-            postgresConfig.sourceSimple("address") {
-                each { _, iMessage, _ -> logger.info("Bdsch: $iMessage") }
-                joinRemote({ msg -> "${msg["city_id"]}" }, false) {
-                    postgresConfig.sourceSimple("city") {
-                        joinRemote({ msg -> "${msg["country_id"]}" }, false) {
-                            postgresConfig.sourceSimple("country") {}
-                        }
-                        set { _, msg, state ->
-                            msg.set("country", state)
-                        }
-                    }
-                }
-                each { _, iMessage, _ -> logger.info("Boodschap: $iMessage") }
-                set { _, msg, state ->
-                    msg.set("city", state)
-                }
-                elasticSearchSink("@address", "@address", "@address", elasticConfig)
-            }
-        }.renderAndTest {
-            delay(30000)
-            connectJobs().forEach { it.cancel("ciao!") }
         }
     }
 
