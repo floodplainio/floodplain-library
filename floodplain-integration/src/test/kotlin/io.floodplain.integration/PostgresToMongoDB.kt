@@ -93,7 +93,7 @@ class TestCombinedMongo {
 
             connectJobs().forEach { it.cancel("ciao!") }
             var hits = 0L
-            withTimeout(40000) {
+            withTimeout(100000) {
                 repeat(1000) {
                     MongoClients.create("mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}").use { client ->
                         val collection = client.getDatabase(database).getCollection("customer")
