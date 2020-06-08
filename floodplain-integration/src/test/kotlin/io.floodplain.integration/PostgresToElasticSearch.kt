@@ -105,11 +105,16 @@ class TestCombined {
             var hits = 0
             withTimeout(40000) {
                 repeat(1000) {
-                    val node = query("http://${elasticSearchContainer.host}:${elasticSearchContainer.exposedPort}/$index", "q=Amersfoort")
-                    val found = node.get("hits").get("total").get("value").asInt()
-                    if (found > 0) {
-                        hits = found
-                        return@withTimeout
+                    try {
+                        val node = query("http://${elasticSearchContainer.host}:${elasticSearchContainer.exposedPort}/$index", "q=Amersfoort")
+                        logger.info("Resulting node: {}", node)
+                        val found = node.get("hits").get("total").get("value").asInt()
+                        if (found > 0) {
+                            hits = found
+                            return@withTimeout
+                        }
+                    } catch (e: Throwable) {
+                        logger.error("Error checking elasticsearch: ", e)
                     }
                     delay(1000)
                 }
