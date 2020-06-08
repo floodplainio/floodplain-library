@@ -12,6 +12,7 @@ import io.floodplain.mongodb.mongoSink
 import kotlin.test.assertEquals
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withTimeout
 import org.junit.After
 import org.junit.Test
 
@@ -91,16 +92,21 @@ class TestCombinedMongo {
             val database = topologyContext().topicName("@mongodump")
 
             connectJobs().forEach { it.cancel("ciao!") }
-            MongoClients.create("mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}").use { client ->
-                val collection = client.getDatabase(database)
-                    .getCollection("customer")
-                // collection.deleteMany(Document())
-                var doccount = collection
-                    .countDocuments()
-                logger.info("Count of Documents: $doccount in database: $database")
-                // Thread.sleep(100000)
-                assertEquals(599L, doccount)
+            var hits = 0L
+            withTimeout(40000) {
+                repeat(1000) {
+                    MongoClients.create("mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}").use { client ->
+                        val collection = client.getDatabase(database).getCollection("customer")
+                        hits = collection.countDocuments()
+                        logger.info("Count of Documents: $hits in database: $database")
+                        if (hits >= 598) {
+                            return@withTimeout
+                        }
+                    }
+                    delay(1000)
+                }
             }
+            assertEquals(599, hits)
         }
     }
 }
