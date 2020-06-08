@@ -1,4 +1,5 @@
 version: 2 # use CircleCI 2.0
+machine: true
 jobs: # a collection of steps
   build:
     # Remove if parallelism is not desired
