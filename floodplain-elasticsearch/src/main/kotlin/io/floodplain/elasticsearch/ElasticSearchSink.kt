@@ -1,6 +1,13 @@
-package io.floodplain.kotlindsl
+package io.floodplain.elasticsearch
 
 import io.confluent.connect.elasticsearch.ElasticsearchSinkConnector
+import io.floodplain.kotlindsl.Config
+import io.floodplain.kotlindsl.FloodplainSink
+import io.floodplain.kotlindsl.InputReceiver
+import io.floodplain.kotlindsl.PartialStream
+import io.floodplain.kotlindsl.SourceTopic
+import io.floodplain.kotlindsl.Stream
+import io.floodplain.kotlindsl.Transformer
 import io.floodplain.kotlindsl.message.IMessage
 import io.floodplain.reactive.source.topology.SinkTransformer
 import io.floodplain.streams.api.ProcessorName
@@ -18,10 +25,11 @@ fun Stream.elasticSearchConfig(name: String, uri: String): ElasticSearchSinkConf
     return this.addSinkConfiguration(c) as ElasticSearchSinkConfig
 }
 
-class ElasticSearchSinkConfig(val name: String, val uri: String, val context: TopologyContext, stream: Stream) : Config {
+class ElasticSearchSinkConfig(val name: String, val uri: String, val context: TopologyContext, stream: Stream) :
+    Config {
     val sinks: MutableMap<Topic, FloodplainSink> = mutableMapOf()
 
-    override fun materializeConnectorConfig(topologyContext: TopologyContext): Pair<String, Map<String, String>> {
+    override fun materializeConnectorConfig(): Pair<String, Map<String, String>> {
 
         return "" to emptyMap<String, String>()
     }
@@ -39,13 +47,19 @@ class ElasticSearchSinkConfig(val name: String, val uri: String, val context: To
 }
 
 private class ElasticSearchSink(private val topic: String, private val task: SinkTask) : FloodplainSink {
-    private val offsetCounter = AtomicLong(0)
-    override fun send(docs: List<Pair<String, IMessage?>>) {
-        val list = docs.map { (key, value) ->
+    private val offsetCounter = AtomicLong(System.currentTimeMillis())
+    override fun send(docs: List<Triple<Topic, String, IMessage?>>) {
+        val list = docs.map { (recordTopic, key, value) ->
             logger.info("Sending document to elastic. Key: $key message: $value")
-            SinkRecord(topic, 0, null, key, null, value?.data(), offsetCounter.incrementAndGet())
+            val data = value?.data()
+            logger.info("Data: $data")
+            SinkRecord(topic, 0, null, key, null, data, offsetCounter.incrementAndGet())
         }.toList()
         task.put(list)
+    }
+
+    override fun flush() {
+        task.flush(emptyMap())
     }
 
     override fun close() {
@@ -68,6 +82,7 @@ fun PartialStream.elasticSearchSink(sinkName: String, index: String, topicName: 
         "key.converter" to "org.apache.kafka.connect.storage.StringConverter",
         "topics" to topic.qualifiedString(config.context),
         "schema.ignore" to "true",
+        "behavior.on.null.values" to "delete",
         "type.name" to "_doc")
     val conn = ElasticsearchSinkConnector()
     conn.start(sinkConfig)
