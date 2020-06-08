@@ -15,7 +15,6 @@ jobs: # a collection of steps
             sudo add-apt-repository ppa:openjdk-r/ppa
             sudo apt-get update
             sudo apt-get install -y openjdk-11-jdk
-            sudo update-java-alternatives --list
             java -version
             sudo update-java-alternatives --set java-1.11.0-openjdk-amd64
             java -version
