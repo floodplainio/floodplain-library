@@ -22,6 +22,7 @@ apply plugin: "com.github.johnrengelman.shadow"
 dependencies {
     Map<String, String> dependencies = globalConf.commonDependencies
     implementation(project(":floodplain-dsl"))
+    implementation(project(":floodplain-mongodb"))
     implementation(project(":streams-api"))
     implementation(project(":streams"))
     implementation(project(":replication-api"))

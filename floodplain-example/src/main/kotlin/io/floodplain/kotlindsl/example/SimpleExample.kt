@@ -21,19 +21,19 @@ package io.floodplain.kotlindsl.example
 import io.floodplain.kotlindsl.each
 import io.floodplain.kotlindsl.filter
 import io.floodplain.kotlindsl.joinRemote
-import io.floodplain.kotlindsl.mongoConfigOld
-import io.floodplain.kotlindsl.mongoSinkOld
 import io.floodplain.kotlindsl.postgresSource
 import io.floodplain.kotlindsl.postgresSourceConfig
 import io.floodplain.kotlindsl.set
 import io.floodplain.kotlindsl.stream
+import io.floodplain.mongodb.mongoConfig
+import io.floodplain.mongodb.mongoSink
 import java.net.URL
 
 private val logger = mu.KotlinLogging.logger {}
 
 fun mainaaa(args: Array<String>) {
     stream("nextgen7") {
-        val mongodb = mongoConfigOld("@mongo", "mongodb://mongo", "mydatabase")
+        val mongodb = mongoConfig("@mongo", "mongodb://mongo", "mydatabase")
         val pgConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")
         postgresSource("public", "actor", pgConfig) {
             each {
@@ -42,7 +42,7 @@ fun mainaaa(args: Array<String>) {
             set {
                 _, msg, _ -> msg.clear("last_update"); msg
             }
-            mongoSinkOld("actorz", "actorz", mongodb)
+            mongoSink("actorz", "actorz", mongodb)
         }
     }.renderAndStart(URL("http://localhost:8083/connectors"), "localhost:9092")
 }
@@ -50,12 +50,12 @@ fun mainaaa(args: Array<String>) {
 fun mainold(args: Array<String>) {
     stream {
         val postgres = postgresSourceConfig("local", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")
-        val mongodb = mongoConfigOld("mongo", "mongodb://mongo", "mydatabase")
+        val mongodb = mongoConfig("mongo", "mongodb://mongo", "mydatabase")
         postgresSource("public", "payment", postgres) {
             each {
                     _, msg, _ -> logger.info("Record: $msg")
             }
-            mongoSinkOld("payments", "mytopic", mongodb)
+            mongoSink("payments", "mytopic", mongodb)
         }
     }.renderAndStart(URL("http://localhost:8083/connectors"), "localhost:9092")
 }
@@ -65,7 +65,7 @@ fun main() = stream {
     val pgConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")
 
     // create a mongodb config, named 'mymongo' pointing to uri: 'mongodb://mongo' using database: "mydatabase"
-    val mongoConfig = mongoConfigOld("mymongo", "mongodb://mongo", "mydatabase")
+    val mongoConfig = mongoConfig("mymongo", "mongodb://mongo", "mydatabase")
 
     // create a source, using schema "public" and table "film" and use the postgres
     postgresSource("public", "payment", pgConfig) {
@@ -74,30 +74,30 @@ fun main() = stream {
             key, _, _ -> logger.info("Key: $key")
         }
         // ... add more transformers
-        mongoSinkOld("justfilm", "justfilm", mongoConfig)
+        mongoSink("justfilm", "justfilm", mongoConfig)
     }
 }.renderAndStart(URL("http://localhost:8083/connectors"), "localhost:9092")
 
 fun main2() = stream {
     val pgConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")
-    val mongoConfig = mongoConfigOld("mymongo", "mongodb://mongo", "mydatabase")
+    val mongoConfig = mongoConfig("mymongo", "mongodb://mongo", "mydatabase")
     postgresSource("public", "film", pgConfig) {
         joinRemote({ msg -> msg["language_id"].toString() }) { postgresSource("public", "language", pgConfig) {} }
         set { _, film, language ->
             film["language"] = language["name"]; film
         }
-        mongoSinkOld("filmwithlanguage", "filmwithlanguage", mongoConfig)
+        mongoSink("filmwithlanguage", "filmwithlanguage", mongoConfig)
     }
 }.renderAndStart(URL("http://localhost:8083/connectors"), "localhost:9092")
 
 fun mainold() {
     stream("mygeneration") {
         val pgConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")
-        val mongoConfig = mongoConfigOld("mymongo", "mongodb://mongo", "mydatabase")
+        val mongoConfig = mongoConfig("mymongo", "mongodb://mongo", "mydatabase")
         postgresSource("public", "actor", pgConfig) {
             set { _, msg, _ -> msg["last_update"] = null; msg }
             filter { _, msg -> (msg["actor_id"] as Int) < 10 }
-            mongoSinkOld("mycollection", "sometopic", mongoConfig)
+            mongoSink("mycollection", "sometopic", mongoConfig)
         }
     }.renderAndStart(URL("http://localhost:8083/connectors"), "localhost:9092")
 }

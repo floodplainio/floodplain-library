@@ -21,8 +21,6 @@ package io.floodplain.kotlindsl.example
 import io.floodplain.kotlindsl.join
 import io.floodplain.kotlindsl.joinRemote
 import io.floodplain.kotlindsl.message.empty
-import io.floodplain.kotlindsl.mongoConfigOld
-import io.floodplain.kotlindsl.mongoSinkOld
 import io.floodplain.kotlindsl.postgresSource
 import io.floodplain.kotlindsl.postgresSourceConfig
 import io.floodplain.kotlindsl.scan
@@ -30,6 +28,8 @@ import io.floodplain.kotlindsl.set
 import io.floodplain.kotlindsl.sink
 import io.floodplain.kotlindsl.source
 import io.floodplain.kotlindsl.streams
+import io.floodplain.mongodb.mongoConfig
+import io.floodplain.mongodb.mongoSink
 import java.net.URL
 
 private val logger = mu.KotlinLogging.logger {}
@@ -37,7 +37,7 @@ private val logger = mu.KotlinLogging.logger {}
 fun main() {
     streams {
         val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")
-        val mongoConfig = mongoConfigOld("mongosink", "mongodb://mongo", "@mongodump")
+        val mongoConfig = mongoConfig("mongosink", "mongodb://mongo", "@mongodump")
         listOf(
                 postgresSource("public", "address", postgresConfig) {
                     joinRemote({ msg -> "${msg["city_id"]}" }, false) {
@@ -68,7 +68,7 @@ fun main() {
                     set { _, customer, totals ->
                         customer["total"] = totals["total"]; customer
                     }
-                    mongoSinkOld("customer", "customer", mongoConfig)
+                    mongoSink("customer", "customer", mongoConfig)
                 },
                 postgresSource("public", "store", postgresConfig) {
                     joinRemote({ m -> "${m["address_id"]}" }, false) {
@@ -77,7 +77,7 @@ fun main() {
                     set { _, msg, state ->
                         msg.set("address", state)
                     }
-                    mongoSinkOld("store", "store", mongoConfig)
+                    mongoSink("store", "store", mongoConfig)
                 },
                 postgresSource("public", "staff", postgresConfig) {
                     joinRemote({ m -> "${m["address_id"]}" }, false) {
@@ -86,7 +86,7 @@ fun main() {
                     set { _, msg, state ->
                         msg.set("address", state)
                     }
-                    mongoSinkOld("staff", "staff", mongoConfig)
+                    mongoSink("staff", "staff", mongoConfig)
                 },
                 postgresSource("public", "payment", postgresConfig) {
                     scan({ msg -> msg["customer_id"].toString() }, { msg -> empty().set("total", 0.0).set("customer_id", msg["customer_id"]) },

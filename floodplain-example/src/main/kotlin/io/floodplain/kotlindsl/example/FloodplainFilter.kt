@@ -19,11 +19,11 @@
 package io.floodplain.kotlindsl.example
 
 import io.floodplain.kotlindsl.filter
-import io.floodplain.kotlindsl.mongoConfigOld
-import io.floodplain.kotlindsl.mongoSinkOld
 import io.floodplain.kotlindsl.postgresSource
 import io.floodplain.kotlindsl.postgresSourceConfig
 import io.floodplain.kotlindsl.stream
+import io.floodplain.mongodb.mongoConfig
+import io.floodplain.mongodb.mongoSink
 import java.net.URL
 
 private val logger = mu.KotlinLogging.logger {}
@@ -31,12 +31,12 @@ private val logger = mu.KotlinLogging.logger {}
 fun filter(generation: String) {
     stream(generation) {
         val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")
-        val mongoConfig = mongoConfigOld("mongosink", "mongodb://mongo", "mongodump")
+        val mongoConfig = mongoConfig("mongosink", "mongodb://mongo", "mongodump")
         postgresSource("public", "actor", postgresConfig) {
             filter { _, msg ->
                 (msg["last_name"] as String).startsWith("G", true)
             }
-            mongoSinkOld("filtercollection", "filtertopic", mongoConfig)
+            mongoSink("filtercollection", "filtertopic", mongoConfig)
         }
     }.renderAndStart(URL("http://localhost:8083/connectors"), "localhost:9092")
     logger.info { "done!" }

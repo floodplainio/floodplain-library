@@ -22,12 +22,12 @@ import io.floodplain.kotlindsl.group
 import io.floodplain.kotlindsl.joinGrouped
 import io.floodplain.kotlindsl.joinRemote
 import io.floodplain.kotlindsl.message.empty
-import io.floodplain.kotlindsl.mongoConfigOld
-import io.floodplain.kotlindsl.mongoSinkOld
 import io.floodplain.kotlindsl.postgresSource
 import io.floodplain.kotlindsl.postgresSourceConfig
 import io.floodplain.kotlindsl.set
 import io.floodplain.kotlindsl.stream
+import io.floodplain.mongodb.mongoConfig
+import io.floodplain.mongodb.mongoSink
 import java.net.URL
 
 private val logger = mu.KotlinLogging.logger {}
@@ -39,7 +39,7 @@ fun main() {
 fun joinFilms(generation: String) {
     stream(generation) {
         val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")
-        val mongoConfig = mongoConfigOld("mongosink", "mongodb://mongo", "@mongodump")
+        val mongoConfig = mongoConfig("mongosink", "mongodb://mongo", "@mongodump")
         postgresSource("public", "film", postgresConfig) {
             joinGrouped {
                 postgresSource("public", "film_category", postgresConfig) {
@@ -57,7 +57,7 @@ fun joinFilms(generation: String) {
                 msg["categories"] = state["list"] ?: empty()
                 msg
             }
-            mongoSinkOld("filmwithcategories", "filmwithcat", mongoConfig)
+            mongoSink("filmwithcategories", "filmwithcat", mongoConfig)
         }
     }.renderAndStart(URL("http://localhost:8083/connectors"), "localhost:9092")
     logger.info { "done!" }

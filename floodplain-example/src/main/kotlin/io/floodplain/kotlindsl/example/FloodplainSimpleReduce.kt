@@ -19,13 +19,13 @@
 package io.floodplain.kotlindsl.example
 
 import io.floodplain.kotlindsl.message.empty
-import io.floodplain.kotlindsl.mongoConfigOld
-import io.floodplain.kotlindsl.mongoSinkOld
 import io.floodplain.kotlindsl.postgresSource
 import io.floodplain.kotlindsl.postgresSourceConfig
 import io.floodplain.kotlindsl.scan
 import io.floodplain.kotlindsl.set
 import io.floodplain.kotlindsl.stream
+import io.floodplain.mongodb.mongoConfig
+import io.floodplain.mongodb.mongoSink
 import java.math.BigDecimal
 import java.net.URL
 
@@ -34,7 +34,7 @@ private val logger = mu.KotlinLogging.logger {}
 fun main() {
     stream("bla") {
         val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")
-        val mongoConfig = mongoConfigOld("mongosink", "mongodb://mongo", "mongodump")
+        val mongoConfig = mongoConfig("mongosink", "mongodb://mongo", "mongodump")
         postgresSource("public", "payment", postgresConfig) {
             scan({ msg -> empty().set("total", BigDecimal(0)) },
                 {
@@ -50,7 +50,7 @@ fun main() {
                     }
                 }
             )
-            mongoSinkOld("justtotal", "@myfinaltopic", mongoConfig)
+            mongoSink("justtotal", "@myfinaltopic", mongoConfig)
         }
     }.renderAndStart(URL("http://localhost:8083/connectors"), "localhost:9092")
 }
