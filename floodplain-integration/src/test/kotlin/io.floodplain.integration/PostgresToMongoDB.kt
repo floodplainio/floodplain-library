@@ -14,6 +14,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeout
 import org.junit.After
+import org.junit.Ignore
 import org.junit.Test
 
 private val logger = mu.KotlinLogging.logger {}
@@ -21,8 +22,8 @@ private val logger = mu.KotlinLogging.logger {}
 @kotlinx.coroutines.ExperimentalCoroutinesApi
 class TestCombinedMongo {
 
-    val postgresContainer = InstantiatedContainer("floodplain/floodplain-postgres-demo:1.0.0", 5432)
-    val mongoContainer = InstantiatedContainer("mongo:latest", 27017)
+    private val postgresContainer = InstantiatedContainer("floodplain/floodplain-postgres-demo:1.0.0", 5432)
+    private val mongoContainer = InstantiatedContainer("mongo:latest", 27017)
 
     @After
     fun shutdown() {
@@ -33,7 +34,7 @@ class TestCombinedMongo {
     /**
      * Test the simplest imaginable pipe: One source and one sink.
      */
-    @Test
+    @Test @Ignore
     fun testPostgresSource() {
         println("Logger class: ${logger.underlyingLogger}")
         streams("any", "myinstance") {
