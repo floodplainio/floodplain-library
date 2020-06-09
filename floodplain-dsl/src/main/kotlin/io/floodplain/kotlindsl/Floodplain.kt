@@ -159,9 +159,7 @@ fun Stream.source(topic: String, init: Source.() -> Unit): Source {
 fun Stream.externalSource(topic: String, init: Source.() -> Unit): Source {
     val sourceElement = TopicSource(Topic.from(topic), true)
     val source = Source(sourceElement)
-
     source.init()
-//    this.addSource(source)
     return source
 }
 

@@ -331,21 +331,30 @@ public class JSONToReplicationMessage {
         }
     }
 
-    public static String processDebeziumJSONKey(String keyInput) throws JsonProcessingException {
-        ObjectNode keynode = (ObjectNode) objectMapper.readTree(keyInput);
-        TableIdentifier ti = processDebeziumKey(keynode);
-        return ti.combinedKey;
+    public static String processDebeziumJSONKey(String keyInput) throws DebeziumParseException {
+        ObjectNode keyNode = null;
+        try {
+            keyNode = (ObjectNode) objectMapper.readTree(keyInput);
+            TableIdentifier ti = processDebeziumKey(keyNode);
+            return ti.combinedKey;
+        } catch (JsonProcessingException e) {
+            throw new DebeziumParseException("Error parsing debezium key: "+keyInput,e);
+        }
     }
 
-    public static ReplicationMessage processDebeziumBody(byte[] data) throws IOException {
+    public static ReplicationMessage processDebeziumBody(byte[] data) throws DebeziumParseException {
         if(data == null) {
             return null;
         }
-        ObjectNode valuenode = (ObjectNode) objectMapper.readTree(data);
-        if (!valuenode.has("payload") || valuenode.get("payload").isNull()) {
-            return ReplicationFactory.empty().withOperation(Operation.DELETE);
+        try {
+            ObjectNode valueNode = (ObjectNode) objectMapper.readTree(data);
+            if (!valueNode.has("payload") || valueNode.get("payload").isNull()) {
+                return ReplicationFactory.empty().withOperation(Operation.DELETE);
+            }
+            return convertToReplication(false, valueNode, Optional.empty());
+        } catch (IOException e) {
+            throw new DebeziumParseException("Error parsing debezium body",e);
         }
-        return convertToReplication(false, valuenode, Optional.empty());
 
     }
 

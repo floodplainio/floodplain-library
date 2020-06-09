@@ -11,6 +11,7 @@ import java.util.UUID
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.system.measureTimeMillis
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.sendBlocking
 import kotlinx.coroutines.flow.Flow
@@ -23,7 +24,7 @@ private val logger = mu.KotlinLogging.logger {}
 
 data class ChangeRecord(val topic: String, val key: String, val value: ByteArray?)
 
-fun main(args: Array<String>) {
+fun main() {
     val offsetFilePath = Paths.get("offset")
     Files.deleteIfExists(offsetFilePath)
     runBlocking {
@@ -38,19 +39,6 @@ fun main(args: Array<String>) {
     }
 }
 
-/**
- * @return A hot flow of ChangeRecord. Perhaps one day there might be a colder one.
- * @param name: The prefix of the outgoing 'topic', basically the destination field of the changerecord is <topicprefix>.<schema>.<table>
- * @param hostname: The host of the postgres database
- * @param port: The port of the postgres database
- * @param username: The username of the postgres database
- * @param password: The password of the postgres database
- * @param offsetFilePath: By default, we will save the offsets in a file path
- * @param settings An optional string-string map, that represents any extra parameters you want to pass to Debezium
- * Defaults to empty map.
- *
- */
-
 internal class EngineKillSwitch(var engine: DebeziumEngine<ChangeEvent<String, String>>? = null) {
 
     val killed = AtomicBoolean(false)
@@ -63,10 +51,21 @@ internal class EngineKillSwitch(var engine: DebeziumEngine<ChangeEvent<String, S
         }
     }
 }
-@kotlinx.coroutines.ExperimentalCoroutinesApi
-fun postgresDataSource(name: String, hostname: String, port: Int, database: String, user: String, password: String, offsetFilePath: Path, settings: Map<String, String> = emptyMap()): Flow<ChangeRecord> {
+/**
+ * @return A hot flow of ChangeRecord. Perhaps one day there might be a colder one.
+ * @param name: The prefix of the outgoing 'topic', basically the destination field of the changerecord is <topicprefix>.<schema>.<table>
+ * @param hostname: The host of the postgres database
+ * @param port: The port of the postgres database
+ * @param username: The username of the postgres database
+ * @param password: The password of the postgres database
+ * @param offsetFilePath: By default, we will save the offsets in a file path
+ * @param settings An optional string-string map, that represents any extra parameters you want to pass to Debezium
+ * Defaults to empty map.
+ *
+ */
+@ExperimentalCoroutinesApi
+fun postgresDataSource(name: String, hostname: String, port: Int, database: String, username: String, password: String, offsetFilePath: Path, settings: Map<String, String> = emptyMap()): Flow<ChangeRecord> {
         val props = Properties()
-    val startedAt = System.currentTimeMillis()
         props.setProperty("name", "engine_" + UUID.randomUUID())
         props.setProperty("connector.class", "io.debezium.connector.postgresql.PostgresConnector")
         props.setProperty("database.hostname", hostname)
@@ -74,11 +73,11 @@ fun postgresDataSource(name: String, hostname: String, port: Int, database: Stri
         props.setProperty("database.server.name", name) // don't think this matters?
         props.setProperty("database.dbname", database)
         props.setProperty("connector.class", "io.debezium.connector.postgresql.PostgresConnector")
-        props.setProperty("database.user", user)
+        props.setProperty("database.user", username)
         props.setProperty("database.password", password)
         props.setProperty("offset.storage.file.filename", offsetFilePath.toString())
         props.setProperty("offset.flush.interval.ms", "10000")
-        settings.forEach { k, v -> props[k] = v }
+        settings.forEach { (k, v) -> props[k] = v }
         logger.info("Starting source flow with name: ${props.getProperty("name")} offsetpath: $offsetFilePath ")
         val engineKillSwitch = EngineKillSwitch()
         return callbackFlow<ChangeRecord> {
@@ -95,7 +94,7 @@ fun postgresDataSource(name: String, hostname: String, port: Int, database: Stri
                             }
                         }
                         if (perf > 1000) {
-                            println("Send blocking ran for: " + perf)
+                            println("Send blocking ran for: $perf")
                         }
 
                     // }

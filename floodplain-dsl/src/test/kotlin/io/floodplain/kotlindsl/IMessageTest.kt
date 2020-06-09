@@ -33,7 +33,7 @@ class IMessageTest {
     @Test
     fun testAppHasAGreeting() {
         val m = ImmutableFactory.empty().with("aap", "vla", ImmutableMessage.ValueType.STRING)
-        val msg: IMessage = fromImmutable(m)!!
+        val msg: IMessage = fromImmutable(m)
         val m2 = msg.toImmutable()
         assertNotNull(m2.value("aap"), "app conversion has failed")
         assertEquals("vla", m2.value("aap").get() as String)

@@ -30,7 +30,6 @@ class ElasticSearchSinkConfig(val name: String, val uri: String, val context: To
     val sinks: MutableMap<Topic, FloodplainSink> = mutableMapOf()
 
     override fun materializeConnectorConfig(): Pair<String, Map<String, String>> {
-
         return "" to emptyMap<String, String>()
     }
 

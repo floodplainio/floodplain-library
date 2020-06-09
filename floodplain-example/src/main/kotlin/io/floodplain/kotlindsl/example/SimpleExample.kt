@@ -31,7 +31,7 @@ import java.net.URL
 
 private val logger = mu.KotlinLogging.logger {}
 
-fun mainaaa(args: Array<String>) {
+fun mainaaa() {
     stream("nextgen7") {
         val mongodb = mongoConfig("@mongo", "mongodb://mongo", "mydatabase")
         val pgConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")
@@ -47,7 +47,7 @@ fun mainaaa(args: Array<String>) {
     }.renderAndStart(URL("http://localhost:8083/connectors"), "localhost:9092")
 }
 
-fun mainold(args: Array<String>) {
+fun mainold2() {
     stream {
         val postgres = postgresSourceConfig("local", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")
         val mongodb = mongoConfig("mongo", "mongodb://mongo", "mydatabase")

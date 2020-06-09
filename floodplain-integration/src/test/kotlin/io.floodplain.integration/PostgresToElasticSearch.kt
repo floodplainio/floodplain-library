@@ -137,10 +137,10 @@ class TestCombined {
         }
     }
 
-    private fun query(uri: String, query: String): JsonNode {
+    private fun query(queryUri: String, query: String): JsonNode {
 
         val client = HttpClient.newBuilder().build()
-        val uri = URI.create("$uri/_search?$query")
+        val uri = URI.create("$queryUri/_search?$query")
         logger.warn("QUERYING: $uri")
         val request = HttpRequest.newBuilder()
             .GET()

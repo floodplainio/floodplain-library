@@ -45,9 +45,10 @@ class MongoConfig(val name: String, val uri: String, val database: String, priva
         val additional = mutableMapOf<String, String>()
         sinkInstancePair.forEach { (key, value) -> additional.put("topic.override.${value.qualifiedString(topologyContext)}.collection", key) }
         logger.debug("Pairs: $sinkInstancePair")
-        val collections: String = sinkInstancePair.map { e -> e.first }.joinToString(",")
+        val collections: String = sinkInstancePair.joinToString(",") { e -> e.first }
         logger.debug("Collections: $collections")
-        val topics: String = sinkInstancePair.map { (collection, topic) -> topic.qualifiedString(topologyContext) }.joinToString(",")
+        val topics: String =
+            sinkInstancePair.joinToString(",") { (collection, topic) -> topic.qualifiedString(topologyContext) }
         logger.debug("Topics: $topics")
 
         val generationalDatabase = topologyContext.topicName(database)
@@ -79,7 +80,7 @@ class MongoConfig(val name: String, val uri: String, val database: String, priva
     }
 
     override fun sinkElements(): Map<Topic, FloodplainSink> {
-        val (key, settings) = materializeConnectorConfig()
+        val (_, settings) = materializeConnectorConfig()
         val connector = MongoSinkConnector()
         connector.start(settings)
 

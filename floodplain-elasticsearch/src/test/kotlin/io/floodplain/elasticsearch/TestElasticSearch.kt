@@ -42,11 +42,8 @@ class TestElasticSearch {
         val uri = "http://$address:$port"
         stream {
             source("sometopic") {
-                // val uri = "http://${address}:${port}";
                 val config = elasticSearchConfig("elasticName", uri)
-                // val sink = sink("someindex", "mytopic",config)
-                // val topic = Topic.from("mytopic")
-                val sink = elasticSearchSink("mysinkname", "myindex", "someindex", config)
+                elasticSearchSink("mysinkname", "myindex", "someindex", config)
             }
         }.renderAndTest {
 
@@ -71,7 +68,7 @@ class TestElasticSearch {
         }
     }
 
-    fun queryUUIDHits(uuid: String): Int {
+    private fun queryUUIDHits(uuid: String): Int {
         val node = queryUUID("http://$address:$port", "q=$uuid")
         return node.get("hits").get("total").get("value").asInt()
     }

@@ -31,12 +31,13 @@ import io.floodplain.streams.debezium.JSONToReplicationMessage.processDebeziumJS
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.UUID
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 
 private val logger = mu.KotlinLogging.logger {}
 
-class PostgresConfig(val topologyContext: TopologyContext, val name: String, val hostname: String, val port: Int, val username: String, val password: String, val database: String, val defaultSchema: String? = null) : Config {
+class PostgresConfig(val topologyContext: TopologyContext, val name: String, private val hostname: String, private val port: Int, private val username: String, private val password: String, private val database: String, private val defaultSchema: String? = null) : Config {
 
     private val sourceElements: MutableList<SourceTopic> = mutableListOf()
 
@@ -45,15 +46,11 @@ class PostgresConfig(val topologyContext: TopologyContext, val name: String, val
     }
 
     override suspend fun connectSource(inputReceiver: InputReceiver) {
-        val elements = sourceElements.toSet()
         val broadcastFlow = directSource(Paths.get("somepath" + UUID.randomUUID().toString()))
         broadcastFlow.collect {
             val availableSourceTopics = sourceElements.map { sourceElement -> sourceElement.topic().qualifiedString(topologyContext) }.toSet()
             if (availableSourceTopics.contains(it.topic)) {
                 val parsedKey = processDebeziumJSONKey(it.key)
-                // println("matched! Matching key: $parsedKey unparsedKey : ${it.key}")
-                // println("value: ${String(it.value)}")
-                // inputReceiver.input(it.topic,it.key,it.value)
                 val rm: ReplicationMessage? = processDebeziumBody(it.value)
                 val operation = rm?.operation() ?: ReplicationMessage.Operation.DELETE
                 try {
@@ -61,7 +58,7 @@ class PostgresConfig(val topologyContext: TopologyContext, val name: String, val
                         ReplicationMessage.Operation.DELETE ->
                             inputReceiver.delete(it.topic, parsedKey)
                         else ->
-                            inputReceiver.input(it.topic, parsedKey, fromImmutable(rm!!.message())!!)
+                            inputReceiver.input(it.topic, parsedKey, fromImmutable(rm!!.message()))
                     }
                 } catch (e: Throwable) {
                     e.printStackTrace()
@@ -92,13 +89,14 @@ class PostgresConfig(val topologyContext: TopologyContext, val name: String, val
         sourceElements.add(elt)
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     fun directSource(offsetFilePath: Path): Flow<ChangeRecord> {
         return postgresDataSource(topologyContext.topicName(name), hostname, port, database, username, password, offsetFilePath)
     }
 
     fun sourceSimple(table: String, schema: String? = null, init: Source.() -> Unit): Source {
         val effectiveSchema = schema ?: defaultSchema ?: "public"
-        val topic = Topic.from(name + "." + effectiveSchema + "." + table)
+        val topic = Topic.from("$name.$effectiveSchema.$table")
         val topicSource = TopicSource(topic, false)
         addSourceElement(DebeziumSourceElement(topic))
         val databaseSource = Source(topicSource)
@@ -122,7 +120,6 @@ fun Stream.postgresSourceConfig(name: String, hostname: String, port: Int, usern
     return postgresConfig
 }
 
-@Deprecated("Use the config object")
 fun Stream.postgresSource(schema: String, table: String, config: PostgresConfig, init: Source.() -> Unit): Source {
     val topicSource = DebeziumTopicSource(config.name, table, schema)
     config.addSourceElement(DebeziumSourceElement(topicSource.topic))

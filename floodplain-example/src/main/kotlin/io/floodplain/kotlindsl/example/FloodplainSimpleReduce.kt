@@ -36,7 +36,7 @@ fun main() {
         val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")
         val mongoConfig = mongoConfig("mongosink", "mongodb://mongo", "mongodump")
         postgresSource("public", "payment", postgresConfig) {
-            scan({ msg -> empty().set("total", BigDecimal(0)) },
+            scan({ empty().set("total", BigDecimal(0)) },
                 {
                     set { _, msg, state ->
                         state["total"] = (state["total"] as BigDecimal).add(msg["amount"] as BigDecimal)

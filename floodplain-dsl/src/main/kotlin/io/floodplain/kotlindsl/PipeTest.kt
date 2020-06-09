@@ -16,6 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+@file:Suppress("EXPERIMENTAL_API_USAGE")
+
 package io.floodplain.kotlindsl
 
 import io.floodplain.kotlindsl.message.IMessage
@@ -269,7 +271,7 @@ class TestDriverContext(
             return output(topic)
 //            throw RuntimeException("Expected message for key: ${keyVal.key}, but got a delete.")
         } else {
-            return Pair(keyVal.key, fromImmutable(keyVal.value!!.message())!!)
+            return Pair(keyVal.key, fromImmutable(keyVal.value!!.message()))
         }
     }
 

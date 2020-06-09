@@ -128,7 +128,7 @@ class Stream(val context: TopologyContext) {
      * - A list of kafka connect source pairs (name to json definition)
      * - A list of kafka connect sink pairs (name to json definition)
      */
-    fun render(topologyConstructor: TopologyConstructor): Triple<Topology, List<Pair<String, String>>, List<Pair<String, String>>> {
+    private fun render(topologyConstructor: TopologyConstructor): Triple<Topology, List<Pair<String, String>>, List<Pair<String, String>>> {
         val topology = renderTopology(topologyConstructor)
         val sources = sourceConfigurations().map { element ->
             val (name, config) = element.materializeConnectorConfig()
@@ -141,7 +141,7 @@ class Stream(val context: TopologyContext) {
         return Triple(topology, sources, sinks)
     }
 
-    fun runTopology(topology: Topology, applicationId: String, kafkaHosts: String, storagePath: String): KafkaStreams? {
+    private fun runTopology(topology: Topology, applicationId: String, kafkaHosts: String, storagePath: String): KafkaStreams? {
         val props = createProperties(applicationId, kafkaHosts, storagePath)
         val stream = KafkaStreams(topology, props)
         logger.info("CurrentTopology:\n ${topology.describe()}")

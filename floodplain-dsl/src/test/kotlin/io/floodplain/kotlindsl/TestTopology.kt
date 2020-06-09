@@ -31,7 +31,6 @@ import org.apache.kafka.streams.state.KeyValueStore
 
 private val logger = mu.KotlinLogging.logger {}
 
-@Suppress("UNCHECKED_CAST")
 class TestTopology {
 
     @Test
@@ -268,11 +267,6 @@ class TestTopology {
         }
     }
 
-//    @Test
-//    fun testRemoteJoin() {
-//        fail("Implement")
-//    }
-
     @Test
     fun testFilter() {
         stream("anygen") {
@@ -322,14 +316,14 @@ class TestTopology {
         stream {
             source("@source") {
                 scan({
-                        msg -> empty().set("total", BigDecimal.valueOf(0))
+                        _ -> empty().set("total", BigDecimal.valueOf(0))
                 }, {
                     set {
                         _, _, acc -> acc["total"] = (acc["total"] as BigDecimal).add(BigDecimal.valueOf(1))
                         acc
                     }
                 }, {
-                    set { _, mm, acc ->
+                    set { _, _, acc ->
                         if (acc["total"] != null) {
                             println("A: $acc")
                         }

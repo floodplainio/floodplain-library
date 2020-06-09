@@ -22,9 +22,7 @@ import io.floodplain.immutable.api.ImmutableMessage
 import io.floodplain.immutable.factory.ImmutableFactory
 import java.math.BigDecimal
 import java.util.stream.Collectors
-import kotlin.streams.toList
-
-private val logger = mu.KotlinLogging.logger {}
+import kotlin.streams.toList as toList1
 
 data class IMessage(private val content: MutableMap<String, Any>) {
 
@@ -169,7 +167,7 @@ data class IMessage(private val content: MutableMap<String, Any>) {
         for ((name, elt) in content) {
             when (elt) {
                 is IMessage -> subMessage[name] = elt.toImmutable()
-                is List<*> -> subMessageList[name] = subListToImmutable(elt as List<IMessage>)
+                is List<*> -> subMessageList[name] = subListToImmutable(elt)
                 is ImmutableMessage -> subMessage[name] = elt
                 else -> {
                     values[name] = elt; types.put(name, ImmutableFactory.resolveTypeFromValue(elt))
@@ -179,9 +177,9 @@ data class IMessage(private val content: MutableMap<String, Any>) {
         return ImmutableFactory.create(values, types, subMessage, subMessageList)
     }
 
-    private fun subListToImmutable(items: List<IMessage>): List<ImmutableMessage> {
+    private fun subListToImmutable(items: List<*>): List<ImmutableMessage> {
         return items.stream().map {
-            it.toImmutable()
+            (it as IMessage).toImmutable()
         }.collect(Collectors.toList())
     }
 
@@ -216,7 +214,7 @@ fun fromImmutable(msg: ImmutableMessage): IMessage {
         }
     }
     for ((name, value) in msg.subMessageListMap()) {
-        content[name] = value.stream().map { e -> fromImmutable(e) }.toList()
+        content[name] = value.stream().map { e -> fromImmutable(e) }.toList1()
     }
     return IMessage(content)
 }
