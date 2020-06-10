@@ -100,7 +100,7 @@ class TestCombined {
 
             // find a customer from Amersfoort. There should be one.
             var hits = 0
-            withTimeout(100000) {
+            withTimeout(200000) {
                 repeat(1000) {
                     try {
                         val node = query("http://${elasticSearchContainer.host}:${elasticSearchContainer.exposedPort}/$index", "q=Amersfoort")

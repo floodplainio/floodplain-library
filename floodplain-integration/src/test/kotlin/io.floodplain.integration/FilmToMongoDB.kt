@@ -98,7 +98,7 @@ class FilmToMongoDB {
             val database = topologyContext().topicName("@mongodump")
             connectJobs().forEach { it.cancel("ciao!") }
             var hits = 0L
-            withTimeout(100000) {
+            withTimeout(200000) {
                 repeat(1000) {
                     MongoClients.create("mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}")
                         .use { client ->
