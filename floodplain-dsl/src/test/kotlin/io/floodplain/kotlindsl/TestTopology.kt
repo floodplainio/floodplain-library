@@ -212,8 +212,8 @@ class TestTopology {
             assertEquals(1, subList2.size)
             delete("@right", "otherkey2")
             val (_, v5) = output("@output")
-            val subList3 = v5.get("rightsub") as List<*>
-            assertEquals(0, subList3.size)
+            val subList3 = v5.get("rightsub") as List<*>?
+            assertEquals(0, subList3?.size ?: 0)
             delete("@left", "key1")
             assertEquals("key1", deleted("@output"))
         }
