@@ -61,7 +61,7 @@ class PostgresConfig(val topologyContext: TopologyContext, val name: String, pri
                             inputReceiver.input(it.topic, parsedKey, fromImmutable(rm!!.message()))
                     }
                 } catch (e: Throwable) {
-                    e.printStackTrace()
+                    error("Failed with exception $e")
                 }
             }
         }

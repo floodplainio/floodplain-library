@@ -233,7 +233,7 @@ class TestDriverContext(
                 // logger.info { "Some VALUE: $valueString" }
                 val message = parser.parseBytes(Optional.of(it.topic()), it.value())
                 val imessage = message?.message()?.let { it1 -> fromImmutable(it1) }
-                logger.info("Sending output $key topic: ${it.topic()} value: $imessage")
+                // logger.info("Sending output $key topic: ${it.topic()} value: $imessage")
                 if (this.isActive) {
                     sendBlocking(Triple(Topic.fromQualified(it.topic()), key, imessage))
                 }
@@ -251,7 +251,11 @@ class TestDriverContext(
         val inputTopic = inputTopics.computeIfAbsent(qualifiedTopicName) {
             driver.createInputTopic(qualifiedTopicName, Serdes.String().serializer(), ReplicationMessageSerde().serializer())
         }
-        inputTopic.pipeInput(key, ReplicationFactory.standardMessage(msg.toImmutable()))
+        // if(key.indexOf("<$>")!=-1) {
+        //     logger.info("weird key found: $key")
+        // }
+        val msg = ReplicationFactory.standardMessage(msg.toImmutable())
+        inputTopic.pipeInput(key, msg)
     }
 
     override fun delete(topic: String, key: String) {
