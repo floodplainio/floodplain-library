@@ -80,7 +80,7 @@ public class ImmutableFactory {
             return ValueType.STRING;
         } else if (val instanceof byte[]) {
             return ValueType.BINARY;
-        } else if (val instanceof String[]) {
+        } else if (val instanceof List) {
             return ValueType.STRINGLIST;
         } else if (val instanceof BigDecimal) {
             return ValueType.DECIMAL;

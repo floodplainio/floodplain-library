@@ -108,11 +108,6 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
                     return (String) val;
                 }
                 return clocktimeFormat.format((Date) val);
-            case LIST:
-                List<String> v = (List<String>) val;
-                return v.stream().collect(Collectors.joining(","));
-            case COORDINATE:
-                return val.toString();
             case ENUM:
                 return val.toString();
             default:
@@ -186,12 +181,8 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
                 return Replication.ValueProtobuf.ValueType.DATE;
             case STRINGLIST:
                 return Replication.ValueProtobuf.ValueType.STRINGLIST;
-            case LIST:
-                return Replication.ValueProtobuf.ValueType.LIST;
             case BINARY:
                 return Replication.ValueProtobuf.ValueType.BINARY;
-            case COORDINATE:
-                return Replication.ValueProtobuf.ValueType.COORDINATE;
             case CLOCKTIME:
                 return Replication.ValueProtobuf.ValueType.CLOCKTIME;
             case ENUM:
@@ -226,12 +217,8 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
                 return ImmutableMessage.ValueType.DATE;
             case CLOCKTIME:
                 return ImmutableMessage.ValueType.CLOCKTIME;
-            case LIST:
-                return ImmutableMessage.ValueType.LIST;
             case BINARY:
                 return ImmutableMessage.ValueType.BINARY;
-            case COORDINATE:
-                return ImmutableMessage.ValueType.COORDINATE;
             case ENUM:
                 return ImmutableMessage.ValueType.ENUM;
             case UNRECOGNIZED:

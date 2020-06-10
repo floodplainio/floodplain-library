@@ -166,18 +166,6 @@ public class ImmutableJSON {
                     arrayNode.addAll(valueToTree);
                 }
                 return;
-            case LIST:
-                if (value instanceof String[]) {
-                    ArrayNode arrayNode = m.putArray(key);
-                    @SuppressWarnings("rawtypes")
-                    ArrayNode valueToTree = objectMapper.valueToTree(value);
-                    arrayNode.addAll(valueToTree);
-                } else {
-                    logger.warn("Bad type mapping, key: {} of type: list has actual class: {}. Treating as string for now.", key, value.getClass());
-                    String stringify = value.toString();
-                    m.put(key, stringify);
-                }
-                break;
             default:
                 break;
         }

@@ -19,7 +19,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeout
 import org.junit.After
 import org.junit.Assert
-import org.junit.Ignore
 import org.junit.Test
 
 private val logger = mu.KotlinLogging.logger {}
@@ -41,7 +40,7 @@ class TestCombined {
     /**
      * Test the simplest imaginable pipe: One source and one sink.
      */
-    @Test @Ignore
+    @Test
     fun testPostgresSource() {
         println("Logger class: ${logger.underlyingLogger}")
         logger.debug("startdebug")
@@ -82,7 +81,7 @@ class TestCombined {
                     set { _, msg, state ->
                         msg.set("address", state)
                     }
-                    elasticSearchSink("@store", "@store", "@store", elasticConfig)
+                    elasticSearchSink("@store", "@store", "@stImmutableMessage.javaImmutableMessage.javaore", elasticConfig)
                 },
                 postgresConfig.sourceSimple("staff") {
                     joinRemote({ m -> "${m["address_id"]}" }, false) {

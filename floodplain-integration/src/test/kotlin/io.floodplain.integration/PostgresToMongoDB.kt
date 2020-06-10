@@ -14,7 +14,6 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeout
 import org.junit.After
-import org.junit.Ignore
 import org.junit.Test
 
 private val logger = mu.KotlinLogging.logger {}
@@ -34,12 +33,24 @@ class TestCombinedMongo {
     /**
      * Test the simplest imaginable pipe: One source and one sink.
      */
-    @Test @Ignore
+    @Test
     fun testPostgresSource() {
         println("Logger class: ${logger.underlyingLogger}")
         streams("any", "myinstance") {
-            val postgresConfig = postgresSourceConfig("mypostgres", postgresContainer.host, postgresContainer.exposedPort, "postgres", "mysecretpassword", "dvdrental", "public")
-            val mongoConfig = mongoConfig("mongosink", "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}", "@mongodump")
+            val postgresConfig = postgresSourceConfig(
+                "mypostgres",
+                postgresContainer.host,
+                postgresContainer.exposedPort,
+                "postgres",
+                "mysecretpassword",
+                "dvdrental",
+                "public"
+            )
+            val mongoConfig = mongoConfig(
+                "mongosink",
+                "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
+                "@mongodump"
+            )
             listOf(
                 postgresConfig.sourceSimple("address") {
                     joinRemote({ msg -> "${msg["city_id"]}" }, false) {
@@ -96,18 +107,111 @@ class TestCombinedMongo {
             var hits = 0L
             withTimeout(100000) {
                 repeat(1000) {
-                    MongoClients.create("mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}").use { client ->
-                        val collection = client.getDatabase(database).getCollection("customer")
-                        hits = collection.countDocuments()
-                        logger.info("Count of Documents: $hits in database: $database")
-                        if (hits >= 598) {
-                            return@withTimeout
+                    MongoClients.create("mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}")
+                        .use { client ->
+                            val collection = client.getDatabase(database).getCollection("customer")
+                            hits = collection.countDocuments()
+                            logger.info("Count of Documents: $hits in database: $database")
+                            if (hits >= 598) {
+                                return@withTimeout
+                            }
                         }
-                    }
                     delay(1000)
                 }
             }
             assertEquals(599, hits)
+        }
+        /**
+         * Test the simplest imaginable pipe: One source and one sink.
+         */
+        @Test
+        fun testPostgresSource() {
+            println("Logger class: ${logger.underlyingLogger}")
+            streams("any", "myinstance") {
+                val postgresConfig = postgresSourceConfig(
+                    "mypostgres",
+                    postgresContainer.host,
+                    postgresContainer.exposedPort,
+                    "postgres",
+                    "mysecretpassword",
+                    "dvdrental",
+                    "public"
+                )
+                val mongoConfig = mongoConfig(
+                    "mongosink",
+                    "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
+                    "@mongodump"
+                )
+                listOf(
+                    postgresConfig.sourceSimple("address") {
+                        joinRemote({ msg -> "${msg["city_id"]}" }, false) {
+                            postgresConfig.sourceSimple("city") {
+                                joinRemote({ msg -> "${msg["country_id"]}" }, false) {
+                                    postgresConfig.sourceSimple("country") {}
+                                }
+                                set { _, msg, state ->
+                                    msg.set("country", state)
+                                }
+                            }
+                        }
+                        set { _, msg, state ->
+                            msg.set("city", state)
+                        }
+                        sink("@address", false)
+                        // mongoSink("address", "@address",  mongoConfig)
+                    },
+                    postgresConfig.sourceSimple("customer") {
+                        joinRemote({ m -> "${m["address_id"]}" }, false) {
+                            source("@address") {}
+                        }
+                        set { _, msg, state ->
+                            msg.set("address", state)
+                        }
+                        mongoSink("customer", "@customer", mongoConfig)
+                    },
+                    postgresConfig.sourceSimple("store") {
+                        joinRemote({ m -> "${m["address_id"]}" }, false) {
+                            source("@address") {}
+                        }
+                        set { _, msg, state ->
+                            msg.set("address", state)
+                        }
+                        mongoSink("store", "@store", mongoConfig)
+                    },
+                    postgresConfig.sourceSimple("staff") {
+                        joinRemote({ m -> "${m["address_id"]}" }, false) {
+                            source("@address") {}
+                        }
+                        set { _, msg, state ->
+                            msg.set("address", state)
+                            msg["address_id"] = null
+                            msg
+                        }
+                        mongoSink("staff", "@staff", mongoConfig)
+                    })
+            }.renderAndTest {
+                logger.info("Outputs: ${outputs()}")
+                delay(30000)
+                val database = topologyContext().topicName("@mongodump")
+
+                connectJobs().forEach { it.cancel("ciao!") }
+                var hits = 0L
+                withTimeout(100000) {
+                    repeat(1000) {
+                        MongoClients.create("mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}")
+                            .use { client ->
+                                val collection = client.getDatabase(database).getCollection("customer")
+                                hits = collection.countDocuments()
+                                logger.info("Count of Documents: $hits in database: $database")
+                                if (hits >= 598) {
+                                    return@withTimeout
+                                }
+                            }
+                        delay(1000)
+                    }
+                }
+                assertEquals(599, hits)
+            }
         }
     }
 }

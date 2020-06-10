@@ -186,8 +186,6 @@ public class JSONToReplicationMessage {
                     }
                 }
                 return ValueType.LONG;
-            case "io.debezium.data.Enum":
-                return ValueType.ENUM;
             default:
                 logger.warn("Unknown type with name, this will probably fail: {}", namedType.get());
                 return resolveSimpleType(type);
@@ -282,6 +280,9 @@ public class JSONToReplicationMessage {
                 List<String> ar = new ArrayList<>();
                 value.forEach(e -> ar.add(e.asText()));
                 return Collections.unmodifiableList(ar);
+//                List<String> rr = new ArrayList<>();
+//                value.forEach(e -> rr.add(e.asText()));
+//                return rr.toArray(new String[0]);
             default:
                 throw new RuntimeException("Unknown type: " + type);
         }

@@ -95,7 +95,14 @@ private class MongoFloodplainSink(private val topologyContext: TopologyContext, 
     private val offsetCounter = AtomicLong(System.currentTimeMillis())
 
     override fun send(docs: List<Triple<Topic, String, IMessage?>>) {
-
+        docs.forEach {
+                (topic, key, value) ->
+            val tt = try {
+                value?.data() ?: emptyMap<String, Any>()
+            } catch (e: Throwable) {
+                e.printStackTrace()
+            }
+        }
         val list = docs.map { (topic, key, value) ->
             SinkRecord(topic.qualifiedString(topologyContext), 0, null, mapOf(Pair("key", key)), null, value?.data(), offsetCounter.incrementAndGet())
         }.toList()
