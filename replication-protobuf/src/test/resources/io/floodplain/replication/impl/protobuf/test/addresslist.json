@@ -12,11 +12,6 @@
       "Name": "locationid",
       "Type": "string",
       "Value": "ABCD12"
-    },
-    "coordinates": {
-      "Name": "streetname",
-      "Type": "coordinate",
-      "Value": "{\"type\"=\"Point\", \"coordinates\" = [-50.0, 13.0] }"
     }
   }
 }

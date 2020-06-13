@@ -2,6 +2,10 @@ package io.floodplain.integration
 
 import org.testcontainers.containers.GenericContainer
 
+val useIntegraton: Boolean by lazy {
+    System.getenv("NO_INTEGRATION") == null
+}
+
 class InstantiatedContainer(image: String, port: Int, env: Map<String, String> = emptyMap()) {
 
     class KGenericContainer(imageName: String) : GenericContainer<KGenericContainer>(imageName)

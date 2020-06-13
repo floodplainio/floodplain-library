@@ -131,7 +131,7 @@ public class ReplicationProtobufTest {
         Assert.assertEquals(1, list.size());
         byte[] data = parser.serializeMessageList(list);
         logger.info("Datasize: " + data.length);
-        Assert.assertEquals(89, data.length);
+        Assert.assertEquals(68, data.length);
         logger.info("First: " + data[0]);
         logger.info("Secon: " + data[1]);
         List<ReplicationMessage> list2 = parser.parseMessageList(data);
@@ -148,7 +148,7 @@ public class ReplicationProtobufTest {
         Assert.assertEquals(1, list.size());
         byte[] data = parser.serializeMessageList(list);
         logger.info("Datasize: " + data.length);
-        Assert.assertEquals(89, data.length);
+        Assert.assertEquals(68, data.length);
         ByteArrayInputStream bais = new ByteArrayInputStream(data);
         List<ReplicationMessage> list2 = parser.parseMessageList(Optional.of("addresstopic"), bais);
         for (ReplicationMessage replicationMessage : list2) {
