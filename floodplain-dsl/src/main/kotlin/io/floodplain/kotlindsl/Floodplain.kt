@@ -71,7 +71,8 @@ interface SourceTopic {
 }
 
 interface FloodplainSink {
-    fun send(docs: List<Triple<Topic, String, IMessage?>>)
+    fun send(topic: Topic, elements: List<Pair<String, IMessage?>>)
+    // fun send(elements: List<Pair<Topic,IMessage?>>)
     fun flush()
     fun close()
 }

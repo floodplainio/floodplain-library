@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-@file:Suppress("EXPERIMENTAL_API_USAGE")
 
 package io.floodplain.kotlindsl
 
@@ -36,13 +35,19 @@ import java.time.Duration
 import java.util.Optional
 import java.util.Properties
 import java.util.UUID
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.sendBlocking
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.broadcastIn
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -62,6 +67,7 @@ private val parser: ReplicationMessageParser = JSONReplicationMessageParserImpl(
 
 interface InputReceiver {
     fun input(topic: String, key: String, msg: IMessage)
+
     // fun input(topic: String, key: String, msg: ByteArray)
     fun delete(topic: String, key: String)
     fun inputs(): Set<String>
@@ -70,6 +76,7 @@ interface InputReceiver {
 interface TestContext : InputReceiver {
     fun output(topic: String): Pair<String, IMessage>
     fun skip(topic: String, number: Int)
+
     /**
      * Doesn't work, outputs get created lazily, so only sinks that have been accessed before are counted
      */
@@ -87,11 +94,14 @@ interface TestContext : InputReceiver {
     fun connectJobs(): List<Job>
     fun flushSinks()
     suspend fun connectSource()
-    fun outputFlow(): Flow<Triple<Topic, String, IMessage?>>
-    fun sinkConsumer(sinks: Map<Topic, List<FloodplainSink>>): (Triple<Topic, String, IMessage?>) -> Unit
-    fun initializeSinks(): (Triple<Topic, String, IMessage?>) -> Unit
+
+    // fun outputFlow(): Map<Topic, Flow<Pair<String, IMessage?>>>
+    // override fun outputFlow(): Flow<List<Triple<Topic, String, IMessage?>>> {
+    // fun sinkConsumer(sinks: Map<Topic, List<FloodplainSink>>): (Pair<Topic, List<Pair<String, IMessage?>>>) -> Unit
+    fun sinksByTopic(): MutableMap<Topic, MutableList<FloodplainSink>>
     fun connectSourceAndSink(): List<Job>
 }
+
 fun testTopology(
     topology: Topology,
     testCmds: suspend
@@ -104,7 +114,10 @@ fun testTopology(
     val storageFolder = "teststorage/store-" + UUID.randomUUID().toString()
     val props = Properties()
     props.setProperty(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "doesntmatter:9092")
-    props.setProperty(StreamsConfig.DEFAULT_TIMESTAMP_EXTRACTOR_CLASS_CONFIG, WallclockTimestampExtractor::class.java.name)
+    props.setProperty(
+        StreamsConfig.DEFAULT_TIMESTAMP_EXTRACTOR_CLASS_CONFIG,
+        WallclockTimestampExtractor::class.java.name
+    )
     props.setProperty(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().javaClass.name)
     props.setProperty(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, ReplicationMessageSerde::class.java.name)
     props.setProperty(StreamsConfig.APPLICATION_ID_CONFIG, "doesntmatterid")
@@ -125,13 +138,12 @@ fun testTopology(
         val path = Path.of(storageFolder).toAbsolutePath()
         if (Files.exists(path)) {
             Files.walk(path)
-                    .sorted(Comparator.reverseOrder())
-                    .forEach { Files.deleteIfExists(it) }
+                .sorted(Comparator.reverseOrder())
+                .forEach { Files.deleteIfExists(it) }
         }
     }
 }
 
-@kotlinx.coroutines.ExperimentalCoroutinesApi
 class TestDriverContext(
     private val driver: TopologyTestDriver,
     private val topologyContext: TopologyContext,
@@ -148,6 +160,7 @@ class TestDriverContext(
     override fun sourceConfigurations(): List<Config> {
         return sourceConfigs
     }
+
     override fun sinkConfigurations(): List<Config> {
         return sinkConfigs
     }
@@ -159,30 +172,50 @@ class TestDriverContext(
     override fun inputs(): Set<String> {
         return inputTopics.keys
     }
+
     override fun outputs(): Set<String> {
         return outputTopics.keys
     }
+
     override suspend fun connectSource() {
         sourceConfigs.forEach { config ->
             config.connectSource(this@TestDriverContext)
         }
     }
 
+    // (Pair<Topic, List<Pair<String, IMessage?>>>) -> Unit
     override fun connectSourceAndSink(): List<Job> {
-        val consumer = initializeSinks()
-        val outputFlow = outputFlow()
         val outputJob = GlobalScope.launch {
-            outputFlow
-                .collect { trip: Triple<Topic, String, IMessage?> ->
-                    // logger.info("Consuming topic: ${trip.first} message: ${trip.third}")
-                    consumer(trip)
+            val outputFlows = outputFlows(this)
+                .onEach { (k, v) -> logger.info("Topic mapped: $k") }
+                .map { (topic, flow) -> topic to flow.bufferTimeout(200, 2000) }
+                .toMap()
+            val sinks = sinksByTopic()
+            outputFlows.forEach { (topic, flow) ->
+                logger.info("Connecting topic $topic to sink: ${sinks[topic]}")
+                this.async {
+                    flow.collect { elements ->
+                        sinks[topic]?.forEach {
+                            logger.info("Buffered. Sending size: ${elements.size} topic: $topic")
+                            it.send(topic, elements)
+                        }
+                    }
                 }
+            }
         }
         val inputJob = GlobalScope.launch {
             connectSource()
         }
         return listOf(inputJob, outputJob)
     }
+
+    private fun topics(): Set<Topic> {
+        return sinkConfigurations().flatMap { it.sinkElements().keys }.toSet()
+    }
+
+    // private fun topicSinks(topic: Topic) {
+    //     return sinkConfigurations().flatMap { it.sinkElements().keys }.toSet()
+    // }
 
     override fun flushSinks() {
         this.sinkConfigurations().map { config ->
@@ -200,42 +233,94 @@ class TestDriverContext(
         }
     }
 
-    override fun initializeSinks(): (Triple<Topic, String, IMessage?>) -> Unit {
+    // fun sinkConsumer(): (List<Triple<Topic, String, IMessage?>>) -> Unit {
+    //     val map = mutableMapOf<Topic, MutableList<FloodplainSink>>()
+    //     this.sinkConfigurations().map {
+    //         it.sinkElements()
+    //     }.forEach {
+    //             sinkElements -> sinkElements.forEach {
+    //             (topic, message) ->
+    //         map.computeIfAbsent(topic) {
+    //             mutableListOf()
+    //         }.add(message)
+    //     }
+    //     }
+    //     return sinkConsumer(map)
+    // }
+
+    override fun sinksByTopic(): MutableMap<Topic, MutableList<FloodplainSink>> {
         val map = mutableMapOf<Topic, MutableList<FloodplainSink>>()
         this.sinkConfigurations().map {
             it.sinkElements()
-        }.forEach {
-            sinkElements -> sinkElements.forEach {
-                (topic, message) ->
-            map.computeIfAbsent(topic) {
-                mutableListOf()
-            }.add(message)
-        }
-        }
-        return sinkConsumer(map)
-    }
-    override fun sinkConsumer(sinks: Map<Topic, List<FloodplainSink>>): (Triple<Topic, String, IMessage?>) -> Unit {
-        return {
-                (topic, key, msg) ->
-            val sink = sinks[topic] ?: emptyList<FloodplainSink>()
-            // logger.info("# of sinks found: ${sink.size}")
-            sink.forEach {
-                // println("Key: $topic $key $msg")
-                it.send(listOf(Triple(topic, key, msg)))
+        }.forEach { sinkElements ->
+            sinkElements.forEach { (topic, sink) ->
+                map.computeIfAbsent(topic) {
+                    mutableListOf()
+                }.add(sink)
             }
         }
+        return map
+        // return sinkConsumer(map)
     }
-    override fun outputFlow(): Flow<Triple<Topic, String, IMessage?>> {
+    // override fun sinkConsumer(sinks: Map<Topic, List<FloodplainSink>>): (Pair<Topic, List<Pair<String, IMessage?>>>) -> Unit {
+    //     return {
+    //             (topic, elementList) ->
+    //         val sink = sinks[topic] ?: emptyList<FloodplainSink>()
+    //         // logger.info("# of sinks found: ${sink.size}")
+    //         sink.forEach {
+    //             val mappedList = elementList.map { (key, msg) -> Triple(topic, key, msg) }
+    //             // println("Key: $topic $key $msg")
+    //
+    //             it.send(mappedList)
+    //         }
+    //     }
+    // }
+
+    private fun outputFlows(context: CoroutineScope): Map<Topic, Flow<Pair<String, IMessage?>>> {
+        val topics = topics()
+        // GlobalScope.launch {
+        val sourceFlow = outputFlowOld().broadcastIn(context).asFlow()
+        return topics.map { topic ->
+            val flow = sourceFlow.filter { (incomingTopic, key, message) ->
+                incomingTopic == topic
+            }.map { (_, key, value) -> key to value }
+
+            topic to flow
+        }.toMap()
+        // val lazyTopicFlows = mutableMapOf<Topic,Flow<Pair<String,IMessage?>>>()
+        // val producerScopes = mutableMapOf<Topic,ProducerScope<Pair<String,IMessage?>>>()
+        // GlobalScope.launch {
+        //     topics().map {topic-> produce<Pair<String,IMessage?>> {
+        //
+        //     } }
+        // }
+        // driver.setOutputListener {
+        //     val key = Serdes.String().deserializer().deserialize(it.topic(), it.key())
+        //     val message = parser.parseBytes(Optional.of(it.topic()), it.value())
+        //     val imessage = message?.message()?.let { it1 -> fromImmutable(it1) }
+        //     val topic = Topic.fromQualified(it.topic())
+        //     lazyTopicFlows.computeIfAbsent(topic) {
+        //         callbackFlow {
+        //             producerScopes[topic] = this
+        //         }
+        //     }
+        //     producerScopes[topic]?.sendBlocking(key to imessage)
+        // }
+        // return lazyTopicFlows
+    }
+
+    fun outputFlowOld(): Flow<Triple<Topic, String, IMessage?>> {
+        // val topics = topics().map { it to Channel<Pair<String,IMessage?>>() }.toMap()
+
         return callbackFlow<Triple<Topic, String, IMessage?>> {
             driver.setOutputListener {
                 val key = Serdes.String().deserializer().deserialize(it.topic(), it.key())
-                // val valueString = String(it.value()) // TODO remove
-                // logger.info { "Some VALUE: $valueString" }
                 val message = parser.parseBytes(Optional.of(it.topic()), it.value())
                 val imessage = message?.message()?.let { it1 -> fromImmutable(it1) }
-                // logger.info("Sending output $key topic: ${it.topic()} value: $imessage")
+                val topic = Topic.fromQualified(it.topic())
                 if (this.isActive) {
-                    sendBlocking(Triple(Topic.fromQualified(it.topic()), key, imessage))
+                    // topics[topic]!!.sendBlocking(key to imessage)
+                    sendBlocking(Triple(topic, key, imessage))
                 }
             }
             awaitClose {
@@ -243,39 +328,52 @@ class TestDriverContext(
             }
         }
     }
+
     override fun input(topic: String, key: String, msg: IMessage) {
         val qualifiedTopicName = topologyContext.topicName(topic)
         if (!inputs().contains(qualifiedTopicName)) {
-            logger.info("Missing topic: $topic available topics: ${inputs()}")
+            logger.debug("Missing topic: $topic available topics: ${inputs()}")
         }
         val inputTopic = inputTopics.computeIfAbsent(qualifiedTopicName) {
-            driver.createInputTopic(qualifiedTopicName, Serdes.String().serializer(), ReplicationMessageSerde().serializer())
+            driver.createInputTopic(
+                qualifiedTopicName,
+                Serdes.String().serializer(),
+                ReplicationMessageSerde().serializer()
+            )
         }
-        // if(key.indexOf("<$>")!=-1) {
-        //     logger.info("weird key found: $key")
-        // }
         val msg = ReplicationFactory.standardMessage(msg.toImmutable())
         inputTopic.pipeInput(key, msg)
     }
 
     override fun delete(topic: String, key: String) {
         val qualifiedTopicName = topologyContext.topicName(topic)
-        val inputTopic = inputTopics.computeIfAbsent(qualifiedTopicName) { driver.createInputTopic(qualifiedTopicName, Serdes.String().serializer(), ReplicationMessageSerde().serializer()) }
+        val inputTopic = inputTopics.computeIfAbsent(qualifiedTopicName) {
+            driver.createInputTopic(
+                qualifiedTopicName,
+                Serdes.String().serializer(),
+                ReplicationMessageSerde().serializer()
+            )
+        }
         inputTopic.pipeInput(key, null)
     }
 
     override fun output(topic: String): Pair<String, IMessage> {
         val qualifiedTopicName = topologyContext.topicName(topic)
-        val outputTopic = outputTopics.computeIfAbsent(qualifiedTopicName) { driver.createOutputTopic(qualifiedTopicName, Serdes.String().deserializer(), ReplicationMessageSerde().deserializer()) }
+        val outputTopic = outputTopics.computeIfAbsent(qualifiedTopicName) {
+            driver.createOutputTopic(
+                qualifiedTopicName,
+                Serdes.String().deserializer(),
+                ReplicationMessageSerde().deserializer()
+            )
+        }
         val keyVal: KeyValue<String, ReplicationMessage?> = outputTopic.readKeyValue()
         val op = keyVal.value?.operation() ?: ReplicationMessage.Operation.DELETE
-        if (op == ReplicationMessage.Operation.DELETE) {
+        return if (op == ReplicationMessage.Operation.DELETE) {
             logger.info("delete detected! isnull? ${keyVal.value}")
             logger.info("retrying...")
-            return output(topic)
-//            throw RuntimeException("Expected message for key: ${keyVal.key}, but got a delete.")
+            output(topic)
         } else {
-            return Pair(keyVal.key, fromImmutable(keyVal.value!!.message()))
+            Pair(keyVal.key, fromImmutable(keyVal.value!!.message()))
         }
     }
 
@@ -287,13 +385,25 @@ class TestDriverContext(
 
     override fun outputSize(topic: String): Long {
         val qualifiedTopicName = topologyContext.topicName(topic)
-        val outputTopic = outputTopics.computeIfAbsent(qualifiedTopicName) { driver.createOutputTopic(qualifiedTopicName, Serdes.String().deserializer(), ReplicationMessageSerde().deserializer()) }
+        val outputTopic = outputTopics.computeIfAbsent(qualifiedTopicName) {
+            driver.createOutputTopic(
+                qualifiedTopicName,
+                Serdes.String().deserializer(),
+                ReplicationMessageSerde().deserializer()
+            )
+        }
         return outputTopic.queueSize
     }
 
     override fun deleted(topic: String): String {
         val qualifiedTopicName = topologyContext.topicName(topic)
-        val outputTopic = outputTopics.computeIfAbsent(qualifiedTopicName) { driver.createOutputTopic(qualifiedTopicName, Serdes.String().deserializer(), ReplicationMessageSerde().deserializer()) }
+        val outputTopic = outputTopics.computeIfAbsent(qualifiedTopicName) {
+            driver.createOutputTopic(
+                qualifiedTopicName,
+                Serdes.String().deserializer(),
+                ReplicationMessageSerde().deserializer()
+            )
+        }
         logger.info("Looking for a tombstone message for topic $qualifiedTopicName")
         val keyVal = outputTopic.readKeyValue()
         logger.info { "Found key ${keyVal.key} operation: ${keyVal.value?.operation()}" }
@@ -309,7 +419,13 @@ class TestDriverContext(
 
     override fun isEmpty(topic: String): Boolean {
         val qualifiedTopicName = topologyContext.topicName(topic)
-        val outputTopic = outputTopics.computeIfAbsent(qualifiedTopicName) { driver.createOutputTopic(qualifiedTopicName, Serdes.String().deserializer(), ReplicationMessageSerde().deserializer()) }
+        val outputTopic = outputTopics.computeIfAbsent(qualifiedTopicName) {
+            driver.createOutputTopic(
+                qualifiedTopicName,
+                Serdes.String().deserializer(),
+                ReplicationMessageSerde().deserializer()
+            )
+        }
         return outputTopic.isEmpty
     }
 
