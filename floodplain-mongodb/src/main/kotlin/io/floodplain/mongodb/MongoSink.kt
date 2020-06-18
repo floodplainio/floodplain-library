@@ -48,7 +48,7 @@ class MongoConfig(val name: String, val uri: String, val database: String, priva
         val collections: String = sinkInstancePair.joinToString(",") { e -> e.first }
         logger.debug("Collections: $collections")
         val topics: String =
-            sinkInstancePair.joinToString(",") { (collection, topic) -> topic.qualifiedString(topologyContext) }
+            sinkInstancePair.joinToString(",") { (_, topic) -> topic.qualifiedString(topologyContext) }
         logger.debug("Topics: $topics")
 
         val generationalDatabase = topologyContext.topicName(database)
@@ -94,12 +94,11 @@ class MongoConfig(val name: String, val uri: String, val database: String, priva
 private class MongoFloodplainSink(private val topologyContext: TopologyContext, private val task: SinkTask) : FloodplainSink {
     private val offsetCounter = AtomicLong(System.currentTimeMillis())
 
-    // override fun send(docs: Pair<Topic,List<Pair<String, IMessage?>>>) {
     override fun send(topic: Topic, elements: List<Pair<String, IMessage?>>) {
         logger.info("Inserting # of documents ${elements.size} for topic: $topic")
         elements.forEach {
-                (key, value) ->
-            val tt = try {
+                (_, value) ->
+            try {
                 value?.data() ?: emptyMap<String, Any>()
             } catch (e: Throwable) {
                 e.printStackTrace()

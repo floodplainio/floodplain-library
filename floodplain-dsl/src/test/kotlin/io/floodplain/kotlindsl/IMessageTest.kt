@@ -36,6 +36,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
+@Suppress("UNCHECKED_CAST")
 class IMessageTest {
 
     // STRING,
@@ -175,7 +176,6 @@ class IMessageTest {
         val submessage = empty().set("submessage", "value")
         val baseMessage = empty().set("foo", "bar").set("subm", submessage)
         val copy = baseMessage.copy()
-        val b = baseMessage == copy
         assertEquals(baseMessage, copy)
     }
 

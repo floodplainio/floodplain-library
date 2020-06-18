@@ -29,7 +29,6 @@ import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicLong
 import kotlin.system.measureTimeMillis
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.sendBlocking
@@ -64,7 +63,6 @@ internal class EngineKillSwitch(var engine: DebeziumEngine<ChangeEvent<String, S
  * Defaults to empty map.
  *
  */
-@OptIn(ExperimentalCoroutinesApi::class)
 fun postgresDataSource(name: String, hostname: String, port: Int, database: String, username: String, password: String, offsetFilePath: Path, settings: Map<String, String> = emptyMap()): Flow<ChangeRecord> {
         val props = Properties()
         props.setProperty("name", "engine_" + UUID.randomUUID())

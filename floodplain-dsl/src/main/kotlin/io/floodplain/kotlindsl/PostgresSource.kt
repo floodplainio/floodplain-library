@@ -30,7 +30,6 @@ import io.floodplain.streams.debezium.JSONToReplicationMessage.processDebeziumJS
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.UUID
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 
@@ -88,7 +87,6 @@ class PostgresConfig(val topologyContext: TopologyContext, val name: String, pri
         sourceElements.add(elt)
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     fun directSource(offsetFilePath: Path): Flow<ChangeRecord> {
         return postgresDataSource(topologyContext.topicName(name), hostname, port, database, username, password, offsetFilePath)
     }

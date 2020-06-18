@@ -16,6 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+@file:Suppress("UNCHECKED_CAST")
+
 package io.floodplain.kotlindsl.message
 
 import io.floodplain.immutable.api.ImmutableMessage
@@ -210,7 +212,7 @@ private data class IMessageImpl(private val content: MutableMap<String, Any>) : 
                 is List<*> -> key to parseList(value)
                 else -> key to value
             }
-        }.toMap() as Map<String, Any>
+        }.toMap()
         return IMessageImpl(convertedMap.toMutableMap())
     }
 
@@ -320,10 +322,7 @@ fun fromImmutable(msg: ImmutableMessage): IMessage {
         }
     }
     for ((name, value) in msg.subMessageMap()) {
-        val submsg = fromImmutable(value)
-        if (submsg != null) {
-            content[name] = submsg
-        }
+        content[name] = fromImmutable(value)
     }
     for ((name, value) in msg.subMessageListMap()) {
         content[name] = value.stream().map { e -> fromImmutable(e) }.toList()

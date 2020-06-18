@@ -14,3 +14,12 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
     testImplementation(dependencies.testContainer)
 }
+
+sourceSets {
+    all {
+        languageSettings {
+            useExperimentalAnnotation('org.mylibrary.OptInAnnotation')
+        }
+    }
+}
+

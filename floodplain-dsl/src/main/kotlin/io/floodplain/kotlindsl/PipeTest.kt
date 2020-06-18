@@ -37,7 +37,6 @@ import java.util.Optional
 import java.util.Properties
 import java.util.UUID
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
@@ -185,8 +184,6 @@ class TestDriverContext(
         }
     }
 
-    // (Pair<Topic, List<Pair<String, IMessage?>>>) -> Unit
-    @OptIn(ExperimentalCoroutinesApi::class)
     override fun connectSourceAndSink(): List<Job> {
         val outputJob = GlobalScope.launch {
             val outputFlows = outputFlows(this)
@@ -265,21 +262,7 @@ class TestDriverContext(
         return map
         // return sinkConsumer(map)
     }
-    // override fun sinkConsumer(sinks: Map<Topic, List<FloodplainSink>>): (Pair<Topic, List<Pair<String, IMessage?>>>) -> Unit {
-    //     return {
-    //             (topic, elementList) ->
-    //         val sink = sinks[topic] ?: emptyList<FloodplainSink>()
-    //         // logger.info("# of sinks found: ${sink.size}")
-    //         sink.forEach {
-    //             val mappedList = elementList.map { (key, msg) -> Triple(topic, key, msg) }
-    //             // println("Key: $topic $key $msg")
-    //
-    //             it.send(mappedList)
-    //         }
-    //     }
-    // }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     private fun outputFlows(context: CoroutineScope): Map<Topic, Flow<Pair<String, IMessage?>>> {
         val topics = topics()
         // GlobalScope.launch {
@@ -291,31 +274,9 @@ class TestDriverContext(
 
             topic to flow
         }.toMap()
-        // val lazyTopicFlows = mutableMapOf<Topic,Flow<Pair<String,IMessage?>>>()
-        // val producerScopes = mutableMapOf<Topic,ProducerScope<Pair<String,IMessage?>>>()
-        // GlobalScope.launch {
-        //     topics().map {topic-> produce<Pair<String,IMessage?>> {
-        //
-        //     } }
-        // }
-        // driver.setOutputListener {
-        //     val key = Serdes.String().deserializer().deserialize(it.topic(), it.key())
-        //     val message = parser.parseBytes(Optional.of(it.topic()), it.value())
-        //     val imessage = message?.message()?.let { it1 -> fromImmutable(it1) }
-        //     val topic = Topic.fromQualified(it.topic())
-        //     lazyTopicFlows.computeIfAbsent(topic) {
-        //         callbackFlow {
-        //             producerScopes[topic] = this
-        //         }
-        //     }
-        //     producerScopes[topic]?.sendBlocking(key to imessage)
-        // }
-        // return lazyTopicFlows
     }
 
     private fun outputFlowSingle(): Flow<Triple<Topic, String, IMessage?>> {
-        // val topics = topics().map { it to Channel<Pair<String,IMessage?>>() }.toMap()
-
         return callbackFlow<Triple<Topic, String, IMessage?>> {
             driver.setOutputListener {
                 val key = Serdes.String().deserializer().deserialize(it.topic(), it.key())
@@ -345,8 +306,8 @@ class TestDriverContext(
                 ReplicationMessageSerde().serializer()
             )
         }
-        val msg = ReplicationFactory.standardMessage(msg.toImmutable())
-        inputTopic.pipeInput(key, msg)
+        val replicationMsg = ReplicationFactory.standardMessage(msg.toImmutable())
+        inputTopic.pipeInput(key, replicationMsg)
     }
 
     override fun delete(topic: String, key: String) {

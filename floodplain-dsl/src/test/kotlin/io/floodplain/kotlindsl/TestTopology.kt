@@ -31,6 +31,7 @@ import org.apache.kafka.streams.state.KeyValueStore
 
 private val logger = mu.KotlinLogging.logger {}
 
+@Suppress("UNCHECKED_CAST")
 class TestTopology {
 
     @Test
