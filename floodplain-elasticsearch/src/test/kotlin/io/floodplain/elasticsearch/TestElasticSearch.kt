@@ -13,6 +13,7 @@ import java.util.Date
 import java.util.UUID
 import kotlin.test.assertEquals
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withTimeout
 import org.junit.Test
 import org.testcontainers.containers.GenericContainer
 
@@ -59,10 +60,30 @@ class TestElasticSearch {
                 input("sometopic", "$uuid", msg)
                 logger.info("inserting number: $it and uuid: $uuid")
             }
-
-            delay(2000)
+            withTimeout(100000) {
+                repeat(1000) {
+                    val resultCount = queryUUIDHits(uuid)
+                    if (resultCount == 1) {
+                        logger.info("Found hit. continuing.")
+                        return@withTimeout
+                    }
+                    logger.info("looping...")
+                    delay(1000)
+                }
+            }
             assertEquals(1, queryUUIDHits(uuid))
+
+            logger.info("deleting....")
             delete("sometopic", uuid)
+            withTimeout(100000) {
+                repeat(1000) {
+                    val resultCount = queryUUIDHits(uuid)
+                    if (resultCount == 0) {
+                        logger.info("Delete processed. continuing.")
+                        return@withTimeout
+                    }
+                }
+            }
             delay(2000)
             assertEquals(0, queryUUIDHits(uuid))
         }

@@ -24,7 +24,7 @@ import org.junit.Test
 private val logger = mu.KotlinLogging.logger {}
 
 @kotlinx.coroutines.ExperimentalCoroutinesApi
-class TestCombined {
+class PostgresToElasticSearch {
 
     private val objectMapper = ObjectMapper()
 
@@ -41,7 +41,7 @@ class TestCombined {
      * Test the simplest imaginable pipe: One source and one sink.
      */
     @Test
-    fun testPostgresSource() {
+    fun testPostgresToElastic() {
         if (!useIntegraton) {
             logger.info("Not performing integration tests, doesn't seem to work in circleci")
             return
@@ -85,7 +85,7 @@ class TestCombined {
                     set { _, msg, state ->
                         msg.set("address", state)
                     }
-                    elasticSearchSink("@store", "@store", "@stImmutableMessage.javaImmutableMessage.javaore", elasticConfig)
+                    elasticSearchSink("@store", "@store", "@store", elasticConfig)
                 },
                 postgresConfig.sourceSimple("staff") {
                     joinRemote({ m -> "${m["address_id"]}" }, false) {
@@ -121,22 +121,8 @@ class TestCombined {
                 }
             }
             Assert.assertEquals(1, hits)
+            // delay(1000000)
             connectJobs().forEach { it.cancel("ciao!") }
-            //
-            // repeat(1000) {
-            //     val outputs = outputs()
-            //
-            //     outputs.forEach {
-            //         logger.info(" Output: $it count: ${outputSize(it)}")
-            //     }
-            //     delay(10000)
-            // }
-            // outputs()
-            //
-            // val index = topologyContext().topicName("@customer")
-            // delay(30000)
-            // query("http://${postgresContainer.host}:${postgresContainer.exposedPort}/${index}","q=Amersfoort")
-            // connectJobs().forEach { it.cancel("ciao!") }
         }
     }
 

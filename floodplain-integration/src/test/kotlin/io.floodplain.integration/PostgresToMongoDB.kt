@@ -104,12 +104,12 @@ class TestCombinedMongo {
                 })
         }.renderAndTest {
             logger.info("Outputs: ${outputs()}")
-            delay(30000)
+            delay(20000)
             val database = topologyContext().topicName("@mongodump")
 
             connectJobs().forEach { it.cancel("ciao!") }
             var hits = 0L
-            withTimeout(100000) {
+            withTimeout(1000000) {
                 repeat(1000) {
                     MongoClients.create("mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}")
                         .use { client ->
@@ -215,6 +215,8 @@ class TestCombinedMongo {
                     }
                 }
                 assertEquals(599, hits)
+                logger.info("done, test succeeded")
+                delay(120000)
             }
         }
     }

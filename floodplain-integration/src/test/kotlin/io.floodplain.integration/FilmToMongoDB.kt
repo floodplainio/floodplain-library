@@ -14,6 +14,7 @@ import kotlin.test.assertEquals
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeout
+import org.bson.Document
 import org.junit.After
 import org.junit.Test
 
@@ -97,25 +98,28 @@ class FilmToMongoDB {
             }
         }.renderAndTest {
             logger.info("Outputs: ${outputs()}")
-            delay(30000)
+            delay(5000)
             val database = topologyContext().topicName("@mongodump")
-            connectJobs().forEach { it.cancel("ciao!") }
             var hits = 0L
+            flushSinks()
             withTimeout(200000) {
                 repeat(1000) {
                     MongoClients.create("mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}")
                         .use { client ->
+                            repeat(1000) {
                             val collection = client.getDatabase(database).getCollection("filmwithactors")
-                            hits = collection.countDocuments()
+                            hits = collection.countDocuments(Document("actors", Document("\$ne", null)))
                             logger.info("Count of Documents: $hits in database: $database")
-                            if (hits == 1000L) {
+                            if (hits == 997L) {
                                 return@withTimeout
                             }
+                            delay(1000)
                         }
-                    delay(1000)
                 }
             }
-            assertEquals(1000, hits)
+            }
+            assertEquals(997L, hits)
+            connectJobs().forEach { it.cancel("ciao!") }
         }
     }
 }

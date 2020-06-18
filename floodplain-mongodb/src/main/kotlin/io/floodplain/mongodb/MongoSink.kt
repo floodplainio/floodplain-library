@@ -94,16 +94,18 @@ class MongoConfig(val name: String, val uri: String, val database: String, priva
 private class MongoFloodplainSink(private val topologyContext: TopologyContext, private val task: SinkTask) : FloodplainSink {
     private val offsetCounter = AtomicLong(System.currentTimeMillis())
 
-    override fun send(docs: List<Triple<Topic, String, IMessage?>>) {
-        docs.forEach {
-                (topic, key, value) ->
+    // override fun send(docs: Pair<Topic,List<Pair<String, IMessage?>>>) {
+    override fun send(topic: Topic, elements: List<Pair<String, IMessage?>>) {
+        logger.info("Inserting # of documents ${elements.size} for topic: $topic")
+        elements.forEach {
+                (key, value) ->
             val tt = try {
                 value?.data() ?: emptyMap<String, Any>()
             } catch (e: Throwable) {
                 e.printStackTrace()
             }
         }
-        val list = docs.map { (topic, key, value) ->
+        val list = elements.map { (key, value) ->
             SinkRecord(topic.qualifiedString(topologyContext), 0, null, mapOf(Pair("key", key)), null, value?.data(), offsetCounter.incrementAndGet())
         }.toList()
         task.put(list)

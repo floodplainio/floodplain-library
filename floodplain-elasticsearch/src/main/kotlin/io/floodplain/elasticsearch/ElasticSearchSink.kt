@@ -45,14 +45,15 @@ class ElasticSearchSinkConfig(val name: String, val uri: String, val context: To
     }
 }
 
-private class ElasticSearchSink(private val topic: String, private val task: SinkTask) : FloodplainSink {
+private class ElasticSearchSink(val topologyContext: TopologyContext, private val topic: String, private val task: SinkTask) : FloodplainSink {
     private val offsetCounter = AtomicLong(System.currentTimeMillis())
-    override fun send(docs: List<Triple<Topic, String, IMessage?>>) {
-        val list = docs.map { (recordTopic, key, value) ->
+    override fun send(topic: Topic, elements: List<Pair<String, IMessage?>>) {
+    // override fun send(docs: List<Triple<Topic, String, IMessage?>>) {
+        val list = elements.map { (key, value) ->
             logger.info("Sending document to elastic. Key: $key message: $value")
             val data = value?.data()
             logger.info("Data: $data")
-            SinkRecord(topic, 0, null, key, null, data, offsetCounter.incrementAndGet())
+            SinkRecord(topic.qualifiedString(topologyContext), 0, null, key, null, data, offsetCounter.incrementAndGet())
         }.toList()
         task.put(list)
     }
@@ -87,7 +88,7 @@ fun PartialStream.elasticSearchSink(sinkName: String, index: String, topicName: 
     conn.start(sinkConfig)
     val task = conn.taskClass().getDeclaredConstructor().newInstance() as SinkTask
     task.start(sinkConfig)
-    val sink = ElasticSearchSink(topic.qualifiedString(config.context), task)
+    val sink = ElasticSearchSink(config.context, topic.qualifiedString(config.context), task)
     config.sinks[topic] = sink
     return sink
 }
