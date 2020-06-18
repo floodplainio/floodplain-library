@@ -186,6 +186,8 @@ public class JSONToReplicationMessage {
                     }
                 }
                 return ValueType.LONG;
+            case "io.debezium.data.Enum":
+                return ValueType.ENUM;
             default:
                 logger.warn("Unknown type with name, this will probably fail: {}", namedType.get());
                 return resolveSimpleType(type);
