@@ -714,7 +714,7 @@ public class TopologyTestDriver implements Closeable {
         final Queue<ProducerRecord<byte[], byte[]>> outputRecords = outputRecordsByTopic.get(topicName);
         if (outputRecords == null) {
             if (!processorTopology.sinkTopics().contains(topicName)) {
-                throw new IllegalArgumentException("Unknown topic: " + topicName);
+                throw new IllegalArgumentException("Unknown topic: " + topicName+" available sinkTopics: "+processorTopology.sinkTopics());
             }
         }
         return outputRecords;
