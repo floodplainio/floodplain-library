@@ -6,6 +6,14 @@ license {
     ext.name = 'Frank Lyaruu'
 }
 
+sourceSets {
+    all {
+        languageSettings {
+            useExperimentalAnnotation('org.mylibrary.OptInAnnotation')
+        }
+    }
+}
+
 compileKotlin {
     kotlinOptions.jvmTarget = "11"
 }

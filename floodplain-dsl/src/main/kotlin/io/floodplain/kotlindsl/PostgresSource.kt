@@ -17,8 +17,8 @@
  * under the License.
  */
 package io.floodplain.kotlindsl
+import io.floodplain.ChangeRecord
 import io.floodplain.debezium.postgres.postgresDataSource
-import io.floodplain.io.floodplain.ChangeRecord
 import io.floodplain.kotlindsl.message.fromImmutable
 import io.floodplain.reactive.source.topology.DebeziumTopicSource
 import io.floodplain.reactive.source.topology.TopicSource

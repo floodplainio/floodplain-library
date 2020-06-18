@@ -37,6 +37,7 @@ import java.util.Optional
 import java.util.Properties
 import java.util.UUID
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
@@ -185,10 +186,11 @@ class TestDriverContext(
     }
 
     // (Pair<Topic, List<Pair<String, IMessage?>>>) -> Unit
+    @OptIn(ExperimentalCoroutinesApi::class)
     override fun connectSourceAndSink(): List<Job> {
         val outputJob = GlobalScope.launch {
             val outputFlows = outputFlows(this)
-                .onEach { (k, v) -> logger.info("Topic mapped: $k") }
+                .onEach { (k, _) -> logger.info("Topic mapped: $k") }
                 .map { (topic, flow) -> topic to flow.bufferTimeout(200, 2000) }
                 .toMap()
             val sinks = sinksByTopic()
@@ -277,12 +279,13 @@ class TestDriverContext(
     //     }
     // }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun outputFlows(context: CoroutineScope): Map<Topic, Flow<Pair<String, IMessage?>>> {
         val topics = topics()
         // GlobalScope.launch {
-        val sourceFlow = outputFlowOld().broadcastIn(context).asFlow()
+        val sourceFlow = outputFlowSingle().broadcastIn(context).asFlow()
         return topics.map { topic ->
-            val flow = sourceFlow.filter { (incomingTopic, key, message) ->
+            val flow = sourceFlow.filter { (incomingTopic, _, _) ->
                 incomingTopic == topic
             }.map { (_, key, value) -> key to value }
 
@@ -310,7 +313,7 @@ class TestDriverContext(
         // return lazyTopicFlows
     }
 
-    fun outputFlowOld(): Flow<Triple<Topic, String, IMessage?>> {
+    private fun outputFlowSingle(): Flow<Triple<Topic, String, IMessage?>> {
         // val topics = topics().map { it to Channel<Pair<String,IMessage?>>() }.toMap()
 
         return callbackFlow<Triple<Topic, String, IMessage?>> {
