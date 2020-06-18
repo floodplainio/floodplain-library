@@ -13,6 +13,7 @@ dependencies {
     implementation(project(":floodplain-stream-topology"))
     implementation(project(":floodplain-debezium-postgres"))
     implementation(project(":floodplain-direct"))
+    implementation(project(":floodplain-api"))
     compile(dependencies.slf4j)
     compile(dependencies.kotlinLogging)
     implementation(dependencies.slf4jSimple)

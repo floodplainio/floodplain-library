@@ -1,47 +1,29 @@
-package io.floodplain
+package io.floodplain.debezium.postgres
 
 import io.debezium.engine.ChangeEvent
 import io.debezium.engine.DebeziumEngine
 import io.debezium.engine.format.Json
-import java.nio.file.Files
+import io.floodplain.io.floodplain.ChangeRecord
 import java.nio.file.Path
-import java.nio.file.Paths
 import java.util.Properties
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.AtomicLong
 import kotlin.system.measureTimeMillis
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.sendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onCompletion
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.launch
 
 private val logger = mu.KotlinLogging.logger {}
 
-data class ChangeRecord(val topic: String, val key: String, val value: ByteArray?)
-
-fun main() {
-    val offsetFilePath = Paths.get("offset")
-    Files.deleteIfExists(offsetFilePath)
-    runBlocking {
-        postgresDataSource("dvdrental", "localhost", 5432, "dvdrental", "postgres", "mysecretpassword", offsetFilePath)
-
-            .collect() { record ->
-                // val kv = JSONToReplicationMessage.parse(record.key, record.value.toByteArray())
-                // val msg = parser.parseBytes(Optional.empty<String>(), kv.value)
-
-                println("item: ${record.topic} : ${record.key} : ${record.value}")
-            }
-    }
-}
-
 internal class EngineKillSwitch(var engine: DebeziumEngine<ChangeEvent<String, String>>? = null) {
 
-    val killed = AtomicBoolean(false)
+    private val killed = AtomicBoolean(false)
     fun kill() {
         engine?.let {
             if (killed.compareAndSet(false, true)) {
@@ -63,7 +45,6 @@ internal class EngineKillSwitch(var engine: DebeziumEngine<ChangeEvent<String, S
  * Defaults to empty map.
  *
  */
-@ExperimentalCoroutinesApi
 fun postgresDataSource(name: String, hostname: String, port: Int, database: String, username: String, password: String, offsetFilePath: Path, settings: Map<String, String> = emptyMap()): Flow<ChangeRecord> {
         val props = Properties()
         props.setProperty("name", "engine_" + UUID.randomUUID())
@@ -80,36 +61,40 @@ fun postgresDataSource(name: String, hostname: String, port: Int, database: Stri
         settings.forEach { (k, v) -> props[k] = v }
         logger.info("Starting source flow with name: ${props.getProperty("name")} offsetpath: $offsetFilePath ")
         val engineKillSwitch = EngineKillSwitch()
+        val totalTimeInSend = AtomicLong(0L)
         return callbackFlow<ChangeRecord> {
             val engine = DebeziumEngine.create(Json::class.java)
                 .using(props)
                 .notifying { record: ChangeEvent<String, String> ->
-                    // if (isActive) {
-                        val perf = measureTimeMillis {
-                            try {
-                                sendBlocking(ChangeRecord(record.destination(), record.key(), record.value()?.toByteArray()))
-                            } catch (e: CancellationException) {
-                                engineKillSwitch.kill()
-                                Thread.currentThread().interrupt()
-                            }
+                    val perf = measureTimeMillis {
+                        try {
+                            sendBlocking(
+                                ChangeRecord(
+                                    record.destination(),
+                                    record.key(),
+                                    record.value()?.toByteArray()
+                                )
+                            )
+                        } catch (e: CancellationException) {
+                            logger.info("engine cancelled")
+                            engineKillSwitch.kill()
+                            Thread.currentThread().interrupt()
                         }
-                        if (perf > 1000) {
-                            println("Send blocking ran for: $perf")
-                        }
-
-                    // }
+                    }
+                    if (perf > 1000) {
+                        println("Send blocking ran for: $perf")
+                    }
+                    totalTimeInSend.addAndGet(perf)
                 }
                 .build()
             // TODO I'm unsure if it is wise to run this in the same thread
             // Seems to work fine for my tests, so for the time being I'll keep it simple.
             engineKillSwitch.engine = engine
-            println("Engine ran for: " + measureTimeMillis {
-                engine.run() })
-            // engine.run()
-            println("Engine run completed")
-            // Thread {
-            // }.start()
-            // engine.run()
+            GlobalScope.launch {
+                println("Engine ran for: " + measureTimeMillis {
+                    engine.run() })
+                println("Engine run completed. Total time in send: ${totalTimeInSend.get()}")
+            }
             awaitClose {
                 println("closin!")
                 engine.close()

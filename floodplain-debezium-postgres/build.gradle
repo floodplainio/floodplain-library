@@ -7,8 +7,10 @@ dependencies {
     implementation(dependencies.debeziumPostgres)
     compile(dependencies.kotlinLogging)
     testCompile(dependencies.jUnit)
+    implementation(project(":floodplain-api"))
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation(dependencies.kotlinCoroutines)
     testImplementation("org.jetbrains.kotlin:kotlin-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
+    testImplementation(dependencies.testContainer)
 }

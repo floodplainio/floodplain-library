@@ -19,6 +19,7 @@
 
 package io.floodplain.kotlindsl
 
+import io.floodplain.bufferTimeout
 import io.floodplain.kotlindsl.message.IMessage
 import io.floodplain.kotlindsl.message.fromImmutable
 import io.floodplain.replication.api.ReplicationMessage
