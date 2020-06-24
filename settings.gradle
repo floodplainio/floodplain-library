@@ -21,9 +21,11 @@ include 'immutable-api',
         'floodplain-dsl',
         'floodplain-direct',
         'floodplain-integration',
+        'floodplain-googlesheets',
         'floodplain-debezium-postgres',
         'floodplain-example',
-	'floodplain-mongodb',
-	'floodplain-elasticsearch',
+		'floodplain-mongodb',
+		'floodplain-elasticsearch',
+		'floodplain-quarkus',
         'kafka-converter'
 

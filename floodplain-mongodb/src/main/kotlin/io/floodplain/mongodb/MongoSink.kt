@@ -86,15 +86,15 @@ class MongoConfig(val name: String, val uri: String, val database: String, priva
 
         val task = connector.taskClass().getDeclaredConstructor().newInstance() as SinkTask
         task.start(settings)
-        val sink = MongoFloodplainSink(topologyContext, task)
+        val sink = MongoFloodplainSink(task)
         return sinkInstancePair.map { it.second to sink }.toMap()
     }
 }
 
-private class MongoFloodplainSink(private val topologyContext: TopologyContext, private val task: SinkTask) : FloodplainSink {
+private class MongoFloodplainSink(private val task: SinkTask) : FloodplainSink {
     private val offsetCounter = AtomicLong(System.currentTimeMillis())
 
-    override fun send(topic: Topic, elements: List<Pair<String, IMessage?>>) {
+    override fun send(topic: Topic, elements: List<Pair<String, IMessage?>>, topologyContext: TopologyContext) {
         logger.info("Inserting # of documents ${elements.size} for topic: $topic")
         elements.forEach {
                 (_, value) ->
@@ -132,7 +132,7 @@ fun PartialStream.mongoSink(collection: String, topicDefinition: String, config:
     val topic = Topic.from(topicDefinition)
     config.sinkInstancePair.add(collection to topic)
     val sinkName = ProcessorName.from(config.name)
-    val sink = SinkTransformer(Optional.of(sinkName), topic, false, Optional.empty(), false)
+    val sink = SinkTransformer(Optional.of(sinkName), topic, false, Optional.empty(), true)
     val transform = Transformer(sink)
     addTransformer(transform)
 }

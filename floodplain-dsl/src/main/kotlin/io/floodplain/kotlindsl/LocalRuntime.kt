@@ -37,9 +37,9 @@ import java.util.Optional
 import java.util.Properties
 import java.util.UUID
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.sendBlocking
 import kotlinx.coroutines.flow.Flow
@@ -51,6 +51,7 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.runBlocking
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.KeyValue
@@ -123,7 +124,8 @@ fun testTopology(
     props.setProperty(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, ReplicationMessageSerde::class.java.name)
     props.setProperty(StreamsConfig.APPLICATION_ID_CONFIG, "doesntmatterid")
     props.setProperty(StreamsConfig.STATE_DIR_CONFIG, storageFolder)
-
+    props.setProperty(StreamsConfig.BUILT_IN_METRICS_VERSION_CONFIG, StreamsConfig.METRICS_LATEST)
+    println("configs: $props")
     val driver = TopologyTestDriver(topology, props)
     val contextInstance = TestDriverContext(driver, context, topologyConstructor, sourceConfigs, sinkConfigs)
     val jobs = contextInstance.connectSourceAndSink()
@@ -185,27 +187,30 @@ class TestDriverContext(
     }
 
     override fun connectSourceAndSink(): List<Job> {
-        val outputJob = GlobalScope.launch {
+        val outputJob = GlobalScope.launch(newSingleThreadContext("TopologySource"), CoroutineStart.UNDISPATCHED) {
             val outputFlows = outputFlows(this)
                 .onEach { (k, _) -> logger.info("Topic mapped: $k") }
-                .map { (topic, flow) -> topic to flow.bufferTimeout(200, 2000) }
+                .map { (topic, flow) -> topic to flow.bufferTimeout(200, 200) }
                 .toMap()
             val sinks = sinksByTopic()
-            outputFlows.forEach { (topic, flow) ->
-                logger.info("Connecting topic $topic to sink: ${sinks[topic]}")
-                this.async {
-                    flow.collect { elements ->
-                        sinks[topic]?.forEach {
-                            logger.info("Buffered. Sending size: ${elements.size} topic: $topic")
-                            it.send(topic, elements)
+                outputFlows.forEach { (topic, flow) ->
+                    logger.info("Connecting topic $topic to sink: ${sinks[topic]}")
+                    this.launch {
+                        flow.collect { elements ->
+                            sinks[topic]?.forEach {
+                                logger.info("Buffered. Sending size: ${elements.size} topic: $topic")
+                                it.send(topic, elements, topologyContext)
+                            }
                         }
                     }
                 }
             }
-        }
+        outputJob.start()
+        logger.info("output job connected")
         val inputJob = GlobalScope.launch {
             connectSource()
         }
+        logger.info("input job connected")
         return listOf(inputJob, outputJob)
     }
 
@@ -280,14 +285,16 @@ class TestDriverContext(
         return callbackFlow<Triple<Topic, String, IMessage?>> {
             driver.setOutputListener {
                 val key = Serdes.String().deserializer().deserialize(it.topic(), it.key())
+                val msgString = String(it.value())
                 val message = parser.parseBytes(Optional.of(it.topic()), it.value())
                 val imessage = message?.message()?.let { it1 -> fromImmutable(it1) }
                 val topic = Topic.fromQualified(it.topic())
                 if (this.isActive) {
-                    // topics[topic]!!.sendBlocking(key to imessage)
+                    logger.info("Output for topic: ${topic.qualifiedString(topologyContext)} key: $key value: $message")
                     sendBlocking(Triple(topic, key, imessage))
                 }
             }
+            logger.info("Outputflow connected!")
             awaitClose {
                 println("closing output flow!")
             }

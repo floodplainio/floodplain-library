@@ -273,8 +273,10 @@ public class TopologyTestDriver implements Closeable {
     private TopologyTestDriver(final InternalTopologyBuilder builder,
                                final Properties config,
                                final long initialWallClockTimeMs) {
+        log.warn("TopologyTestDriver: "+config);
         final StreamsConfig streamsConfig = new QuietStreamsConfig(config);
         logIfTaskIdleEnabled(streamsConfig);
+        log.warn("TopologyTestDriver: "+streamsConfig);
         mockWallClockTime = new MockTime(initialWallClockTimeMs);
 
         internalTopologyBuilder = builder;

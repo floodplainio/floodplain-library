@@ -42,7 +42,7 @@ public class ConnectKeySerde implements Serde<String> {
 
     @Override
     public Deserializer<String> deserializer() {
-        return new Deserializer<>() {
+        return new Deserializer<String>() {
 
             @Override
             public void close() {
@@ -65,7 +65,7 @@ public class ConnectKeySerde implements Serde<String> {
     @Override
     public Serializer<String> serializer() {
 
-        return new Serializer<>() {
+        return new Serializer<String>() {
 
             @Override
             public void close() {
@@ -79,7 +79,7 @@ public class ConnectKeySerde implements Serde<String> {
 
             @Override
             public byte[] serialize(String topic, String key) {
-                String converted = "{\"key\":\" " + key + "\" }";
+                String converted = "{\"key\":\"" + key + "\" }";
                 return converted.getBytes();
             }
         };

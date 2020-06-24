@@ -13,6 +13,7 @@ dependencies {
     implementation(project(":floodplain-dsl"))
     implementation(project(":floodplain-mongodb"))
     implementation(project(":floodplain-elasticsearch"))
+    implementation(project(":floodplain-googlesheets"))
     implementation("io.confluent:kafka-connect-elasticsearch:5.5.0")
     implementation(dependencies.kotlinCoroutines)
     testImplementation("org.jetbrains.kotlin:kotlin-test")

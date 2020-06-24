@@ -16,7 +16,6 @@ dependencies {
     implementation(project(":floodplain-api"))
     compile(dependencies.slf4j)
     compile(dependencies.kotlinLogging)
-    implementation(dependencies.slf4jSimple)
     implementation(dependencies.debeziumPostgres)
     implementation(dependencies.debeziumEmbedded)
     testCompile(dependencies.jUnit)

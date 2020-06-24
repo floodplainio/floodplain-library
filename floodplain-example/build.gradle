@@ -29,7 +29,6 @@ dependencies {
     implementation(project(":replication-json"))
     implementation("io.confluent:kafka-connect-elasticsearch:5.5.0")
     compile(dependencies.slf4j)
-    implementation(dependencies.slf4jSimple)
     testCompile(dependencies.jUnit)
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     testImplementation("org.jetbrains.kotlin:kotlin-test")
@@ -40,13 +39,4 @@ shadowJar {
         path = "META-INF/custom"
         exclude "META-INF/services/javax.xml.stream.*"
     }
-}
-
-
-
-compileKotlin {
-    kotlinOptions.jvmTarget = "11"
-}
-compileTestKotlin {
-    kotlinOptions.jvmTarget = "11"
 }

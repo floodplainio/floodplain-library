@@ -195,6 +195,9 @@ public class ReplicationJSON {
             case BINARY:
                 m.put("Value", Base64.getEncoder().encodeToString((byte[]) value));
                 break;
+            case ENUM:
+                m.put("Value", (String) value);
+                break;
             default:
                 logger.warn("Unknown type: {} while serializing replication message to JSON. ", type);
                 break;

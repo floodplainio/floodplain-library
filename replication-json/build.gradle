@@ -9,7 +9,6 @@ dependencies {
     implementation(project(":replication-impl"))
     implementation(project("::streams-api"))
     testCompile(dependencies.jUnit)
-    testRuntime(dependencies.slf4jSimple)
 }
 
 

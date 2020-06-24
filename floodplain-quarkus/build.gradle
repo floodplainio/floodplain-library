@@ -1,0 +1,64 @@
+plugins {
+    id 'io.quarkus' version "${quarkusPluginVersion}"
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    jcenter()
+    gradlePluginPortal()
+    google()
+    maven {
+        url "http://packages.confluent.io/maven"
+    }
+}
+
+dependencies {
+    implementation 'io.quarkus:quarkus-kotlin'
+    implementation 'io.quarkus:quarkus-arc'
+    implementation 'io.quarkus:quarkus-core'
+    implementation 'io.quarkus:quarkus-core-deployment:1.4.2.Final'
+
+    implementation ("io.debezium:debezium-api") {
+        version {
+            strictly "1.2.0.CR1"
+            force = true
+        }
+    }
+    implementation ("io.debezium:debezium-core") {
+        version {
+            strictly "1.2.0.CR1"
+            force = true
+        }
+    }
+    implementation ("io.debezium:debezium-embedded") {
+        version {
+            strictly "1.2.0.CR1"
+            force = true
+        }
+    }
+    implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
+
+    implementation(project(":floodplain-mongodb"))
+    implementation(project(":floodplain-dsl"))
+    implementation(project(":floodplain-integration"))
+}
+
+quarkus {
+    setOutputDirectory("$projectDir/build/classes/kotlin/main")
+}
+
+quarkusDev {
+    setSourceDir("$projectDir/src/main/kotlin")
+}
+
+allOpen {
+    annotation("javax.ws.rs.Path")
+    annotation("javax.enterprise.context.ApplicationScoped")
+    annotation("io.quarkus.test.junit.QuarkusTest")
+}
+
+test {
+    systemProperty "java.util.logging.manager", "org.jboss.logmanager.LogManager"
+}

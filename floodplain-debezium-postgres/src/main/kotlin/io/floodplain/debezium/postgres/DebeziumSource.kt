@@ -111,7 +111,7 @@ fun postgresDataSource(name: String, hostname: String, port: Int, database: Stri
             GlobalScope.launch {
                 println("Engine ran for: " + measureTimeMillis {
                     engine.run() })
-                println("Engine run completed. Total time in send: ${totalTimeInSend.get()}")
+                println("Debezium source engine terminated. Total time in send: ${totalTimeInSend.get()}")
             }
             awaitClose {
                 println("closin!")

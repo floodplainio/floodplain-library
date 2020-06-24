@@ -82,7 +82,7 @@ public class TopologyConstructor {
         }
         List<NewTopic> toBeCreated = desiredTopics.entrySet()
                 .stream()
-                .filter(e -> !topics.contains(e.getKey()))
+                .filter(e -> !topics.contains(e.getKey().qualifiedString(topologyContext)))
                 .map(e -> new NewTopic(e.getKey().qualifiedString(topologyContext), e.getValue(), Optional.empty()))
                 .collect(Collectors.toList());
         try {

@@ -28,6 +28,7 @@ import io.floodplain.kotlindsl.stream
 import io.floodplain.mongodb.mongoConfig
 import io.floodplain.mongodb.mongoSink
 import java.net.URL
+import java.util.Date
 
 private val logger = mu.KotlinLogging.logger {}
 
@@ -70,13 +71,16 @@ fun main() = stream {
     // create a source, using schema "public" and table "film" and use the postgres
     postgresSource("public", "payment", pgConfig) {
         // For each key, message, and secondary message, log the key
-        each {
-            key, _, _ -> logger.info("Key: $key")
+        set {
+            key, msg, _ -> logger.info("Key: $key")
+            msg["date"] = Date(msg.long("payment_date"))
+            msg["payment_date"] = null
+            msg
         }
         // ... add more transformers
-        mongoSink("justfilm", "justfilm", mongoConfig)
+        mongoSink("justpayment", "justpayment", mongoConfig)
     }
-}.renderAndStart(URL("http://localhost:8083/connectors"), "localhost:9092")
+}.renderAndStart(URL("http://localhost:8083/connectors"), "localhost:9092", true)
 
 fun main2() = stream {
     val pgConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")

@@ -18,6 +18,7 @@
  */
 package io.floodplain.kotlindsl.example
 
+import io.floodplain.kotlindsl.each
 import io.floodplain.kotlindsl.group
 import io.floodplain.kotlindsl.joinGrouped
 import io.floodplain.kotlindsl.joinRemote
@@ -33,7 +34,7 @@ import java.net.URL
 private val logger = mu.KotlinLogging.logger {}
 
 fun main() {
-    joinFilms("generation1")
+    joinFilms("generation4")
 }
 
 fun joinFilms(generation: String) {
@@ -48,6 +49,7 @@ fun joinFilms(generation: String) {
                     }
                     set { _, msg, state ->
                         msg["category"] = state["name"] ?: "unknown"
+                        msg["last_update"] = null
                         msg
                     }
                     group { msg -> "${msg["film_id"]}" }
@@ -55,10 +57,14 @@ fun joinFilms(generation: String) {
             }
             set { _, msg, state ->
                 msg["categories"] = state["list"] ?: empty()
+                msg["last_update"] = null
                 msg
             }
-            mongoSink("filmwithcategories", "filmwithcat", mongoConfig)
+            each { _, msg, _ ->
+                logger.info("Message: $msg")
+            }
+            mongoSink("filmwithcategories", "@filmwithcat", mongoConfig)
         }
-    }.renderAndStart(URL("http://localhost:8083/connectors"), "localhost:9092")
+    }.renderAndStart(URL("http://localhost:8083/connectors"), "localhost:9092", true)
     logger.info { "done!" }
 }

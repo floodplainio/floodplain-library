@@ -34,6 +34,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeout
 import org.junit.Test
 import org.testcontainers.containers.GenericContainer
+import org.testcontainers.shaded.com.fasterxml.jackson.databind.node.NullNode
 
 private val logger = mu.KotlinLogging.logger {}
 
@@ -69,27 +70,32 @@ class TestElasticSearch {
             // for now TODO remove
             // address = "localhost"
             // port = 9200
+            val poem = """It's a high pitched sound
+                Hot rubber eternally pressing against a blackened pavement
+                A wheel is forever
+                A car is infinity times four 
+                """.trimIndent()
             val uuid = UUID.randomUUID().toString().substring(1..7)
             repeat(1) {
                 val msg = empty()
-                    .set("body", "I am a fluffy rabbit number $it and I have fluffy feet")
+                    .set("body", poem)
                     .set("time", Date().time)
                     .set("uuid", uuid)
                 input("sometopic", "$uuid", msg)
                 logger.info("inserting number: $it and uuid: $uuid")
             }
-            withTimeout(100000) {
+            withTimeout(300000) {
                 repeat(1000) {
-                    val resultCount = queryUUIDHits(uuid)
+                    val resultCount = queryUUIDHits("eternal")
                     if (resultCount == 1) {
                         logger.info("Found hit. continuing.")
                         return@withTimeout
                     }
                     logger.info("looping...")
-                    delay(1000)
+                    delay(100)
                 }
             }
-            assertEquals(1, queryUUIDHits(uuid))
+            assertEquals(1, queryUUIDHits("eternal"))
 
             logger.info("deleting....")
             delete("sometopic", uuid)
@@ -100,26 +106,34 @@ class TestElasticSearch {
                         logger.info("Delete processed. continuing.")
                         return@withTimeout
                     }
+                    delay(100)
                 }
             }
-            delay(2000)
             assertEquals(0, queryUUIDHits(uuid))
         }
     }
 
-    private fun queryUUIDHits(uuid: String): Int {
-        val node = queryUUID("http://$address:$port", "q=$uuid")
-        return node.get("hits").get("total").get("value").asInt()
+    private fun queryUUIDHits(query: String): Int {
+        val node = queryUUID("http://$address:$port", "q=$query")
+        logger.info("Query uri: $node")
+        val error = node.get("error")
+        if (error is NullNode) {
+            return node.get("hits").get("total").get("value").asInt()
+        } else {
+            return -1
+        }
     }
 
     private fun queryUUID(uri: String, query: String): JsonNode {
-
+        val assembledUri = "$uri/_search?$query"
+        logger.info("uuid query: $uri query: $assembledUri")
         val client = HttpClient.newBuilder().build()
         val request = HttpRequest.newBuilder()
             .GET()
-            .uri(URI.create("$uri/_search?$query"))
+            .uri(URI.create(assembledUri))
             .build()
         val response: HttpResponse<String> = client.send(request, HttpResponse.BodyHandlers.ofString())
+        logger.info("return code: ${response.statusCode()}")
         return objectMapper.readTree(response.body())
     }
 }
