@@ -86,7 +86,7 @@ class TestElasticSearch {
             }
             withTimeout(300000) {
                 repeat(1000) {
-                    val resultCount = queryUUIDHits("eternal")
+                    val resultCount = queryUUIDHits("eternal*")
                     if (resultCount == 1) {
                         logger.info("Found hit. continuing.")
                         return@withTimeout
@@ -95,13 +95,13 @@ class TestElasticSearch {
                     delay(100)
                 }
             }
-            assertEquals(1, queryUUIDHits("eternal"))
+            assertEquals(1, queryUUIDHits("eternal*"))
 
             logger.info("deleting....")
             delete("sometopic", uuid)
             withTimeout(100000) {
                 repeat(1000) {
-                    val resultCount = queryUUIDHits(uuid)
+                    val resultCount = queryUUIDHits("eternal*")
                     if (resultCount == 0) {
                         logger.info("Delete processed. continuing.")
                         return@withTimeout
@@ -117,7 +117,7 @@ class TestElasticSearch {
         val node = queryUUID("http://$address:$port", "q=$query")
         logger.info("Query uri: $node")
         val error = node.get("error")
-        if (error is NullNode) {
+        if (error == null || error is NullNode) {
             return node.get("hits").get("total").get("value").asInt()
         } else {
             return -1

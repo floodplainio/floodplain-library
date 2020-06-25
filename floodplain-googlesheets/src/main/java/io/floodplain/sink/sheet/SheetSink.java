@@ -115,6 +115,20 @@ public class SheetSink {
 
 		ClearValuesResponse response = request.execute();
 	}
+
+	public void clear(String spreadsheetId, List<String> ranges) throws IOException {
+		BatchClearValuesRequest requestBody = new BatchClearValuesRequest();
+		requestBody.setRanges(ranges);
+		Sheets.Spreadsheets.Values.BatchClear request =
+				sheetsService.spreadsheets().values().batchClear(spreadsheetId, requestBody);
+		BatchClearValuesResponse response = request.execute();
+//		sheetsService.spreadsheets().batchUpdate(spreadsheetId,pp);
+
+	}
+	public List<List<Object>> getRange(String spreadsheetId, String range) throws IOException {
+		return sheetsService.spreadsheets().values().get(spreadsheetId,range).execute().getValues();
+	}
+
     public void updateRange(String spreadsheetId, String range, List<List<Object>> values)
 			throws IOException {
         String valueInputOption = "RAW"; 

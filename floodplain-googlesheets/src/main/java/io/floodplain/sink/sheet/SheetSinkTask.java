@@ -44,9 +44,17 @@ public class SheetSinkTask extends SinkTask {
 		}
 	}
 
+	/**
+	 * For testing
+	 * @return
+	 */
+	public SheetSink getSheetSink() {
+		return this.sheetSink;
+	}
+
 	@Override
 	public void put(Collection<SinkRecord> records) {
-		List<UpdateTuple> tuples = extractTuples(1, "A", records);
+		List<UpdateTuple> tuples = extractTuples(2, "C", records);
 		try {
 			sheetSink.updateRangeWithBatch(spreadsheetId, tuples);
 		} catch (IOException e1) {
@@ -65,11 +73,11 @@ public class SheetSinkTask extends SinkTask {
 				System.err.println("Ignoring delete of key: "+sinkRecord.key());
 			} else {
 //				logger.warn("Inserting message: {}", msg);
-				Long row = (Long) msg.get("_row");
+				Integer row = (Integer) msg.get("_row");
 //				logger.warn("Inserting row: {}", row);
 //				String column = "B";
 //				int startOffset = 4;
-				long currentRow = row+startOffset;
+				int currentRow = row+startOffset;
 				List<List<Object>> res = sheetSink.extractRow(msg, this.columns);
 				logger.warn("res: "+res);
 				logger.warn("Would update: {} : {} res: {}",spreadsheetId,startColumn+currentRow,res);

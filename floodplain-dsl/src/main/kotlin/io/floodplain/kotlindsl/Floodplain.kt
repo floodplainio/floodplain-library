@@ -64,6 +64,7 @@ interface Config {
     fun sourceElements(): List<SourceTopic>
     suspend fun connectSource(inputReceiver: InputReceiver)
     fun sinkElements(): Map<Topic, FloodplainSink>
+    fun sinkTask(): Any?
 }
 
 interface SourceTopic {
@@ -71,8 +72,9 @@ interface SourceTopic {
 }
 
 interface FloodplainSink {
-    fun send(topic: Topic, elements: List<Pair<String, IMessage?>>, topologyContext: TopologyContext)
+    fun send(topic: Topic, elements: List<Pair<String, Map<String, Any>?>>, topologyContext: TopologyContext)
     // fun send(elements: List<Pair<Topic,IMessage?>>)
+    fun config(): Config
     fun flush()
     fun close()
 }

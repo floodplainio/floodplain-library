@@ -21,7 +21,6 @@ package io.floodplain.kotlindsl
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ArrayNode
-import io.floodplain.kotlindsl.message.IMessage
 import io.floodplain.streams.api.Topic
 import io.floodplain.streams.api.TopologyContext
 import java.io.IOException
@@ -120,28 +119,31 @@ private fun postToHttpJava11(url: URL, jsonString: String) {
     }
 }
 
-fun floodplainSinkFromTask(task: SinkTask): FloodplainSink {
-    return LocalConnectorSink(task)
+fun floodplainSinkFromTask(task: SinkTask, config: Config): FloodplainSink {
+    return LocalConnectorSink(task, config)
 }
 
-private class LocalConnectorSink(private val task: SinkTask) : FloodplainSink {
+private class LocalConnectorSink(private val task: SinkTask, val config: Config) : FloodplainSink {
     private val offsetCounter = AtomicLong(System.currentTimeMillis())
-
-    override fun send(topic: Topic, elements: List<Pair<String, IMessage?>>, topologyContext: TopologyContext) {
+    override fun send(topic: Topic, elements: List<Pair<String, Map<String, Any>?>>, topologyContext: TopologyContext) {
+    // override fun send(topic: Topic, elements: List<Pair<String, ByteArray?>>, topologyContext: TopologyContext) {
         logger.info("Inserting # of documents ${elements.size} for topic: $topic")
-        elements.forEach {
-                (_, value) ->
-            try {
-                logger.info("My Message: $value")
-                value?.data() ?: emptyMap<String, Any>()
-            } catch (e: Throwable) {
-                e.printStackTrace()
-            }
-        }
+        // elements.forEach { (_, value) ->
+            // try {
+            //     logger.info("My Message: $value")
+            //     // value?.data() ?: emptyMap<String, Any>()
+            // } catch (e: Throwable) {
+            //     e.printStackTrace()
+            // }
+        // }
         val list = elements.map { (key, value) ->
-            SinkRecord(topic.qualifiedString(topologyContext), 0, null, mapOf(Pair("key", key)), null, value?.data(), offsetCounter.incrementAndGet())
+            SinkRecord(topic.qualifiedString(topologyContext), 0, null, mapOf(Pair("key", key)), null, value, offsetCounter.incrementAndGet())
         }.toList()
         task.put(list)
+    }
+
+    override fun config(): Config {
+        return config
     }
 
     override fun flush() {

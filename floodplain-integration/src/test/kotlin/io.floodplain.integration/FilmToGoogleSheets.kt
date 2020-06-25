@@ -21,8 +21,12 @@ package io.floodplain.integration
 import io.floodplain.kotlindsl.postgresSourceConfig
 import io.floodplain.kotlindsl.set
 import io.floodplain.kotlindsl.stream
+import io.floodplain.sink.sheet.SheetSink
+import io.floodplain.sink.sheet.SheetSinkTask
 import io.floodplain.sink.sheet.googleSheetConfig
 import io.floodplain.sink.sheet.googleSheetsSink
+import io.floodplain.streams.api.Topic
+import kotlin.test.assertEquals
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeout
 import org.junit.After
@@ -42,6 +46,11 @@ class FilmToGoogleSheets {
         postgresContainer.close()
     }
 
+    // @Test
+    // fun testClearSheets() {
+    //     val sheetSink = SheetSink()
+    //     sheetSink.clear(spreadsheetId, listOf("A1:H1100"))
+    // }
     /**
      * Test the simplest imaginable pipe: One source and one sink.
      */
@@ -51,6 +60,9 @@ class FilmToGoogleSheets {
             logger.info("Not performing integration tests, doesn't seem to work in circleci")
             return
         }
+        val sheetSink = SheetSink()
+        // First, clear the spreadsheet
+        sheetSink.clear(spreadsheetId, listOf("A1:H1100"))
         stream {
 
             val postgresConfig = postgresSourceConfig(
@@ -75,6 +87,10 @@ class FilmToGoogleSheets {
                 googleSheetsSink(config)
             }
         }.renderAndTest {
+            val ll = this.sinksByTopic()[Topic.from("outputtopic")]?.first()
+            val task = ll?.config()?.sinkTask()!! as SheetSinkTask
+            val coreSink = task.getSheetSink()
+            // coreSink.
             logger.info("Outputs: ${outputs()}")
             delay(5000)
             val database = topologyContext().topicName("@mongodump")
@@ -82,9 +98,17 @@ class FilmToGoogleSheets {
             flushSinks()
             withTimeout(200000) {
                 repeat(1000) {
+                    val value = coreSink.getRange(spreadsheetId, "C3").first()?.first()
+                    if (value == "Academy Dinosaur") {
+                        logger.info("Found cell")
+                        return@withTimeout
+                    }
+
                             delay(1000)
                     }
                 }
+            val value = coreSink.getRange(spreadsheetId, "C3").first()?.first()
+            assertEquals(value, "Academy Dinosaur")
             }
-        }
+    }
 }

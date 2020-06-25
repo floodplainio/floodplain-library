@@ -19,6 +19,9 @@
 
 package io.floodplain.kotlindsl
 
+import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.ObjectNode
 import io.floodplain.bufferTimeout
 import io.floodplain.kotlindsl.message.IMessage
 import io.floodplain.kotlindsl.message.fromImmutable
@@ -46,14 +49,17 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.broadcastIn
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.runBlocking
 import org.apache.kafka.common.serialization.Serdes
+import org.apache.kafka.connect.json.JsonDeserializer
 import org.apache.kafka.streams.KeyValue
 import org.apache.kafka.streams.StreamsConfig
 import org.apache.kafka.streams.TestInputTopic
@@ -186,6 +192,9 @@ class TestDriverContext(
         }
     }
 
+    private fun <T> Flow<T>.handleErrors(): Flow<T> =
+        catch { e -> logger.warn("Error in flow $e") }
+
     override fun connectSourceAndSink(): List<Job> {
         val outputJob = GlobalScope.launch(newSingleThreadContext("TopologySource"), CoroutineStart.UNDISPATCHED) {
             val outputFlows = outputFlows(this)
@@ -217,10 +226,6 @@ class TestDriverContext(
     private fun topics(): Set<Topic> {
         return sinkConfigurations().flatMap { it.sinkElements().keys }.toSet()
     }
-
-    // private fun topicSinks(topic: Topic) {
-    //     return sinkConfigurations().flatMap { it.sinkElements().keys }.toSet()
-    // }
 
     override fun flushSinks() {
         this.sinkConfigurations().map { config ->
@@ -268,10 +273,24 @@ class TestDriverContext(
         // return sinkConsumer(map)
     }
 
-    private fun outputFlows(context: CoroutineScope): Map<Topic, Flow<Pair<String, IMessage?>>> {
+    private fun outputFlows(context: CoroutineScope): Map<Topic, Flow<Pair<String, Map<String, Any>?>>> {
         val topics = topics()
+        val deserializer = JsonDeserializer()
+        var mapper: ObjectMapper = ObjectMapper()
+
         // GlobalScope.launch {
-        val sourceFlow = outputFlowSingle().broadcastIn(context).asFlow()
+        val sourceFlow = outputFlowSingle()
+            .map { (topic, key, value) ->
+                val parsed = if (value == null) null else deserializer.deserialize(topic.qualifiedString(topologyContext), value) as ObjectNode
+                var result = if (value == null) null else mapper.convertValue(parsed, object : TypeReference<Map<String, Any>>() {})
+                Triple(topic, key, result)
+            }
+            .broadcastIn(context)
+            .asFlow()
+            .handleErrors()
+            .onEach { (topic, key, value) ->
+                logger.info("My triple: $topic key: $key, ${value == null}")
+            }
         return topics.map { topic ->
             val flow = sourceFlow.filter { (incomingTopic, _, _) ->
                 incomingTopic == topic
@@ -281,17 +300,17 @@ class TestDriverContext(
         }.toMap()
     }
 
-    private fun outputFlowSingle(): Flow<Triple<Topic, String, IMessage?>> {
-        return callbackFlow<Triple<Topic, String, IMessage?>> {
-            driver.setOutputListener {
-                val key = Serdes.String().deserializer().deserialize(it.topic(), it.key())
-                val msgString = String(it.value())
-                val message = parser.parseBytes(Optional.of(it.topic()), it.value())
-                val imessage = message?.message()?.let { it1 -> fromImmutable(it1) }
-                val topic = Topic.fromQualified(it.topic())
+    private fun outputFlowSingle(): Flow<Triple<Topic, String, ByteArray?>> {
+        return callbackFlow<Triple<Topic, String, ByteArray?>> {
+            driver.setOutputListener { record ->
+                val key = Serdes.String().deserializer().deserialize(record.topic(), record.key())
+                // val msgString = String(it.value())
+                val message = parser.parseBytes(Optional.of(record.topic()), record.value())
+//                val imessage = message?.message()?.let { it1 -> fromImmutable(it1) }
+                val topic = Topic.fromQualified(record.topic())
                 if (this.isActive) {
                     logger.info("Output for topic: ${topic.qualifiedString(topologyContext)} key: $key value: $message")
-                    sendBlocking(Triple(topic, key, imessage))
+                    sendBlocking(Triple(topic, key, record.value()))
                 }
             }
             logger.info("Outputflow connected!")

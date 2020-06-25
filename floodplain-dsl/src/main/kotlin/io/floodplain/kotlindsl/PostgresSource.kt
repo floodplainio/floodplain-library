@@ -70,6 +70,10 @@ class PostgresConfig(val topologyContext: TopologyContext, val name: String, pri
         TODO("Not yet implemented")
     }
 
+    override fun sinkTask(): Any? {
+        return null
+    }
+
     override fun materializeConnectorConfig(): Pair<String, Map<String, String>> {
         return name to mapOf(
                 "connector.class" to "io.debezium.connector.postgresql.PostgresConnector",

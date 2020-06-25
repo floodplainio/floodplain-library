@@ -37,7 +37,7 @@ fun PartialStream.googleSheetsSink(config: GoogleSheetConfiguration) {
     var sheetConnectorClass = SheetSinkConnector::class.java.name
     logger.info("Sheet connector: $sheetConnectorClass")
     val configMap: Map<String, String> = mapOf(Pair("connector.class", sheetConnectorClass))
-    val sink = SinkTransformer(Optional.of(ProcessorName.from(config.name)), config.topic, false, Optional.empty(), false)
+    val sink = SinkTransformer(Optional.of(ProcessorName.from(config.name)), config.topic, false, Optional.empty(), true)
     addTransformer(Transformer(sink))
 }
 
@@ -50,6 +50,8 @@ fun Stream.googleSheetConfig(topic: String, name: String, spreadsheetId: String,
 
 class GoogleSheetConfiguration(val name: String, val topic: Topic, val spreadsheetId: String, val columns: List<String>) :
     Config {
+
+    private var googleTask: SheetSinkTask? = null
     override fun materializeConnectorConfig(): Pair<String, Map<String, String>> {
         val additional = mutableMapOf<String, String>()
 
@@ -81,8 +83,13 @@ class GoogleSheetConfiguration(val name: String, val topic: Topic, val spreadshe
         connector.start(settings)
 
         val task = connector.taskClass().getDeclaredConstructor().newInstance() as SheetSinkTask
+        googleTask = task
         task.start(settings)
-        val sink = floodplainSinkFromTask(task)
+        val sink = floodplainSinkFromTask(task, this)
         return mapOf(topic to sink)
+    }
+
+    override fun sinkTask(): Any? {
+        return googleTask
     }
 }

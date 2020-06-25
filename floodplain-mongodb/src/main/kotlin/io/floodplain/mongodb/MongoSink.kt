@@ -18,7 +18,9 @@
  */
 package io.floodplain.mongodb
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.mongodb.kafka.connect.MongoSinkConnector
+import com.mongodb.kafka.connect.sink.MongoSinkTask
 import io.floodplain.kotlindsl.Config
 import io.floodplain.kotlindsl.FloodplainSink
 import io.floodplain.kotlindsl.InputReceiver
@@ -26,13 +28,13 @@ import io.floodplain.kotlindsl.PartialStream
 import io.floodplain.kotlindsl.SourceTopic
 import io.floodplain.kotlindsl.Stream
 import io.floodplain.kotlindsl.Transformer
-import io.floodplain.kotlindsl.message.IMessage
 import io.floodplain.reactive.source.topology.SinkTransformer
 import io.floodplain.streams.api.ProcessorName
 import io.floodplain.streams.api.Topic
 import io.floodplain.streams.api.TopologyContext
 import java.util.Optional
 import java.util.concurrent.atomic.AtomicLong
+import org.apache.kafka.connect.json.JsonDeserializer
 import org.apache.kafka.connect.sink.SinkRecord
 import org.apache.kafka.connect.sink.SinkTask
 
@@ -40,6 +42,7 @@ private val logger = mu.KotlinLogging.logger {}
 
 class MongoConfig(val name: String, val uri: String, val database: String, private val topologyContext: TopologyContext) : Config {
 
+    var sinkTask: MongoSinkTask? = null
     val sinkInstancePair: MutableList<Pair<String, Topic>> = mutableListOf()
     override fun materializeConnectorConfig(): Pair<String, Map<String, String>> {
         val additional = mutableMapOf<String, String>()
@@ -84,30 +87,44 @@ class MongoConfig(val name: String, val uri: String, val database: String, priva
         val connector = MongoSinkConnector()
         connector.start(settings)
 
-        val task = connector.taskClass().getDeclaredConstructor().newInstance() as SinkTask
+        val task = connector.taskClass().getDeclaredConstructor().newInstance() as MongoSinkTask
         task.start(settings)
-        val sink = MongoFloodplainSink(task)
+        sinkTask = task
+        val sink = MongoFloodplainSink(task, this)
         return sinkInstancePair.map { it.second to sink }.toMap()
+    }
+
+    override fun sinkTask(): Any? {
+        TODO("Not yet implemented")
     }
 }
 
-private class MongoFloodplainSink(private val task: SinkTask) : FloodplainSink {
-    private val offsetCounter = AtomicLong(System.currentTimeMillis())
+private class MongoFloodplainSink(private val task: SinkTask, private val config: Config) : FloodplainSink {
+    val deserializer = JsonDeserializer()
+    var mapper: ObjectMapper = ObjectMapper()
 
-    override fun send(topic: Topic, elements: List<Pair<String, IMessage?>>, topologyContext: TopologyContext) {
-        logger.info("Inserting # of documents ${elements.size} for topic: $topic")
-        elements.forEach {
-                (_, value) ->
-            try {
-                value?.data() ?: emptyMap<String, Any>()
-            } catch (e: Throwable) {
-                e.printStackTrace()
-            }
-        }
+    private val offsetCounter = AtomicLong(System.currentTimeMillis())
+    // override fun send(topic: Topic, elements: List<Pair<String, ByteArray?>>, topologyContext: TopologyContext) {
+    //     logger.info("Inserting # of documents ${elements.size} for topic: $topic")
+    //     val list = elements.map { (key, value) ->
+    //         val parsed = deserializer.deserialize(topic.qualifiedString(topologyContext),value) as ObjectNode
+    //         var result = mapper.convertValue(parsed, object : TypeReference<Map<String, Any>>() {})
+    //         SinkRecord(topic.qualifiedString(topologyContext), 0, null, mapOf(Pair("key", key)), null, result, offsetCounter.incrementAndGet())
+    //     }.toList()
+    //     task.put(list)
+    // }
+
+    override fun send(topic: Topic, elements: List<Pair<String, Map<String, Any>?>>, topologyContext: TopologyContext) {
+        // override fun send(docs: List<Triple<Topic, String, IMessage?>>) {
         val list = elements.map { (key, value) ->
-            SinkRecord(topic.qualifiedString(topologyContext), 0, null, mapOf(Pair("key", key)), null, value?.data(), offsetCounter.incrementAndGet())
+            // logger.info("Sending document to elastic. Topic: $topic Key: $key message: $result")
+            SinkRecord(topic.qualifiedString(topologyContext), 0, null, key, null, value, offsetCounter.incrementAndGet())
         }.toList()
         task.put(list)
+    }
+
+    override fun config(): Config {
+        return config
     }
 
     override fun flush() {
