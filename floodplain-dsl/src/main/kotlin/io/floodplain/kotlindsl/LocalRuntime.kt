@@ -36,7 +36,6 @@ import io.floodplain.streams.serializer.ReplicationMessageSerde
 import java.nio.file.Files
 import java.nio.file.Path
 import java.time.Duration
-import java.util.Optional
 import java.util.Properties
 import java.util.UUID
 import kotlinx.coroutines.CoroutineScope
@@ -197,7 +196,6 @@ class TestDriverContext(
     override fun connectSourceAndSink(): List<Job> {
         val outputJob = GlobalScope.launch(newSingleThreadContext("TopologySource"), CoroutineStart.UNDISPATCHED) {
             val outputFlows = outputFlows(this)
-                .onEach { (k, a) -> logger.info("Topic mapped: $k") }
                 .map { (topic, flow) -> topic to flow.bufferTimeout(200, 200) }
                 .toMap()
             val sinks = sinksByTopic()
@@ -205,11 +203,6 @@ class TestDriverContext(
                     logger.info("Connecting topic $topic to sink: ${sinks[topic]}")
                     this.launch {
                         flow.collect { elements ->
-                            elements.forEach { (key, msg) ->
-                                if (msg == null) {
-                                    logger.info("null message detected")
-                                }
-                            }
                             sinks[topic]?.forEach {
                                 // logger.info("Buffered. Sending size: ${elements.size} topic: $topic")
                                 it.send(topic, elements, topologyContext)
@@ -301,7 +294,7 @@ class TestDriverContext(
             driver.setOutputListener { record ->
                 if (!record.topic().endsWith("changelog")) {
                     val key = Serdes.String().deserializer().deserialize(record.topic(), record.key())
-                    val message = parser.parseBytes(Optional.of(record.topic()), record.value())
+                    // val message = parser.parseBytes(Optional.of(record.topic()), record.value())
                     val topic = Topic.fromQualified(record.topic())
                     if (this.isActive) {
                         logger.info("Sending key: $key")

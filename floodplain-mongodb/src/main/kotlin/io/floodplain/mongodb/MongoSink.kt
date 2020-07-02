@@ -83,8 +83,6 @@ class MongoConfig(val name: String, val uri: String, val database: String, priva
         throw UnsupportedOperationException("MongoSink can not be used as a source")
     }
 
-    private fun createSink(builder: () -> FloodplainSink) {
-    }
     override fun sinkElements(topologyContext: TopologyContext): Map<Topic, List<FloodplainSink>> {
         return materializeConnectorConfig(topologyContext)
             .map {

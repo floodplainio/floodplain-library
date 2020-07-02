@@ -18,7 +18,8 @@ public class GoogleSheetTest {
 
     @Test
     fun testGoogleSheet() {
-        val config = GoogleSheetConfiguration("connectorName")
+        // sanity check
+        GoogleSheetConfiguration("connectorName")
     }
 
     @Test

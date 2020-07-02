@@ -28,7 +28,11 @@ jobs: # a collection of steps
           name: Run tests in parallel # See: https://circleci.com/docs/2.0/parallelism-faster-jobs/
           # Use "./gradlew test" instead if tests are not run in parallel
           command: |
+            echo "current path: $PWD"
+            pwd ~
             echo "$ENV_VARIABLE_NAME" >~/sheetkey.json
+            echo "homedir:"
+            ls -l ~
             export GOOGLE_SHEETS_CREDENTIAL_PATH=~/sheetkey.json
             # Format the arguments to "./gradlew test"
             ./gradlew test --info --stacktrace

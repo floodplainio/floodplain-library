@@ -94,8 +94,6 @@ class FilmToGoogleSheets {
             // coreSink.
             logger.info("Outputs: ${outputs()}")
             delay(5000)
-            val database = topologyContext().topicName("@mongodump")
-            var hits = 0L
             flushSinks()
             withTimeout(200000) {
                 repeat(1000) {
