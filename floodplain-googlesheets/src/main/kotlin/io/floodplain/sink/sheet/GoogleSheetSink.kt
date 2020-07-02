@@ -21,6 +21,7 @@ package io.floodplain.sink.sheet
 import io.floodplain.kotlindsl.Config
 import io.floodplain.kotlindsl.FloodplainSink
 import io.floodplain.kotlindsl.InputReceiver
+import io.floodplain.kotlindsl.MaterializedSink
 import io.floodplain.kotlindsl.PartialStream
 import io.floodplain.kotlindsl.SourceTopic
 import io.floodplain.kotlindsl.Stream
@@ -29,46 +30,47 @@ import io.floodplain.kotlindsl.floodplainSinkFromTask
 import io.floodplain.reactive.source.topology.SinkTransformer
 import io.floodplain.streams.api.ProcessorName
 import io.floodplain.streams.api.Topic
+import io.floodplain.streams.api.TopologyContext
 import java.util.Optional
 
 private val logger = mu.KotlinLogging.logger {}
 
-fun PartialStream.googleSheetsSink(config: GoogleSheetConfiguration) {
+fun PartialStream.googleSheetsSink(topicDefinition: String, googleSheetId: String, columns: List<String>, config: GoogleSheetConfiguration) {
     var sheetConnectorClass = SheetSinkConnector::class.java.name
     logger.info("Sheet connector: $sheetConnectorClass")
-    val configMap: Map<String, String> = mapOf(Pair("connector.class", sheetConnectorClass))
-    val sink = SinkTransformer(Optional.of(ProcessorName.from(config.name)), config.topic, false, Optional.empty(), true)
+    val topic = Topic.from(topicDefinition)
+    val sheetSink = GoogleSheetSink(topic, googleSheetId, columns)
+    config.addSink(sheetSink)
+    val sink = SinkTransformer(Optional.of(ProcessorName.from(config.name)), topic, false, Optional.empty(), true, true)
     addTransformer(Transformer(sink))
 }
 
-private class GoogleSheetSink(config: GoogleSheetConfiguration, spreadsheetId: String, columns: List<String>)
-fun Stream.googleSheetConfig(topic: String, name: String, spreadsheetId: String, columns: List<String>): GoogleSheetConfiguration {
-    val googleSheetConfiguration = GoogleSheetConfiguration(name, Topic.from(topic), spreadsheetId, columns)
+class GoogleSheetSink(val topic: Topic, val spreadsheetId: String, val columns: List<String>)
+fun Stream.googleSheetConfig(name: String): GoogleSheetConfiguration {
+    val googleSheetConfiguration = GoogleSheetConfiguration(name)
     this.addSinkConfiguration(googleSheetConfiguration)
     return googleSheetConfiguration
 }
 
-class GoogleSheetConfiguration(val name: String, val topic: Topic, val spreadsheetId: String, val columns: List<String>) :
-    Config {
-
+class GoogleSheetConfiguration(val name: String) : Config {
     private var googleTask: SheetSinkTask? = null
-    override fun materializeConnectorConfig(): Pair<String, Map<String, String>> {
-        val additional = mutableMapOf<String, String>()
-
-        val settings = mutableMapOf("connector.class" to SheetSinkConnector::class.java.name,
-            "value.converter.schemas.enable" to "false",
-            "key.converter.schemas.enable" to "false",
-            "value.converter" to "org.apache.kafka.connect.json.JsonConverter",
-            "key.converter" to "org.apache.kafka.connect.json.JsonConverter",
-            "delete.on.null.values" to "true",
-            SheetSinkTask.SPREADSHEETID to spreadsheetId,
-            SheetSinkTask.COLUMNS to columns.joinToString(",")
-        )
-        settings.putAll(additional)
-        settings.forEach { (key, value) ->
-            logger.info { "Setting: $key value: $value" }
+    private val sheetSinks = mutableListOf<GoogleSheetSink>()
+    override fun materializeConnectorConfig(topologyContext: TopologyContext): List<MaterializedSink> {
+        return sheetSinks.map {
+            val settings = mutableMapOf("connector.class" to SheetSinkConnector::class.java.name,
+                "value.converter.schemas.enable" to "false",
+                "key.converter.schemas.enable" to "false",
+                "value.converter" to "org.apache.kafka.connect.json.JsonConverter",
+                "key.converter" to "org.apache.kafka.connect.json.JsonConverter",
+                "delete.on.null.values" to "true"
+            )
+            // SheetSinkTask.SPREADSHEETID to spreadsheetId,
+            // SheetSinkTask.COLUMNS to columns.joinToString(",")
+            settings.put(SheetSinkTask.SPREADSHEETID, it.spreadsheetId)
+            settings.put(SheetSinkTask.COLUMNS, it.columns.joinToString(","))
+            settings.put(SheetSinkTask.TOPIC, it.topic.qualifiedString(topologyContext))
+            MaterializedSink(name, listOf(it.topic), settings)
         }
-        return name to settings.toMap()
     }
     override fun sourceElements(): List<SourceTopic> {
         return emptyList<SourceTopic>()
@@ -77,19 +79,28 @@ class GoogleSheetConfiguration(val name: String, val topic: Topic, val spreadshe
     override suspend fun connectSource(inputReceiver: InputReceiver) {
     }
 
-    override fun sinkElements(): Map<Topic, FloodplainSink> {
-        val (_, settings) = materializeConnectorConfig()
-        val connector = SheetSinkConnector()
-        connector.start(settings)
-
-        val task = connector.taskClass().getDeclaredConstructor().newInstance() as SheetSinkTask
-        googleTask = task
-        task.start(settings)
-        val sink = floodplainSinkFromTask(task, this)
-        return mapOf(topic to sink)
+    override fun sinkElements(topologyContext: TopologyContext): Map<Topic, MutableList<FloodplainSink>> {
+        val result = mutableMapOf<Topic, MutableList<FloodplainSink>>()
+        materializeConnectorConfig(topologyContext).forEach { materializedSink ->
+            val connector = SheetSinkConnector()
+            connector.start(materializedSink.settings)
+            val task = connector.taskClass().getDeclaredConstructor().newInstance() as SheetSinkTask
+            googleTask = task
+            task.start(materializedSink.settings)
+            val sink = floodplainSinkFromTask(task, this)
+            materializedSink.topics.forEach {
+                val list = result.computeIfAbsent(it) { mutableListOf<FloodplainSink>() }
+                list.add(sink)
+            }
+        }
+        return result
     }
 
     override fun sinkTask(): Any? {
         return googleTask
+    }
+
+    fun addSink(sheetSink: GoogleSheetSink) {
+        sheetSinks.add(sheetSink)
     }
 }

@@ -84,6 +84,9 @@ fun postgresDataSource(name: String, hostname: String, port: Int, database: Stri
             val engine = DebeziumEngine.create(Json::class.java)
                 .using(props)
                 .notifying { record: ChangeEvent<String, String> ->
+                    if (this.isClosedForSend) {
+                        logger.info("Closed for send")
+                    }
                     val perf = measureTimeMillis {
                         try {
                             sendBlocking(

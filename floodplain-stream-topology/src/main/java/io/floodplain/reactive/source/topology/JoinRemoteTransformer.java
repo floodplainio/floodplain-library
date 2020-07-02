@@ -37,15 +37,13 @@ import java.util.function.Function;
 public class JoinRemoteTransformer implements TopologyPipeComponent {
 
     private final ReactivePipe remoteJoin;
-    private final boolean isList;
     private final boolean isOptional;
     private boolean materialize = false;
     private final BiFunction<ImmutableMessage, ImmutableMessage, String> keyExtractor;
 
-    public JoinRemoteTransformer(ReactivePipe remoteJoin, BiFunction<ImmutableMessage, ImmutableMessage, String> keyExtractor, boolean isList, boolean isOptional) {
+    public JoinRemoteTransformer(ReactivePipe remoteJoin, BiFunction<ImmutableMessage, ImmutableMessage, String> keyExtractor, boolean isOptional) {
         this.remoteJoin = remoteJoin;
         this.keyExtractor = keyExtractor;
-        this.isList = isList;
         this.isOptional = isOptional;
     }
 
@@ -61,7 +59,7 @@ public class JoinRemoteTransformer implements TopologyPipeComponent {
         ReactivePipeParser.processPipe(topologyContext, topologyConstructor, topology, topologyConstructor.generateNewStreamId(), pipeStack, remoteJoin, true);
         String with = pipeStack.peek();
         String name = topologyContext.qualifiedName("joinRemote", transformerNames.size(), pipeId);
-        ReplicationTopologyParser.addSingleJoinGrouped(topology, topologyContext, topologyConstructor, from.get(), name, Optional.empty(), isList, with, isOptional);
+        ReplicationTopologyParser.addSingleJoinGrouped(topology, topologyContext, topologyConstructor, from.get(), name, Optional.empty(), with, isOptional);
         transformerNames.push(name);
     }
 

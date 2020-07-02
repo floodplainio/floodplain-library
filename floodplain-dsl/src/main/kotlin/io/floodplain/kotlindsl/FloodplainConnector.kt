@@ -33,6 +33,7 @@ import java.time.Duration
 import java.util.Collections
 import java.util.concurrent.atomic.AtomicLong
 import java.util.function.Consumer
+import org.apache.kafka.connect.sink.SinkConnector
 import org.apache.kafka.connect.sink.SinkRecord
 import org.apache.kafka.connect.sink.SinkTask
 
@@ -123,21 +124,31 @@ fun floodplainSinkFromTask(task: SinkTask, config: Config): FloodplainSink {
     return LocalConnectorSink(task, config)
 }
 
+fun instantiateSinkConfig(topologyContext: TopologyContext, config: Config, connector: () -> SinkConnector): Map<Topic, MutableList<FloodplainSink>> {
+    val result = mutableMapOf<Topic, MutableList<FloodplainSink>>()
+    val materializedSinks = config.materializeConnectorConfig(topologyContext)
+    materializedSinks.map { materializedSink ->
+        val connectorInstance = connector()
+        connector().start(materializedSink.settings)
+        val task = connectorInstance.taskClass().getDeclaredConstructor().newInstance() as SinkTask
+        task.start(materializedSink.settings)
+
+        val localSink = floodplainSinkFromTask(task, config)
+        materializedSink.topics.forEach { topic ->
+            val list = result.computeIfAbsent(topic, { _ -> mutableListOf<FloodplainSink>() })
+            list.add(localSink)
+        }
+    }
+    return result
+}
+
 private class LocalConnectorSink(private val task: SinkTask, val config: Config) : FloodplainSink {
     private val offsetCounter = AtomicLong(System.currentTimeMillis())
     override fun send(topic: Topic, elements: List<Pair<String, Map<String, Any>?>>, topologyContext: TopologyContext) {
     // override fun send(topic: Topic, elements: List<Pair<String, ByteArray?>>, topologyContext: TopologyContext) {
         logger.info("Inserting # of documents ${elements.size} for topic: $topic")
-        // elements.forEach { (_, value) ->
-            // try {
-            //     logger.info("My Message: $value")
-            //     // value?.data() ?: emptyMap<String, Any>()
-            // } catch (e: Throwable) {
-            //     e.printStackTrace()
-            // }
-        // }
         val list = elements.map { (key, value) ->
-            SinkRecord(topic.qualifiedString(topologyContext), 0, null, mapOf(Pair("key", key)), null, value, offsetCounter.incrementAndGet())
+            SinkRecord(topic.qualifiedString(topologyContext), 0, null, key, null, value, offsetCounter.incrementAndGet())
         }.toList()
         task.put(list)
     }
@@ -152,5 +163,9 @@ private class LocalConnectorSink(private val task: SinkTask, val config: Config)
 
     override fun close() {
         task.close(emptyList())
+    }
+
+    override fun taskObject(): Any? {
+        TODO("Not yet implemented")
     }
 }

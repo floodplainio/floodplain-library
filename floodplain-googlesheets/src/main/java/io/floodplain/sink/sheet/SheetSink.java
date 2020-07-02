@@ -77,27 +77,26 @@ public class SheetSink {
 		return credential;
 	}
 
-	private static Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT, String clientId, String clientSecret, String projectId) throws IOException {
-		// Load client secrets.
-		try (InputStream in = SheetSink.class.getClassLoader().getResourceAsStream("credentials.json")) {
-			ObjectNode on = (ObjectNode) objectMapper.readTree(in);
-			on.put("client_id", clientId);
-			on.put("client_secret", clientSecret);
-			on.put("project_id", projectId);
-			ByteArrayInputStream bais = new ByteArrayInputStream(objectMapper.writeValueAsBytes(on));
-			GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(bais));
-			// Build flow and trigger user authorization request.
-			GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
-					HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, SCOPES)
-					.setDataStoreFactory(new FileDataStoreFactory(new java.io.File(TOKENS_DIRECTORY_PATH)))
-					.setAccessType("offline")
-					.build();
-
-			LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).build();
-			return new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
-		}
-
-	}
+//	private static Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT, String clientId, String clientSecret, String projectId) throws IOException {
+//		// Load client secrets.
+//		try (InputStream in = SheetSink.class.getClassLoader().getResourceAsStream("credentials.json")) {
+//			ObjectNode on = (ObjectNode) objectMapper.readTree(in);
+//			on.put("client_id", clientId);
+//			on.put("client_secret", clientSecret);
+//			on.put("project_id", projectId);
+//			ByteArrayInputStream bais = new ByteArrayInputStream(objectMapper.writeValueAsBytes(on));
+//			GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(bais));
+//			// Build flow and trigger user authorization request.
+//			GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
+//					HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, SCOPES)
+//					.setDataStoreFactory(new FileDataStoreFactory(new java.io.File(TOKENS_DIRECTORY_PATH)))
+//					.setAccessType("offline")
+//					.build();
+//
+//			LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).build();
+//			return new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
+//		}
+//	}
 
 	public List<List<Object>> extractRow(Map<String, Object> message, String[] columns) {
 		List<Object> list = new ArrayList<Object>();

@@ -19,7 +19,7 @@ public class SheetSinkConnector extends SinkConnector {
 
 	@Override
 	public String version() {
-		return "0.9";
+		return "0.10";
 	}
 
 	@Override

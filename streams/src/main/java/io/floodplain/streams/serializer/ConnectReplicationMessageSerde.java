@@ -61,7 +61,7 @@ public class ConnectReplicationMessageSerde implements Serde<ReplicationMessage>
     }
 
     public static Deserializer<String> keyDeserialize() {
-        return new Deserializer<String>() {
+        return new Deserializer<>() {
 
             @Override
             public void close() {
@@ -110,7 +110,7 @@ public class ConnectReplicationMessageSerde implements Serde<ReplicationMessage>
     public Serializer<ReplicationMessage> serializer() {
 
         boolean schemaEnable = false;
-        boolean debug = true;
+        boolean debug = false;
 
         return new Serializer<ReplicationMessage>() {
 

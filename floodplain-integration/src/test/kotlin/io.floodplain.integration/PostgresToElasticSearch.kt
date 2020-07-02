@@ -22,9 +22,11 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.floodplain.elasticsearch.elasticSearchConfig
 import io.floodplain.elasticsearch.elasticSearchSink
+import io.floodplain.kotlindsl.each
 import io.floodplain.kotlindsl.joinRemote
 import io.floodplain.kotlindsl.postgresSourceConfig
 import io.floodplain.kotlindsl.set
+import io.floodplain.kotlindsl.sink
 import io.floodplain.kotlindsl.source
 import io.floodplain.kotlindsl.streams
 import java.net.URI
@@ -55,13 +57,10 @@ class PostgresToElasticSearch {
         elasticSearchContainer.close()
     }
 
-    /**
-     * Test the simplest imaginable pipe: One source and one sink.
-     */
     @Test
     fun testPostgresToElastic() {
         if (!useIntegraton) {
-            logger.info("Not performing integration tests, doesn't seem to work in circleci")
+            logger.info("Not performing integration tests; doesn't seem to work in circleci")
             return
         }
         println("Logger class: ${logger.underlyingLogger}")
@@ -85,7 +84,11 @@ class PostgresToElasticSearch {
                     set { _, msg, state ->
                         msg.set("city", state)
                     }
-                    elasticSearchSink("@address", "@address", "@address", elasticConfig)
+                    each { key, msg, _ ->
+                        logger.info("Found: $key.... msg: $msg")
+                    }
+                    sink("@address")
+                    // elasticSearchSink("@address", "@address", "@address", elasticConfig)
                 },
                 postgresConfig.sourceSimple("customer") {
                     joinRemote({ m -> "${m["address_id"]}" }, false) {
@@ -106,12 +109,12 @@ class PostgresToElasticSearch {
                     elasticSearchSink("@store", "@store", "@store", elasticConfig)
                 },
                 postgresConfig.sourceSimple("staff") {
-                    joinRemote({ m -> "${m["address_id"]}" }, false) {
-                        source("@address") {}
-                    }
-                    set { _, msg, state ->
-                        msg.set("address", state)
-                    }
+                    // joinRemote({ m -> "${m["address_id"]}" }, false) {
+                    //     source("@address") {}
+                    // }
+                    // set { _, msg, state ->
+                    //     msg.set("address", state)
+                    // }
                     elasticSearchSink("@staff", "@staff", "@staff", elasticConfig)
                 })
         }.renderAndTest {
@@ -122,10 +125,65 @@ class PostgresToElasticSearch {
 
             // find a customer from Amersfoort. There should be one.
             var hits = 0
-            withTimeout(200000) {
+            withTimeout(100000) {
                 repeat(1000) {
                     try {
                         val node = query("http://${elasticSearchContainer.host}:${elasticSearchContainer.exposedPort}/$index", "q=Amersfoort")
+                        logger.info("Resulting node: {}", node)
+                        val found = node.get("hits")?.get("total")?.get("value")?.asInt()
+                        if (found != null && found > 0) {
+                            hits = found
+                            return@withTimeout
+                        }
+                    } catch (e: Throwable) {
+                        logger.error("Error checking elasticsearch: ", e)
+                    }
+                    delay(1000)
+                }
+            }
+            Assert.assertEquals(1, hits)
+            // delay(1000000)
+            connectJobs().forEach { it.cancel("ciao!") }
+        }
+    }
+
+    @Test
+    fun testPostgresToElasticSimple() {
+        if (!useIntegraton) {
+            logger.info("Not performing integration tests, doesn't seem to work in circleci")
+            return
+        }
+        println("Logger class: ${logger.underlyingLogger}")
+        logger.debug("startdebug")
+        streams("any", "myinstance") {
+            val postgresConfig = postgresSourceConfig("mypostgres", postgresContainer.host, postgresContainer.exposedPort, "postgres", "mysecretpassword", "dvdrental", "public")
+            val elasticConfig = elasticSearchConfig("elastic", "http://${elasticSearchContainer.host}:${elasticSearchContainer.exposedPort}")
+            listOf(
+                postgresConfig.sourceSimple("customer") {
+                    joinRemote({ m -> "${m["address_id"]}" }, false) {
+                        postgresConfig.sourceSimple("address") {}
+                    }
+                    set { _, msg, state ->
+                        msg.set("address", state)
+                    }
+                    elasticSearchSink("@customer", "@customer", "@customer", elasticConfig)
+                },
+                postgresConfig.sourceSimple("staff") {
+                    elasticSearchSink("@staff", "@staff", "@staff", elasticConfig)
+                }
+            )
+        }.renderAndTest {
+            logger.info("Outputs: ${outputs()}")
+            val index = topologyContext().topicName("@customer")
+            logger.warn("Will query: \"http://${elasticSearchContainer.host}:${elasticSearchContainer.exposedPort}/${index}\"")
+            delay(10000)
+
+            // find a customer from Chungo. There should be one.
+            var hits = 0
+            withTimeout(200000) {
+                repeat(1000) {
+                    try {
+                        val node = query("http://${elasticSearchContainer.host}:${elasticSearchContainer.exposedPort}/$index", "q=*Chungho*")
                         logger.info("Resulting node: {}", node)
                         val found = node.get("hits")?.get("total")?.get("value")?.asInt()
                         if (found != null && found > 0) {

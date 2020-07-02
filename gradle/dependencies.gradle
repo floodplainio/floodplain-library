@@ -6,7 +6,7 @@ ext {
     slf4j_version = "1.7.30"
     mysql_version = "8.0.20"
     mongodb_version = "3.12.5"
-    debezium_version = "1.2.0.CR1"
+    debezium_version = "1.2.0.Final"
     testContainer_version = "1.14.3"
     kotlin_version = "1.3.7"
     okhttp_version = "4.7.2"

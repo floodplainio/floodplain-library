@@ -17,6 +17,7 @@ public class SheetSinkTask extends SinkTask {
 	private Map<String, String> props;
 	public static final String SPREADSHEETID = "spreadsheetId";
 	public static final String COLUMNS = "columns";
+	public static final String TOPIC = "topic";
 
 	
 	private final static Logger logger = LoggerFactory.getLogger(SheetSinkTask.class);
@@ -70,13 +71,9 @@ public class SheetSinkTask extends SinkTask {
 			// TODO figure this out
 			Map<String,Object> msg = (Map<String, Object>) toplevel; // .get("payload");
 			if(msg==null) {
-				System.err.println("Ignoring delete of key: "+sinkRecord.key());
+				logger.info("Ignoring delete of key: {}", sinkRecord.key());
 			} else {
-//				logger.warn("Inserting message: {}", msg);
 				Integer row = (Integer) msg.get("_row");
-//				logger.warn("Inserting row: {}", row);
-//				String column = "B";
-//				int startOffset = 4;
 				int currentRow = row+startOffset;
 				List<List<Object>> res = sheetSink.extractRow(msg, this.columns);
 				logger.warn("res: "+res);

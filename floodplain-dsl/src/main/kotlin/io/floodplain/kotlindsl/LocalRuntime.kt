@@ -53,7 +53,6 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newSingleThreadContext
@@ -106,7 +105,7 @@ interface TestContext : InputReceiver {
     // fun outputFlow(): Map<Topic, Flow<Pair<String, IMessage?>>>
     // override fun outputFlow(): Flow<List<Triple<Topic, String, IMessage?>>> {
     // fun sinkConsumer(sinks: Map<Topic, List<FloodplainSink>>): (Pair<Topic, List<Pair<String, IMessage?>>>) -> Unit
-    fun sinksByTopic(): MutableMap<Topic, MutableList<FloodplainSink>>
+    fun sinksByTopic(): Map<Topic, List<FloodplainSink>>
     fun connectSourceAndSink(): List<Job>
 }
 
@@ -139,7 +138,7 @@ fun testTopology(
     try {
         runBlocking {
             testCmds(contextInstance)
-            contextInstance.closeSinks()
+            contextInstance.closeSinks(context)
         }
     } finally {
         driver.allStateStores.forEach { store -> store.value.close() }
@@ -198,7 +197,7 @@ class TestDriverContext(
     override fun connectSourceAndSink(): List<Job> {
         val outputJob = GlobalScope.launch(newSingleThreadContext("TopologySource"), CoroutineStart.UNDISPATCHED) {
             val outputFlows = outputFlows(this)
-                .onEach { (k, _) -> logger.info("Topic mapped: $k") }
+                .onEach { (k, a) -> logger.info("Topic mapped: $k") }
                 .map { (topic, flow) -> topic to flow.bufferTimeout(200, 200) }
                 .toMap()
             val sinks = sinksByTopic()
@@ -206,8 +205,13 @@ class TestDriverContext(
                     logger.info("Connecting topic $topic to sink: ${sinks[topic]}")
                     this.launch {
                         flow.collect { elements ->
+                            elements.forEach { (key, msg) ->
+                                if (msg == null) {
+                                    logger.info("null message detected")
+                                }
+                            }
                             sinks[topic]?.forEach {
-                                logger.info("Buffered. Sending size: ${elements.size} topic: $topic")
+                                // logger.info("Buffered. Sending size: ${elements.size} topic: $topic")
                                 it.send(topic, elements, topologyContext)
                             }
                         }
@@ -224,53 +228,35 @@ class TestDriverContext(
     }
 
     private fun topics(): Set<Topic> {
-        return sinkConfigurations().flatMap { it.sinkElements().keys }.toSet()
+        return sinkConfigurations().flatMap { it.materializeConnectorConfig(topologyContext) }.flatMap { it.topics }.toSet()
+        // .materializeConnectorConfig(topologyContext) .flatMap { it.sinkElements().keys }
     }
 
     override fun flushSinks() {
         this.sinkConfigurations().map { config ->
-            config.sinkElements()
+            config.sinkElements(topologyContext)
         }.forEach { configSinks ->
-            configSinks.map { sink -> sink.value.flush() }
+            // configSinks.map { sink -> sink.value.flush() }
         }
     }
 
-    fun closeSinks() {
+    fun closeSinks(topologyContext: TopologyContext) {
         this.sinkConfigurations().map { config ->
-            config.sinkElements()
+            config.sinkElements(topologyContext)
         }.forEach { configSinks ->
-            configSinks.map { sink -> sink.value.close() }
+            // configSinks.map { sink -> sink.value.close() }
         }
     }
 
-    // fun sinkConsumer(): (List<Triple<Topic, String, IMessage?>>) -> Unit {
-    //     val map = mutableMapOf<Topic, MutableList<FloodplainSink>>()
-    //     this.sinkConfigurations().map {
-    //         it.sinkElements()
-    //     }.forEach {
-    //             sinkElements -> sinkElements.forEach {
-    //             (topic, message) ->
-    //         map.computeIfAbsent(topic) {
-    //             mutableListOf()
-    //         }.add(message)
-    //     }
-    //     }
-    //     return sinkConsumer(map)
-    // }
-
-    override fun sinksByTopic(): MutableMap<Topic, MutableList<FloodplainSink>> {
-        val map = mutableMapOf<Topic, MutableList<FloodplainSink>>()
-        this.sinkConfigurations().map {
-            it.sinkElements()
-        }.forEach { sinkElements ->
-            sinkElements.forEach { (topic, sink) ->
-                map.computeIfAbsent(topic) {
-                    mutableListOf()
-                }.add(sink)
-            }
+    override fun sinksByTopic(): Map<Topic, List<FloodplainSink>> {
+        val result = mutableMapOf<Topic, MutableList<FloodplainSink>>()
+        this.sinkConfigurations().flatMap {
+            it.sinkElements(topologyContext).entries
+        }.forEach { entry ->
+            val list = result.computeIfAbsent(entry.key) { mutableListOf() }
+            list.addAll(entry.value)
         }
-        return map
-        // return sinkConsumer(map)
+        return result
     }
 
     private fun outputFlows(context: CoroutineScope): Map<Topic, Flow<Pair<String, Map<String, Any>?>>> {
@@ -283,14 +269,24 @@ class TestDriverContext(
             .map { (topic, key, value) ->
                 val parsed = if (value == null) null else deserializer.deserialize(topic.qualifiedString(topologyContext), value) as ObjectNode
                 var result = if (value == null) null else mapper.convertValue(parsed, object : TypeReference<Map<String, Any>>() {})
+                if (value != null) {
+                    logger.info("Non null detected")
+                }
+                if (result == null) {
+                    if (value == null) {
+                        logger.info(" Null result for null value")
+                    } else {
+                        logger.info(" Null result for value: ${ String(value)}")
+                    }
+                }
                 Triple(topic, key, result)
             }
             .broadcastIn(context)
             .asFlow()
             .handleErrors()
-            .onEach { (topic, key, value) ->
-                logger.info("My triple: $topic key: $key, ${value == null}")
-            }
+            // .onEach { (topic, key, value) ->
+            //     // logger.info("My triple: $topic key: $key, ${value == null}")
+            // }
         return topics.map { topic ->
             val flow = sourceFlow.filter { (incomingTopic, _, _) ->
                 incomingTopic == topic
@@ -303,14 +299,16 @@ class TestDriverContext(
     private fun outputFlowSingle(): Flow<Triple<Topic, String, ByteArray?>> {
         return callbackFlow<Triple<Topic, String, ByteArray?>> {
             driver.setOutputListener { record ->
-                val key = Serdes.String().deserializer().deserialize(record.topic(), record.key())
-                // val msgString = String(it.value())
-                val message = parser.parseBytes(Optional.of(record.topic()), record.value())
-//                val imessage = message?.message()?.let { it1 -> fromImmutable(it1) }
-                val topic = Topic.fromQualified(record.topic())
-                if (this.isActive) {
-                    logger.info("Output for topic: ${topic.qualifiedString(topologyContext)} key: $key value: $message")
-                    sendBlocking(Triple(topic, key, record.value()))
+                if (!record.topic().endsWith("changelog")) {
+                    val key = Serdes.String().deserializer().deserialize(record.topic(), record.key())
+                    val message = parser.parseBytes(Optional.of(record.topic()), record.value())
+                    val topic = Topic.fromQualified(record.topic())
+                    if (this.isActive) {
+                        logger.info("Sending key: $key")
+                        sendBlocking(Triple(topic, key, record.value()))
+                    }
+                } else {
+                    // noop, skipping changelog items
                 }
             }
             logger.info("Outputflow connected!")

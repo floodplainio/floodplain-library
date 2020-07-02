@@ -18,40 +18,38 @@
  */
 package io.floodplain.elasticsearch
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import io.confluent.connect.elasticsearch.ElasticsearchSinkConnector
 import io.confluent.connect.elasticsearch.ElasticsearchSinkTask
 import io.floodplain.kotlindsl.Config
 import io.floodplain.kotlindsl.FloodplainSink
 import io.floodplain.kotlindsl.InputReceiver
+import io.floodplain.kotlindsl.MaterializedSink
 import io.floodplain.kotlindsl.PartialStream
 import io.floodplain.kotlindsl.SourceTopic
 import io.floodplain.kotlindsl.Stream
 import io.floodplain.kotlindsl.Transformer
+import io.floodplain.kotlindsl.floodplainSinkFromTask
+import io.floodplain.kotlindsl.instantiateSinkConfig
 import io.floodplain.reactive.source.topology.SinkTransformer
 import io.floodplain.streams.api.ProcessorName
 import io.floodplain.streams.api.Topic
 import io.floodplain.streams.api.TopologyContext
 import java.util.Optional
-import java.util.concurrent.atomic.AtomicLong
-import org.apache.kafka.connect.json.JsonDeserializer
-import org.apache.kafka.connect.sink.SinkRecord
-import org.apache.kafka.connect.sink.SinkTask
 
 private val logger = mu.KotlinLogging.logger {}
 
 fun Stream.elasticSearchConfig(name: String, uri: String): ElasticSearchSinkConfig {
-    val c = ElasticSearchSinkConfig(name, uri, this.context, this)
+    val c = ElasticSearchSinkConfig(name, uri, this.context)
     return this.addSinkConfiguration(c) as ElasticSearchSinkConfig
 }
 
-class ElasticSearchSinkConfig(val name: String, val uri: String, val context: TopologyContext, stream: Stream) :
+class ElasticSearchSinkConfig(val name: String, val uri: String, val context: TopologyContext) :
     Config {
     var sinkTask: ElasticsearchSinkTask? = null
-    val sinks: MutableMap<Topic, FloodplainSink> = mutableMapOf()
+    val materializedConfigs: MutableList<MaterializedSink> = mutableListOf()
 
-    override fun materializeConnectorConfig(): Pair<String, Map<String, String>> {
-        return "" to emptyMap<String, String>()
+    override fun materializeConnectorConfig(topologyContext: TopologyContext): List<MaterializedSink> {
+        return materializedConfigs
     }
 
     override fun sourceElements(): List<SourceTopic> {
@@ -61,48 +59,19 @@ class ElasticSearchSinkConfig(val name: String, val uri: String, val context: To
     override suspend fun connectSource(inputReceiver: InputReceiver) {
     }
 
-    override fun sinkElements(): Map<Topic, FloodplainSink> {
-        return sinks
-    }
-
     override fun sinkTask(): Any? {
         return sinkTask
     }
-}
 
-// TODO, use generic one
-private class ElasticSearchSink(private val topic: String, private val task: SinkTask, private val config: ElasticSearchSinkConfig) : FloodplainSink {
-    val deserializer = JsonDeserializer()
-    var mapper: ObjectMapper = ObjectMapper()
-
-    private val offsetCounter = AtomicLong(System.currentTimeMillis())
-    override fun send(topic: Topic, elements: List<Pair<String, Map<String, Any>?>>, topologyContext: TopologyContext) {
-    // override fun send(docs: List<Triple<Topic, String, IMessage?>>) {
-        val list = elements.map { (key, value) ->
-            // logger.info("Sending document to elastic. Topic: $topic Key: $key message: $result")
-            SinkRecord(topic.qualifiedString(topologyContext), 0, null, key, null, value, offsetCounter.incrementAndGet())
-        }.toList()
-        task.put(list)
-    }
-
-    override fun config(): Config {
-        return config
-    }
-
-    override fun flush() {
-        task.flush(emptyMap())
-    }
-
-    override fun close() {
-        task.flush(emptyMap())
-        task.close(mutableListOf())
+    override fun sinkElements(topologyContext: TopologyContext): Map<Topic, MutableList<FloodplainSink>> {
+        return instantiateSinkConfig(topologyContext, this) { ElasticsearchSinkConnector() }
     }
 }
 
 fun PartialStream.elasticSearchSink(sinkName: String, index: String, topicName: String, config: ElasticSearchSinkConfig): FloodplainSink {
     val sinkProcessorName = ProcessorName.from(sinkName)
     val topic = Topic.from(topicName)
-    val sinkTransformer = SinkTransformer(Optional.of(sinkProcessorName), topic, false, Optional.empty(), true)
+    val sinkTransformer = SinkTransformer(Optional.of(sinkProcessorName), topic, false, Optional.empty(), false, true)
     addTransformer(Transformer(sinkTransformer))
 
     val sinkConfig = mapOf(
@@ -110,19 +79,18 @@ fun PartialStream.elasticSearchSink(sinkName: String, index: String, topicName: 
         "connection.url" to config.uri,
         "tasks.max" to "1",
         "type.name" to "_doc",
-        // "value.converter" to "org.apache.kafka.connect.json.JsonConverter",
-        "key.converter" to "org.apache.kafka.connect.json.JsonConverter",
-        // "key.converter" to "org.apache.kafka.connect.storage.StringConverter",
+        "value.converter" to "org.apache.kafka.connect.json.JsonConverter",
+        "key.converter" to "org.apache.kafka.connect.json.JsonConverter", // maps not supported by elasticsearch
         "topics" to topic.qualifiedString(config.context),
         "schema.ignore" to "true",
         "behavior.on.null.values" to "delete",
         "type.name" to "_doc")
+    config.materializedConfigs.add(MaterializedSink(config.name, listOf(topic), sinkConfig))
     val conn = ElasticsearchSinkConnector()
     conn.start(sinkConfig)
     val task = conn.taskClass().getDeclaredConstructor().newInstance() as ElasticsearchSinkTask
     task.start(sinkConfig)
     config.sinkTask = task
-    val sink = ElasticSearchSink(topic.qualifiedString(config.context), task, config)
-    config.sinks[topic] = sink
+    val sink = floodplainSinkFromTask(task, config)
     return sink
 }

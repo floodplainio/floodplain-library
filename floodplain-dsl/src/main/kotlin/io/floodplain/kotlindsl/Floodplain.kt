@@ -60,12 +60,14 @@ interface Config {
      * The map is essentially a Kafka Connect configuration, and will be converted to JSON and posted to Kafka Connect
      * For some
      */
-    fun materializeConnectorConfig(): Pair<String, Map<String, String>>
+    fun materializeConnectorConfig(topologyContext: TopologyContext): List<MaterializedSink>
     fun sourceElements(): List<SourceTopic>
     suspend fun connectSource(inputReceiver: InputReceiver)
-    fun sinkElements(): Map<Topic, FloodplainSink>
     fun sinkTask(): Any?
+    fun sinkElements(topologyContext: TopologyContext): Map<Topic, List<FloodplainSink>>
 }
+
+class MaterializedSink(val name: String, val topics: List<Topic>, val settings: Map<String, String>)
 
 interface SourceTopic {
     fun topic(): Topic
@@ -77,6 +79,7 @@ interface FloodplainSink {
     fun config(): Config
     fun flush()
     fun close()
+    fun taskObject(): Any?
 }
 
 /**
@@ -136,7 +139,7 @@ fun PartialStream.set(transform: (String, IMessage, IMessage) -> IMessage): Tran
  */
 fun PartialStream.joinRemote(key: (IMessage) -> String, optional: Boolean = false, source: () -> Source) {
     val keyExtractor: (ImmutableMessage, ImmutableMessage) -> String = { msg, _ -> key.invoke(fromImmutable(msg)) }
-    val jrt = JoinRemoteTransformer(source.invoke().toReactivePipe(), keyExtractor, false, optional)
+    val jrt = JoinRemoteTransformer(source.invoke().toReactivePipe(), keyExtractor, optional)
     addTransformer(Transformer(jrt))
 }
 
@@ -170,7 +173,7 @@ fun Stream.externalSource(topic: String, init: Source.() -> Unit): Source {
  * Creates a simple sink that will contain the result of the current transformation. Multiple sinks may not be added.
  */
 fun PartialStream.sink(topic: String, materializeParent: Boolean = false): Transformer {
-    val sink = SinkTransformer(Optional.empty(), Topic.from(topic), materializeParent, Optional.empty(), false)
+    val sink = SinkTransformer(Optional.empty(), Topic.from(topic), materializeParent, Optional.empty(), true, false)
     return addTransformer(Transformer(sink))
 }
 

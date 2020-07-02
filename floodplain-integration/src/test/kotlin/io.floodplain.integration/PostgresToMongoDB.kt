@@ -142,6 +142,7 @@ class TestCombinedMongo {
                 }
             }
             assertEquals(599, hits)
+            // delay(1000000)
         }
         /**
          * Test the simplest imaginable pipe: One source and one sink.

@@ -74,7 +74,7 @@ class FilmToGoogleSheets {
                 "dvdrental",
                 "public"
             )
-            val config = googleSheetConfig("outputtopic", "somename", spreadsheetId, listOf("title", "rating", "release_year", "rental_duration", "special_features", "description"))
+            val sheetConfig = googleSheetConfig("sheets")
             postgresConfig.sourceSimple("film") {
                 // Clear the last_update field, it makes no sense in a denormalized situation
                 set { _, film, _ ->
@@ -84,11 +84,12 @@ class FilmToGoogleSheets {
                     film["special_features"] = film.list("special_features").joinToString(",")
                     film
                 }
-                googleSheetsSink(config)
+                googleSheetsSink("outputtopic", spreadsheetId, listOf("title", "rating", "release_year", "rental_duration", "special_features", "description"), sheetConfig)
             }
         }.renderAndTest {
+            delay(5000)
             val ll = this.sinksByTopic()[Topic.from("outputtopic")]?.first()
-            val task = ll?.config()?.sinkTask()!! as SheetSinkTask
+            val task = ll!!.taskObject() as SheetSinkTask // ?.config()?.sinkTask()!! as SheetSinkTask
             val coreSink = task.getSheetSink()
             // coreSink.
             logger.info("Outputs: ${outputs()}")

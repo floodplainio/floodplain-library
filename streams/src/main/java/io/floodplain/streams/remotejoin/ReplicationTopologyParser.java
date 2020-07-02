@@ -184,7 +184,7 @@ public class ReplicationTopologyParser {
     public static String addSingleJoinGrouped(final Topology current, TopologyContext topologyContext,
                                               TopologyConstructor topologyConstructor, String fromProcessor, String name,
                                               Optional<Predicate<String, ReplicationMessage>> associationBypass,
-                                              boolean isList, String withProcessor, boolean optional) {
+                                              String withProcessor, boolean optional) {
 
         String firstNamePre = name + "-forwardpre";
         String secondNamePre = name + "-reversepre";
@@ -201,15 +201,8 @@ public class ReplicationTopologyParser {
                 , withProcessor
         ).addProcessor(
                 finalJoin
-                , () -> (!isList) ?
+                , () ->
                         new ManyToOneGroupedProcessor(
-                                fromProcessor,
-                                withProcessor,
-                                associationBypass,
-                                optional
-                        )
-                        :
-                        new ManyToManyGroupedProcessor(
                                 fromProcessor,
                                 withProcessor,
                                 associationBypass,

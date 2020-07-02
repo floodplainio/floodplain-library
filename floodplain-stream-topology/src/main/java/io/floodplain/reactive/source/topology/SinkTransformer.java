@@ -26,6 +26,7 @@ import io.floodplain.streams.api.TopologyContext;
 import io.floodplain.streams.remotejoin.TopologyConstructor;
 import io.floodplain.streams.serializer.ConnectKeySerde;
 import io.floodplain.streams.serializer.ConnectReplicationMessageSerde;
+import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.serialization.Serializer;
 import org.apache.kafka.streams.Topology;
 import org.slf4j.Logger;
@@ -40,16 +41,18 @@ public class SinkTransformer implements TopologyPipeComponent {
     private final Optional<Integer> partitions;
     private final boolean materializeParent;
     private final boolean connectFormat;
+    private final boolean stringKeys;
     private final Topic topic;
 
 
     private final static Logger logger = LoggerFactory.getLogger(SinkTransformer.class);
 
-    public SinkTransformer(Optional<ProcessorName> name, Topic topic, boolean materializeParent, Optional<Integer> partitions, boolean connectFormat) {
+    public SinkTransformer(Optional<ProcessorName> name, Topic topic, boolean materializeParent, Optional<Integer> partitions, boolean stringKeys, boolean connectFormat) {
         this.name = name;
         this.topic = topic;
         this.partitions = partitions;
         this.materializeParent = materializeParent;
+        this.stringKeys = stringKeys;
         this.connectFormat = connectFormat;
     }
 
@@ -68,7 +71,7 @@ public class SinkTransformer implements TopologyPipeComponent {
         topologyConstructor.addSink(qualifiedName);
         logger.info("Stack top for transformer: " + transformerNames.peek());
         if(connectFormat) {
-            Serializer<String> connectKeySerde = new ConnectKeySerde().serializer();
+            Serializer<String> connectKeySerde = stringKeys ? Serdes.String().serializer() : new ConnectKeySerde().serializer();
             Serializer<ReplicationMessage> connectValueSerde = new ConnectReplicationMessageSerde().serializer();
             topology.addSink(qualifiedName, qualifiedSinkTopic, connectKeySerde, connectValueSerde, transformerNames.peek());
         } else {

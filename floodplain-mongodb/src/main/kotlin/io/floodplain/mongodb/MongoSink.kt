@@ -24,6 +24,7 @@ import com.mongodb.kafka.connect.sink.MongoSinkTask
 import io.floodplain.kotlindsl.Config
 import io.floodplain.kotlindsl.FloodplainSink
 import io.floodplain.kotlindsl.InputReceiver
+import io.floodplain.kotlindsl.MaterializedSink
 import io.floodplain.kotlindsl.PartialStream
 import io.floodplain.kotlindsl.SourceTopic
 import io.floodplain.kotlindsl.Stream
@@ -44,7 +45,7 @@ class MongoConfig(val name: String, val uri: String, val database: String, priva
 
     var sinkTask: MongoSinkTask? = null
     val sinkInstancePair: MutableList<Pair<String, Topic>> = mutableListOf()
-    override fun materializeConnectorConfig(): Pair<String, Map<String, String>> {
+    override fun materializeConnectorConfig(topologyContext: TopologyContext): List<MaterializedSink> {
         val additional = mutableMapOf<String, String>()
         sinkInstancePair.forEach { (key, value) -> additional.put("topic.override.${value.qualifiedString(topologyContext)}.collection", key) }
         logger.debug("Pairs: $sinkInstancePair")
@@ -71,7 +72,7 @@ class MongoConfig(val name: String, val uri: String, val database: String, priva
         settings.forEach { (key, value) ->
             logger.info { "Setting: $key value: $value" }
         }
-        return name to settings
+        return listOf(MaterializedSink(name, sinkInstancePair.map { (_, topic) -> topic }.toList(), settings))
     }
 
     override fun sourceElements(): List<SourceTopic> {
@@ -82,16 +83,28 @@ class MongoConfig(val name: String, val uri: String, val database: String, priva
         throw UnsupportedOperationException("MongoSink can not be used as a source")
     }
 
-    override fun sinkElements(): Map<Topic, FloodplainSink> {
-        val (_, settings) = materializeConnectorConfig()
-        val connector = MongoSinkConnector()
-        connector.start(settings)
+    private fun createSink(builder: () -> FloodplainSink) {
+    }
+    override fun sinkElements(topologyContext: TopologyContext): Map<Topic, List<FloodplainSink>> {
+        return materializeConnectorConfig(topologyContext)
+            .map {
 
-        val task = connector.taskClass().getDeclaredConstructor().newInstance() as MongoSinkTask
-        task.start(settings)
-        sinkTask = task
-        val sink = MongoFloodplainSink(task, this)
-        return sinkInstancePair.map { it.second to sink }.toMap()
+                val connector = MongoSinkConnector()
+                connector.start(it.settings)
+                val task = connector.taskClass().getDeclaredConstructor().newInstance() as MongoSinkTask
+                task.start(it.settings)
+                sinkTask = task
+
+                // sinkInstancePair
+                //     .map { (name,topic)-> topic to listOf(MongoFloodplainSink(task, this))}
+                //     .toMap()
+                val localSink = MongoFloodplainSink(task, this)
+                it.topics
+                    .map { topic -> topic to listOf(localSink) }
+                    .toMap()
+
+                // name to MongoFloodplainSink(task, this)
+            }.first() // I know there is only one
     }
 
     override fun sinkTask(): Any? {
@@ -134,6 +147,10 @@ private class MongoFloodplainSink(private val task: SinkTask, private val config
     override fun close() {
         task.close(emptyList())
     }
+
+    override fun taskObject(): Any? {
+        TODO("Not yet implemented")
+    }
 }
 /**
  * Creates a config for this specific connector type, add the required params as needed. This config object will be passed
@@ -149,7 +166,7 @@ fun PartialStream.mongoSink(collection: String, topicDefinition: String, config:
     val topic = Topic.from(topicDefinition)
     config.sinkInstancePair.add(collection to topic)
     val sinkName = ProcessorName.from(config.name)
-    val sink = SinkTransformer(Optional.of(sinkName), topic, false, Optional.empty(), true)
+    val sink = SinkTransformer(Optional.of(sinkName), topic, false, Optional.empty(), false, true)
     val transform = Transformer(sink)
     addTransformer(transform)
 }

@@ -6,7 +6,6 @@ import io.floodplain.kotlindsl.stream
 import io.floodplain.sink.sheet.GoogleSheetConfiguration
 import io.floodplain.sink.sheet.googleSheetConfig
 import io.floodplain.sink.sheet.googleSheetsSink
-import io.floodplain.streams.api.Topic
 import kotlinx.coroutines.delay
 import org.junit.Test
 
@@ -19,21 +18,21 @@ public class GoogleSheetTest {
 
     @Test
     fun testGoogleSheet() {
-        val config = GoogleSheetConfiguration("connectorName",
-            Topic.from("sometopic"), spreadsheetId, listOf("column1", "column2"))
+        val config = GoogleSheetConfiguration("connectorName")
     }
 
     @Test
     fun testSheetWithTopology() {
         stream {
-            val config = googleSheetConfig("outputtopic", "somename", spreadsheetId, listOf("column1", "column2"))
+            val config = googleSheetConfig("somename")
             source("topic") {
                 each { _, msg, _ -> logger.info("MSG: $msg") }
                 set { _, msg, _ ->
                     msg["_row"] = msg.integer("id").toLong()
                     msg
                 }
-                googleSheetsSink(config)
+                googleSheetsSink(
+                    "outputtopic", spreadsheetId, listOf("column1", "column2"), config)
             }
         }.renderAndTest {
             input("topic", "k1", empty().set("column1", "kol1").set("column2", "otherkol1").set("id", 1))

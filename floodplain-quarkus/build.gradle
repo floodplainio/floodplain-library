@@ -21,19 +21,19 @@ dependencies {
 
     implementation ("io.debezium:debezium-api") {
         version {
-            strictly "1.2.0.CR1"
+            strictly "1.2.0.Final"
             force = true
         }
     }
     implementation ("io.debezium:debezium-core") {
         version {
-            strictly "1.2.0.CR1"
+            strictly "1.2.0.Final"
             force = true
         }
     }
     implementation ("io.debezium:debezium-embedded") {
         version {
-            strictly "1.2.0.CR1"
+            strictly "1.2.0.Final"
             force = true
         }
     }

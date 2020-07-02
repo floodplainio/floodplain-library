@@ -49,6 +49,7 @@ class PostgresConfig(val topologyContext: TopologyContext, val name: String, pri
             val availableSourceTopics = sourceElements.map { sourceElement -> sourceElement.topic().qualifiedString(topologyContext) }.toSet()
             if (availableSourceTopics.contains(it.topic)) {
                 val parsedKey = processDebeziumJSONKey(it.key)
+                logger.info("Sending key from debezium: $parsedKey")
                 val rm: ReplicationMessage? = processDebeziumBody(it.value)
                 val operation = rm?.operation() ?: ReplicationMessage.Operation.DELETE
                 try {
@@ -66,16 +67,16 @@ class PostgresConfig(val topologyContext: TopologyContext, val name: String, pri
         logger.info("connectSource completed")
     }
 
-    override fun sinkElements(): Map<Topic, FloodplainSink> {
-        TODO("Not yet implemented")
-    }
-
     override fun sinkTask(): Any? {
         return null
     }
 
-    override fun materializeConnectorConfig(): Pair<String, Map<String, String>> {
-        return name to mapOf(
+    override fun sinkElements(topologyContext: TopologyContext): Map<Topic, MutableList<FloodplainSink>> {
+        TODO("Not yet implemented")
+    }
+
+    override fun materializeConnectorConfig(topologyContext: TopologyContext): List<MaterializedSink> {
+        return listOf(MaterializedSink(name, emptyList(), mapOf(
                 "connector.class" to "io.debezium.connector.postgresql.PostgresConnector",
                 "database.hostname" to hostname,
                 "database.port" to port.toString(),
@@ -84,7 +85,7 @@ class PostgresConfig(val topologyContext: TopologyContext, val name: String, pri
                 "database.password" to password,
                 // TODO
                 "tablewhitelistorsomething" to sourceElements.map { e -> e.topic().qualifiedString(topologyContext) }.joinToString(",")
-        )
+        )))
     }
 
     fun addSourceElement(elt: DebeziumSourceElement) {
