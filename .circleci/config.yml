@@ -30,7 +30,7 @@ jobs: # a collection of steps
           command: |
             echo "current path: $PWD"
             pwd ~
-            echo "$ENV_VARIABLE_NAME" >~/sheetkey.json
+            echo "$SHEETKEY" >~/sheetkey.json
             echo "homedir:"
             ls -l ~
             export GOOGLE_SHEETS_CREDENTIAL_PATH=~/sheetkey.json
