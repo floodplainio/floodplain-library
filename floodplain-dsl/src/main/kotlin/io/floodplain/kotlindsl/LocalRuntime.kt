@@ -262,16 +262,6 @@ class TestDriverContext(
             .map { (topic, key, value) ->
                 val parsed = if (value == null) null else deserializer.deserialize(topic.qualifiedString(topologyContext), value) as ObjectNode
                 var result = if (value == null) null else mapper.convertValue(parsed, object : TypeReference<Map<String, Any>>() {})
-                if (value != null) {
-                    logger.info("Non null detected")
-                }
-                if (result == null) {
-                    if (value == null) {
-                        logger.info(" Null result for null value")
-                    } else {
-                        logger.info(" Null result for value: ${ String(value)}")
-                    }
-                }
                 Triple(topic, key, result)
             }
             .broadcastIn(context)
@@ -297,7 +287,6 @@ class TestDriverContext(
                     // val message = parser.parseBytes(Optional.of(record.topic()), record.value())
                     val topic = Topic.fromQualified(record.topic())
                     if (this.isActive) {
-                        logger.info("Sending key: $key")
                         sendBlocking(Triple(topic, key, record.value()))
                     }
                 } else {

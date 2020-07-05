@@ -109,12 +109,12 @@ class PostgresToElasticSearch {
                     elasticSearchSink("@store", "@store", "@store", elasticConfig)
                 },
                 postgresConfig.sourceSimple("staff") {
-                    // joinRemote({ m -> "${m["address_id"]}" }, false) {
-                    //     source("@address") {}
-                    // }
-                    // set { _, msg, state ->
-                    //     msg.set("address", state)
-                    // }
+                    joinRemote({ m -> "${m["address_id"]}" }, false) {
+                        source("@address") {}
+                    }
+                    set { _, msg, state ->
+                        msg.set("address", state)
+                    }
                     elasticSearchSink("@staff", "@staff", "@staff", elasticConfig)
                 })
         }.renderAndTest {
@@ -142,6 +142,7 @@ class PostgresToElasticSearch {
                 }
             }
             Assert.assertEquals(1, hits)
+            // We've found our hit. Close down connections.
             // delay(1000000)
             connectJobs().forEach { it.cancel("ciao!") }
         }

@@ -49,7 +49,6 @@ class PostgresConfig(val topologyContext: TopologyContext, val name: String, pri
             val availableSourceTopics = sourceElements.map { sourceElement -> sourceElement.topic().qualifiedString(topologyContext) }.toSet()
             if (availableSourceTopics.contains(it.topic)) {
                 val parsedKey = processDebeziumJSONKey(it.key)
-                logger.info("Sending key from debezium: $parsedKey")
                 val rm: ReplicationMessage? = processDebeziumBody(it.value)
                 val operation = rm?.operation() ?: ReplicationMessage.Operation.DELETE
                 try {

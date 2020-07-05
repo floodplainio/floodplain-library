@@ -35,17 +35,17 @@ import java.util.Optional
 
 private val logger = mu.KotlinLogging.logger {}
 
-fun PartialStream.googleSheetsSink(topicDefinition: String, googleSheetId: String, columns: List<String>, config: GoogleSheetConfiguration) {
+fun PartialStream.googleSheetsSink(topicDefinition: String, googleSheetId: String, columns: List<String>, startColumn: String = "A", startRow: Int = 1, config: GoogleSheetConfiguration) {
     var sheetConnectorClass = SheetSinkConnector::class.java.name
     logger.info("Sheet connector: $sheetConnectorClass")
     val topic = Topic.from(topicDefinition)
-    val sheetSink = GoogleSheetSink(topic, googleSheetId, columns)
+    val sheetSink = GoogleSheetSink(topic, googleSheetId, columns, startColumn, startRow)
     config.addSink(sheetSink)
     val sink = SinkTransformer(Optional.of(ProcessorName.from(config.name)), topic, false, Optional.empty(), true, true)
     addTransformer(Transformer(sink))
 }
 
-class GoogleSheetSink(val topic: Topic, val spreadsheetId: String, val columns: List<String>)
+class GoogleSheetSink(val topic: Topic, val spreadsheetId: String, val columns: List<String>, private val startColumn: String = "A", private val startRow: Int = 1)
 fun Stream.googleSheetConfig(name: String): GoogleSheetConfiguration {
     val googleSheetConfiguration = GoogleSheetConfiguration(name)
     this.addSinkConfiguration(googleSheetConfiguration)

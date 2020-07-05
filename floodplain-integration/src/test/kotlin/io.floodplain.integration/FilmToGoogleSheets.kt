@@ -80,7 +80,6 @@ class FilmToGoogleSheets {
                 set { _, film, _ ->
                     film["last_update"] = null
                     film["_row"] = film.integer("film_id").toLong()
-                    logger.info("Flm: $film")
                     film["special_features"] = film.list("special_features").joinToString(",")
                     film
                 }

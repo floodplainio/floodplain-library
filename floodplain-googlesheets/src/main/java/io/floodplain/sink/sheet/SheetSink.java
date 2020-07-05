@@ -77,27 +77,6 @@ public class SheetSink {
 		return credential;
 	}
 
-//	private static Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT, String clientId, String clientSecret, String projectId) throws IOException {
-//		// Load client secrets.
-//		try (InputStream in = SheetSink.class.getClassLoader().getResourceAsStream("credentials.json")) {
-//			ObjectNode on = (ObjectNode) objectMapper.readTree(in);
-//			on.put("client_id", clientId);
-//			on.put("client_secret", clientSecret);
-//			on.put("project_id", projectId);
-//			ByteArrayInputStream bais = new ByteArrayInputStream(objectMapper.writeValueAsBytes(on));
-//			GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(bais));
-//			// Build flow and trigger user authorization request.
-//			GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
-//					HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, SCOPES)
-//					.setDataStoreFactory(new FileDataStoreFactory(new java.io.File(TOKENS_DIRECTORY_PATH)))
-//					.setAccessType("offline")
-//					.build();
-//
-//			LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).build();
-//			return new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
-//		}
-//	}
-
 	public List<List<Object>> extractRow(Map<String, Object> message, String[] columns) {
 		List<Object> list = new ArrayList<Object>();
 		for (String column : columns) {
@@ -151,10 +130,6 @@ public class SheetSink {
   	public void updateRangeWithBatch(String spreadsheetId, List<UpdateTuple> tuples) throws IOException {
 
     	String valueInputOption = "RAW"; 
-//		ValueRange requestBody = new ValueRange();
-//		requestBody.setValues(values);
-//		List<List<Object>> res = sheetsService.spreadsheets().values().get(spreadsheetId,"A1").execute().getValues();
-//		 System.err.println(">>> "+res);
 		List<ValueRange> data = new ArrayList<>();
 		tuples.forEach(tuple->{
 			data.add(new ValueRange()
@@ -167,17 +142,13 @@ public class SheetSink {
 		        .setValueInputOption(valueInputOption)
 		        .setData(data);
 
-		
-		
-		
 		BatchUpdate request = sheetsService.spreadsheets().values().batchUpdate(spreadsheetId, 
 				body);
-//		request.setValueInputOption(valueInputOption);
 		request.set("key", "");
          
         BatchUpdateValuesResponse response = request.execute();
 
-        // TODO: Change code below to process the `response` object:
+		// TODO Deal with the response
         System.out.println(response);
 	}
 
