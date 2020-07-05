@@ -33,10 +33,7 @@ allprojects {
         ext.year = "2020"
         ext.name = "Frank Lyaruu"
     }
-
-
 }
-
 
 subprojects {
 //    systemProperty "release", findProperty("release")
@@ -63,14 +60,9 @@ subprojects {
                 groupId = "io.floodplain"
                 artifactId = project.name
                 version = rootProject.ext.floodplain_version
-
                 from components.java
-
                 artifact sourceJar
                 artifact javadocJar
-
-
-
             }
         }
         repositories {
@@ -132,7 +124,7 @@ def customizePom(pom) {
             }
 
             scm {
-                url "https://github.com/mautini/floodplainio/floodplain-library"
+                url "https://github.com/floodplainio/floodplainio/floodplain-library"
                 connection "scm:git:git://github.com/floodplainio/floodplain-library.git"
                 developerConnection "scm:git:ssh://git@github.com:floodplainio/floodplain-library.git"
             }

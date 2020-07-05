@@ -1,6 +1,12 @@
 plugins {
+    id "java"
+    id "org.jetbrains.kotlin.jvm"
+    id "org.jetbrains.kotlin.plugin.allopen"
     id 'io.quarkus' version "${quarkusPluginVersion}"
 }
+
+apply from: "$rootProject.projectDir/gradle/shared.gradle"
+def globalConf = rootProject.ext
 
 repositories {
     mavenLocal()
@@ -14,35 +20,23 @@ repositories {
 }
 
 dependencies {
+    Map<String, String> dependencies = globalConf.commonDependencies
     implementation 'io.quarkus:quarkus-kotlin'
     implementation 'io.quarkus:quarkus-arc'
-    implementation 'io.quarkus:quarkus-core'
-    implementation 'io.quarkus:quarkus-core-deployment:1.4.2.Final'
-
-    implementation ("io.debezium:debezium-api") {
-        version {
-            strictly "1.2.0.Final"
-            force = true
-        }
-    }
-    implementation ("io.debezium:debezium-core") {
-        version {
-            strictly "1.2.0.Final"
-            force = true
-        }
-    }
-    implementation ("io.debezium:debezium-embedded") {
-        version {
-            strictly "1.2.0.Final"
-            force = true
-        }
-    }
+    implementation (dependencies.debeziumCore)
+    implementation (dependencies.debeziumServerCore)
+    implementation (dependencies.debeziumPostgres)
     implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
 
     implementation(project(":floodplain-mongodb"))
     implementation(project(":floodplain-dsl"))
     implementation(project(":floodplain-integration"))
+    implementation(dependencies.kafkaClient)
+    implementation(dependencies.kafkaStreams)
+    implementation(dependencies.kafkaConnectApi)
+    implementation(dependencies.kafkaConnectRuntime)
+
 }
 
 quarkus {
