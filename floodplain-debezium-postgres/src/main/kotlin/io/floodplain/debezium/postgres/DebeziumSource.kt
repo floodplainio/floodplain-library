@@ -51,6 +51,33 @@ internal class EngineKillSwitch(var engine: DebeziumEngine<ChangeEvent<String, S
         }
     }
 }
+
+private fun createOffsetFilePath(offsetId: String?): Path {
+    val tempFile = createTempFile(offsetId ?: UUID.randomUUID().toString().substring(0, 7))
+    if (offsetId == null) {
+        tempFile.deleteOnExit()
+    }
+    return tempFile.toPath()
+}
+
+private fun createPostgresSettings(name: String, hostname: String, port: Int, database: String, username: String, password: String, offsetId: String? = null, settings: Map<String, String> = emptyMap()): Properties {
+    val offsetFilePath = createOffsetFilePath(offsetId)
+    logger.info("Creating offset files at: $offsetFilePath")
+    val props = Properties()
+    props.setProperty("name", "engine_" + UUID.randomUUID())
+    props.setProperty("connector.class", "io.debezium.connector.postgresql.PostgresConnector")
+    props.setProperty("database.hostname", hostname)
+    props.setProperty("database.port", "$port")
+    props.setProperty("database.server.name", name) // don't think this matters?
+    props.setProperty("database.dbname", database)
+    props.setProperty("connector.class", "io.debezium.connector.postgresql.PostgresConnector")
+    props.setProperty("database.user", username)
+    props.setProperty("database.password", password)
+    props.setProperty("offset.storage.file.filename", offsetFilePath.toString())
+    props.setProperty("offset.flush.interval.ms", "10000")
+    settings.forEach { (k, v) -> props[k] = v }
+    return props
+}
 /**
  * @return A hot flow of ChangeRecord. Perhaps one day there might be a colder one.
  * @param name: The prefix of the outgoing 'topic', basically the destination field of the changerecord is <topicprefix>.<schema>.<table>
@@ -63,30 +90,24 @@ internal class EngineKillSwitch(var engine: DebeziumEngine<ChangeEvent<String, S
  * Defaults to empty map.
  *
  */
-fun postgresDataSource(name: String, hostname: String, port: Int, database: String, username: String, password: String, offsetFilePath: Path, settings: Map<String, String> = emptyMap()): Flow<ChangeRecord> {
-        val props = Properties()
-        props.setProperty("name", "engine_" + UUID.randomUUID())
-        props.setProperty("connector.class", "io.debezium.connector.postgresql.PostgresConnector")
-        props.setProperty("database.hostname", hostname)
-        props.setProperty("database.port", "$port")
-        props.setProperty("database.server.name", name) // don't think this matters?
-        props.setProperty("database.dbname", database)
-        props.setProperty("connector.class", "io.debezium.connector.postgresql.PostgresConnector")
-        props.setProperty("database.user", username)
-        props.setProperty("database.password", password)
-        props.setProperty("offset.storage.file.filename", offsetFilePath.toString())
-        props.setProperty("offset.flush.interval.ms", "10000")
-        settings.forEach { (k, v) -> props[k] = v }
-        logger.info("Starting source flow with name: ${props.getProperty("name")} offsetpath: $offsetFilePath ")
-        val engineKillSwitch = EngineKillSwitch()
-        val totalTimeInSend = AtomicLong(0L)
-        return callbackFlow<ChangeRecord> {
-            val engine = DebeziumEngine.create(Json::class.java)
-                .using(props)
-                .notifying { record: ChangeEvent<String, String> ->
-                    if (this.isClosedForSend) {
-                        logger.info("Closed for send")
-                    }
+fun postgresDataSource(name: String, hostname: String, port: Int, database: String, username: String, password: String, offsetId: String? = null, settings: Map<String, String> = emptyMap()): Flow<ChangeRecord> {
+
+        val props = createPostgresSettings(name, hostname, port, database, username, password, offsetId, settings)
+    val flow = runDebeziumServer(props)
+    return flow
+}
+
+private fun runDebeziumServer(props: Properties): Flow<ChangeRecord> {
+    val engineKillSwitch = EngineKillSwitch()
+    val totalTimeInSend = AtomicLong(0L)
+    val flow = callbackFlow<ChangeRecord> {
+
+        val engine = DebeziumEngine.create(Json::class.java)
+            .using(props)
+            .notifying { record: ChangeEvent<String, String> ->
+                if (this.isClosedForSend) {
+                    // logger.info("Closed for send")
+                } else {
                     val perf = measureTimeMillis {
                         try {
                             sendBlocking(
@@ -107,19 +128,23 @@ fun postgresDataSource(name: String, hostname: String, port: Int, database: Stri
                     }
                     totalTimeInSend.addAndGet(perf)
                 }
-                .build()
-            // TODO I'm unsure if it is wise to run this in the same thread
-            // Seems to work fine for my tests, so for the time being I'll keep it simple.
-            engineKillSwitch.engine = engine
-            GlobalScope.launch {
-                println("Engine ran for: " + measureTimeMillis {
-                    engine.run() })
-                println("Debezium source engine terminated. Total time in send: ${totalTimeInSend.get()}")
             }
-            awaitClose {
-                println("closin!")
-                engine.close()
-            }
+            .build()
+        engineKillSwitch.engine = engine
+        GlobalScope.launch {
+            println("Engine ran for: " + measureTimeMillis {
+                engine.run()
+            })
+            println("Debezium source engine terminated. Total time in send: ${totalTimeInSend.get()}")
         }
-        .onCompletion { engineKillSwitch.kill() }
+        awaitClose {
+            println("closing!")
+            engine.close()
+        }
     }
+        .onCompletion {
+            engineKillSwitch.kill()
+            logger.info("Debezium flow shutdown completed")
+        }
+    return flow
+}

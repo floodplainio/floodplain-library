@@ -83,7 +83,7 @@ class FilmToGoogleSheets {
                     film["special_features"] = film.list("special_features").joinToString(",")
                     film
                 }
-                googleSheetsSink("outputtopic", spreadsheetId, listOf("title", "rating", "release_year", "rental_duration", "special_features", "description"), sheetConfig)
+                googleSheetsSink("outputtopic", spreadsheetId, listOf("title", "rating", "release_year", "rental_duration", "special_features", "description"), "B", 2, sheetConfig)
             }
         }.renderAndTest {
             delay(5000)
@@ -96,7 +96,7 @@ class FilmToGoogleSheets {
             flushSinks()
             withTimeout(200000) {
                 repeat(1000) {
-                    val value = coreSink.getRange(spreadsheetId, "C3").first()?.first()
+                    val value = coreSink.getRange(spreadsheetId, "B3").first()?.first()
                     if (value == "Academy Dinosaur") {
                         logger.info("Found cell")
                         return@withTimeout
@@ -105,7 +105,7 @@ class FilmToGoogleSheets {
                             delay(1000)
                     }
                 }
-            val value = coreSink.getRange(spreadsheetId, "C3").first()?.first()
+            val value = coreSink.getRange(spreadsheetId, "B3").first()?.first()
             assertEquals(value, "Academy Dinosaur")
             }
     }

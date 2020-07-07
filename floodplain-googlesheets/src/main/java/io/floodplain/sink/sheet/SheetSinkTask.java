@@ -39,7 +39,7 @@ public class SheetSinkTask extends SinkTask {
 		this.spreadsheetId = props.get(SPREADSHEETID);
 		this.columns = props.get(COLUMNS).split(",");
 		this.startRow = Optional.of(props.get(STARTROW)).map(e->Integer.parseInt(e)).orElse(1);
-		this.startColumn = Optional.of(props.get(STARTROW)).orElse("A");
+		this.startColumn = Optional.of(props.get(STARTCOLUMN)).orElse("A");
 		try {
 			this.sheetSink = new SheetSink();
 		} catch (IOException | GeneralSecurityException e) {

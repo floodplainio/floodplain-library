@@ -166,6 +166,6 @@ private class LocalConnectorSink(private val task: SinkTask, val config: Config)
     }
 
     override fun taskObject(): Any? {
-        TODO("Not yet implemented")
+        return task
     }
 }

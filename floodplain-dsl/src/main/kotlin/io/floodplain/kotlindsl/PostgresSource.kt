@@ -27,15 +27,12 @@ import io.floodplain.streams.api.Topic
 import io.floodplain.streams.api.TopologyContext
 import io.floodplain.streams.debezium.JSONToReplicationMessage.processDebeziumBody
 import io.floodplain.streams.debezium.JSONToReplicationMessage.processDebeziumJSONKey
-import java.nio.file.Path
-import java.nio.file.Paths
-import java.util.UUID
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 
 private val logger = mu.KotlinLogging.logger {}
 
-class PostgresConfig(val topologyContext: TopologyContext, val name: String, private val hostname: String, private val port: Int, private val username: String, private val password: String, private val database: String, private val defaultSchema: String? = null) : Config {
+class PostgresConfig(val topologyContext: TopologyContext, val name: String, val offsetId: String, private val hostname: String, private val port: Int, private val username: String, private val password: String, private val database: String, private val defaultSchema: String? = null) : Config {
 
     private val sourceElements: MutableList<SourceTopic> = mutableListOf()
 
@@ -44,7 +41,7 @@ class PostgresConfig(val topologyContext: TopologyContext, val name: String, pri
     }
 
     override suspend fun connectSource(inputReceiver: InputReceiver) {
-        val broadcastFlow = directSource(Paths.get("somepath" + UUID.randomUUID().toString()))
+        val broadcastFlow = directSource(offsetId)
         broadcastFlow.collect {
             val availableSourceTopics = sourceElements.map { sourceElement -> sourceElement.topic().qualifiedString(topologyContext) }.toSet()
             if (availableSourceTopics.contains(it.topic)) {
@@ -70,7 +67,11 @@ class PostgresConfig(val topologyContext: TopologyContext, val name: String, pri
         return null
     }
 
-    override fun sinkElements(topologyContext: TopologyContext): Map<Topic, MutableList<FloodplainSink>> {
+    override fun instantiateSinkElements(topologyContext: TopologyContext) {
+        TODO("Not yet implemented")
+    }
+
+    override fun sinkElements(): Map<Topic, MutableList<FloodplainSink>> {
         TODO("Not yet implemented")
     }
 
@@ -91,8 +92,8 @@ class PostgresConfig(val topologyContext: TopologyContext, val name: String, pri
         sourceElements.add(elt)
     }
 
-    fun directSource(offsetFilePath: Path): Flow<ChangeRecord> {
-        return postgresDataSource(topologyContext.topicName(name), hostname, port, database, username, password, offsetFilePath)
+    fun directSource(offsetId: String): Flow<ChangeRecord> {
+        return postgresDataSource(topologyContext.topicName(name), hostname, port, database, username, password, offsetId)
     }
 
     fun sourceSimple(table: String, schema: String? = null, init: Source.() -> Unit): Source {
@@ -116,7 +117,7 @@ class PostgresConfig(val topologyContext: TopologyContext, val name: String, pri
 }
 
 fun Stream.postgresSourceConfig(name: String, hostname: String, port: Int, username: String, password: String, database: String, defaultSchema: String? = null): PostgresConfig {
-    val postgresConfig = PostgresConfig(this.context, name, hostname, port, username, password, database, defaultSchema)
+    val postgresConfig = PostgresConfig(this.context, name, context.applicationId(), hostname, port, username, password, database, defaultSchema)
     addSourceConfiguration(postgresConfig)
     return postgresConfig
 }

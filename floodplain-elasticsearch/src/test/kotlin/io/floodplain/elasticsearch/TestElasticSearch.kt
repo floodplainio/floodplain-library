@@ -92,7 +92,7 @@ class TestElasticSearch {
                         return@withTimeout
                     }
                     logger.info("looping...")
-                    delay(100)
+                    delay(2000)
                 }
             }
             assertEquals(1, queryUUIDHits("eternal*"))

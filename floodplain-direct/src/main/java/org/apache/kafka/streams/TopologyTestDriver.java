@@ -597,9 +597,13 @@ public class TopologyTestDriver implements Closeable {
             producer.beginTransaction();
         }
         for (final ProducerRecord<byte[], byte[]> record : output) {
-            outputRecordsByTopic.computeIfAbsent(record.topic(), k -> new LinkedList<>()).add(record);
+            if(outputCallback==null) {
+                // no outputcallback set, so use classic enqueue
+                outputRecordsByTopic.computeIfAbsent(record.topic(), k -> new LinkedList<>()).add(record);
+            } else {
+                publishOutputMessage(record);
+            }
 //            log.info("Enqueueing for topic: {} ", record.topic());
-            publishOutputMessage(record);
             // Forward back into the topology if the produced record is to an internal or a source topic ...
             final String outputTopicName = record.topic();
 

@@ -71,8 +71,6 @@ public class SheetSink {
 				credential = GoogleCredential.fromStream(is)
 						.createScoped(Collections.singleton(SheetsScopes.SPREADSHEETS));
 			}
-//            InputStream is = SheetSink.class.getClassLoader()
-//              .getResourceAsStream("sheetkey.json");
 		}
 		return credential;
 	}

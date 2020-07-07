@@ -26,6 +26,5 @@ include 'immutable-api',
         'floodplain-example',
 		'floodplain-mongodb',
 		'floodplain-elasticsearch',
-		'floodplain-quarkus',
         'kafka-converter'
 

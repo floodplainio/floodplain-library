@@ -22,7 +22,6 @@
             <option value="$PROJECT_DIR$/floodplain-googlesheets" />
             <option value="$PROJECT_DIR$/floodplain-integration" />
             <option value="$PROJECT_DIR$/floodplain-mongodb" />
-            <option value="$PROJECT_DIR$/floodplain-quarkus" />
             <option value="$PROJECT_DIR$/floodplain-stream-topology" />
             <option value="$PROJECT_DIR$/immutable-api" />
             <option value="$PROJECT_DIR$/immutable-impl" />

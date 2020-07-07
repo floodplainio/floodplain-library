@@ -108,7 +108,6 @@ class Stream(val context: TopologyContext) {
      */
     fun renderAndStart(connectorURL: URL, kafkaHosts: String, force: Boolean = false) {
         val topologyConstructor = TopologyConstructor()
-        context.applicationId()
         val (topology, sources, sinks) = render(topologyConstructor)
         topologyConstructor.createTopicsAsNeeded(context, kafkaHosts)
         sources.forEach { (name, json) ->

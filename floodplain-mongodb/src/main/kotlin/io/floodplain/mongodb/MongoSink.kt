@@ -45,6 +45,8 @@ class MongoConfig(val name: String, val uri: String, val database: String, priva
 
     var sinkTask: MongoSinkTask? = null
     val sinkInstancePair: MutableList<Pair<String, Topic>> = mutableListOf()
+    var instantiatedSinkElements: Map<Topic, List<FloodplainSink>>? = null
+
     override fun materializeConnectorConfig(topologyContext: TopologyContext): List<MaterializedSink> {
         val additional = mutableMapOf<String, String>()
         sinkInstancePair.forEach { (key, value) -> additional.put("topic.override.${value.qualifiedString(topologyContext)}.collection", key) }
@@ -83,8 +85,11 @@ class MongoConfig(val name: String, val uri: String, val database: String, priva
         throw UnsupportedOperationException("MongoSink can not be used as a source")
     }
 
-    override fun sinkElements(topologyContext: TopologyContext): Map<Topic, List<FloodplainSink>> {
-        return materializeConnectorConfig(topologyContext)
+    override fun sinkElements(): Map<Topic, List<FloodplainSink>> {
+        return instantiatedSinkElements ?: emptyMap()
+    }
+    override fun instantiateSinkElements(topologyContext: TopologyContext) {
+        instantiatedSinkElements = materializeConnectorConfig(topologyContext)
             .map {
 
                 val connector = MongoSinkConnector()
@@ -106,7 +111,7 @@ class MongoConfig(val name: String, val uri: String, val database: String, priva
     }
 
     override fun sinkTask(): Any? {
-        TODO("Not yet implemented")
+        return sinkTask
     }
 }
 
@@ -115,15 +120,6 @@ private class MongoFloodplainSink(private val task: SinkTask, private val config
     var mapper: ObjectMapper = ObjectMapper()
 
     private val offsetCounter = AtomicLong(System.currentTimeMillis())
-    // override fun send(topic: Topic, elements: List<Pair<String, ByteArray?>>, topologyContext: TopologyContext) {
-    //     logger.info("Inserting # of documents ${elements.size} for topic: $topic")
-    //     val list = elements.map { (key, value) ->
-    //         val parsed = deserializer.deserialize(topic.qualifiedString(topologyContext),value) as ObjectNode
-    //         var result = mapper.convertValue(parsed, object : TypeReference<Map<String, Any>>() {})
-    //         SinkRecord(topic.qualifiedString(topologyContext), 0, null, mapOf(Pair("key", key)), null, result, offsetCounter.incrementAndGet())
-    //     }.toList()
-    //     task.put(list)
-    // }
 
     override fun send(topic: Topic, elements: List<Pair<String, Map<String, Any>?>>, topologyContext: TopologyContext) {
         // override fun send(docs: List<Triple<Topic, String, IMessage?>>) {

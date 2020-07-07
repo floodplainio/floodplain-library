@@ -18,7 +18,7 @@
  */
 package io.floodplain.debezium.postgres
 
-import java.io.File
+import java.util.UUID
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.runBlocking
@@ -50,9 +50,9 @@ class TestDebeziumSource {
 
     @Test
     fun testShortRun() {
-        val offsets = File.createTempFile("temp", null).toPath()
+        // val offsets = File.createTempFile("temp", null).toPath()
         runBlocking {
-            postgresDataSource("mypostgres", postgresContainer.host, postgresContainer.exposedPort, "dvdrental", "postgres", "mysecretpassword", offsets,
+            postgresDataSource("mypostgres", postgresContainer.host, postgresContainer.exposedPort, "dvdrental", "postgres", "mysecretpassword", UUID.randomUUID().toString(),
                 emptyMap())
                 .take(500)
                 .collect { it.key
@@ -60,7 +60,6 @@ class TestDebeziumSource {
                 }
             println("completed")
         }
-        offsets.toFile().delete()
     }
 
     @After

@@ -226,25 +226,24 @@ class TestDriverContext(
     }
 
     override fun flushSinks() {
-        this.sinkConfigurations().map { config ->
-            config.sinkElements(topologyContext)
-        }.forEach { configSinks ->
-            // configSinks.map { sink -> sink.value.flush() }
-        }
+        this.sinkConfigurations().flatMap { config ->
+            config.sinkElements().values
+        }.flatMap { it }
+            .forEach { it.flush() }
     }
 
     fun closeSinks(topologyContext: TopologyContext) {
-        this.sinkConfigurations().map { config ->
-            config.sinkElements(topologyContext)
-        }.forEach { configSinks ->
-            // configSinks.map { sink -> sink.value.close() }
-        }
+        this.sinkConfigurations().flatMap { config ->
+            config.sinkElements().values
+        }.flatMap { it }
+            .forEach { it.close() }
     }
 
     override fun sinksByTopic(): Map<Topic, List<FloodplainSink>> {
         val result = mutableMapOf<Topic, MutableList<FloodplainSink>>()
         this.sinkConfigurations().flatMap {
-            it.sinkElements(topologyContext).entries
+            it.instantiateSinkElements(topologyContext)
+            it.sinkElements().entries
         }.forEach { entry ->
             val list = result.computeIfAbsent(entry.key) { mutableListOf() }
             list.addAll(entry.value)

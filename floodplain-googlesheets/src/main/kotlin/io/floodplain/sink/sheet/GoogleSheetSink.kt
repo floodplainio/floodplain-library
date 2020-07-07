@@ -45,7 +45,7 @@ fun PartialStream.googleSheetsSink(topicDefinition: String, googleSheetId: Strin
     addTransformer(Transformer(sink))
 }
 
-class GoogleSheetSink(val topic: Topic, val spreadsheetId: String, val columns: List<String>, private val startColumn: String = "A", private val startRow: Int = 1)
+class GoogleSheetSink(val topic: Topic, val spreadsheetId: String, val columns: List<String>, val startColumn: String = "A", val startRow: Int = 1)
 fun Stream.googleSheetConfig(name: String): GoogleSheetConfiguration {
     val googleSheetConfiguration = GoogleSheetConfiguration(name)
     this.addSinkConfiguration(googleSheetConfiguration)
@@ -55,6 +55,8 @@ fun Stream.googleSheetConfig(name: String): GoogleSheetConfiguration {
 class GoogleSheetConfiguration(val name: String) : Config {
     private var googleTask: SheetSinkTask? = null
     private val sheetSinks = mutableListOf<GoogleSheetSink>()
+    private var instantiatedSinkElements: Map<Topic, MutableList<FloodplainSink>>? = null
+
     override fun materializeConnectorConfig(topologyContext: TopologyContext): List<MaterializedSink> {
         return sheetSinks.map {
             val settings = mutableMapOf("connector.class" to SheetSinkConnector::class.java.name,
@@ -69,6 +71,9 @@ class GoogleSheetConfiguration(val name: String) : Config {
             settings.put(SheetSinkTask.SPREADSHEETID, it.spreadsheetId)
             settings.put(SheetSinkTask.COLUMNS, it.columns.joinToString(","))
             settings.put(SheetSinkTask.TOPIC, it.topic.qualifiedString(topologyContext))
+            settings.put(SheetSinkTask.STARTCOLUMN, it.startColumn)
+            settings.put(SheetSinkTask.STARTROW, it.startRow.toString())
+            // settings.put(SheetSinkTask.STARTCOLUMN,)
             MaterializedSink(name, listOf(it.topic), settings)
         }
     }
@@ -78,8 +83,11 @@ class GoogleSheetConfiguration(val name: String) : Config {
 
     override suspend fun connectSource(inputReceiver: InputReceiver) {
     }
+    override fun sinkElements(): Map<Topic, MutableList<FloodplainSink>> {
+        return instantiatedSinkElements ?: emptyMap()
+    }
 
-    override fun sinkElements(topologyContext: TopologyContext): Map<Topic, MutableList<FloodplainSink>> {
+    override fun instantiateSinkElements(topologyContext: TopologyContext) {
         val result = mutableMapOf<Topic, MutableList<FloodplainSink>>()
         materializeConnectorConfig(topologyContext).forEach { materializedSink ->
             val connector = SheetSinkConnector()
@@ -93,7 +101,8 @@ class GoogleSheetConfiguration(val name: String) : Config {
                 list.add(sink)
             }
         }
-        return result
+        instantiatedSinkElements = result
+        // return result
     }
 
     override fun sinkTask(): Any? {

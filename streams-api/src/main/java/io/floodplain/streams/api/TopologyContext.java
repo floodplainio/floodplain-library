@@ -43,7 +43,6 @@ public class TopologyContext {
         @Override
         public String apply(String name) {
             if(name.contains("-") || name.contains(":")) {
-//                logger.warn("Can't use '-' or ':' in topic name. name: {}, not-requalifying",name);
                 return name;
             }
             if(!name.startsWith("@") && name.contains("@")) {
@@ -81,11 +80,6 @@ public class TopologyContext {
     public static TopologyContext context(Optional<String> tenant, String instance, String generation) {
         return new TopologyContext(new NameQualifier(tenant,instance,generation));
     }
-
-    public static TopologyContext context(String instance, String generation) {
-        return new TopologyContext(new NameQualifier(Optional.empty(),instance,generation));
-    }
-
 
     public TopologyContext(Function<String, String> qualifier) {
         this.qualifier = qualifier;
