@@ -42,10 +42,6 @@ public class GoogleSheetTest {
             delay(1000)
             input("topic", "k3", empty().set("column1", "kol3").set("column2", "otherkol3").set("id", 3))
             delay(1000)
-            val out = outputSize("outputtopic")
-            println("output: $out")
-            val msg = output("outputtopic")
-            logger.info("info: $msg")
             // TODO improve testing
         }
         // Thread.sleep(200000)

@@ -35,7 +35,7 @@ public class SheetSinkTask extends SinkTask {
 	@Override
 	public void start(Map<String, String> props) {
 		this.props = props;
-		logger.info("Starting Sheet connector: {}",props);
+		logger.info(GoogleSheetTest"Starting Sheet connector: {}",props);
 		this.spreadsheetId = props.get(SPREADSHEETID);
 		this.columns = props.get(COLUMNS).split(",");
 		this.startRow = Optional.of(props.get(STARTROW)).map(e->Integer.parseInt(e)).orElse(1);
