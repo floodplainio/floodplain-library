@@ -59,6 +59,10 @@ class TestCombinedMongo {
          */
         @Test
         fun testPostgresSource() {
+            if (!useIntegraton) {
+                logger.info("Not performing integration tests; doesn't seem to work in circleci")
+                return
+            }
             streams("any", "myinstance") {
                 val postgresConfig = postgresSourceConfig(
                     "mypostgres",
@@ -149,6 +153,10 @@ class TestCombinedMongo {
 
     @Test
     fun testSimpleReduce() {
+        if (!useIntegraton) {
+            logger.info("Not performing integration tests; doesn't seem to work in circleci")
+            return
+        }
         streams {
             val postgresConfig = postgresSourceConfig(
                 "mypostgres",
@@ -206,6 +214,10 @@ class TestCombinedMongo {
     // TODO Fix
     @Test @Ignore
     fun testPaymentPerCustomer() {
+        if (!useIntegraton) {
+            logger.info("Not performing integration tests; doesn't seem to work in circleci")
+            return
+        }
         streams {
             val postgresConfig = postgresSourceConfig(
                 "mypostgres",
