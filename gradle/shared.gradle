@@ -6,6 +6,9 @@ license {
     ext.name = 'Frank Lyaruu'
 }
 
+apply plugin: "com.github.hierynomus.license-base"
+
+
 sourceSets {
     all {
         languageSettings {
