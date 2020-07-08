@@ -52,7 +52,6 @@ class TestOutputFlow {
                 // println("Topic: $topic elements: ${elements.size}")
                 // }
                 .map { elts -> elts.size }
-                .onEach { e -> println("EE: $e") }
                 .fold(0, { acc, cnt -> acc + cnt })
 
             println("total: $count total: $initialCount")
