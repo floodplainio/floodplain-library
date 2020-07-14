@@ -35,9 +35,9 @@ fun main() {
     val instance = stream("genxx") {
         val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")
         val mongoConfig = mongoConfig("mongosink", "mongodb://mongo", "mongodump")
-        postgresConfig.sourceSimple("customer", "public") {
+        postgresConfig.source("customer", "public") {
             join {
-                postgresConfig.sourceSimple("payment", "public") {
+                postgresConfig.source("payment", "public") {
                     scan({ msg -> msg["customer_id"].toString() }, { _ -> empty().set("total", BigDecimal(0)) },
                             {
                                 set { _, msg, state ->

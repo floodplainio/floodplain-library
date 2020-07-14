@@ -75,7 +75,7 @@ class FilmToGoogleSheets {
                 "public"
             )
             val sheetConfig = googleSheetConfig("sheets")
-            postgresConfig.sourceSimple("film") {
+            postgresConfig.source("film") {
                 // Clear the last_update field, it makes no sense in a denormalized situation
                 set { _, film, _ ->
                     film["last_update"] = null

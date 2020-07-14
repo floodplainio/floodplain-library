@@ -95,7 +95,7 @@ class FilmSimple {
                 } else {
                     null
                 }
-            } as Long?
+            }
             assertNotNull(hits)
             connectJobs().forEach { it.cancel("ciao!") }
         }

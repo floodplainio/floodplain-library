@@ -99,7 +99,7 @@ class PostgresToElasticSearch {
                     }
                     elasticSearchSink("@customer", "@customer", "@customer", elasticConfig)
                 },
-                postgresConfig.sourceSimple("store") {
+                postgresConfig.source("store") {
                     joinRemote({ m -> "${m["address_id"]}" }, false) {
                         source("@address") {}
                     }
@@ -108,7 +108,7 @@ class PostgresToElasticSearch {
                     }
                     elasticSearchSink("@store", "@store", "@store", elasticConfig)
                 },
-                postgresConfig.sourceSimple("staff") {
+                postgresConfig.source("staff") {
                     joinRemote({ m -> "${m["address_id"]}" }, false) {
                         source("@address") {}
                     }
@@ -160,16 +160,16 @@ class PostgresToElasticSearch {
             val postgresConfig = postgresSourceConfig("mypostgres", postgresContainer.host, postgresContainer.exposedPort, "postgres", "mysecretpassword", "dvdrental", "public")
             val elasticConfig = elasticSearchConfig("elastic", "http://${elasticSearchContainer.host}:${elasticSearchContainer.exposedPort}")
             listOf(
-                postgresConfig.sourceSimple("customer") {
+                postgresConfig.source("customer") {
                     joinRemote({ m -> "${m["address_id"]}" }, false) {
-                        postgresConfig.sourceSimple("address") {}
+                        postgresConfig.source("address") {}
                     }
                     set { _, msg, state ->
                         msg.set("address", state)
                     }
                     elasticSearchSink("@customer", "@customer", "@customer", elasticConfig)
                 },
-                postgresConfig.sourceSimple("staff") {
+                postgresConfig.source("staff") {
                     elasticSearchSink("@staff", "@staff", "@staff", elasticConfig)
                 }
             )

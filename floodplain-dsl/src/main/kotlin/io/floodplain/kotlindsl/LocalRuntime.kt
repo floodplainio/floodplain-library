@@ -54,6 +54,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.runBlocking
@@ -267,7 +268,7 @@ class TestDriverContext(
             .map { (topic, key, value) ->
                 val parsed = if (value == null) null else deserializer.deserialize(topic.qualifiedString(topologyContext), value) as ObjectNode
                 var result = if (value == null) null else mapper.convertValue(parsed, object : TypeReference<Map<String, Any>>() {})
-                logger.info("RawTopic: $topic key: $key data: $value")
+                // logger.info("RawTopic: $topic key: $key data: $value")
                 Triple(topic, key, result)
             }
             .onEach { (topic, key, data) ->
@@ -294,11 +295,11 @@ class TestDriverContext(
                     val key = Serdes.String().deserializer().deserialize(record.topic(), record.key())
                     // val message = parser.parseBytes(Optional.of(record.topic()), record.value())
                     val messageString = String(record.value() ?: byteArrayOf())
-                    logger.info("JOUTPUT: $key value: $messageString")
+                    // logger.info("JOUTPUT: $key value: $messageString")
                     val topic = Topic.fromQualified(record.topic())
-                    // if (this.isActive) {
+                    if (this.isActive) {
                         sendBlocking(Triple(topic, key, record.value()))
-                    // }
+                    }
                 } else {
                     // noop, skipping changelog items
                 }

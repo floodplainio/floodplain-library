@@ -35,6 +35,7 @@ import io.floodplain.mongodb.mongoConfig
 import io.floodplain.mongodb.mongoSink
 import java.math.BigDecimal
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeout
@@ -108,8 +109,8 @@ class TestCombinedMongo {
                         }.map { (k, v) -> k }
                             .count()
 
-                        logger.info("Corr addresses: " + correctAddresses)
-                        logger.info("KEYYJ {}\n{}", key, msg)
+                        // logger.info("Corr addresses: " + correctAddresses)
+                        // logger.info("KEYYJ {}\n{}", key, msg)
                         msg
                     }
                     // logSink("someSink","@sometopic",logConfig)
@@ -122,7 +123,7 @@ class TestCombinedMongo {
 
             connectJobs().forEach { it.cancel("ciao!") }
             var hits = 0L
-            withTimeout(200000) {
+            withTimeout(100000) {
                 repeat(1000) {
                     MongoClients.create("mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}")
                         .use { client ->
@@ -219,7 +220,7 @@ class TestCombinedMongo {
 
             connectJobs().forEach { it.cancel("ciao!") }
             var hits = 0L
-            withTimeout(200000) {
+            withTimeout(100000) {
                 repeat(1000) {
                     MongoClients.create("mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}")
                         .use { client ->
@@ -237,7 +238,6 @@ class TestCombinedMongo {
             logger.info("done, test succeeded")
         }
     }
-
     @Test @Ignore
     fun testSimpleReduce() {
         if (!useIntegraton) {
@@ -259,7 +259,7 @@ class TestCombinedMongo {
                 "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
                 "@mongodump"
             )
-            listOf(postgresConfig.sourceSimple("payment") {
+            listOf(postgresConfig.source("payment") {
                 scan({ empty().set("total", BigDecimal(0)) },
                     {
                         set { _, msg, state ->
@@ -299,7 +299,7 @@ class TestCombinedMongo {
     }
 
     // TODO Fix
-    @Test @Ignore
+    @Test
     fun testPaymentPerCustomer() {
         if (!useIntegraton) {
             logger.info("Not performing integration tests; doesn't seem to work in circleci")
@@ -327,9 +327,6 @@ class TestCombinedMongo {
                     }
                 join {
                     postgresConfig.source("payment", "public") {
-                        each { _, mms, _ ->
-                            logger.info("Payment: $mms")
-                        }
                         scan({ msg -> msg["customer_id"].toString() }, { _ -> empty().set("total", BigDecimal(0)) },
                             {
                                 set { _, msg, state ->
@@ -350,24 +347,15 @@ class TestCombinedMongo {
                 mongoSink("paymentpercustomer", "myfinaltopic", mongoConfig) })
         }.renderAndTest {
             val database = topologyContext().topicName("@mongodump")
-            withTimeout(100000) {
-                repeat(100) {
-                    MongoClients.create("mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}")
-                        .use { client ->
-                            val collection = client.getDatabase(database).getCollection("paymentpercustomer")
-                            val items = collection.countDocuments()
-                            // TODO improve
-                            if (items> 100) {
-                                return@withTimeout
-                            }
-                            logger.info("Current total: $items")
-                        }
-                    delay(1000)
+            val items = waitForMongoDbCondition("mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}", database) { database ->
+                val collection = database.getCollection("paymentpercustomer")
+                val items = collection.countDocuments()
+                // TODO improve
+                if (items> 100) {
+                    items
                 }
             }
-            logger.info("Test done, total computed")
-            // TODO implement testing code
-            delay(200000)
+            assertNotNull(items)
         }
     }
 }
