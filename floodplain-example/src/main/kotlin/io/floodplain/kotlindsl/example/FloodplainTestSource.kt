@@ -12,9 +12,9 @@ private val logger = mu.KotlinLogging.logger {}
 
 fun main() {
     stream {
-        val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")
+        val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental", "public")
         val mongoConfig = mongoConfig("mongosink", "mongodb://mongo", "mongodump")
-        postgresSource("public", "customer", postgresConfig) {
+        postgresSource("customer", postgresConfig) {
             // postgresConfig.sourceSimple("customer", "public") {
             each { key, msg, other ->
                 logger.info("Customer: $key msg: $msg")

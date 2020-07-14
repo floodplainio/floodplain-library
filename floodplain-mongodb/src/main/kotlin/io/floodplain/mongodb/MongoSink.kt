@@ -41,7 +41,7 @@ import org.apache.kafka.connect.sink.SinkTask
 
 private val logger = mu.KotlinLogging.logger {}
 
-class MongoConfig(val name: String, val uri: String, val database: String, private val topologyContext: TopologyContext) : Config {
+class MongoConfig(val name: String, val uri: String, val database: String) : Config {
 
     var sinkTask: MongoSinkTask? = null
     val sinkInstancePair: MutableList<Pair<String, Topic>> = mutableListOf()
@@ -81,6 +81,15 @@ class MongoConfig(val name: String, val uri: String, val database: String, priva
     override fun sourceElements(): List<SourceTopic> {
         return emptyList()
     }
+
+    // fun sink(collection: String, topicDefinition: String, parent: PartialStream) {
+    //     val topic = Topic.from(topicDefinition)
+    //     sinkInstancePair.add(collection to topic)
+    //     val sinkName = ProcessorName.from(name)
+    //     val sink = SinkTransformer(Optional.of(sinkName), topic, false, Optional.empty(), Topic.FloodplainKeyFormat.CONNECT_KEY_JSON, Topic.FloodplainBodyFormat.CONNECT_JSON)
+    //     val transform = Transformer(sink)
+    //     parent.addTransformer(transform)
+    // }
 
     override suspend fun connectSource(inputReceiver: InputReceiver) {
         throw UnsupportedOperationException("MongoSink can not be used as a source")
@@ -153,7 +162,7 @@ private class MongoFloodplainSink(private val task: SinkTask, private val config
  * to all sink objects
  */
 fun Stream.mongoConfig(name: String, uri: String, database: String): MongoConfig {
-    val c = MongoConfig(name, uri, database, this.context)
+    val c = MongoConfig(name, uri, database)
     this.addSinkConfiguration(c)
     return c
 }

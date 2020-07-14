@@ -33,9 +33,9 @@ private val logger = mu.KotlinLogging.logger {}
 
 fun main() {
     stream("bla") {
-        val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")
+        val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental", "public")
         val mongoConfig = mongoConfig("mongosink", "mongodb://mongo", "mongodump")
-        postgresSource("public", "payment", postgresConfig) {
+        postgresSource("payment", postgresConfig) {
             scan({ empty().set("total", BigDecimal(0)) },
                 {
                     set { _, msg, state ->

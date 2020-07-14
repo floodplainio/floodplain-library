@@ -30,9 +30,9 @@ private val logger = mu.KotlinLogging.logger {}
 
 fun filter(generation: String) {
     stream(generation) {
-        val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")
+        val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental", "public")
         val mongoConfig = mongoConfig("mongosink", "mongodb://mongo", "mongodump")
-        postgresSource("public", "actor", postgresConfig) {
+        postgresSource("actor", postgresConfig) {
             filter { _, msg ->
                 (msg["last_name"] as String).startsWith("G", true)
             }

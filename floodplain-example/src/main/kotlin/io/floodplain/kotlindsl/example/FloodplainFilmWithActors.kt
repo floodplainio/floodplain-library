@@ -38,10 +38,10 @@ fun main() {
 
 fun filmWithActorList(generation: String) {
     stream(generation) {
-        val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")
+        val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental", "public")
         val mongoConfig = mongoConfig("mongosink", "mongodb://mongo", "@mongodump")
         // Start with the 'film' collection
-        postgresSource("public", "film", postgresConfig) {
+        postgresSource("film", postgresConfig) {
             // Clear the last_update field, it makes no sense in a denormalized situation
             set { _, film, _ ->
                 film["last_update"] = null; film
@@ -52,9 +52,9 @@ fun filmWithActorList(generation: String) {
             // we are joining with something that is grouped by film_id
             joinGrouped(optional = true) {
 
-                postgresSource("public", "film_actor", postgresConfig) {
+                postgresSource("film_actor", postgresConfig) {
                     joinRemote({ msg -> "${msg["actor_id"]}" }, false) {
-                        postgresSource("public", "actor", postgresConfig) {
+                        postgresSource("actor", postgresConfig) {
                         }
                     }
                     // copy the first_name, last_name and actor_id to the film_actor message, drop the last update

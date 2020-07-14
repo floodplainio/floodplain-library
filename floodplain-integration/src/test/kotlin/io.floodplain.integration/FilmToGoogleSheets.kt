@@ -18,6 +18,7 @@
  */
 package io.floodplain.integration
 
+import io.floodplain.kotlindsl.postgresSource
 import io.floodplain.kotlindsl.postgresSourceConfig
 import io.floodplain.kotlindsl.set
 import io.floodplain.kotlindsl.stream
@@ -75,7 +76,7 @@ class FilmToGoogleSheets {
                 "public"
             )
             val sheetConfig = googleSheetConfig("sheets")
-            postgresConfig.source("film") {
+            postgresSource("film", postgresConfig) {
                 // Clear the last_update field, it makes no sense in a denormalized situation
                 set { _, film, _ ->
                     film["last_update"] = null

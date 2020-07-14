@@ -39,13 +39,13 @@ fun main() {
 
 fun joinFilms(generation: String) {
     stream(generation) {
-        val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")
+        val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental", "public")
         val mongoConfig = mongoConfig("mongosink", "mongodb://mongo", "@mongodump")
-        postgresSource("public", "film", postgresConfig) {
+        postgresSource("film", postgresConfig) {
             joinGrouped {
-                postgresSource("public", "film_category", postgresConfig) {
+                postgresSource("film_category", postgresConfig) {
                     joinRemote({ msg -> "${msg["category_id"]}" }, true) {
-                        postgresSource("public", "category", postgresConfig) {}
+                        postgresSource("category", postgresConfig) {}
                     }
                     set { _, msg, state ->
                         msg["category"] = state["name"] ?: "unknown"

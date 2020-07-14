@@ -19,6 +19,7 @@
 package io.floodplain.integration
 
 import io.floodplain.kotlindsl.each
+import io.floodplain.kotlindsl.postgresSource
 import io.floodplain.kotlindsl.postgresSourceConfig
 import io.floodplain.kotlindsl.set
 import io.floodplain.kotlindsl.sink
@@ -73,7 +74,7 @@ class FilmSimple {
                 "@mongodump"
             )
             // postgresSource("public","film",postgresConfig) {
-            postgresConfig.source("film") {
+            postgresSource("film", postgresConfig) {
                 // Clear the last_update field, it makes no sense in a denormalized situation
                 set { _, film, _ ->
                     film["last_update"] = null; film
@@ -127,7 +128,7 @@ class FilmSimple {
                 "@mongodump"
             )
             listOf(
-                postgresConfig.source("film") {
+                postgresSource("film", postgresConfig) {
                     // Clear the last_update field, it makes no sense in a denormalized situation
                     set { _, film, _ ->
                         film["last_update"] = null; film

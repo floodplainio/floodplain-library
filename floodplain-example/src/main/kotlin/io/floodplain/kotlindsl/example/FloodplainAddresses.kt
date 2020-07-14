@@ -35,14 +35,14 @@ fun main() {
 
     val generation = "generation1"
     streams(generation) {
-        val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")
+        val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental", "public")
         val mongoConfig = mongoConfig("mongosink", "mongodb://mongo", "@mongodump")
         listOf(
-        postgresSource("public", "address", postgresConfig) {
+            postgresSource("address", postgresConfig) {
             joinRemote({ msg -> "${msg["city_id"]}" }, false) {
-                postgresSource("public", "city", postgresConfig) {
+                postgresSource("city", postgresConfig) {
                     joinRemote({ msg -> "${msg["country_id"]}" }, false) {
-                        postgresSource("public", "country", postgresConfig) {}
+                        postgresSource("country", postgresConfig) {}
                     }
                     set { _, msg, state ->
                         msg.set("country", state)
@@ -54,7 +54,7 @@ fun main() {
             }
             sink("@address")
         },
-        postgresSource("public", "customer", postgresConfig) {
+            postgresSource("customer", postgresConfig) {
             joinRemote({ m -> "${m["address_id"]}" }, false) {
                 source("@address") {}
             }
@@ -63,7 +63,7 @@ fun main() {
             }
             mongoSink("customer", "@customer", mongoConfig)
         },
-        postgresSource("public", "store", postgresConfig) {
+        postgresSource("store", postgresConfig) {
             joinRemote({ m -> "${m["address_id"]}" }, false) {
                 source("@address") {}
             }
@@ -72,7 +72,7 @@ fun main() {
             }
             mongoSink("store", "@store", mongoConfig)
         },
-        postgresSource("public", "staff", postgresConfig) {
+        postgresSource("staff", postgresConfig) {
             joinRemote({ m -> "${m["address_id"]}" }, false) {
                 source("@address") {}
             }

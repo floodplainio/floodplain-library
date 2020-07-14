@@ -24,6 +24,7 @@ import io.floodplain.kotlindsl.join
 import io.floodplain.kotlindsl.joinRemote
 import io.floodplain.kotlindsl.message.IMessage
 import io.floodplain.kotlindsl.message.empty
+import io.floodplain.kotlindsl.postgresSource
 import io.floodplain.kotlindsl.postgresSourceConfig
 import io.floodplain.kotlindsl.scan
 import io.floodplain.kotlindsl.set
@@ -84,12 +85,12 @@ class TestCombinedMongo {
                 "@mongodump"
             )
             val addressMap = mutableMapOf<String, IMessage>()
-                postgresConfig.source("address") {
+            postgresSource("address", postgresConfig) {
                     each { key, _, _ ->
                         logger.info("KEYYA {} -> {}", key, key.javaClass)
                     }
                     joinRemote({ msg -> "${msg["city_id"]}" }, false) {
-                        postgresConfig.source("city") {
+                        postgresSource("city", postgresConfig) {
                             each { key, _, _ ->
                                 logger.info("KEYYC {}", key)
                             }
@@ -167,11 +168,11 @@ class TestCombinedMongo {
                 "@mongodump"
             )
             listOf(
-                postgresConfig.source("address") {
+                postgresSource("address", postgresConfig) {
                     joinRemote({ msg -> "${msg["city_id"]}" }, false) {
-                        postgresConfig.source("city") {
+                        postgresSource("city", postgresConfig) {
                             joinRemote({ msg -> "${msg["country_id"]}" }, false) {
-                                postgresConfig.source("country") {}
+                                postgresSource("country", postgresConfig) {}
                             }
                             set { _, msg, state ->
                                 msg.set("country", state)
@@ -184,7 +185,7 @@ class TestCombinedMongo {
                     sink("@address", false)
                     // mongoSink("address", "@address",  mongoConfig)
                 },
-                postgresConfig.source("customer") {
+                postgresSource("customer", postgresConfig) {
                     joinRemote({ m -> "${m["address_id"]}" }, false) {
                         source("@address") {}
                     }
@@ -193,7 +194,7 @@ class TestCombinedMongo {
                     }
                     mongoSink("customer", "@customer", mongoConfig)
                 },
-                postgresConfig.source("store") {
+                postgresSource("store", postgresConfig) {
                     joinRemote({ m -> "${m["address_id"]}" }, false) {
                         source("@address") {}
                     }
@@ -202,7 +203,7 @@ class TestCombinedMongo {
                     }
                     mongoSink("store", "@store", mongoConfig)
                 },
-                postgresConfig.source("staff") {
+                postgresSource("staff", postgresConfig) {
                     joinRemote({ m -> "${m["address_id"]}" }, false) {
                         source("@address") {}
                     }
@@ -259,7 +260,7 @@ class TestCombinedMongo {
                 "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
                 "@mongodump"
             )
-            listOf(postgresConfig.source("payment") {
+            listOf(postgresSource("payment", postgresConfig) {
                 scan({ empty().set("total", BigDecimal(0)) },
                     {
                         set { _, msg, state ->
@@ -321,12 +322,12 @@ class TestCombinedMongo {
                 "@mongodump"
             )
             listOf(
-                postgresConfig.source("customer", "public") {
+                postgresSource("customer", postgresConfig) {
                     each { _, mms, _ ->
                         logger.info("Customer: $mms")
                     }
                 join {
-                    postgresConfig.source("payment", "public") {
+                    postgresSource("payment", postgresConfig) {
                         scan({ msg -> msg["customer_id"].toString() }, { _ -> empty().set("total", BigDecimal(0)) },
                             {
                                 set { _, msg, state ->

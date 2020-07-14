@@ -22,12 +22,13 @@ import io.floodplain.debezium.postgres.postgresDataSource
 import io.floodplain.reactive.source.topology.TopicSource
 import io.floodplain.streams.api.Topic
 import io.floodplain.streams.api.TopologyContext
+import java.lang.IllegalArgumentException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 
 private val logger = mu.KotlinLogging.logger {}
 
-class PostgresConfig(val topologyContext: TopologyContext, val name: String, val offsetId: String, private val hostname: String, private val port: Int, private val username: String, private val password: String, private val database: String, private val defaultSchema: String? = null) : Config {
+class PostgresConfig(val topologyContext: TopologyContext, val name: String, val offsetId: String, private val hostname: String, private val port: Int, private val username: String, private val password: String, private val database: String, val defaultSchema: String? = null) : Config {
 
     private val sourceElements: MutableList<SourceTopic> = mutableListOf()
 
@@ -45,18 +46,6 @@ class PostgresConfig(val topologyContext: TopologyContext, val name: String, val
                 } else {
                     inputReceiver.delete(it.topic, it.key)
                 }
-                // val rm: ReplicationMessage? = processDebeziumBody(it.value)
-                // val operation = rm?.operation() ?: ReplicationMessage.Operation.DELETE
-                // try {
-                //     when (operation) {
-                //         ReplicationMessage.Operation.DELETE ->
-                //             inputReceiver.delete(it.topic, parsedKey)
-                //         else ->
-                //             inputReceiver.input(it.topic, parsedKey, fromImmutable(rm!!.message()))
-                //     }
-                // } catch (e: Throwable) {
-                //     error("Failed with exception $e")
-                // }
             }
         }
         logger.info("connectSource completed")
@@ -97,35 +86,29 @@ class PostgresConfig(val topologyContext: TopologyContext, val name: String, val
         return postgresDataSource(topologyContext.topicName(name), hostname, port, database, username, password, offsetId)
     }
 
-    fun sourceSimple(table: String, schema: String? = null, init: Source.() -> Unit): Source {
-        val effectiveSchema = schema ?: defaultSchema ?: "public"
-        val topic = Topic.from("$name.$effectiveSchema.$table")
-        val topicSource = TopicSource(topic, Topic.FloodplainKeyFormat.FLOODPLAIN_STRING, Topic.FloodplainBodyFormat.FLOODPLAIN_JSON)
-        addSourceElement(DebeziumSourceElement(topic))
-        val databaseSource = Source(topicSource)
-        databaseSource.init()
-        return databaseSource
-    }
-
-    fun source(table: String, schema: String? = null, init: Source.() -> Unit): Source {
-        val effectiveSchema = schema ?: defaultSchema ?: "public"
-        val topic = Topic.from("$name.$effectiveSchema.$table")
-        val topicSource = TopicSource(topic, Topic.FloodplainKeyFormat.CONNECT_KEY_JSON, Topic.FloodplainBodyFormat.CONNECT_JSON)
-        addSourceElement(DebeziumSourceElement(topic))
-        val databaseSource = Source(topicSource)
-        databaseSource.init()
-        return databaseSource
-    }
+    // fun source(table: String, schema: String? = null, init: Source.() -> Unit): Source {
+    //     val effectiveSchema = schema ?: defaultSchema ?: "public"
+    //     val topic = Topic.from("$name.$effectiveSchema.$table")
+    //     val topicSource = TopicSource(topic, Topic.FloodplainKeyFormat.CONNECT_KEY_JSON, Topic.FloodplainBodyFormat.CONNECT_JSON)
+    //     addSourceElement(DebeziumSourceElement(topic))
+    //     val databaseSource = Source(topicSource)
+    //     databaseSource.init()
+    //     return databaseSource
+    // }
 }
 
-fun Stream.postgresSourceConfig(name: String, hostname: String, port: Int, username: String, password: String, database: String, defaultSchema: String? = null): PostgresConfig {
+fun Stream.postgresSourceConfig(name: String, hostname: String, port: Int, username: String, password: String, database: String, defaultSchema: String?): PostgresConfig {
     val postgresConfig = PostgresConfig(this.context, name, context.applicationId(), hostname, port, username, password, database, defaultSchema)
     addSourceConfiguration(postgresConfig)
     return postgresConfig
 }
 
-fun Stream.postgresSource(schema: String, table: String, config: PostgresConfig, init: Source.() -> Unit): Source {
-    val topic = Topic.from("${config.name}.$schema.$table")
+fun Stream.postgresSource(table: String, config: PostgresConfig, schema: String? = null, init: Source.() -> Unit): Source {
+    val effectiveSchema = schema ?: config.defaultSchema
+    if (effectiveSchema == null) {
+        throw IllegalArgumentException("No schema defined, and also no default schema")
+    }
+    val topic = Topic.from("${config.name}.$effectiveSchema.$table")
     val topicSource = TopicSource(topic, Topic.FloodplainKeyFormat.CONNECT_KEY_JSON, Topic.FloodplainBodyFormat.CONNECT_JSON)
     config.addSourceElement(DebeziumSourceElement(topic))
     val databaseSource = Source(topicSource)

@@ -23,6 +23,7 @@ import io.floodplain.kotlindsl.group
 import io.floodplain.kotlindsl.joinGrouped
 import io.floodplain.kotlindsl.joinRemote
 import io.floodplain.kotlindsl.message.IMessage
+import io.floodplain.kotlindsl.postgresSource
 import io.floodplain.kotlindsl.postgresSourceConfig
 import io.floodplain.kotlindsl.set
 import io.floodplain.kotlindsl.stream
@@ -75,7 +76,7 @@ class FilmToMongoDB {
                 "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
                 "@mongodump"
             )
-            postgresConfig.source("film") {
+            postgresSource("film", postgresConfig) {
                 // Clear the last_update field, it makes no sense in a denormalized situation
                 set { _, film, _ ->
                     film["last_update"] = null; film
@@ -86,9 +87,9 @@ class FilmToMongoDB {
                 // we are joining with something that is grouped by film_id
                 joinGrouped(optional = true) {
 
-                    postgresConfig.source("film_actor") {
+                    postgresSource("film_actor", postgresConfig) {
                         joinRemote({ msg -> "${msg["actor_id"]}" }, false) {
-                            postgresConfig.source("actor") {
+                            postgresSource("actor", postgresConfig) {
                             }
                         }
                         // copy the first_name, last_name and actor_id to the film_actor message, drop the last update
