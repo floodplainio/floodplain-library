@@ -177,12 +177,19 @@ public class ManyToOneGroupedProcessor extends AbstractProcessor<String, Replica
 
         final ReplicationMessage withOperation = message.withOperation(message.operation());
         ReplicationMessage outerMessage = reverseLookupStore.get(reverseLookupKey);
-
+        StringBuffer sb = new StringBuffer();
+        reverseLookupStore.all().forEachRemaining(
+                e->{
+                    logger.info("Found key: {} value: {}",e.key,e.value);
+                    sb.append(e.key);
+                }
+        );
         if (outerMessage == null) {
             // nothing found to join with, forward only if optional
             if (optional) {
                 forwardMessage(actualKey, message);
             } else {
+                // I don't think this is always correct
                 forwardMessage(actualKey, message.withOperation(Operation.DELETE));
             }
         } else {

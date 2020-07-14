@@ -75,20 +75,20 @@ class FilmToMongoDB {
                 "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
                 "@mongodump"
             )
-            postgresConfig.sourceSimple("film") {
+            postgresConfig.source("film") {
                 // Clear the last_update field, it makes no sense in a denormalized situation
                 set { _, film, _ ->
                     film["last_update"] = null; film
                 }
-                // Join with something that also uses the film_id key space.
+                // Join with something that also    uses the film_id key space.
                 // optional = true so films without any actors (animation?) will propagate
                 // multiple = true we're not joining with something that actually 'has' a film id
                 // we are joining with something that is grouped by film_id
                 joinGrouped(optional = true) {
 
-                    postgresConfig.sourceSimple("film_actor") {
+                    postgresConfig.source("film_actor") {
                         joinRemote({ msg -> "${msg["actor_id"]}" }, false) {
-                            postgresConfig.sourceSimple("actor") {
+                            postgresConfig.source("actor") {
                             }
                         }
                         // copy the first_name, last_name and actor_id to the film_actor message, drop the last update

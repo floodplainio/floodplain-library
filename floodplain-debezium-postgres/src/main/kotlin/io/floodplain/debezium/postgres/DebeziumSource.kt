@@ -70,7 +70,6 @@ private fun createPostgresSettings(name: String, hostname: String, port: Int, da
     props.setProperty("database.port", "$port")
     props.setProperty("database.server.name", name) // don't think this matters?
     props.setProperty("database.dbname", database)
-    props.setProperty("connector.class", "io.debezium.connector.postgresql.PostgresConnector")
     props.setProperty("database.user", username)
     props.setProperty("database.password", password)
     props.setProperty("offset.storage.file.filename", offsetFilePath.toString())
@@ -91,10 +90,8 @@ private fun createPostgresSettings(name: String, hostname: String, port: Int, da
  *
  */
 fun postgresDataSource(name: String, hostname: String, port: Int, database: String, username: String, password: String, offsetId: String? = null, settings: Map<String, String> = emptyMap()): Flow<ChangeRecord> {
-
-        val props = createPostgresSettings(name, hostname, port, database, username, password, offsetId, settings)
-    val flow = runDebeziumServer(props)
-    return flow
+    val props = createPostgresSettings(name, hostname, port, database, username, password, offsetId, settings)
+    return runDebeziumServer(props)
 }
 
 private fun runDebeziumServer(props: Properties): Flow<ChangeRecord> {

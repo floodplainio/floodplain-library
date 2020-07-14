@@ -62,6 +62,7 @@ class MongoConfig(val name: String, val uri: String, val database: String, priva
                 "value.converter.schemas.enable" to "false",
                 "key.converter.schemas.enable" to "false",
                 "value.converter" to "org.apache.kafka.connect.json.JsonConverter",
+                // "key.converter" to "io.floodplain.kafka.converter.ReplicationMessageConverter",
                 "key.converter" to "org.apache.kafka.connect.json.JsonConverter",
                 "document.id.strategy" to "com.mongodb.kafka.connect.sink.processor.id.strategy.FullKeyStrategy",
                 "delete.on.null.values" to "true",
@@ -93,6 +94,7 @@ class MongoConfig(val name: String, val uri: String, val database: String, priva
             .map {
 
                 val connector = MongoSinkConnector()
+                logger.info("Mongo SEttings: ${it.settings}")
                 connector.start(it.settings)
                 val task = connector.taskClass().getDeclaredConstructor().newInstance() as MongoSinkTask
                 task.start(it.settings)
@@ -124,7 +126,7 @@ private class MongoFloodplainSink(private val task: SinkTask, private val config
     override fun send(topic: Topic, elements: List<Pair<String, Map<String, Any>?>>, topologyContext: TopologyContext) {
         // override fun send(docs: List<Triple<Topic, String, IMessage?>>) {
         val list = elements.map { (key, value) ->
-            // logger.info("Sending document to elastic. Topic: $topic Key: $key message: $result")
+            logger.info("Sending document to sink. Topic: $topic Key: $key message: $value")
             SinkRecord(topic.qualifiedString(topologyContext), 0, null, key, null, value, offsetCounter.incrementAndGet())
         }.toList()
         task.put(list)
@@ -160,7 +162,7 @@ fun PartialStream.mongoSink(collection: String, topicDefinition: String, config:
     val topic = Topic.from(topicDefinition)
     config.sinkInstancePair.add(collection to topic)
     val sinkName = ProcessorName.from(config.name)
-    val sink = SinkTransformer(Optional.of(sinkName), topic, false, Optional.empty(), false, true)
+    val sink = SinkTransformer(Optional.of(sinkName), topic, false, Optional.empty(), Topic.FloodplainKeyFormat.CONNECT_KEY_JSON, Topic.FloodplainBodyFormat.CONNECT_JSON)
     val transform = Transformer(sink)
     addTransformer(transform)
 }

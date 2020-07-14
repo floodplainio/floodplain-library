@@ -19,15 +19,18 @@
 package io.floodplain.streams.serializer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.floodplain.replication.api.ReplicationMessage;
 import io.floodplain.replication.impl.protobuf.FallbackReplicationMessageParser;
+import io.floodplain.streams.debezium.DebeziumParseException;
 import io.floodplain.streams.debezium.JSONToReplicationMessage;
 import io.floodplain.streams.debezium.TableIdentifier;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serializer;
+import org.apache.kafka.connect.json.JsonConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,6 +46,7 @@ public class ConnectReplicationMessageSerde implements Serde<ReplicationMessage>
     private static final Logger logger = LoggerFactory.getLogger(ConnectReplicationMessageSerde.class);
 //    ReplicationMessageConverter keyConverter = new ReplicationMessageConverter();
 
+    private static ConnectKeySerde keySerde = new ConnectKeySerde();
     private static final ObjectMapper objectMapper = new ObjectMapper();
     @Override
     public void close() {
@@ -55,11 +59,21 @@ public class ConnectReplicationMessageSerde implements Serde<ReplicationMessage>
 
 
     private static String parseConnectKey(byte[] input) throws IOException {
-        ObjectNode node = (ObjectNode) objectMapper.readTree(input);
+        JsonNode jsonNode = objectMapper.readTree(input);
+        ObjectNode node = (ObjectNode) jsonNode;
         TableIdentifier id = JSONToReplicationMessage.processDebeziumKey(node);
         return id.combinedKey;
     }
 
+    public static Serializer<String> keySerialize() {
+        return keySerde.serializer();
+//        return new Serializer<String>() {
+//            @Override
+//            public byte[] serialize(String topic, String data) {
+//                return data.getBytes();
+//            }
+//        };
+    }
     public static Deserializer<String> keyDeserialize() {
         return new Deserializer<>() {
 
@@ -100,8 +114,12 @@ public class ConnectReplicationMessageSerde implements Serde<ReplicationMessage>
 
             @Override
             public ReplicationMessage deserialize(String topic, byte[] data) {
-
-                return parser.parseBytes(Optional.of(topic), data);
+                try {
+                    return JSONToReplicationMessage.processDebeziumBody(data);
+                } catch (DebeziumParseException e) {
+                    throw new RuntimeException("Error parsing replmessage",e);
+                }
+//                return parser.parseBytes(Optional.of(topic), data);
             }
         };
     }

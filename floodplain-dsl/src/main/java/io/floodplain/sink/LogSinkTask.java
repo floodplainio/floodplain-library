@@ -16,22 +16,41 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package io.floodplain.kotlindsl
+package io.floodplain.sink;
 
-import io.floodplain.immutable.factory.ImmutableFactory
-import io.floodplain.kotlindsl.message.empty
-import kotlin.test.Test
+import org.apache.kafka.connect.sink.SinkRecord;
+import org.apache.kafka.connect.sink.SinkTask;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-private val logger = mu.KotlinLogging.logger {}
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.util.*;
 
-class FloodplainMessage {
+public class LogSinkTask extends SinkTask {
 
-    @Test
-    fun testMessageConversion() {
-        val msg = empty()
-        msg["bla"] = "ble"
-        msg["blieb"] = 3
-        val serialized = msg.toImmutable().toFlatString(ImmutableFactory.createParser())
-        logger.info("Serialized: $serialized")
-    }
+	private final static Logger logger = LoggerFactory.getLogger(LogSinkTask.class);
+
+	@Override
+	public String version() {
+		return "0.1";
+	}
+
+	@Override
+	public void start(Map<String, String> props) {
+		// noop
+	}
+
+	@Override
+	public void put(Collection<SinkRecord> records) {
+		records.forEach(e->
+			logger.info("Message: {} key: {} value: {}",e.topic(),e.key(),e.value())
+		);
+	}
+
+	@Override
+	public void stop() {
+		// noop
+	}
+
 }

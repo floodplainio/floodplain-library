@@ -18,9 +18,11 @@
  */
 package io.floodplain.debezium.postgres
 
+import io.floodplain.ChangeRecord
 import java.util.UUID
-import kotlinx.coroutines.flow.collect
+import kotlin.test.assertEquals
 import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Test
@@ -50,14 +52,13 @@ class TestDebeziumSource {
 
     @Test
     fun testShortRun() {
-        // val offsets = File.createTempFile("temp", null).toPath()
         runBlocking {
+            val resultList = mutableListOf<ChangeRecord>()
             postgresDataSource("mypostgres", postgresContainer.host, postgresContainer.exposedPort, "dvdrental", "postgres", "mysecretpassword", UUID.randomUUID().toString(),
                 emptyMap())
                 .take(500)
-                .collect { it.key
-                    println("Topic: ${it.topic} key: ${it.key}")
-                }
+                .toList(resultList)
+            assertEquals(500, resultList.size)
             println("completed")
         }
     }

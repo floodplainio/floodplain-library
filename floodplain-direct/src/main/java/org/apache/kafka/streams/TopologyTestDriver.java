@@ -459,6 +459,13 @@ public class TopologyTestDriver implements Closeable {
             consumerRecord.headers());
     }
 
+    public void pipeRawRecord(final String topicName,
+                            final long timestamp,
+                            final byte[] key,
+                            final byte[] value) {
+        pipeRecord(topicName,timestamp,key,value,new RecordHeaders());
+    }
+
     private void pipeRecord(final String topicName,
                             final long timestamp,
                             final byte[] key,

@@ -145,7 +145,6 @@ fun instantiateSinkConfig(topologyContext: TopologyContext, config: Config, conn
 private class LocalConnectorSink(private val task: SinkTask, val config: Config) : FloodplainSink {
     private val offsetCounter = AtomicLong(System.currentTimeMillis())
     override fun send(topic: Topic, elements: List<Pair<String, Map<String, Any>?>>, topologyContext: TopologyContext) {
-    // override fun send(topic: Topic, elements: List<Pair<String, ByteArray?>>, topologyContext: TopologyContext) {
         logger.info("Inserting # of documents ${elements.size} for topic: $topic")
         val list = elements.map { (key, value) ->
             SinkRecord(topic.qualifiedString(topologyContext), 0, null, key, null, value, offsetCounter.incrementAndGet())

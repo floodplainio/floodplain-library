@@ -52,7 +52,7 @@ public class TestInputTopic<K, V> {
     private final TopologyTestDriver driver;
     private final String topic;
     private final Serializer<K> keySerializer;
-    private final Serializer<V> valueSerializer;
+    public final Serializer<V> valueSerializer;
 
     //Timing
     private Instant currentTime;

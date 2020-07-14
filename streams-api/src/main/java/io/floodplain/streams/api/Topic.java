@@ -25,7 +25,17 @@ public class Topic {
     private final String topicDefinition;
     private final String qualifiedDefinition;
 
-//    private static final TopologyContext mockContext = TopologyContext.context("instance","gen");
+
+    public enum FloodplainBodyFormat {
+        CONNECT_JSON, FLOODPLAIN_JSON
+    }
+
+    public enum FloodplainKeyFormat {
+        CONNECT_KEY_JSON, FLOODPLAIN_STRING
+    }
+
+
+    //    private static final TopologyContext mockContext = TopologyContext.context("instance","gen");
     private Topic(String topicDefinition, String qualifiedDefinition) {
         this.topicDefinition = topicDefinition;
         this.qualifiedDefinition = qualifiedDefinition;

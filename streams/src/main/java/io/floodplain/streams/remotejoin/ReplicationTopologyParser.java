@@ -35,6 +35,7 @@ import io.floodplain.streams.serializer.ReplicationMessageSerde;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
+import org.apache.kafka.common.serialization.Serializer;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.Predicate;
 import org.apache.kafka.streams.processor.Processor;
@@ -58,6 +59,8 @@ public class ReplicationTopologyParser {
     private static final Serde<ReplicationMessage> messageSerde = new ReplicationMessageSerde();
     private static final Serde<ImmutableMessage> immutableMessageSerde = new ImmutableMessageSerde();
 
+    private static ReplicationMessageSerde replicationMessageSerder = new ReplicationMessageSerde();
+    private static ConnectReplicationMessageSerde connectReplicationMessageSerder = new ConnectReplicationMessageSerde();
     public enum Flatten {FIRST, LAST, NONE}
 
     private static final Logger logger = LoggerFactory.getLogger(ReplicationTopologyParser.class);
@@ -116,7 +119,6 @@ public class ReplicationTopologyParser {
         if (!topologyConstructor.sources.containsKey(topic)) {
             currentBuilder.addSource(topic.qualifiedString(context), keyDeserializer, valueDeserializer, topic.qualifiedString(context));
             topologyConstructor.sources.put(topic, topic.qualifiedString(context));
-            // TODO Optimize. The topology should be valid without adding identityprocessors
         }
     }
 
@@ -131,19 +133,62 @@ public class ReplicationTopologyParser {
         return name;
     }
 
-    public static String addSourceStore(final Topology currentBuilder, TopologyContext context, TopologyConstructor topologyConstructor, Topic sourceTopicName,boolean connectSourceFormat, boolean materializeStore) {
-//        String storeTopic = context.topicName(sourceTopicName);
+    public static Deserializer<String> keyDeserializer(Topic.FloodplainKeyFormat keyFormat) {
+        switch (keyFormat) {
+
+            case CONNECT_KEY_JSON:
+                return ConnectReplicationMessageSerde.keyDeserialize();
+            case FLOODPLAIN_STRING:
+                return Serdes.String().deserializer();
+        }
+        throw new IllegalArgumentException("Weird key format: "+keyFormat);
+    }
+
+    public static Serializer<String> keySerializer(Topic.FloodplainKeyFormat keyFormat) {
+        switch (keyFormat) {
+            case CONNECT_KEY_JSON:
+                return ConnectReplicationMessageSerde.keySerialize();
+            case FLOODPLAIN_STRING:
+                return Serdes.String().serializer();
+        }
+        throw new IllegalArgumentException("Weird key format: "+keyFormat);
+    }
+
+    public static Deserializer<ReplicationMessage> bodyDeserializer(Topic.FloodplainBodyFormat bodyFormat) {
+        switch (bodyFormat) {
+           case CONNECT_JSON:
+               return connectReplicationMessageSerder.deserializer();
+           case FLOODPLAIN_JSON:
+               return replicationMessageSerder.deserializer();
+        }
+        throw new IllegalArgumentException("Weird body format: "+bodyFormat);
+    }
+
+    public static Serializer<ReplicationMessage> bodySerializer(Topic.FloodplainBodyFormat bodyFormat) {
+        switch (bodyFormat) {
+            case CONNECT_JSON:
+                return connectReplicationMessageSerder.serializer();
+            case FLOODPLAIN_JSON:
+                return replicationMessageSerder.serializer();
+        }
+        throw new IllegalArgumentException("Weird body format: "+bodyFormat);
+    }
+
+
+    public static String addSourceStore(final Topology currentBuilder, TopologyContext context, TopologyConstructor topologyConstructor, Topic sourceTopicName, Topic.FloodplainKeyFormat keyFormat, Topic.FloodplainBodyFormat bodyFormat, boolean materializeStore) {
         // TODO It might be better to fail if the topic does not exist? -> Well depends, if it is external yes, but if it is created by the same instance, then no.
         final String sourceProcessorName =  sourceTopicName.prefixedString("SOURCE",context);
         if (sourceTopicName != null) {
             String sourceName;
             if (!topologyConstructor.sources.containsKey(sourceTopicName)) {
                 sourceName = sourceProcessorName + "_src";
-                if (connectSourceFormat) {
-                    currentBuilder.addSource(sourceName, ConnectReplicationMessageSerde.keyDeserialize(), JSONToReplicationMessage.replicationFromConnect(), sourceTopicName.qualifiedString(context));
-                } else {
-                    currentBuilder.addSource(sourceName, sourceTopicName.qualifiedString(context));
-                }
+                currentBuilder.addSource(sourceName, keyDeserializer(keyFormat), bodyDeserializer(bodyFormat), sourceTopicName.qualifiedString(context));
+//
+//                if (connectSourceFormat) {
+//                    currentBuilder.addSource(sourceName, ConnectReplicationMessageSerde.keyDeserialize(), JSONToReplicationMessage.replicationFromConnect(), sourceTopicName.qualifiedString(context));
+//                } else {
+//                    currentBuilder.addSource(sourceName, sourceTopicName.qualifiedString(context));
+//                }
                 topologyConstructor.sources.put(sourceTopicName, sourceName);
                 if (materializeStore) {
                     currentBuilder.addProcessor(sourceProcessorName, () -> new StoreProcessor(STORE_PREFIX + sourceProcessorName), sourceName);

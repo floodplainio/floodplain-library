@@ -32,12 +32,12 @@ import java.net.URL
 private val logger = mu.KotlinLogging.logger {}
 
 fun main() {
-    stream {
+    val instance = stream("genxx") {
         val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")
         val mongoConfig = mongoConfig("mongosink", "mongodb://mongo", "mongodump")
-        postgresConfig.source("customer", "public") {
+        postgresConfig.sourceSimple("customer", "public") {
             join {
-                postgresConfig.source("payment", "public") {
+                postgresConfig.sourceSimple("payment", "public") {
                     scan({ msg -> msg["customer_id"].toString() }, { _ -> empty().set("total", BigDecimal(0)) },
                             {
                                 set { _, msg, state ->
@@ -57,5 +57,7 @@ fun main() {
             }
             mongoSink("justtotal", "myfinaltopic", mongoConfig)
         }
-    }.renderAndStart(URL("http://localhost:8083/connectors"), "localhost:9092", true)
+    }
+
+        instance.renderAndStart(URL("http://localhost:8083/connectors"), "localhost:9092", true)
 }

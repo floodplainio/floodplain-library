@@ -31,18 +31,20 @@ import java.util.Stack;
 public class TopicSource implements TopologyPipeComponent {
 
     private final Topic topic;
-    private final boolean connectFormat;
+    private final Topic.FloodplainBodyFormat bodyFormat;
+    private final Topic.FloodplainKeyFormat keyFormat;
 
     private boolean materialize = false;
 
-    public TopicSource(Topic topic, boolean connectFormat) {
+    public TopicSource(Topic topic, Topic.FloodplainKeyFormat keyFormat, Topic.FloodplainBodyFormat bodyFormat) {
         this.topic = topic;
-        this.connectFormat = connectFormat;
+        this.keyFormat = keyFormat;
+        this.bodyFormat = bodyFormat;
     }
 
     @Override
     public void addToTopology(Stack<String> transformerNames, int pipeId, Topology topology, TopologyContext topologyContext, TopologyConstructor topologyConstructor) {
-        String source = ReplicationTopologyParser.addSourceStore(topology, topologyContext, topologyConstructor, topic,connectFormat, this.materialize);
+        String source = ReplicationTopologyParser.addSourceStore(topology, topologyContext, topologyConstructor, topic,keyFormat,bodyFormat, this.materialize);
         topologyConstructor.addDesiredTopic(topic, Optional.empty());
         transformerNames.push(source);
     }

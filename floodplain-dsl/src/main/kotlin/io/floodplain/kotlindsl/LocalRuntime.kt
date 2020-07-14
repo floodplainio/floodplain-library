@@ -36,6 +36,7 @@ import io.floodplain.streams.serializer.ReplicationMessageSerde
 import java.nio.file.Files
 import java.nio.file.Path
 import java.time.Duration
+import java.time.Instant
 import java.util.Properties
 import java.util.UUID
 import kotlinx.coroutines.CoroutineScope
@@ -52,7 +53,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.isActive
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.runBlocking
@@ -74,7 +75,7 @@ private val parser: ReplicationMessageParser = JSONReplicationMessageParserImpl(
 interface InputReceiver {
     fun input(topic: String, key: String, msg: IMessage)
 
-    // fun input(topic: String, key: String, msg: ByteArray)
+    fun input(topic: String, key: ByteArray, msg: ByteArray)
     fun delete(topic: String, key: String)
     fun inputs(): Set<String>
 }
@@ -129,7 +130,6 @@ fun testTopology(
     props.setProperty(StreamsConfig.APPLICATION_ID_CONFIG, "doesntmatterid")
     props.setProperty(StreamsConfig.STATE_DIR_CONFIG, storageFolder)
     props.setProperty(StreamsConfig.BUILT_IN_METRICS_VERSION_CONFIG, StreamsConfig.METRICS_LATEST)
-    println("configs: $props")
     val driver = TopologyTestDriver(topology, props)
     val contextInstance = TestDriverContext(driver, context, topologyConstructor, sourceConfigs, sinkConfigs)
     val jobs = contextInstance.connectSourceAndSink()
@@ -140,8 +140,10 @@ fun testTopology(
             contextInstance.closeSinks(context)
         }
     } finally {
+
         driver.allStateStores.forEach { store -> store.value.close() }
         driver.close()
+        // TODO Add switch to be able to resume (so don't delete state files)?
         val path = Path.of(storageFolder).toAbsolutePath()
         if (Files.exists(path)) {
             Files.walk(path)
@@ -161,9 +163,13 @@ class TestDriverContext(
 
     val connectJobs = mutableListOf<Job>()
     private val inputTopics = mutableMapOf<String, TestInputTopic<String, ReplicationMessage>>()
+    // private val rawInputTopics = mutableMapOf<String, TestInputTopic<String, ByteArray>>()
+
     private val outputTopics = mutableMapOf<String, TestOutputTopic<String, ReplicationMessage>>()
 
     private val replicationMessageParser = ReplicationFactory.getInstance()
+    // private val connectReplicationMessageSerde = ConnectReplicationMessageSerde()
+    // private val connectKeySerde = ConnectKeySerde()
     override fun sourceConfigurations(): List<Config> {
         return sourceConfigs
     }
@@ -177,7 +183,7 @@ class TestDriverContext(
     }
 
     override fun inputs(): Set<String> {
-        return inputTopics.keys
+        return inputTopics.keys // + rawInputTopics.keys
     }
 
     override fun outputs(): Set<String> {
@@ -261,7 +267,10 @@ class TestDriverContext(
             .map { (topic, key, value) ->
                 val parsed = if (value == null) null else deserializer.deserialize(topic.qualifiedString(topologyContext), value) as ObjectNode
                 var result = if (value == null) null else mapper.convertValue(parsed, object : TypeReference<Map<String, Any>>() {})
+                logger.info("RawTopic: $topic key: $key data: $value")
                 Triple(topic, key, result)
+            }
+            .onEach { (topic, key, data) ->
             }
             .broadcastIn(context)
             .asFlow()
@@ -284,10 +293,12 @@ class TestDriverContext(
                 if (!record.topic().endsWith("changelog")) {
                     val key = Serdes.String().deserializer().deserialize(record.topic(), record.key())
                     // val message = parser.parseBytes(Optional.of(record.topic()), record.value())
+                    val messageString = String(record.value() ?: byteArrayOf())
+                    logger.info("JOUTPUT: $key value: $messageString")
                     val topic = Topic.fromQualified(record.topic())
-                    if (this.isActive) {
+                    // if (this.isActive) {
                         sendBlocking(Triple(topic, key, record.value()))
-                    }
+                    // }
                 } else {
                     // noop, skipping changelog items
                 }
@@ -304,6 +315,12 @@ class TestDriverContext(
         if (!inputs().contains(qualifiedTopicName)) {
             logger.debug("Missing topic: $topic available topics: ${inputs()}")
         }
+        // if(rawInputTopics.containsKey(qualifiedTopicName)) {
+        //     rawInputTopics[qualifiedTopicName]
+        //     // TODO better exception type?
+        //     throw java.lang.RuntimeException("Parsed input topic: $qualifiedTopicName is already present as a raw type")
+        // }
+
         val inputTopic = inputTopics.computeIfAbsent(qualifiedTopicName) {
             driver.createInputTopic(
                 qualifiedTopicName,
@@ -312,7 +329,39 @@ class TestDriverContext(
             )
         }
         val replicationMsg = ReplicationFactory.standardMessage(msg.toImmutable())
+        // val parsedKey = JSONToReplicationMessage.processDebeziumJSONKey(key)
         inputTopic.pipeInput(key, replicationMsg)
+    }
+
+    override fun input(topic: String, key: ByteArray, msg: ByteArray) {
+        val qualifiedTopicName = topologyContext.topicName(topic)
+        if (!inputs().contains(qualifiedTopicName)) {
+            logger.debug("Missing topic: $topic available topics: ${inputs()}")
+        }
+        try {
+            driver.pipeRawRecord(qualifiedTopicName, Instant.now().toEpochMilli(), key, msg)
+        } catch (e: Throwable) {
+            e.printStackTrace()
+        }
+        // val parsedKey = JSONToReplicationMessage.processDebeziumJSONKey(key)
+        // val replicationMessage = JSONToReplicationMessage.processDebeziumBody(msg).withOperation(ReplicationMessage.Operation.UPDATE)
+        // val inputTopic = inputTopics.computeIfAbsent(qualifiedTopicName) {
+        //     driver.createInputTopic(
+        //         qualifiedTopicName,
+        //         // connectKeySerde.serializer(),
+        //         // ReplicationTopologyParser.keySerializer(Topic.FloodplainKeyFormat.CONNECT_KEY_JSON),
+        //         Serdes.String().serializer(),
+        //         // ReplicationTopologyParser.bodySerializer(Topic.FloodplainBodyFormat.CONNECT_JSON)
+        //         ReplicationMessageSerde().serializer()
+        //     )
+        //     // connectKeySerde.serializer()
+        //     // driver.
+        // }
+        // // driver.createInputTopic()
+        // // val replicationMsg = ReplicationFactory.standardMessage(parsed.toImmutable())
+        // inputTopic.pipeInput(parsedKey, replicationMessage)
+        // // val parsed = connectReplicationMessageSerde.deserializer().deserialize(qualifiedTopicName,msg)
+        // // input(topic,key, parsed)
     }
 
     override fun delete(topic: String, key: String) {

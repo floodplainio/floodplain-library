@@ -19,14 +19,9 @@
 package io.floodplain.kotlindsl
 import io.floodplain.ChangeRecord
 import io.floodplain.debezium.postgres.postgresDataSource
-import io.floodplain.kotlindsl.message.fromImmutable
-import io.floodplain.reactive.source.topology.DebeziumTopicSource
 import io.floodplain.reactive.source.topology.TopicSource
-import io.floodplain.replication.api.ReplicationMessage
 import io.floodplain.streams.api.Topic
 import io.floodplain.streams.api.TopologyContext
-import io.floodplain.streams.debezium.JSONToReplicationMessage.processDebeziumBody
-import io.floodplain.streams.debezium.JSONToReplicationMessage.processDebeziumJSONKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 
@@ -45,19 +40,23 @@ class PostgresConfig(val topologyContext: TopologyContext, val name: String, val
         broadcastFlow.collect {
             val availableSourceTopics = sourceElements.map { sourceElement -> sourceElement.topic().qualifiedString(topologyContext) }.toSet()
             if (availableSourceTopics.contains(it.topic)) {
-                val parsedKey = processDebeziumJSONKey(it.key)
-                val rm: ReplicationMessage? = processDebeziumBody(it.value)
-                val operation = rm?.operation() ?: ReplicationMessage.Operation.DELETE
-                try {
-                    when (operation) {
-                        ReplicationMessage.Operation.DELETE ->
-                            inputReceiver.delete(it.topic, parsedKey)
-                        else ->
-                            inputReceiver.input(it.topic, parsedKey, fromImmutable(rm!!.message()))
-                    }
-                } catch (e: Throwable) {
-                    error("Failed with exception $e")
+                if (it.value != null) {
+                    inputReceiver.input(it.topic, it.key.toByteArray(), it.value!!)
+                } else {
+                    inputReceiver.delete(it.topic, it.key)
                 }
+                // val rm: ReplicationMessage? = processDebeziumBody(it.value)
+                // val operation = rm?.operation() ?: ReplicationMessage.Operation.DELETE
+                // try {
+                //     when (operation) {
+                //         ReplicationMessage.Operation.DELETE ->
+                //             inputReceiver.delete(it.topic, parsedKey)
+                //         else ->
+                //             inputReceiver.input(it.topic, parsedKey, fromImmutable(rm!!.message()))
+                //     }
+                // } catch (e: Throwable) {
+                //     error("Failed with exception $e")
+                // }
             }
         }
         logger.info("connectSource completed")
@@ -83,6 +82,8 @@ class PostgresConfig(val topologyContext: TopologyContext, val name: String, val
                 "database.dbname" to database,
                 "database.user" to username,
                 "database.password" to password,
+                "key.converter" to "org.apache.kafka.connect.json.JsonConverter",
+                "value.converter" to "org.apache.kafka.connect.json.JsonConverter",
                 // TODO
                 "tablewhitelistorsomething" to sourceElements.map { e -> e.topic().qualifiedString(topologyContext) }.joinToString(",")
         )))
@@ -92,14 +93,14 @@ class PostgresConfig(val topologyContext: TopologyContext, val name: String, val
         sourceElements.add(elt)
     }
 
-    fun directSource(offsetId: String): Flow<ChangeRecord> {
+    private fun directSource(offsetId: String): Flow<ChangeRecord> {
         return postgresDataSource(topologyContext.topicName(name), hostname, port, database, username, password, offsetId)
     }
 
     fun sourceSimple(table: String, schema: String? = null, init: Source.() -> Unit): Source {
         val effectiveSchema = schema ?: defaultSchema ?: "public"
         val topic = Topic.from("$name.$effectiveSchema.$table")
-        val topicSource = TopicSource(topic, false)
+        val topicSource = TopicSource(topic, Topic.FloodplainKeyFormat.FLOODPLAIN_STRING, Topic.FloodplainBodyFormat.FLOODPLAIN_JSON)
         addSourceElement(DebeziumSourceElement(topic))
         val databaseSource = Source(topicSource)
         databaseSource.init()
@@ -108,8 +109,9 @@ class PostgresConfig(val topologyContext: TopologyContext, val name: String, val
 
     fun source(table: String, schema: String? = null, init: Source.() -> Unit): Source {
         val effectiveSchema = schema ?: defaultSchema ?: "public"
-        val topicSource = DebeziumTopicSource(name, table, effectiveSchema)
-        addSourceElement(DebeziumSourceElement(topicSource.topic))
+        val topic = Topic.from("$name.$effectiveSchema.$table")
+        val topicSource = TopicSource(topic, Topic.FloodplainKeyFormat.CONNECT_KEY_JSON, Topic.FloodplainBodyFormat.CONNECT_JSON)
+        addSourceElement(DebeziumSourceElement(topic))
         val databaseSource = Source(topicSource)
         databaseSource.init()
         return databaseSource
@@ -123,8 +125,9 @@ fun Stream.postgresSourceConfig(name: String, hostname: String, port: Int, usern
 }
 
 fun Stream.postgresSource(schema: String, table: String, config: PostgresConfig, init: Source.() -> Unit): Source {
-    val topicSource = DebeziumTopicSource(config.name, table, schema)
-    config.addSourceElement(DebeziumSourceElement(topicSource.topic))
+    val topic = Topic.from("${config.name}.$schema.$table")
+    val topicSource = TopicSource(topic, Topic.FloodplainKeyFormat.CONNECT_KEY_JSON, Topic.FloodplainBodyFormat.CONNECT_JSON)
+    config.addSourceElement(DebeziumSourceElement(topic))
     val databaseSource = Source(topicSource)
     databaseSource.init()
     return databaseSource

@@ -48,9 +48,6 @@ class TestOutputFlow {
             var initialCount = 0
             val count = flow.onEach { initialCount++ }
                 .bufferTimeout(7, 1000)
-                // .chunkFlow(10).onEach {(topic,elements)->
-                // println("Topic: $topic elements: ${elements.size}")
-                // }
                 .map { elts -> elts.size }
                 .fold(0, { acc, cnt -> acc + cnt })
 

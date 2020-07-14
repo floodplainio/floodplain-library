@@ -20,13 +20,18 @@ package io.floodplain.kotlindsl
 
 import io.floodplain.kotlindsl.message.IMessage
 import io.floodplain.kotlindsl.message.empty
+import io.floodplain.kotlindsl.sink.logSink
+import io.floodplain.kotlindsl.sink.logSinkConfig
 import io.floodplain.replication.api.ReplicationMessage
+import io.floodplain.streams.api.Topic
 import io.floodplain.streams.remotejoin.StoreStateProcessor
+import java.lang.IllegalArgumentException
 import java.math.BigDecimal
 import java.time.Duration
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import kotlinx.coroutines.delay
 import org.apache.kafka.streams.state.KeyValueStore
 
 private val logger = mu.KotlinLogging.logger {}
@@ -467,6 +472,25 @@ class TestTopology {
     }
 
     @Test
+    fun testRawInput() {
+        val data = javaClass.classLoader.getResource("decimalwithscale.json")?.readBytes()
+        if (data == null) {
+            throw IllegalArgumentException("Missing json file for decimalwithscale.json")
+        }
+        stream {
+            externalSource("@source", Topic.FloodplainKeyFormat.FLOODPLAIN_STRING, Topic.FloodplainBodyFormat.CONNECT_JSON) {
+                sink("@sinktopic")
+            }
+        }.renderAndTest {
+            input("@source", "key1".toByteArray(), data)
+            var (key, value) = output("@sinktopic")
+            println("value: $value")
+            val amount = value.decimal("amount")
+            assertEquals(BigDecimal.valueOf(299, 2), amount)
+        }
+    }
+
+    @Test
     fun testDiff() {
         stream {
             source("@source") {
@@ -500,6 +524,19 @@ class TestTopology {
         var i = 0L
         store.all().forEach { i++ }
         return i
+    }
+
+    @Test
+    fun testLogSink() {
+        stream {
+            val logSinkConfig = logSinkConfig("logname")
+            source("@source") {
+                logSink("logSinkTest", "@output", logSinkConfig)
+            }
+        }.renderAndTest {
+            input("@source", "somekey", empty().set("myKey", "myValue"))
+            delay(200)
+        }
     }
 
     @Test
@@ -541,6 +578,24 @@ class TestTopology {
 
             logger.info("Store szie: $storeSize")
 //            assertEquals(10L,storeSize)
+        }
+    }
+
+    @Test
+    fun testRawJsonInput() {
+        val originalKey = """{"schema":{"type":"struct","fields":[{"type":"int32","optional":false,"field":"film_id"}],"optional":false,"name":"instance_mypostgres.public.film.Key"},"payload":{"film_id":965}}"""
+        val body = """{"schema":{"type":"struct","fields":[{"type":"struct","fields":[{"type":"int32","optional":false,"field":"film_id"},{"type":"string","optional":false,"field":"title"},{"type":"string","optional":true,"field":"description"},{"type":"int32","optional":true,"field":"release_year"},{"type":"int16","optional":false,"field":"language_id"},{"type":"int16","optional":false,"field":"rental_duration"},{"type":"bytes","optional":false,"name":"org.apache.kafka.connect.data.Decimal","version":1,"parameters":{"scale":"2","connect.decimal.precision":"4"},"field":"rental_rate"},{"type":"int16","optional":true,"field":"length"},{"type":"bytes","optional":false,"name":"org.apache.kafka.connect.data.Decimal","version":1,"parameters":{"scale":"2","connect.decimal.precision":"5"},"field":"replacement_cost"},{"type":"string","optional":true,"name":"io.debezium.data.Enum","version":1,"parameters":{"allowed":"G,PG,PG-13,R,NC-17"},"field":"rating"},{"type":"int64","optional":false,"name":"io.debezium.time.MicroTimestamp","version":1,"field":"last_update"},{"type":"array","items":{"type":"string","optional":true},"optional":true,"field":"special_features"}],"optional":true,"name":"instance_mypostgres.public.film.Value","field":"before"},{"type":"struct","fields":[{"type":"int32","optional":false,"field":"film_id"},{"type":"string","optional":false,"field":"title"},{"type":"string","optional":true,"field":"description"},{"type":"int32","optional":true,"field":"release_year"},{"type":"int16","optional":false,"field":"language_id"},{"type":"int16","optional":false,"field":"rental_duration"},{"type":"bytes","optional":false,"name":"org.apache.kafka.connect.data.Decimal","version":1,"parameters":{"scale":"2","connect.decimal.precision":"4"},"field":"rental_rate"},{"type":"int16","optional":true,"field":"length"},{"type":"bytes","optional":false,"name":"org.apache.kafka.connect.data.Decimal","version":1,"parameters":{"scale":"2","connect.decimal.precision":"5"},"field":"replacement_cost"},{"type":"string","optional":true,"name":"io.debezium.data.Enum","version":1,"parameters":{"allowed":"G,PG,PG-13,R,NC-17"},"field":"rating"},{"type":"int64","optional":false,"name":"io.debezium.time.MicroTimestamp","version":1,"field":"last_update"},{"type":"array","items":{"type":"string","optional":true},"optional":true,"field":"special_features"}],"optional":true,"name":"instance_mypostgres.public.film.Value","field":"after"},{"type":"struct","fields":[{"type":"string","optional":false,"field":"version"},{"type":"string","optional":false,"field":"connector"},{"type":"string","optional":false,"field":"name"},{"type":"int64","optional":false,"field":"ts_ms"},{"type":"string","optional":true,"name":"io.debezium.data.Enum","version":1,"parameters":{"allowed":"true,last,false"},"default":"false","field":"snapshot"},{"type":"string","optional":false,"field":"db"},{"type":"string","optional":false,"field":"schema"},{"type":"string","optional":false,"field":"table"},{"type":"int64","optional":true,"field":"txId"},{"type":"int64","optional":true,"field":"lsn"},{"type":"int64","optional":true,"field":"xmin"}],"optional":false,"name":"io.debezium.connector.postgresql.Source","field":"source"},{"type":"string","optional":false,"field":"op"},{"type":"int64","optional":true,"field":"ts_ms"},{"type":"struct","fields":[{"type":"string","optional":false,"field":"id"},{"type":"int64","optional":false,"field":"total_order"},{"type":"int64","optional":false,"field":"data_collection_order"}],"optional":true,"field":"transaction"}],"optional":false,"name":"instance_mypostgres.public.film.Envelope"},"payload":{"before":null,"after":{"film_id":778,"title":"Secrets Paradise","description":"A Fateful Saga of a Cat And a Frisbee who must Kill a Girl in A Manhattan Penthouse","release_year":2006,"language_id":1,"rental_duration":3,"rental_rate":"AfM=","length":109,"replacement_cost":"CcM=","rating":"G","last_update":1369579858951000,"special_features":["Trailers","Commentaries"]},"source":{"version":"1.2.0.Final","connector":"postgresql","name":"instance-mypostgres","ts_ms":1594564042739,"snapshot":"true","db":"dvdrental","schema":"public","table":"film","txId":751,"lsn":30998528,"xmin":null},"op":"r","ts_ms":1594564042739,"transaction":null}}"""
+
+        stream {
+            val logSinkConfig = logSinkConfig("logname")
+            externalSource("@external", Topic.FloodplainKeyFormat.CONNECT_KEY_JSON, Topic.FloodplainBodyFormat.CONNECT_JSON) {
+                logSink("somesink", "@output", logSinkConfig)
+            }
+        }.renderAndTest {
+            input("@external", originalKey.toByteArray(), body.toByteArray())
+            // val (key,value) = output("@output")
+            // assertEquals(originalKey,key)
+            // logger.info("Result: $value")
         }
     }
 }

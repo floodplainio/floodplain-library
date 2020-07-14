@@ -28,6 +28,7 @@ dependencies {
     implementation(project(":replication-api"))
     implementation(project(":replication-json"))
     implementation("io.confluent:kafka-connect-elasticsearch:5.5.0")
+    implementation(dependencies.kotlinCoroutines)
     compile(dependencies.slf4j)
     testCompile(dependencies.jUnit)
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
