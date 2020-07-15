@@ -38,7 +38,7 @@ fun filter(generation: String) {
             }
             mongoSink("filtercollection", "filtertopic", mongoConfig)
         }
-    }.renderAndStart(URL("http://localhost:8083/connectors"), "localhost:9092")
+    }.renderAndSchedule(URL("http://localhost:8083/connectors"), "localhost:9092")
     logger.info { "done!" }
 }
 

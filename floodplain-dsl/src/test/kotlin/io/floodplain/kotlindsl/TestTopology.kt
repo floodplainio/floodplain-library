@@ -48,7 +48,7 @@ class TestTopology {
             source("@sometopic") {
                 sink("@outputTopic")
             }
-        }.renderAndTest {
+        }.renderAndExecute {
             input("@sometopic", "key1", empty().set("name", "gorilla"))
             input("@sometopic", "key1", empty().set("name", "monkey"))
             assertEquals("gorilla", output("@outputTopic").second["name"])
@@ -62,7 +62,7 @@ class TestTopology {
             source("@sometopic") {
                 sink("@outputtopic")
             }
-        }.renderAndTest {
+        }.renderAndExecute {
             input("@sometopic", "key1", empty().set("name", "gorilla"))
             delete("@sometopic", "key1")
             output("@outputtopic")
@@ -80,7 +80,7 @@ class TestTopology {
                 }
                 sink("people")
             }
-        }.renderAndTest {
+        }.renderAndExecute {
             input("mysource", "1", empty().set("species", "human"))
             logger.info("outputs: ${outputs()}")
             val (_, value) = output("people")
@@ -100,7 +100,7 @@ class TestTopology {
                 }
                 sink("@output")
             }
-        }.renderAndTest {
+        }.renderAndExecute {
             assertTrue(isEmpty("@output"))
             input("@left", "key1", empty().set("name", "left1"))
             assertTrue(isEmpty("@output"))
@@ -130,7 +130,7 @@ class TestTopology {
                 }
                 sink("@output")
             }
-        }.renderAndTest {
+        }.renderAndExecute {
             assertTrue(isEmpty("@output"))
             val msg = empty().set("name", "left1")
             input("@left", "key1", msg)
@@ -155,7 +155,7 @@ class TestTopology {
                 group { message -> message["subkey"] as String }
                 sink("mysink")
             }
-        }.renderAndTest {
+        }.renderAndExecute {
             val record1 = empty().set("subkey", "subkey1")
             val record2 = empty().set("subkey", "subkey2")
             input("src", "key1", record1)
@@ -189,7 +189,7 @@ class TestTopology {
                 }
                 sink("@output")
             }
-        }.renderAndTest {
+        }.renderAndExecute {
             assertTrue(isEmpty("@output"))
             val leftRecord = empty().set("name", "left1")
             input("@left", "key1", leftRecord)
@@ -243,7 +243,7 @@ class TestTopology {
                 }
                 sink("@output")
             }
-        }.renderAndTest {
+        }.renderAndExecute {
             assertTrue(isEmpty("@output"))
             val leftRecord = empty().set("name", "left1")
             input("@left", "key1", leftRecord)
@@ -282,7 +282,7 @@ class TestTopology {
                 }
                 sink("@output")
             }
-        }.renderAndTest {
+        }.renderAndExecute {
             input("@source", "key1", empty().set("name", "myname"))
             input("@source", "key2", empty().set("name", "notmyname"))
             input("@source", "key3", empty().set("name", "myname"))
@@ -304,7 +304,7 @@ class TestTopology {
 
                 sink("@output")
             }
-        }.renderAndTest {
+        }.renderAndExecute {
             input("@source", "key1", empty())
             input("@source", "key1", empty())
             output("@output") // initial key, total = 1
@@ -340,7 +340,7 @@ class TestTopology {
                 each { key, msg, acc -> logger.info("Each: $key -> $msg -> $acc") }
                 sink("@output")
             }
-        }.renderAndTest {
+        }.renderAndExecute {
             input("@source", "key1", empty().set("message", "message1"))
             input("@source", "key1", empty().set("message", "message1"))
             output("@output") // initial key, total = 1
@@ -368,7 +368,7 @@ class TestTopology {
 
                 sink("@output")
             }
-        }.renderAndTest {
+        }.renderAndExecute {
             input("@source", "key1", empty().set("groupKey", "group1"))
             input("@source", "key1", empty().set("groupKey", "group1"))
             output("@output") // initial key, total = 1
@@ -417,7 +417,7 @@ class TestTopology {
 
                 sink("@output")
             }
-        }.renderAndTest {
+        }.renderAndExecute {
             input("@source", "key1", empty().set("groupKey", "group1"))
             delete("@source", "key1")
             skip("@output", 1)
@@ -445,7 +445,7 @@ class TestTopology {
                 )
                 sink("@sink")
             }
-        }.renderAndTest {
+        }.renderAndExecute {
             input("@source", "key1", empty().set("category", "category1"))
             assertEquals(1, outputSize("@category1"))
             assertEquals(0, outputSize("@category2"))
@@ -463,7 +463,7 @@ class TestTopology {
                     value["destination"] as String
                 }
             }
-        }.renderAndTest {
+        }.renderAndExecute {
             input("@source", "key1", empty().set("destination", "mydestination"))
             input("@source", "key1", empty().set("destination", "otherdestination"))
             assertEquals(1, outputSize("mydestination"))
@@ -481,9 +481,9 @@ class TestTopology {
             externalSource("@source", Topic.FloodplainKeyFormat.FLOODPLAIN_STRING, Topic.FloodplainBodyFormat.CONNECT_JSON) {
                 sink("@sinktopic")
             }
-        }.renderAndTest {
+        }.renderAndExecute {
             input("@source", "key1".toByteArray(), data)
-            var (key, value) = output("@sinktopic")
+            var (_, value) = output("@sinktopic")
             logger.info("value: $value")
             val amount = value.decimal("amount")
             assertEquals(BigDecimal.valueOf(299, 2), amount)
@@ -497,7 +497,7 @@ class TestTopology {
                 diff()
                 sink("@output")
             }
-        }.renderAndTest {
+        }.renderAndExecute {
 
             val stateStore = stateStore(topologyContext().topicName("@diff_1_1"))
             input("@source", "key1", empty().set("value", "value1"))
@@ -533,7 +533,7 @@ class TestTopology {
             source("@source") {
                 logSink("logSinkTest", "@output", logSinkConfig)
             }
-        }.renderAndTest {
+        }.renderAndExecute {
             input("@source", "somekey", empty().set("myKey", "myValue"))
             delay(200)
         }
@@ -546,7 +546,7 @@ class TestTopology {
                 buffer(Duration.ofSeconds(9), 10)
                 sink("@output")
             }
-        }.renderAndTest {
+        }.renderAndExecute {
             val msg = empty().set("value", "value1")
             input("@source", "key1", msg)
             // shouldn't have arrived yet:
@@ -591,7 +591,7 @@ class TestTopology {
             externalSource("@external", Topic.FloodplainKeyFormat.CONNECT_KEY_JSON, Topic.FloodplainBodyFormat.CONNECT_JSON) {
                 logSink("somesink", "@output", logSinkConfig)
             }
-        }.renderAndTest {
+        }.renderAndExecute {
             input("@external", originalKey.toByteArray(), body.toByteArray())
             // val (key,value) = output("@output")
             // assertEquals(originalKey,key)

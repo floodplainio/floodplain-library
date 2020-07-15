@@ -22,7 +22,6 @@ import com.mongodb.client.MongoClients
 import io.floodplain.kotlindsl.each
 import io.floodplain.kotlindsl.join
 import io.floodplain.kotlindsl.joinRemote
-import io.floodplain.kotlindsl.message.IMessage
 import io.floodplain.kotlindsl.message.empty
 import io.floodplain.kotlindsl.postgresSource
 import io.floodplain.kotlindsl.postgresSourceConfig
@@ -35,7 +34,6 @@ import io.floodplain.kotlindsl.streams
 import io.floodplain.mongodb.mongoConfig
 import io.floodplain.mongodb.mongoSink
 import java.math.BigDecimal
-import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
@@ -84,61 +82,66 @@ class TestCombinedMongo {
                 "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
                 "@mongodump"
             )
-            val addressMap = mutableMapOf<String, IMessage>()
+            // val addressMap = mutableMapOf<String, IMessage>()
             postgresSource("address", postgresConfig) {
-                    each { key, _, _ ->
-                        logger.info("KEYYA {} -> {}", key, key.javaClass)
-                    }
+                    // each { key, _, _ ->
+                    //     logger.info("KEYYA {} -> {}", key, key.javaClass)
+                    // }
                     joinRemote({ msg -> "${msg["city_id"]}" }, false) {
                         postgresSource("city", postgresConfig) {
-                            each { key, _, _ ->
-                                logger.info("KEYYC {}", key)
-                            }
-                            // joinRemote({ msg -> "${msg["country_id"]}" }, false) {
-                            //     postgresConfig.source("country") {}
-                            // }
-                            // set { _, msg, state ->
-                            //     msg.set("country", state)
-                            // }
                         }
                     }
                     set { key, msg, state ->
                         msg.set("city", state)
-                        addressMap.put(key, msg)
-                        val correctAddresses = addressMap.filter { (k, v) ->
-                            v["city"] != null
-                        }.map { (k, v) -> k }
-                            .count()
-
-                        // logger.info("Corr addresses: " + correctAddresses)
+                        // addressMap.put(key, msg)
+                        // val correctAddresses = addressMap.filter { (k, v) ->
+                        //     v["city"] != null
+                        // }.map { (k, v) -> k }
+                            // .count(
+                        // logger.info("Corr addresses: " + correctAddresses.size)
+                        // logger.info("Corr: " + correctAddresses)
                         // logger.info("KEYYJ {}\n{}", key, msg)
                         msg
                     }
                     // logSink("someSink","@sometopic",logConfig)
                     mongoSink("address", "@address", mongoConfig)
                 }
-        }.renderAndTest {
-            logger.info("Outputs: ${outputs()}")
-            delay(5000)
+        }.renderAndExecute {
             val database = topologyContext().topicName("@mongodump")
-
-            connectJobs().forEach { it.cancel("ciao!") }
-            var hits = 0L
-            withTimeout(100000) {
-                repeat(1000) {
-                    MongoClients.create("mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}")
-                        .use { client ->
-                            val collection = client.getDatabase(database).getCollection("customer")
-                            hits = collection.countDocuments()
-                            logger.info("Count of Documents: $hits in database: $database")
-                            if (hits >= 598) {
-                                return@withTimeout
-                            }
-                        }
-                    delay(1000)
+            flushSinks()
+            val hits = waitForMongoDbCondition("mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}", database) { database ->
+                val collection = database.getCollection("address")
+                val countDocuments = collection.countDocuments()
+                logger.info("# of documents: $countDocuments")
+                if (countDocuments == 603L) {
+                    603L
+                } else {
+                    null
                 }
-            }
-            assertEquals(599, hits)
+            } as Long?
+            assertNotNull(hits)
+            connectJobs().forEach { it.cancel("ciao!") }
+            // logger.info("Outputs: ${outputs()}")
+            // delay(5000)
+            // val database = topologyContext().topicName("@mongodump")
+
+            // connectJobs().forEach { it.cancel("ciao!") }
+            // var hits = 0L
+            // withTimeout(100000) {
+            //     repeat(1000) {
+            //         MongoClients.create("mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}")
+            //             .use { client ->
+            //                 val collection = client.getDatabase(database).getCollection("address")
+            //                 hits = collection.countDocuments()
+            //                 logger.info("Count of Documents: $hits in database: $database")
+            //                 if (hits >= 598) {
+            //                     return@withTimeout
+            //                 }
+            //             }
+            //         delay(1000)
+            //     }
+            // }
+            // assertEquals(599, hits)
             logger.info("done, test succeeded")
         }
     }
@@ -214,30 +217,25 @@ class TestCombinedMongo {
                     }
                     mongoSink("staff", "@staff", mongoConfig)
                 })
-        }.renderAndTest {
-            logger.info("Outputs: ${outputs()}")
-            delay(5000)
+        }.renderAndExecute {
             val database = topologyContext().topicName("@mongodump")
-
-            connectJobs().forEach { it.cancel("ciao!") }
-            var hits = 0L
-            withTimeout(100000) {
-                repeat(1000) {
-                    MongoClients.create("mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}")
-                        .use { client ->
-                            val collection = client.getDatabase(database).getCollection("customer")
-                            hits = collection.countDocuments()
-                            logger.info("Count of Documents: $hits in database: $database")
-                            if (hits >= 598) {
-                                return@withTimeout
-                            }
-                        }
-                    delay(1000)
+            flushSinks()
+            val hits = waitForMongoDbCondition("mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}", database) { database ->
+                val staff = database.getCollection("staff")
+                val staffCount = staff.countDocuments()
+                val store = database.getCollection("store")
+                val storeCount = store.countDocuments()
+                val customer = database.getCollection("customer")
+                val customerCount = customer.countDocuments()
+                logger.info("# of staff: $staffCount # of stores: $storeCount customer count: $customerCount")
+                if (storeCount == 2L && staffCount == 2L && customerCount == 599L) {
+                    customerCount
+                } else {
+                    null
                 }
-            }
-            assertEquals(599, hits)
-            logger.info("done, test succeeded")
-        }
+            } as Long?
+            assertNotNull(hits)
+            connectJobs().forEach { it.cancel("ciao!") } }
     }
     @Test @Ignore
     fun testSimpleReduce() {
@@ -277,7 +275,7 @@ class TestCombinedMongo {
                 )
                 mongoSink("justtotal", "@myfinaltopic", mongoConfig)
             })
-        }.renderAndTest {
+        }.renderAndExecute {
             val database = topologyContext().topicName("@mongodump")
 
             withTimeout(100000) {
@@ -346,10 +344,10 @@ class TestCombinedMongo {
                     customer["payments"] = paymenttotal["total"]; customer
                 }
                 mongoSink("paymentpercustomer", "myfinaltopic", mongoConfig) })
-        }.renderAndTest {
+        }.renderAndExecute {
             val database = topologyContext().topicName("@mongodump")
-            val items = waitForMongoDbCondition("mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}", database) { database ->
-                val collection = database.getCollection("paymentpercustomer")
+            val items = waitForMongoDbCondition("mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}", database) { currentDatabase ->
+                val collection = currentDatabase.getCollection("paymentpercustomer")
                 val items = collection.countDocuments()
                 // TODO improve
                 if (items> 100) {

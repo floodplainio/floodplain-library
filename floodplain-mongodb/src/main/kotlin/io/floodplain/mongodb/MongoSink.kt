@@ -134,11 +134,17 @@ private class MongoFloodplainSink(private val task: SinkTask, private val config
 
     override fun send(topic: Topic, elements: List<Pair<String, Map<String, Any>?>>, topologyContext: TopologyContext) {
         // override fun send(docs: List<Triple<Topic, String, IMessage?>>) {
+        val keys = elements.map { (k, v) -> k }.toList()
+        // logger.info("Sending documents to sink: ${elements.size} Topic: $topic Keys: $keys")
         val list = elements.map { (key, value) ->
             // logger.info("Sending document to sink. Topic: $topic Key: $key message: $value")
             SinkRecord(topic.qualifiedString(topologyContext), 0, null, key, null, value, offsetCounter.incrementAndGet())
         }.toList()
-        task.put(list)
+        try {
+            task.put(list)
+        } catch (e: Throwable) {
+            e.printStackTrace()
+        }
     }
 
     override fun config(): Config {

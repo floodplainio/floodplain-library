@@ -65,6 +65,6 @@ fun joinFilms(generation: String) {
             }
             mongoSink("filmwithcategories", "@filmwithcat", mongoConfig)
         }
-    }.renderAndStart(URL("http://localhost:8083/connectors"), "localhost:9092", true)
+    }.renderAndSchedule(URL("http://localhost:8083/connectors"), "localhost:9092", true)
     logger.info { "done!" }
 }

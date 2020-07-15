@@ -64,7 +64,7 @@ class TestMongo {
                 filter { _, msg -> msg.long("counter") % 2 == 0L }
                 mongoSink("test-collection", "myindex", config)
             }
-        }.renderAndTest {
+        }.renderAndExecute {
             // delay(5000)
             MongoClients.create("mongodb://$address:$port").use { client ->
                 val collection = client.getDatabase("mongo-connect-test")
@@ -118,7 +118,7 @@ class TestMongo {
                     mongoSink("collection2", "myindex2", config)
                 }
             )
-        }.renderAndTest {
+        }.renderAndExecute {
             // delay(5000)
             MongoClients.create("mongodb://$address:$port").use { client ->
                 val database = client.getDatabase("mongo-connect-test")

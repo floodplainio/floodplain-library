@@ -41,6 +41,7 @@ import java.util.Properties
 import java.util.UUID
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.awaitClose
@@ -53,7 +54,6 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newSingleThreadContext
@@ -138,7 +138,7 @@ fun testTopology(
     try {
         runBlocking {
             testCmds(contextInstance)
-            contextInstance.closeSinks(context)
+            contextInstance.closeSinks()
         }
     } finally {
 
@@ -198,12 +198,12 @@ class TestDriverContext(
     }
 
     private fun <T> Flow<T>.handleErrors(): Flow<T> =
-        catch { e -> logger.warn("Error in flow $e") }
+        catch { e -> logger.error("Error in flow $e") }
 
     override fun connectSourceAndSink(): List<Job> {
         val outputJob = GlobalScope.launch(newSingleThreadContext("TopologySource"), CoroutineStart.UNDISPATCHED) {
             val outputFlows = outputFlows(this)
-                .map { (topic, flow) -> topic to flow.bufferTimeout(200, 200) }
+                .map { (topic, flow) -> topic to flow.bufferTimeout(50, 200) }
                 .toMap()
             val sinks = sinksByTopic()
                 outputFlows.forEach { (topic, flow) ->
@@ -239,7 +239,7 @@ class TestDriverContext(
             .forEach { it.flush() }
     }
 
-    fun closeSinks(topologyContext: TopologyContext) {
+    fun closeSinks() {
         this.sinkConfigurations().flatMap { config ->
             config.sinkElements().values
         }.flatMap { it }
@@ -258,27 +258,21 @@ class TestDriverContext(
         return result
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun outputFlows(context: CoroutineScope): Map<Topic, Flow<Pair<String, Map<String, Any>?>>> {
         val topics = topics()
         val deserializer = JsonDeserializer()
-        var mapper: ObjectMapper = ObjectMapper()
+        val mapper: ObjectMapper = ObjectMapper()
 
-        // GlobalScope.launch {
         val sourceFlow = outputFlowSingle()
             .map { (topic, key, value) ->
                 val parsed = if (value == null) null else deserializer.deserialize(topic.qualifiedString(topologyContext), value) as ObjectNode
                 var result = if (value == null) null else mapper.convertValue(parsed, object : TypeReference<Map<String, Any>>() {})
-                // logger.info("RawTopic: $topic key: $key data: $value")
                 Triple(topic, key, result)
-            }
-            .onEach { (topic, key, data) ->
             }
             .broadcastIn(context)
             .asFlow()
             .handleErrors()
-            // .onEach { (topic, key, value) ->
-            //     // logger.info("My triple: $topic key: $key, ${value == null}")
-            // }
         return topics.map { topic ->
             val flow = sourceFlow.filter { (incomingTopic, _, _) ->
                 incomingTopic == topic
@@ -288,14 +282,12 @@ class TestDriverContext(
         }.toMap()
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun outputFlowSingle(): Flow<Triple<Topic, String, ByteArray?>> {
         return callbackFlow<Triple<Topic, String, ByteArray?>> {
             driver.setOutputListener { record ->
                 if (!record.topic().endsWith("changelog")) {
                     val key = Serdes.String().deserializer().deserialize(record.topic(), record.key())
-                    // val message = parser.parseBytes(Optional.of(record.topic()), record.value())
-                    val messageString = String(record.value() ?: byteArrayOf())
-                    // logger.info("JOUTPUT: $key value: $messageString")
                     val topic = Topic.fromQualified(record.topic())
                     if (this.isActive) {
                         sendBlocking(Triple(topic, key, record.value()))

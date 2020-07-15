@@ -86,7 +86,7 @@ class FilmToGoogleSheets {
                 }
                 googleSheetsSink("outputtopic", spreadsheetId, listOf("title", "rating", "release_year", "rental_duration", "special_features", "description"), "B", 2, sheetConfig)
             }
-        }.renderAndTest {
+        }.renderAndExecute {
             delay(5000)
             val ll = this.sinksByTopic()[Topic.from("outputtopic")]?.first()
             val task = ll!!.taskObject() as SheetSinkTask // ?.config()?.sinkTask()!! as SheetSinkTask

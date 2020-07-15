@@ -15,11 +15,10 @@ fun main() {
         val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental", "public")
         val mongoConfig = mongoConfig("mongosink", "mongodb://mongo", "mongodump")
         postgresSource("customer", postgresConfig) {
-            // postgresConfig.sourceSimple("customer", "public") {
-            each { key, msg, other ->
+            each { key, msg, _ ->
                 logger.info("Customer: $key msg: $msg")
             }
             mongoSink("somecollection", "@someoutput", mongoConfig)
         }
-    }.renderAndStart(URL("http://localhost:8083/connectors"), "localhost:9092", true)
+    }.renderAndSchedule(URL("http://localhost:8083/connectors"), "localhost:9092", true)
 }

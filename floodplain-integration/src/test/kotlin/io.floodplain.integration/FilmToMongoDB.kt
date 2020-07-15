@@ -115,7 +115,7 @@ class FilmToMongoDB {
                 mongoSink("filmwithactors", "@filmwithcat", mongoConfig)
                 // mongoSink("film", "@film", mongoConfig)
             }
-        }.renderAndTest {
+        }.renderAndExecute {
             logger.info("Outputs: ${outputs()}")
             delay(5000)
             val database = topologyContext().topicName("@mongodump")

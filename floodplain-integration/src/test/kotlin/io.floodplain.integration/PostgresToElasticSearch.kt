@@ -97,7 +97,7 @@ class PostgresToElasticSearch {
                     set { _, msg, state ->
                         msg.set("address", state)
                     }
-                    elasticSearchSink("@customer", "@customer", "@customer", elasticConfig)
+                    elasticSearchSink("@customer", "@customer", elasticConfig)
                 },
                 postgresSource("store", postgresConfig) {
                     joinRemote({ m -> "${m["address_id"]}" }, false) {
@@ -106,7 +106,7 @@ class PostgresToElasticSearch {
                     set { _, msg, state ->
                         msg.set("address", state)
                     }
-                    elasticSearchSink("@store", "@store", "@store", elasticConfig)
+                    elasticSearchSink("@store", "@store", elasticConfig)
                 },
                 postgresSource("staff", postgresConfig) {
                     joinRemote({ m -> "${m["address_id"]}" }, false) {
@@ -115,13 +115,13 @@ class PostgresToElasticSearch {
                     set { _, msg, state ->
                         msg.set("address", state)
                     }
-                    elasticSearchSink("@staff", "@staff", "@staff", elasticConfig)
+                    elasticSearchSink("@staff", "@staff", elasticConfig)
                 })
-        }.renderAndTest {
+        }.renderAndExecute {
             logger.info("Outputs: ${outputs()}")
             val index = topologyContext().topicName("@customer")
             logger.warn("Will query: \"http://${elasticSearchContainer.host}:${elasticSearchContainer.exposedPort}/${index}\"")
-            delay(10000)
+            // delay(10000)
 
             // find a customer from Amersfoort. There should be one.
             var hits = 0
@@ -166,13 +166,13 @@ class PostgresToElasticSearch {
                     set { _, msg, state ->
                         msg.set("address", state)
                     }
-                    elasticSearchSink("@customer", "@customer", "@customer", elasticConfig)
+                    elasticSearchSink("@customer", "@customer", elasticConfig)
                 },
                 postgresSource("staff", postgresConfig) {
-                    elasticSearchSink("@staff", "@staff", "@staff", elasticConfig)
+                    elasticSearchSink("@staff", "@staff", elasticConfig)
                 }
             )
-        }.renderAndTest {
+        }.renderAndExecute {
             logger.info("Outputs: ${outputs()}")
             val index = topologyContext().topicName("@customer")
             logger.warn("Will query: \"http://${elasticSearchContainer.host}:${elasticSearchContainer.exposedPort}/${index}\"")

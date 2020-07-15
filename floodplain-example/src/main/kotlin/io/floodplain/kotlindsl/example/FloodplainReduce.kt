@@ -60,5 +60,5 @@ fun main() {
         }
     }
 
-        instance.renderAndStart(URL("http://localhost:8083/connectors"), "localhost:9092", true)
+        instance.renderAndSchedule(URL("http://localhost:8083/connectors"), "localhost:9092", true)
 }

@@ -53,7 +53,7 @@ public class GoogleSheetTest {
                 googleSheetsSink(
                     "outputtopic", spreadsheetId, listOf("column1", "column2"), "A", 1, config)
             }
-        }.renderAndTest {
+        }.renderAndExecute {
             input("topic", "k1", empty().set("column1", "kol1").set("column2", "otherkol1").set("id", 1))
             input("topic", "k2", empty().set("column1", "kol2").set("column2", "otherkol2").set("id", 2))
             // delay(1000)

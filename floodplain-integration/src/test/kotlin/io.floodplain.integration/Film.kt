@@ -18,7 +18,6 @@
  */
 package io.floodplain.integration
 
-import io.floodplain.kotlindsl.each
 import io.floodplain.kotlindsl.postgresSource
 import io.floodplain.kotlindsl.postgresSourceConfig
 import io.floodplain.kotlindsl.set
@@ -67,29 +66,23 @@ class FilmSimple {
                 "dvdrental",
                 "public"
             )
-            // val logSinkConfig = logSinkConfig("logname")
             val mongoConfig = mongoConfig(
                 "mongosink",
                 "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
                 "@mongodump"
             )
-            // postgresSource("public","film",postgresConfig) {
             postgresSource("film", postgresConfig) {
                 // Clear the last_update field, it makes no sense in a denormalized situation
                 set { _, film, _ ->
                     film["last_update"] = null; film
                 }
-                each { s, iMessage, iMessage2 ->
-                    // println("||>>>> $iMessage")
-                }
-                // logSink("somesink","@filmwithcat",logSinkConfig)
                 mongoSink("filmwithactors", "@filmwithcat", mongoConfig)
             }
-        }.renderAndTest {
+        }.renderAndExecute {
             val database = topologyContext().topicName("@mongodump")
             flushSinks()
-            val hits = waitForMongoDbCondition("mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}", database) { database ->
-                val collection = database.getCollection("filmwithactors")
+            val hits = waitForMongoDbCondition("mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}", database) { currentDatabase ->
+                val collection = currentDatabase.getCollection("filmwithactors")
                 val countDocuments = collection.countDocuments()
                 if (countDocuments == 1000L) {
                     1000L
@@ -139,7 +132,7 @@ class FilmSimple {
                     mongoSink("filmwithactors", "@filmwithcat", mongoConfig)
                 }
             )
-        }.renderAndTest {
+        }.renderAndExecute {
             val database = topologyContext().topicName("@mongodump")
             flushSinks()
             val hits = waitForMongoDbCondition("mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}", database) { database ->

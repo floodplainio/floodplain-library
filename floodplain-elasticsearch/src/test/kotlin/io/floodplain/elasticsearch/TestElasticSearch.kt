@@ -63,9 +63,9 @@ class TestElasticSearch {
         stream {
             source("sometopic") {
                 val config = elasticSearchConfig("elasticName", uri)
-                elasticSearchSink("mysinkname", "myindex", "someindex", config)
+                elasticSearchSink("mysinkname", "myindex", config)
             }
-        }.renderAndTest {
+        }.renderAndExecute {
 
             // for now TODO remove
             // address = "localhost"
@@ -81,7 +81,7 @@ class TestElasticSearch {
                     .set("body", poem)
                     .set("time", Date().time)
                     .set("uuid", uuid)
-                input("sometopic", "$uuid", msg)
+                input("sometopic", uuid, msg)
                 logger.info("inserting number: $it and uuid: $uuid")
             }
             withTimeout(300000) {

@@ -36,8 +36,6 @@ import io.floodplain.streams.api.Topic
 import io.floodplain.streams.api.TopologyContext
 import java.util.Optional
 
-private val logger = mu.KotlinLogging.logger {}
-
 fun Stream.elasticSearchConfig(name: String, uri: String): ElasticSearchSinkConfig {
     val c = ElasticSearchSinkConfig(name, uri, this.context)
     return this.addSinkConfiguration(c) as ElasticSearchSinkConfig
@@ -72,7 +70,7 @@ class ElasticSearchSinkConfig(val name: String, val uri: String, val context: To
     }
 }
 
-fun PartialStream.elasticSearchSink(sinkName: String, index: String, topicName: String, config: ElasticSearchSinkConfig): FloodplainSink {
+fun PartialStream.elasticSearchSink(sinkName: String, topicName: String, config: ElasticSearchSinkConfig): FloodplainSink {
     val sinkProcessorName = ProcessorName.from(sinkName)
     val topic = Topic.from(topicName)
     val sinkTransformer = SinkTransformer(Optional.of(sinkProcessorName), topic, false, Optional.empty(), Topic.FloodplainKeyFormat.FLOODPLAIN_STRING, Topic.FloodplainBodyFormat.CONNECT_JSON)

@@ -85,7 +85,7 @@ class Stream(val context: TopologyContext) {
         ReplicationTopologyParser.materializeStateStores(topologyConstructor, topology)
         return topology
     }
-    fun renderAndTest(testCmds: suspend TestContext.() -> Unit) {
+    fun renderAndExecute(testCmds: suspend TestContext.() -> Unit) {
             val topologyConstructor = TopologyConstructor()
             val (topology, sources, sinks) = render(topologyConstructor)
             // val offsetPath = Paths.get("offset_" + UUID.randomUUID())
@@ -106,7 +106,7 @@ class Stream(val context: TopologyContext) {
      * instance pointing at the kafka cluster at kafkaHosts, using the supplied clientId.
      * Finally, it will POST the supplied
      */
-    fun renderAndStart(connectorURL: URL, kafkaHosts: String, force: Boolean = false) {
+    fun renderAndSchedule(connectorURL: URL, kafkaHosts: String, force: Boolean = false) {
         val topologyConstructor = TopologyConstructor()
         val (topology, sources, sinks) = render(topologyConstructor)
         topologyConstructor.createTopicsAsNeeded(context, kafkaHosts)
