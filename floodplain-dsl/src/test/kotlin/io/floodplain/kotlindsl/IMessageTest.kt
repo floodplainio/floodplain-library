@@ -82,7 +82,6 @@ class IMessageTest {
         val immutable = input.toImmutable()
         val repl = ReplicationFactory.standardMessage(immutable)
         val serialized = parser.serialize(repl)
-        println("Serialized:\n${String(serialized)}")
         val deserialized = parser.parseBytes(Optional.empty(), serialized)
         val im = fromImmutable(deserialized.message())
         return im
@@ -157,7 +156,7 @@ class IMessageTest {
         val subList = listOf(empty().set("mystring", "value1"), empty().set("mystring", "value2"))
         val msg = empty().set("someother", "string").set("sublist", subList)
         val msg2 = convertThereAndBack(msg)
-        println("value: $msg <-> $msg2")
+        assertEquals(msg, msg2)
     }
 
     @Test

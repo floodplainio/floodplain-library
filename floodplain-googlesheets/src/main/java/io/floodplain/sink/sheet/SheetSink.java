@@ -129,18 +129,15 @@ public class SheetSink {
 		ValueRange requestBody = new ValueRange();
 		requestBody.setValues(values);
 		logger.info("Adding {} rows to sheet",values.size());
-//		List<List<Object>> res = sheetsService.spreadsheets().values().get(spreadsheetId,"A1").execute().getValues();
-//		 System.err.println(">>> "+res);
         Sheets.Spreadsheets.Values.Update request =
         sheetsService.spreadsheets().values().update(spreadsheetId, range, requestBody);
         request.setValueInputOption(valueInputOption);
         request.set("key", "");
-        
-         
+
         UpdateValuesResponse response = request.execute();
 
         // TODO: Change code below to process the `response` object:
-        System.out.println(response);
+        logger.info("Response: {}", response);
 	}
     
   	public void updateRangeWithBatch(String spreadsheetId, List<UpdateTuple> tuples) throws IOException {
@@ -165,7 +162,7 @@ public class SheetSink {
         BatchUpdateValuesResponse response = request.execute();
 
 		// TODO Deal with the response
-        System.out.println(response);
+		logger.info("Response: {}", response);
 	}
 
     

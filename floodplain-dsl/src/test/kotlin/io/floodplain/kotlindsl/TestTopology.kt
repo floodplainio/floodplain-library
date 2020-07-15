@@ -82,7 +82,7 @@ class TestTopology {
             }
         }.renderAndTest {
             input("mysource", "1", empty().set("species", "human"))
-            println("outputs: ${outputs()}")
+            logger.info("outputs: ${outputs()}")
             val (_, value) = output("people")
             logger.info("Person found: $value")
         }
@@ -331,7 +331,7 @@ class TestTopology {
                 }, {
                     set { _, _, acc ->
                         if (acc["total"] != null) {
-                            println("A: $acc")
+                            logger.info("A: $acc")
                         }
                         acc["total"] = (acc["total"] as BigDecimal).subtract(BigDecimal.valueOf(1))
                         acc
@@ -484,7 +484,7 @@ class TestTopology {
         }.renderAndTest {
             input("@source", "key1".toByteArray(), data)
             var (key, value) = output("@sinktopic")
-            println("value: $value")
+            logger.info("value: $value")
             val amount = value.decimal("amount")
             assertEquals(BigDecimal.valueOf(299, 2), amount)
         }

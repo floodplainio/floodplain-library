@@ -306,7 +306,7 @@ class TestDriverContext(
             }
             logger.info("Outputflow connected!")
             awaitClose {
-                println("closing output flow!")
+                logger.info("closing output flow!")
             }
         }
     }

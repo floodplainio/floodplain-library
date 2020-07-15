@@ -45,7 +45,7 @@ internal class EngineKillSwitch(var engine: DebeziumEngine<ChangeEvent<String, S
     fun kill() {
         engine?.let {
             if (killed.compareAndSet(false, true)) {
-                println("Closing engine: $engine")
+                logger.debug("Closing engine: $engine")
                 it.close()
             }
         }
@@ -121,7 +121,7 @@ private fun runDebeziumServer(props: Properties): Flow<ChangeRecord> {
                         }
                     }
                     if (perf > 1000) {
-                        println("Send blocking ran for: $perf")
+                        logger.debug("Send blocking ran for: $perf")
                     }
                     totalTimeInSend.addAndGet(perf)
                 }
@@ -129,13 +129,12 @@ private fun runDebeziumServer(props: Properties): Flow<ChangeRecord> {
             .build()
         engineKillSwitch.engine = engine
         GlobalScope.launch {
-            println("Engine ran for: " + measureTimeMillis {
+            logger.info("Engine ran for: " + measureTimeMillis {
                 engine.run()
             })
-            println("Debezium source engine terminated. Total time in send: ${totalTimeInSend.get()}")
+            logger.info("Debezium source engine terminated. Total time in send: ${totalTimeInSend.get()}")
         }
         awaitClose {
-            println("closing!")
             engine.close()
         }
     }

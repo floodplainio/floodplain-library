@@ -64,7 +64,6 @@ class PostgresToElasticSearch {
             logger.info("Not performing integration tests; doesn't seem to work in circleci")
             return
         }
-        println("Logger class: ${logger.underlyingLogger}")
         logger.debug("startdebug")
         streams("any", "myinstance") {
             val postgresConfig = postgresSourceConfig("mypostgres", postgresContainer.host, postgresContainer.exposedPort, "postgres", "mysecretpassword", "dvdrental", "public")
@@ -155,7 +154,6 @@ class PostgresToElasticSearch {
             logger.info("Not performing integration tests, doesn't seem to work in circleci")
             return
         }
-        println("Logger class: ${logger.underlyingLogger}")
         logger.debug("startdebug")
         streams("any", "myinstance") {
             val postgresConfig = postgresSourceConfig("mypostgres", postgresContainer.host, postgresContainer.exposedPort, "postgres", "mysecretpassword", "dvdrental", "public")

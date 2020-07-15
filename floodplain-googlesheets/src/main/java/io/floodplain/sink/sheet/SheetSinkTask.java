@@ -107,31 +107,7 @@ public class SheetSinkTask extends SinkTask {
 		
 		return result;
 	}
-	
-	private void putWithSingle(Collection<SinkRecord> records) {
-		for (SinkRecord sinkRecord : records) {
-			System.err.println("Record: "+sinkRecord);
-			Map<String,Object> toplevel = (Map<String, Object>) sinkRecord.value();
-			Map<String,Object> msg = (Map<String, Object>) toplevel.get("payload");
-			if(msg==null) {
-				logger.info("Ignoring delete of key: {} deletions aren't supported",sinkRecord.key());
-			} else {
-				Long row = (Long) msg.get("_row");
-				String column = "B";
-				int startOffset = 4;
-				long currentRow = row+startOffset;
-				List<List<Object>> res = sheetSink.extractRow(msg, this.columns);
-				logger.info("Would update: {} : {} res: {}",spreadsheetId,column+currentRow,res);
-				try {
-					sheetSink.updateRange(spreadsheetId, column+currentRow, res);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-	}
 
-	
 	@Override
 	public void stop() {
 		// TODO Auto-generated method stub

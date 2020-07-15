@@ -59,7 +59,6 @@ class TestDebeziumSource {
                 .take(500)
                 .toList(resultList)
             assertEquals(500, resultList.size)
-            println("completed")
         }
     }
 
