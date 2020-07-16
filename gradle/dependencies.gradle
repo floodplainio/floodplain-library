@@ -12,6 +12,7 @@ ext {
     commonDependencies = [
             debeziumCore      : "io.debezium:debezium-core:$debezium_version",
             debeziumPostgres  : "io.debezium:debezium-connector-postgres:$debezium_version",
+            debeziumMySQL     : "io.debezium:debezium-connector-mysql:$debezium_version",
             debeziumEmbedded  : "io.debezium:debezium-embedded:$debezium_version",
             debeziumServerCore: "io.debezium:debezium-server-core:$debezium_version",
             cdiApi            : "jakarta.enterprise:jakarta.enterprise.cdi-api:2.0.2",

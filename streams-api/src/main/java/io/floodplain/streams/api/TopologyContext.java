@@ -42,6 +42,8 @@ public class TopologyContext {
         }
         @Override
         public String apply(String name) {
+            // Dashes are problematic. Maybe hard-fail whenever we create a source / sink that contains a dash?
+            // Otherwise this creates a weird 'silent error state' where simply nothing happens.
             if(name.contains("-") || name.contains(":")) {
                 return name;
             }

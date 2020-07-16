@@ -17,6 +17,7 @@ dependencies {
     compile(dependencies.slf4j)
     compile(dependencies.kotlinLogging)
     implementation(dependencies.debeziumPostgres)
+    implementation(dependencies.debeziumMySQL)
     implementation(dependencies.debeziumEmbedded)
     testCompile(dependencies.jUnit)
     testCompile(dependencies.testContainer)

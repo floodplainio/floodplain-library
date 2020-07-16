@@ -1,0 +1,1056 @@
+INFO Test worker io.floodplain.debezium.postgres.TestMySQL - Creating offset files at: /var/folders/4f/bjxrqxs94tg59hqfv2whcr_m0000gq/T/ec077e215470379261654267173.tmp
+INFO Test worker org.apache.kafka.connect.json.JsonConverterConfig - JsonConverterConfig values: 
+	converter.type = key
+	decimal.format = BASE64
+	schemas.cache.size = 1000
+	schemas.enable = true
+
+INFO Test worker org.apache.kafka.connect.json.JsonConverterConfig - JsonConverterConfig values: 
+	converter.type = value
+	decimal.format = BASE64
+	schemas.cache.size = 1000
+	schemas.enable = false
+
+INFO Test worker io.debezium.embedded.EmbeddedEngine$EmbeddedConfig - EmbeddedConfig values: 
+	access.control.allow.methods = 
+	access.control.allow.origin = 
+	admin.listeners = null
+	bootstrap.servers = [localhost:9092]
+	client.dns.lookup = default
+	config.providers = []
+	connector.client.config.override.policy = None
+	header.converter = class org.apache.kafka.connect.storage.SimpleHeaderConverter
+	internal.key.converter = class org.apache.kafka.connect.json.JsonConverter
+	internal.value.converter = class org.apache.kafka.connect.json.JsonConverter
+	key.converter = class org.apache.kafka.connect.json.JsonConverter
+	listeners = null
+	metric.reporters = []
+	metrics.num.samples = 2
+	metrics.recording.level = INFO
+	metrics.sample.window.ms = 30000
+	offset.flush.interval.ms = 1000
+	offset.flush.timeout.ms = 5000
+	offset.storage.file.filename = /var/folders/4f/bjxrqxs94tg59hqfv2whcr_m0000gq/T/ec077e215470379261654267173.tmp
+	offset.storage.partitions = null
+	offset.storage.replication.factor = null
+	offset.storage.topic = 
+	plugin.path = null
+	rest.advertised.host.name = null
+	rest.advertised.listener = null
+	rest.advertised.port = null
+	rest.extension.classes = []
+	rest.host.name = null
+	rest.port = 8083
+	ssl.client.auth = none
+	task.shutdown.graceful.timeout.ms = 5000
+	topic.tracking.allow.reset = true
+	topic.tracking.enable = true
+	value.converter = class org.apache.kafka.connect.json.JsonConverter
+
+INFO Test worker org.apache.kafka.connect.runtime.WorkerConfig - Worker configuration property 'internal.key.converter' is deprecated and may be removed in an upcoming release. The specified value 'org.apache.kafka.connect.json.JsonConverter' matches the default, so this property can be safely removed from the worker configuration.
+INFO Test worker org.apache.kafka.connect.runtime.WorkerConfig - Worker configuration property 'internal.value.converter' is deprecated and may be removed in an upcoming release. The specified value 'org.apache.kafka.connect.json.JsonConverter' matches the default, so this property can be safely removed from the worker configuration.
+INFO Test worker org.apache.kafka.connect.json.JsonConverterConfig - JsonConverterConfig values: 
+	converter.type = key
+	decimal.format = BASE64
+	schemas.cache.size = 1000
+	schemas.enable = true
+
+INFO Test worker org.apache.kafka.connect.json.JsonConverterConfig - JsonConverterConfig values: 
+	converter.type = value
+	decimal.format = BASE64
+	schemas.cache.size = 1000
+	schemas.enable = true
+
+INFO Test worker org.apache.kafka.connect.storage.FileOffsetBackingStore - Starting FileOffsetBackingStore with file /var/folders/4f/bjxrqxs94tg59hqfv2whcr_m0000gq/T/ec077e215470379261654267173.tmp
+INFO Test worker io.debezium.connector.common.BaseSourceTask - Starting MySqlConnectorTask with configuration:
+INFO Test worker io.debezium.connector.common.BaseSourceTask -    connector.class = io.debezium.connector.mysql.MySqlConnector
+INFO Test worker io.debezium.connector.common.BaseSourceTask -    database.dbname = my-wpdb
+INFO Test worker io.debezium.connector.common.BaseSourceTask -    database.user = root
+INFO Test worker io.debezium.connector.common.BaseSourceTask -    offset.storage = org.apache.kafka.connect.storage.FileOffsetBackingStore
+INFO Test worker io.debezium.connector.common.BaseSourceTask -    database.server.name = instance-mysqlsource
+INFO Test worker io.debezium.connector.common.BaseSourceTask -    database.port = 3306
+INFO Test worker io.debezium.connector.common.BaseSourceTask -    offset.flush.interval.ms = 1000
+INFO Test worker io.debezium.connector.common.BaseSourceTask -    offset.storage.file.filename = /var/folders/4f/bjxrqxs94tg59hqfv2whcr_m0000gq/T/ec077e215470379261654267173.tmp
+INFO Test worker io.debezium.connector.common.BaseSourceTask -    debezium.source.database.history.file.filename = currenthistory
+INFO Test worker io.debezium.connector.common.BaseSourceTask -    database.hostname = localhost
+INFO Test worker io.debezium.connector.common.BaseSourceTask -    database.password = ********
+INFO Test worker io.debezium.connector.common.BaseSourceTask -    name = engine_04c4d1d1-5dc9-4df5-adb1-c45b237ef386
+INFO Test worker io.debezium.connector.common.BaseSourceTask -    debezium.source.database.history = io.debezium.relational.history.FileDatabaseHistory
+ERROR Test worker io.debezium.relational.history.KafkaDatabaseHistory - The 'database.history.kafka.topic' value is invalid: A value is required
+ERROR Test worker io.debezium.relational.history.KafkaDatabaseHistory - The 'database.history.kafka.bootstrap.servers' value is invalid: A value is required
+INFO Test worker io.debezium.connector.common.BaseSourceTask - Stopping down connector
+INFO Test worker io.debezium.connector.mysql.MySqlConnectorTask - Stopping MySQL connector task
+INFO Test worker org.apache.kafka.connect.storage.FileOffsetBackingStore - Stopped FileOffsetBackingStore
+ERROR Test worker io.debezium.embedded.EmbeddedEngine - Unable to initialize and start connector's task class 'io.debezium.connector.mysql.MySqlConnectorTask' with config: {connector.class=io.debezium.connector.mysql.MySqlConnector, database.dbname=my-wpdb, database.user=root, offset.storage=org.apache.kafka.connect.storage.FileOffsetBackingStore, database.server.name=instance-mysqlsource, database.port=3306, offset.flush.interval.ms=1000, offset.storage.file.filename=/var/folders/4f/bjxrqxs94tg59hqfv2whcr_m0000gq/T/ec077e215470379261654267173.tmp, debezium.source.database.history.file.filename=currenthistory, database.hostname=localhost, database.password=********, name=engine_04c4d1d1-5dc9-4df5-adb1-c45b237ef386, debezium.source.database.history=io.debezium.relational.history.FileDatabaseHistory}
+org.apache.kafka.connect.errors.ConnectException: Error configuring an instance of KafkaDatabaseHistory; check the logs for details
+	at io.debezium.relational.history.KafkaDatabaseHistory.configure(KafkaDatabaseHistory.java:180)
+	at io.debezium.connector.mysql.MySqlSchema.<init>(MySqlSchema.java:139)
+	at io.debezium.connector.mysql.MySqlTaskContext.<init>(MySqlTaskContext.java:86)
+	at io.debezium.connector.mysql.MySqlTaskContext.<init>(MySqlTaskContext.java:52)
+	at io.debezium.connector.mysql.MySqlConnectorTask.createAndStartTaskContext(MySqlConnectorTask.java:357)
+	at io.debezium.connector.mysql.MySqlConnectorTask.start(MySqlConnectorTask.java:143)
+	at io.debezium.connector.common.BaseSourceTask.start(BaseSourceTask.java:101)
+	at io.debezium.embedded.EmbeddedEngine.run(EmbeddedEngine.java:756)
+	at io.debezium.embedded.ConvertingEngineBuilder$2.run(ConvertingEngineBuilder.java:170)
+	at io.floodplain.debezium.postgres.TestMySQL.testMySql(TestMySQL.kt:52)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecutor.runTestClass(JUnitTestClassExecutor.java:110)
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecutor.execute(JUnitTestClassExecutor.java:58)
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecutor.execute(JUnitTestClassExecutor.java:38)
+	at org.gradle.api.internal.tasks.testing.junit.AbstractJUnitTestClassProcessor.processTestClass(AbstractJUnitTestClassProcessor.java:62)
+	at org.gradle.api.internal.tasks.testing.SuiteTestClassProcessor.processTestClass(SuiteTestClassProcessor.java:51)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:36)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24)
+	at org.gradle.internal.dispatch.ContextClassLoaderDispatch.dispatch(ContextClassLoaderDispatch.java:33)
+	at org.gradle.internal.dispatch.ProxyDispatchAdapter$DispatchingInvocationHandler.invoke(ProxyDispatchAdapter.java:94)
+	at com.sun.proxy.$Proxy2.processTestClass(Unknown Source)
+	at org.gradle.api.internal.tasks.testing.worker.TestWorker.processTestClass(TestWorker.java:119)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:36)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24)
+	at org.gradle.internal.remote.internal.hub.MessageHubBackedObjectConnection$DispatchWrapper.dispatch(MessageHubBackedObjectConnection.java:182)
+	at org.gradle.internal.remote.internal.hub.MessageHubBackedObjectConnection$DispatchWrapper.dispatch(MessageHubBackedObjectConnection.java:164)
+	at org.gradle.internal.remote.internal.hub.MessageHub$Handler.run(MessageHub.java:414)
+	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:64)
+	at org.gradle.internal.concurrent.ManagedExecutorImpl$1.run(ManagedExecutorImpl.java:48)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
+	at org.gradle.internal.concurrent.ThreadFactoryImpl$ManagedThreadRunnable.run(ThreadFactoryImpl.java:56)
+	at java.base/java.lang.Thread.run(Thread.java:834)
+INFO Test worker io.floodplain.debezium.postgres.TestMySQL - Creating offset files at: /var/folders/4f/bjxrqxs94tg59hqfv2whcr_m0000gq/T/2ce07a517044626211776930551.tmp
+INFO Test worker org.apache.kafka.connect.json.JsonConverterConfig - JsonConverterConfig values: 
+	converter.type = key
+	decimal.format = BASE64
+	schemas.cache.size = 1000
+	schemas.enable = true
+
+INFO Test worker org.apache.kafka.connect.json.JsonConverterConfig - JsonConverterConfig values: 
+	converter.type = value
+	decimal.format = BASE64
+	schemas.cache.size = 1000
+	schemas.enable = false
+
+INFO Test worker io.debezium.embedded.EmbeddedEngine$EmbeddedConfig - EmbeddedConfig values: 
+	access.control.allow.methods = 
+	access.control.allow.origin = 
+	admin.listeners = null
+	bootstrap.servers = [localhost:9092]
+	client.dns.lookup = default
+	config.providers = []
+	connector.client.config.override.policy = None
+	header.converter = class org.apache.kafka.connect.storage.SimpleHeaderConverter
+	internal.key.converter = class org.apache.kafka.connect.json.JsonConverter
+	internal.value.converter = class org.apache.kafka.connect.json.JsonConverter
+	key.converter = class org.apache.kafka.connect.json.JsonConverter
+	listeners = null
+	metric.reporters = []
+	metrics.num.samples = 2
+	metrics.recording.level = INFO
+	metrics.sample.window.ms = 30000
+	offset.flush.interval.ms = 1000
+	offset.flush.timeout.ms = 5000
+	offset.storage.file.filename = /var/folders/4f/bjxrqxs94tg59hqfv2whcr_m0000gq/T/2ce07a517044626211776930551.tmp
+	offset.storage.partitions = null
+	offset.storage.replication.factor = null
+	offset.storage.topic = 
+	plugin.path = null
+	rest.advertised.host.name = null
+	rest.advertised.listener = null
+	rest.advertised.port = null
+	rest.extension.classes = []
+	rest.host.name = null
+	rest.port = 8083
+	ssl.client.auth = none
+	task.shutdown.graceful.timeout.ms = 5000
+	topic.tracking.allow.reset = true
+	topic.tracking.enable = true
+	value.converter = class org.apache.kafka.connect.json.JsonConverter
+
+INFO Test worker org.apache.kafka.connect.runtime.WorkerConfig - Worker configuration property 'internal.key.converter' is deprecated and may be removed in an upcoming release. The specified value 'org.apache.kafka.connect.json.JsonConverter' matches the default, so this property can be safely removed from the worker configuration.
+INFO Test worker org.apache.kafka.connect.runtime.WorkerConfig - Worker configuration property 'internal.value.converter' is deprecated and may be removed in an upcoming release. The specified value 'org.apache.kafka.connect.json.JsonConverter' matches the default, so this property can be safely removed from the worker configuration.
+INFO Test worker org.apache.kafka.connect.json.JsonConverterConfig - JsonConverterConfig values: 
+	converter.type = key
+	decimal.format = BASE64
+	schemas.cache.size = 1000
+	schemas.enable = true
+
+INFO Test worker org.apache.kafka.connect.json.JsonConverterConfig - JsonConverterConfig values: 
+	converter.type = value
+	decimal.format = BASE64
+	schemas.cache.size = 1000
+	schemas.enable = true
+
+INFO Test worker org.apache.kafka.connect.storage.FileOffsetBackingStore - Starting FileOffsetBackingStore with file /var/folders/4f/bjxrqxs94tg59hqfv2whcr_m0000gq/T/2ce07a517044626211776930551.tmp
+ERROR Test worker io.debezium.connector.common.BaseSourceTask - The 'database.server.id' value 'someid' is invalid: A long value is expected
+ERROR Test worker io.debezium.connector.common.BaseSourceTask - The 'database.server.id' value 'someid' is invalid: A positive long value is expected
+INFO Test worker org.apache.kafka.connect.storage.FileOffsetBackingStore - Stopped FileOffsetBackingStore
+ERROR Test worker io.debezium.embedded.EmbeddedEngine - Unable to initialize and start connector's task class 'io.debezium.connector.mysql.MySqlConnectorTask' with config: {connector.class=io.debezium.connector.mysql.MySqlConnector, database.dbname=my-wpdb, database.user=root, database.server.id=someid, offset.storage=org.apache.kafka.connect.storage.FileOffsetBackingStore, database.server.name=instance-mysqlsource, database.port=3306, offset.flush.interval.ms=1000, offset.storage.file.filename=/var/folders/4f/bjxrqxs94tg59hqfv2whcr_m0000gq/T/2ce07a517044626211776930551.tmp, debezium.source.database.history.file.filename=currenthistory, database.hostname=localhost, database.password=********, name=engine_c53b0512-8b4c-4992-90ec-966c15018219, debezium.source.database.history=io.debezium.relational.history.FileDatabaseHistory}
+org.apache.kafka.connect.errors.ConnectException: Error configuring an instance of MySqlConnectorTask; check the logs for details
+	at io.debezium.connector.common.BaseSourceTask.start(BaseSourceTask.java:91)
+	at io.debezium.embedded.EmbeddedEngine.run(EmbeddedEngine.java:756)
+	at io.debezium.embedded.ConvertingEngineBuilder$2.run(ConvertingEngineBuilder.java:170)
+	at io.floodplain.debezium.postgres.TestMySQL.testMySql(TestMySQL.kt:53)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecutor.runTestClass(JUnitTestClassExecutor.java:110)
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecutor.execute(JUnitTestClassExecutor.java:58)
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecutor.execute(JUnitTestClassExecutor.java:38)
+	at org.gradle.api.internal.tasks.testing.junit.AbstractJUnitTestClassProcessor.processTestClass(AbstractJUnitTestClassProcessor.java:62)
+	at org.gradle.api.internal.tasks.testing.SuiteTestClassProcessor.processTestClass(SuiteTestClassProcessor.java:51)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:36)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24)
+	at org.gradle.internal.dispatch.ContextClassLoaderDispatch.dispatch(ContextClassLoaderDispatch.java:33)
+	at org.gradle.internal.dispatch.ProxyDispatchAdapter$DispatchingInvocationHandler.invoke(ProxyDispatchAdapter.java:94)
+	at com.sun.proxy.$Proxy2.processTestClass(Unknown Source)
+	at org.gradle.api.internal.tasks.testing.worker.TestWorker.processTestClass(TestWorker.java:119)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:36)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24)
+	at org.gradle.internal.remote.internal.hub.MessageHubBackedObjectConnection$DispatchWrapper.dispatch(MessageHubBackedObjectConnection.java:182)
+	at org.gradle.internal.remote.internal.hub.MessageHubBackedObjectConnection$DispatchWrapper.dispatch(MessageHubBackedObjectConnection.java:164)
+	at org.gradle.internal.remote.internal.hub.MessageHub$Handler.run(MessageHub.java:414)
+	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:64)
+	at org.gradle.internal.concurrent.ManagedExecutorImpl$1.run(ManagedExecutorImpl.java:48)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
+	at org.gradle.internal.concurrent.ThreadFactoryImpl$ManagedThreadRunnable.run(ThreadFactoryImpl.java:56)
+	at java.base/java.lang.Thread.run(Thread.java:834)
+INFO Test worker io.floodplain.debezium.postgres.TestMySQL - Creating offset files at: /var/folders/4f/bjxrqxs94tg59hqfv2whcr_m0000gq/T/2cb1b7d11705223019076550009.tmp
+INFO Test worker org.apache.kafka.connect.json.JsonConverterConfig - JsonConverterConfig values: 
+	converter.type = key
+	decimal.format = BASE64
+	schemas.cache.size = 1000
+	schemas.enable = true
+
+INFO Test worker org.apache.kafka.connect.json.JsonConverterConfig - JsonConverterConfig values: 
+	converter.type = value
+	decimal.format = BASE64
+	schemas.cache.size = 1000
+	schemas.enable = false
+
+INFO Test worker io.debezium.embedded.EmbeddedEngine$EmbeddedConfig - EmbeddedConfig values: 
+	access.control.allow.methods = 
+	access.control.allow.origin = 
+	admin.listeners = null
+	bootstrap.servers = [localhost:9092]
+	client.dns.lookup = default
+	config.providers = []
+	connector.client.config.override.policy = None
+	header.converter = class org.apache.kafka.connect.storage.SimpleHeaderConverter
+	internal.key.converter = class org.apache.kafka.connect.json.JsonConverter
+	internal.value.converter = class org.apache.kafka.connect.json.JsonConverter
+	key.converter = class org.apache.kafka.connect.json.JsonConverter
+	listeners = null
+	metric.reporters = []
+	metrics.num.samples = 2
+	metrics.recording.level = INFO
+	metrics.sample.window.ms = 30000
+	offset.flush.interval.ms = 1000
+	offset.flush.timeout.ms = 5000
+	offset.storage.file.filename = /var/folders/4f/bjxrqxs94tg59hqfv2whcr_m0000gq/T/2cb1b7d11705223019076550009.tmp
+	offset.storage.partitions = null
+	offset.storage.replication.factor = null
+	offset.storage.topic = 
+	plugin.path = null
+	rest.advertised.host.name = null
+	rest.advertised.listener = null
+	rest.advertised.port = null
+	rest.extension.classes = []
+	rest.host.name = null
+	rest.port = 8083
+	ssl.client.auth = none
+	task.shutdown.graceful.timeout.ms = 5000
+	topic.tracking.allow.reset = true
+	topic.tracking.enable = true
+	value.converter = class org.apache.kafka.connect.json.JsonConverter
+
+INFO Test worker org.apache.kafka.connect.runtime.WorkerConfig - Worker configuration property 'internal.key.converter' is deprecated and may be removed in an upcoming release. The specified value 'org.apache.kafka.connect.json.JsonConverter' matches the default, so this property can be safely removed from the worker configuration.
+INFO Test worker org.apache.kafka.connect.runtime.WorkerConfig - Worker configuration property 'internal.value.converter' is deprecated and may be removed in an upcoming release. The specified value 'org.apache.kafka.connect.json.JsonConverter' matches the default, so this property can be safely removed from the worker configuration.
+INFO Test worker org.apache.kafka.connect.json.JsonConverterConfig - JsonConverterConfig values: 
+	converter.type = key
+	decimal.format = BASE64
+	schemas.cache.size = 1000
+	schemas.enable = true
+
+INFO Test worker org.apache.kafka.connect.json.JsonConverterConfig - JsonConverterConfig values: 
+	converter.type = value
+	decimal.format = BASE64
+	schemas.cache.size = 1000
+	schemas.enable = true
+
+INFO Test worker org.apache.kafka.connect.storage.FileOffsetBackingStore - Starting FileOffsetBackingStore with file /var/folders/4f/bjxrqxs94tg59hqfv2whcr_m0000gq/T/2cb1b7d11705223019076550009.tmp
+INFO Test worker io.debezium.connector.common.BaseSourceTask - Starting MySqlConnectorTask with configuration:
+INFO Test worker io.debezium.connector.common.BaseSourceTask -    connector.class = io.debezium.connector.mysql.MySqlConnector
+INFO Test worker io.debezium.connector.common.BaseSourceTask -    database.dbname = my-wpdb
+INFO Test worker io.debezium.connector.common.BaseSourceTask -    database.user = root
+INFO Test worker io.debezium.connector.common.BaseSourceTask -    offset.storage = org.apache.kafka.connect.storage.FileOffsetBackingStore
+INFO Test worker io.debezium.connector.common.BaseSourceTask -    database.server.id = 1594891699488
+INFO Test worker io.debezium.connector.common.BaseSourceTask -    database.server.name = instance-mysqlsource
+INFO Test worker io.debezium.connector.common.BaseSourceTask -    database.port = 3306
+INFO Test worker io.debezium.connector.common.BaseSourceTask -    offset.flush.interval.ms = 1000
+INFO Test worker io.debezium.connector.common.BaseSourceTask -    offset.storage.file.filename = /var/folders/4f/bjxrqxs94tg59hqfv2whcr_m0000gq/T/2cb1b7d11705223019076550009.tmp
+INFO Test worker io.debezium.connector.common.BaseSourceTask -    debezium.source.database.history.file.filename = currenthistory
+INFO Test worker io.debezium.connector.common.BaseSourceTask -    database.hostname = localhost
+INFO Test worker io.debezium.connector.common.BaseSourceTask -    database.password = ********
+INFO Test worker io.debezium.connector.common.BaseSourceTask -    name = engine_62059a85-f2d7-4768-b25e-f25c92cb4f1c
+INFO Test worker io.debezium.connector.common.BaseSourceTask -    debezium.source.database.history = io.debezium.relational.history.FileDatabaseHistory
+ERROR Test worker io.debezium.relational.history.KafkaDatabaseHistory - The 'database.history.kafka.topic' value is invalid: A value is required
+ERROR Test worker io.debezium.relational.history.KafkaDatabaseHistory - The 'database.history.kafka.bootstrap.servers' value is invalid: A value is required
+INFO Test worker io.debezium.connector.common.BaseSourceTask - Stopping down connector
+INFO Test worker io.debezium.connector.mysql.MySqlConnectorTask - Stopping MySQL connector task
+INFO Test worker org.apache.kafka.connect.storage.FileOffsetBackingStore - Stopped FileOffsetBackingStore
+ERROR Test worker io.debezium.embedded.EmbeddedEngine - Unable to initialize and start connector's task class 'io.debezium.connector.mysql.MySqlConnectorTask' with config: {connector.class=io.debezium.connector.mysql.MySqlConnector, database.dbname=my-wpdb, database.user=root, database.server.id=1594891699488, offset.storage=org.apache.kafka.connect.storage.FileOffsetBackingStore, database.server.name=instance-mysqlsource, database.port=3306, offset.flush.interval.ms=1000, offset.storage.file.filename=/var/folders/4f/bjxrqxs94tg59hqfv2whcr_m0000gq/T/2cb1b7d11705223019076550009.tmp, debezium.source.database.history.file.filename=currenthistory, database.hostname=localhost, database.password=********, name=engine_62059a85-f2d7-4768-b25e-f25c92cb4f1c, debezium.source.database.history=io.debezium.relational.history.FileDatabaseHistory}
+org.apache.kafka.connect.errors.ConnectException: Error configuring an instance of KafkaDatabaseHistory; check the logs for details
+	at io.debezium.relational.history.KafkaDatabaseHistory.configure(KafkaDatabaseHistory.java:180)
+	at io.debezium.connector.mysql.MySqlSchema.<init>(MySqlSchema.java:139)
+	at io.debezium.connector.mysql.MySqlTaskContext.<init>(MySqlTaskContext.java:86)
+	at io.debezium.connector.mysql.MySqlTaskContext.<init>(MySqlTaskContext.java:52)
+	at io.debezium.connector.mysql.MySqlConnectorTask.createAndStartTaskContext(MySqlConnectorTask.java:357)
+	at io.debezium.connector.mysql.MySqlConnectorTask.start(MySqlConnectorTask.java:143)
+	at io.debezium.connector.common.BaseSourceTask.start(BaseSourceTask.java:101)
+	at io.debezium.embedded.EmbeddedEngine.run(EmbeddedEngine.java:756)
+	at io.debezium.embedded.ConvertingEngineBuilder$2.run(ConvertingEngineBuilder.java:170)
+	at io.floodplain.debezium.postgres.TestMySQL.testMySql(TestMySQL.kt:53)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecutor.runTestClass(JUnitTestClassExecutor.java:110)
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecutor.execute(JUnitTestClassExecutor.java:58)
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecutor.execute(JUnitTestClassExecutor.java:38)
+	at org.gradle.api.internal.tasks.testing.junit.AbstractJUnitTestClassProcessor.processTestClass(AbstractJUnitTestClassProcessor.java:62)
+	at org.gradle.api.internal.tasks.testing.SuiteTestClassProcessor.processTestClass(SuiteTestClassProcessor.java:51)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:36)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24)
+	at org.gradle.internal.dispatch.ContextClassLoaderDispatch.dispatch(ContextClassLoaderDispatch.java:33)
+	at org.gradle.internal.dispatch.ProxyDispatchAdapter$DispatchingInvocationHandler.invoke(ProxyDispatchAdapter.java:94)
+	at com.sun.proxy.$Proxy2.processTestClass(Unknown Source)
+	at org.gradle.api.internal.tasks.testing.worker.TestWorker.processTestClass(TestWorker.java:119)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:36)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24)
+	at org.gradle.internal.remote.internal.hub.MessageHubBackedObjectConnection$DispatchWrapper.dispatch(MessageHubBackedObjectConnection.java:182)
+	at org.gradle.internal.remote.internal.hub.MessageHubBackedObjectConnection$DispatchWrapper.dispatch(MessageHubBackedObjectConnection.java:164)
+	at org.gradle.internal.remote.internal.hub.MessageHub$Handler.run(MessageHub.java:414)
+	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:64)
+	at org.gradle.internal.concurrent.ManagedExecutorImpl$1.run(ManagedExecutorImpl.java:48)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
+	at org.gradle.internal.concurrent.ThreadFactoryImpl$ManagedThreadRunnable.run(ThreadFactoryImpl.java:56)
+	at java.base/java.lang.Thread.run(Thread.java:834)
+INFO Test worker io.floodplain.debezium.postgres.TestMySQL - Creating offset files at: /var/folders/4f/bjxrqxs94tg59hqfv2whcr_m0000gq/T/d3933a912998954971584870536.tmp
+INFO Test worker org.apache.kafka.connect.json.JsonConverterConfig - JsonConverterConfig values: 
+	converter.type = key
+	decimal.format = BASE64
+	schemas.cache.size = 1000
+	schemas.enable = true
+
+INFO Test worker org.apache.kafka.connect.json.JsonConverterConfig - JsonConverterConfig values: 
+	converter.type = value
+	decimal.format = BASE64
+	schemas.cache.size = 1000
+	schemas.enable = false
+
+INFO Test worker io.debezium.embedded.EmbeddedEngine$EmbeddedConfig - EmbeddedConfig values: 
+	access.control.allow.methods = 
+	access.control.allow.origin = 
+	admin.listeners = null
+	bootstrap.servers = [localhost:9092]
+	client.dns.lookup = default
+	config.providers = []
+	connector.client.config.override.policy = None
+	header.converter = class org.apache.kafka.connect.storage.SimpleHeaderConverter
+	internal.key.converter = class org.apache.kafka.connect.json.JsonConverter
+	internal.value.converter = class org.apache.kafka.connect.json.JsonConverter
+	key.converter = class org.apache.kafka.connect.json.JsonConverter
+	listeners = null
+	metric.reporters = []
+	metrics.num.samples = 2
+	metrics.recording.level = INFO
+	metrics.sample.window.ms = 30000
+	offset.flush.interval.ms = 1000
+	offset.flush.timeout.ms = 5000
+	offset.storage.file.filename = /var/folders/4f/bjxrqxs94tg59hqfv2whcr_m0000gq/T/d3933a912998954971584870536.tmp
+	offset.storage.partitions = null
+	offset.storage.replication.factor = null
+	offset.storage.topic = 
+	plugin.path = null
+	rest.advertised.host.name = null
+	rest.advertised.listener = null
+	rest.advertised.port = null
+	rest.extension.classes = []
+	rest.host.name = null
+	rest.port = 8083
+	ssl.client.auth = none
+	task.shutdown.graceful.timeout.ms = 5000
+	topic.tracking.allow.reset = true
+	topic.tracking.enable = true
+	value.converter = class org.apache.kafka.connect.json.JsonConverter
+
+INFO Test worker org.apache.kafka.connect.runtime.WorkerConfig - Worker configuration property 'internal.key.converter' is deprecated and may be removed in an upcoming release. The specified value 'org.apache.kafka.connect.json.JsonConverter' matches the default, so this property can be safely removed from the worker configuration.
+INFO Test worker org.apache.kafka.connect.runtime.WorkerConfig - Worker configuration property 'internal.value.converter' is deprecated and may be removed in an upcoming release. The specified value 'org.apache.kafka.connect.json.JsonConverter' matches the default, so this property can be safely removed from the worker configuration.
+INFO Test worker org.apache.kafka.connect.json.JsonConverterConfig - JsonConverterConfig values: 
+	converter.type = key
+	decimal.format = BASE64
+	schemas.cache.size = 1000
+	schemas.enable = true
+
+INFO Test worker org.apache.kafka.connect.json.JsonConverterConfig - JsonConverterConfig values: 
+	converter.type = value
+	decimal.format = BASE64
+	schemas.cache.size = 1000
+	schemas.enable = true
+
+INFO Test worker org.apache.kafka.connect.storage.FileOffsetBackingStore - Starting FileOffsetBackingStore with file /var/folders/4f/bjxrqxs94tg59hqfv2whcr_m0000gq/T/d3933a912998954971584870536.tmp
+INFO Test worker io.debezium.connector.common.BaseSourceTask - Starting MySqlConnectorTask with configuration:
+INFO Test worker io.debezium.connector.common.BaseSourceTask -    connector.class = io.debezium.connector.mysql.MySqlConnector
+INFO Test worker io.debezium.connector.common.BaseSourceTask -    database.dbname = my-wpdb
+INFO Test worker io.debezium.connector.common.BaseSourceTask -    database.user = root
+INFO Test worker io.debezium.connector.common.BaseSourceTask -    offset.storage = org.apache.kafka.connect.storage.FileOffsetBackingStore
+INFO Test worker io.debezium.connector.common.BaseSourceTask -    database.server.id = 1594892000012
+INFO Test worker io.debezium.connector.common.BaseSourceTask -    database.server.name = instance-mysqlsource
+INFO Test worker io.debezium.connector.common.BaseSourceTask -    database.port = 3306
+INFO Test worker io.debezium.connector.common.BaseSourceTask -    offset.flush.interval.ms = 1000
+INFO Test worker io.debezium.connector.common.BaseSourceTask -    offset.storage.file.filename = /var/folders/4f/bjxrqxs94tg59hqfv2whcr_m0000gq/T/d3933a912998954971584870536.tmp
+INFO Test worker io.debezium.connector.common.BaseSourceTask -    debezium.source.database.history.file.filename = currenthistory
+INFO Test worker io.debezium.connector.common.BaseSourceTask -    database.hostname = localhost
+INFO Test worker io.debezium.connector.common.BaseSourceTask -    database.password = ********
+INFO Test worker io.debezium.connector.common.BaseSourceTask -    name = engine
+INFO Test worker io.debezium.connector.common.BaseSourceTask -    debezium.source.database.history = io.debezium.relational.history.FileDatabaseHistory
+ERROR Test worker io.debezium.relational.history.KafkaDatabaseHistory - The 'database.history.kafka.topic' value is invalid: A value is required
+ERROR Test worker io.debezium.relational.history.KafkaDatabaseHistory - The 'database.history.kafka.bootstrap.servers' value is invalid: A value is required
+INFO Test worker io.debezium.connector.common.BaseSourceTask - Stopping down connector
+INFO Test worker io.debezium.connector.mysql.MySqlConnectorTask - Stopping MySQL connector task
+INFO Test worker org.apache.kafka.connect.storage.FileOffsetBackingStore - Stopped FileOffsetBackingStore
+ERROR Test worker io.debezium.embedded.EmbeddedEngine - Unable to initialize and start connector's task class 'io.debezium.connector.mysql.MySqlConnectorTask' with config: {connector.class=io.debezium.connector.mysql.MySqlConnector, database.dbname=my-wpdb, database.user=root, database.server.id=1594892000012, offset.storage=org.apache.kafka.connect.storage.FileOffsetBackingStore, database.server.name=instance-mysqlsource, database.port=3306, offset.flush.interval.ms=1000, offset.storage.file.filename=/var/folders/4f/bjxrqxs94tg59hqfv2whcr_m0000gq/T/d3933a912998954971584870536.tmp, debezium.source.database.history.file.filename=currenthistory, database.hostname=localhost, database.password=********, name=engine, debezium.source.database.history=io.debezium.relational.history.FileDatabaseHistory}
+org.apache.kafka.connect.errors.ConnectException: Error configuring an instance of KafkaDatabaseHistory; check the logs for details
+	at io.debezium.relational.history.KafkaDatabaseHistory.configure(KafkaDatabaseHistory.java:180)
+	at io.debezium.connector.mysql.MySqlSchema.<init>(MySqlSchema.java:139)
+	at io.debezium.connector.mysql.MySqlTaskContext.<init>(MySqlTaskContext.java:86)
+	at io.debezium.connector.mysql.MySqlTaskContext.<init>(MySqlTaskContext.java:52)
+	at io.debezium.connector.mysql.MySqlConnectorTask.createAndStartTaskContext(MySqlConnectorTask.java:357)
+	at io.debezium.connector.mysql.MySqlConnectorTask.start(MySqlConnectorTask.java:143)
+	at io.debezium.connector.common.BaseSourceTask.start(BaseSourceTask.java:101)
+	at io.debezium.embedded.EmbeddedEngine.run(EmbeddedEngine.java:756)
+	at io.debezium.embedded.ConvertingEngineBuilder$2.run(ConvertingEngineBuilder.java:170)
+	at io.floodplain.debezium.postgres.TestMySQL.testMySql(TestMySQL.kt:53)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecutor.runTestClass(JUnitTestClassExecutor.java:110)
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecutor.execute(JUnitTestClassExecutor.java:58)
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecutor.execute(JUnitTestClassExecutor.java:38)
+	at org.gradle.api.internal.tasks.testing.junit.AbstractJUnitTestClassProcessor.processTestClass(AbstractJUnitTestClassProcessor.java:62)
+	at org.gradle.api.internal.tasks.testing.SuiteTestClassProcessor.processTestClass(SuiteTestClassProcessor.java:51)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:36)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24)
+	at org.gradle.internal.dispatch.ContextClassLoaderDispatch.dispatch(ContextClassLoaderDispatch.java:33)
+	at org.gradle.internal.dispatch.ProxyDispatchAdapter$DispatchingInvocationHandler.invoke(ProxyDispatchAdapter.java:94)
+	at com.sun.proxy.$Proxy2.processTestClass(Unknown Source)
+	at org.gradle.api.internal.tasks.testing.worker.TestWorker.processTestClass(TestWorker.java:119)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:36)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24)
+	at org.gradle.internal.remote.internal.hub.MessageHubBackedObjectConnection$DispatchWrapper.dispatch(MessageHubBackedObjectConnection.java:182)
+	at org.gradle.internal.remote.internal.hub.MessageHubBackedObjectConnection$DispatchWrapper.dispatch(MessageHubBackedObjectConnection.java:164)
+	at org.gradle.internal.remote.internal.hub.MessageHub$Handler.run(MessageHub.java:414)
+	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:64)
+	at org.gradle.internal.concurrent.ManagedExecutorImpl$1.run(ManagedExecutorImpl.java:48)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
+	at org.gradle.internal.concurrent.ThreadFactoryImpl$ManagedThreadRunnable.run(ThreadFactoryImpl.java:56)
+	at java.base/java.lang.Thread.run(Thread.java:834)
+INFO Test worker io.floodplain.debezium.postgres.TestMySQL - Creating offset files at: /var/folders/4f/bjxrqxs94tg59hqfv2whcr_m0000gq/T/2313d497439840659074958584.tmp
+INFO Test worker org.apache.kafka.connect.json.JsonConverterConfig - JsonConverterConfig values: 
+	converter.type = key
+	decimal.format = BASE64
+	schemas.cache.size = 1000
+	schemas.enable = true
+
+INFO Test worker org.apache.kafka.connect.json.JsonConverterConfig - JsonConverterConfig values: 
+	converter.type = value
+	decimal.format = BASE64
+	schemas.cache.size = 1000
+	schemas.enable = false
+
+INFO Test worker io.debezium.embedded.EmbeddedEngine$EmbeddedConfig - EmbeddedConfig values: 
+	access.control.allow.methods = 
+	access.control.allow.origin = 
+	admin.listeners = null
+	bootstrap.servers = [localhost:9092]
+	client.dns.lookup = default
+	config.providers = []
+	connector.client.config.override.policy = None
+	header.converter = class org.apache.kafka.connect.storage.SimpleHeaderConverter
+	internal.key.converter = class org.apache.kafka.connect.json.JsonConverter
+	internal.value.converter = class org.apache.kafka.connect.json.JsonConverter
+	key.converter = class org.apache.kafka.connect.json.JsonConverter
+	listeners = null
+	metric.reporters = []
+	metrics.num.samples = 2
+	metrics.recording.level = INFO
+	metrics.sample.window.ms = 30000
+	offset.flush.interval.ms = 1000
+	offset.flush.timeout.ms = 5000
+	offset.storage.file.filename = /var/folders/4f/bjxrqxs94tg59hqfv2whcr_m0000gq/T/2313d497439840659074958584.tmp
+	offset.storage.partitions = null
+	offset.storage.replication.factor = null
+	offset.storage.topic = 
+	plugin.path = null
+	rest.advertised.host.name = null
+	rest.advertised.listener = null
+	rest.advertised.port = null
+	rest.extension.classes = []
+	rest.host.name = null
+	rest.port = 8083
+	ssl.client.auth = none
+	task.shutdown.graceful.timeout.ms = 5000
+	topic.tracking.allow.reset = true
+	topic.tracking.enable = true
+	value.converter = class org.apache.kafka.connect.json.JsonConverter
+
+INFO Test worker org.apache.kafka.connect.runtime.WorkerConfig - Worker configuration property 'internal.key.converter' is deprecated and may be removed in an upcoming release. The specified value 'org.apache.kafka.connect.json.JsonConverter' matches the default, so this property can be safely removed from the worker configuration.
+INFO Test worker org.apache.kafka.connect.runtime.WorkerConfig - Worker configuration property 'internal.value.converter' is deprecated and may be removed in an upcoming release. The specified value 'org.apache.kafka.connect.json.JsonConverter' matches the default, so this property can be safely removed from the worker configuration.
+INFO Test worker org.apache.kafka.connect.json.JsonConverterConfig - JsonConverterConfig values: 
+	converter.type = key
+	decimal.format = BASE64
+	schemas.cache.size = 1000
+	schemas.enable = true
+
+INFO Test worker org.apache.kafka.connect.json.JsonConverterConfig - JsonConverterConfig values: 
+	converter.type = value
+	decimal.format = BASE64
+	schemas.cache.size = 1000
+	schemas.enable = true
+
+INFO Test worker org.apache.kafka.connect.storage.FileOffsetBackingStore - Starting FileOffsetBackingStore with file /var/folders/4f/bjxrqxs94tg59hqfv2whcr_m0000gq/T/2313d497439840659074958584.tmp
+INFO Test worker io.debezium.connector.common.BaseSourceTask - Starting MySqlConnectorTask with configuration:
+INFO Test worker io.debezium.connector.common.BaseSourceTask -    connector.class = io.debezium.connector.mysql.MySqlConnector
+INFO Test worker io.debezium.connector.common.BaseSourceTask -    database.history.file.filename = currenthistory
+INFO Test worker io.debezium.connector.common.BaseSourceTask -    database.dbname = my-wpdb
+INFO Test worker io.debezium.connector.common.BaseSourceTask -    database.user = root
+INFO Test worker io.debezium.connector.common.BaseSourceTask -    offset.storage = org.apache.kafka.connect.storage.FileOffsetBackingStore
+INFO Test worker io.debezium.connector.common.BaseSourceTask -    database.server.id = 1594892178684
+INFO Test worker io.debezium.connector.common.BaseSourceTask -    database.server.name = instance-mysqlsource
+INFO Test worker io.debezium.connector.common.BaseSourceTask -    database.port = 3306
+INFO Test worker io.debezium.connector.common.BaseSourceTask -    offset.flush.interval.ms = 1000
+INFO Test worker io.debezium.connector.common.BaseSourceTask -    offset.storage.file.filename = /var/folders/4f/bjxrqxs94tg59hqfv2whcr_m0000gq/T/2313d497439840659074958584.tmp
+INFO Test worker io.debezium.connector.common.BaseSourceTask -    database.hostname = localhost
+INFO Test worker io.debezium.connector.common.BaseSourceTask -    database.password = ********
+INFO Test worker io.debezium.connector.common.BaseSourceTask -    name = engine
+INFO Test worker io.debezium.connector.common.BaseSourceTask -    database.history = io.debezium.relational.history.FileDatabaseHistory
+INFO Test worker io.debezium.connector.mysql.MySqlConnectorTask - Found no existing offset, so preparing to perform a snapshot
+INFO Test worker io.debezium.util.Threads - Requested thread factory for connector MySqlConnector, id = instance-mysqlsource named = binlog-client
+INFO Test worker io.debezium.util.Threads - Requested thread factory for connector MySqlConnector, id = instance-mysqlsource named = snapshot
+INFO Test worker io.debezium.util.Threads - Creating thread debezium-mysqlconnector-instance-mysqlsource-snapshot
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - Starting snapshot for jdbc:mysql://localhost:3306/?useInformationSchema=true&nullCatalogMeansCurrent=false&useSSL=false&useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8&zeroDateTimeBehavior=CONVERT_TO_NULL&connectTimeout=30000 with user 'root' with locking mode 'minimal'
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - Snapshot is using user 'root' with these MySQL grants:
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' WITH GRANT OPTION
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - MySQL server variables related to change data capture:
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	binlog_cache_size                             = 32768                                        
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	binlog_checksum                               = CRC32                                        
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	binlog_direct_non_transactional_updates       = OFF                                          
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	binlog_error_action                           = ABORT_SERVER                                 
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	binlog_format                                 = ROW                                          
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	binlog_group_commit_sync_delay                = 0                                            
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	binlog_group_commit_sync_no_delay_count       = 0                                            
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	binlog_gtid_simple_recovery                   = ON                                           
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	binlog_max_flush_queue_time                   = 0                                            
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	binlog_order_commits                          = ON                                           
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	binlog_row_image                              = FULL                                         
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	binlog_rows_query_log_events                  = OFF                                          
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	binlog_stmt_cache_size                        = 32768                                        
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	binlog_transaction_dependency_history_size    = 25000                                        
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	binlog_transaction_dependency_tracking        = COMMIT_ORDER                                 
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	character_set_client                          = utf8mb4                                      
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	character_set_connection                      = utf8mb4                                      
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	character_set_database                        = latin1                                       
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	character_set_filesystem                      = binary                                       
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	character_set_results                         = utf8mb4                                      
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	character_set_server                          = latin1                                       
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	character_set_system                          = utf8                                         
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	character_sets_dir                            = /usr/share/mysql/charsets/                   
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	collation_connection                          = utf8mb4_general_ci                           
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	collation_database                            = latin1_swedish_ci                            
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	collation_server                              = latin1_swedish_ci                            
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	enforce_gtid_consistency                      = OFF                                          
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	gtid_executed_compression_period              = 1000                                         
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	gtid_mode                                     = OFF                                          
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	gtid_next                                     = AUTOMATIC                                    
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	gtid_owned                                    =                                              
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	gtid_purged                                   =                                              
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	innodb_api_enable_binlog                      = OFF                                          
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	innodb_locks_unsafe_for_binlog                = OFF                                          
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	innodb_version                                = 5.7.30                                       
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	log_statements_unsafe_for_binlog              = ON                                           
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	max_binlog_cache_size                         = 18446744073709547520                         
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	max_binlog_size                               = 1073741824                                   
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	max_binlog_stmt_cache_size                    = 18446744073709547520                         
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	protocol_version                              = 10                                           
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	session_track_gtids                           = OFF                                          
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	slave_type_conversions                        =                                              
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	sync_binlog                                   = 1                                            
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	system_time_zone                              = UTC                                          
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	time_zone                                     = SYSTEM                                       
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	tls_version                                   = TLSv1,TLSv1.1,TLSv1.2                        
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	tx_isolation                                  = REPEATABLE-READ                              
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	tx_read_only                                  = OFF                                          
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	version                                       = 5.7.30-log                                   
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	version_comment                               = MySQL Community Server (GPL)                 
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	version_compile_machine                       = x86_64                                       
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	version_compile_os                            = Linux                                        
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - Step 0: disabling autocommit, enabling repeatable read transactions, and setting lock wait timeout to 10
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - Step 1: flush and obtain global read lock to prevent writes to database
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - Step 2: start transaction with consistent snapshot
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - Step 3: read binlog position of MySQL master
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 using binlog 'mysql-bin.000004' at position '989620' and gtid ''
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - Step 4: read list of available databases
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 list of available databases is: [information_schema, inventory, my-wpdb, mysql, performance_schema, sys]
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - Step 5: read list of available tables in each database
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'inventory.addresses' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'inventory.addresses' for further processing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'inventory.customers' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'inventory.customers' for further processing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'inventory.geom' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'inventory.geom' for further processing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'inventory.orders' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'inventory.orders' for further processing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'inventory.products' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'inventory.products' for further processing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'inventory.products_on_hand' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'inventory.products_on_hand' for further processing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'my-wpdb.wp_commentmeta' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'my-wpdb.wp_commentmeta' for further processing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'my-wpdb.wp_comments' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'my-wpdb.wp_comments' for further processing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'my-wpdb.wp_links' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'my-wpdb.wp_links' for further processing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'my-wpdb.wp_options' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'my-wpdb.wp_options' for further processing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'my-wpdb.wp_postmeta' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'my-wpdb.wp_postmeta' for further processing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'my-wpdb.wp_posts' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'my-wpdb.wp_posts' for further processing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'my-wpdb.wp_term_relationships' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'my-wpdb.wp_term_relationships' for further processing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'my-wpdb.wp_term_taxonomy' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'my-wpdb.wp_term_taxonomy' for further processing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'my-wpdb.wp_termmeta' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'my-wpdb.wp_termmeta' for further processing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'my-wpdb.wp_terms' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'my-wpdb.wp_terms' for further processing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'my-wpdb.wp_usermeta' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'my-wpdb.wp_usermeta' for further processing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'my-wpdb.wp_users' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'my-wpdb.wp_users' for further processing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'mysql.columns_priv' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'mysql.columns_priv' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'mysql.db' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'mysql.db' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'mysql.engine_cost' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'mysql.engine_cost' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'mysql.event' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'mysql.event' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'mysql.func' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'mysql.func' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'mysql.general_log' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'mysql.general_log' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'mysql.gtid_executed' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'mysql.gtid_executed' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'mysql.help_category' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'mysql.help_category' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'mysql.help_keyword' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'mysql.help_keyword' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'mysql.help_relation' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'mysql.help_relation' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'mysql.help_topic' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'mysql.help_topic' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'mysql.innodb_index_stats' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'mysql.innodb_index_stats' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'mysql.innodb_table_stats' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'mysql.innodb_table_stats' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'mysql.ndb_binlog_index' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'mysql.ndb_binlog_index' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'mysql.plugin' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'mysql.plugin' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'mysql.proc' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'mysql.proc' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'mysql.procs_priv' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'mysql.procs_priv' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'mysql.proxies_priv' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'mysql.proxies_priv' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'mysql.server_cost' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'mysql.server_cost' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'mysql.servers' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'mysql.servers' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'mysql.slave_master_info' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'mysql.slave_master_info' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'mysql.slave_relay_log_info' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'mysql.slave_relay_log_info' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'mysql.slave_worker_info' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'mysql.slave_worker_info' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'mysql.slow_log' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'mysql.slow_log' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'mysql.tables_priv' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'mysql.tables_priv' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'mysql.time_zone' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'mysql.time_zone' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'mysql.time_zone_leap_second' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'mysql.time_zone_leap_second' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'mysql.time_zone_name' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'mysql.time_zone_name' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'mysql.time_zone_transition' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'mysql.time_zone_transition' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'mysql.time_zone_transition_type' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'mysql.time_zone_transition_type' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'mysql.user' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'mysql.user' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.accounts' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.accounts' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.cond_instances' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.cond_instances' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.events_stages_current' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.events_stages_current' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.events_stages_history' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.events_stages_history' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.events_stages_history_long' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.events_stages_history_long' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.events_stages_summary_by_account_by_event_name' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.events_stages_summary_by_account_by_event_name' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.events_stages_summary_by_host_by_event_name' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.events_stages_summary_by_host_by_event_name' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.events_stages_summary_by_thread_by_event_name' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.events_stages_summary_by_thread_by_event_name' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.events_stages_summary_by_user_by_event_name' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.events_stages_summary_by_user_by_event_name' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.events_stages_summary_global_by_event_name' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.events_stages_summary_global_by_event_name' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.events_statements_current' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.events_statements_current' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.events_statements_history' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.events_statements_history' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.events_statements_history_long' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.events_statements_history_long' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.events_statements_summary_by_account_by_event_name' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.events_statements_summary_by_account_by_event_name' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.events_statements_summary_by_digest' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.events_statements_summary_by_digest' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.events_statements_summary_by_host_by_event_name' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.events_statements_summary_by_host_by_event_name' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.events_statements_summary_by_program' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.events_statements_summary_by_program' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.events_statements_summary_by_thread_by_event_name' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.events_statements_summary_by_thread_by_event_name' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.events_statements_summary_by_user_by_event_name' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.events_statements_summary_by_user_by_event_name' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.events_statements_summary_global_by_event_name' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.events_statements_summary_global_by_event_name' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.events_transactions_current' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.events_transactions_current' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.events_transactions_history' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.events_transactions_history' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.events_transactions_history_long' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.events_transactions_history_long' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.events_transactions_summary_by_account_by_event_name' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.events_transactions_summary_by_account_by_event_name' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.events_transactions_summary_by_host_by_event_name' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.events_transactions_summary_by_host_by_event_name' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.events_transactions_summary_by_thread_by_event_name' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.events_transactions_summary_by_thread_by_event_name' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.events_transactions_summary_by_user_by_event_name' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.events_transactions_summary_by_user_by_event_name' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.events_transactions_summary_global_by_event_name' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.events_transactions_summary_global_by_event_name' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.events_waits_current' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.events_waits_current' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.events_waits_history' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.events_waits_history' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.events_waits_history_long' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.events_waits_history_long' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.events_waits_summary_by_account_by_event_name' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.events_waits_summary_by_account_by_event_name' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.events_waits_summary_by_host_by_event_name' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.events_waits_summary_by_host_by_event_name' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.events_waits_summary_by_instance' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.events_waits_summary_by_instance' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.events_waits_summary_by_thread_by_event_name' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.events_waits_summary_by_thread_by_event_name' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.events_waits_summary_by_user_by_event_name' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.events_waits_summary_by_user_by_event_name' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.events_waits_summary_global_by_event_name' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.events_waits_summary_global_by_event_name' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.file_instances' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.file_instances' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.file_summary_by_event_name' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.file_summary_by_event_name' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.file_summary_by_instance' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.file_summary_by_instance' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.global_status' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.global_status' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.global_variables' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.global_variables' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.host_cache' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.host_cache' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.hosts' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.hosts' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.memory_summary_by_account_by_event_name' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.memory_summary_by_account_by_event_name' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.memory_summary_by_host_by_event_name' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.memory_summary_by_host_by_event_name' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.memory_summary_by_thread_by_event_name' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.memory_summary_by_thread_by_event_name' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.memory_summary_by_user_by_event_name' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.memory_summary_by_user_by_event_name' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.memory_summary_global_by_event_name' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.memory_summary_global_by_event_name' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.metadata_locks' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.metadata_locks' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.mutex_instances' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.mutex_instances' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.objects_summary_global_by_type' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.objects_summary_global_by_type' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.performance_timers' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.performance_timers' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.prepared_statements_instances' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.prepared_statements_instances' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.replication_applier_configuration' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.replication_applier_configuration' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.replication_applier_status' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.replication_applier_status' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.replication_applier_status_by_coordinator' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.replication_applier_status_by_coordinator' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.replication_applier_status_by_worker' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.replication_applier_status_by_worker' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.replication_connection_configuration' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.replication_connection_configuration' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.replication_connection_status' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.replication_connection_status' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.replication_group_member_stats' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.replication_group_member_stats' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.replication_group_members' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.replication_group_members' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.rwlock_instances' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.rwlock_instances' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.session_account_connect_attrs' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.session_account_connect_attrs' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.session_connect_attrs' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.session_connect_attrs' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.session_status' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.session_status' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.session_variables' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.session_variables' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.setup_actors' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.setup_actors' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.setup_consumers' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.setup_consumers' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.setup_instruments' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.setup_instruments' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.setup_objects' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.setup_objects' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.setup_timers' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.setup_timers' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.socket_instances' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.socket_instances' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.socket_summary_by_event_name' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.socket_summary_by_event_name' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.socket_summary_by_instance' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.socket_summary_by_instance' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.status_by_account' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.status_by_account' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.status_by_host' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.status_by_host' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.status_by_thread' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.status_by_thread' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.status_by_user' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.status_by_user' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.table_handles' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.table_handles' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.table_io_waits_summary_by_index_usage' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.table_io_waits_summary_by_index_usage' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.table_io_waits_summary_by_table' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.table_io_waits_summary_by_table' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.table_lock_waits_summary_by_table' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.table_lock_waits_summary_by_table' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.threads' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.threads' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.user_variables_by_thread' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.user_variables_by_thread' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.users' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.users' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'performance_schema.variables_by_thread' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'performance_schema.variables_by_thread' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 including 'sys.sys_config' among known tables
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	 'sys.sys_config' is filtered out of capturing
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	snapshot continuing with database(s): [my-wpdb, inventory]
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - Step 6: generating DROP and CREATE statements to reflect current database schemas:
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	SET character_set_server=latin1, collation_server=latin1_swedish_ci;SET character_set_server=latin1, collation_server=latin1_swedish_ci;
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	DROP TABLE IF EXISTS `inventory`.`addresses`
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	DROP TABLE IF EXISTS `inventory`.`customers`
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	DROP TABLE IF EXISTS `inventory`.`geom`
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	DROP TABLE IF EXISTS `inventory`.`orders`
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	DROP TABLE IF EXISTS `inventory`.`products`
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	DROP TABLE IF EXISTS `inventory`.`products_on_hand`
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	DROP TABLE IF EXISTS `my-wpdb`.`wp_commentmeta`
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	DROP TABLE IF EXISTS `my-wpdb`.`wp_comments`
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	DROP TABLE IF EXISTS `my-wpdb`.`wp_links`
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	DROP TABLE IF EXISTS `my-wpdb`.`wp_options`
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	DROP TABLE IF EXISTS `my-wpdb`.`wp_postmeta`
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	DROP TABLE IF EXISTS `my-wpdb`.`wp_posts`
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	DROP TABLE IF EXISTS `my-wpdb`.`wp_term_relationships`
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	DROP TABLE IF EXISTS `my-wpdb`.`wp_term_taxonomy`
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	DROP TABLE IF EXISTS `my-wpdb`.`wp_termmeta`
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	DROP TABLE IF EXISTS `my-wpdb`.`wp_terms`
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	DROP TABLE IF EXISTS `my-wpdb`.`wp_usermeta`
+INFO Test worker io.debezium.connector.common.BaseSourceTask - Stopping down connector
+INFO Test worker io.debezium.connector.mysql.MySqlConnectorTask - Stopping MySQL connector task
+INFO Test worker io.debezium.connector.mysql.ChainedReader - ChainedReader: Stopping the snapshot reader
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - 	DROP TABLE IF EXISTS `my-wpdb`.`wp_users`
+INFO Test worker io.debezium.connector.mysql.SnapshotReader - Discarding 4 unsent record(s) due to the connector shutting down
+INFO Test worker io.debezium.connector.mysql.SnapshotReader - Discarding 0 unsent record(s) due to the connector shutting down
+INFO debezium-mysqlconnector-instance-mysqlsource-snapshot io.debezium.connector.mysql.SnapshotReader - Step 7: rolling back transaction after abort
+INFO Test worker io.debezium.connector.mysql.MySqlConnectorTask - Connector task finished all work and is now shutdown
+INFO Test worker org.apache.kafka.connect.storage.FileOffsetBackingStore - Stopped FileOffsetBackingStore
+ERROR Test worker io.debezium.embedded.EmbeddedEngine - Stopping connector after error in the application's handler method: An operation is not implemented: Not yet implemented
+kotlin.NotImplementedError: An operation is not implemented: Not yet implemented
+	at io.floodplain.debezium.postgres.TestMySQL.send(TestMySQL.kt:57)
+	at io.floodplain.debezium.postgres.TestMySQL.access$send(TestMySQL.kt:15)
+	at io.floodplain.debezium.postgres.TestMySQL$testMySql$engine$1.accept(TestMySQL.kt:40)
+	at io.floodplain.debezium.postgres.TestMySQL$testMySql$engine$1.accept(TestMySQL.kt:15)
+	at io.debezium.embedded.ConvertingEngineBuilder.lambda$notifying$0(ConvertingEngineBuilder.java:70)
+	at io.debezium.embedded.EmbeddedEngine$1.handleBatch(EmbeddedEngine.java:471)
+	at io.debezium.embedded.EmbeddedEngine.run(EmbeddedEngine.java:810)
+	at io.debezium.embedded.ConvertingEngineBuilder$2.run(ConvertingEngineBuilder.java:170)
+	at io.floodplain.debezium.postgres.TestMySQL.testMySql(TestMySQL.kt:53)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecutor.runTestClass(JUnitTestClassExecutor.java:110)
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecutor.execute(JUnitTestClassExecutor.java:58)
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecutor.execute(JUnitTestClassExecutor.java:38)
+	at org.gradle.api.internal.tasks.testing.junit.AbstractJUnitTestClassProcessor.processTestClass(AbstractJUnitTestClassProcessor.java:62)
+	at org.gradle.api.internal.tasks.testing.SuiteTestClassProcessor.processTestClass(SuiteTestClassProcessor.java:51)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:36)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24)
+	at org.gradle.internal.dispatch.ContextClassLoaderDispatch.dispatch(ContextClassLoaderDispatch.java:33)
+	at org.gradle.internal.dispatch.ProxyDispatchAdapter$DispatchingInvocationHandler.invoke(ProxyDispatchAdapter.java:94)
+	at com.sun.proxy.$Proxy2.processTestClass(Unknown Source)
+	at org.gradle.api.internal.tasks.testing.worker.TestWorker.processTestClass(TestWorker.java:119)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:36)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24)
+	at org.gradle.internal.remote.internal.hub.MessageHubBackedObjectConnection$DispatchWrapper.dispatch(MessageHubBackedObjectConnection.java:182)
+	at org.gradle.internal.remote.internal.hub.MessageHubBackedObjectConnection$DispatchWrapper.dispatch(MessageHubBackedObjectConnection.java:164)
+	at org.gradle.internal.remote.internal.hub.MessageHub$Handler.run(MessageHub.java:414)
+	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:64)
+	at org.gradle.internal.concurrent.ManagedExecutorImpl$1.run(ManagedExecutorImpl.java:48)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
+	at org.gradle.internal.concurrent.ThreadFactoryImpl$ManagedThreadRunnable.run(ThreadFactoryImpl.java:56)
+	at java.base/java.lang.Thread.run(Thread.java:834)

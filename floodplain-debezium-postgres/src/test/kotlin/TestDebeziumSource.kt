@@ -54,7 +54,7 @@ class TestDebeziumSource {
     fun testShortRun() {
         runBlocking {
             val resultList = mutableListOf<ChangeRecord>()
-            postgresDataSource("mypostgres", postgresContainer.host, postgresContainer.exposedPort, "dvdrental", "postgres", "mysecretpassword", UUID.randomUUID().toString(),
+            createDebeziumChangeFlow("mypostgres", "io.debezium.connector.postgresql.PostgresConnector", postgresContainer.host, postgresContainer.exposedPort, "dvdrental", "postgres", "mysecretpassword", UUID.randomUUID().toString(),
                 emptyMap())
                 .take(500)
                 .toList(resultList)

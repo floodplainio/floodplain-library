@@ -5,6 +5,7 @@ dependencies {
     Map<String, String> dependencies = globalConf.commonDependencies
     implementation(dependencies.debeziumEmbedded)
     implementation(dependencies.debeziumPostgres)
+    implementation(dependencies.debeziumMySQL)
     compile(dependencies.kotlinLogging)
     testCompile(dependencies.jUnit)
     implementation(project(":floodplain-api"))

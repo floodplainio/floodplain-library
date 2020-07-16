@@ -116,6 +116,7 @@ private fun postToHttpJava11(url: URL, jsonString: String) {
         .build()
     val response: HttpResponse<String> = httpClient.send(request, BodyHandlers.ofString())
     if (response.statusCode() >= 400) {
+        logger.error("Scheduling connector failed. Request: $jsonString")
         throw IOException("Error calling connector: ${response.uri()} code: ${response.statusCode()} body: ${response.body()}")
     }
 }

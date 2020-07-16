@@ -60,20 +60,22 @@ private fun createOffsetFilePath(offsetId: String?): Path {
     return tempFile.toPath()
 }
 
-private fun createPostgresSettings(name: String, hostname: String, port: Int, database: String, username: String, password: String, offsetId: String? = null, settings: Map<String, String> = emptyMap()): Properties {
+private fun createLocalDebeziumSettings(name: String, taskClass: String, hostname: String, port: Int, database: String, username: String, password: String, offsetId: String? = null, settings: Map<String, String> = emptyMap()): Properties {
     val offsetFilePath = createOffsetFilePath(offsetId)
     logger.info("Creating offset files at: $offsetFilePath")
     val props = Properties()
     props.setProperty("name", "engine_" + UUID.randomUUID())
-    props.setProperty("connector.class", "io.debezium.connector.postgresql.PostgresConnector")
+    props.setProperty("connector.class", taskClass)
     props.setProperty("database.hostname", hostname)
     props.setProperty("database.port", "$port")
     props.setProperty("database.server.name", name) // don't think this matters?
     props.setProperty("database.dbname", database)
+    props.setProperty("database.whitelist", database)
     props.setProperty("database.user", username)
     props.setProperty("database.password", password)
+    props.setProperty("offset.storage", "org.apache.kafka.connect.storage.FileOffsetBackingStore")
     props.setProperty("offset.storage.file.filename", offsetFilePath.toString())
-    props.setProperty("offset.flush.interval.ms", "10000")
+    props.setProperty("offset.flush.interval.ms", "1000")
     settings.forEach { (k, v) -> props[k] = v }
     return props
 }
@@ -89,8 +91,9 @@ private fun createPostgresSettings(name: String, hostname: String, port: Int, da
  * Defaults to empty map.
  *
  */
-fun postgresDataSource(name: String, hostname: String, port: Int, database: String, username: String, password: String, offsetId: String? = null, settings: Map<String, String> = emptyMap()): Flow<ChangeRecord> {
-    val props = createPostgresSettings(name, hostname, port, database, username, password, offsetId, settings)
+fun createDebeziumChangeFlow(name: String, taskClass: String, hostname: String, port: Int, database: String, username: String, password: String, offsetId: String? = null, settings: Map<String, String> = emptyMap()): Flow<ChangeRecord> {
+    val props = createLocalDebeziumSettings(name, taskClass, hostname, port, database, username, password, offsetId, settings)
+    props.list(System.out)
     return runDebeziumServer(props)
 }
 
