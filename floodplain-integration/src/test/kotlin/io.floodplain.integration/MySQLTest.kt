@@ -1,11 +1,18 @@
 package io.floodplain.integration
 
 import io.floodplain.kotlindsl.each
+import io.floodplain.kotlindsl.group
+import io.floodplain.kotlindsl.join
+import io.floodplain.kotlindsl.joinGrouped
+import io.floodplain.kotlindsl.message.IMessage
 import io.floodplain.kotlindsl.mysqlSource
 import io.floodplain.kotlindsl.mysqlSourceConfig
+import io.floodplain.kotlindsl.set
 import io.floodplain.kotlindsl.stream
+import io.floodplain.kotlindsl.streams
 import io.floodplain.mongodb.mongoConfig
 import io.floodplain.mongodb.mongoSink
+import kotlin.test.assertNotNull
 import kotlinx.coroutines.delay
 import org.junit.After
 import org.junit.Ignore
@@ -31,7 +38,103 @@ class MySQLTest {
     }
 
     @Test
+    fun testSimple() {
+        stream {
+            val mysqlConfig = mysqlSourceConfig(
+                "mypostgres",
+                mysqlContainer.host,
+                mysqlContainer.exposedPort,
+                "root",
+                "mysecretpassword",
+                "inventory"
+            )
+            val mongoConfig = mongoConfig(
+                "mongosink",
+                "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
+                "@mongodump"
+            )
+            mysqlSource("inventory.customers", mysqlConfig) {
+                mongoSink("customers", "@customers", mongoConfig)
+            }
+        }.renderAndExecute {
+            val database = topologyContext().topicName("@mongodump")
+            val hits = waitForMongoDbCondition("mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}", database) { database ->
+                val collection = database.getCollection("customers")
+                val countDocuments = collection.countDocuments()
+                logger.info("# of documents: $countDocuments")
+                if (countDocuments == 4L) {
+                    4L
+                } else {
+                    null
+                }
+            } as Long?
+            assertNotNull(hits)
+        }
+    }
+
+    @Test
     fun testInventory() {
+        streams {
+            val mysqlConfig = mysqlSourceConfig(
+                "mypostgres",
+                mysqlContainer.host,
+                mysqlContainer.exposedPort,
+                "root",
+                "mysecretpassword",
+                "inventory"
+            )
+            val mongoConfig = mongoConfig(
+                "mongosink",
+                "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
+                "@mongodump"
+            )
+            listOf(
+                mysqlSource("inventory.customers", mysqlConfig) {
+                    each { key, customer, _ ->
+                        logger.info("Key: $key message: $customer")
+                    }
+                    joinGrouped(true) {
+                        mysqlSource("inventory.addresses", mysqlConfig) {
+                            group { msg -> "${msg["customer_id"]}" }
+                        }
+                    }
+                    set { key, customer, addresses ->
+                        val addressList: List<IMessage> = addresses.get("list") as List<IMessage>
+                        customer["addresses"] = addressList
+                        customer
+                    }
+                    mongoSink("customers", "@customers", mongoConfig)
+                },
+                mysqlSource("inventory.products", mysqlConfig) {
+                    join {
+                        mysqlSource("inventory.products_on_hand", mysqlConfig) {}
+                    }
+                    set { key, product, product_on_hand ->
+                        product["quantity"] = product_on_hand.integer("quantity")
+                        product
+                    }
+                    mongoSink("products", "@products", mongoConfig)
+                },
+                mysqlSource("inventory.orders", mysqlConfig) {
+                    mongoSink("orders", "@orders", mongoConfig)
+                }
+            )
+        }.renderAndExecute {
+            // delay(1000000)
+            val database = topologyContext().topicName("@mongodump")
+            val hits = waitForMongoDbCondition("mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}", database) { database ->
+                val customerCount = database.getCollection("customers").countDocuments()
+                val orderCount = database.getCollection("orders").countDocuments()
+                val productCount = database.getCollection("products").countDocuments()
+                logger.info("# of documents: $customerCount")
+                if (customerCount == 4L && orderCount == 4L && productCount == 9L) {
+                    4L
+                } else {
+                    null
+                }
+            } as Long?
+            assertNotNull(hits)
+        }
     }
     // can make this a proper unit test when I have a persisted wordpress installation image
     @Test @Ignore

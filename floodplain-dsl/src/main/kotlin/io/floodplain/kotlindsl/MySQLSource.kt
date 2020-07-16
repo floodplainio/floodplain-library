@@ -22,8 +22,10 @@ import io.floodplain.debezium.postgres.createDebeziumChangeFlow
 import io.floodplain.reactive.source.topology.TopicSource
 import io.floodplain.streams.api.Topic
 import io.floodplain.streams.api.TopologyContext
+import java.util.UUID
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 
 private val logger = mu.KotlinLogging.logger {}
@@ -80,40 +82,22 @@ class MySQLConfig(val topologyContext: TopologyContext, val name: String, val of
                 "database.history.kafka.bootstrap.servers" to "kafka:9092",
                 "database.history.kafka.topic" to "dbhistory.wordpress",
                 "include.schema.changes" to "false"
-        // TODO
-                // "tablewhitelistorsomething" to sourceElements.map { e -> e.topic().qualifiedString(topologyContext) }.joinToString(",")
         )))
     }
-
-    // val props = Properties()
-    // props.setProperty("name", "engine_" + UUID.randomUUID())
-    // props.setProperty("connector.class", taskClass)
-    // props.setProperty("database.hostname", hostname)
-    // props.setProperty("database.port", "$port")
-    // props.setProperty("database.server.name", name) // don't think this matters?
-    // props.setProperty("database.dbname", database)
-    // props.setProperty("database.whitelist", database)
-    // props.setProperty("database.user", username)
-    // props.setProperty("database.password", password)
-    // props.setProperty("offset.storage", "org.apache.kafka.connect.storage.FileOffsetBackingStore")
-    // props.setProperty("offset.storage.file.filename", offsetFilePath.toString())
-    // props.setProperty("offset.flush.interval.ms", "1000")
-    // settings.forEach { (k, v) -> props[k] = v }
-    // return props
 
     fun addSourceElement(elt: DebeziumSourceElement) {
         sourceElements.add(elt)
     }
 
     private fun directSource(offsetId: String): Flow<ChangeRecord> {
-        val historyTopic = Topic.from("@historytopic")
+        val tempFile = createTempFile(offsetId ?: UUID.randomUUID().toString().substring(0, 7))
+
         val extraSettings = mapOf(
-            // "database.history.kafka.topic" to historyTopic.qualifiedString(topologyContext),
             "database.history" to "io.debezium.relational.history.FileDatabaseHistory",
-            "database.history.file.filename" to "currenthistory"
-            // "database.history.kafka.bootstrap.servers" to "something:9092"
+            "database.history.file.filename" to tempFile.absolutePath
         )
         return createDebeziumChangeFlow(topologyContext.topicName(name), "io.debezium.connector.mysql.MySqlConnector", hostname, port, database, username, password, offsetId, extraSettings)
+            .onCompletion { e -> tempFile.absolutePath }
     }
 }
 
@@ -123,7 +107,7 @@ fun Stream.mysqlSourceConfig(name: String, hostname: String, port: Int, username
     return mySQLConfig
 }
 
-fun Stream.mysqlSource(table: String, config: MySQLConfig, schema: String? = null, init: Source.() -> Unit): Source {
+fun Stream.mysqlSource(table: String, config: MySQLConfig, init: Source.() -> Unit): Source {
 
     val topic = Topic.from("${config.name}.$table")
     val topicSource = TopicSource(topic, Topic.FloodplainKeyFormat.CONNECT_KEY_JSON, Topic.FloodplainBodyFormat.CONNECT_JSON)
