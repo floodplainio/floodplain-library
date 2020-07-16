@@ -15,7 +15,13 @@ private val logger = mu.KotlinLogging.logger {}
 
 class MySQLTest {
 
-    private val mysqlContainer = InstantiatedContainer("debezium/example-mysql:1.2", 3306)
+    private val mysqlContainer = InstantiatedContainer("debezium/example-mysql:1.2", 3306, mapOf(
+        "MYSQL_ROOT_PASSWORD" to "mysecretpassword",
+        "MYSQL_DATABASE" to "wpdb",
+        "MYSQL_USER" to "mysqluser",
+        "MYSQL_PASSWORD" to "mysqlpw",
+        "MYSQL_ROOT_HOST" to "%"
+    ))
     private val mongoContainer = InstantiatedContainer("mongo:latest", 27017)
 
     @After
