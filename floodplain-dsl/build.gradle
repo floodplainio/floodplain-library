@@ -21,7 +21,6 @@ dependencies {
     implementation(dependencies.debeziumEmbedded)
     testCompile(dependencies.jUnit)
     testCompile(dependencies.testContainer)
-    testCompile(dependencies.okHttp)
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation(dependencies.kotlinCoroutines)
     testImplementation("org.jetbrains.kotlin:kotlin-test")

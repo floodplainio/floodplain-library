@@ -37,7 +37,7 @@ suspend fun waitForMongoDbCondition(connectionString: String, database: String, 
                         returnValue = value
                         return@withTimeout
                     }
-                    delay(100)
+                    delay(500)
                 }
             }
         })
