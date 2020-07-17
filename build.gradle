@@ -13,6 +13,7 @@ plugins {
 
 apply from: "gradle/dependencies.gradle"
 apply from: "gradle/shared.gradle"
+apply plugin: "maven-publish"
 
 allprojects {
     repositories {
@@ -32,6 +33,36 @@ allprojects {
         mapping("kt", "SLASHSTAR_STYLE")
         ext.year = "2020"
         ext.name = "Frank Lyaruu"
+    }
+}
+
+// BOM publication doesn't work well yet.
+publishing {
+    publications {
+        maven(MavenPublication) {
+            customizePom(pom)
+            groupId = "io.floodplain"
+            artifactId = "library"
+            version = rootProject.ext.floodplain_version
+            pom.withXml {
+                asNode().children().last() + {
+                    resolveStrategy = Closure.DELEGATE_FIRST
+                    dependencyManagement {
+                        dependencies {
+                            project.configurations.each { conf ->
+                                conf.dependencies.each { dep ->
+                                    dependency {
+                                        groupId "${dep.group}"
+                                        artifactId "${dep.name}"
+                                        version "${dep.version}"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 

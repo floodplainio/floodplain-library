@@ -26,12 +26,14 @@ import java.nio.file.Path
 import java.util.Properties
 import java.util.UUID
 import kotlin.system.measureTimeMillis
+import org.junit.Ignore
 import org.junit.Test
 
 private val logger = mu.KotlinLogging.logger {}
 
 class TestMySQL {
-    @Test
+    // TODO, connect to testcontainers (now hard coded to localhost)
+    @Test @Ignore
     fun testMySql() {
         val offsetFilePath = createOffsetFilePath()
         logger.info("Creating offset files at: $offsetFilePath")
