@@ -81,7 +81,7 @@ interface InputReceiver {
     fun inputs(): Set<String>
 }
 
-interface TestContext : InputReceiver {
+interface LocalContext : InputReceiver {
     fun output(topic: String): Pair<String, IMessage>
     fun skip(topic: String, number: Int)
 
@@ -112,8 +112,8 @@ interface TestContext : InputReceiver {
 
 fun testTopology(
     topology: Topology,
-    testCmds: suspend
-    TestContext.() -> Unit,
+    localCmds: suspend
+    LocalContext.() -> Unit,
     topologyConstructor: TopologyConstructor,
     context: TopologyContext,
     sourceConfigs: List<Config>,
@@ -132,12 +132,12 @@ fun testTopology(
     props.setProperty(StreamsConfig.STATE_DIR_CONFIG, storageFolder)
     props.setProperty(StreamsConfig.BUILT_IN_METRICS_VERSION_CONFIG, StreamsConfig.METRICS_LATEST)
     val driver = TopologyTestDriver(topology, props)
-    val contextInstance = TestDriverContext(driver, context, topologyConstructor, sourceConfigs, sinkConfigs)
+    val contextInstance = LocalDriverContext(driver, context, topologyConstructor, sourceConfigs, sinkConfigs)
     val jobs = contextInstance.connectSourceAndSink()
     contextInstance.connectJobs.addAll(jobs)
     try {
         runBlocking {
-            testCmds(contextInstance)
+            localCmds(contextInstance)
             contextInstance.closeSinks()
         }
     } finally {
@@ -154,13 +154,13 @@ fun testTopology(
     }
 }
 
-class TestDriverContext(
+class LocalDriverContext(
     private val driver: TopologyTestDriver,
     private val topologyContext: TopologyContext,
     private val topologyConstructor: TopologyConstructor,
     private val sourceConfigs: List<Config>,
     private val sinkConfigs: List<Config>
-) : TestContext {
+) : LocalContext {
 
     val connectJobs = mutableListOf<Job>()
     private val inputTopics = mutableMapOf<String, TestInputTopic<String, ReplicationMessage>>()
@@ -193,7 +193,7 @@ class TestDriverContext(
 
     override suspend fun connectSource() {
         sourceConfigs.forEach { config ->
-            config.connectSource(this@TestDriverContext)
+            config.connectSource(this@LocalDriverContext)
         }
     }
 
@@ -203,7 +203,7 @@ class TestDriverContext(
     override fun connectSourceAndSink(): List<Job> {
         val outputJob = GlobalScope.launch(newSingleThreadContext("TopologySource"), CoroutineStart.UNDISPATCHED) {
             val outputFlows = outputFlows(this)
-                .map { (topic, flow) -> topic to flow.bufferTimeout(50, 200) }
+                .map { (topic, flow) -> topic to flow.bufferTimeout(200, 400) }
                 .toMap()
             val sinks = sinksByTopic()
                 outputFlows.forEach { (topic, flow) ->

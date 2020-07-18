@@ -11,7 +11,7 @@ dependencies {
     implementation(project(":streams"))
     implementation(project(":streams-api"))
     implementation(project(":floodplain-stream-topology"))
-    implementation(project(":floodplain-debezium-postgres"))
+    implementation(project(":floodplain-debezium"))
     implementation(project(":floodplain-direct"))
     implementation(project(":floodplain-api"))
     compile(dependencies.slf4j)

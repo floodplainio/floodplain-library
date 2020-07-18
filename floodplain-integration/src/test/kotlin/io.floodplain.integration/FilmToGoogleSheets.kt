@@ -27,6 +27,8 @@ import io.floodplain.sink.sheet.SheetSinkTask
 import io.floodplain.sink.sheet.googleSheetConfig
 import io.floodplain.sink.sheet.googleSheetsSink
 import io.floodplain.streams.api.Topic
+import io.floodplain.test.InstantiatedContainer
+import io.floodplain.test.useIntegraton
 import kotlin.test.assertEquals
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeout
@@ -97,13 +99,13 @@ class FilmToGoogleSheets {
             flushSinks()
             withTimeout(200000) {
                 repeat(1000) {
-                    val value = coreSink.getRange(spreadsheetId, "B3").first()?.first()
+                    // load a range:
+                    val range = coreSink.getRange(spreadsheetId, "B3")
+                    val value = range.first()?.first()
                     if (value == "Academy Dinosaur") {
                         logger.info("Found cell")
                         return@withTimeout
                     }
-
-                            delay(1000)
                     }
                 }
             val value = coreSink.getRange(spreadsheetId, "B3").first()?.first()

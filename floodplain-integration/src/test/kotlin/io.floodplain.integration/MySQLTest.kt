@@ -30,6 +30,8 @@ import io.floodplain.kotlindsl.stream
 import io.floodplain.kotlindsl.streams
 import io.floodplain.mongodb.mongoConfig
 import io.floodplain.mongodb.mongoSink
+import io.floodplain.mongodb.waitForMongoDbCondition
+import io.floodplain.test.InstantiatedContainer
 import kotlin.test.assertNotNull
 import kotlinx.coroutines.delay
 import org.junit.After

@@ -29,6 +29,8 @@ import io.floodplain.kotlindsl.set
 import io.floodplain.kotlindsl.stream
 import io.floodplain.mongodb.mongoConfig
 import io.floodplain.mongodb.mongoSink
+import io.floodplain.test.InstantiatedContainer
+import io.floodplain.test.useIntegraton
 import kotlin.test.assertEquals
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay

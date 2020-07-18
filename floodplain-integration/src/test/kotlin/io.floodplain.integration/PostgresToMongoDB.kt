@@ -33,6 +33,9 @@ import io.floodplain.kotlindsl.stream
 import io.floodplain.kotlindsl.streams
 import io.floodplain.mongodb.mongoConfig
 import io.floodplain.mongodb.mongoSink
+import io.floodplain.mongodb.waitForMongoDbCondition
+import io.floodplain.test.InstantiatedContainer
+import io.floodplain.test.useIntegraton
 import java.math.BigDecimal
 import kotlin.test.assertNotNull
 import kotlinx.coroutines.cancel

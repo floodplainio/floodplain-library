@@ -29,7 +29,8 @@ ext {
             kafkaConnectRuntime : "org.apache.kafka:connect-runtime:$kafka_version",
             kafkaStreams      : "org.apache.kafka:kafka-streams:$kafka_version",
             testContainer     : "org.testcontainers:testcontainers:$testContainer_version",
-            kotlinCoroutines  : "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlin_version"
+            kotlinCoroutines  : "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlin_version",
+            argParser         : "com.xenomachina:kotlin-argparser:2.0.7"
     ]
 
 }

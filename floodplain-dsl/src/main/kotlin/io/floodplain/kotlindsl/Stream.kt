@@ -85,7 +85,7 @@ class Stream(val context: TopologyContext) {
         ReplicationTopologyParser.materializeStateStores(topologyConstructor, topology)
         return topology
     }
-    fun renderAndExecute(testCmds: suspend TestContext.() -> Unit) {
+    fun renderAndExecute(localCmds: suspend LocalContext.() -> Unit) {
             val topologyConstructor = TopologyConstructor()
             val (topology, sources, sinks) = render(topologyConstructor)
             // val offsetPath = Paths.get("offset_" + UUID.randomUUID())
@@ -97,7 +97,7 @@ class Stream(val context: TopologyContext) {
             logger.info("Testing sinks:\n$sinks")
             logger.info("Sourcetopics: \n${topologyConstructor.desiredTopicNames().map { it.qualifiedString(context) }}")
 
-            testTopology(topology, testCmds, topologyConstructor, context, sourceConfigs, sinkConfigs)
+            testTopology(topology, localCmds, topologyConstructor, context, sourceConfigs, sinkConfigs)
     }
 
         /**

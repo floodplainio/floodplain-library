@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package io.floodplain.integration
+package io.floodplain.test
 
 import org.testcontainers.containers.GenericContainer
 

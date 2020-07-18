@@ -14,7 +14,7 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/floodplain-api" />
-            <option value="$PROJECT_DIR$/floodplain-debezium-postgres" />
+            <option value="$PROJECT_DIR$/floodplain-debezium" />
             <option value="$PROJECT_DIR$/floodplain-direct" />
             <option value="$PROJECT_DIR$/floodplain-dsl" />
             <option value="$PROJECT_DIR$/floodplain-elasticsearch" />
@@ -22,7 +22,9 @@
             <option value="$PROJECT_DIR$/floodplain-googlesheets" />
             <option value="$PROJECT_DIR$/floodplain-integration" />
             <option value="$PROJECT_DIR$/floodplain-mongodb" />
+            <option value="$PROJECT_DIR$/floodplain-runtime" />
             <option value="$PROJECT_DIR$/floodplain-stream-topology" />
+            <option value="$PROJECT_DIR$/floodplain-test" />
             <option value="$PROJECT_DIR$/immutable-api" />
             <option value="$PROJECT_DIR$/immutable-impl" />
             <option value="$PROJECT_DIR$/kafka-converter" />
