@@ -18,7 +18,6 @@
  */
 package io.floodplain.mongodb
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.mongodb.kafka.connect.MongoSinkConnector
 import com.mongodb.kafka.connect.sink.MongoSinkTask
 import io.floodplain.kotlindsl.Config
@@ -35,7 +34,6 @@ import io.floodplain.streams.api.Topic
 import io.floodplain.streams.api.TopologyContext
 import java.util.Optional
 import java.util.concurrent.atomic.AtomicLong
-import org.apache.kafka.connect.json.JsonDeserializer
 import org.apache.kafka.connect.sink.SinkRecord
 import org.apache.kafka.connect.sink.SinkTask
 
@@ -127,14 +125,11 @@ class MongoConfig(val name: String, val uri: String, val database: String) : Con
 }
 
 private class MongoFloodplainSink(private val task: SinkTask, private val config: Config) : FloodplainSink {
-    val deserializer = JsonDeserializer()
-    var mapper: ObjectMapper = ObjectMapper()
-
     private val offsetCounter = AtomicLong(System.currentTimeMillis())
 
     override fun send(topic: Topic, elements: List<Pair<String, Map<String, Any>?>>, topologyContext: TopologyContext) {
         // override fun send(docs: List<Triple<Topic, String, IMessage?>>) {
-        val keys = elements.map { (k, v) -> k }.toList()
+        // val keys = elements.map { (k, _) -> k }.toList()
         // logger.info("Sending documents to sink: ${elements.size} Topic: $topic Keys: $keys")
         val list = elements.map { (key, value) ->
             // logger.info("Sending document to sink. Topic: $topic Key: $key message: $value")

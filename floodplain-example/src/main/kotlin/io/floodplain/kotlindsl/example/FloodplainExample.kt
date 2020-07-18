@@ -32,8 +32,6 @@ import io.floodplain.mongodb.mongoConfig
 import io.floodplain.mongodb.mongoSink
 import java.net.URL
 
-private val logger = mu.KotlinLogging.logger {}
-
 fun main() {
     streams {
         val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental", "public")

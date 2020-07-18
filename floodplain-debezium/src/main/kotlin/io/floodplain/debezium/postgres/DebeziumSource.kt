@@ -100,12 +100,11 @@ fun createDebeziumChangeFlow(name: String, taskClass: String, hostname: String, 
 private fun runDebeziumServer(props: Properties): Flow<ChangeRecord> {
     val engineKillSwitch = EngineKillSwitch()
     val totalTimeInSend = AtomicLong(0L)
-    val flow = callbackFlow<ChangeRecord> {
-
+    return callbackFlow<ChangeRecord> {
         val engine = DebeziumEngine.create(Json::class.java)
             .using(props)
             .notifying { record: ChangeEvent<String, String> ->
-                if (this.isClosedForSend) {
+                if (isClosedForSend) {
                     // logger.info("Closed for send")
                 } else {
                     val perf = measureTimeMillis {
@@ -145,5 +144,4 @@ private fun runDebeziumServer(props: Properties): Flow<ChangeRecord> {
             engineKillSwitch.kill()
             logger.info("Debezium flow shutdown completed")
         }
-    return flow
 }

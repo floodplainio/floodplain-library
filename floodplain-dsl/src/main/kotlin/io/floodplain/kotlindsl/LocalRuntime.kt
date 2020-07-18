@@ -26,9 +26,7 @@ import io.floodplain.bufferTimeout
 import io.floodplain.kotlindsl.message.IMessage
 import io.floodplain.kotlindsl.message.fromImmutable
 import io.floodplain.replication.api.ReplicationMessage
-import io.floodplain.replication.api.ReplicationMessageParser
 import io.floodplain.replication.factory.ReplicationFactory
-import io.floodplain.replication.impl.json.JSONReplicationMessageParserImpl
 import io.floodplain.streams.api.Topic
 import io.floodplain.streams.api.TopologyContext
 import io.floodplain.streams.remotejoin.TopologyConstructor
@@ -41,7 +39,6 @@ import java.util.Properties
 import java.util.UUID
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.awaitClose
@@ -70,8 +67,6 @@ import org.apache.kafka.streams.processor.WallclockTimestampExtractor
 import org.apache.kafka.streams.state.KeyValueStore
 
 private val logger = mu.KotlinLogging.logger {}
-
-private val parser: ReplicationMessageParser = JSONReplicationMessageParserImpl()
 
 interface InputReceiver {
     fun input(topic: String, key: String, msg: IMessage)
@@ -110,7 +105,7 @@ interface LocalContext : InputReceiver {
     fun connectSourceAndSink(): List<Job>
 }
 
-fun testTopology(
+fun runLocalTopology(
     topology: Topology,
     localCmds: suspend
     LocalContext.() -> Unit,
@@ -258,7 +253,6 @@ class LocalDriverContext(
         return result
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     private fun outputFlows(context: CoroutineScope): Map<Topic, Flow<Pair<String, Map<String, Any>?>>> {
         val topics = topics()
         val deserializer = JsonDeserializer()
@@ -267,7 +261,7 @@ class LocalDriverContext(
         val sourceFlow = outputFlowSingle()
             .map { (topic, key, value) ->
                 val parsed = if (value == null) null else deserializer.deserialize(topic.qualifiedString(topologyContext), value) as ObjectNode
-                var result = if (value == null) null else mapper.convertValue(parsed, object : TypeReference<Map<String, Any>>() {})
+                val result = if (value == null) null else mapper.convertValue(parsed, object : TypeReference<Map<String, Any>>() {})
                 Triple(topic, key, result)
             }
             .broadcastIn(context)
@@ -282,7 +276,6 @@ class LocalDriverContext(
         }.toMap()
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     private fun outputFlowSingle(): Flow<Triple<Topic, String, ByteArray?>> {
         return callbackFlow<Triple<Topic, String, ByteArray?>> {
             driver.setOutputListener { record ->

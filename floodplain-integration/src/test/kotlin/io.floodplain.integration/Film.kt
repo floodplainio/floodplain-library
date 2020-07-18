@@ -102,6 +102,51 @@ class FilmSimple {
      * Test the simplest imaginable pipe: One source and one sink.
      */
     @Test
+    fun testPostgresSourceFromArguments() {
+        if (!useIntegraton) {
+            logger.info("Not performing integration tests, doesn't seem to work in circleci")
+            return
+        }
+        stream {
+
+            val postgresConfig = postgresSourceConfig(
+                "mypostgres",
+                postgresContainer.host,
+                postgresContainer.exposedPort,
+                "postgres",
+                "mysecretpassword",
+                "dvdrental",
+                "public"
+            )
+            val mongoConfig = mongoConfig(
+                "mongosink",
+                "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
+                "@mongodump"
+            )
+            postgresSource("film", postgresConfig) {
+                // Clear the last_update field, it makes no sense in a denormalized situation
+                set { _, film, _ ->
+                    film["last_update"] = null; film
+                }
+                mongoSink("filmwithactors", "@filmwithcat", mongoConfig)
+            }
+        }.runWithArguments { topologyContext ->
+            val database = topologyContext.topicName("@mongodump")
+            // flushSinks()
+            val hits = waitForMongoDbCondition("mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}", database) { currentDatabase ->
+                val collection = currentDatabase.getCollection("filmwithactors")
+                val countDocuments = collection.countDocuments()
+                if (countDocuments == 1000L) {
+                    1000L
+                } else {
+                    null
+                }
+            }
+            assertNotNull(hits)
+        }
+    }
+
+    @Test
     fun testPostgresWithExtraTopic() {
         if (!useIntegraton) {
             logger.info("Not performing integration tests, doesn't seem to work in circleci")

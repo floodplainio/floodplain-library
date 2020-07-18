@@ -51,8 +51,8 @@ class PostgresToElasticSearch {
 
     private val objectMapper = ObjectMapper()
 
-    val postgresContainer = InstantiatedContainer("floodplain/floodplain-postgres-demo:1.0.0", 5432)
-    val elasticSearchContainer = InstantiatedContainer("docker.elastic.co/elasticsearch/elasticsearch-oss:7.7.0", 9200, mapOf("discovery.type" to "single-node"))
+    private val postgresContainer = InstantiatedContainer("floodplain/floodplain-postgres-demo:1.0.0", 5432)
+    private val elasticSearchContainer = InstantiatedContainer("docker.elastic.co/elasticsearch/elasticsearch-oss:7.7.0", 9200, mapOf("discovery.type" to "single-node"))
 
     @After
     fun shutdown() {

@@ -94,8 +94,8 @@ class TestCombinedMongo {
                         postgresSource("city", postgresConfig) {
                         }
                     }
-                    set { key, msg, state ->
-                        msg.set("city", state)
+                    set { _, msg, state ->
+                        msg["city"] = state
                         // addressMap.put(key, msg)
                         // val correctAddresses = addressMap.filter { (k, v) ->
                         //     v["city"] != null
@@ -112,8 +112,8 @@ class TestCombinedMongo {
         }.renderAndExecute {
             val database = topologyContext().topicName("@mongodump")
             flushSinks()
-            val hits = waitForMongoDbCondition("mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}", database) { database ->
-                val collection = database.getCollection("address")
+            val hits = waitForMongoDbCondition("mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}", database) { databaseInstance ->
+                val collection = databaseInstance.getCollection("address")
                 val countDocuments = collection.countDocuments()
                 logger.info("# of documents: $countDocuments")
                 if (countDocuments == 603L) {
@@ -214,7 +214,7 @@ class TestCombinedMongo {
                         source("@address") {}
                     }
                     set { _, msg, state ->
-                        msg.set("address", state)
+                        msg["address"] = state
                         msg["address_id"] = null
                         msg
                     }
@@ -223,12 +223,12 @@ class TestCombinedMongo {
         }.renderAndExecute {
             val database = topologyContext().topicName("@mongodump")
             flushSinks()
-            val hits = waitForMongoDbCondition("mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}", database) { database ->
-                val staff = database.getCollection("staff")
+            val hits = waitForMongoDbCondition("mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}", database) { databaseInstance ->
+                val staff = databaseInstance.getCollection("staff")
                 val staffCount = staff.countDocuments()
-                val store = database.getCollection("store")
+                val store = databaseInstance.getCollection("store")
                 val storeCount = store.countDocuments()
-                val customer = database.getCollection("customer")
+                val customer = databaseInstance.getCollection("customer")
                 val customerCount = customer.countDocuments()
                 logger.info("# of staff: $staffCount # of stores: $storeCount customer count: $customerCount")
                 if (storeCount == 2L && staffCount == 2L && customerCount == 599L) {
@@ -329,7 +329,7 @@ class TestCombinedMongo {
                     }
                 join {
                     postgresSource("payment", postgresConfig) {
-                        scan({ msg -> msg["customer_id"].toString() }, { _ -> empty().set("total", BigDecimal(0)) },
+                        scan({ msg -> msg["customer_id"].toString() }, { empty().set("total", BigDecimal(0)) },
                             {
                                 set { _, msg, state ->
                                     state["total"] = (state["total"] as BigDecimal).add(msg["amount"] as BigDecimal)
@@ -353,9 +353,7 @@ class TestCombinedMongo {
                 val collection = currentDatabase.getCollection("paymentpercustomer")
                 val items = collection.countDocuments()
                 // TODO improve
-                if (items> 100) {
-                    items
-                }
+                items> 100
             }
             assertNotNull(items)
         }

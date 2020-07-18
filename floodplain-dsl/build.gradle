@@ -19,6 +19,7 @@ dependencies {
     implementation(dependencies.debeziumPostgres)
     implementation(dependencies.debeziumMySQL)
     implementation(dependencies.debeziumEmbedded)
+    implementation(dependencies.argParser)
     testCompile(dependencies.jUnit)
     testCompile(dependencies.testContainer)
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")

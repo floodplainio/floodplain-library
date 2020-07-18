@@ -30,8 +30,6 @@ import io.floodplain.mongodb.mongoSink
 import java.math.BigDecimal
 import java.net.URL
 
-private val logger = mu.KotlinLogging.logger {}
-
 fun main() {
     val instance = stream("genxx") {
         val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental", "public")

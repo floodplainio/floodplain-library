@@ -41,6 +41,7 @@ import org.junit.Test
 
 private val logger = mu.KotlinLogging.logger {}
 
+@Suppress("UNCHECKED_CAST")
 class MySQLTest {
 
     private val mysqlContainer = InstantiatedContainer("debezium/example-mysql:1.2", 3306, mapOf(
@@ -82,12 +83,52 @@ class MySQLTest {
                 mongoSink("customers", "@customers", mongoConfig)
             }
         }.renderAndExecute {
-            val database = topologyContext().topicName("@mongodump")
-            val hits = waitForMongoDbCondition("mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}", database) { database ->
+            val databaseInstance = topologyContext().topicName("@mongodump")
+            val hits = waitForMongoDbCondition("mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}", databaseInstance) { database ->
                 val collection = database.getCollection("customers")
                 val countDocuments = collection.countDocuments()
                 logger.info("# of documents: $countDocuments")
                 if (countDocuments == 4L) {
+                    4L
+                } else {
+                    null
+                }
+            } as Long?
+            assertNotNull(hits)
+        }
+    }
+
+    @Test
+    fun testRuntimeParamParser() {
+        if (!useIntegraton) {
+            logger.warn("Skipping integration test")
+            return
+        }
+        stream {
+            val mysqlConfig = mysqlSourceConfig(
+                "mypostgres",
+                mysqlContainer.host,
+                mysqlContainer.exposedPort,
+                "root",
+                "mysecretpassword",
+                "inventory"
+            )
+            val mongoConfig = mongoConfig(
+                "mongosink",
+                "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
+                "@mongodump"
+            )
+            mysqlSource("inventory.customers", mysqlConfig) {
+                mongoSink("customers", "@customers", mongoConfig)
+            }
+        }.runWithArguments { topologyContext ->
+            val databaseInstance = topologyContext.topicName("@mongodump")
+            val hits = waitForMongoDbCondition("mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}", databaseInstance) { database ->
+                val customerCount = database.getCollection("customers").countDocuments()
+                val orderCount = database.getCollection("orders").countDocuments()
+                val productCount = database.getCollection("products").countDocuments()
+                logger.info("# of documents: $customerCount $orderCount $productCount")
+                if (customerCount == 4L) {
                     4L
                 } else {
                     null
@@ -123,8 +164,8 @@ class MySQLTest {
                             group { msg -> "${msg["customer_id"]}" }
                         }
                     }
-                    set { key, customer, addresses ->
-                        val addressList: List<IMessage> = addresses.get("list") as List<IMessage>
+                    set { _, customer, addresses ->
+                        val addressList: List<IMessage> = addresses["list"] as List<IMessage>
                         customer["addresses"] = addressList
                         customer
                     }
@@ -134,7 +175,7 @@ class MySQLTest {
                     join {
                         mysqlSource("inventory.products_on_hand", mysqlConfig) {}
                     }
-                    set { key, product, product_on_hand ->
+                    set { _, product, product_on_hand ->
                         product["quantity"] = product_on_hand.integer("quantity")
                         product
                     }
@@ -146,8 +187,8 @@ class MySQLTest {
             )
         }.renderAndExecute {
             // delay(1000000)
-            val database = topologyContext().topicName("@mongodump")
-            val hits = waitForMongoDbCondition("mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}", database) { database ->
+            val databaseInstance = topologyContext().topicName("@mongodump")
+            val hits = waitForMongoDbCondition("mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}", databaseInstance) { database ->
                 val customerCount = database.getCollection("customers").countDocuments()
                 val orderCount = database.getCollection("orders").countDocuments()
                 val productCount = database.getCollection("products").countDocuments()
@@ -168,7 +209,7 @@ class MySQLTest {
             val mysqlConfig = mysqlSourceConfig("mysqlsource", "localhost", 3306, "root", "mysecretpassword", "wpdb")
             val mongoConfig = mongoConfig("mongosink", "mongodb://localhost", "@mongodump2")
             mysqlSource("wpdb.wp_posts", mysqlConfig) {
-                each { key, msg, other ->
+                each { key, msg, _ ->
                     logger.info("Detected key: $key and message: $msg")
                 }
                 mongoSink("posts", "@topicdef", mongoConfig)

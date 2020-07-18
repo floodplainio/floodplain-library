@@ -32,7 +32,7 @@ fun main() {
         val mysqlConfig = mysqlSourceConfig("mysqlsource", "mysql", 3306, "root", "mysecretpassword", "wpdb")
         val mongoConfig = mongoConfig("mongosink", "mongodb://mongo", "@mongodumpalt")
         mysqlSource("wpdb.wp_posts", mysqlConfig) {
-            each { key, msg, other ->
+            each { key, msg, _ ->
                 logger.info("Detected key: $key and message: $msg")
             }
             mongoSink("posts", "@topicdef", mongoConfig)

@@ -22,7 +22,6 @@ import io.floodplain.debezium.postgres.createDebeziumChangeFlow
 import io.floodplain.reactive.source.topology.TopicSource
 import io.floodplain.streams.api.Topic
 import io.floodplain.streams.api.TopologyContext
-import java.util.UUID
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onCompletion
@@ -30,7 +29,7 @@ import kotlinx.coroutines.flow.onEach
 
 private val logger = mu.KotlinLogging.logger {}
 
-class MySQLConfig(val topologyContext: TopologyContext, val name: String, val offsetId: String, private val hostname: String, private val port: Int, private val username: String, private val password: String, private val database: String, val defaultSchema: String? = null) : Config {
+class MySQLConfig(val topologyContext: TopologyContext, val name: String, val offsetId: String, private val hostname: String, private val port: Int, private val username: String, private val password: String, private val database: String) : Config {
 
     private val sourceElements: MutableList<SourceTopic> = mutableListOf()
 
@@ -90,7 +89,7 @@ class MySQLConfig(val topologyContext: TopologyContext, val name: String, val of
     }
 
     private fun directSource(offsetId: String): Flow<ChangeRecord> {
-        val tempFile = createTempFile(offsetId ?: UUID.randomUUID().toString().substring(0, 7))
+        val tempFile = createTempFile(offsetId)
 
         val extraSettings = mapOf(
             "database.history" to "io.debezium.relational.history.FileDatabaseHistory",

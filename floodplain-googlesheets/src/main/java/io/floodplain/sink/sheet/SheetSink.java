@@ -63,7 +63,7 @@ public class SheetSink {
 	private static GoogleCredential credential;
 	private final static Logger logger = LoggerFactory.getLogger(SheetSink.class);
 
-	private Sheets sheetsService;
+	private final Sheets sheetsService;
 
 	public SheetSink() throws IOException, GeneralSecurityException {
 		sheetsService = createSheetsService();
@@ -94,11 +94,11 @@ public class SheetSink {
 	}
 
 	public List<List<Object>> extractRow(Map<String, Object> message, String[] columns) {
-		List<Object> list = new ArrayList<Object>();
+		List<Object> list = new ArrayList<>();
 		for (String column : columns) {
 			list.add(message.get(column));
 		}
-		return Arrays.asList(list);
+		return Collections.singletonList(list);
 	}
 
 	public void deleteRows(String spreadsheetId, String range) throws IOException {
@@ -116,7 +116,6 @@ public class SheetSink {
 		Sheets.Spreadsheets.Values.BatchClear request =
 				sheetsService.spreadsheets().values().batchClear(spreadsheetId, requestBody);
 		BatchClearValuesResponse response = request.execute();
-//		sheetsService.spreadsheets().batchUpdate(spreadsheetId,pp);
 
 	}
 	public List<List<Object>> getRange(String spreadsheetId, String range) throws IOException {
@@ -144,11 +143,9 @@ public class SheetSink {
 
     	String valueInputOption = "RAW"; 
 		List<ValueRange> data = new ArrayList<>();
-		tuples.forEach(tuple->{
-			data.add(new ValueRange()
-			        .setRange(tuple.range)
-			        .setValues(tuple.values));
-		});
+		tuples.forEach(tuple-> data.add(new ValueRange()
+				.setRange(tuple.range)
+				.setValues(tuple.values)));
 		// Additional ranges to update ...
 
 		BatchUpdateValuesRequest body = new BatchUpdateValuesRequest()
