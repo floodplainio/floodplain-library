@@ -32,6 +32,7 @@ import io.floodplain.mongodb.mongoConfig
 import io.floodplain.mongodb.mongoSink
 import io.floodplain.mongodb.waitForMongoDbCondition
 import io.floodplain.test.InstantiatedContainer
+import io.floodplain.test.useIntegraton
 import kotlin.test.assertNotNull
 import kotlinx.coroutines.delay
 import org.junit.After
@@ -59,6 +60,10 @@ class MySQLTest {
 
     @Test
     fun testSimple() {
+        if (!useIntegraton) {
+            logger.warn("Skipping integration test")
+            return
+        }
         stream {
             val mysqlConfig = mysqlSourceConfig(
                 "mypostgres",
