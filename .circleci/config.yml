@@ -69,7 +69,7 @@ jobs: # a collection of steps
       - run:
           name: Upload to central
           command: |
-            ./gradlew publishAllPublicationsToSnapshotsRepository
+            ./gradlew publishAllPublicationsToSnapshotsRepository -x signArchives
 workflows:
   version: 2
   workflow:
