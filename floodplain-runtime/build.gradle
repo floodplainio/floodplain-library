@@ -1,0 +1,9 @@
+apply from: "$rootProject.projectDir/gradle/shared.gradle"
+def globalConf = rootProject.ext
+
+dependencies {
+    Map<String, String> dependencies = globalConf.commonDependencies
+    implementation(project(":floodplain-dsl"))
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    implementation(dependencies.argParser)
+}

@@ -16,18 +16,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package io.floodplain.debezium.postgres
+package io.floodplain.test
 
-import io.floodplain.ChangeRecord
-import java.util.UUID
-import kotlin.test.assertEquals
-import kotlinx.coroutines.flow.take
-import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.runBlocking
-import org.junit.After
-import org.junit.Test
 import org.testcontainers.containers.GenericContainer
 
+val useIntegraton: Boolean by lazy {
+    System.getenv("NO_INTEGRATION") == null
+}
+
+/**
+ * Kotlin wrapper, to make testcontainers easier to use
+ */
 class InstantiatedContainer(image: String, port: Int, env: Map<String, String> = emptyMap()) {
 
     class KGenericContainer(imageName: String) : GenericContainer<KGenericContainer>(imageName)
@@ -44,26 +43,5 @@ class InstantiatedContainer(image: String, port: Int, env: Map<String, String> =
     }
     fun close() {
         container?.close()
-    }
-}
-class TestDebeziumSource {
-
-    private val postgresContainer = InstantiatedContainer("floodplain/floodplain-postgres-demo:1.0.0", 5432)
-
-    @Test
-    fun testShortRun() {
-        runBlocking {
-            val resultList = mutableListOf<ChangeRecord>()
-            createDebeziumChangeFlow("mypostgres", "io.debezium.connector.postgresql.PostgresConnector", postgresContainer.host, postgresContainer.exposedPort, "dvdrental", "postgres", "mysecretpassword", UUID.randomUUID().toString(),
-                emptyMap())
-                .take(500)
-                .toList(resultList)
-            assertEquals(500, resultList.size)
-        }
-    }
-
-    @After
-    fun shutdown() {
-        postgresContainer.close()
     }
 }

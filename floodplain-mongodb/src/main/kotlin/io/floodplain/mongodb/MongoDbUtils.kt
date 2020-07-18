@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package io.floodplain.integration
 
 import com.mongodb.client.MongoClients
 import com.mongodb.client.MongoDatabase
@@ -25,12 +24,12 @@ import kotlinx.coroutines.withTimeout
 
 private val logger = mu.KotlinLogging.logger {}
 
-suspend fun waitForMongoDbCondition(connectionString: String, database: String, check: (MongoDatabase) -> Any?): Any? {
+suspend fun waitForMongoDbCondition(connectionString: String, database: String, timeout: Long = 200000L, check: (MongoDatabase) -> Any?): Any? {
     var returnValue: Any? = null
     MongoClients.create(connectionString)
         .use({ client ->
             val db = client.getDatabase(database)
-            withTimeout(200000) {
+            withTimeout(timeout) {
                 repeat(1000) {
                     val value = check(db)
                     if (value != null) {

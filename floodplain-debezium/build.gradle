@@ -12,6 +12,8 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation(dependencies.kotlinCoroutines)
     testImplementation("org.jetbrains.kotlin:kotlin-test")
+    testImplementation(project(":floodplain-dsl"))
+    testImplementation(project(":floodplain-test"))
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
     testImplementation(dependencies.testContainer)
 }

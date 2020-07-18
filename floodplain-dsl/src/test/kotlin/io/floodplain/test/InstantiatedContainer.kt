@@ -24,6 +24,9 @@ val useIntegraton: Boolean by lazy {
     System.getenv("NO_INTEGRATION") == null
 }
 
+/**
+ * Kotlin wrapper, to make testcontainers easier to use
+ */
 class InstantiatedContainer(image: String, port: Int, env: Map<String, String> = emptyMap()) {
 
     class KGenericContainer(imageName: String) : GenericContainer<KGenericContainer>(imageName)
