@@ -115,7 +115,9 @@ public class ConnectReplicationMessageSerde implements Serde<ReplicationMessage>
             @Override
             public ReplicationMessage deserialize(String topic, byte[] data) {
                 try {
-                    return JSONToReplicationMessage.processDebeziumBody(data);
+
+//                    JSONToReplicationMessage.convertToReplication(false,objectMapper.readTree(data))
+                    return JSONToReplicationMessage.processDebeziumBody(data,Optional.of(topic));
                 } catch (DebeziumParseException e) {
                     throw new RuntimeException("Error parsing replmessage",e);
                 }

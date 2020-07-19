@@ -345,7 +345,7 @@ public class JSONToReplicationMessage {
         }
     }
 
-    public static ReplicationMessage processDebeziumBody(byte[] data) throws DebeziumParseException {
+    public static ReplicationMessage processDebeziumBody(byte[] data,Optional<String> table) throws DebeziumParseException {
         if(data == null) {
             return null;
         }
@@ -354,7 +354,7 @@ public class JSONToReplicationMessage {
             if (!valueNode.has("payload") || valueNode.get("payload").isNull()) {
                 return ReplicationFactory.empty().withOperation(Operation.DELETE);
             }
-            return convertToReplication(false, valueNode, Optional.empty());
+            return convertToReplication(false, valueNode, table);
         } catch (IOException e) {
             throw new DebeziumParseException("Error parsing debezium body",e);
         }

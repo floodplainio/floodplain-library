@@ -200,9 +200,9 @@ class Stream(val context: TopologyContext) {
         return streamsConfiguration
     }
 
-    fun runWithArguments(vararg args: String, after: suspend ((topologyContext: TopologyContext) -> Unit)) {
+    fun runWithArguments(args: Array<out String?> = emptyArray(), after: suspend ((topologyContext: TopologyContext) -> Unit)) {
         runBlocking {
-            io.floodplain.runtime.run(this@Stream, arrayOf(*args), { after(it) }, { kafkaStreams, topologyContext -> after(topologyContext) })
+            io.floodplain.runtime.run(this@Stream, args, { after(it) }, { kafkaStreams, topologyContext -> after(topologyContext) })
         }
         // io.floodplain.runtime.runWithArguments(this@Stream, arrayOf(*args), { after(it) }, { after() })
     }

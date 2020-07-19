@@ -52,8 +52,8 @@ suspend fun runWithArguments(stream: Stream, args: Array<out String>, after: (su
     run(stream, arrayOf(*args), { this.topologyContext() }, { kafkaStreams, topologyContext -> after(topologyContext) })
 }
 
-suspend fun run(stream: Stream, arguments: Array<String>, localContext: (suspend LocalContext.(TopologyContext) -> Unit)?, remoteContext: (suspend (AutoCloseable, TopologyContext) -> Unit)?) {
-    ArgParser(arguments).parseInto(::LocalArgs).run {
+suspend fun run(stream: Stream, arguments: Array<out String?>, localContext: (suspend LocalContext.(TopologyContext) -> Unit)?, remoteContext: (suspend (AutoCloseable, TopologyContext) -> Unit)?) {
+    ArgParser(arguments.requireNoNulls()).parseInto(::LocalArgs).run {
         if (kafka != null) {
             if (connect == null) {
                 throw RuntimeException("When supplying kafka, supply connect too")
