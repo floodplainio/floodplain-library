@@ -34,6 +34,7 @@ import io.floodplain.streams.api.Topic
 import io.floodplain.streams.api.TopologyContext
 import java.util.Optional
 import java.util.concurrent.atomic.AtomicLong
+import kotlin.system.measureTimeMillis
 import org.apache.kafka.connect.sink.SinkRecord
 import org.apache.kafka.connect.sink.SinkTask
 
@@ -135,11 +136,14 @@ private class MongoFloodplainSink(private val task: SinkTask, private val config
             // logger.info("Sending document to sink. Topic: $topic Key: $key message: $value")
             SinkRecord(topic.qualifiedString(topologyContext), 0, null, key, null, value, offsetCounter.incrementAndGet())
         }.toList()
-        try {
-            task.put(list)
-        } catch (e: Throwable) {
-            e.printStackTrace()
+        val insertTime = measureTimeMillis {
+            try {
+                task.put(list)
+            } catch (e: Throwable) {
+                e.printStackTrace()
+            }
         }
+        logger.info("Inserting into mongodb size: ${list.size} duration: $insertTime")
     }
 
     override fun config(): Config {

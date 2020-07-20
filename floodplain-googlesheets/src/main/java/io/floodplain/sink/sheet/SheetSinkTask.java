@@ -21,6 +21,7 @@ package io.floodplain.sink.sheet;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.kafka.connect.sink.SinkRecord;
 import org.apache.kafka.connect.sink.SinkTask;
@@ -44,6 +45,8 @@ public class SheetSinkTask extends SinkTask {
 	private String spreadsheetId;
 	private int startRow;
 	private String startColumn;
+
+	private final AtomicLong totalInTransaction = new AtomicLong(0);
 
 	@Override
 	public String version() {
@@ -76,15 +79,20 @@ public class SheetSinkTask extends SinkTask {
 	@Override
 	public void put(Collection<SinkRecord> records) {
 		List<UpdateTuple> tuples = extractTuples(records);
+		long now = System.currentTimeMillis();
 		try {
 			sheetSink.updateRangeWithBatch(spreadsheetId, tuples);
 		} catch (IOException e1) {
 			logger.error("Error: ", e1);
 		}
+		long elapsed = System.currentTimeMillis() - now;
+		logger.info("Update took: {} total: {}",elapsed,totalInTransaction.addAndGet(elapsed));
 	}
 
 	private List<UpdateTuple> extractTuples(Collection<SinkRecord> records) {
-		List<UpdateTuple> result = new ArrayList<UpdateTuple>();
+		LinkedHashMap<Integer,UpdateTuple> result = new LinkedHashMap<>();
+//		List<UpdateTuple> result = new ArrayList<>();
+		logger.info("Inserting {} records",records.size());
 		for (SinkRecord sinkRecord : records) {
 			Map<String,Object> toplevel = (Map<String, Object>) sinkRecord.value();
 			// TODO figure this out
@@ -96,16 +104,16 @@ public class SheetSinkTask extends SinkTask {
 				if(row==null) {
 					throw new IllegalArgumentException("Invalid message for Google Sheets: Every message should have an int or long field named: '_row', marking the row where it should be inserted ");
 				}
-				int currentRow = row+startRow;
 				List<List<Object>> res = sheetSink.extractRow(msg, this.columns);
-				logger.warn("res: "+res);
-				logger.warn("Would update: {} : {} res: {}",spreadsheetId,startColumn+currentRow,res);
+//				logger.warn("res: "+res);
+//				logger.warn("Would update: {} : {} res: {}",spreadsheetId,startColumn+currentRow,res);
+				int currentRow = row+startRow;
 				UpdateTuple ut = new UpdateTuple(startColumn+currentRow, res);
-				result.add(ut);
+				result.put(currentRow,ut);
 			}
 		}
 		
-		return result;
+		return new ArrayList(result.values());
 	}
 
 	@Override

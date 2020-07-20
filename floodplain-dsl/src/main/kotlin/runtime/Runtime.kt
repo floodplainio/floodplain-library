@@ -18,21 +18,29 @@
  */
 package io.floodplain.runtime
 import com.xenomachina.argparser.ArgParser
+import com.xenomachina.argparser.SystemExitException
 import com.xenomachina.argparser.default
 import io.floodplain.kotlindsl.LocalContext
 import io.floodplain.kotlindsl.Stream
 import io.floodplain.streams.api.TopologyContext
+import java.io.OutputStreamWriter
 import java.lang.RuntimeException
 import java.net.URL
 
 class LocalArgs(parser: ArgParser) {
-    // val verbose by parser.flagging(
-    //     "-v", "--verbose",
-    //     help = "enable verbose mode")
-
     val force by parser.flagging(
         "-f", "--force",
         help = "force redeploy of connect modules. Not for local executions.")
+
+    val id by parser.storing(
+        "-i", "--id",
+        help = "run as this application id. Subsequent runs with the same id will re-use storage. Will be random if unspecified. For local runs this will only affect disk storage, for Kafka based runs topics / consumer as well")
+        .default<String?>(null)
+
+    val bufferTime by parser.storing(
+        "-b", "--bufferTime",
+        help = "Hints max buffering time. Longer increases latency, but might improve thoughput, esp. for high-latency sinks. Only for local runs.") { toInt() }
+        .default(1000)
 
     val kafka by parser.storing(
         "-k", "--kafka",
@@ -48,12 +56,17 @@ class LocalArgs(parser: ArgParser) {
         .default<String?>(null)
 }
 
-suspend fun runWithArguments(stream: Stream, args: Array<out String>, after: (suspend (TopologyContext) -> Unit)) {
-    run(stream, arrayOf(*args), { this.topologyContext() }, { kafkaStreams, topologyContext -> after(topologyContext) })
-}
-
 suspend fun run(stream: Stream, arguments: Array<out String?>, localContext: (suspend LocalContext.(TopologyContext) -> Unit)?, remoteContext: (suspend (AutoCloseable, TopologyContext) -> Unit)?) {
-    ArgParser(arguments.requireNoNulls()).parseInto(::LocalArgs).run {
+
+    val parseInto = try {
+        ArgParser(arguments.requireNoNulls()).parseInto(::LocalArgs)
+    } catch (e: SystemExitException) {
+        val writer = OutputStreamWriter(if (e.returnCode == 0) System.out else System.err)
+        e.printUserMessage(writer, System.getProperty("com.xenomachina.argparser.programName"), 80)
+        writer.flush()
+        return
+    }
+    parseInto.run {
         if (kafka != null) {
             if (connect == null) {
                 throw RuntimeException("When supplying kafka, supply connect too")
@@ -61,7 +74,7 @@ suspend fun run(stream: Stream, arguments: Array<out String?>, localContext: (su
             val streamsInstance = stream.renderAndSchedule(URL(connect), kafka!!, force)
             remoteContext?.invoke(streamsInstance, stream.context)
         } else {
-            stream.renderAndExecute {
+            stream.renderAndExecute(id, bufferTime) {
                 localContext?.invoke(this, this.topologyContext())
             }
         }

@@ -36,7 +36,6 @@ import java.nio.file.Path
 import java.time.Duration
 import java.time.Instant
 import java.util.Properties
-import java.util.UUID
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.GlobalScope
@@ -106,6 +105,8 @@ interface LocalContext : InputReceiver {
 }
 
 fun runLocalTopology(
+    applicationId: String,
+    bufferTime: Int,
     topology: Topology,
     localCmds: suspend
     LocalContext.() -> Unit,
@@ -114,7 +115,7 @@ fun runLocalTopology(
     sourceConfigs: List<Config>,
     sinkConfigs: List<Config>
 ) {
-    val storageFolder = "teststorage/store-" + UUID.randomUUID().toString()
+    val storageFolder = "teststorage/store"
     val props = Properties()
     props.setProperty(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "doesntmatter:9092")
     props.setProperty(
@@ -123,11 +124,11 @@ fun runLocalTopology(
     )
     props.setProperty(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().javaClass.name)
     props.setProperty(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, ReplicationMessageSerde::class.java.name)
-    props.setProperty(StreamsConfig.APPLICATION_ID_CONFIG, "doesntmatterid")
+    props.setProperty(StreamsConfig.APPLICATION_ID_CONFIG, applicationId)
     props.setProperty(StreamsConfig.STATE_DIR_CONFIG, storageFolder)
     props.setProperty(StreamsConfig.BUILT_IN_METRICS_VERSION_CONFIG, StreamsConfig.METRICS_LATEST)
     val driver = TopologyTestDriver(topology, props)
-    val contextInstance = LocalDriverContext(driver, context, topologyConstructor, sourceConfigs, sinkConfigs)
+    val contextInstance = LocalDriverContext(driver, context, topologyConstructor, sourceConfigs, sinkConfigs, bufferTime)
     val jobs = contextInstance.connectSourceAndSink()
     contextInstance.connectJobs.addAll(jobs)
     try {
@@ -154,7 +155,8 @@ class LocalDriverContext(
     private val topologyContext: TopologyContext,
     private val topologyConstructor: TopologyConstructor,
     private val sourceConfigs: List<Config>,
-    private val sinkConfigs: List<Config>
+    private val sinkConfigs: List<Config>,
+    private val bufferTime: Int
 ) : LocalContext {
 
     val connectJobs = mutableListOf<Job>()
@@ -198,7 +200,7 @@ class LocalDriverContext(
     override fun connectSourceAndSink(): List<Job> {
         val outputJob = GlobalScope.launch(newSingleThreadContext("TopologySource"), CoroutineStart.UNDISPATCHED) {
             val outputFlows = outputFlows(this)
-                .map { (topic, flow) -> topic to flow.bufferTimeout(200, 400) }
+                .map { (topic, flow) -> topic to flow.bufferTimeout(2000, bufferTime.toLong()) }
                 .toMap()
             val sinks = sinksByTopic()
                 outputFlows.forEach { (topic, flow) ->
@@ -327,7 +329,7 @@ class LocalDriverContext(
         try {
             driver.pipeRawRecord(qualifiedTopicName, Instant.now().toEpochMilli(), key, msg)
         } catch (e: Throwable) {
-            e.printStackTrace()
+            // logger.error("Error sending input data",e)
         }
         // val parsedKey = JSONToReplicationMessage.processDebeziumJSONKey(key)
         // val replicationMessage = JSONToReplicationMessage.processDebeziumBody(msg).withOperation(ReplicationMessage.Operation.UPDATE)

@@ -73,8 +73,8 @@ class PostgresConfig(val topologyContext: TopologyContext, val name: String, val
                 "database.password" to password,
                 "key.converter" to "org.apache.kafka.connect.json.JsonConverter",
                 "value.converter" to "org.apache.kafka.connect.json.JsonConverter",
-                // TODO
-                "tablewhitelistorsomething" to sourceElements.map { e -> e.topic().qualifiedString(topologyContext) }.joinToString(",")
+                // TODO"table.whitelist": "public.inventory"
+                "public.inventory" to sourceElements.map { e -> "${e.schema()}.${e.table()}" }.joinToString(",")
         )))
     }
 
@@ -100,14 +100,22 @@ fun Stream.postgresSource(table: String, config: PostgresConfig, schema: String?
     }
     val topic = Topic.from("${config.name}.$effectiveSchema.$table")
     val topicSource = TopicSource(topic, Topic.FloodplainKeyFormat.CONNECT_KEY_JSON, Topic.FloodplainBodyFormat.CONNECT_JSON)
-    config.addSourceElement(DebeziumSourceElement(topic))
+    config.addSourceElement(DebeziumSourceElement(topic, effectiveSchema, table))
     val databaseSource = Source(topicSource)
     databaseSource.init()
     return databaseSource
 }
 
-class DebeziumSourceElement(val prefix: Topic) : SourceTopic {
+class DebeziumSourceElement(val prefix: Topic, val schema: String? = null, val table: String) : SourceTopic {
     override fun topic(): Topic {
         return prefix
+    }
+
+    override fun schema(): String? {
+        return schema
+    }
+
+    override fun table(): String {
+        return table
     }
 }

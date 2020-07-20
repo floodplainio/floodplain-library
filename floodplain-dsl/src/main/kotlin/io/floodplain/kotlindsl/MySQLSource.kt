@@ -110,7 +110,7 @@ fun Stream.mysqlSource(table: String, config: MySQLConfig, init: Source.() -> Un
 
     val topic = Topic.from("${config.name}.$table")
     val topicSource = TopicSource(topic, Topic.FloodplainKeyFormat.CONNECT_KEY_JSON, Topic.FloodplainBodyFormat.CONNECT_JSON)
-    config.addSourceElement(DebeziumSourceElement(topic))
+    config.addSourceElement(DebeziumSourceElement(topic, null, table))
     val databaseSource = Source(topicSource)
     databaseSource.init()
     return databaseSource

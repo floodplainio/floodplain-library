@@ -119,10 +119,11 @@ class FilmToMongoDB {
             }
         }.renderAndExecute {
             logger.info("Outputs: ${outputs()}")
-            delay(5000)
+            // delay(5000)
             val database = topologyContext().topicName("@mongodump")
             var hits = 0L
-            flushSinks()
+            // flushSinks()
+            val start = System.currentTimeMillis()
             withTimeout(200000) {
                 repeat(1000) {
                     MongoClients.create("mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}")
@@ -139,6 +140,8 @@ class FilmToMongoDB {
                 }
             }
             }
+            val diff = System.currentTimeMillis() - start
+            logger.info("Elapsed: $diff millis")
             assertEquals(997L, hits)
             connectJobs().forEach { it.cancel("ciao!") }
         }

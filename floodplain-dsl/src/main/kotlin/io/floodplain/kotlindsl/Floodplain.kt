@@ -72,6 +72,8 @@ class MaterializedSink(val name: String, val topics: List<Topic>, val settings: 
 
 interface SourceTopic {
     fun topic(): Topic
+    fun schema(): String?
+    fun table(): String
 }
 
 interface FloodplainSink {

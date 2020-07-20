@@ -598,4 +598,14 @@ class TestTopology {
             // logger.info("Result: $value")
         }
     }
+
+    @Test
+    fun testArgumentParser() {
+        stream {
+            source("@sometopic") {
+                sink("@outputTopic")
+            }
+        }.runWithArguments(arrayOf("--help")) {
+        }
+    }
 }

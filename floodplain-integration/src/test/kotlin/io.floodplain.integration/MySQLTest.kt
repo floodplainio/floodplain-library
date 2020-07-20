@@ -19,6 +19,7 @@
 package io.floodplain.integration
 
 import io.floodplain.kotlindsl.each
+import io.floodplain.kotlindsl.filter
 import io.floodplain.kotlindsl.group
 import io.floodplain.kotlindsl.join
 import io.floodplain.kotlindsl.joinGrouped
@@ -211,6 +212,9 @@ class MySQLTest {
             mysqlSource("wpdb.wp_posts", mysqlConfig) {
                 each { key, msg, _ ->
                     logger.info("Detected key: $key and message: $msg")
+                }
+                filter { _, msg ->
+                    msg["post_status"] == "publish"
                 }
                 mongoSink("posts", "@topicdef", mongoConfig)
             }

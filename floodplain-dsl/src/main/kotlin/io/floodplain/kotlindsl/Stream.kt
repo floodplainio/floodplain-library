@@ -28,6 +28,7 @@ import io.floodplain.streams.remotejoin.TopologyConstructor
 import java.net.URL
 import java.util.Properties
 import java.util.Stack
+import java.util.UUID
 import kotlinx.coroutines.runBlocking
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.producer.ProducerConfig
@@ -86,7 +87,7 @@ class Stream(val context: TopologyContext) {
         ReplicationTopologyParser.materializeStateStores(topologyConstructor, topology)
         return topology
     }
-    fun renderAndExecute(localCmds: suspend LocalContext.() -> Unit) {
+    fun renderAndExecute(applicationId: String? = null, bufferTime: Int, localCmds: suspend LocalContext.() -> Unit) {
             val topologyConstructor = TopologyConstructor()
             val (topology, sources, sinks) = render(topologyConstructor)
             // val offsetPath = Paths.get("offset_" + UUID.randomUUID())
@@ -98,7 +99,9 @@ class Stream(val context: TopologyContext) {
             logger.info("Testing sinks:\n$sinks")
             logger.info("Sourcetopics: \n${topologyConstructor.desiredTopicNames().map { it.qualifiedString(context) }}")
 
-            runLocalTopology(topology, localCmds, topologyConstructor, context, sourceConfigs, sinkConfigs)
+            runLocalTopology(applicationId ?: UUID.randomUUID().toString(),
+                bufferTime,
+                topology, localCmds, topologyConstructor, context, sourceConfigs, sinkConfigs)
     }
 
         /**
