@@ -106,7 +106,7 @@ interface LocalContext : InputReceiver {
 
 fun runLocalTopology(
     applicationId: String,
-    bufferTime: Int,
+    bufferTime: Int?,
     topology: Topology,
     localCmds: suspend
     LocalContext.() -> Unit,
@@ -156,7 +156,7 @@ class LocalDriverContext(
     private val topologyConstructor: TopologyConstructor,
     private val sourceConfigs: List<Config>,
     private val sinkConfigs: List<Config>,
-    private val bufferTime: Int
+    private val bufferTime: Int?
 ) : LocalContext {
 
     val connectJobs = mutableListOf<Job>()
@@ -200,7 +200,7 @@ class LocalDriverContext(
     override fun connectSourceAndSink(): List<Job> {
         val outputJob = GlobalScope.launch(newSingleThreadContext("TopologySource"), CoroutineStart.UNDISPATCHED) {
             val outputFlows = outputFlows(this)
-                .map { (topic, flow) -> topic to flow.bufferTimeout(2000, bufferTime.toLong()) }
+                .map { (topic, flow) -> topic to flow.bufferTimeout(2000, bufferTime?.toLong() ?: 1000) }
                 .toMap()
             val sinks = sinksByTopic()
                 outputFlows.forEach { (topic, flow) ->

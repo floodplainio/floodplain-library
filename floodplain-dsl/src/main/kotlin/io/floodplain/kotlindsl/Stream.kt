@@ -87,7 +87,7 @@ class Stream(val context: TopologyContext) {
         ReplicationTopologyParser.materializeStateStores(topologyConstructor, topology)
         return topology
     }
-    fun renderAndExecute(applicationId: String? = null, bufferTime: Int, localCmds: suspend LocalContext.() -> Unit) {
+    fun renderAndExecute(applicationId: String? = null, bufferTime: Int? = null, localCmds: suspend LocalContext.() -> Unit) {
             val topologyConstructor = TopologyConstructor()
             val (topology, sources, sinks) = render(topologyConstructor)
             // val offsetPath = Paths.get("offset_" + UUID.randomUUID())
