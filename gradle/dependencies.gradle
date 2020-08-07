@@ -21,7 +21,7 @@ ext {
             slf4j             : "org.slf4j:slf4j-api:$slf4j_version",
             slf4jLog4j        : "org.slf4j:slf4j-log4j12:$slf4j_version",
             protobuf          : "com.google.protobuf:protobuf-java:3.11.4",
-            kotlinLogging     : 'io.github.microutils:kotlin-logging:1.8.3',
+            kotlinLogging     : "io.github.microutils:kotlin-logging:1.8.3",
             jacksonCore       : "com.fasterxml.jackson.core:jackson-core:$jackson_version",
             jacksonDatabind   : "com.fasterxml.jackson.core:jackson-databind:$jackson_version",
             kafkaClient       : "org.apache.kafka:kafka-clients:$kafka_version",
