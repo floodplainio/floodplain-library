@@ -182,12 +182,6 @@ public class ReplicationJSON {
                 }
 
                 return;
-            case LIST:
-                ArrayNode arrayNode = m.putArray("Value");
-                @SuppressWarnings("rawtypes")
-                ArrayNode valueToTree = objectMapper.valueToTree(value);
-                arrayNode.addAll(valueToTree);
-                break;
             case STRINGLIST:
                 ArrayNode stringArrayNode = m.putArray("Value");
                 if (value instanceof String[]) {
@@ -200,9 +194,6 @@ public class ReplicationJSON {
                 break;
             case BINARY:
                 m.put("Value", Base64.getEncoder().encodeToString((byte[]) value));
-                break;
-            case COORDINATE:
-                m.put("Value", value.toString());
                 break;
             case ENUM:
                 m.put("Value", (String) value);
@@ -251,20 +242,7 @@ public class ReplicationJSON {
                         logger.warn("Unsupported array element type: {} in {}. Ignoring!", objNode, jsonNode);
                     }
                 }
-                return stringResult.toArray(new String[]{});
-            case LIST:
-                ArrayNode node = ((ArrayNode) jsonNode);
-                List<Object> result = new ArrayList<>();
-                for (final JsonNode objNode : node) {
-                    if (objNode.isInt()) {
-                        result.add(objNode.asInt());
-                    } else if (objNode.isTextual()) {
-                        result.add(objNode.asText());
-                    } else {
-                        logger.warn("Unsupported array element type: {} in {}. Ignoring!", objNode, jsonNode);
-                    }
-                }
-                return result;
+                return stringResult;
             case DATE:
                 //"2011-10-03 15:01:06.00"
                 try {
@@ -394,15 +372,6 @@ public class ReplicationJSON {
                     }
                     node.set(key, alist);
                     break;
-
-                case LIST:
-                    List<String> s = (List<String>) o;
-                    ArrayNode an = objectMapper.createArrayNode();
-                    s.forEach(element -> {
-                        an.add(element);
-                    });
-                    node.set(key, an);
-                    break;
                 case LONG:
                     node.put(key, (Long) o);
                     break;
@@ -418,7 +387,6 @@ public class ReplicationJSON {
                     // ignore binaries for now
                     break;
                 case BINARY_DIGEST:
-                case COORDINATE:
                 case STOPWATCHTIME:
                     throw new RuntimeException("Whoops, illegal type: " + e.getValue().type);
                     // ignore this one:

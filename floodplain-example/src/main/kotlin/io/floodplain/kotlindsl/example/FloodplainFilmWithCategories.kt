@@ -18,36 +18,39 @@
  */
 package io.floodplain.kotlindsl.example
 
+import io.floodplain.kotlindsl.each
 import io.floodplain.kotlindsl.group
 import io.floodplain.kotlindsl.joinGrouped
 import io.floodplain.kotlindsl.joinRemote
+import io.floodplain.kotlindsl.message.IMessage
 import io.floodplain.kotlindsl.message.empty
-import io.floodplain.kotlindsl.mongoConfig
-import io.floodplain.kotlindsl.mongoSink
 import io.floodplain.kotlindsl.postgresSource
 import io.floodplain.kotlindsl.postgresSourceConfig
 import io.floodplain.kotlindsl.set
 import io.floodplain.kotlindsl.stream
+import io.floodplain.mongodb.mongoConfig
+import io.floodplain.mongodb.mongoSink
 import java.net.URL
 
 private val logger = mu.KotlinLogging.logger {}
 
 fun main() {
-    joinFilms("generation1")
+    joinFilms()
 }
 
-fun joinFilms(generation: String) {
-    stream(generation) {
-        val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")
+fun joinFilms() {
+    stream {
+        val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental", "public")
         val mongoConfig = mongoConfig("mongosink", "mongodb://mongo", "@mongodump")
-        postgresSource("public", "film", postgresConfig) {
+        postgresSource("film", postgresConfig) {
             joinGrouped {
-                postgresSource("public", "film_category", postgresConfig) {
+                postgresSource("film_category", postgresConfig) {
                     joinRemote({ msg -> "${msg["category_id"]}" }, true) {
-                        postgresSource("public", "category", postgresConfig) {}
+                        postgresSource("category", postgresConfig) {}
                     }
                     set { _, msg, state ->
                         msg["category"] = state["name"] ?: "unknown"
+                        msg["last_update"] = null
                         msg
                     }
                     group { msg -> "${msg["film_id"]}" }
@@ -55,10 +58,36 @@ fun joinFilms(generation: String) {
             }
             set { _, msg, state ->
                 msg["categories"] = state["list"] ?: empty()
+                msg["last_update"] = null
                 msg
             }
-            mongoSink("filmwithcategories", "filmwithcat", mongoConfig)
+            joinGrouped(optional = true) {
+                postgresSource("film_actor", postgresConfig) {
+                    joinRemote({ msg -> "${msg["actor_id"]}" }, false) {
+                        postgresSource("actor", postgresConfig) {
+                        }
+                    }
+                    // copy the first_name, last_name and actor_id to the film_actor message, drop the last update
+                    set { _, actor_film, actor ->
+                        actor_film["last_name"] = actor["last_name"]
+                        actor_film["first_name"] = actor["first_name"]
+                        actor_film["actor_id"] = actor["actor_id"]
+                        actor_film["last_update"] = null
+                        actor_film
+                    }
+                    // group the film_actor stream by film_id
+                    group { msg -> "${msg["film_id"]}" }
+                }
+            }
+            set { _, film, actorlist ->
+                film["actors"] = actorlist["list"] ?: emptyList<IMessage>()
+                film
+            }
+            each { _, msg, _ ->
+                logger.info("Message: $msg")
+            }
+            mongoSink("filmwithcategories", "@filmwithcat", mongoConfig)
         }
-    }.renderAndStart(URL("http://localhost:8083/connectors"), "localhost:9092")
+    }.renderAndSchedule(URL("http://localhost:8083/connectors"), "localhost:9092", true)
     logger.info { "done!" }
 }

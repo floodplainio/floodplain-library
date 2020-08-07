@@ -12,7 +12,6 @@ dependencies {
     implementation(project(":replication-protobuf"))
     implementation(project(":kafka-converter"))
     testCompile(dependencies.jUnit)
-    testRuntime(dependencies.slf4jSimple)
     compile(dependencies.kafkaClient)
     compile(dependencies.kafkaStreams)
     compile(dependencies.kafkaConnectApi)

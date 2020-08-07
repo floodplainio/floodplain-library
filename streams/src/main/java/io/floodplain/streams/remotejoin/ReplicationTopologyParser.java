@@ -22,7 +22,7 @@ import io.floodplain.immutable.api.ImmutableMessage;
 import io.floodplain.reactive.source.topology.api.TopologyPipeComponent;
 import io.floodplain.replication.api.ReplicationMessage;
 import io.floodplain.replication.api.ReplicationMessage.Operation;
-import io.floodplain.streams.api.CoreOperators;
+import io.floodplain.streams.api.Topic;
 import io.floodplain.streams.api.TopologyContext;
 import io.floodplain.streams.debezium.JSONToReplicationMessage;
 import io.floodplain.streams.remotejoin.ranged.GroupedUpdateProcessor;
@@ -35,6 +35,7 @@ import io.floodplain.streams.serializer.ReplicationMessageSerde;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
+import org.apache.kafka.common.serialization.Serializer;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.Predicate;
 import org.apache.kafka.streams.processor.Processor;
@@ -58,6 +59,8 @@ public class ReplicationTopologyParser {
     private static final Serde<ReplicationMessage> messageSerde = new ReplicationMessageSerde();
     private static final Serde<ImmutableMessage> immutableMessageSerde = new ImmutableMessageSerde();
 
+    private static ReplicationMessageSerde replicationMessageSerder = new ReplicationMessageSerde();
+    private static ConnectReplicationMessageSerde connectReplicationMessageSerder = new ConnectReplicationMessageSerde();
     public enum Flatten {FIRST, LAST, NONE}
 
     private static final Logger logger = LoggerFactory.getLogger(ReplicationTopologyParser.class);
@@ -110,15 +113,13 @@ public class ReplicationTopologyParser {
         topologyConstructor.stateStoreSupplier.put(diffProcessorNamePrefix, createMessageStoreSupplier(diffProcessorNamePrefix, true));
     }
 
-    public static String addLazySourceStore(final Topology currentBuilder, TopologyContext context,
-                                            TopologyConstructor topologyConstructor, String topicName, Deserializer<?> keyDeserializer, Deserializer<?> valueDeserializer) {
-        topologyConstructor.addDesiredTopic(topicName, Optional.empty());
-        if (!topologyConstructor.sources.containsKey(topicName)) {
-            currentBuilder.addSource(topicName, keyDeserializer, valueDeserializer, topicName);
-            topologyConstructor.sources.put(topicName, topicName);
-            // TODO Optimize. The topology should be valid without adding identityprocessors
+    public static void addLazySourceStore(final Topology currentBuilder, TopologyContext context,
+                                            TopologyConstructor topologyConstructor, Topic topic, Deserializer<?> keyDeserializer, Deserializer<?> valueDeserializer) {
+        topologyConstructor.addDesiredTopic(topic, Optional.empty());
+        if (!topologyConstructor.sources.containsKey(topic)) {
+            currentBuilder.addSource(topic.qualifiedString(context), keyDeserializer, valueDeserializer, topic.qualifiedString(context));
+            topologyConstructor.sources.put(topic, topic.qualifiedString(context));
         }
-        return topicName;
     }
 
     //    ss
@@ -132,20 +133,63 @@ public class ReplicationTopologyParser {
         return name;
     }
 
-    public static String addSourceStore(final Topology currentBuilder, TopologyContext context, TopologyConstructor topologyConstructor, String sourceTopicName,boolean connectSourceFormat, boolean materializeStore) {
-        String storeTopic = context.topicName(sourceTopicName);
+    public static Deserializer<String> keyDeserializer(Topic.FloodplainKeyFormat keyFormat) {
+        switch (keyFormat) {
+
+            case CONNECT_KEY_JSON:
+                return ConnectReplicationMessageSerde.keyDeserialize();
+            case FLOODPLAIN_STRING:
+                return Serdes.String().deserializer();
+        }
+        throw new IllegalArgumentException("Weird key format: "+keyFormat);
+    }
+
+    public static Serializer<String> keySerializer(Topic.FloodplainKeyFormat keyFormat) {
+        switch (keyFormat) {
+            case CONNECT_KEY_JSON:
+                return ConnectReplicationMessageSerde.keySerialize();
+            case FLOODPLAIN_STRING:
+                return Serdes.String().serializer();
+        }
+        throw new IllegalArgumentException("Weird key format: "+keyFormat);
+    }
+
+    public static Deserializer<ReplicationMessage> bodyDeserializer(Topic.FloodplainBodyFormat bodyFormat) {
+        switch (bodyFormat) {
+           case CONNECT_JSON:
+               return connectReplicationMessageSerder.deserializer();
+           case FLOODPLAIN_JSON:
+               return replicationMessageSerder.deserializer();
+        }
+        throw new IllegalArgumentException("Weird body format: "+bodyFormat);
+    }
+
+    public static Serializer<ReplicationMessage> bodySerializer(Topic.FloodplainBodyFormat bodyFormat) {
+        switch (bodyFormat) {
+            case CONNECT_JSON:
+                return connectReplicationMessageSerder.serializer();
+            case FLOODPLAIN_JSON:
+                return replicationMessageSerder.serializer();
+        }
+        throw new IllegalArgumentException("Weird body format: "+bodyFormat);
+    }
+
+
+    public static String addSourceStore(final Topology currentBuilder, TopologyContext context, TopologyConstructor topologyConstructor, Topic sourceTopicName, Topic.FloodplainKeyFormat keyFormat, Topic.FloodplainBodyFormat bodyFormat, boolean materializeStore) {
         // TODO It might be better to fail if the topic does not exist? -> Well depends, if it is external yes, but if it is created by the same instance, then no.
-        final String sourceProcessorName = "SOURCE_"+storeTopic;
-        if (storeTopic != null) {
+        final String sourceProcessorName =  sourceTopicName.prefixedString("SOURCE",context);
+        if (sourceTopicName != null) {
             String sourceName;
-            if (!topologyConstructor.sources.containsKey(storeTopic)) {
+            if (!topologyConstructor.sources.containsKey(sourceTopicName)) {
                 sourceName = sourceProcessorName + "_src";
-                if (connectSourceFormat) {
-                    currentBuilder.addSource(sourceName, ConnectReplicationMessageSerde.keyDeserialize(), JSONToReplicationMessage.replicationFromConnect(), storeTopic);
-                } else {
-                    currentBuilder.addSource(sourceName, storeTopic);
-                }
-                topologyConstructor.sources.put(storeTopic, sourceName);
+                currentBuilder.addSource(sourceName, keyDeserializer(keyFormat), bodyDeserializer(bodyFormat), sourceTopicName.qualifiedString(context));
+//
+//                if (connectSourceFormat) {
+//                    currentBuilder.addSource(sourceName, ConnectReplicationMessageSerde.keyDeserialize(), JSONToReplicationMessage.replicationFromConnect(), sourceTopicName.qualifiedString(context));
+//                } else {
+//                    currentBuilder.addSource(sourceName, sourceTopicName.qualifiedString(context));
+//                }
+                topologyConstructor.sources.put(sourceTopicName, sourceName);
                 if (materializeStore) {
                     currentBuilder.addProcessor(sourceProcessorName, () -> new StoreProcessor(STORE_PREFIX + sourceProcessorName), sourceName);
                 } else {
@@ -154,7 +198,7 @@ public class ReplicationTopologyParser {
                 }
 
             } else {
-                sourceName = topologyConstructor.sources.get(storeTopic);
+                sourceName = topologyConstructor.sources.get(sourceTopicName);
             }
 
         }
@@ -164,7 +208,7 @@ public class ReplicationTopologyParser {
             topologyConstructor.stateStoreSupplier.put(STORE_PREFIX + sourceProcessorName, createMessageStoreSupplier(STORE_PREFIX + sourceProcessorName, true));
         }
 
-        logger.info("Granting access for processor: {} to store: {}", sourceProcessorName, STORE_PREFIX + storeTopic);
+        logger.info("Granting access for processor: {} to store: {}", sourceProcessorName, sourceProcessorName);
 
         return sourceProcessorName;
     }
@@ -185,7 +229,7 @@ public class ReplicationTopologyParser {
     public static String addSingleJoinGrouped(final Topology current, TopologyContext topologyContext,
                                               TopologyConstructor topologyConstructor, String fromProcessor, String name,
                                               Optional<Predicate<String, ReplicationMessage>> associationBypass,
-                                              boolean isList, String withProcessor, boolean optional) {
+                                              String withProcessor, boolean optional) {
 
         String firstNamePre = name + "-forwardpre";
         String secondNamePre = name + "-reversepre";
@@ -202,15 +246,8 @@ public class ReplicationTopologyParser {
                 , withProcessor
         ).addProcessor(
                 finalJoin
-                , () -> (!isList) ?
+                , () ->
                         new ManyToOneGroupedProcessor(
-                                fromProcessor,
-                                withProcessor,
-                                associationBypass,
-                                optional
-                        )
-                        :
-                        new ManyToManyGroupedProcessor(
                                 fromProcessor,
                                 withProcessor,
                                 associationBypass,

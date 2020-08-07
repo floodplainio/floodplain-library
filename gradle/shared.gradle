@@ -1,39 +1,56 @@
 license {
-    header rootProject.file('gradle/LICENSE_HEADER.txt')
-    mapping('java', 'SLASHSTAR_STYLE')
-    mapping('kt', 'SLASHSTAR_STYLE')
-    ext.year = '2020'
-    ext.name = 'Frank Lyaruu'
+    header = rootProject.file("gradle/LICENSE_HEADER.txt")
+    mapping("java", "SLASHSTAR_STYLE")
+    mapping("kt", "SLASHSTAR_STYLE")
+    ext.year = "2020"
+    ext.name = "Frank Lyaruu"
+}
+
+plugins {
+    "com.github.hierynomus.license-base"
+}
+
+sourceSets {
+    all {
+        languageSettings {
+        }
+    }
 }
 
 compileKotlin {
-    kotlinOptions.jvmTarget = "11"
+    kotlinOptions.freeCompilerArgs += ["-Xuse-experimental=kotlinx.coroutines.ObsoleteCoroutinesApi"]
+    kotlinOptions.freeCompilerArgs += ["-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi"]
+    kotlinOptions.freeCompilerArgs += ["-Xuse-experimental=kotlinx.coroutines.FlowPreview"]
+    kotlinOptions.jvmTarget = JavaVersion.VERSION_11
+    kotlinOptions.javaParameters = true
 }
 compileTestKotlin {
-    kotlinOptions.jvmTarget = "11"
+    kotlinOptions.jvmTarget = JavaVersion.VERSION_11
+    kotlinOptions.javaParameters = true
 }
 
 dokka {
     outputFormat = "gfm"
     outputDirectory = "$buildDir/dokka"
+
 }
 
 task sourceJar(type: Jar, dependsOn: classes) {
-    classifier 'sources'
+    classifier "sources"
     from sourceSets.main.allSource
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
+    classifier = "javadoc"
     from javadoc.destinationDir
 }
 
 task publishAll {
-    dependsOn 'build'
-    dependsOn 'javadocJar'
-    dependsOn 'sourceJar'
+    dependsOn "build"
+    dependsOn "javadocJar"
+    dependsOn "sourceJar"
 
     doLast {
-        println 'We release now'
+        println "We release now"
     }
 }

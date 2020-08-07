@@ -9,6 +9,7 @@ buildOutputCleanup
 .classpath
 sharedstore
 storagePath
+teststorage
 floodplain-dsl/teststorage
 lsp
 

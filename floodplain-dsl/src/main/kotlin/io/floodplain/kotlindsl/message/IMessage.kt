@@ -16,41 +16,140 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+@file:Suppress("UNCHECKED_CAST")
+
 package io.floodplain.kotlindsl.message
 
 import io.floodplain.immutable.api.ImmutableMessage
 import io.floodplain.immutable.factory.ImmutableFactory
-import java.util.stream.Collectors
+import java.math.BigDecimal
 import kotlin.streams.toList
 
 private val logger = mu.KotlinLogging.logger {}
 
-data class IMessage(private val content: MutableMap<String, Any>) {
+interface IMessage {
+    operator fun get(path: String): Any?
+    fun message(path: String): IMessage
+    fun string(path: String): String
+    fun integer(path: String): Int
+    fun optionalInteger(path: String): Int?
+
+    fun long(path: String): Long
+    fun optionalLong(path: String): Long?
+    fun list(path: String): List<String>
+    fun optionalList(path: String): List<String>?
+    fun decimal(path: String): BigDecimal
+    fun optionalDecimal(path: String): BigDecimal?
+    fun double(path: String): Double
+    fun optionalDouble(path: String): Double?
+    fun boolean(path: String): Boolean
+    fun optionalBoolean(path: String): Boolean?
+    fun optionalString(path: String): String?
+    fun clear(path: String)
+    fun isEmpty(): Boolean
+    operator fun set(path: String, value: Any?): IMessage
+    fun copy(): IMessage
+    fun toImmutable(): ImmutableMessage
+    fun data(): Map<String, Any>
+}
+
+private data class IMessageImpl(private val content: MutableMap<String, Any>) : IMessage {
 
     //    val content = mapOf<String,Any>()
-    operator fun get(path: String): Any? {
+    override operator fun get(path: String): Any? {
         val (msg, name) = parsePath(path.split("/"))
         return msg.content.get(name)
     }
 
-    fun string(path: String): String {
+    override fun message(path: String): IMessage {
+        val raw = get(path)
+        if (raw == null) {
+            val created = empty()
+            set(path, created)
+            return created
+        }
+        if (raw !is IMessage) {
+            throw ClassCastException("Path element $path should be an message but it is a ${raw::class}")
+        }
+        return raw
+    }
+    override fun string(path: String): String {
         return optionalString(path)
                 ?: throw NullPointerException("Can't obtain string from path: $path as it is absent")
     }
 
-    fun integer(path: String): Int {
+    override fun integer(path: String): Int {
         return optionalInteger(path) ?: throw NullPointerException("Can't obtain int from path: $path as it is absent")
     }
 
-    fun optionalInteger(path: String): Int? {
+    override fun optionalInteger(path: String): Int? {
         val raw = get(path) ?: return null
         if (raw !is Int) {
             throw ClassCastException("Path element $path should be an integer but it is a ${raw::class}")
         }
         return raw
     }
+    override fun long(path: String): Long {
+        return optionalLong(path) ?: throw NullPointerException("Can't obtain int from path: $path as it is absent")
+    }
 
-    fun optionalString(path: String): String? {
+    override fun optionalLong(path: String): Long? {
+        val raw = get(path) ?: return null
+        if (raw !is Long) {
+            throw ClassCastException("Path element $path should be an long but it is a ${raw::class}")
+        }
+        return raw
+    }
+
+    override fun list(path: String): List<String> {
+        return optionalList(path) ?: throw NullPointerException("Can't obtain list from path: $path as it is absent")
+    }
+
+    override fun optionalList(path: String): List<String>? {
+        val raw = get(path) ?: return null
+        if (raw !is List<*>) {
+            throw ClassCastException("Path element $path should be an list but it is a ${raw::class}")
+        }
+        return raw as List<String>
+    }
+
+    override fun decimal(path: String): BigDecimal {
+        return optionalDecimal(path) ?: throw NullPointerException("Can't obtain decimal from path: $path as it is absent")
+    }
+
+    override fun optionalDecimal(path: String): BigDecimal? {
+        val raw = get(path) ?: return null
+        if (raw !is BigDecimal) {
+            throw ClassCastException("Path element $path should be an decimal but it is a ${raw::class}")
+        }
+        return raw
+    }
+
+    override fun double(path: String): Double {
+        return optionalDouble(path) ?: throw NullPointerException("Can't obtain double from path: $path as it is absent")
+    }
+
+    override fun optionalDouble(path: String): Double? {
+        val raw = get(path) ?: return null
+        if (raw !is Double) {
+            throw ClassCastException("Path element $path should be an double but it is a ${raw::class}")
+        }
+        return raw
+    }
+
+    override fun boolean(path: String): Boolean {
+        return optionalBoolean(path) ?: throw NullPointerException("Can't obtain boolean from path: $path as it is absent")
+    }
+
+    override fun optionalBoolean(path: String): Boolean? {
+        val raw = get(path) ?: return null
+        if (raw !is Boolean) {
+            throw ClassCastException("Path element $path should be an boolean but it is a ${raw::class}")
+        }
+        return raw
+    }
+
+    override fun optionalString(path: String): String? {
         val raw = get(path) ?: return null
         if (raw !is String) {
             throw ClassCastException("Path element $path should be an string but it is a ${raw::class}")
@@ -58,11 +157,11 @@ data class IMessage(private val content: MutableMap<String, Any>) {
         return raw
     }
 
-    private fun parsePath(path: List<String>): Pair<IMessage, String> {
+    private fun parsePath(path: List<String>): Pair<IMessageImpl, String> {
         if (path.size > 1) {
             val subelement: Any? = content[path[0]]
             subelement ?: throw NullPointerException("Can't parse path list: $path, element ${path[0]} is missing")
-            if (subelement !is IMessage) {
+            if (subelement !is IMessageImpl) {
                 throw ClassCastException("Path element ${path[0]} should be a message but it is a ${subelement::class}")
             }
             return subelement.parsePath(path.subList(1, path.size))
@@ -70,16 +169,16 @@ data class IMessage(private val content: MutableMap<String, Any>) {
         return Pair(this, path[0])
     }
 
-    fun clear(path: String) {
+    override fun clear(path: String) {
         val (msg, name) = parsePath(path.split("/"))
         msg.content.remove(name)
     }
 
-    fun isEmpty(): Boolean {
+    override fun isEmpty(): Boolean {
         return content.isEmpty()
     }
 
-    operator fun set(path: String, value: Any?): IMessage {
+    override operator fun set(path: String, value: Any?): IMessage {
         val (msg, name) = parsePath(path.split("/"))
         if (value == null) {
             msg.content.remove(name)
@@ -101,7 +200,35 @@ data class IMessage(private val content: MutableMap<String, Any>) {
         return this
     }
 
-    fun toImmutable(): ImmutableMessage {
+    override fun copy(): IMessage {
+        return fromData(content)
+        // IMessage(data().toMutableMap())
+    }
+
+    private fun fromData(data: Map<String, Any>): IMessage {
+        val convertedMap = data.map { (key, value) ->
+            when (value) {
+                is Map<*, *> -> key to fromData(value as Map<String, Any>)
+                is List<*> -> key to parseList(value)
+                else -> key to value
+            }
+        }.toMap()
+        return IMessageImpl(convertedMap.toMutableMap())
+    }
+
+    private fun parseList(input: List<*>): List<*> {
+        if (input.isEmpty()) {
+            // Decide on this scenario
+            return emptyList<IMessage>()
+        }
+        val first = input.first()!!
+        if (first is Map<*, *>) {
+            return input.map { fromData(it as Map<String, Any>) }.toList()
+        }
+        return input
+    }
+
+    override fun toImmutable(): ImmutableMessage {
         val values = mutableMapOf<String, Any>()
         val types = mutableMapOf<String, ImmutableMessage.ValueType>()
         val subMessage = mutableMapOf<String, ImmutableMessage>()
@@ -109,7 +236,7 @@ data class IMessage(private val content: MutableMap<String, Any>) {
         for ((name, elt) in content) {
             when (elt) {
                 is IMessage -> subMessage[name] = elt.toImmutable()
-                is List<*> -> subMessageList[name] = subListToImmutable(elt as List<IMessage>)
+                is List<*> -> maybeSetList(name, elt, subMessageList, values, types)
                 is ImmutableMessage -> subMessage[name] = elt
                 else -> {
                     values[name] = elt; types.put(name, ImmutableFactory.resolveTypeFromValue(elt))
@@ -118,19 +245,74 @@ data class IMessage(private val content: MutableMap<String, Any>) {
         }
         return ImmutableFactory.create(values, types, subMessage, subMessageList)
     }
-
-    private fun subListToImmutable(items: List<IMessage>): List<ImmutableMessage> {
-        return items.stream().map {
-            it.toImmutable()
-        }.collect(Collectors.toList())
+    private fun maybeSetList(name: String, value: List<*>, subMessagesList: MutableMap<String, List<ImmutableMessage>>, values: MutableMap<String, Any>, types: MutableMap<String, ImmutableMessage.ValueType>) {
+        if (value.isEmpty()) {
+            return
+        }
+        val first = value.first() ?: throw java.lang.NullPointerException("Sub list contains a null")
+        if (first is IMessage) {
+            subMessagesList[name] = value.map {
+                (it as IMessageImpl).toImmutable()
+            }.toList()
+        } else {
+            values[name] = value as List<String>
+            types[name] = ImmutableMessage.ValueType.STRINGLIST
+        }
     }
+
+    // private fun subListToImmutable(items: List<*>): List<ImmutableMessage> {
+    //     if(items.isEmpty()) {
+    //         return emptyList()
+    //     }
+    //     val first = items.first() ?: throw java.lang.NullPointerException("Sub list contains a null")
+    //     if(first is IMessage) {
+    //         return items.stream().map {
+    //             (it as IMessage).toImmutable()
+    //         }.collect(Collectors.toList())
+    //     }
+    // }
 
     override fun toString(): String {
         return this.content.toString()
     }
+
+    override fun data(): Map<String, Any> {
+        return content.map { (key, value) ->
+            key to when (value) {
+                is IMessage -> value.data()
+                is List<*> -> subMessageListIfSM(value)
+                else -> value
+            }
+        }.toMap()
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is IMessageImpl) return false
+
+        if (content != other.content) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return content.hashCode()
+    }
 }
 
-fun empty(): IMessage = IMessage(mutableMapOf())
+private fun subMessageListIfSM(value: List<*>): List<*> {
+    if (value.isEmpty()) {
+        return listOf<String>()
+    }
+    val first = value.first()!!
+    if (first is IMessage) {
+        return value.map { (it as IMessage).data() }.toList()
+    }
+    // Assume list of strings
+    return value
+}
+
+fun empty(): IMessage = IMessageImpl(mutableMapOf())
 
 fun fromImmutable(msg: ImmutableMessage): IMessage {
     val content = mutableMapOf<String, Any>()
@@ -145,5 +327,5 @@ fun fromImmutable(msg: ImmutableMessage): IMessage {
     for ((name, value) in msg.subMessageListMap()) {
         content[name] = value.stream().map { e -> fromImmutable(e) }.toList()
     }
-    return IMessage(content)
+    return IMessageImpl(content)
 }

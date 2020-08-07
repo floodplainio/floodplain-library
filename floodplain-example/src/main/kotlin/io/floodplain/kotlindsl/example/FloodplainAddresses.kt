@@ -19,14 +19,14 @@
 package io.floodplain.kotlindsl.example
 
 import io.floodplain.kotlindsl.joinRemote
-import io.floodplain.kotlindsl.mongoConfig
-import io.floodplain.kotlindsl.mongoSink
 import io.floodplain.kotlindsl.postgresSource
 import io.floodplain.kotlindsl.postgresSourceConfig
 import io.floodplain.kotlindsl.set
 import io.floodplain.kotlindsl.sink
 import io.floodplain.kotlindsl.source
 import io.floodplain.kotlindsl.streams
+import io.floodplain.mongodb.mongoConfig
+import io.floodplain.mongodb.mongoSink
 import java.net.URL
 
 private val logger = mu.KotlinLogging.logger {}
@@ -35,14 +35,14 @@ fun main() {
 
     val generation = "generation1"
     streams(generation) {
-        val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")
+        val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental", "public")
         val mongoConfig = mongoConfig("mongosink", "mongodb://mongo", "@mongodump")
         listOf(
-        postgresSource("public", "address", postgresConfig) {
+            postgresSource("address", postgresConfig) {
             joinRemote({ msg -> "${msg["city_id"]}" }, false) {
-                postgresSource("public", "city", postgresConfig) {
+                postgresSource("city", postgresConfig) {
                     joinRemote({ msg -> "${msg["country_id"]}" }, false) {
-                        postgresSource("public", "country", postgresConfig) {}
+                        postgresSource("country", postgresConfig) {}
                     }
                     set { _, msg, state ->
                         msg.set("country", state)
@@ -54,7 +54,7 @@ fun main() {
             }
             sink("@address")
         },
-        postgresSource("public", "customer", postgresConfig) {
+            postgresSource("customer", postgresConfig) {
             joinRemote({ m -> "${m["address_id"]}" }, false) {
                 source("@address") {}
             }
@@ -63,7 +63,7 @@ fun main() {
             }
             mongoSink("customer", "@customer", mongoConfig)
         },
-        postgresSource("public", "store", postgresConfig) {
+        postgresSource("store", postgresConfig) {
             joinRemote({ m -> "${m["address_id"]}" }, false) {
                 source("@address") {}
             }
@@ -72,7 +72,7 @@ fun main() {
             }
             mongoSink("store", "@store", mongoConfig)
         },
-        postgresSource("public", "staff", postgresConfig) {
+        postgresSource("staff", postgresConfig) {
             joinRemote({ m -> "${m["address_id"]}" }, false) {
                 source("@address") {}
             }
@@ -81,6 +81,6 @@ fun main() {
             }
             mongoSink("staff", "@staff", mongoConfig)
         })
-    }.renderAndStart(URL("http://localhost:8083/connectors"), "localhost:9092")
+    }.renderAndSchedule(URL("http://localhost:8083/connectors"), "localhost:9092")
     logger.info { "done!" }
 }

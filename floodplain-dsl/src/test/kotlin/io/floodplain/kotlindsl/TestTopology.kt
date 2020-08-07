@@ -20,13 +20,18 @@ package io.floodplain.kotlindsl
 
 import io.floodplain.kotlindsl.message.IMessage
 import io.floodplain.kotlindsl.message.empty
+import io.floodplain.kotlindsl.sink.logSink
+import io.floodplain.kotlindsl.sink.logSinkConfig
 import io.floodplain.replication.api.ReplicationMessage
+import io.floodplain.streams.api.Topic
 import io.floodplain.streams.remotejoin.StoreStateProcessor
+import java.lang.IllegalArgumentException
 import java.math.BigDecimal
 import java.time.Duration
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import kotlinx.coroutines.delay
 import org.apache.kafka.streams.state.KeyValueStore
 
 private val logger = mu.KotlinLogging.logger {}
@@ -43,7 +48,7 @@ class TestTopology {
             source("@sometopic") {
                 sink("@outputTopic")
             }
-        }.renderAndTest {
+        }.renderAndExecute {
             input("@sometopic", "key1", empty().set("name", "gorilla"))
             input("@sometopic", "key1", empty().set("name", "monkey"))
             assertEquals("gorilla", output("@outputTopic").second["name"])
@@ -57,7 +62,7 @@ class TestTopology {
             source("@sometopic") {
                 sink("@outputtopic")
             }
-        }.renderAndTest {
+        }.renderAndExecute {
             input("@sometopic", "key1", empty().set("name", "gorilla"))
             delete("@sometopic", "key1")
             output("@outputtopic")
@@ -75,8 +80,9 @@ class TestTopology {
                 }
                 sink("people")
             }
-        }.renderAndTest {
+        }.renderAndExecute {
             input("mysource", "1", empty().set("species", "human"))
+            logger.info("outputs: ${outputs()}")
             val (_, value) = output("people")
             logger.info("Person found: $value")
         }
@@ -94,7 +100,7 @@ class TestTopology {
                 }
                 sink("@output")
             }
-        }.renderAndTest {
+        }.renderAndExecute {
             assertTrue(isEmpty("@output"))
             input("@left", "key1", empty().set("name", "left1"))
             assertTrue(isEmpty("@output"))
@@ -124,7 +130,7 @@ class TestTopology {
                 }
                 sink("@output")
             }
-        }.renderAndTest {
+        }.renderAndExecute {
             assertTrue(isEmpty("@output"))
             val msg = empty().set("name", "left1")
             input("@left", "key1", msg)
@@ -149,7 +155,7 @@ class TestTopology {
                 group { message -> message["subkey"] as String }
                 sink("mysink")
             }
-        }.renderAndTest {
+        }.renderAndExecute {
             val record1 = empty().set("subkey", "subkey1")
             val record2 = empty().set("subkey", "subkey2")
             input("src", "key1", record1)
@@ -183,7 +189,7 @@ class TestTopology {
                 }
                 sink("@output")
             }
-        }.renderAndTest {
+        }.renderAndExecute {
             assertTrue(isEmpty("@output"))
             val leftRecord = empty().set("name", "left1")
             input("@left", "key1", leftRecord)
@@ -212,8 +218,8 @@ class TestTopology {
             assertEquals(1, subList2.size)
             delete("@right", "otherkey2")
             val (_, v5) = output("@output")
-            val subList3 = v5.get("rightsub") as List<*>
-            assertEquals(0, subList3.size)
+            val subList3 = v5.get("rightsub") as List<*>?
+            assertEquals(0, subList3?.size ?: 0)
             delete("@left", "key1")
             assertEquals("key1", deleted("@output"))
         }
@@ -237,7 +243,7 @@ class TestTopology {
                 }
                 sink("@output")
             }
-        }.renderAndTest {
+        }.renderAndExecute {
             assertTrue(isEmpty("@output"))
             val leftRecord = empty().set("name", "left1")
             input("@left", "key1", leftRecord)
@@ -267,11 +273,6 @@ class TestTopology {
         }
     }
 
-//    @Test
-//    fun testRemoteJoin() {
-//        fail("Implement")
-//    }
-
     @Test
     fun testFilter() {
         stream("anygen") {
@@ -281,7 +282,7 @@ class TestTopology {
                 }
                 sink("@output")
             }
-        }.renderAndTest {
+        }.renderAndExecute {
             input("@source", "key1", empty().set("name", "myname"))
             input("@source", "key2", empty().set("name", "notmyname"))
             input("@source", "key3", empty().set("name", "myname"))
@@ -303,7 +304,7 @@ class TestTopology {
 
                 sink("@output")
             }
-        }.renderAndTest {
+        }.renderAndExecute {
             input("@source", "key1", empty())
             input("@source", "key1", empty())
             output("@output") // initial key, total = 1
@@ -321,16 +322,16 @@ class TestTopology {
         stream {
             source("@source") {
                 scan({
-                        msg -> empty().set("total", BigDecimal.valueOf(0))
+                        _ -> empty().set("total", BigDecimal.valueOf(0))
                 }, {
                     set {
                         _, _, acc -> acc["total"] = (acc["total"] as BigDecimal).add(BigDecimal.valueOf(1))
                         acc
                     }
                 }, {
-                    set { _, mm, acc ->
+                    set { _, _, acc ->
                         if (acc["total"] != null) {
-                            println("A: $acc")
+                            logger.info("A: $acc")
                         }
                         acc["total"] = (acc["total"] as BigDecimal).subtract(BigDecimal.valueOf(1))
                         acc
@@ -339,7 +340,7 @@ class TestTopology {
                 each { key, msg, acc -> logger.info("Each: $key -> $msg -> $acc") }
                 sink("@output")
             }
-        }.renderAndTest {
+        }.renderAndExecute {
             input("@source", "key1", empty().set("message", "message1"))
             input("@source", "key1", empty().set("message", "message1"))
             output("@output") // initial key, total = 1
@@ -367,7 +368,7 @@ class TestTopology {
 
                 sink("@output")
             }
-        }.renderAndTest {
+        }.renderAndExecute {
             input("@source", "key1", empty().set("groupKey", "group1"))
             input("@source", "key1", empty().set("groupKey", "group1"))
             output("@output") // initial key, total = 1
@@ -380,24 +381,48 @@ class TestTopology {
             val (groupkey, afterDelete) = output("@output") // key1 deleted, so total should be 0 again
             assertEquals("group1", groupkey)
             assertEquals(0, afterDelete["total"])
-        }.renderAndTest {
             input("@source", "key1", empty().set("groupKey", "group1"))
             input("@source", "key2", empty().set("groupKey", "group1"))
             output("@output")
 
-            val (_, value) = output("@output")
-            logger.info("Value: $value")
-            assertEquals(2, value["total"], "Entries with different keys should add")
-        }.renderAndTest {
+            val (_, ovalue) = output("@output")
+            logger.info("Value: $ovalue")
+            assertEquals(2, ovalue["total"], "Entries with different keys should add")
             input("@source", "key1", empty().set("groupKey", "group1"))
             delete("@source", "key1")
-            val (_, value) = output("@output")
-            logger.info("Value: $value")
-            assertEquals(1, value["total"], "Entries with different keys should add")
+            val (_, ivalue) = output("@output")
+            logger.info("Value:> $ivalue")
+            delete("@source", "key2")
 
+            assertEquals(1, ivalue["total"], "Entries with different keys should add")
+            skip("@output", 2)
             val (_, value2) = output("@output")
-            logger.info("Value: $value2")
+            logger.info("Value: $value2 outputsize: ${outputSize("@output")}")
             assertEquals(0, value2["total"], "Delete should subtract")
+        }
+    }
+
+    @Test
+    fun testScanGroupedSimple() {
+        stream {
+            source("@source") {
+                scan({ msg -> msg["groupKey"] as String }, { msg -> msg["total"] = 0; msg }, {
+                    set { _, _, acc -> acc["total"] = acc["total"] as Int + 1; acc }
+                }, {
+                    set { _, _, acc -> acc["total"] = acc["total"] as Int - 1; acc }
+                })
+                each {
+                        key, msg, acc -> logger.info("Each: $key -> $msg -> $acc")
+                }
+
+                sink("@output")
+            }
+        }.renderAndExecute {
+            input("@source", "key1", empty().set("groupKey", "group1"))
+            delete("@source", "key1")
+            skip("@output", 1)
+            val (_, value) = output("@output") // key1 deleted, so total should be 0 again
+            assertEquals(0, value["total"], "Entries with the same key should replace")
         }
     }
 
@@ -420,7 +445,7 @@ class TestTopology {
                 )
                 sink("@sink")
             }
-        }.renderAndTest {
+        }.renderAndExecute {
             input("@source", "key1", empty().set("category", "category1"))
             assertEquals(1, outputSize("@category1"))
             assertEquals(0, outputSize("@category2"))
@@ -438,11 +463,30 @@ class TestTopology {
                     value["destination"] as String
                 }
             }
-        }.renderAndTest {
+        }.renderAndExecute {
             input("@source", "key1", empty().set("destination", "mydestination"))
             input("@source", "key1", empty().set("destination", "otherdestination"))
             assertEquals(1, outputSize("mydestination"))
             assertEquals(1, outputSize("otherdestination"))
+        }
+    }
+
+    @Test
+    fun testRawInput() {
+        val data = javaClass.classLoader.getResource("decimalwithscale.json")?.readBytes()
+        if (data == null) {
+            throw IllegalArgumentException("Missing json file for decimalwithscale.json")
+        }
+        stream {
+            externalSource("@source", Topic.FloodplainKeyFormat.FLOODPLAIN_STRING, Topic.FloodplainBodyFormat.CONNECT_JSON) {
+                sink("@sinktopic")
+            }
+        }.renderAndExecute {
+            input("@source", "key1".toByteArray(), data)
+            var (_, value) = output("@sinktopic")
+            logger.info("value: $value")
+            val amount = value.decimal("amount")
+            assertEquals(BigDecimal.valueOf(299, 2), amount)
         }
     }
 
@@ -453,7 +497,7 @@ class TestTopology {
                 diff()
                 sink("@output")
             }
-        }.renderAndTest {
+        }.renderAndExecute {
 
             val stateStore = stateStore(topologyContext().topicName("@diff_1_1"))
             input("@source", "key1", empty().set("value", "value1"))
@@ -483,13 +527,26 @@ class TestTopology {
     }
 
     @Test
+    fun testLogSink() {
+        stream {
+            val logSinkConfig = logSinkConfig("logname")
+            source("@source") {
+                logSink("logSinkTest", "@output", logSinkConfig)
+            }
+        }.renderAndExecute {
+            input("@source", "somekey", empty().set("myKey", "myValue"))
+            delay(200)
+        }
+    }
+
+    @Test
     fun testBuffer() {
         stream {
             source("@source") {
                 buffer(Duration.ofSeconds(9), 10)
                 sink("@output")
             }
-        }.renderAndTest {
+        }.renderAndExecute {
             val msg = empty().set("value", "value1")
             input("@source", "key1", msg)
             // shouldn't have arrived yet:
@@ -521,6 +578,34 @@ class TestTopology {
 
             logger.info("Store szie: $storeSize")
 //            assertEquals(10L,storeSize)
+        }
+    }
+
+    @Test
+    fun testRawJsonInput() {
+        val originalKey = """{"schema":{"type":"struct","fields":[{"type":"int32","optional":false,"field":"film_id"}],"optional":false,"name":"instance_mypostgres.public.film.Key"},"payload":{"film_id":965}}"""
+        val body = """{"schema":{"type":"struct","fields":[{"type":"struct","fields":[{"type":"int32","optional":false,"field":"film_id"},{"type":"string","optional":false,"field":"title"},{"type":"string","optional":true,"field":"description"},{"type":"int32","optional":true,"field":"release_year"},{"type":"int16","optional":false,"field":"language_id"},{"type":"int16","optional":false,"field":"rental_duration"},{"type":"bytes","optional":false,"name":"org.apache.kafka.connect.data.Decimal","version":1,"parameters":{"scale":"2","connect.decimal.precision":"4"},"field":"rental_rate"},{"type":"int16","optional":true,"field":"length"},{"type":"bytes","optional":false,"name":"org.apache.kafka.connect.data.Decimal","version":1,"parameters":{"scale":"2","connect.decimal.precision":"5"},"field":"replacement_cost"},{"type":"string","optional":true,"name":"io.debezium.data.Enum","version":1,"parameters":{"allowed":"G,PG,PG-13,R,NC-17"},"field":"rating"},{"type":"int64","optional":false,"name":"io.debezium.time.MicroTimestamp","version":1,"field":"last_update"},{"type":"array","items":{"type":"string","optional":true},"optional":true,"field":"special_features"}],"optional":true,"name":"instance_mypostgres.public.film.Value","field":"before"},{"type":"struct","fields":[{"type":"int32","optional":false,"field":"film_id"},{"type":"string","optional":false,"field":"title"},{"type":"string","optional":true,"field":"description"},{"type":"int32","optional":true,"field":"release_year"},{"type":"int16","optional":false,"field":"language_id"},{"type":"int16","optional":false,"field":"rental_duration"},{"type":"bytes","optional":false,"name":"org.apache.kafka.connect.data.Decimal","version":1,"parameters":{"scale":"2","connect.decimal.precision":"4"},"field":"rental_rate"},{"type":"int16","optional":true,"field":"length"},{"type":"bytes","optional":false,"name":"org.apache.kafka.connect.data.Decimal","version":1,"parameters":{"scale":"2","connect.decimal.precision":"5"},"field":"replacement_cost"},{"type":"string","optional":true,"name":"io.debezium.data.Enum","version":1,"parameters":{"allowed":"G,PG,PG-13,R,NC-17"},"field":"rating"},{"type":"int64","optional":false,"name":"io.debezium.time.MicroTimestamp","version":1,"field":"last_update"},{"type":"array","items":{"type":"string","optional":true},"optional":true,"field":"special_features"}],"optional":true,"name":"instance_mypostgres.public.film.Value","field":"after"},{"type":"struct","fields":[{"type":"string","optional":false,"field":"version"},{"type":"string","optional":false,"field":"connector"},{"type":"string","optional":false,"field":"name"},{"type":"int64","optional":false,"field":"ts_ms"},{"type":"string","optional":true,"name":"io.debezium.data.Enum","version":1,"parameters":{"allowed":"true,last,false"},"default":"false","field":"snapshot"},{"type":"string","optional":false,"field":"db"},{"type":"string","optional":false,"field":"schema"},{"type":"string","optional":false,"field":"table"},{"type":"int64","optional":true,"field":"txId"},{"type":"int64","optional":true,"field":"lsn"},{"type":"int64","optional":true,"field":"xmin"}],"optional":false,"name":"io.debezium.connector.postgresql.Source","field":"source"},{"type":"string","optional":false,"field":"op"},{"type":"int64","optional":true,"field":"ts_ms"},{"type":"struct","fields":[{"type":"string","optional":false,"field":"id"},{"type":"int64","optional":false,"field":"total_order"},{"type":"int64","optional":false,"field":"data_collection_order"}],"optional":true,"field":"transaction"}],"optional":false,"name":"instance_mypostgres.public.film.Envelope"},"payload":{"before":null,"after":{"film_id":778,"title":"Secrets Paradise","description":"A Fateful Saga of a Cat And a Frisbee who must Kill a Girl in A Manhattan Penthouse","release_year":2006,"language_id":1,"rental_duration":3,"rental_rate":"AfM=","length":109,"replacement_cost":"CcM=","rating":"G","last_update":1369579858951000,"special_features":["Trailers","Commentaries"]},"source":{"version":"1.2.0.Final","connector":"postgresql","name":"instance-mypostgres","ts_ms":1594564042739,"snapshot":"true","db":"dvdrental","schema":"public","table":"film","txId":751,"lsn":30998528,"xmin":null},"op":"r","ts_ms":1594564042739,"transaction":null}}"""
+
+        stream {
+            val logSinkConfig = logSinkConfig("logname")
+            externalSource("@external", Topic.FloodplainKeyFormat.CONNECT_KEY_JSON, Topic.FloodplainBodyFormat.CONNECT_JSON) {
+                logSink("somesink", "@output", logSinkConfig)
+            }
+        }.renderAndExecute {
+            input("@external", originalKey.toByteArray(), body.toByteArray())
+            // val (key,value) = output("@output")
+            // assertEquals(originalKey,key)
+            // logger.info("Result: $value")
+        }
+    }
+
+    @Test
+    fun testArgumentParser() {
+        stream {
+            source("@sometopic") {
+                sink("@outputTopic")
+            }
+        }.runWithArguments(arrayOf("--help")) {
         }
     }
 }

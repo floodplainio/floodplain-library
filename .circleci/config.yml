@@ -6,9 +6,18 @@ jobs: # a collection of steps
       # Configure the JVM and Gradle to avoid OOM errors
       _JAVA_OPTIONS: "-Xmx1g"
       GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=2"
-    docker: # run the steps with Docker
-      - image: circleci/openjdk:11.0.3-jdk-stretch # ...with this image as the primary container; this is where all `steps` will run
+    machine: # run the steps with Docker
+      image: circleci/classic:latest # ...with this image as the primary container; this is where all `steps` will run
     steps: # a collection of executable commands
+      - run:
+          name: Pre-install
+          command: |
+            sudo add-apt-repository ppa:openjdk-r/ppa
+            sudo apt-get update
+            sudo apt-get install -y openjdk-11-jdk
+            java -version
+            sudo update-java-alternatives --set java-1.11.0-openjdk-amd64
+            java -version
       - checkout # check out source code to working directory
       # Read about caching dependencies: https://circleci.com/docs/2.0/caching/
       - restore_cache:
@@ -19,8 +28,14 @@ jobs: # a collection of steps
           name: Run tests in parallel # See: https://circleci.com/docs/2.0/parallelism-faster-jobs/
           # Use "./gradlew test" instead if tests are not run in parallel
           command: |
+            echo "current path: $PWD"
+            pwd ~
+            echo "$SHEETKEY" >~/sheetkey.json
+            echo "homedir:"
+            ls -l ~
+            export GOOGLE_SHEETS_CREDENTIAL_PATH=~/sheetkey.json
             # Format the arguments to "./gradlew test"
-            ./gradlew test
+            ./gradlew test --info --stacktrace
       - save_cache:
           paths:
             - ~/.gradle/wrapper
@@ -54,7 +69,7 @@ jobs: # a collection of steps
       - run:
           name: Upload to central
           command: |
-           ./gradlew publishAllPublicationsToSnapshotsRepository
+            ./gradlew publishAllPublicationsToSnapshotsRepository
 workflows:
   version: 2
   workflow:

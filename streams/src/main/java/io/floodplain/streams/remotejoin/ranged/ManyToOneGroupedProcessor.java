@@ -75,6 +75,10 @@ public class ManyToOneGroupedProcessor extends AbstractProcessor<String, Replica
 
     @Override
     public void process(String key, ReplicationMessage message) {
+        if(key.contains("{")) {
+            // TODO remove, it is a bit barbaric
+            throw new RuntimeException("Failed. bad key: "+key);
+        }
         boolean reverse = false;
         if (key.endsWith(PreJoinProcessor.REVERSE_IDENTIFIER)) {
             reverse = true;
@@ -173,12 +177,12 @@ public class ManyToOneGroupedProcessor extends AbstractProcessor<String, Replica
 
         final ReplicationMessage withOperation = message.withOperation(message.operation());
         ReplicationMessage outerMessage = reverseLookupStore.get(reverseLookupKey);
-
         if (outerMessage == null) {
             // nothing found to join with, forward only if optional
             if (optional) {
                 forwardMessage(actualKey, message);
             } else {
+                // I don't think this is always correct
                 forwardMessage(actualKey, message.withOperation(Operation.DELETE));
             }
         } else {

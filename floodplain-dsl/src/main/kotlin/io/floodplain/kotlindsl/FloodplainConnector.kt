@@ -21,6 +21,7 @@ package io.floodplain.kotlindsl
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ArrayNode
+import io.floodplain.streams.api.Topic
 import io.floodplain.streams.api.TopologyContext
 import java.io.IOException
 import java.net.URL
@@ -30,11 +31,15 @@ import java.net.http.HttpResponse
 import java.net.http.HttpResponse.BodyHandlers
 import java.time.Duration
 import java.util.Collections
+import java.util.concurrent.atomic.AtomicLong
 import java.util.function.Consumer
+import org.apache.kafka.connect.sink.SinkConnector
+import org.apache.kafka.connect.sink.SinkRecord
+import org.apache.kafka.connect.sink.SinkTask
 
 private val logger = mu.KotlinLogging.logger {}
 private val objectMapper = ObjectMapper()
-private val httpClient: HttpClient = HttpClient.newBuilder()
+val httpClient: HttpClient = HttpClient.newBuilder()
     .version(HttpClient.Version.HTTP_1_1)
     .followRedirects(HttpClient.Redirect.NORMAL)
     .connectTimeout(Duration.ofSeconds(10))
@@ -111,6 +116,56 @@ private fun postToHttpJava11(url: URL, jsonString: String) {
         .build()
     val response: HttpResponse<String> = httpClient.send(request, BodyHandlers.ofString())
     if (response.statusCode() >= 400) {
-        throw IOException("Error calling connector: ${response.uri()} code: ${response.statusCode()}")
+        logger.error("Scheduling connector failed. Request: $jsonString")
+        throw IOException("Error calling connector: ${response.uri()} code: ${response.statusCode()} body: ${response.body()}")
+    }
+}
+
+fun floodplainSinkFromTask(task: SinkTask, config: Config): FloodplainSink {
+    return LocalConnectorSink(task, config)
+}
+
+fun instantiateSinkConfig(topologyContext: TopologyContext, config: Config, connector: () -> SinkConnector): Map<Topic, MutableList<FloodplainSink>> {
+    val result = mutableMapOf<Topic, MutableList<FloodplainSink>>()
+    val materializedSinks = config.materializeConnectorConfig(topologyContext)
+    materializedSinks.map { materializedSink ->
+        val connectorInstance = connector()
+        connector().start(materializedSink.settings)
+        val task = connectorInstance.taskClass().getDeclaredConstructor().newInstance() as SinkTask
+        task.start(materializedSink.settings)
+
+        val localSink = floodplainSinkFromTask(task, config)
+        materializedSink.topics.forEach { topic ->
+            val list = result.computeIfAbsent(topic, { _ -> mutableListOf<FloodplainSink>() })
+            list.add(localSink)
+        }
+    }
+    return result
+}
+
+private class LocalConnectorSink(private val task: SinkTask, val config: Config) : FloodplainSink {
+    private val offsetCounter = AtomicLong(System.currentTimeMillis())
+    override fun send(topic: Topic, elements: List<Pair<String, Map<String, Any>?>>, topologyContext: TopologyContext) {
+        logger.info("Inserting # of documents ${elements.size} for topic: $topic")
+        val list = elements.map { (key, value) ->
+            SinkRecord(topic.qualifiedString(topologyContext), 0, null, key, null, value, offsetCounter.incrementAndGet())
+        }.toList()
+        task.put(list)
+    }
+
+    override fun config(): Config {
+        return config
+    }
+
+    override fun flush() {
+        task.flush(emptyMap())
+    }
+
+    override fun close() {
+        task.close(emptyList())
+    }
+
+    override fun taskObject(): Any? {
+        return task
     }
 }

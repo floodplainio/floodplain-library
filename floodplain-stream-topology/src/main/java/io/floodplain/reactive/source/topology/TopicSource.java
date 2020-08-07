@@ -19,6 +19,7 @@
 package io.floodplain.reactive.source.topology;
 
 import io.floodplain.reactive.source.topology.api.TopologyPipeComponent;
+import io.floodplain.streams.api.Topic;
 import io.floodplain.streams.api.TopologyContext;
 import io.floodplain.streams.remotejoin.ReplicationTopologyParser;
 import io.floodplain.streams.remotejoin.TopologyConstructor;
@@ -29,20 +30,22 @@ import java.util.Stack;
 
 public class TopicSource implements TopologyPipeComponent {
 
-    private final String topicName;
-    private final boolean connectFormat;
+    private final Topic topic;
+    private final Topic.FloodplainBodyFormat bodyFormat;
+    private final Topic.FloodplainKeyFormat keyFormat;
 
     private boolean materialize = false;
 
-    public TopicSource(String topicName, boolean connectFormat) {
-        this.topicName = topicName;
-        this.connectFormat = connectFormat;
+    public TopicSource(Topic topic, Topic.FloodplainKeyFormat keyFormat, Topic.FloodplainBodyFormat bodyFormat) {
+        this.topic = topic;
+        this.keyFormat = keyFormat;
+        this.bodyFormat = bodyFormat;
     }
 
     @Override
     public void addToTopology(Stack<String> transformerNames, int pipeId, Topology topology, TopologyContext topologyContext, TopologyConstructor topologyConstructor) {
-        String source = ReplicationTopologyParser.addSourceStore(topology, topologyContext, topologyConstructor, topicName,connectFormat, this.materialize);
-        topologyConstructor.addDesiredTopic(source, Optional.empty());
+        String source = ReplicationTopologyParser.addSourceStore(topology, topologyContext, topologyConstructor, topic,keyFormat,bodyFormat, this.materialize);
+        topologyConstructor.addDesiredTopic(topic, Optional.empty());
         transformerNames.push(source);
     }
 

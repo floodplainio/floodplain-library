@@ -6,15 +6,25 @@
       <GradleProjectSettings>
         <option name="delegatedBuild" value="true" />
         <option name="testRunner" value="GRADLE" />
+        <option name="disableWrapperSourceDistributionNotification" value="true" />
         <option name="distributionType" value="DEFAULT_WRAPPED" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="gradleJvm" value="#JAVA_HOME" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/floodplain-api" />
+            <option value="$PROJECT_DIR$/floodplain-debezium" />
+            <option value="$PROJECT_DIR$/floodplain-direct" />
             <option value="$PROJECT_DIR$/floodplain-dsl" />
+            <option value="$PROJECT_DIR$/floodplain-elasticsearch" />
             <option value="$PROJECT_DIR$/floodplain-example" />
+            <option value="$PROJECT_DIR$/floodplain-googlesheets" />
+            <option value="$PROJECT_DIR$/floodplain-integration" />
+            <option value="$PROJECT_DIR$/floodplain-mongodb" />
+            <option value="$PROJECT_DIR$/floodplain-runtime" />
             <option value="$PROJECT_DIR$/floodplain-stream-topology" />
+            <option value="$PROJECT_DIR$/floodplain-test" />
             <option value="$PROJECT_DIR$/immutable-api" />
             <option value="$PROJECT_DIR$/immutable-impl" />
             <option value="$PROJECT_DIR$/kafka-converter" />

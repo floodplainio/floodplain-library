@@ -20,7 +20,6 @@ package io.floodplain.streams.debezium.impl;
 
 import io.floodplain.replication.api.ReplicationMessage;
 import io.floodplain.replication.impl.protobuf.FallbackReplicationMessageParser;
-import io.floodplain.streams.api.TopologyContext;
 import io.floodplain.streams.debezium.JSONToReplicationMessage;
 import io.floodplain.streams.debezium.KeyValue;
 import org.apache.kafka.streams.processor.Processor;
@@ -31,14 +30,8 @@ import java.util.Optional;
 public class DebeziumConversionProcessor implements Processor<String, byte[]> {
 
     private ProcessorContext processorContext;
-    private final boolean appendTenant;
-    private final boolean appendSchema;
-    private final boolean appendTable;
 
-    public DebeziumConversionProcessor(boolean appendTenant, boolean appendSchema, boolean appendTable) {
-        this.appendTenant = appendTenant;
-        this.appendSchema = appendSchema;
-        this.appendTable = appendTable;
+    public DebeziumConversionProcessor() {
     }
 
     @Override
@@ -57,7 +50,7 @@ public class DebeziumConversionProcessor implements Processor<String, byte[]> {
         if (value == null) {
             return;
         }
-        KeyValue keyValue = JSONToReplicationMessage.parse(key,value, appendTenant, appendSchema, appendTable);
+        KeyValue keyValue = JSONToReplicationMessage.parse(key,value);
         FallbackReplicationMessageParser ftm = new FallbackReplicationMessageParser(true);
         ReplicationMessage msg = ftm.parseBytes(Optional.empty(), keyValue.value);
         processorContext.forward(keyValue.key, msg);

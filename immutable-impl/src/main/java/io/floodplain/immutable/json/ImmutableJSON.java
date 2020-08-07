@@ -19,24 +19,22 @@
 package io.floodplain.immutable.json;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.floodplain.immutable.api.ImmutableMessage;
 import io.floodplain.immutable.api.ImmutableMessage.ValueType;
 import io.floodplain.immutable.api.ImmutableTypeParser;
-import io.floodplain.immutable.factory.ImmutableFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 public class ImmutableJSON {
 
@@ -168,18 +166,6 @@ public class ImmutableJSON {
                     arrayNode.addAll(valueToTree);
                 }
                 return;
-            case LIST:
-                if (value instanceof String[]) {
-                    ArrayNode arrayNode = m.putArray(key);
-                    @SuppressWarnings("rawtypes")
-                    ArrayNode valueToTree = objectMapper.valueToTree(value);
-                    arrayNode.addAll(valueToTree);
-                } else {
-                    logger.warn("Bad type mapping, key: {} of type: list has actual class: {}. Treating as string for now.", key, value.getClass());
-                    String stringify = value.toString();
-                    m.put(key, stringify);
-                }
-                break;
             default:
                 break;
         }

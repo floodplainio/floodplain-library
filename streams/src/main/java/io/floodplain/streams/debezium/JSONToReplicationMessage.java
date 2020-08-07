@@ -56,27 +56,23 @@ public class JSONToReplicationMessage {
     //TODO Beware of threading issues
     private final static DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SS");
 
-    public static KeyValue parse(String keyInput, byte[] data, boolean appendTenant, boolean appendSchema, boolean appendTable) {
+    public static KeyValue parse(String keyInput, byte[] data) {
         try {
-            ObjectNode keynode = (ObjectNode) objectMapper.readTree(keyInput);
-            TableIdentifier key = processDebeziumKey(keynode, appendTenant, appendSchema);
+            JsonNode mapped = objectMapper.readTree(keyInput);
+            if(!(mapped instanceof ObjectNode)) {
+                throw new ClassCastException("Expected debezium style key. Not type: "+mapped.getClass()+" data: "+new String(data));
+            }
+            ObjectNode keynode = (ObjectNode) mapped;
+            TableIdentifier key = processDebeziumKey(keynode);
 
             ObjectNode valuenode = (ObjectNode) objectMapper.readTree(data);
             if (!valuenode.has("payload") || valuenode.get("payload").isNull()) {
                 ReplicationMessage replMsg = ReplicationFactory.empty().withOperation(Operation.DELETE);
-                final ReplicationMessage converted = appendTenant ? replMsg.with("_tenant", key.tenant, ValueType.STRING) : replMsg;
-                final ReplicationMessage convertedWTable = appendTable ? converted.with("_tenant", key.tenant, ValueType.STRING) : converted;
-                return new KeyValue(key.combinedKey, ReplicationFactory.getInstance().serialize(convertedWTable));
+                return new KeyValue(key.combinedKey, ReplicationFactory.getInstance().serialize(replMsg));
             }
-            final ReplicationMessage convOptional = convertToReplication(false, valuenode, Optional.ofNullable(key.table));
-            ReplicationMessage conv = convOptional.withPrimaryKeys(key.fields);
-            if (appendTable) {
-                conv = conv.with("_table", key.table, ImmutableMessage.ValueType.STRING);
+            final ReplicationMessage convOptional = convertToReplication(false, valuenode, Optional.empty());
 
-            }
-            final ReplicationMessage converted = appendTenant ? conv.with("_tenant", key.tenant, ImmutableMessage.ValueType.STRING) : conv;
-
-            byte[] serialized = ReplicationFactory.getInstance().serialize(converted);
+            byte[] serialized = ReplicationFactory.getInstance().serialize(convOptional);
             return new KeyValue(key.combinedKey,serialized);
         } catch (IOException e) {
             logger.error("Error: ", e);
@@ -286,6 +282,9 @@ public class JSONToReplicationMessage {
                 List<String> ar = new ArrayList<>();
                 value.forEach(e -> ar.add(e.asText()));
                 return Collections.unmodifiableList(ar);
+//                List<String> rr = new ArrayList<>();
+//                value.forEach(e -> rr.add(e.asText()));
+//                return rr.toArray(new String[0]);
             default:
                 throw new RuntimeException("Unknown type: " + type);
         }
@@ -335,12 +334,39 @@ public class JSONToReplicationMessage {
         }
     }
 
-    public static TableIdentifier processDebeziumKey(ObjectNode on, boolean appendTenant, boolean appendSchema) {
+    public static String processDebeziumJSONKey(String keyInput) throws DebeziumParseException {
+        ObjectNode keyNode = null;
+        try {
+            keyNode = (ObjectNode) objectMapper.readTree(keyInput);
+            TableIdentifier ti = processDebeziumKey(keyNode);
+            return ti.combinedKey;
+        } catch (JsonProcessingException e) {
+            throw new DebeziumParseException("Error parsing debezium key: "+keyInput,e);
+        }
+    }
+
+    public static ReplicationMessage processDebeziumBody(byte[] data,Optional<String> table) throws DebeziumParseException {
+        if(data == null) {
+            return null;
+        }
+        try {
+            ObjectNode valueNode = (ObjectNode) objectMapper.readTree(data);
+            if (!valueNode.has("payload") || valueNode.get("payload").isNull()) {
+                return ReplicationFactory.empty().withOperation(Operation.DELETE);
+            }
+            return convertToReplication(false, valueNode, table);
+        } catch (IOException e) {
+            throw new DebeziumParseException("Error parsing debezium body",e);
+        }
+
+    }
+
+    public static TableIdentifier processDebeziumKey(ObjectNode on) {
         List<String> fields = new ArrayList<>();
         ImmutableMessage converted = convert(on, fields::add, true, Optional.empty(), Optional.empty());
         Optional<Object> tableId = converted.value("__dbz__physicalTableIdentifier");
         fields.remove("__dbz__physicalTableIdentifier");
         // for demo, shouldn't do any harm
-        return new TableIdentifier(tableId.map(e->(String)e).orElse(on.get("schema").get("name").asText()), converted, fields, appendTenant, appendSchema);
+        return new TableIdentifier(tableId.map(e->(String)e).orElse(on.get("schema").get("name").asText()), converted, fields);
     }
 }

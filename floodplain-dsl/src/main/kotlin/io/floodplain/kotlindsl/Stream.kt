@@ -25,10 +25,11 @@ import io.floodplain.streams.base.RocksDBConfigurationSetter
 import io.floodplain.streams.base.StreamOperators
 import io.floodplain.streams.remotejoin.ReplicationTopologyParser
 import io.floodplain.streams.remotejoin.TopologyConstructor
-import java.io.IOException
 import java.net.URL
 import java.util.Properties
 import java.util.Stack
+import java.util.UUID
+import kotlinx.coroutines.runBlocking
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.common.serialization.Serdes
@@ -56,8 +57,9 @@ class Stream(val context: TopologyContext) {
     /**
      * Adds a sink config, should only be called from a sink implementation
      */
-    fun addSinkConfiguration(c: Config) {
+    fun addSinkConfiguration(c: Config): Config {
         sinkConfigurations.add(c)
+        return c
     }
 
     /**
@@ -67,11 +69,11 @@ class Stream(val context: TopologyContext) {
         sourceConfigurations.add(c)
     }
 
-    private fun sinkConfigurations(): List<Config> {
+    fun sinkConfigurations(): List<Config> {
         return sinkConfigurations.toList()
     }
 
-    private fun sourceConfigurations(): List<Config> {
+    fun sourceConfigurations(): List<Config> {
         return sourceConfigurations.toList()
     }
 
@@ -85,24 +87,33 @@ class Stream(val context: TopologyContext) {
         ReplicationTopologyParser.materializeStateStores(topologyConstructor, topology)
         return topology
     }
+    fun renderAndExecute(applicationId: String? = null, bufferTime: Int? = null, localCmds: suspend LocalContext.() -> Unit) {
+            val topologyConstructor = TopologyConstructor()
+            val (topology, sources, sinks) = render(topologyConstructor)
+            // val offsetPath = Paths.get("offset_" + UUID.randomUUID())
+            val sourceConfigs = this@Stream.sourceConfigurations
+            val sinkConfigs = this@Stream.sinkConfigurations
+            // logger.info("Using offset path: $offsetPath sources: ${ this@Stream.sourceConfigurations.first()}")
+            logger.info("Testing topology:\n${topology.describe()}")
+            logger.info("Testing sources:\n$sources")
+            logger.info("Testing sinks:\n$sinks")
+            logger.info("Sourcetopics: \n${topologyConstructor.desiredTopicNames().map { it.qualifiedString(context) }}")
 
-    fun renderAndTest(testCmds: TestContext.() -> Unit): Stream {
-        val top = renderTopology(TopologyConstructor())
-        logger.info("Testing topology:\n${top.describe()}")
-        testTopology(top, testCmds, context)
-        return this
+            runLocalTopology(applicationId ?: UUID.randomUUID().toString(),
+                bufferTime,
+                topology, localCmds, topologyConstructor, context, sourceConfigs, sinkConfigs)
     }
 
-    /**
-     * Will create an executable definition of the stream (@see render), then will start the topology by starting a streams
+        /**
+     * Will create an executable definition of the str
+     * eam (@see render), then will start the topology by starting a streams
      * instance pointing at the kafka cluster at kafkaHosts, using the supplied clientId.
      * Finally, it will POST the supplied
      */
-    fun renderAndStart(connectorURL: URL, kafkaHosts: String, force: Boolean = false) {
+    fun renderAndSchedule(connectorURL: URL, kafkaHosts: String, force: Boolean = false): KafkaStreams {
         val topologyConstructor = TopologyConstructor()
-        context.applicationId()
         val (topology, sources, sinks) = render(topologyConstructor)
-        topologyConstructor.createTopicsAsNeeded(kafkaHosts)
+        topologyConstructor.createTopicsAsNeeded(context, kafkaHosts)
         sources.forEach { (name, json) ->
             startConstructor(name, context, connectorURL, json, force)
         }
@@ -110,8 +121,9 @@ class Stream(val context: TopologyContext) {
             startConstructor(name, context, connectorURL, json, force)
         }
         val appId = context.topicName("@applicationId")
-        runTopology(topology, appId, kafkaHosts, "storagePath")
+        val streams = runTopology(topology, appId, kafkaHosts, "storagePath")
         logger.info { "Topology running!" }
+        return streams
     }
 
     /**
@@ -120,21 +132,22 @@ class Stream(val context: TopologyContext) {
      * - A list of kafka connect source pairs (name to json definition)
      * - A list of kafka connect sink pairs (name to json definition)
      */
-    fun render(topologyConstructor: TopologyConstructor): Triple<Topology, List<Pair<String, String>>, List<Pair<String, String>>> {
+    private fun render(topologyConstructor: TopologyConstructor): Triple<Topology, List<Pair<String, String>>, List<Pair<String, String>>> {
         val topology = renderTopology(topologyConstructor)
-        val sources = sourceConfigurations().map { element ->
-            val (name, config) = element.materializeConnectorConfig(context)
-            name to constructConnectorJson(context, name, config)
+        val sources = sourceConfigurations().flatMap { element ->
+            element.materializeConnectorConfig(context)
+        }.map {
+            it.name to constructConnectorJson(context, it.name, it.settings)
         }
-        val sinks = sinkConfigurations().map { element ->
-            val (name, config) = element.materializeConnectorConfig(context)
-            name to constructConnectorJson(context, name, config)
+        val sinks = sinkConfigurations().flatMap { element ->
+            element.materializeConnectorConfig(context)
+        }.map {
+            it.name to constructConnectorJson(context, it.name, it.settings)
         }
         return Triple(topology, sources, sinks)
     }
 
-    @Throws(InterruptedException::class, IOException::class)
-    fun runTopology(topology: Topology, applicationId: String, kafkaHosts: String, storagePath: String): KafkaStreams? {
+    private fun runTopology(topology: Topology, applicationId: String, kafkaHosts: String, storagePath: String): KafkaStreams {
         val props = createProperties(applicationId, kafkaHosts, storagePath)
         val stream = KafkaStreams(topology, props)
         logger.info("CurrentTopology:\n ${topology.describe()}")
@@ -148,7 +161,7 @@ class Stream(val context: TopologyContext) {
         return stream
     }
 
-    private fun createProperties(applicationId: String, brokers: String, storagePath: String): Properties? {
+    private fun createProperties(applicationId: String, brokers: String, storagePath: String): Properties {
         val streamsConfiguration = Properties()
         // Give the Streams application a unique name.  The name must be unique in the Kafka cluster
         // against which the application is run.
@@ -188,5 +201,12 @@ class Stream(val context: TopologyContext) {
         streamsConfiguration[ConsumerConfig.MAX_PARTITION_FETCH_BYTES_CONFIG] = 7900000
         streamsConfiguration[StreamsConfig.ROCKSDB_CONFIG_SETTER_CLASS_CONFIG] = RocksDBConfigurationSetter::class.java
         return streamsConfiguration
+    }
+
+    fun runWithArguments(args: Array<out String?> = emptyArray(), after: suspend ((topologyContext: TopologyContext) -> Unit)) {
+        runBlocking {
+            io.floodplain.runtime.run(this@Stream, args, { after(it) }, { kafkaStreams, topologyContext -> after(topologyContext) })
+        }
+        // io.floodplain.runtime.runWithArguments(this@Stream, arrayOf(*args), { after(it) }, { after() })
     }
 }

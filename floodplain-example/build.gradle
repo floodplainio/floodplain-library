@@ -11,21 +11,25 @@ def globalConf = rootProject.ext
 
 graal {
     graalVersion("19.3.2")
+    javaVersion("11")
     mainClass("io.floodplain.kotlindsl.example.FloodplainFilmWithActorsKt")
     outputName("Floodplain")
 }
 mainClassName = "io.floodplain.kotlindsl.example.FloodplainFilmWithActorsKt"
 
 apply plugin: "com.github.johnrengelman.shadow"
-apply plugin: "com.github.johnrengelman.shadow"
 
 dependencies {
     Map<String, String> dependencies = globalConf.commonDependencies
     implementation(project(":floodplain-dsl"))
+    implementation(project(":floodplain-mongodb"))
     implementation(project(":streams-api"))
     implementation(project(":streams"))
+    implementation(project(":replication-api"))
+    implementation(project(":replication-json"))
+    implementation("io.confluent:kafka-connect-elasticsearch:5.5.0")
+    implementation(dependencies.kotlinCoroutines)
     compile(dependencies.slf4j)
-    implementation(dependencies.slf4jSimple)
     testCompile(dependencies.jUnit)
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     testImplementation("org.jetbrains.kotlin:kotlin-test")
@@ -36,13 +40,4 @@ shadowJar {
         path = "META-INF/custom"
         exclude "META-INF/services/javax.xml.stream.*"
     }
-}
-
-
-
-compileKotlin {
-    kotlinOptions.jvmTarget = "11"
-}
-compileTestKotlin {
-    kotlinOptions.jvmTarget = "11"
 }

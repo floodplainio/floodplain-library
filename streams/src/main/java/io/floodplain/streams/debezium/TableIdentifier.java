@@ -37,16 +37,10 @@ public class TableIdentifier {
     public final List<String> fields;
 
 
-    public TableIdentifier(String tableId, ImmutableMessage keyMessage, List<String> fields, boolean appendTenant, boolean appendSchema) {
+    public TableIdentifier(String tableId, ImmutableMessage keyMessage, List<String> fields) {
         final String[] primary = tableId.split("\\.");
         this.keyMessage = keyMessage;
         List<String> l = new LinkedList<>(fields);
-        if (appendTenant) {
-            l.add(0, "tenant");
-        }
-        if (appendSchema) {
-            l.add(0, "instance");
-        }
         this.fields = Collections.unmodifiableList(l);
 
         if (primary[1].indexOf("_") == -1) {
@@ -63,26 +57,9 @@ public class TableIdentifier {
             tenant = Optional.of(secondary[0].toUpperCase());
             databaseInstance = Optional.of(secondary[1].toUpperCase());
             table = primary[2];
-            final String primarykeys = fields.stream()
+            combinedKey = fields.stream()
                     .map(field -> keyMessage.columnValue(field).toString())
                     .collect(Collectors.joining(ReplicationMessage.KEYSEPARATOR));
-            StringBuilder sb = new StringBuilder();
-            if (appendTenant) {
-                if (!tenant.isPresent()) {
-                    throw new IllegalArgumentException("Error creating table identifier: appendTenant is supplied, but there is no tenant present.");
-                }
-                sb.append(tenant.get());
-                sb.append(ReplicationMessage.KEYSEPARATOR);
-            }
-            if (appendSchema) {
-                if (!databaseInstance.isPresent()) {
-                    throw new IllegalArgumentException("Error creating table identifier: appendSchema is supplied, but there is no schema present.");
-                }
-                sb.append(databaseInstance.get());
-                sb.append(ReplicationMessage.KEYSEPARATOR);
-            }
-            sb.append(primarykeys);
-            combinedKey = sb.toString();
         }
 
     }

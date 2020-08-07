@@ -32,8 +32,6 @@ public class ImmutableTypeParser {
                 return "binary_digest";
             case BOOLEAN:
                 return "boolean";
-            case COORDINATE:
-                return "coordinate";
             case DATE:
                 return "date";
             case DOUBLE:
@@ -42,8 +40,6 @@ public class ImmutableTypeParser {
                 return "float";
             case INTEGER:
                 return "integer";
-            case LIST:
-                return "list";
             case STRINGLIST:
                 return "stringlist";
             case LONG:
@@ -86,16 +82,12 @@ public class ImmutableTypeParser {
             case "date":
             case "timestamp":
                 return ValueType.DATE;
-            case "list":
-                return ValueType.LIST;
             case "stringlist":
                 return ValueType.STRINGLIST;
             case "binary":
                 return ValueType.BINARY;
             case "clocktime":
                 return ValueType.CLOCKTIME;
-            case "coordinate":
-                return ValueType.COORDINATE;
             case "object":
             case "any":
             case "empty":

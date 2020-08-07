@@ -22,12 +22,12 @@ import io.floodplain.kotlindsl.group
 import io.floodplain.kotlindsl.joinGrouped
 import io.floodplain.kotlindsl.joinRemote
 import io.floodplain.kotlindsl.message.IMessage
-import io.floodplain.kotlindsl.mongoConfig
-import io.floodplain.kotlindsl.mongoSink
 import io.floodplain.kotlindsl.postgresSource
 import io.floodplain.kotlindsl.postgresSourceConfig
 import io.floodplain.kotlindsl.set
 import io.floodplain.kotlindsl.stream
+import io.floodplain.mongodb.mongoConfig
+import io.floodplain.mongodb.mongoSink
 import java.net.URL
 
 private val logger = mu.KotlinLogging.logger {}
@@ -38,10 +38,10 @@ fun main() {
 
 fun filmWithActorList(generation: String) {
     stream(generation) {
-        val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")
+        val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental", "public")
         val mongoConfig = mongoConfig("mongosink", "mongodb://mongo", "@mongodump")
         // Start with the 'film' collection
-        postgresSource("public", "film", postgresConfig) {
+        postgresSource("film", postgresConfig) {
             // Clear the last_update field, it makes no sense in a denormalized situation
             set { _, film, _ ->
                 film["last_update"] = null; film
@@ -52,9 +52,9 @@ fun filmWithActorList(generation: String) {
             // we are joining with something that is grouped by film_id
             joinGrouped(optional = true) {
 
-                postgresSource("public", "film_actor", postgresConfig) {
+                postgresSource("film_actor", postgresConfig) {
                     joinRemote({ msg -> "${msg["actor_id"]}" }, false) {
-                        postgresSource("public", "actor", postgresConfig) {
+                        postgresSource("actor", postgresConfig) {
                         }
                     }
                     // copy the first_name, last_name and actor_id to the film_actor message, drop the last update
@@ -69,16 +69,12 @@ fun filmWithActorList(generation: String) {
                     group { msg -> "${msg["film_id"]}" }
                 }
             }
-            // ugly hack: As lists of messages can't be toplevel, a grouped message always consist of a single, otherwise empty message, that only
-            // contains one field, which is a list of the grouped messages, and that field is always named 'list'
-            // Ideas welcome
             set { _, film, actorlist ->
                 film["actors"] = actorlist["list"] ?: emptyList<IMessage>()
                 film
             }
-            // pass this message to the mongo sink
             mongoSink("filmwithactors", "@filmwithcat", mongoConfig)
         }
-    }.renderAndStart(URL("http://localhost:8083/connectors"), "localhost:9092")
+    }.renderAndSchedule(URL("http://localhost:8083/connectors"), "localhost:9092")
     logger.info { "done!" }
 }

@@ -22,7 +22,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
-import java.util.concurrent.Callable;
 import java.util.function.Function;
 
 public class TopologyContext {
@@ -43,8 +42,14 @@ public class TopologyContext {
         }
         @Override
         public String apply(String name) {
+            // Dashes are problematic. Maybe hard-fail whenever we create a source / sink that contains a dash?
+            // Otherwise this creates a weird 'silent error state' where simply nothing happens.
             if(name.contains("-") || name.contains(":")) {
-                throw new IllegalArgumentException("Can't use '-' or ':' in topic name. name: "+name);
+                return name;
+            }
+            if(!name.startsWith("@") && name.contains("@")) {
+                logger.warn("This is problematic: {}",name);
+                Thread.dumpStack();
             }
             if (name.startsWith("@")) {
                 String[] withInstance = name.split(":");
@@ -77,11 +82,6 @@ public class TopologyContext {
     public static TopologyContext context(Optional<String> tenant, String instance, String generation) {
         return new TopologyContext(new NameQualifier(tenant,instance,generation));
     }
-
-    public static TopologyContext context(String instance, String generation) {
-        return new TopologyContext(new NameQualifier(Optional.empty(),instance,generation));
-    }
-
 
     public TopologyContext(Function<String, String> qualifier) {
         this.qualifier = qualifier;

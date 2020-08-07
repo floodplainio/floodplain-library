@@ -17,47 +17,105 @@
  * under the License.
  */
 package io.floodplain.kotlindsl
-
-import io.floodplain.reactive.source.topology.DebeziumTopicSource
+import io.floodplain.ChangeRecord
+import io.floodplain.debezium.postgres.createDebeziumChangeFlow
+import io.floodplain.reactive.source.topology.TopicSource
+import io.floodplain.streams.api.Topic
 import io.floodplain.streams.api.TopologyContext
+import java.lang.IllegalArgumentException
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
 
-class PostgresConfig(val name: String, val hostname: String, val port: Int, val username: String, val password: String, val database: String) : Config() {
+private val logger = mu.KotlinLogging.logger {}
 
-    private val sourceElements: MutableList<DebeziumSourceElement> = mutableListOf()
+class PostgresConfig(val topologyContext: TopologyContext, val name: String, val offsetId: String, private val hostname: String, private val port: Int, private val username: String, private val password: String, private val database: String, val defaultSchema: String? = null) : Config {
 
-    override fun materializeConnectorConfig(topologyContext: TopologyContext): Pair<String, Map<String, String>> {
-        return name to mapOf(
+    private val sourceElements: MutableList<SourceTopic> = mutableListOf()
+
+    override fun sourceElements(): List<SourceTopic> {
+        return sourceElements
+    }
+
+    override suspend fun connectSource(inputReceiver: InputReceiver) {
+        val broadcastFlow = directSource(offsetId)
+        broadcastFlow.collect {
+            val availableSourceTopics = sourceElements.map { sourceElement -> sourceElement.topic().qualifiedString(topologyContext) }.toSet()
+            if (availableSourceTopics.contains(it.topic)) {
+                if (it.value != null) {
+                    inputReceiver.input(it.topic, it.key.toByteArray(), it.value!!)
+                } else {
+                    inputReceiver.delete(it.topic, it.key)
+                }
+            }
+        }
+        logger.info("connectSource completed")
+    }
+
+    override fun sinkTask(): Any? {
+        return null
+    }
+
+    override fun instantiateSinkElements(topologyContext: TopologyContext) {
+        TODO("Not yet implemented")
+    }
+
+    override fun sinkElements(): Map<Topic, MutableList<FloodplainSink>> {
+        TODO("Not yet implemented")
+    }
+
+    override fun materializeConnectorConfig(topologyContext: TopologyContext): List<MaterializedSink> {
+        return listOf(MaterializedSink(name, emptyList(), mapOf(
                 "connector.class" to "io.debezium.connector.postgresql.PostgresConnector",
                 "database.hostname" to hostname,
                 "database.port" to port.toString(),
                 "database.dbname" to database,
                 "database.user" to username,
                 "database.password" to password,
-                // TODO
-                "tablewhitelistorsomething" to sourceElements.map { e -> e.schema + "." + e.table }.joinToString(",")
-        )
+                "key.converter" to "org.apache.kafka.connect.json.JsonConverter",
+                "value.converter" to "org.apache.kafka.connect.json.JsonConverter",
+                // TODO"table.whitelist": "public.inventory"
+                "public.inventory" to sourceElements.map { e -> "${e.schema()}.${e.table()}" }.joinToString(",")
+        )))
     }
 
     fun addSourceElement(elt: DebeziumSourceElement) {
         sourceElements.add(elt)
     }
+
+    private fun directSource(offsetId: String): Flow<ChangeRecord> {
+        return createDebeziumChangeFlow(topologyContext.topicName(name), "io.debezium.connector.postgresql.PostgresConnector", hostname, port, database, username, password, offsetId)
+    }
 }
 
-fun Stream.postgresSourceConfig(name: String, hostname: String, port: Int, username: String, password: String, database: String): PostgresConfig {
-    val postgresConfig = PostgresConfig(name, hostname, port, username, password, database)
+fun Stream.postgresSourceConfig(name: String, hostname: String, port: Int, username: String, password: String, database: String, defaultSchema: String?): PostgresConfig {
+    val postgresConfig = PostgresConfig(this.context, name, context.applicationId(), hostname, port, username, password, database, defaultSchema)
     addSourceConfiguration(postgresConfig)
     return postgresConfig
 }
 
-fun Stream.postgresSource(schema: String, table: String, config: PostgresConfig, init: Source.() -> Unit): Source {
-
-    val topicSource = DebeziumTopicSource(config.name, table, schema, true, true)
-    val topicName = topicSource.topicName(this.context)
-    config.addSourceElement(DebeziumSourceElement(topicName, table, schema))
+fun Stream.postgresSource(table: String, config: PostgresConfig, schema: String? = null, init: Source.() -> Unit): Source {
+    val effectiveSchema = schema ?: config.defaultSchema
+    if (effectiveSchema == null) {
+        throw IllegalArgumentException("No schema defined, and also no default schema")
+    }
+    val topic = Topic.from("${config.name}.$effectiveSchema.$table")
+    val topicSource = TopicSource(topic, Topic.FloodplainKeyFormat.CONNECT_KEY_JSON, Topic.FloodplainBodyFormat.CONNECT_JSON)
+    config.addSourceElement(DebeziumSourceElement(topic, effectiveSchema, table))
     val databaseSource = Source(topicSource)
     databaseSource.init()
-//    this.addSource(databaseSource)
     return databaseSource
 }
 
-class DebeziumSourceElement(val topic: String, val table: String, val schema: String)
+class DebeziumSourceElement(val prefix: Topic, val schema: String? = null, val table: String) : SourceTopic {
+    override fun topic(): Topic {
+        return prefix
+    }
+
+    override fun schema(): String? {
+        return schema
+    }
+
+    override fun table(): String {
+        return table
+    }
+}

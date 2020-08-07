@@ -38,14 +38,12 @@ import io.floodplain.reactive.source.topology.SinkTransformer
 import io.floodplain.reactive.source.topology.TopicSource
 import io.floodplain.reactive.source.topology.api.TopologyPipeComponent
 import io.floodplain.reactive.topology.ReactivePipe
+import io.floodplain.streams.api.Topic
 import io.floodplain.streams.api.TopologyContext
 import java.time.Duration
 import java.util.Optional
 
 private val logger = mu.KotlinLogging.logger {}
-
-@DslMarker
-annotation class FloodplainTagMarker
 
 /**
  * Super (wrapper) class for all components (source, transformer or sink)
@@ -55,14 +53,36 @@ open class Transformer(val component: TopologyPipeComponent) : PartialStream()
 /**
  * Base class for connector configurations
  */
-abstract class Config {
+interface Config {
 
     /**
      * Connector configs must implement this method, returning a name + map.
      * The map is essentially a Kafka Connect configuration, and will be converted to JSON and posted to Kafka Connect
      * For some
      */
-    abstract fun materializeConnectorConfig(topologyContext: TopologyContext): Pair<String, Map<String, String>>
+    fun materializeConnectorConfig(topologyContext: TopologyContext): List<MaterializedSink>
+    fun sourceElements(): List<SourceTopic>
+    suspend fun connectSource(inputReceiver: InputReceiver)
+    fun sinkTask(): Any?
+    fun instantiateSinkElements(topologyContext: TopologyContext)
+    fun sinkElements(): Map<Topic, List<FloodplainSink>>
+}
+
+class MaterializedSink(val name: String, val topics: List<Topic>, val settings: Map<String, String>)
+
+interface SourceTopic {
+    fun topic(): Topic
+    fun schema(): String?
+    fun table(): String
+}
+
+interface FloodplainSink {
+    fun send(topic: Topic, elements: List<Pair<String, Map<String, Any>?>>, topologyContext: TopologyContext)
+    // fun send(elements: List<Pair<Topic,IMessage?>>)
+    fun config(): Config
+    fun flush()
+    fun close()
+    fun taskObject(): Any?
 }
 
 /**
@@ -122,7 +142,7 @@ fun PartialStream.set(transform: (String, IMessage, IMessage) -> IMessage): Tran
  */
 fun PartialStream.joinRemote(key: (IMessage) -> String, optional: Boolean = false, source: () -> Source) {
     val keyExtractor: (ImmutableMessage, ImmutableMessage) -> String = { msg, _ -> key.invoke(fromImmutable(msg)) }
-    val jrt = JoinRemoteTransformer(source.invoke().toReactivePipe(), keyExtractor, false, optional)
+    val jrt = JoinRemoteTransformer(source.invoke().toReactivePipe(), keyExtractor, optional)
     addTransformer(Transformer(jrt))
 }
 
@@ -139,20 +159,16 @@ fun PartialStream.group(key: (IMessage) -> String) {
  * Use an existing source
  */
 fun Stream.source(topic: String, init: Source.() -> Unit): Source {
-    val sourceElement = TopicSource(topic, false)
+    val sourceElement = TopicSource(Topic.from(topic), Topic.FloodplainKeyFormat.FLOODPLAIN_STRING, Topic.FloodplainBodyFormat.FLOODPLAIN_JSON)
     val source = Source(sourceElement)
-
     source.init()
-//    this.addSource(source)
     return source
 }
 
-fun Stream.externalSource(topic: String, init: Source.() -> Unit): Source {
-    val sourceElement = TopicSource(topic, true)
+fun Stream.externalSource(topic: String, keyFormat: Topic.FloodplainKeyFormat, valueFormat: Topic.FloodplainBodyFormat, init: Source.() -> Unit): Source {
+    val sourceElement = TopicSource(Topic.from(topic), keyFormat, valueFormat)
     val source = Source(sourceElement)
-
     source.init()
-//    this.addSource(source)
     return source
 }
 
@@ -160,13 +176,12 @@ fun Stream.externalSource(topic: String, init: Source.() -> Unit): Source {
  * Creates a simple sink that will contain the result of the current transformation. Multiple sinks may not be added.
  */
 fun PartialStream.sink(topic: String, materializeParent: Boolean = false): Transformer {
-    val sink = SinkTransformer(Optional.empty(), topic, materializeParent, Optional.empty(), false)
+    val sink = SinkTransformer(Optional.empty(), Topic.from(topic), materializeParent, Optional.empty(), Topic.FloodplainKeyFormat.FLOODPLAIN_STRING, Topic.FloodplainBodyFormat.FLOODPLAIN_JSON)
     return addTransformer(Transformer(sink))
 }
 
 /**
- * Creates a simple sink that will contain the result of the current transformation. Multiple sinks may not be added.
- */
+ * Creates a simple sink that takes a lambda that will  */
 fun PartialStream.dynamicSink(name: String, extractor: (String, IMessage) -> String): Transformer {
     val sink = DynamicSinkTransformer(name, Optional.empty()) { key, value -> extractor.invoke(key, fromImmutable(value)) }
     return addTransformer(Transformer(sink))
@@ -247,14 +262,14 @@ fun PartialStream.fork(vararg destinations: Block.() -> Transformer): Transforme
  * To make sure all data gets reprocessed, change the generation. It is a string, with no further meaning within the framework, you can choose what
  * meaning you want to attach. You can increment a number, use a sort of time stamp, or even a git commit.
  */
-fun stream(generation: String = "any", instance: String = "instance", tenant: String? = null, init: Stream.() -> Source): Stream {
-    val topologyContext = TopologyContext.context(Optional.ofNullable(tenant), instance, generation)
+fun stream(generation: String = "any", instance: String = "instance", init: Stream.() -> Source): Stream {
+    val topologyContext = TopologyContext.context(Optional.empty(), instance, generation)
     val pipe = Stream(topologyContext)
     return pipe.addSource(pipe.init())
 }
 
-fun streams(generation: String = "any", instance: String = "instance", tenant: String? = null, init: Stream.() -> List<Source>): Stream {
-    val topologyContext = TopologyContext.context(Optional.ofNullable(tenant), instance, generation)
+fun streams(generation: String = "any", instance: String = "instance", init: Stream.() -> List<Source>): Stream {
+    val topologyContext = TopologyContext.context(Optional.empty(), instance, generation)
     val pipe = Stream(topologyContext)
     val sources = pipe.init()
     sources.forEach {

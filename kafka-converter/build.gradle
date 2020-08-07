@@ -26,7 +26,6 @@ dependencies {
     implementation(project(":replication-json"))
     implementation(project(":replication-protobuf"))
     testCompile(dependencies.jUnit)
-    testRuntime(dependencies.slf4jSimple)
     compile(dependencies.kafkaStreams)
     compile(dependencies.kafkaConnectApi)
 }

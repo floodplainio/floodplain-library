@@ -20,26 +20,24 @@ package io.floodplain.kotlindsl.example
 
 import io.floodplain.kotlindsl.join
 import io.floodplain.kotlindsl.message.empty
-import io.floodplain.kotlindsl.mongoConfig
-import io.floodplain.kotlindsl.mongoSink
 import io.floodplain.kotlindsl.postgresSource
 import io.floodplain.kotlindsl.postgresSourceConfig
 import io.floodplain.kotlindsl.scan
 import io.floodplain.kotlindsl.set
 import io.floodplain.kotlindsl.stream
+import io.floodplain.mongodb.mongoConfig
+import io.floodplain.mongodb.mongoSink
 import java.math.BigDecimal
 import java.net.URL
 
-private val logger = mu.KotlinLogging.logger {}
-
 fun main() {
-    stream {
-        val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental")
+    val instance = stream("genxx") {
+        val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental", "public")
         val mongoConfig = mongoConfig("mongosink", "mongodb://mongo", "mongodump")
-        postgresSource("public", "customer", postgresConfig) {
+        postgresSource("customer", postgresConfig) {
             join {
-                postgresSource("public", "payment", postgresConfig) {
-                    scan({ msg -> msg["customer_id"].toString() }, { msg -> empty().set("total", BigDecimal(0)) },
+                postgresSource("payment", postgresConfig) {
+                    scan({ msg -> msg["customer_id"].toString() }, { _ -> empty().set("total", BigDecimal(0)) },
                             {
                                 set { _, msg, state ->
                                     state["total"] = (state["total"] as BigDecimal).add(msg["amount"] as BigDecimal)
@@ -58,5 +56,7 @@ fun main() {
             }
             mongoSink("justtotal", "myfinaltopic", mongoConfig)
         }
-    }.renderAndStart(URL("http://localhost:8083/connectors"), "localhost:9092", true)
+    }
+
+        instance.renderAndSchedule(URL("http://localhost:8083/connectors"), "localhost:9092", true)
 }

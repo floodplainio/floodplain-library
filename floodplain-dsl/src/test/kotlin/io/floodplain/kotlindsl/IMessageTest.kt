@@ -24,18 +24,172 @@ package io.floodplain.kotlindsl
 import io.floodplain.immutable.api.ImmutableMessage
 import io.floodplain.immutable.factory.ImmutableFactory
 import io.floodplain.kotlindsl.message.IMessage
+import io.floodplain.kotlindsl.message.empty
 import io.floodplain.kotlindsl.message.fromImmutable
+import io.floodplain.replication.api.ReplicationMessageParser
+import io.floodplain.replication.factory.ReplicationFactory
+import io.floodplain.replication.impl.json.JSONReplicationMessageParserImpl
+import java.math.BigDecimal
+import java.util.Optional
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 
+@Suppress("UNCHECKED_CAST")
 class IMessageTest {
+
+    // STRING,
+    // INTEGER,
+    // LONG,
+    // DOUBLE,
+    // DECIMAL,
+    // FLOAT,
+    // BOOLEAN,
+    // BINARY_DIGEST,
+    // DATE,
+    // LIST,
+    // BINARY,
+    // COORDINATE,
+    // CLOCKTIME,
+    // STOPWATCHTIME,
+    // IMMUTABLE,
+    // UNKNOWN,
+    // IMMUTABLELIST,
+    // ENUM,
+    // STRINGLIST
+
+    private val parser: ReplicationMessageParser = JSONReplicationMessageParserImpl()
+
+    val exampleMessage = empty()
+        .set("adouble", 1.1)
+        .set("anint", -3)
+        .set("along", 15L)
+        .set("adecimal", BigDecimal.valueOf(99))
+        .set("astring", "somestring")
+        .set("aboolean", false)
+        .set("alist", listOf("foo", "bar"))
+
+    private fun createComplexMessage(): IMessage {
+        val list = List(2) { exampleMessage.copy() }
+        return exampleMessage
+            .set("sublist", list)
+            .set("sub", exampleMessage.copy())
+    }
+
+    // Utility function to check if a message remains unchanged after serialization and deserialization
+    private fun convertThereAndBack(input: IMessage): IMessage {
+        val immutable = input.toImmutable()
+        val repl = ReplicationFactory.standardMessage(immutable)
+        val serialized = parser.serialize(repl)
+        val deserialized = parser.parseBytes(Optional.empty(), serialized)
+        val im = fromImmutable(deserialized.message())
+        return im
+    }
+
     @Test
-    fun testAppHasAGreeting() {
+    fun testImmutableConversion() {
         val m = ImmutableFactory.empty().with("aap", "vla", ImmutableMessage.ValueType.STRING)
         val msg: IMessage = fromImmutable(m)
         val m2 = msg.toImmutable()
         assertNotNull(m2.value("aap"), "app conversion has failed")
         assertEquals("vla", m2.value("aap").get() as String)
+    }
+
+    @Test
+    fun testIMessageToData() {
+        val msg = empty().set("key", "stringvalue")
+        val data = msg.data()
+        assertEquals(1, data.size)
+        assertEquals("stringvalue", data["key"])
+        assertEquals(msg, convertThereAndBack(msg))
+    }
+
+    @Test
+    fun testNumerics() {
+        val original = empty().set("adouble", 1.1)
+            .set("anint", -3)
+            .set("along", 15L)
+            .set("adecimal", BigDecimal.valueOf(99))
+
+        val msg = convertThereAndBack(original)
+        assertEquals(original, msg)
+
+        assertEquals(1.1, msg.double("adouble"))
+        assertEquals(1.1, msg.optionalDouble("adouble"))
+        assertNull(msg.optionalDouble("doesntexist"))
+
+        assertEquals(-3, msg.integer("anint"))
+        assertEquals(-3, msg.optionalInteger("anint"))
+        assertNull(msg.optionalInteger("doesntexist"))
+
+        assertEquals(15L, msg.long("along"))
+        assertEquals(15L, msg.optionalLong("along"))
+        assertNull(msg.optionalLong("doesntexist"))
+
+        assertEquals(BigDecimal.valueOf(99), msg.decimal("adecimal"))
+        assertEquals(BigDecimal.valueOf(99), msg.optionalDecimal("adecimal"))
+        assertNull(msg.optionalLong("doesntexist"))
+    }
+
+    @Test
+    fun testStringList() {
+        val original = empty().set("alist", listOf("foo", "bar", "baz"))
+        val msg = convertThereAndBack(original)
+        assertEquals(listOf("foo", "bar", "baz"), msg.list("alist"))
+        assertEquals(listOf("foo", "bar", "baz"), msg.optionalList("alist"))
+        assertNull(msg.optionalList("doesntexist"))
+    }
+
+    @Test
+    fun testList() {
+        val initialList = listOf("alpha", "bravo", "charlie")
+        val vv = empty().set("somelist", initialList)
+        val data = vv.data()
+        assertEquals(1, data.size)
+        val list = data["somelist"] as List<String>
+        assertEquals(initialList, list)
+    }
+
+    @Test
+    fun testSimpleSubList() {
+        val subList = listOf(empty().set("mystring", "value1"), empty().set("mystring", "value2"))
+        val msg = empty().set("someother", "string").set("sublist", subList)
+        val msg2 = convertThereAndBack(msg)
+        assertEquals(msg, msg2)
+    }
+
+    @Test
+    fun testEqualityIssue() {
+        val msg1 = empty().set("field1", "value1").set("field2", "value2")
+        val msg1b = convertThereAndBack(msg1)
+        val msg2 = empty().set("field2", "value2").set("field1", "value1")
+        val msg2b = convertThereAndBack(msg2)
+        assertEquals(msg1, msg2)
+        assertEquals(msg1, msg2b)
+        assertEquals(msg1b, msg2)
+    }
+
+    @Test
+    fun testCopy() {
+        val submessage = empty().set("submessage", "value")
+        val baseMessage = empty().set("foo", "bar").set("subm", submessage)
+        val copy = baseMessage.copy()
+        assertEquals(baseMessage, copy)
+    }
+
+    @Test
+    fun testSomewhatComplexMessage() {
+        val baseMessage = empty().set("foo", "bar")
+        val nested = baseMessage.set("subm", listOf(baseMessage.copy(), baseMessage.copy()))
+            .set("othersub", baseMessage.copy())
+        val msg = convertThereAndBack(nested.copy())
+        assertEquals(nested, msg)
+    }
+    @Test
+    fun testComplexMessage() {
+        val original = createComplexMessage()
+        val msg = convertThereAndBack(original)
+        assertEquals(original, msg)
     }
 }
