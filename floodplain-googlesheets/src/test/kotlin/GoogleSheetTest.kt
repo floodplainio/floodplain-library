@@ -29,9 +29,9 @@ import org.junit.Test
 
 private val logger = mu.KotlinLogging.logger {}
 
-public class GoogleSheetTest {
+class GoogleSheetTest {
 
-    val spreadsheetId = "1MTAn1d13M8ptb2MkBHOSNK1gbJOOW1sFQoSfqa1JbXU"
+    private val spreadsheetId = "1MTAn1d13M8ptb2MkBHOSNK1gbJOOW1sFQoSfqa1JbXU"
     // var spreadsheetId = "1COkG3-Y0phnHKvwNiFpYewKhT3weEC5CmzmKkXUpPA4"
 
     @Test
