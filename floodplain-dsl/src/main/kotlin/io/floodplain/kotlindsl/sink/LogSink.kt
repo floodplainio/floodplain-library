@@ -95,6 +95,5 @@ fun PartialStream.logSink(sinkName: String, topicName: String, config: LogSinkCo
     val task = conn.taskClass().getDeclaredConstructor().newInstance() as LogSinkTask
     task.start(sinkConfig)
     // config.sinkTask = task
-    val sink = floodplainSinkFromTask(task, config)
-    return sink
+    return floodplainSinkFromTask(task, config)
 }

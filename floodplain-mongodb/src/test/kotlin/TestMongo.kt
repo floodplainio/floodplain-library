@@ -17,7 +17,6 @@
  * under the License.
  */
 import com.mongodb.client.MongoClients
-import io.floodplain.kotlindsl.Source
 import io.floodplain.kotlindsl.each
 import io.floodplain.kotlindsl.filter
 import io.floodplain.kotlindsl.message.empty
@@ -106,7 +105,7 @@ class TestMongo {
     fun testMultipleSink() {
         streams {
             val config = mongoConfig("mongoClient", "mongodb://$address:$port", "mongo-connect-test")
-            listOf<Source>(
+            listOf(
                 source("sometopic") {
                     each { _, msg, _ -> logger.info("message: $msg") }
                     filter { _, msg -> msg.long("counter") % 2 == 0L }

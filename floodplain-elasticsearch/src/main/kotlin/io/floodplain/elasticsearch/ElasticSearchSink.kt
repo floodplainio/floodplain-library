@@ -93,6 +93,5 @@ fun PartialStream.elasticSearchSink(sinkName: String, topicName: String, config:
     val task = conn.taskClass().getDeclaredConstructor().newInstance() as ElasticsearchSinkTask
     task.start(sinkConfig)
     config.sinkTask = task
-    val sink = floodplainSinkFromTask(task, config)
-    return sink
+    return floodplainSinkFromTask(task, config)
 }

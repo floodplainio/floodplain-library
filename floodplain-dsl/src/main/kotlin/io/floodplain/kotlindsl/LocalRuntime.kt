@@ -258,7 +258,7 @@ class LocalDriverContext(
     private fun outputFlows(context: CoroutineScope): Map<Topic, Flow<Pair<String, Map<String, Any>?>>> {
         val topics = topics()
         val deserializer = JsonDeserializer()
-        val mapper: ObjectMapper = ObjectMapper()
+        val mapper = ObjectMapper()
 
         val sourceFlow = outputFlowSingle()
             .map { (topic, key, value) ->
@@ -279,7 +279,7 @@ class LocalDriverContext(
     }
 
     private fun outputFlowSingle(): Flow<Triple<Topic, String, ByteArray?>> {
-        return callbackFlow<Triple<Topic, String, ByteArray?>> {
+        return callbackFlow {
             driver.setOutputListener { record ->
                 if (!record.topic().endsWith("changelog")) {
                     val key = Serdes.String().deserializer().deserialize(record.topic(), record.key())

@@ -186,8 +186,6 @@ private data class IMessageImpl(private val content: MutableMap<String, Any>) : 
             if (value is IMessage) {
                 if (!value.isEmpty()) {
                     msg.content[name] = value
-                } else {
-                    // empty msg
                 }
             } else {
 //                if (value is List<*>) {
