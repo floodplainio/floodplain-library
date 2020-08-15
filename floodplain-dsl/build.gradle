@@ -1,8 +1,4 @@
-apply from: "$rootProject.projectDir/gradle/shared.gradle"
-def globalConf = rootProject.ext
-
 dependencies {
-    Map<String, String> dependencies = globalConf.commonDependencies
     implementation(project(":immutable-api"))
     implementation(project(":immutable-impl"))
     implementation(project(":replication-api"))
@@ -14,16 +10,16 @@ dependencies {
     implementation(project(":floodplain-debezium"))
     implementation(project(":floodplain-direct"))
     implementation(project(":floodplain-api"))
-    compile(dependencies.slf4j)
-    compile(dependencies.kotlinLogging)
-    implementation(dependencies.debeziumPostgres)
-    implementation(dependencies.debeziumMySQL)
-    implementation(dependencies.debeziumEmbedded)
-    implementation(dependencies.argParser)
-    testCompile(dependencies.jUnit)
-    testCompile(dependencies.testContainer)
+    compile(FloodplainDeps.slf4j)
+    compile(FloodplainDeps.kotlinLogging)
+    implementation(FloodplainDeps.debeziumPostgres)
+    implementation(FloodplainDeps.debeziumMySQL)
+    implementation(FloodplainDeps.debeziumEmbedded)
+    implementation(FloodplainDeps.argParser)
+    testCompile(FloodplainDeps.jUnit)
+    testCompile(FloodplainDeps.testContainer)
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    implementation(dependencies.kotlinCoroutines)
+    implementation(FloodplainDeps.kotlinCoroutines)
     testImplementation("org.jetbrains.kotlin:kotlin-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
 }

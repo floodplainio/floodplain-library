@@ -8,18 +8,13 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.2.0")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.2.0")
 }
+//
+//task copyTestResources(type: Copy) {
+//    from "${projectDir}/test"
+//    into "${buildDir}/classes/test"
+//}
 
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
-}
-task copyTestResources(type: Copy) {
-    from "${projectDir}/test"
-    into "${buildDir}/classes/test"
-}
-
-
-processTestResources.dependsOn copyTestResources
+//processTestResources.dependsOn copyTestResources
 
 
