@@ -28,6 +28,12 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.selects.select
 
+/**
+ * Buffered timeout, that will save up entries until a certain size or time limit.
+ * See: https://dev.to/psfeng/a-story-of-building-a-custom-flow-operator-buffertimeout-4d95
+ * @param size: After this number of entries, the buffer will be propagated immediately
+ * @param duration: The operation will not wait longer for entries than this number (in millis)
+ */
 fun <T> Flow<T>.bufferTimeout(size: Int, duration: Long): Flow<List<T>> {
     require(size > 0) { "Window size should be greater than 0" }
     require(duration > 0) { "Duration should be greater than 0" }

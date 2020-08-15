@@ -1,14 +1,10 @@
-apply from: "$rootProject.projectDir/gradle/shared.gradle"
-def globalConf = rootProject.ext
+import io.floodplain.build.FloodplainDeps
 
 dependencies {
-    Map<String, String> dependencies = globalConf.commonDependencies
     implementation(project(":immutable-api"))
     implementation(project(":immutable-impl"))
     implementation(project(":replication-api"))
     implementation(project(":replication-impl"))
     implementation(project("::streams-api"))
-    testCompile(dependencies.jUnit)
+    testCompile(FloodplainDeps.jUnit)
 }
-
-

@@ -1,10 +1,8 @@
-apply from: "$rootProject.projectDir/gradle/shared.gradle"
-def globalConf = rootProject.ext
+import io.floodplain.build.FloodplainDeps
 
 dependencies {
-    Map<String, String> dependencies = globalConf.commonDependencies
-    compile(dependencies.kotlinLogging)
-    testCompile(dependencies.jUnit)
+    compile(FloodplainDeps.kotlinLogging)
+    testCompile(FloodplainDeps.jUnit)
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation(project(":floodplain-stream-topology"))
     implementation(project(":streams-api"))
@@ -12,10 +10,10 @@ dependencies {
     implementation(project(":floodplain-stream-topology"))
     implementation(project(":floodplain-dsl"))
     implementation("io.confluent:kafka-connect-elasticsearch:5.5.0")
-    implementation(dependencies.kotlinCoroutines)
+    implementation(FloodplainDeps.kotlinCoroutines)
     testImplementation("org.jetbrains.kotlin:kotlin-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
-    testImplementation(dependencies.jacksonCore)
-    testImplementation(dependencies.jacksonDatabind)
-    testCompile(dependencies.testContainer)
+    testImplementation(FloodplainDeps.jacksonCore)
+    testImplementation(FloodplainDeps.jacksonDatabind)
+    testCompile(FloodplainDeps.testContainer)
 }
