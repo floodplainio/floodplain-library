@@ -1,13 +1,22 @@
 import org.gradle.kotlin.dsl.`kotlin-dsl`
-// import nl.javadude.gradle.plugins.license.DownloadLicensesExtension
-// import nl.javadude.gradle.plugins.license.LicenseExtension
-//import nl.javadude.gradle.plugins.license.*
 
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+    dependencies {
+        classpath("gradle.plugin.com.hierynomus.gradle.plugins:license-gradle-plugin:0.15.0")
+    }
+}
 plugins {
     `kotlin-dsl` apply false
+    id("org.jetbrains.kotlin.jvm") version "1.3.72"
     id("org.jetbrains.dokka").version("0.10.1")
-    id("com.github.hierynomus.license").version("0.15.0")
+
 }
+
 
 repositories {
     mavenLocal()
@@ -15,33 +24,7 @@ repositories {
     gradlePluginPortal()
 }
 
-// configure<LicenseExtension> {
-//     header = file("$rootDir/gradle/LICENSE_HEADER.txt")
-//     skipExistingHeaders = false
-//
-//     mapping(
-//         kotlin.collections.mapOf(
-//             "java" to "SLASHSTAR_STYLE"
-//         )
-//     )
-//
-//     excludes(
-//         kotlin.collections.listOf(
-//             "**/*.json",
-//
-//             // Ignore copy-pasted library .js and .css's
-//             "**/tempusdominus-bootstrap*",
-//             "**/chosen.*",
-//             "**/bootstrap-multiselect.*"
-//         )
-//     )
-// }
 
-tasks.dokka {
-    outputFormat = "gfm"
-    outputDirectory = "$buildDir/dokka"
-
-}
 
 // tasks {
 //     val sourcesJar by creating(Jar::class) {

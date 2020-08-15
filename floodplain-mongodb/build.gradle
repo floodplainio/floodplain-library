@@ -1,3 +1,5 @@
+import io.floodplain.build.FloodplainDeps
+
 dependencies {
     compile(FloodplainDeps.kotlinLogging)
     testCompile(FloodplainDeps.jUnit)

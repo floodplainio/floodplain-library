@@ -9,7 +9,7 @@ object Apps {
 
 object Versions {
     const val gradle = "3.5.0"
-    const val kotlin = "1.3.50"
+    const val kotlin = "1.3.72"
     const val appcompat = "1.0.2"
 
     /* test */
@@ -17,7 +17,7 @@ object Versions {
 }
 
 object Libs {
-    const val kotlin = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${Versions.kotlin}"
+    const val kotlin = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${Versions.kotlin}"
     const val appcompat = "androidx.appcompat:appcompat:${Versions.appcompat}"
 }
 

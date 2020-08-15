@@ -1,4 +1,5 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import io.floodplain.build.FloodplainDeps
 
 plugins {
     id("com.github.johnrengelman.shadow")

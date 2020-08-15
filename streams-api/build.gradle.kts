@@ -1,3 +1,5 @@
+import io.floodplain.build.FloodplainDeps
+
 dependencies {
     compile(FloodplainDeps.jacksonCore)
     compile(FloodplainDeps.jacksonDatabind)
@@ -8,4 +10,3 @@ dependencies {
     implementation(project(":replication-impl"))
     testCompile(FloodplainDeps.jUnit)
 }
-

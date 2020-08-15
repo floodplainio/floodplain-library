@@ -1,5 +1,5 @@
 import io.floodplain.build.FloodplainDeps
-
+import nl.javadude.gradle.plugins.license.*
 plugins {
     id("eclipse")
     id("org.jetbrains.kotlin.jvm") version "1.3.72"
@@ -8,26 +8,29 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint") version "9.2.1"
     id("com.palantir.graal") version "0.7.0-5-g838c2ab"
     id("org.jetbrains.dokka") version "0.10.1"
+    id("com.github.hierynomus.license").version("0.15.0")
+    id("com.github.hierynomus.license-report").version("0.15.0")
     `maven-publish`
     `java-library`
 }
 
+dependencies {
+    implementation(io.floodplain.build.Libs.kotlin)
+}
+
 // apply(from="gradle/dependencies.gradle")
-apply(from="buildSrc/build.gradle.kts")
+// apply(from="buildSrc/build.gradle.kts")
 
 allprojects {
     repositories {
         mavenLocal()
         mavenCentral()
         jcenter()
-        gradlePluginPortal()
         google()
         maven {
             url = uri("http://packages.confluent.io/maven")
         }
     }
-
-
 
     // license {
     //     header = rootProject.file("gradle/LICENSE_HEADER.txt")
@@ -38,6 +41,7 @@ allprojects {
     //     exclude("**/*.json")
     // }
 }
+
 // tasks.compileKotlin {
 //     kotlinOptions.jvmTarget = "11"
 //     kotlinOptions.javaParameters = true
@@ -150,11 +154,8 @@ subprojects {
     apply(plugin = "distribution")
     apply(plugin = "org.jetbrains.kotlin.jvm")
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
-    // // apply(from=rootProject. "$rootProject.projectDir/gradle/common.gradle")
-    // project.apply {
-    //     from("$rootDir/gradle/common.gradle")
-    // }
-    apply(plugin = "org.jetbrains.dokka")
+    apply(plugin = "com.github.hierynomus.license-base")
+
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
         kotlinOptions.jvmTarget = "11"
         kotlinOptions.javaParameters = true
@@ -171,6 +172,21 @@ subprojects {
                 "-Xopt-in=kotlin.time.ExperimentalTime")
         }
     }
+    configure<LicenseExtension> {
+        header = file("$rootDir/gradle/LICENSE_HEADER.txt")
+        skipExistingHeaders = false
+        val settings = HashMap<String, String>()
+        val exclude = ArrayList<String>()
+        exclude.add("**/*.json")
+        settings.put("java", "SLASHSTAR_STYLE")
+        mapping(
+            settings
+        )
+        excludes(
+            exclude
+        )
+    }
+
     apply(plugin = "signing")
     group = "io.floodplain"
     // project.publishing.publications.withType(MavenPublication::class.java).forEach { publication ->
@@ -180,7 +196,6 @@ subprojects {
     // if (name == "replication-protobuf") {
     // apply(plugin="com.google.protobuf")
     // }
-    apply(plugin = "com.github.hierynomus.license-base")
 
     // project.publishing.publications.withType(MavenPublication::class.java).forEach { publication ->
     //     with(publication.pom) {
