@@ -6,6 +6,7 @@ dependencies {
     compile(FloodplainDeps.jacksonCore)
     compile(FloodplainDeps.jacksonDatabind)
     compile(FloodplainDeps.cdiApi)
+    testImplementation(FloodplainDeps.jUnit)
 }
 
 
