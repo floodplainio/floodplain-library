@@ -1,5 +1,4 @@
 import io.floodplain.build.FloodplainDeps
-import io.floodplain.build.isReleaseVersion
 
 buildscript {
     repositories {
@@ -26,7 +25,6 @@ plugins {
     `java-library`
 }
 
-
 dependencies {
     implementation(io.floodplain.build.Libs.kotlin)
 }
@@ -45,7 +43,6 @@ allprojects {
         }
     }
 }
-
 
 subprojects {
     version = FloodplainDeps.floodplain_version
@@ -98,18 +95,6 @@ subprojects {
         useInMemoryPgpKeys(signingKey, signingPassword)
        // sign publishing.publications."$project.name"(MavenPublication)
     }
-
-
-
-
-
-
-
-    // extra["isReleaseVersion"] = !FloodplainDeps.floodplain_version.endsWith("SNAPSHOT")
-
-
-
-
     publishing {
         publications {
             // register("mavenJava", MavenPublication::class) {
@@ -144,16 +129,12 @@ subprojects {
             }
         }
     }
-
 }
-
-
 
 val sourcesJar by tasks.registering(Jar::class) {
     classifier = "sources"
     from(sourceSets.main.get().allSource)
 }
-
 
 // fun customizePom(pom: MavenPom) {
 //     pom.withXml {

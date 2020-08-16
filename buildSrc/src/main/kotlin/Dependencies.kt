@@ -18,7 +18,6 @@ object Versions {
 
 object Libs {
     const val kotlin = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${Versions.kotlin}"
-    const val appcompat = "androidx.appcompat:appcompat:${Versions.appcompat}"
 }
 
 object TestLibs {
