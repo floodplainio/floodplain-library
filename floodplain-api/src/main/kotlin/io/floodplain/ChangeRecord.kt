@@ -17,4 +17,11 @@
  * under the License.
  */
 package io.floodplain
+
+/**
+ * Representing a change record object. Probably a debezium based record
+ * @param topic: The topic that was used
+ * @param key: The unparsed string key. For fp internals, it is string based, for kafka connect json based.
+ * @param value: The raw message contents
+ */
 data class ChangeRecord(val topic: String, val key: String, val value: ByteArray?)

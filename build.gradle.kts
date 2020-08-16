@@ -30,9 +30,6 @@ dependencies {
     implementation(io.floodplain.build.Libs.kotlin)
 }
 
-// apply(from="gradle/dependencies.gradle")
-// apply(from="buildSrc/build.gradle.kts")
-
 allprojects {
     repositories {
         mavenLocal()
@@ -53,6 +50,7 @@ subprojects {
     apply(plugin = "distribution")
     apply(plugin = "org.jetbrains.kotlin.jvm")
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
+    apply(plugin = "org.jetbrains.dokka")
 
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
         kotlinOptions.jvmTarget = "11"
@@ -70,47 +68,48 @@ subprojects {
                 "-Xopt-in=kotlin.time.ExperimentalTime")
         }
     }
-    // configure<LicenseExtension> {
-    //     header = file("$rootDir/gradle/LICENSE_HEADER.txt")
-    //     skipExistingHeaders = false
-    //     val settings = HashMap<String, String>()
-    //     val exclude = ArrayList<String>()
-    //     exclude.add("**/*.json")
-    //     settings.put("java", "SLASHSTAR_STYLE")
-    //     mapping(
-    //         settings
-    //     )
-    //     excludes(
-    //         exclude
-    //     )
-    // }
 
-    // apply(plugin = "com.github.hierynomus.license-base")
+    tasks {
+        val sourcesJar by creating(Jar::class) {
+            archiveClassifier.set("sources")
+            from(sourceSets.main.get().allSource)
+        }
 
-    apply(plugin = "signing")
-    group = "io.floodplain"
+        val javadocJar by creating(Jar::class) {
+            dependsOn.add(javadoc)
+            archiveClassifier.set("javadoc")
+            from(javadoc)
+        }
+        val dokkaJar by creating(Jar::class) {
+            dependsOn.add(dokka)
+            archiveClassifier.set("dokka")
+            from(dokka)
+        }
 
-    signing {
-        val signingKey: String? by project
-        val signingPassword: String? by project
-        useInMemoryPgpKeys(signingKey, signingPassword)
-        if (isReleaseVersion()) {
-            sign(publishing.publications[project.name])
+        artifacts {
+            archives(sourcesJar)
+            archives(javadocJar)
+            archives(dokkaJar)
+            archives(jar)
         }
     }
+    group = "io.floodplain"
+
     publishing {
         publications {
-            // register("mavenJava", MavenPublication::class) {
-            //     from(components["java"])
-            //     artifact(sourcesJar.get())
-            // }
             create<MavenPublication>(project.name) {
-                // customizePom(pom)
+                customizePom(this@create)
                 groupId = "io.floodplain"
                 artifactId = project.name
                 version = FloodplainDeps.floodplain_version
-                // artifact(sourcesJar.get())
-                // artifact (javadocJar)
+                from(components["java"])
+                val sourcesJar by tasks
+                val javadocJar by tasks
+                val dokkaJar by tasks
+
+                artifact(sourcesJar)
+                artifact(javadocJar)
+                artifact(dokkaJar)
             }
         }
         repositories {
@@ -132,55 +131,49 @@ subprojects {
             }
         }
     }
+
+    apply(plugin = "signing")
+    signing {
+        if (isReleaseVersion()) {
+            sign(publishing.publications[project.name])
+        }
+    }
 }
 
-val sourcesJar by tasks.registering(Jar::class) {
-    classifier = "sources"
-    from(sourceSets.main.get().allSource)
+fun customizePom(publication: MavenPublication) {
+    with(publication.pom) {
+        withXml {
+            val root = asNode()
+            root.appendNode("name", "Floodplain")
+            root.appendNode("description", "Transforms CDC streams in Kotlin")
+            root.appendNode("url", "https://floodplain.io")
+        }
+        organization {
+            name.set("Floodplain")
+            url.set("https://floodplain.io")
+        }
+        issueManagement {
+                system.set("GitHub")
+                url.set("https://github.com/floodplainio/floodplain-library/issues")
+            }
+        licenses {
+            license {
+                name.set("Apache License 2.0")
+                url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                distribution.set("repo")
+            }
+        }
+        developers {
+            developer {
+                id.set("flyaruu")
+                name.set("Frank Lyaruu")
+                email.set("flyaruu@gmail.com")
+            }
+        }
+        scm {
+                url.set("https://github.com/floodplainio/floodplainio/floodplain-library")
+                connection.set("scm:git:git://github.com/floodplainio/floodplain-library.git")
+                developerConnection.set("scm:git:ssh://git@github.com:floodplainio/floodplain-library.git")
+            }
+    }
 }
-
-// fun customizePom(pom: MavenPom) {
-//     pom.withXml {
-//         val root: Node = asNode()
-//         // eliminate test-scoped dependencies (no need in maven central POMs)
-//         // root.
-//         root.dependencies.removeAll { dep ->
-//             dep.scope == "test"
-//         }
-//
-//         // add all items necessary for maven central publication
-//         root.children().last() + {
-//             resolveStrategy = Closure.DELEGATE_FIRST
-//
-//             description="Transforms CDC streams in Kotlin"
-//             name="Floodplain"
-//             url = "https://floodplain.io"
-//             organization {
-//                 name = "Floodplain"
-//                 url = "https://floodplain.io"
-//             }
-//             issueManagement {
-//                 system = "GitHub"
-//                 url = "https://github.com/floodplainio/floodplain-library/issues"
-//             }
-//             licenses {
-//                 license {
-//                     name = "Apache License 2.0"
-//                     url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
-//                     distribution = "repo"
-//                 }
-//             }
-//
-//             scm {
-//                 url = "https://github.com/floodplainio/floodplainio/floodplain-library"
-//                 connection = "scm:git:git://github.com/floodplainio/floodplain-library.git"
-//                 developerConnection = "scm:git:ssh://git@github.com:floodplainio/floodplain-library.git"
-//             }
-//             developers {
-//                 developer {
-//                     name = "Frank Lyaruu"
-//                 }
-//             }
-//         }
-//     }
-// }
