@@ -25,6 +25,10 @@ object TestLibs {
     const val junit = "junit:junit:${Versions.junit}"
 }
 
+fun isReleaseVersion(): Boolean {
+    return !FloodplainDeps.floodplain_version.endsWith("SNAPSHOT")
+}
+
 object FloodplainDeps {
     const val floodplain_version = "0.9.21-SNAPSHOT"
     const val jackson_version = "2.11.0"

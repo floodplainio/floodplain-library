@@ -1,15 +1,5 @@
 import org.gradle.kotlin.dsl.`kotlin-dsl`
 
-buildscript {
-    repositories {
-        mavenLocal()
-        mavenCentral()
-        gradlePluginPortal()
-    }
-    dependencies {
-        classpath("gradle.plugin.com.hierynomus.gradle.plugins:license-gradle-plugin:0.15.0")
-    }
-}
 plugins {
     `kotlin-dsl` apply false
     id("org.jetbrains.kotlin.jvm") version "1.3.72"
