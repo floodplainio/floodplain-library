@@ -1,4 +1,5 @@
 import io.floodplain.build.FloodplainDeps
+import io.floodplain.build.isReleaseVersion
 
 buildscript {
     repositories {
@@ -93,7 +94,9 @@ subprojects {
         val signingKey: String? by project
         val signingPassword: String? by project
         useInMemoryPgpKeys(signingKey, signingPassword)
-       // sign publishing.publications."$project.name"(MavenPublication)
+        if (isReleaseVersion()) {
+            sign(publishing.publications[project.name])
+        }
     }
     publishing {
         publications {
@@ -101,7 +104,7 @@ subprojects {
             //     from(components["java"])
             //     artifact(sourcesJar.get())
             // }
-            create<MavenPublication>("mavenJava") {
+            create<MavenPublication>(project.name) {
                 // customizePom(pom)
                 groupId = "io.floodplain"
                 artifactId = project.name
