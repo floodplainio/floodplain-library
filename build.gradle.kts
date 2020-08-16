@@ -10,6 +10,7 @@ buildscript {
     }
     dependencies {
         classpath("gradle.plugin.com.hierynomus.gradle.plugins:license-gradle-plugin:0.15.0")
+        classpath("com.github.johnrengelman.shadow:com.github.johnrengelman.shadow.gradle.plugin:5.2.0")
     }
 }
 plugins {
