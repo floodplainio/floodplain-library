@@ -10,7 +10,7 @@ buildscript {
     }
     dependencies {
         classpath("gradle.plugin.com.hierynomus.gradle.plugins:license-gradle-plugin:0.15.0")
-        classpath("com.github.johnrengelman.shadow:com.github.johnrengelman.shadow.gradle.plugin:5.2.0")
+        classpath("com.github.johnrengelman.shadow:com.github.johnrengelman.shadow.gradle.plugin:6.0.0")
     }
 }
 plugins {
@@ -25,6 +25,7 @@ plugins {
     signing
     `maven-publish`
     `java-library`
+    jacoco
 }
 
 dependencies {
@@ -52,6 +53,20 @@ subprojects {
     apply(plugin = "org.jetbrains.kotlin.jvm")
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
     apply(plugin = "org.jetbrains.dokka")
+    apply(plugin = "com.github.hierynomus.license-base")
+    apply(plugin = "jacoco")
+
+    // tasks.
+    tasks.test {
+        finalizedBy(tasks.jacocoTestReport)
+    }
+    tasks.jacocoTestReport {
+        dependsOn(tasks.test)
+        reports {
+            xml.isEnabled = true
+            this.html.isEnabled = true
+        }
+    }
 
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
         kotlinOptions.jvmTarget = "11"

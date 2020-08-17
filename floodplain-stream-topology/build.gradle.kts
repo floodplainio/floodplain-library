@@ -9,8 +9,7 @@ dependencies {
     implementation(project(":streams"))
     implementation(project(":streams-api"))
     implementation(project(":kafka-converter"))
-    compile(FloodplainDeps.slf4j)
-    compile(FloodplainDeps.cdiApi)
-    testCompile(FloodplainDeps.jUnit)
+    implementation(FloodplainDeps.slf4j)
+    testImplementation(FloodplainDeps.jUnit)
     testImplementation(FloodplainDeps.slf4jLog4j)
 }

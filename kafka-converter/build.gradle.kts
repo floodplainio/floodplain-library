@@ -7,9 +7,6 @@ plugins {
 
 tasks {
     "shadowJar"(ShadowJar::class) {
-//        baseName = project.name
-//        classifier = null
-//        version = null
         mergeServiceFiles {
             exclude("META-INF/services/javax.xml.stream.*")
         }
