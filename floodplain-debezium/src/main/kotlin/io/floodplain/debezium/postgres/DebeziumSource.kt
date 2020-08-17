@@ -86,7 +86,7 @@ private fun createLocalDebeziumSettings(name: String, taskClass: String, hostnam
  * @param port: The port of the postgres database
  * @param username: The username of the postgres database
  * @param password: The password of the postgres database
- * @param offsetFilePath: By default, we will save the offsets in a file path
+ * @param offsetId: By default, we will save the offsets in a file path
  * @param settings An optional string-string map, that represents any extra parameters you want to pass to Debezium
  * Defaults to empty map.
  *

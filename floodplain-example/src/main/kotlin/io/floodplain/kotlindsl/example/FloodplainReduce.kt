@@ -37,7 +37,7 @@ fun main() {
         postgresSource("customer", postgresConfig) {
             join {
                 postgresSource("payment", postgresConfig) {
-                    scan({ msg -> msg["customer_id"].toString() }, { _ -> empty().set("total", BigDecimal(0)) },
+                    scan({ msg -> msg["customer_id"].toString() }, { empty().set("total", BigDecimal(0)) },
                             {
                                 set { _, msg, state ->
                                     state["total"] = (state["total"] as BigDecimal).add(msg["amount"] as BigDecimal)

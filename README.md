@@ -27,7 +27,7 @@ Make sure the demo setup is running:
 https://github.com/floodplainio/floodplain-demo-setup
 
 Follow the README, it should be easy to start.
-After running an example, stop, delete and restart the demo with
+After running an example, stop, delete and restart the demo with:
 
 ```bash
 CTRL+C

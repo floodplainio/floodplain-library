@@ -78,7 +78,7 @@ class GoogleSheetConfiguration(val name: String) : Config {
         }
     }
     override fun sourceElements(): List<SourceTopic> {
-        return emptyList<SourceTopic>()
+        return emptyList()
     }
 
     override suspend fun connectSource(inputReceiver: InputReceiver) {
@@ -97,7 +97,7 @@ class GoogleSheetConfiguration(val name: String) : Config {
             task.start(materializedSink.settings)
             val sink = floodplainSinkFromTask(task, this)
             materializedSink.topics.forEach {
-                val list = result.computeIfAbsent(it) { mutableListOf<FloodplainSink>() }
+                val list = result.computeIfAbsent(it) { mutableListOf() }
                 list.add(sink)
             }
         }

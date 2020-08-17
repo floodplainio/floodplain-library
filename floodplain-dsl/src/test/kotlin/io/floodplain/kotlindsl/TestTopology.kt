@@ -66,7 +66,7 @@ class TestTopology {
             input("@sometopic", "key1", empty().set("name", "gorilla"))
             delete("@sometopic", "key1")
             output("@outputtopic")
-            deleted("@outputtopic").equals("key1")
+            assertTrue(deleted("@outputtopic") == "key1", "Key mismatch")
             logger.info("Topic now empty: ${isEmpty("@outputtopic")}")
         }
     }
@@ -208,17 +208,17 @@ class TestTopology {
             assertEquals(2, outputs, "should have 2 elements")
             output("@output") // skip one
             val (_, v3) = output("@output")
-            val subList = v3.get("rightsub") as List<*>
+            val subList = v3["rightsub"] as List<*>
             assertEquals(2, subList.size)
             assertEquals(record1, subList[0])
             assertEquals(record2, subList[1])
             delete("@right", "otherkey1")
             val (_, v4) = output("@output")
-            val subList2 = v4.get("rightsub") as List<*>
+            val subList2 = v4["rightsub"] as List<*>
             assertEquals(1, subList2.size)
             delete("@right", "otherkey2")
             val (_, v5) = output("@output")
-            val subList3 = v5.get("rightsub") as List<*>?
+            val subList3 = v5["rightsub"] as List<*>?
             assertEquals(0, subList3?.size ?: 0)
             delete("@left", "key1")
             assertEquals("key1", deleted("@output"))
@@ -260,13 +260,13 @@ class TestTopology {
             assertEquals(2, outputs, "should have 2 elements")
             output("@output") // skip one
             val (_, v3) = output("@output")
-            val subList = v3.get("rightsub") as List<*>
+            val subList = v3["rightsub"] as List<*>
             assertEquals(2, subList.size)
             assertEquals(record1, subList[0])
             assertEquals(record2, subList[1])
             delete("@right", "otherkey1")
             val (_, v4) = output("@output")
-            val subList2 = v4.get("rightsub") as List<*>
+            val subList2 = v4["rightsub"] as List<*>
             assertEquals(1, subList2.size)
             delete("@right", "otherkey2")
             assertEquals("key1", deleted("@output"))
@@ -322,7 +322,7 @@ class TestTopology {
         stream {
             source("@source") {
                 scan({
-                        _ -> empty().set("total", BigDecimal.valueOf(0))
+                    empty().set("total", BigDecimal.valueOf(0))
                 }, {
                     set {
                         _, _, acc -> acc["total"] = (acc["total"] as BigDecimal).add(BigDecimal.valueOf(1))
@@ -474,16 +474,14 @@ class TestTopology {
     @Test
     fun testRawInput() {
         val data = javaClass.classLoader.getResource("decimalwithscale.json")?.readBytes()
-        if (data == null) {
-            throw IllegalArgumentException("Missing json file for decimalwithscale.json")
-        }
+            ?: throw IllegalArgumentException("Missing json file for decimalwithscale.json")
         stream {
             externalSource("@source", Topic.FloodplainKeyFormat.FLOODPLAIN_STRING, Topic.FloodplainBodyFormat.CONNECT_JSON) {
                 sink("@sinktopic")
             }
         }.renderAndExecute {
             input("@source", "key1".toByteArray(), data)
-            var (_, value) = output("@sinktopic")
+            val (_, value) = output("@sinktopic")
             logger.info("value: $value")
             val amount = value.decimal("amount")
             assertEquals(BigDecimal.valueOf(299, 2), amount)
@@ -522,7 +520,7 @@ class TestTopology {
 
     private fun countStateStoreSize(store: KeyValueStore<String, ReplicationMessage>): Long {
         var i = 0L
-        store.all().forEach { i++ }
+        store.all().forEach { _ -> i++ }
         return i
     }
 

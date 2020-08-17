@@ -19,7 +19,7 @@ import org.junit.Test
 
 private val logger = mu.KotlinLogging.logger {}
 
-public class FilmWithArgumentsRemote {
+class FilmWithArgumentsRemote {
     /**
      * Re-enable when I've got a testcontainer based kafka cluster
      */

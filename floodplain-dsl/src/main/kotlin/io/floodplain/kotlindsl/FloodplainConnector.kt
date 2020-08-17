@@ -136,7 +136,7 @@ fun instantiateSinkConfig(topologyContext: TopologyContext, config: Config, conn
 
         val localSink = floodplainSinkFromTask(task, config)
         materializedSink.topics.forEach { topic ->
-            val list = result.computeIfAbsent(topic, { _ -> mutableListOf<FloodplainSink>() })
+            val list = result.computeIfAbsent(topic) { _ -> mutableListOf() }
             list.add(localSink)
         }
     }
