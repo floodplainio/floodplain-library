@@ -39,16 +39,19 @@ class PostgresConfig(val topologyContext: TopologyContext, val name: String, val
     override suspend fun connectSource(inputReceiver: InputReceiver) {
         val broadcastFlow = directSource(offsetId)
         broadcastFlow.collect {
-            val availableSourceTopics = sourceElements.map { sourceElement -> sourceElement.topic().qualifiedString(topologyContext) }.toSet()
-            if (availableSourceTopics.contains(it.topic)) {
-                if (it.value != null) {
-                    inputReceiver.input(it.topic, it.key.toByteArray(), it.value!!)
-                } else {
-                    inputReceiver.delete(it.topic, it.key)
-                }
-            }
+            acceptRecord(inputReceiver, it)
         }
         logger.info("connectSource completed")
+    }
+    private fun acceptRecord(inputReceiver: InputReceiver, record: ChangeRecord) {
+        val availableSourceTopics = sourceElements.map { sourceElement -> sourceElement.topic().qualifiedString(topologyContext) }.toSet()
+        if (availableSourceTopics.contains(record.topic)) {
+            if (record.value != null) {
+                inputReceiver.input(record.topic, record.key.toByteArray(), record.value!!)
+            } else {
+                inputReceiver.delete(record.topic, record.key)
+            }
+        }
     }
 
     override fun sinkTask(): Any? {

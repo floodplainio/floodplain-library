@@ -59,8 +59,8 @@ public class ReplicationTopologyParser {
     private static final Serde<ReplicationMessage> messageSerde = new ReplicationMessageSerde();
     private static final Serde<ImmutableMessage> immutableMessageSerde = new ImmutableMessageSerde();
 
-    private static ReplicationMessageSerde replicationMessageSerder = new ReplicationMessageSerde();
-    private static ConnectReplicationMessageSerde connectReplicationMessageSerder = new ConnectReplicationMessageSerde();
+    private static final ReplicationMessageSerde replicationMessageSerder = new ReplicationMessageSerde();
+    private static final ConnectReplicationMessageSerde connectReplicationMessageSerder = new ConnectReplicationMessageSerde();
     public enum Flatten {FIRST, LAST, NONE}
 
     private static final Logger logger = LoggerFactory.getLogger(ReplicationTopologyParser.class);
@@ -72,11 +72,7 @@ public class ReplicationTopologyParser {
 
     public static void addStateStoreMapping(Map<String, List<String>> processorStateStoreMapper, String processor, String stateStore) {
         logger.info("Adding processor: {} with statestore: {}", processor, stateStore);
-        List<String> parts = processorStateStoreMapper.get(stateStore);
-        if (parts == null) {
-            parts = new ArrayList<>();
-            processorStateStoreMapper.put(stateStore, parts);
-        }
+        List<String> parts = processorStateStoreMapper.computeIfAbsent(stateStore, k -> new ArrayList<>());
         parts.add(processor);
     }
 
@@ -102,10 +98,11 @@ public class ReplicationTopologyParser {
     }
 
 
-    public static void addDiffProcessor(Topology current, TopologyContext context,
+    public static void addDiffProcessor(Topology current, TopologyContext topologyContext,
                                          TopologyConstructor topologyConstructor, String fromProcessor,
                                          String diffProcessorNamePrefix) {
-        current = current.addProcessor(diffProcessorNamePrefix, () -> new DiffProcessor(diffProcessorNamePrefix), fromProcessor);
+        // TODO I think the topologyContext should be used.
+        current.addProcessor(diffProcessorNamePrefix, () -> new DiffProcessor(diffProcessorNamePrefix), fromProcessor);
         addStateStoreMapping(topologyConstructor.processorStateStoreMapper, diffProcessorNamePrefix, diffProcessorNamePrefix);
         logger.info("Granting access for processor: {} to store: {}", diffProcessorNamePrefix, diffProcessorNamePrefix);
         topologyConstructor.stateStoreSupplier.put(diffProcessorNamePrefix, createMessageStoreSupplier(diffProcessorNamePrefix, true));
@@ -176,20 +173,18 @@ public class ReplicationTopologyParser {
     public static String addSourceStore(final Topology currentBuilder, TopologyContext context, TopologyConstructor topologyConstructor, Topic sourceTopicName, Topic.FloodplainKeyFormat keyFormat, Topic.FloodplainBodyFormat bodyFormat, boolean materializeStore) {
         // TODO It might be better to fail if the topic does not exist? -> Well depends, if it is external yes, but if it is created by the same instance, then no.
         final String sourceProcessorName =  sourceTopicName.prefixedString("SOURCE",context);
-        if (sourceTopicName != null) {
-            String sourceName;
-            if (!topologyConstructor.sources.containsKey(sourceTopicName)) {
-                sourceName = sourceProcessorName + "_src";
-                currentBuilder.addSource(sourceName, keyDeserializer(keyFormat), bodyDeserializer(bodyFormat), sourceTopicName.qualifiedString(context));
-                topologyConstructor.sources.put(sourceTopicName, sourceName);
-                if (materializeStore) {
-                    currentBuilder.addProcessor(sourceProcessorName, () -> new StoreProcessor(STORE_PREFIX + sourceProcessorName), sourceName);
-                } else {
-                    currentBuilder.addProcessor(sourceProcessorName, () -> new IdentityProcessor(), sourceName);
-                }
+        String sourceName;
+        if (!topologyConstructor.sources.containsKey(sourceTopicName)) {
+            sourceName = sourceProcessorName + "_src";
+            currentBuilder.addSource(sourceName, keyDeserializer(keyFormat), bodyDeserializer(bodyFormat), sourceTopicName.qualifiedString(context));
+            topologyConstructor.sources.put(sourceTopicName, sourceName);
+            if (materializeStore) {
+                currentBuilder.addProcessor(sourceProcessorName, () -> new StoreProcessor(STORE_PREFIX + sourceProcessorName), sourceName);
             } else {
-                sourceName = topologyConstructor.sources.get(sourceTopicName);
+                currentBuilder.addProcessor(sourceProcessorName, IdentityProcessor::new, sourceName);
             }
+//        } else {
+//            sourceName = topologyConstructor.sources.get(sourceTopicName);
         }
         if (materializeStore) {
             addStateStoreMapping(topologyConstructor.processorStateStoreMapper, sourceProcessorName, STORE_PREFIX + sourceProcessorName);
@@ -218,7 +213,7 @@ public class ReplicationTopologyParser {
     public static String addSingleJoinGrouped(final Topology current, TopologyContext topologyContext,
                                               TopologyConstructor topologyConstructor, String fromProcessor, String name,
                                               Optional<Predicate<String, ReplicationMessage>> associationBypass,
-                                              String withProcessor, boolean optional) {
+                                              String withProcessor, boolean optional, boolean materialize) {
 
         String firstNamePre = name + "-forwardpre";
         String secondNamePre = name + "-reversepre";
@@ -249,8 +244,9 @@ public class ReplicationTopologyParser {
         addStateStoreMapping(topologyConstructor.processorStateStoreMapper, name, STORE_PREFIX + name);
         topologyConstructor.stores.add(STORE_PREFIX + withProcessor);
         topologyConstructor.stores.add(STORE_PREFIX + fromProcessor);
-        topologyConstructor.stores.add(STORE_PREFIX + name);
+        // TODO I think we only need to materialize if materialize=true
 
+        topologyConstructor.stores.add(STORE_PREFIX + name);
         topologyConstructor.stateStoreSupplier.put(STORE_PREFIX + name, createMessageStoreSupplier(STORE_PREFIX + name, true));
         current.addProcessor(name, () -> new StoreProcessor(STORE_PREFIX + name), finalJoin);
         return finalJoin;
@@ -267,7 +263,7 @@ public class ReplicationTopologyParser {
         mappingStoreName = from + "_mapping";
 
         String transformProcessor = name + "_transform";
-        current.addProcessor(transformProcessor, transformerSupplier.orElse(() -> new IdentityProcessor()), from);
+        current.addProcessor(transformProcessor, transformerSupplier.orElse(IdentityProcessor::new), from);
         // allow override to avoid clashes
         addStateStoreMapping(topologyConstructor.processorStateStoreMapper, name, STORE_PREFIX + name);
         topologyConstructor.stores.add(STORE_PREFIX + name);
@@ -438,7 +434,7 @@ public class ReplicationTopologyParser {
     public static String addKeyRowProcessor(Topology current, TopologyContext context,
                                             TopologyConstructor topologyConstructor, String fromProcessor,
                                             String name, boolean materialize) {
-        current = current.addProcessor(name, () -> new RowNumberProcessor(STORE_PREFIX + name), fromProcessor);
+        current.addProcessor(name, () -> new RowNumberProcessor(STORE_PREFIX + name), fromProcessor);
         addStateStoreMapping(topologyConstructor.processorStateStoreMapper, name, STORE_PREFIX + name);
         logger.info("Granting access for processor: {} to store: {}", name, STORE_PREFIX + name);
         topologyConstructor.stateStoreSupplier.put(STORE_PREFIX + name, createMessageStoreSupplier(STORE_PREFIX + name, false));

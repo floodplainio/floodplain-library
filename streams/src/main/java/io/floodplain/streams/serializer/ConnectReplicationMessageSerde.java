@@ -34,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -89,7 +90,7 @@ public class ConnectReplicationMessageSerde implements Serde<ReplicationMessage>
                 try {
                     return parseConnectKey(data);
                 } catch (IOException e) {
-                    String raw = new String(data);
+                    String raw = new String(data, StandardCharsets.UTF_8);
                     throw new RuntimeException("Error deserializing key: "+raw,e);
                 }
             }
@@ -155,7 +156,7 @@ public class ConnectReplicationMessageSerde implements Serde<ReplicationMessage>
                 try {
                     byte[] val = objectMapper.writeValueAsBytes(valueMap);
                     if(debug) {
-                        logger.info("to Connect value. topic: {} value {}}",topic,new String(val));
+                        logger.info("to Connect value. topic: {} value {}}",topic,new String(val, StandardCharsets.UTF_8));
                     }
                     return val;
                 } catch (JsonProcessingException e) {

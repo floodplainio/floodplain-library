@@ -75,10 +75,8 @@ public class SheetSink {
 		final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
 
 		HttpRequestInitializer credential = getCredential(); // getCredentials(HTTP_TRANSPORT,clientId,clientSecret,projectId);
-//        HttpRequestInitializer credential = req->req. .getUrl().put("key", "");
-
 		return new Sheets.Builder(httpTransport, jsonFactory, credential)
-				.setApplicationName("Google-SheetsSample/0.1")
+				.setApplicationName("Google-Sheets/0.1")
 				.build();
 	}
 
@@ -101,21 +99,20 @@ public class SheetSink {
 		return Collections.singletonList(list);
 	}
 
-	public void deleteRows(String spreadsheetId, String range) throws IOException {
-		ClearValuesRequest requestBody = new ClearValuesRequest();
-
-		Sheets.Spreadsheets.Values.Clear request =
-				sheetsService.spreadsheets().values().clear(spreadsheetId, range, requestBody);
-
-		ClearValuesResponse response = request.execute();
-	}
-
-	public void clear(String spreadsheetId, List<String> ranges) throws IOException {
+	/**
+	 * Clear a number of ranges
+	 * @param spreadsheetId Current spreadsheet
+	 * @param ranges The ranges to delete
+	 * @return The ranges that have been cleared
+	 * @throws IOException On connection issues
+	 */
+	public List<String> clear(String spreadsheetId, List<String> ranges) throws IOException {
 		BatchClearValuesRequest requestBody = new BatchClearValuesRequest();
 		requestBody.setRanges(ranges);
 		Sheets.Spreadsheets.Values.BatchClear request =
 				sheetsService.spreadsheets().values().batchClear(spreadsheetId, requestBody);
 		BatchClearValuesResponse response = request.execute();
+		return response.getClearedRanges();
 
 	}
 	public List<List<Object>> getRange(String spreadsheetId, String range) throws IOException {

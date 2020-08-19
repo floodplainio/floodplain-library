@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 
@@ -45,7 +46,7 @@ public class TestJsonDebeziumTransformation {
         System.setProperty(ReplicationMessage.PRETTY_JSON, "true");
         ReplicationFactory.setInstance(new JSONReplicationMessageParserImpl());
         ReplicationMessage msg = JSONToReplicationMessage.convertToReplication(false, (ObjectNode) node, Optional.of("photo"));
-        final String serialized = new String(msg.toBytes(ReplicationFactory.getInstance()));
+        final String serialized = new String(msg.toBytes(ReplicationFactory.getInstance()), StandardCharsets.UTF_8);
         Assert.assertEquals(11, msg.columnNames().size());
         Assert.assertTrue(serialized.length() > 20000);
 
@@ -58,7 +59,7 @@ public class TestJsonDebeziumTransformation {
         System.setProperty(ReplicationMessage.PRETTY_JSON, "true");
         ReplicationFactory.setInstance(new JSONReplicationMessageParserImpl());
         ReplicationMessage msg = JSONToReplicationMessage.convertToReplication(false, (ObjectNode) node, Optional.of("photo"));
-        final String serialized = new String(msg.toBytes(ReplicationFactory.getInstance()));
+        final String serialized = new String(msg.toBytes(ReplicationFactory.getInstance()), StandardCharsets.UTF_8);
         logger.info("serialized: {}",serialized);
     }
 }

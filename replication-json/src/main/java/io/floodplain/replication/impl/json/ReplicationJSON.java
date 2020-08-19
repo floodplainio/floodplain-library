@@ -39,6 +39,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -69,7 +70,7 @@ public class ReplicationJSON {
             ObjectWriter w = ReplicationMessage.usePrettyPrint() ? objectMapper.writerWithDefaultPrettyPrinter() : objectMapper.writer();
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             if (dumpKey) {
-                baos.write(msg.combinedKey().getBytes());
+                baos.write(msg.combinedKey().getBytes(StandardCharsets.UTF_8));
                 baos.write('\t');
             }
             w.writeValue(baos, ReplicationJSON.toJSON(msg, includeNullValues));
@@ -88,7 +89,7 @@ public class ReplicationJSON {
 
             }
 
-            return ("{}").getBytes();
+            return ("{}").getBytes(StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new RuntimeException("Weird json problem", e);
         }
@@ -103,7 +104,7 @@ public class ReplicationJSON {
             JsonNode res = objectMapper.readTree(data);
             return res;
         } catch (Throwable t) {
-            logger.error("Exception on parsing json! {}", new String(data), t);
+            logger.error("Exception on parsing json! {}", new String(data, StandardCharsets.UTF_8), t);
             throw t;
         }
 
@@ -134,7 +135,7 @@ public class ReplicationJSON {
             throw new RuntimeException("Unexpected optional for " + key + " type: " + type);
         }
         if (type == null) {
-            logger.info("Null type for key: " + key);
+            throw new IllegalArgumentException("Null type for key: " + key);
         }
         switch (type) {
             case STRING:
@@ -357,6 +358,7 @@ public class ReplicationJSON {
                     break;
                 case DECIMAL:
                     node.put(key,((BigDecimal)o).toPlainString());
+                    break;
                 case DOUBLE:
                 case FLOAT:
                     node.put(key, (Double) o);
@@ -515,6 +517,7 @@ public class ReplicationJSON {
                     } catch (JsonProcessingException e1) {
                         logger.error("Error: ", e1);
                     }
+                    throw new IllegalArgumentException("Missing type in json!");
                 }
                 ValueType type = ImmutableTypeParser.parseType(typeObject.asText());
                 if (type == ValueType.UNKNOWN) {
@@ -572,7 +575,7 @@ public class ReplicationJSON {
             subMessageMap = Collections.emptyMap();
             subMessageListMap = Collections.emptyMap();
         }
-        ImmutableMessage flatMessage = ImmutableFactory.create(localvalues, localtypes, subMessageMap, subMessageListMap);
+        ImmutableMessage flatMessage = ImmutableFactory.create(values, types, subMessageMap, subMessageListMap);
         return flatMessage;
     }
 

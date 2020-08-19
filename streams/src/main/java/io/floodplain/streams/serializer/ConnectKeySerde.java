@@ -24,6 +24,7 @@ import org.apache.kafka.common.serialization.Serializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 public class ConnectKeySerde implements Serde<String> {
@@ -80,7 +81,7 @@ public class ConnectKeySerde implements Serde<String> {
             @Override
             public byte[] serialize(String topic, String key) {
                 String converted = "{\"key\":\"" + key + "\" }";
-                return converted.getBytes();
+                return converted.getBytes(StandardCharsets.UTF_8);
             }
         };
     }

@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 
@@ -110,7 +111,7 @@ public class ReplicationProtobufTest {
             Assert.assertEquals(25, rm2.values().size());
             byte[] bb2 = jsonParser.serialize(rm2);
             logger.info("JSON again: {}", bb2.length);
-            logger.info(">>>>\n{}", new String(bb2));
+            logger.info(">>>>\n{}", new String(bb2, StandardCharsets.UTF_8));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -144,17 +145,20 @@ public class ReplicationProtobufTest {
     public void testMessageListParser() {
         ReplicationMessageParser jsonparser = new JSONReplicationMessageParserImpl();
         ReplicationMessageParser parser = new ProtobufReplicationMessageParser();
-        InputStream stream = ReplicationProtobufTest.class.getResourceAsStream("addresslist.json");
-        List<ReplicationMessage> list = jsonparser.parseMessageList(Optional.of("addresstopic"), stream);
-        Assert.assertEquals(1, list.size());
-        byte[] data = parser.serializeMessageList(list);
-        logger.info("Datasize: " + data.length);
-        Assert.assertEquals(68, data.length);
-        logger.info("First: " + data[0]);
-        logger.info("Secon: " + data[1]);
-        List<ReplicationMessage> list2 = parser.parseMessageList(data);
-        byte[] data2 = jsonParser.serializeMessageList(list2);
-        logger.info("DATA: " + new String(data2));
+        try(InputStream stream = ReplicationProtobufTest.class.getResourceAsStream("addresslist.json")) {
+            List<ReplicationMessage> list = jsonparser.parseMessageList(Optional.of("addresstopic"), stream);
+            Assert.assertEquals(1, list.size());
+            byte[] data = parser.serializeMessageList(list);
+            logger.info("Datasize: " + data.length);
+            Assert.assertEquals(68, data.length);
+            logger.info("First: " + data[0]);
+            logger.info("Secon: " + data[1]);
+            List<ReplicationMessage> list2 = parser.parseMessageList(data);
+            byte[] data2 = jsonParser.serializeMessageList(list2);
+            logger.info("DATA: " + new String(data2, StandardCharsets.UTF_8));
+        } catch (IOException e) {
+            throw new RuntimeException("IO issue",e);
+        }
     }
 
     @Test
@@ -192,7 +196,7 @@ public class ReplicationProtobufTest {
         byte[] protobytes = msg.toBytes(parser);
         ReplicationMessage reserialized = parser.parseBytes(Optional.empty(), protobytes);
         Assert.assertNull(reserialized.columnValue("empty"));
-        String json2 = new String(reserialized.toBytes(jsonparser));
+        String json2 = new String(reserialized.toBytes(jsonparser), StandardCharsets.UTF_8);
         logger.info("json: " + json2);
     }
 

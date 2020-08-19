@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 import static io.floodplain.immutable.api.ImmutableMessage.ValueType.*;
@@ -48,7 +49,7 @@ public class TestImmutableJSON {
         ImmutableMessage msg = ImmutableFactory.empty().with("teststring", "bla", STRING)
                 .with("testinteger", 3, INTEGER);
         byte[] bytes = parser.serialize(msg);
-        logger.info("TEST: {}", new String(bytes));
+        logger.info("TEST: {}", new String(bytes, StandardCharsets.UTF_8));
     }
 
     @Test

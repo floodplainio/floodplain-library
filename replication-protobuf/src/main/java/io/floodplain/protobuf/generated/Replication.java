@@ -21,6 +21,9 @@
 
 package io.floodplain.protobuf.generated;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
+@SuppressFBWarnings
 public final class Replication {
   private Replication() {}
   public static void registerAllExtensions(
@@ -2082,6 +2085,7 @@ public final class Replication {
     /**
      * Protobuf type {@code io.floodplain.protobuf.generated.ReplicationMessageProtobuf}
      */
+    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings("CN_IMPLEMENTS_CLONE_BUT_NOT_CLONEABLE")
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:io.floodplain.protobuf.generated.ReplicationMessageProtobuf)

@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
@@ -96,7 +97,7 @@ public class TestJoin {
         organization = organization.withSubMessages("addresses",
                 addresses.stream().map(ReplicationMessage::message).collect(Collectors.toList()));
         int length = organization.toBytes(parser).length;
-        logger.info("org:\n" + new String(organization.toBytes(parser)));
+        logger.info("org:\n" + new String(organization.toBytes(parser),StandardCharsets.UTF_8));
         logger.info("Length: " + length);
         Assert.assertTrue(length > 10000);
 
@@ -232,7 +233,7 @@ public class TestJoin {
         InputStream stream = TestJoin.class.getClassLoader().getResourceAsStream("organizationaddress.json");
         ReplicationMessage repl = ReplicationFactory.getInstance().parseStream(stream);
         byte[] data = ReplicationJSON.replicationToConnectJSON(repl);
-        logger.info(">>>>|>>>\n" + new String(data));
+        logger.info(">>>>|>>>\n" + new String(data, StandardCharsets.UTF_8));
     }
 
     @Test
@@ -247,7 +248,7 @@ public class TestJoin {
                 Optional.empty(), null, 1, ReplicationMessage.Operation.UPDATE, Arrays.asList("Key"), types, values,
                 Collections.emptyMap(), Collections.emptyMap(), Optional.empty(), Optional.empty());
         logger.info("Replication: " + rms.toFlatString(ReplicationFactory.getInstance()));
-        logger.info("Replication: " + new String(rms.toBytes(ReplicationFactory.getInstance())));
+        logger.info("Replication: " + new String(rms.toBytes(ReplicationFactory.getInstance()), StandardCharsets.UTF_8));
     }
 
     @Test

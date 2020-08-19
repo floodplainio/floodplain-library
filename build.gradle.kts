@@ -11,6 +11,7 @@ buildscript {
     dependencies {
         classpath("gradle.plugin.com.hierynomus.gradle.plugins:license-gradle-plugin:0.15.0")
         classpath("com.github.johnrengelman.shadow:com.github.johnrengelman.shadow.gradle.plugin:6.0.0")
+        classpath("gradle.plugin.com.github.spotbugs.snom:spotbugs-gradle-plugin:4.5.0")
     }
 }
 plugins {
@@ -22,6 +23,7 @@ plugins {
     id("com.palantir.graal") version "0.7.0-5-g838c2ab"
     id("org.jetbrains.dokka") version "0.10.1"
     id("com.github.hierynomus.license-base").version("0.15.0")
+    id("com.github.spotbugs") version "4.5.0"
     signing
     `maven-publish`
     `java-library`
@@ -44,6 +46,11 @@ allprojects {
     }
 }
 
+fun useSpotBugs(project: Project): Boolean {
+    val kotlinSource = project.projectDir.resolve("src/main/kotlin")
+    return !kotlinSource.exists()
+}
+
 subprojects {
     version = FloodplainDeps.floodplain_version
     apply(plugin = "java")
@@ -55,7 +62,10 @@ subprojects {
     apply(plugin = "org.jetbrains.dokka")
     apply(plugin = "com.github.hierynomus.license-base")
     apply(plugin = "jacoco")
-
+    apply(plugin = "checkstyle")
+    if (useSpotBugs(this)) {
+        apply(plugin = "com.github.spotbugs")
+    }
     // tasks.
     tasks.test {
         finalizedBy(tasks.jacocoTestReport)
@@ -66,6 +76,12 @@ subprojects {
             xml.isEnabled = true
             this.html.isEnabled = true
         }
+    }
+
+    tasks.withType<com.github.spotbugs.snom.SpotBugsTask>().configureEach {
+        effort.set(com.github.spotbugs.snom.Effort.MAX)
+        reports.maybeCreate("xml").isEnabled = false
+        reports.maybeCreate("html").isEnabled = true
     }
 
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {

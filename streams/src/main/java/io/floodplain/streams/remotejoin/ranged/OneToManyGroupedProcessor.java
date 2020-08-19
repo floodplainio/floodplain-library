@@ -86,14 +86,11 @@ public class OneToManyGroupedProcessor extends AbstractProcessor<String, Replica
 
     private void forwardJoin(String key, ReplicationMessage msg) {
         List<ReplicationMessage> msgs = new ArrayList<>();
-        try (KeyValueIterator<String, ReplicationMessage> it = groupedLookupStore.range(key + "|", key + "}")) {
-            while (it.hasNext()) {
-                KeyValue<String, ReplicationMessage> keyValue = it.next();
-                msgs.add(keyValue.value);
-            }
+        KeyValueIterator<String, ReplicationMessage> it = groupedLookupStore.range(key + "|", key + "}");
+        while (it.hasNext()) {
+            KeyValue<String, ReplicationMessage> keyValue = it.next();
+            msgs.add(keyValue.value);
         }
-
-
         ReplicationMessage joined = msg;
         if (msgs.size() > 0 || optional) {
             joined = joinFunction.apply(msg, msgs);

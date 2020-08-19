@@ -94,16 +94,11 @@ public class ManyToManyGroupedProcessor extends AbstractProcessor<String, Replic
             return;
         }
 
-        try (KeyValueIterator<String, ReplicationMessage> it = forwardLookupStore.range(actualKey + "|",
-                actualKey + "}")) {
-            while (it.hasNext()) {
-                KeyValue<String, ReplicationMessage> keyValue = it.next();
-//				ReplicationMessage joined;
-
-                // TODO fix this
-                forwardJoin(keyValue.key, keyValue.value);
-
-            }
+        KeyValueIterator<String, ReplicationMessage> it = forwardLookupStore.range(actualKey + "|", actualKey + "}");
+        while (it.hasNext()) {
+            KeyValue<String, ReplicationMessage> keyValue = it.next();
+            // TODO fix this
+            forwardJoin(keyValue.key, keyValue.value);
         }
 
     }
@@ -143,12 +138,10 @@ public class ManyToManyGroupedProcessor extends AbstractProcessor<String, Replic
         // If we are a many to many, do a ranged lookup in the reverseLookupStore. Add
         // each match to the list, and pass it on to the join function
         List<ReplicationMessage> messageList = new ArrayList<>();
-        try (KeyValueIterator<String, ReplicationMessage> it = reverseLookupStore.range(reverseLookupName + "|",
-                reverseLookupName + "}")) {
-            while (it.hasNext()) {
-                KeyValue<String, ReplicationMessage> keyValue = it.next();
-                messageList.add(keyValue.value);
-            }
+        KeyValueIterator<String, ReplicationMessage> it = reverseLookupStore.range(reverseLookupName + "|", reverseLookupName + "}");
+        while (it.hasNext()) {
+            KeyValue<String, ReplicationMessage> keyValue = it.next();
+            messageList.add(keyValue.value);
         }
         final ReplicationMessage joined;
         joined = manyToManyJoinFunction.apply(withOperation, messageList);

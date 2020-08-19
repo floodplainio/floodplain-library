@@ -25,6 +25,9 @@ import io.floodplain.immutable.json.ImmutableJSON;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+
 public class JSONImmutableMessageParserImpl implements ImmutableMessageParser {
 
     private static final boolean INCLUDENULLVALUES = true;
@@ -38,7 +41,7 @@ public class JSONImmutableMessageParserImpl implements ImmutableMessageParser {
 
     @Override
     public String describe(ImmutableMessage msg) {
-        return new String(ImmutableJSON.jsonSerializer(msg, INCLUDENULLVALUES, false));
+        return new String(ImmutableJSON.jsonSerializer(msg, INCLUDENULLVALUES, false), StandardCharsets.UTF_8);
     }
 
 }

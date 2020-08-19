@@ -8,8 +8,3 @@ dependencies {
     compile(FloodplainDeps.cdiApi)
     testImplementation(FloodplainDeps.jUnit)
 }
-
-
-
-
-

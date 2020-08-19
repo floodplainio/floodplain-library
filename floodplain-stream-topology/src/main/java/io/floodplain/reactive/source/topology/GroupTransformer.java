@@ -35,7 +35,6 @@ import java.util.function.Function;
 public class GroupTransformer implements TopologyPipeComponent {
 
     private final BiFunction<ImmutableMessage, ImmutableMessage, String> keyExtractor;
-    private boolean materialize;
 
     public GroupTransformer(BiFunction<ImmutableMessage, ImmutableMessage, String> keyExtractor) {
         this.keyExtractor = keyExtractor;
@@ -67,7 +66,7 @@ public class GroupTransformer implements TopologyPipeComponent {
 
     @Override
     public void setMaterialize() {
-        this.materialize = true;
+        // no-op, a group is always materialized
     }
 
 }

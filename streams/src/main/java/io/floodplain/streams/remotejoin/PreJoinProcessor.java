@@ -22,7 +22,7 @@ import io.floodplain.replication.api.ReplicationMessage;
 import org.apache.kafka.streams.processor.AbstractProcessor;
 
 public class PreJoinProcessor extends AbstractProcessor<String, ReplicationMessage> {
-    public static String REVERSE_IDENTIFIER = "_REV_";
+    public static final String REVERSE_IDENTIFIER = "_REV_";
 
 
     private final boolean isReverseJoin;

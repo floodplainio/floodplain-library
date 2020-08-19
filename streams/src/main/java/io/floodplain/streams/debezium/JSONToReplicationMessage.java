@@ -37,9 +37,13 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -54,13 +58,14 @@ public class JSONToReplicationMessage {
 
 
     //TODO Beware of threading issues
-    private final static DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SS");
+//    private final static DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SS");
+    private final static DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SS");
 
     public static KeyValue parse(String keyInput, byte[] data) {
         try {
             JsonNode mapped = objectMapper.readTree(keyInput);
             if(!(mapped instanceof ObjectNode)) {
-                throw new ClassCastException("Expected debezium style key. Not type: "+mapped.getClass()+" data: "+new String(data));
+                throw new ClassCastException("Expected debezium style key. Not type: "+mapped.getClass()+" data: "+new String(data, StandardCharsets.UTF_8));
             }
             ObjectNode keynode = (ObjectNode) mapped;
             TableIdentifier key = processDebeziumKey(keynode);
@@ -93,7 +98,7 @@ public class JSONToReplicationMessage {
             }
             return convertToReplication(false, valuenode, Optional.empty());
         } catch (IOException e) {
-            throw new RuntimeException("JSON parse issue while parsing expected json to replication message: "+new String(data),e);
+            throw new RuntimeException("JSON parse issue while parsing expected json to replication message: "+new String(data, StandardCharsets.UTF_8),e);
         }
 
     }
@@ -206,12 +211,12 @@ public class JSONToReplicationMessage {
         switch (namedType.get()) {
             case "io.debezium.time.Date":
                 int valueInt = value.asInt();
-                // I have no clue...
-                long timemillis = 24 * 60 * 60 * 1000 * (long) valueInt;
+                // TODO I have no clue, doubt if this work. Create a test for this.
+                // long timemillis = 24 * 60 * 60 * 1000 * (long) valueInt;
                 Calendar c = Calendar.getInstance();
                 c.add(Calendar.DAY_OF_YEAR, valueInt);
-                Date d = new Date(timemillis);
-                return format.format(d);
+                LocalDateTime ldt = LocalDateTime.ofEpochSecond(valueInt,0, ZoneOffset.UTC);
+                return format.format(ldt);
             case "io.debezium.time.ZonedTimestamp":
                 Instant instant = Instant.parse(value.asText());
                 return instant.toEpochMilli();

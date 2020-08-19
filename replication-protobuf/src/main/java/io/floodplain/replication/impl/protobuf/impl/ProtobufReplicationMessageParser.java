@@ -451,7 +451,10 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
             // make small pushback
             PushbackInputStream pis = new PushbackInputStream(data, 2);
             byte[] pre = new byte[2];
-            pis.read(pre);
+            int read = pis.read(pre);
+            if(read < 2) {
+                throw new IllegalArgumentException("Can't parse messaagelist: Insufficient data");
+            }
             if ((short) pre[0] != ProtobufReplicationMessageParser.MAGIC_BYTE_1) {
                 throw new IllegalArgumentException("Bad magic byte: " + (short) pre[0]);
             }

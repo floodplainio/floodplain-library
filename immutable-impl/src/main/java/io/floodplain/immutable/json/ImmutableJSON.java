@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -84,7 +85,7 @@ public class ImmutableJSON {
                 //
             }
 
-            return ("{}").getBytes();
+            return ("{}").getBytes(StandardCharsets.UTF_8);
         }
     }
 

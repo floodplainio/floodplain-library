@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -58,12 +59,12 @@ public class ReplicationMessageConverter implements Converter {
         if (o instanceof String) {
             this.schemaEnable = Boolean.parseBoolean((String) o);
         } else if (o instanceof Boolean) {
-            this.schemaEnable = Optional.ofNullable((Boolean) o).orElse(false);
+            this.schemaEnable = Optional.of((Boolean) o).orElse(false);
         } else {
             this.schemaEnable = false;
         }
         Object debug = configs.get("debug");
-        this.debug = true; // debug!=null;
+        this.debug = debug!=null;
         logger.info("Debug enabled: {}",this.debug);
         this.isKey = isKey;
     }
@@ -133,7 +134,7 @@ public class ReplicationMessageConverter implements Converter {
     }
 
     private SchemaAndValue toConnectDataKey(byte[] value) {
-        String valueString = new String(value);
+        String valueString = new String(value, StandardCharsets.UTF_8);
         String converted = "{\"key\":\" " + valueString + "\" }";
         return new SchemaAndValue(null, converted);
     }

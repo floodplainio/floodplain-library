@@ -62,7 +62,10 @@ class FilmToGoogleSheets {
         }
         val sheetSink = SheetSink()
         // First, clear the spreadsheet
-        sheetSink.clear(spreadsheetId, listOf("A1:H1100"))
+        val rangesToClear = listOf("Sheet1!" +
+            "A1:H1100")
+        val clearedOk = sheetSink.clear(spreadsheetId, rangesToClear)
+        assertEquals(rangesToClear, clearedOk, "Clearing seems to have failed")
         stream {
 
             val postgresConfig = postgresSourceConfig(
@@ -98,11 +101,13 @@ class FilmToGoogleSheets {
                 withTimeout(200000) {
                     repeat(1000) {
                         // load a range:
-                        val range = coreSink.getRange(spreadsheetId, "B3")
-                        val value = range.first()?.first()
-                        if (value == "Academy Dinosaur") {
-                            logger.info("Found cell")
-                            return@withTimeout
+                        val range: List<List<Any>>? = coreSink.getRange(spreadsheetId, "B3")
+                        if (range != null) {
+                            val value = range.first()?.first()
+                            if (value == "Academy Dinosaur") {
+                                logger.info("Found cell")
+                                return@withTimeout
+                            }
                         }
                         delay(500)
                     }
@@ -168,13 +173,15 @@ class FilmToGoogleSheets {
                 withTimeout(200000) {
                     repeat(1000) {
                         // load a range:
-                        val range = coreSink.getRange(spreadsheetId, "B4")
-                        val value = range.first()?.first() as String
-                        val parsed = value.toDouble()
-                        logger.info("Value: $parsed")
-                        if (parsed > 61312) {
-                            logger.info("Found cell")
-                            return@withTimeout
+                        val range: List<List<Any>>? = coreSink.getRange(spreadsheetId, "B4")
+                        if (range != null) {
+                            val value = range.first()?.first() as String
+                            val parsed = value.toDouble()
+                            logger.info("Value: $parsed")
+                            if (parsed > 61312) {
+                                logger.info("Found cell")
+                                return@withTimeout
+                            }
                         }
                         delay(500)
                     }

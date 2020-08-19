@@ -7,10 +7,11 @@ dependencies {
     implementation(project(":replication-impl"))
     implementation(project(":replication-json"))
     implementation(project("::streams-api"))
+    implementation("com.github.spotbugs:spotbugs-annotations:4.0.1")
     compile(FloodplainDeps.protobuf)
     testCompile(FloodplainDeps.jUnit)
 }
-//protobuf {
+// protobuf {
 //    protoc {
 //        artifact = "com.google.protobuf:protoc:3.11.4"
 //    }
@@ -22,4 +23,4 @@ dependencies {
 //            // NamedDomainObjectContainer binds the methods.
 //        }
 //    }
-//}
+// }

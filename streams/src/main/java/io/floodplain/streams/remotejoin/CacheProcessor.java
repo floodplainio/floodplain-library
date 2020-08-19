@@ -106,10 +106,9 @@ public class CacheProcessor extends AbstractProcessor<String, ReplicationMessage
     @Override
     public void close() {
         synchronized (sync) {
-            for (String key : cache.keySet()) {
-                CacheEntry entry = cache.get(key);
-                context.forward(key, entry.getEntry());
-                cache.remove(key);
+            for (Map.Entry<String,CacheEntry> entry : cache.entrySet()) {
+                context.forward(entry.getKey(), entry.getValue().getEntry());
+                cache.remove(entry.getKey());
             }
         }
         super.close();
@@ -123,10 +122,9 @@ public class CacheProcessor extends AbstractProcessor<String, ReplicationMessage
         int expiredEntries = 0;
         if (memoryCache) {
             Set<String> toForward = new HashSet<>();
-            for (String key : cache.keySet()) {
-                CacheEntry entry = cache.get(key);
-                if (entry.isExpired(ms)) {
-                    toForward.add(key);
+            for (Map.Entry<String,CacheEntry> entry : cache.entrySet()) {
+                if (entry.getValue().isExpired(ms)) {
+                    toForward.add(entry.getKey());
                 }
             }
             synchronized (sync) {
@@ -138,14 +136,13 @@ public class CacheProcessor extends AbstractProcessor<String, ReplicationMessage
             }
         } else {
             Set<String> possibleExpired = new HashSet<>();
-            try (KeyValueIterator<String, ReplicationMessage> it = lookupStore.all()) {
-                while (it.hasNext()) {
-                    KeyValue<String, ReplicationMessage> keyValue = it.next();
-                    entries++;
-                    long cachedAt = (Long) keyValue.value.columnValue(CACHED_AT_KEY);
-                    if ((ms - cachedAt) >= cacheTime.toMillis()) {
-                        possibleExpired.add(keyValue.key);
-                    }
+            KeyValueIterator<String, ReplicationMessage> it = lookupStore.all();
+            while (it.hasNext()) {
+                KeyValue<String, ReplicationMessage> keyValue = it.next();
+                entries++;
+                long cachedAt = (Long) keyValue.value.columnValue(CACHED_AT_KEY);
+                if ((ms - cachedAt) >= cacheTime.toMillis()) {
+                    possibleExpired.add(keyValue.key);
                 }
             }
 
@@ -172,17 +169,16 @@ public class CacheProcessor extends AbstractProcessor<String, ReplicationMessage
     private void clearPersistentCache() {
         // Make sure all entries from the state store will be evicted
         Set<String> toClear = new HashSet<>();
-        try (KeyValueIterator<String, ReplicationMessage> it = lookupStore.all()) {
-            while (it.hasNext()) {
-                KeyValue<String, ReplicationMessage> next = it.next();
-                context.forward(next.key, next.value.without(CACHED_AT_KEY));
-            }
+        KeyValueIterator<String, ReplicationMessage> it = lookupStore.all();
+        while (it.hasNext()) {
+            KeyValue<String, ReplicationMessage> next = it.next();
+            context.forward(next.key, next.value.without(CACHED_AT_KEY));
+            toClear.add(next.key);
         }
         for (String key : toClear) {
             lookupStore.delete(key);
         }
         clearPersistentCache = false; // one time job
-
     }
 
     private class CacheEntry {

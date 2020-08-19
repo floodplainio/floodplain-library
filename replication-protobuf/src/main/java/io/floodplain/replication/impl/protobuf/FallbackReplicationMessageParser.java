@@ -81,7 +81,10 @@ public class FallbackReplicationMessageParser implements ReplicationMessageParse
         PushbackInputStream pis = new PushbackInputStream(data, 2);
         try {
             byte[] pre = new byte[2];
-            pis.read(pre);
+            int read = pis.read(pre);
+            if(read < 2) {
+                throw new IllegalArgumentException("Can't determine type of data: Insufficient data");
+            }
             if ((short) pre[0] != ProtobufReplicationMessageParser.MAGIC_BYTE_1) {
                 result.add(secondary);
             }

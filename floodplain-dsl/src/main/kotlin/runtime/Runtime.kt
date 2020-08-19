@@ -26,6 +26,7 @@ import io.floodplain.streams.api.TopologyContext
 import java.io.OutputStreamWriter
 import java.lang.RuntimeException
 import java.net.URL
+import java.nio.charset.StandardCharsets
 
 class LocalArgs(parser: ArgParser) {
     val force by parser.flagging(
@@ -61,7 +62,7 @@ suspend fun run(stream: Stream, arguments: Array<out String?>, localContext: (su
     val parseInto = try {
         ArgParser(arguments.requireNoNulls()).parseInto(::LocalArgs)
     } catch (e: SystemExitException) {
-        val writer = OutputStreamWriter(if (e.returnCode == 0) System.out else System.err)
+        val writer = OutputStreamWriter(if (e.returnCode == 0) System.out else System.err, StandardCharsets.UTF_8)
         e.printUserMessage(writer, System.getProperty("com.xenomachina.argparser.programName"), 80)
         writer.flush()
         return

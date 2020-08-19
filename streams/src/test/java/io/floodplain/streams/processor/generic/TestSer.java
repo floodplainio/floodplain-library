@@ -28,6 +28,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 public class TestSer {
@@ -41,7 +42,7 @@ public class TestSer {
     @Test
     public void testBinaryJSON() {
         final ReplicationMessageParser parser = new JSONReplicationMessageParserImpl();
-        byte[] payload = "123".getBytes();
+        byte[] payload = "123".getBytes(StandardCharsets.UTF_8);
         final byte[] deserialized = testSerialization(parser, payload);
         Assert.assertArrayEquals(payload, deserialized);
     }
@@ -49,7 +50,7 @@ public class TestSer {
     @Test
     public void testBinaryProtobuf() {
         final ReplicationMessageParser parser = new FallbackReplicationMessageParser(true);
-        byte[] payload = "123".getBytes();
+        byte[] payload = "123".getBytes(StandardCharsets.UTF_8);
         final byte[] deserialized = testSerialization(parser, payload);
         Assert.assertArrayEquals(payload, deserialized);
     }

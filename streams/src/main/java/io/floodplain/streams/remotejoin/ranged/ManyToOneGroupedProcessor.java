@@ -102,43 +102,40 @@ public class ManyToOneGroupedProcessor extends AbstractProcessor<String, Replica
             return;
         }
         final ReplicationMessage withOperation = message.withOperation(message.operation());
-        try (KeyValueIterator<String, ReplicationMessage> it = forwardLookupStore.range(key + "|", key + "}")) {
-            while (it.hasNext()) {
-                KeyValue<String, ReplicationMessage> keyValue = it.next();
-                String parentKey = CoreOperators.ungroupKey(keyValue.key);
-                if (!associationBypass.test(parentKey, keyValue.value)) {
-                    // filter says no, so don't join this, forward as-is
-                    forwardMessage(parentKey, keyValue.value);
-                    continue;
-                }
-
-                ReplicationMessage joined = joinFunction.apply(keyValue.value, withOperation);
-                forwardMessage(parentKey, joined);
+        KeyValueIterator<String, ReplicationMessage> it = forwardLookupStore.range(key + "|", key + "}");
+        while (it.hasNext()) {
+            KeyValue<String, ReplicationMessage> keyValue = it.next();
+            String parentKey = CoreOperators.ungroupKey(keyValue.key);
+            if (!associationBypass.test(parentKey, keyValue.value)) {
+                // filter says no, so don't join this, forward as-is
+                forwardMessage(parentKey, keyValue.value);
+                continue;
             }
-        }
 
+            ReplicationMessage joined = joinFunction.apply(keyValue.value, withOperation);
+            forwardMessage(parentKey, joined);
+        }
     }
 
     private void reverseJoinDelete(String key, ReplicationMessage message) {
         logger.debug("Delete detected for key: {}", key);
         List<String> deleted = new ArrayList<>();
-        try (KeyValueIterator<String, ReplicationMessage> it = forwardLookupStore.range(key + "|", key + "}")) {
-            while (it.hasNext()) {
-                KeyValue<String, ReplicationMessage> keyValue = it.next();
-                if (optional) {
-                    // Forward without joining
-                    String parentKey = CoreOperators.ungroupKey(keyValue.key);
-                    forwardMessage(parentKey, keyValue.value);
-                } else {
-                    // Non optional join. Forward a delete
-                    ReplicationMessage joined = joinFunction.apply(message, keyValue.value);
-                    String parentKey = CoreOperators
-                            .ungroupKey(keyValue.key);
-                    forwardMessage(parentKey, joined.withOperation(Operation.DELETE));
-                    deleted.add(keyValue.key);
-                }
-
+        KeyValueIterator<String, ReplicationMessage> it = forwardLookupStore.range(key + "|", key + "}");
+        while (it.hasNext()) {
+            KeyValue<String, ReplicationMessage> keyValue = it.next();
+            if (optional) {
+                // Forward without joining
+                String parentKey = CoreOperators.ungroupKey(keyValue.key);
+                forwardMessage(parentKey, keyValue.value);
+            } else {
+                // Non optional join. Forward a delete
+                ReplicationMessage joined = joinFunction.apply(message, keyValue.value);
+                String parentKey = CoreOperators
+                        .ungroupKey(keyValue.key);
+                forwardMessage(parentKey, joined.withOperation(Operation.DELETE));
+                deleted.add(keyValue.key);
             }
+
         }
         for (String deletedKey : deleted) {
             forwardLookupStore.delete(deletedKey);
