@@ -44,7 +44,7 @@ public class ImmutableMessageSerde implements Serde<ImmutableMessage> {
 
     @Override
     public Deserializer<ImmutableMessage> deserializer() {
-        return new Deserializer<ImmutableMessage>() {
+        return new Deserializer<>() {
 
             @Override
             public void close() {
@@ -68,7 +68,7 @@ public class ImmutableMessageSerde implements Serde<ImmutableMessage> {
 
     @Override
     public Serializer<ImmutableMessage> serializer() {
-        return new Serializer<ImmutableMessage>() {
+        return new Serializer<>() {
 
             @Override
             public void close() {

@@ -42,7 +42,7 @@ public class ConnectKeySerde implements Serde<String> {
 
     @Override
     public Deserializer<String> deserializer() {
-        return new Deserializer<String>() {
+        return new Deserializer<>() {
 
             @Override
             public void close() {

@@ -94,7 +94,7 @@ public class TestJoin {
             addresses.add(address);
         }
         organization = organization.withSubMessages("addresses",
-                addresses.stream().map(r -> r.message()).collect(Collectors.toList()));
+                addresses.stream().map(ReplicationMessage::message).collect(Collectors.toList()));
         int length = organization.toBytes(parser).length;
         logger.info("org:\n" + new String(organization.toBytes(parser)));
         logger.info("Length: " + length);

@@ -24,10 +24,7 @@ import org.apache.kafka.connect.sink.SinkConnector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class LogSinkConnector extends SinkConnector {
 
@@ -53,9 +50,8 @@ public class LogSinkConnector extends SinkConnector {
 
 	@Override
 	public List<Map<String, String>> taskConfigs(int maxTasks) {
-		Map<String,String> taskConfig = new HashMap<>();
-		taskConfig.putAll(props);
-		return Arrays.asList(taskConfig);
+		Map<String, String> taskConfig = new HashMap<>(props);
+		return Collections.singletonList(taskConfig);
 	}
 
 	@Override

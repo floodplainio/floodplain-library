@@ -67,11 +67,7 @@ public class TopologyContext {
                     }
                 }
             } else {
-                if(tenant.isPresent()) {
-                    return tenant.get() + "-" + instance + "-" + name;
-                } else {
-                    return instance + "-" + name;
-                }
+                return tenant.map(s -> s + "-" + instance + "-" + name).orElseGet(() -> instance + "-" + name);
             }
         }
     }

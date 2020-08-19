@@ -31,9 +31,9 @@ public class IfElseProcessor extends AbstractProcessor<String, ReplicationMessag
 
 
     private final static Logger logger = LoggerFactory.getLogger(IfElseProcessor.class);
-    private Predicate<ReplicationMessage> condition;
-    private String ifTrueProcessorName;
-    private Optional<String> ifFalseProcessorName;
+    private final Predicate<ReplicationMessage> condition;
+    private final String ifTrueProcessorName;
+    private final Optional<String> ifFalseProcessorName;
 
     public IfElseProcessor(Predicate<ReplicationMessage> condition, String ifTrueProcessorName, Optional<String> ifFalseProcessorName) {
         this.condition = condition;

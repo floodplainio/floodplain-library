@@ -41,8 +41,8 @@ public class OneToOneProcessor extends AbstractProcessor<String, ReplicationMess
     private KeyValueStore<String, ReplicationMessage> reverseLookupStore;
 
     private final BiFunction<ReplicationMessage, ReplicationMessage, ReplicationMessage> joinFunction;
-    private boolean optional;
-    private boolean debug;
+    private final boolean optional;
+    private final boolean debug;
 
     private static final Logger logger = LoggerFactory.getLogger(OneToOneProcessor.class);
 
@@ -90,7 +90,7 @@ public class OneToOneProcessor extends AbstractProcessor<String, ReplicationMess
                 logger.info("Null Join (reverse? {}) key: {} lookupsize: {}",reverse,key,lookupStore.approximateNumEntries());
                 List<String> keys = new ArrayList<>();
                 lookupStore.all().forEachRemaining(k->keys.add(k.key));
-                logger.info("Keys: {}",keys.stream().collect(Collectors.joining(",")));
+                logger.info("Keys: {}", String.join(",", keys));
             } else {
                 logger.info("Join Result: {} {}",key,counterpart.toFlatString(ReplicationFactory.getInstance()));
             }

@@ -38,14 +38,14 @@ public class OneToManyGroupedProcessor extends AbstractProcessor<String, Replica
     private static final Logger logger = LoggerFactory.getLogger(OneToManyGroupedProcessor.class);
     private final boolean debug;
 
-    private String storeName;
-    private String groupedStoreName;
+    private final String storeName;
+    private final String groupedStoreName;
 
-    private boolean optional;
+    private final boolean optional;
 
     private KeyValueStore<String, ReplicationMessage> groupedLookupStore;
     private KeyValueStore<String, ReplicationMessage> lookupStore;
-    private BiFunction<ReplicationMessage, List<ReplicationMessage>, ReplicationMessage> joinFunction;
+    private final BiFunction<ReplicationMessage, List<ReplicationMessage>, ReplicationMessage> joinFunction;
 
     public OneToManyGroupedProcessor(String storeName, String groupedStoreName, boolean optional, boolean debug) {
         this.storeName = storeName;

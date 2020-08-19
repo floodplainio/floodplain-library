@@ -79,9 +79,6 @@ public class Topic {
         }
         return parts[parts.length-1];
     }
-    public String unqualified() {
-        return topicDefinition;
-    }
 
     @Override
     public boolean equals(Object o) {

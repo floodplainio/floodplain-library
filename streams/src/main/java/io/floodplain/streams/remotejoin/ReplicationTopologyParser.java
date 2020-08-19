@@ -70,7 +70,7 @@ public class ReplicationTopologyParser {
     }
 
 
-    public static final void addStateStoreMapping(Map<String, List<String>> processorStateStoreMapper, String processor, String stateStore) {
+    public static void addStateStoreMapping(Map<String, List<String>> processorStateStoreMapper, String processor, String stateStore) {
         logger.info("Adding processor: {} with statestore: {}", processor, stateStore);
         List<String> parts = processorStateStoreMapper.get(stateStore);
         if (parts == null) {
@@ -86,7 +86,6 @@ public class ReplicationTopologyParser {
             final StoreBuilder<KeyValueStore<String, ReplicationMessage>> supplier = topologyConstructor.stateStoreSupplier.get(key);
             if (supplier == null) {
                 final StoreBuilder<KeyValueStore<String, ImmutableMessage>> immutableSupplier = topologyConstructor.immutableStoreSupplier.get(key);
-//				supplier = topologyConstructor.immutableStoreSupplier.get(key);
                 if (immutableSupplier != null) {
                     current = current.addStateStore(immutableSupplier, element.getValue().toArray(new String[]{}));
                     logger.info("Added processor: {} with sttstatestores: {} mappings: {}", element.getKey(), element.getValue(), topologyConstructor.processorStateStoreMapper.get(element.getKey()));
@@ -95,7 +94,6 @@ public class ReplicationTopologyParser {
                     logger.error("Available state stores: {}\nimm: {}", topologyConstructor.stateStoreSupplier.keySet(), topologyConstructor.immutableStoreSupplier.keySet());
                     throw new RuntimeException("Missing supplier for: " + element.getKey());
                 }
-
             } else {
                 current = current.addStateStore(supplier, element.getValue().toArray(new String[]{}));
                 logger.info("Added processor: {} with sttstatestores: {} mappings: {}", element.getKey(), element.getValue(), topologyConstructor.processorStateStoreMapper.get(element.getKey()));
@@ -183,24 +181,15 @@ public class ReplicationTopologyParser {
             if (!topologyConstructor.sources.containsKey(sourceTopicName)) {
                 sourceName = sourceProcessorName + "_src";
                 currentBuilder.addSource(sourceName, keyDeserializer(keyFormat), bodyDeserializer(bodyFormat), sourceTopicName.qualifiedString(context));
-//
-//                if (connectSourceFormat) {
-//                    currentBuilder.addSource(sourceName, ConnectReplicationMessageSerde.keyDeserialize(), JSONToReplicationMessage.replicationFromConnect(), sourceTopicName.qualifiedString(context));
-//                } else {
-//                    currentBuilder.addSource(sourceName, sourceTopicName.qualifiedString(context));
-//                }
                 topologyConstructor.sources.put(sourceTopicName, sourceName);
                 if (materializeStore) {
                     currentBuilder.addProcessor(sourceProcessorName, () -> new StoreProcessor(STORE_PREFIX + sourceProcessorName), sourceName);
                 } else {
                     currentBuilder.addProcessor(sourceProcessorName, () -> new IdentityProcessor(), sourceName);
-
                 }
-
             } else {
                 sourceName = topologyConstructor.sources.get(sourceTopicName);
             }
-
         }
         if (materializeStore) {
             addStateStoreMapping(topologyConstructor.processorStateStoreMapper, sourceProcessorName, STORE_PREFIX + sourceProcessorName);
@@ -330,14 +319,14 @@ public class ReplicationTopologyParser {
         Stack<String> addProcessorStack = new Stack<>();
         addProcessorStack.addAll(transformerNames);
 
-        topology.addProcessor(trueBranchName, () -> new IdentityProcessor(), addProcessorStack.peek());
+        topology.addProcessor(trueBranchName, IdentityProcessor::new, addProcessorStack.peek());
         addProcessorStack.push(trueBranchName);
 
         // Copy stack to have an independant stack
         Stack<String> removeProcessorStack = new Stack<>();
         removeProcessorStack.addAll(transformerNames);
 
-        topology.addProcessor(falseBranchName, () -> new IdentityProcessor(), removeProcessorStack.peek());
+        topology.addProcessor(falseBranchName, IdentityProcessor::new, removeProcessorStack.peek());
         removeProcessorStack.push(falseBranchName);
 
         for (TopologyPipeComponent addBranchComponents : onAdd) {
@@ -346,7 +335,7 @@ public class ReplicationTopologyParser {
 
         String primToSecondaryAddProcessor = topologyContext.qualifiedName("primToSecondaryAdd", transformerNames.size(), currentPipeId);
 
-        topology.addProcessor(primToSecondaryAddProcessor, () -> new PrimaryToSecondaryProcessor(), addProcessorStack.peek());
+        topology.addProcessor(primToSecondaryAddProcessor, PrimaryToSecondaryProcessor::new, addProcessorStack.peek());
         addProcessorStack.push(primToSecondaryAddProcessor);
 
         for (TopologyPipeComponent removePipeComponents : onRemove) {
@@ -354,7 +343,7 @@ public class ReplicationTopologyParser {
         }
         String primToSecondaryRemoveProcessor = topologyContext.qualifiedName("primToSecondaryRemove", transformerNames.size(), currentPipeId);
 
-        topology.addProcessor(primToSecondaryRemoveProcessor, () -> new PrimaryToSecondaryProcessor(), removeProcessorStack.peek());
+        topology.addProcessor(primToSecondaryRemoveProcessor, PrimaryToSecondaryProcessor::new, removeProcessorStack.peek());
         removeProcessorStack.push(primToSecondaryRemoveProcessor);
 
 //		topologyConstructor

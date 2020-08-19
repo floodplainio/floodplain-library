@@ -43,7 +43,7 @@ public class TableIdentifier {
         List<String> l = new LinkedList<>(fields);
         this.fields = Collections.unmodifiableList(l);
 
-        if (primary[1].indexOf("_") == -1) {
+        if (!primary[1].contains("_")) {
             tenant = Optional.empty();
             table = primary[2];
             deployment = primary[0];

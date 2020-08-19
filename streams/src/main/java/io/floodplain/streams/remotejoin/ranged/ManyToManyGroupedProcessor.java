@@ -41,15 +41,15 @@ public class ManyToManyGroupedProcessor extends AbstractProcessor<String, Replic
 
     private static final Logger logger = LoggerFactory.getLogger(ManyToManyGroupedProcessor.class);
 
-    private String fromProcessorName;
-    private String withProcessorName;
-    private boolean optional;
+    private final String fromProcessorName;
+    private final String withProcessorName;
+    private final boolean optional;
 
-    private BiFunction<ReplicationMessage, List<ReplicationMessage>, ReplicationMessage> manyToManyJoinFunction;
+    private final BiFunction<ReplicationMessage, List<ReplicationMessage>, ReplicationMessage> manyToManyJoinFunction;
     private KeyValueStore<String, ReplicationMessage> forwardLookupStore;
     private KeyValueStore<String, ReplicationMessage> reverseLookupStore;
 
-    private Predicate<String, ReplicationMessage> associationBypass;
+    private final Predicate<String, ReplicationMessage> associationBypass;
 
     public ManyToManyGroupedProcessor(String fromProcessor, String withProcessor,
                                       Optional<Predicate<String, ReplicationMessage>> associationBypass, boolean optional) {
@@ -126,7 +126,7 @@ public class ManyToManyGroupedProcessor extends AbstractProcessor<String, Replic
                 return;
             }
         } catch (Throwable t) {
-            logger.error("Error on checking filter predicate: {}", t);
+            logger.error("Error on checking filter predicate", t);
         }
 
         if (message.operation() == Operation.DELETE) {

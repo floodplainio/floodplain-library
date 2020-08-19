@@ -30,7 +30,6 @@ import org.slf4j.LoggerFactory;
 
 public class SheetSinkTask extends SinkTask {
 
-	private Map<String, String> props;
 	public static final String SPREADSHEETID = "spreadsheetId";
 	public static final String COLUMNS = "columns";
 	public static final String TOPIC = "topic";
@@ -55,11 +54,10 @@ public class SheetSinkTask extends SinkTask {
 
 	@Override
 	public void start(Map<String, String> props) {
-		this.props = props;
 		logger.info("Starting Sheet connector: {}",props);
 		this.spreadsheetId = props.get(SPREADSHEETID);
 		this.columns = props.get(COLUMNS).split(",");
-		this.startRow = Optional.of(props.get(STARTROW)).map(e->Integer.parseInt(e)).orElse(1);
+		this.startRow = Optional.of(props.get(STARTROW)).map(Integer::parseInt).orElse(1);
 		this.startColumn = Optional.of(props.get(STARTCOLUMN)).orElse("A");
 		try {
 			this.sheetSink = new SheetSink();
@@ -96,15 +94,14 @@ public class SheetSinkTask extends SinkTask {
 		for (SinkRecord sinkRecord : records) {
 			Map<String,Object> toplevel = (Map<String, Object>) sinkRecord.value();
 			// TODO figure this out
-			Map<String,Object> msg = (Map<String, Object>) toplevel; // .get("payload");
-			if(msg==null) {
+			if((Map<String, Object>) toplevel ==null) {
 				logger.info("Ignoring delete of key: {}", sinkRecord.key());
 			} else {
-				Integer row = (Integer) msg.get("_row");
+				Integer row = (Integer) ((Map<String, Object>) toplevel).get("_row");
 				if(row==null) {
 					throw new IllegalArgumentException("Invalid message for Google Sheets: Every message should have an int or long field named: '_row', marking the row where it should be inserted ");
 				}
-				List<List<Object>> res = sheetSink.extractRow(msg, this.columns);
+				List<List<Object>> res = sheetSink.extractRow((Map<String, Object>) toplevel, this.columns);
 //				logger.warn("res: "+res);
 //				logger.warn("Would update: {} : {} res: {}",spreadsheetId,startColumn+currentRow,res);
 				int currentRow = row+startRow;
@@ -113,13 +110,12 @@ public class SheetSinkTask extends SinkTask {
 			}
 		}
 		
-		return new ArrayList(result.values());
+		return new ArrayList<>(result.values());
 	}
 
 	@Override
 	public void stop() {
-		// TODO Auto-generated method stub
-
+		// noop
 	}
 
 }

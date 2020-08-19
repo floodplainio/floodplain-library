@@ -41,15 +41,15 @@ public class ManyToOneGroupedProcessor extends AbstractProcessor<String, Replica
 
     private static final Logger logger = LoggerFactory.getLogger(ManyToOneGroupedProcessor.class);
 
-    private String fromProcessorName;
-    private String withProcessorName;
-    private boolean optional;
+    private final String fromProcessorName;
+    private final String withProcessorName;
+    private final boolean optional;
 
-    private BiFunction<ReplicationMessage, ReplicationMessage, ReplicationMessage> joinFunction;
+    private final BiFunction<ReplicationMessage, ReplicationMessage, ReplicationMessage> joinFunction = (a, b) -> a.withParamMessage(b.message());
     private KeyValueStore<String, ReplicationMessage> forwardLookupStore;
     private KeyValueStore<String, ReplicationMessage> reverseLookupStore;
 
-    private Predicate<String, ReplicationMessage> associationBypass;
+    private final Predicate<String, ReplicationMessage> associationBypass;
 
     public ManyToOneGroupedProcessor(String fromProcessor, String withProcessor,
                                      Optional<Predicate<String, ReplicationMessage>> associationBypass,
@@ -59,8 +59,6 @@ public class ManyToOneGroupedProcessor extends AbstractProcessor<String, Replica
         this.withProcessorName = withProcessor;
         this.optional = optional;
         this.associationBypass = associationBypass.orElse((k, v) -> true);
-
-        joinFunction = (a, b) -> a.withParamMessage(b.message());
 
 
     }
@@ -163,12 +161,12 @@ public class ManyToOneGroupedProcessor extends AbstractProcessor<String, Replica
                 return;
             }
         } catch (Throwable t) {
-            logger.error("Error on checking filter predicate: {}", t);
+            logger.error("Error on checking filter predicate", t);
         }
 
         if (message.operation() == Operation.DELETE) {
             // We don't need to take special action on a delete. The message has been
-            // removed from the forwardStore already (in the storeProcessor), 
+            // removed from the forwardStore already (in the storeProcessor),
             // and no action is needed on the joined part.
             // We do still perform the join itself before forwarding this delete. It's
             // possible a join down the line

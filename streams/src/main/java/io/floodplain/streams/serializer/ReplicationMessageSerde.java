@@ -51,7 +51,7 @@ public class ReplicationMessageSerde implements Serde<ReplicationMessage> {
 
     @Override
     public Deserializer<ReplicationMessage> deserializer() {
-        return new Deserializer<ReplicationMessage>() {
+        return new Deserializer<>() {
 
             @Override
             public void close() {
@@ -72,7 +72,7 @@ public class ReplicationMessageSerde implements Serde<ReplicationMessage> {
 
     @Override
     public Serializer<ReplicationMessage> serializer() {
-        return new Serializer<ReplicationMessage>() {
+        return new Serializer<>() {
 
             @Override
             public void close() {

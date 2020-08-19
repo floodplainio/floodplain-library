@@ -230,9 +230,7 @@ public class JSONToReplicationMessage {
             case "org.apache.kafka.connect.data.Decimal":
                 String decval = value.asText();
                 Optional<ObjectNode> typeParams = Optional.ofNullable((ObjectNode) typeParameters.get("parameters"));
-                byte[] da = Base64.getDecoder().decode(decval);
-
-                return parseDecimal(da, typeParams);
+                return parseDecimal(Base64.getDecoder().decode(decval), typeParams);
             case "io.debezium.data.Enum":
                 return value.asText();
             default:
@@ -240,18 +238,12 @@ public class JSONToReplicationMessage {
         }
     }
 
-//	private BigDecimal parseDecimal(byte[] data, int scale, )
-
     private static Object parseDecimal(byte[] bytes, Optional<ObjectNode> typeParams) {
-//		logger.info("long byte size: {}",bytes.length);
         Optional<JsonNode> scaleNode = typeParams.map(e -> e.get("scale"));
         Optional<Integer> scale = scaleNode.filter(e -> !e.isNull()).map(e -> Integer.parseInt(e.asText()));
-//		Optional<Integer> scale = typeParams.map(t->t.get("scale").asText()).map(Integer::parseInt);
-
         final BigDecimal decoded = scale.map(integer -> new BigDecimal(new BigInteger(bytes), integer)).orElseGet(() -> new BigDecimal(new BigInteger(bytes)));
         if (decoded.scale() > 0) {
             return decoded;
-//            return decoded.doubleValue();
         } else {
             return decoded.longValue();
 
@@ -282,9 +274,6 @@ public class JSONToReplicationMessage {
                 List<String> ar = new ArrayList<>();
                 value.forEach(e -> ar.add(e.asText()));
                 return Collections.unmodifiableList(ar);
-//                List<String> rr = new ArrayList<>();
-//                value.forEach(e -> rr.add(e.asText()));
-//                return rr.toArray(new String[0]);
             default:
                 throw new RuntimeException("Unknown type: " + type);
         }
@@ -331,17 +320,6 @@ public class JSONToReplicationMessage {
                 return Operation.DELETE;
             default:
                 return Operation.NONE;
-        }
-    }
-
-    public static String processDebeziumJSONKey(String keyInput) throws DebeziumParseException {
-        ObjectNode keyNode = null;
-        try {
-            keyNode = (ObjectNode) objectMapper.readTree(keyInput);
-            TableIdentifier ti = processDebeziumKey(keyNode);
-            return ti.combinedKey;
-        } catch (JsonProcessingException e) {
-            throw new DebeziumParseException("Error parsing debezium key: "+keyInput,e);
         }
     }
 

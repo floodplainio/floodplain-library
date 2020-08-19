@@ -25,7 +25,7 @@ public class PreJoinProcessor extends AbstractProcessor<String, ReplicationMessa
     public static String REVERSE_IDENTIFIER = "_REV_";
 
 
-    private boolean isReverseJoin;
+    private final boolean isReverseJoin;
 
     public PreJoinProcessor(boolean isReverseJoin) {
         this.isReverseJoin = isReverseJoin;

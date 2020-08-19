@@ -47,11 +47,11 @@ public class CacheProcessor extends AbstractProcessor<String, ReplicationMessage
     private KeyValueStore<String, ReplicationMessage> lookupStore;
     private ProcessorContext context;
     private final Duration cacheTime;
-    private String cacheProcName;
+    private final String cacheProcName;
     private final Object sync = new Object();
     private final boolean memoryCache;
     private boolean clearPersistentCache = false;
-    private int maxSize;
+    private final int maxSize;
 
     public CacheProcessor(String cacheProcName, Duration cacheTime, int maxSize, boolean inMemory) {
         this.cacheProcName = cacheProcName;

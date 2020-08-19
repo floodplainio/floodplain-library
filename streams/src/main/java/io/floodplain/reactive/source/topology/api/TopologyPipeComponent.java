@@ -34,7 +34,7 @@ public interface TopologyPipeComponent {
      * @param currentPipeId Every time start a new (sub) stream, it needs to get a new pipe id.
      * @param topology The topology we are using right now
      * @param topologyContext Immutable datastructure for this run.
-     * @param topologyConstructor
+     * @param topologyConstructor Mutable state for topology
      */
     void addToTopology(Stack<String> transformerNames, int currentPipeId, Topology topology, TopologyContext topologyContext, TopologyConstructor topologyConstructor);
 

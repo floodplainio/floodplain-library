@@ -30,7 +30,6 @@ import io.floodplain.streams.debezium.TableIdentifier;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serializer;
-import org.apache.kafka.connect.json.JsonConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,9 +43,7 @@ public class ConnectReplicationMessageSerde implements Serde<ReplicationMessage>
 
     private final FallbackReplicationMessageParser parser = new FallbackReplicationMessageParser();
     private static final Logger logger = LoggerFactory.getLogger(ConnectReplicationMessageSerde.class);
-//    ReplicationMessageConverter keyConverter = new ReplicationMessageConverter();
-
-    private static ConnectKeySerde keySerde = new ConnectKeySerde();
+    private static final ConnectKeySerde keySerde = new ConnectKeySerde();
     private static final ObjectMapper objectMapper = new ObjectMapper();
     @Override
     public void close() {
@@ -100,7 +97,7 @@ public class ConnectReplicationMessageSerde implements Serde<ReplicationMessage>
     }
     @Override
     public Deserializer<ReplicationMessage> deserializer() {
-        return new Deserializer<ReplicationMessage>() {
+        return new Deserializer<>() {
 
             @Override
             public void close() {
@@ -132,7 +129,7 @@ public class ConnectReplicationMessageSerde implements Serde<ReplicationMessage>
         boolean schemaEnable = false;
         boolean debug = false;
 
-        return new Serializer<ReplicationMessage>() {
+        return new Serializer<>() {
 
             @Override
             public void close() {

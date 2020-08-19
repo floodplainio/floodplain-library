@@ -34,11 +34,6 @@ public class LogProcessor extends AbstractProcessor<String, ReplicationMessage> 
     @Override
     public void process(String key, ReplicationMessage value) {
         logger.info("TTPP>> {} key serde: {} value serde: {}",key,context().keySerde(),context().valueSerde());
-//        super.context().
-//        Serializer<ReplicationMessage> sz = (Serializer<ReplicationMessage>) super.context().valueSerde().serializer();
-//        String serializedForm = new String(sz.serialize(this.context().topic(),value));
-//        logger.info("Serialized: {}",serializedForm);
-////serializer                .serialize(value);
         super.context().forward(key, value);
     }
 

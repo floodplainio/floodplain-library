@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -57,12 +58,12 @@ public class DiffProcessor extends AbstractProcessor<String, ReplicationMessage>
 
     }
 
-    private final ReplicationMessage createMessage(String key) {
+    private ReplicationMessage createMessage(String key) {
         Map<String, Object> value = new HashMap<>();
         value.put("key", key);
         Map<String, ValueType> types = new HashMap<>();
         types.put("key", ValueType.STRING);
-        return ReplicationFactory.fromMap(key, value, types).withPrimaryKeys(Arrays.asList("key"));
+        return ReplicationFactory.fromMap(key, value, types).withPrimaryKeys(Collections.singletonList("key"));
     }
 
     @Override
