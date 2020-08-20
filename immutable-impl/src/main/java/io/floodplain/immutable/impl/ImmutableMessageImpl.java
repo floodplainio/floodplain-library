@@ -111,16 +111,15 @@ public class ImmutableMessageImpl implements ImmutableMessage {
         return this.values.keySet();
     }
 
-
     @Override
-    public Object columnValue(String name) {
+    public Optional<Object> value(String name) {
         int path = name.indexOf('/');
         if (path == -1) {
-            return values.get(name);
+            return Optional.of(values.get(name));
         }
         String submp = name.substring(0, path);
         final Optional<Object> value = subMessage(submp).orElse(ImmutableFactory.empty()).value(name.substring(path + 1));
-        return value.orElse(null);
+        return value;
     }
 
     @Override
@@ -192,7 +191,13 @@ public class ImmutableMessageImpl implements ImmutableMessage {
     @Override
     public ImmutableMessage rename(String columnName, String newName) {
         if (columnNames().contains(columnName)) {
-            return this.without(columnName).with(newName, columnValue(columnName), types.get(columnName));
+            Optional<Object> old = value(columnName);
+            if(old.isEmpty()) {
+                throw new IllegalArgumentException("Can't rename field : "+columnName+" it isn't present.");
+            } else {
+                ValueType renamingType = types.get(columnName);
+                return this.without(columnName).with(newName, old.get(), renamingType);
+            }
         }
         return this;
     }
@@ -292,11 +297,11 @@ public class ImmutableMessageImpl implements ImmutableMessage {
                         }
                     }
 
-                    Object found;
+                    Optional<Object> found;
                     if (lookupMsg != null) {
-                        found = lookupMsg.columnValue(key);
-                        if (found != null) {
-                            msg = msg.with(key, found, lookupMsg.columnType(key));
+                        found = lookupMsg.value(key);
+                        if (found.isPresent()) {
+                            msg = msg.with(key, found.get(), lookupMsg.columnType(key));
                         } else {
                             Optional<ImmutableMessage> subMessage = lookupMsg.subMessage(key);
                             if (subMessage.isPresent()) {
@@ -312,9 +317,9 @@ public class ImmutableMessageImpl implements ImmutableMessage {
                 }
             } else {
                 for (String key : other.columnNames()) {
-                    Object found = other.columnValue(key);
-                    if (found != null) {
-                        msg = msg.with(key, found, other.columnType(key));
+                    Optional<Object> found = other.value(key);
+                    if (found.isPresent()) {
+                        msg = msg.with(key, found.get(), other.columnType(key));
                     }
                 }
 

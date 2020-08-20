@@ -313,7 +313,7 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
         Map<String, Replication.ValueProtobuf> val = msg.values().entrySet()
                 .stream()
                 .map(e -> {
-                            final Object value = msg.columnValue(e.getKey());
+                            final Optional<Object> value = msg.value(e.getKey());
                             final ImmutableMessage.ValueType type = msg.types().getOrDefault(e.getKey(), ImmutableMessage.ValueType.STRING);
                             Replication.ValueProtobuf.ValueType parseType = parseType(type);
 
@@ -321,8 +321,8 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
                                 logger.warn("Unknown type for key {}, value {}, type {}", e.getKey(), value, type);
                             }
                             if (parseType.equals(Replication.ValueProtobuf.ValueType.BINARY)) {
-                                if (value != null) {
-                                    ByteString bs = ByteString.copyFrom((byte[]) value);
+                                if (value.isPresent()) {
+                                    ByteString bs = ByteString.copyFrom((byte[]) value.get());
                                     return new ValueTuple(e.getKey(), Replication.ValueProtobuf
                                             .newBuilder()
                                             .setType(parseType)
@@ -339,18 +339,18 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
 
                                 }
                             } else {
-                                final String serializeValue = serializeValue(type, value, dataFormat, clockTimeFormat);
+                                final String serializeValue = serializeValue(type, value.orElse(null), dataFormat, clockTimeFormat);
                                 if (serializeValue == null) {
                                     return new ValueTuple(e.getKey(), Replication.ValueProtobuf.newBuilder()
                                             .setType(Replication.ValueProtobuf.ValueType.CLOCKTIME)
-                                            .setIsNull(value == null)
+                                            .setIsNull(value.isEmpty())
                                             .build()
                                     );
                                 } else {
                                     return new ValueTuple(e.getKey(), Replication.ValueProtobuf.newBuilder()
                                             .setValue(serializeValue)
                                             .setType(parseType)
-                                            .setIsNull(value == null)
+                                            .setIsNull(value.isEmpty())
                                             .build()
                                     );
                                 }

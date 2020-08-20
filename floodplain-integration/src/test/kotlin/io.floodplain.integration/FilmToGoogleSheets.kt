@@ -103,7 +103,7 @@ class FilmToGoogleSheets {
                         // load a range:
                         val range: List<List<Any>>? = coreSink.getRange(spreadsheetId, "B3")
                         if (range != null) {
-                            val value = range.first()?.first()
+                            val value = range.first().first()
                             if (value == "Academy Dinosaur") {
                                 logger.info("Found cell")
                                 return@withTimeout
@@ -175,7 +175,7 @@ class FilmToGoogleSheets {
                         // load a range:
                         val range: List<List<Any>>? = coreSink.getRange(spreadsheetId, "B4")
                         if (range != null) {
-                            val value = range.first()?.first() as String
+                            val value = range.first().first() as String
                             val parsed = value.toDouble()
                             logger.info("Value: $parsed")
                             if (parsed > 61312) {

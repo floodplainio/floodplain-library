@@ -63,7 +63,7 @@ public class ReplicationProtobufTest {
         byte[] bb = m.toBytes(protoBufParser);
         logger.info("Length: {}", bb.length);
         ReplicationMessage rm = protoBufParser.parseBytes(Optional.empty(), bb);
-        logger.info("Astring: {}", rm.columnValue("astring"));
+        logger.info("Astring: {}", rm.value("astring").get());
     }
 
     public ImmutableMessage createSubMessage() {
@@ -81,12 +81,12 @@ public class ReplicationProtobufTest {
         values.put("anint", 3);
         types.put("anint", ValueType.INTEGER);
         ReplicationMessage m = ReplicationFactory.fromMap("key", values, types);
-        Object value = m.columnValue("anint");
+        Object value = m.value("anint").get();
         Assert.assertTrue(value instanceof Integer);
         byte[] bb = m.toBytes(protoBufParser);
         logger.info("Length: {}", bb.length);
         ReplicationMessage rm = protoBufParser.parseBytes(Optional.empty(), bb);
-        Object value2 = rm.columnValue("anint");
+        Object value2 = rm.value("anint").get();
         Assert.assertTrue(value2 instanceof Integer);
     }
 
@@ -95,7 +95,7 @@ public class ReplicationProtobufTest {
     public void testDate() throws IOException {
         try (InputStream is = getClass().getResourceAsStream("submessage.json")) {
             ReplicationMessage rm = jsonParser.parseStream(is);
-            Date dd = (Date) rm.columnValue("formdate");
+            Date dd = (Date) rm.value("formdate").get();
             logger.info(">> {}", dd);
         }
     }
@@ -123,7 +123,7 @@ public class ReplicationProtobufTest {
             ReplicationMessage rm = jsonParser.parseStream(is);
             Calendar c = Calendar.getInstance();
             c.set(1970, 0, 1, 17, 0, 0);
-            final Date columnValue = (Date) rm.columnValue("starttime");
+            final Date columnValue = (Date) rm.value("starttime").get();
             logger.info("Comp: {}", columnValue.compareTo(c.getTime()));
             logger.info("columnValue: {}", columnValue);
             logger.info("columnValue: {}", c.getTime());
@@ -134,7 +134,7 @@ public class ReplicationProtobufTest {
             ReplicationMessage rm2 = protoBufParser.parseBytes(Optional.empty(), bb);
             Assert.assertEquals(7, rm2.values().size());
 
-            final Date columnValue2 = (Date) rm2.columnValue("starttime");
+            final Date columnValue2 = (Date) rm2.value("starttime").get();
             Assert.assertTrue(Math.abs(c.getTime().getTime() - columnValue2.getTime()) < 1000);
         } catch (IOException e) {
             e.printStackTrace();
@@ -191,11 +191,11 @@ public class ReplicationProtobufTest {
         types.put("empty", ValueType.STRING);
 
         ReplicationMessage msg = ReplicationFactory.fromMap("key", values, types);
-        Assert.assertNull(msg.columnValue("empty"));
+        Assert.assertTrue(msg.value("empty").isEmpty());
 //		String json = new String(msg.toBytes(jsonparser));
         byte[] protobytes = msg.toBytes(parser);
         ReplicationMessage reserialized = parser.parseBytes(Optional.empty(), protobytes);
-        Assert.assertNull(reserialized.columnValue("empty"));
+        Assert.assertTrue(reserialized.value("empty").isEmpty());
         String json2 = new String(reserialized.toBytes(jsonparser), StandardCharsets.UTF_8);
         logger.info("json: " + json2);
     }

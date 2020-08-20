@@ -183,8 +183,8 @@ class FilmSimple {
         }.renderAndExecute {
             val database = topologyContext().topicName("@mongodump")
             flushSinks()
-            val hits = waitForMongoDbCondition("mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}", database) { database ->
-                val collection = database.getCollection("filmwithactors")
+            val hits = waitForMongoDbCondition("mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}", database) { mongoDatabase ->
+                val collection = mongoDatabase.getCollection("filmwithactors")
                 val countDocuments = collection.countDocuments()
                 if (countDocuments == 1000L) {
                     1000L

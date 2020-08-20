@@ -49,7 +49,9 @@ public class TableIdentifier {
             deployment = primary[0];
             databaseInstance = Optional.empty();
             combinedKey = fields.stream()
-                    .map(field -> keyMessage.columnValue(field).toString())
+                    .map(keyMessage::value)
+                    .filter(Optional::isPresent)
+                    .map(e->e.get().toString())
                     .collect(Collectors.joining(ReplicationMessage.KEYSEPARATOR));
         } else {
             deployment = primary[0];
@@ -58,7 +60,9 @@ public class TableIdentifier {
             databaseInstance = Optional.of(secondary[1].toUpperCase());
             table = primary[2];
             combinedKey = fields.stream()
-                    .map(field -> keyMessage.columnValue(field).toString())
+                    .map(keyMessage::value)
+                    .filter(Optional::isPresent)
+                    .map(e->e.get().toString())
                     .collect(Collectors.joining(ReplicationMessage.KEYSEPARATOR));
         }
 

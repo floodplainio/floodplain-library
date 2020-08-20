@@ -66,7 +66,7 @@ public class RowNumberProcessor extends AbstractProcessor<String, ReplicationMes
             row = this.lookupStore.approximateNumEntries() + 1;
             this.lookupStore.put(key, ReplicationFactory.empty().with("row", row, ImmutableMessage.ValueType.LONG));
         } else {
-            row = (long) existing.columnValue("row");
+            row = (long) existing.value("row").orElse(0);
         }
         context().forward(key, incoming.with("_row", row, ImmutableMessage.ValueType.LONG));
     }

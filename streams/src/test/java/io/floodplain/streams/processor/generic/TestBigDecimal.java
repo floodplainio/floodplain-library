@@ -37,7 +37,7 @@ public class TestBigDecimal {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode node = mapper.readTree(this.getClass().getClassLoader().getResourceAsStream("decimalwithscale.json"));
         ReplicationMessage msg = JSONToReplicationMessage.convertToReplication(false, (ObjectNode) node, Optional.empty());
-        Object amount = msg.columnValue("amount");
+        Object amount = msg.value("amount").get();
         Assert.assertTrue(amount instanceof BigDecimal);
     }
 }

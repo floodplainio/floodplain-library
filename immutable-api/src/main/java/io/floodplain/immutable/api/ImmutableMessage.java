@@ -49,20 +49,10 @@ public interface ImmutableMessage {
 
     Set<String> columnNames();
 
-    /**
-     * Use value(name) instead
-     *
-     * @param name name of column
-     * @return
-     */
-    @Deprecated
-    Object columnValue(String name);
 
     ValueType columnType(String name);
 
-    default Optional<Object> value(String name) {
-        return Optional.ofNullable(columnValue(name));
-    }
+    Optional<Object> value(String name);
 
     Map<String, ValueType> types();
 

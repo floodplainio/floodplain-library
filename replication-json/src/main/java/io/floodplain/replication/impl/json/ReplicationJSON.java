@@ -30,14 +30,12 @@ import io.floodplain.immutable.api.ImmutableMessage.TypedData;
 import io.floodplain.immutable.api.ImmutableTypeParser;
 import io.floodplain.immutable.factory.ImmutableFactory;
 import io.floodplain.replication.api.ReplicationMessage;
-import io.floodplain.replication.api.ReplicationMessageParser;
 import io.floodplain.replication.factory.ReplicationFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
@@ -54,11 +52,7 @@ public class ReplicationJSON {
 
 
     public static ReplicationMessage parseReplicationMessage(byte[] data, Optional<String> source) throws IOException {
-        return ReplicationJSON.parseJSON(source, (ObjectNode) parseJSON(data, objectMapper));
-    }
-
-    public static ReplicationMessage parseReplicationMessage(InputStream stream, Optional<String> source) throws IOException {
-        return ReplicationJSON.parseJSON(source, (ObjectNode) parseJSON(stream, objectMapper));
+        return ReplicationJSON.parseJSON(source, (ObjectNode) parseJSON(data));
     }
 
     public static byte[] jsonSerializer(ReplicationMessage msg, boolean includeNullValues) {
@@ -86,7 +80,7 @@ public class ReplicationJSON {
             try {
                 logger.error("JSON failed to write: {}", ReplicationJSON.toJSON(msg, includeNullValues).toString());
             } catch (Throwable t) {
-
+                logger.error("Logging issue: ",t);
             }
 
             return ("{}").getBytes(StandardCharsets.UTF_8);
@@ -95,14 +89,13 @@ public class ReplicationJSON {
         }
     }
 
-    public static String jsonDescriber(ReplicationMessage msg, ReplicationMessageParser parser) {
+    public static String jsonDescriber(ReplicationMessage msg) {
         return msg.flatValueMap(true, Collections.emptySet(), "").toString();
     }
 
-    private static JsonNode parseJSON(byte[] data, ObjectMapper objectMapper) throws IOException {
+    private static JsonNode parseJSON(byte[] data) throws IOException {
         try {
-            JsonNode res = objectMapper.readTree(data);
-            return res;
+            return objectMapper.readTree(data);
         } catch (Throwable t) {
             logger.error("Exception on parsing json! {}", new String(data, StandardCharsets.UTF_8), t);
             throw t;
@@ -110,11 +103,7 @@ public class ReplicationJSON {
 
     }
 
-    private static JsonNode parseJSON(InputStream stream, ObjectMapper objectMapper) throws IOException {
-        return objectMapper.readTree(stream);
-    }
-
-    static void resolveValue(ObjectMapper objectMapper, ObjectNode m, String key, ValueType type, Object value, boolean includeNullValues) {
+    static void resolveValue(ObjectNode m, String key, ValueType type, Object value, boolean includeNullValues) {
         if (value == null) {
             if (includeNullValues) {
                 m.putNull(key);
@@ -124,7 +113,7 @@ public class ReplicationJSON {
         // coming across optionals. Shouldn't be TODO investigate
         // Treat empty optionals as null, barf on filled optionals
         if (value instanceof Optional) {
-            Optional o = (Optional) value;
+            Optional<?> o = (Optional<?>) value;
             // empty optional, treat as null
             if (o.isEmpty()) {
                 if (includeNullValues) {
@@ -139,6 +128,7 @@ public class ReplicationJSON {
         }
         switch (type) {
             case STRING:
+            case BINARY_DIGEST:
                 m.put("Value", (String) value);
                 return;
             case DECIMAL:
@@ -162,9 +152,6 @@ public class ReplicationJSON {
                 return;
             case BOOLEAN:
                 m.put("Value", (Boolean) value);
-                return;
-            case BINARY_DIGEST:
-                m.put("Value", (String) value);
                 return;
             case DATE:
                 if (value instanceof String) {
@@ -325,20 +312,6 @@ public class ReplicationJSON {
         }
     }
 
-    public static byte[] serializeImmutable(ImmutableMessage msg) {
-        ObjectNode node = immutableToJSON(msg);
-        try {
-            return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(node);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("Error writing json", e);
-        }
-    }
-
-    public static ImmutableMessage parseReplicationMessage(byte[] data, ObjectMapper objectMapper) throws IOException {
-        return parseImmutable((ObjectNode) parseJSON(data, objectMapper));
-    }
-
-
     private static ObjectNode immutableToJSON(ImmutableMessage msg) {
         ObjectNode node = objectMapper.createObjectNode();
         Map<String, TypedData> values = msg.toTypedDataMap();
@@ -399,13 +372,11 @@ public class ReplicationJSON {
             }
 
         }
-        msg.subMessageMap().entrySet().forEach(e -> {
-            node.set(e.getKey(), immutableToJSON(e.getValue()));
-        });
-        msg.subMessageListMap().entrySet().forEach(e -> {
+        msg.subMessageMap().forEach((key, value) -> node.set(key, immutableToJSON(value)));
+        msg.subMessageListMap().forEach((key, value) -> {
             ArrayNode al = objectMapper.createArrayNode();
-            e.getValue().stream().map(ReplicationJSON::immutableToJSON).forEach(elt -> al.add(elt));
-            node.set(e.getKey(), al);
+            value.stream().map(ReplicationJSON::immutableToJSON).forEach(al::add);
+            node.set(key, al);
         });
         return node;
     }
@@ -426,7 +397,7 @@ public class ReplicationJSON {
             if (value != null || type != ValueType.UNKNOWN) {
                 ObjectNode m = objectMapper.createObjectNode();
                 m.put("Type", ImmutableTypeParser.typeName(type));
-                ReplicationJSON.resolveValue(objectMapper, m, key, type, value, includeNullValues);
+                ReplicationJSON.resolveValue(m, key, type, value, includeNullValues);
                 columns.set(e.getKey(), m);
             }
         }
@@ -495,7 +466,7 @@ public class ReplicationJSON {
     }
 
     public static ImmutableMessage parseImmutable(byte[] data) throws IOException {
-        return parseImmutable((ObjectNode) parseJSON(data, objectMapper));
+        return parseImmutable((ObjectNode) parseJSON(data));
 
     }
 
@@ -575,8 +546,7 @@ public class ReplicationJSON {
             subMessageMap = Collections.emptyMap();
             subMessageListMap = Collections.emptyMap();
         }
-        ImmutableMessage flatMessage = ImmutableFactory.create(values, types, subMessageMap, subMessageListMap);
-        return flatMessage;
+        return ImmutableFactory.create(values, types, subMessageMap, subMessageListMap);
     }
 
 

@@ -71,12 +71,12 @@ public class TestJoin {
     public void testMessageList() {
         logger.info("Output: " + organizationaddress.primaryKeys());
         List<String> primaryValues = organizationaddress.primaryKeys().stream()
-                .map(k -> organizationaddress.columnValue(k).toString()).collect(Collectors.toList());
+                .map(k -> organizationaddress.value(k).get().toString()).collect(Collectors.toList());
 
         String[] parts = primaryValues.toArray(new String[0]);
         String joined = String.join("-", parts);
-        Assert.assertEquals(organizationaddress.columnValue(organizationaddress.primaryKeys().get(0)) + "-"
-                + organizationaddress.columnValue(organizationaddress.primaryKeys().get(1)), joined);
+        Assert.assertEquals(organizationaddress.value(organizationaddress.primaryKeys().get(0)).get() + "-"
+                + organizationaddress.value(organizationaddress.primaryKeys().get(1)).get(), joined);
         logger.info("Joined: " + joined);
         List<ReplicationMessage> list = new ArrayList<>();
         list.add(organizationaddress);
@@ -224,7 +224,7 @@ public class TestJoin {
         Assert.assertEquals(14, repl.subMessages("standings").get().size());
 
         ReplicationMessage combined = repl.withoutSubMessageInList("standings",
-                m -> ((Integer) m.columnValue("homegoals")) == 4);
+                m -> ((Integer) m.value("homegoals").get()) == 4);
         Assert.assertEquals(11, combined.subMessages("standings").get().size());
     }
 

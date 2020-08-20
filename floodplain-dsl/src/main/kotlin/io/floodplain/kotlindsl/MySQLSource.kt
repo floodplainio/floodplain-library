@@ -96,7 +96,12 @@ class MySQLConfig(val topologyContext: TopologyContext, val name: String, val of
             "database.history.file.filename" to tempFile.absolutePath
         )
         return createDebeziumChangeFlow(topologyContext.topicName(name), "io.debezium.connector.mysql.MySqlConnector", hostname, port, database, username, password, offsetId, extraSettings)
-            .onCompletion { e -> tempFile.absolutePath }
+            .onCompletion { e ->
+                if (e != null) {
+                    logger.info("Error in debezium source", e)
+                }
+                tempFile.delete()
+            }
     }
 }
 

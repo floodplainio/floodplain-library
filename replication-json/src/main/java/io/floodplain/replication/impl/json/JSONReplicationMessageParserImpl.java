@@ -142,7 +142,7 @@ public class JSONReplicationMessageParserImpl implements ReplicationMessageParse
 
     @Override
     public String describe(ReplicationMessage msg) {
-        return ReplicationJSON.jsonDescriber(msg, this);
+        return ReplicationJSON.jsonDescriber(msg);
     }
 
     @Override

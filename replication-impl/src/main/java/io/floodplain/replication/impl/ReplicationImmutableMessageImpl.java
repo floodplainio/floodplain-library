@@ -90,7 +90,10 @@ public class ReplicationImmutableMessageImpl implements ReplicationMessage {
         if (primaryKeys.size() == 0) {
             return "NO_KEY_PRESENT";
         }
-        return String.join(ReplicationMessage.KEYSEPARATOR, primaryKeys.stream().map(col -> "" + columnValue(col)).collect(Collectors.toList()));
+        return String.join(ReplicationMessage.KEYSEPARATOR, primaryKeys.stream().map(col ->value(col))
+                .filter(e->e.isPresent())
+                .map(e->(String)e.get())
+                .collect(Collectors.toList()));
     }
 
     @Override
@@ -226,11 +229,12 @@ public class ReplicationImmutableMessageImpl implements ReplicationMessage {
         return message().columnNames();
     }
 
-    @Deprecated
     @Override
-    public Object columnValue(String name) {
-        return message().columnValue(name);
+    public Optional<Object> value(String columnName) {
+        return message().value(columnName);
+
     }
+
 
     @Override
     public ValueType columnType(String name) {

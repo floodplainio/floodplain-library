@@ -59,7 +59,7 @@ public class TestSer {
         ReplicationMessage r = ReplicationFactory.empty().with("binary", payload, ImmutableMessage.ValueType.BINARY);
         byte[] encoded = r.toBytes(parser);
         ReplicationMessage s = parser.parseBytes(Optional.of("binary"), encoded);
-        final byte[] deserialized = (byte[]) s.columnValue("binary");
+        final byte[] deserialized = (byte[]) s.value("binary").get();
         return deserialized;
     }
 

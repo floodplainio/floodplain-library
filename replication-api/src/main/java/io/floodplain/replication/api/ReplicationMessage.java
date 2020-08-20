@@ -45,7 +45,7 @@ public interface ReplicationMessage {
 
     Set<String> columnNames();
 
-    Object columnValue(String name);
+    Optional<Object> value(String columnName);
 
     ValueType columnType(String name);
 
@@ -126,6 +126,6 @@ public interface ReplicationMessage {
     ReplicationMessage withoutParamMessage();
 
     default String combinedKey() {
-        return primaryKeys().stream().map(k -> columnValue(k).toString()).collect(Collectors.joining(KEYSEPARATOR));
+        return primaryKeys().stream().map(k -> value(k).toString()).collect(Collectors.joining(KEYSEPARATOR));
     }
 }

@@ -140,7 +140,7 @@ public class CacheProcessor extends AbstractProcessor<String, ReplicationMessage
             while (it.hasNext()) {
                 KeyValue<String, ReplicationMessage> keyValue = it.next();
                 entries++;
-                long cachedAt = (Long) keyValue.value.columnValue(CACHED_AT_KEY);
+                long cachedAt = (Long) keyValue.value.value(CACHED_AT_KEY).orElse(0L);
                 if ((ms - cachedAt) >= cacheTime.toMillis()) {
                     possibleExpired.add(keyValue.key);
                 }
@@ -150,7 +150,7 @@ public class CacheProcessor extends AbstractProcessor<String, ReplicationMessage
                 for (String key : possibleExpired) {
                     ReplicationMessage message = lookupStore.get(key);
                     if (message == null) continue; // message is deleted
-                    long cachedAt = (Long) message.columnValue(CACHED_AT_KEY);
+                    long cachedAt = (Long) message.value(CACHED_AT_KEY).orElse(0L);
                     if ((ms - cachedAt) >= cacheTime.toMillis()) {
                         expiredEntries++;
                         context.forward(key, message.without(CACHED_AT_KEY));
@@ -159,9 +159,9 @@ public class CacheProcessor extends AbstractProcessor<String, ReplicationMessage
                 }
             }
         }
-
+        // This branch is only for in-memory
         long duration = System.currentTimeMillis() - ms;
-        if (entries > 0 && !memoryCache) {
+        if (entries > 0 ) {
             logger.info("Checked cache {} - {} entries, {} expired entries in {}ms", this.cacheProcName, entries, expiredEntries, duration);
         }
     }

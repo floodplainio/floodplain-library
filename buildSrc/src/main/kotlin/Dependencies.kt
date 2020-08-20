@@ -2,7 +2,7 @@ package io.floodplain.build
 
 object Versions {
     const val gradle = "3.5.0"
-    const val kotlin = "1.3.72"
+    const val kotlin = "1.4.0"
 
     /* test */
     const val junit = "4.12"

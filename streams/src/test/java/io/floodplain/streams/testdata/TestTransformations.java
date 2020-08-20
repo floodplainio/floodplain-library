@@ -98,12 +98,12 @@ public class TestTransformations {
 
     @Test
     public void test() {
-        Assert.assertEquals("4565AB", addressMessage.columnValue("zipcode"));
+        Assert.assertEquals("4565AB", addressMessage.value("zipcode").get());
     }
 
     @Test
     public void testRename() {
-        Assert.assertEquals("4565AB", addressMessage.rename("zipcode", "zippy").columnValue("zippy"));
+        Assert.assertEquals("4565AB", addressMessage.rename("zipcode", "zippy").value("zippy").get());
     }
 
     @Test
@@ -124,18 +124,18 @@ public class TestTransformations {
         ReplicationMessage id = addressMessage.withPrimaryKeys(Arrays.asList("zipcode"));
         Assert.assertEquals(1, id.primaryKeys().size());
         Assert.assertEquals("zipcode", id.primaryKeys().stream().findFirst().get());
-        Assert.assertEquals(id.columnValue("zipcode"), id.queueKey());
+        Assert.assertEquals(id.value("zipcode").get(), id.queueKey());
     }
 
 
     @Test
     public void testRemove() {
-        Assert.assertNull(addressMessage.without("zipcode").columnValue("zipcode"));
+        Assert.assertNull(addressMessage.without("zipcode").value("zipcode").get());
     }
 
     @Test
     public void testAdd() {
-        Assert.assertEquals("monkey", addressMessage.with("animal", "monkey", ImmutableMessage.ValueType.STRING).columnValue("animal"));
+        Assert.assertEquals("monkey", addressMessage.with("animal", "monkey", ImmutableMessage.ValueType.STRING).value("animal").get());
         Assert.assertEquals(ImmutableMessage.ValueType.STRING, addressMessage.with("animal", "monkey", ImmutableMessage.ValueType.STRING).columnType("animal"));
     }
 
