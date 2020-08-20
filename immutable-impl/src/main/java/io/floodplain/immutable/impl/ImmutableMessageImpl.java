@@ -115,7 +115,7 @@ public class ImmutableMessageImpl implements ImmutableMessage {
     public Optional<Object> value(String name) {
         int path = name.indexOf('/');
         if (path == -1) {
-            return Optional.of(values.get(name));
+            return Optional.ofNullable(values.get(name));
         }
         String submp = name.substring(0, path);
         final Optional<Object> value = subMessage(submp).orElse(ImmutableFactory.empty()).value(name.substring(path + 1));
