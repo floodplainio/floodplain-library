@@ -92,7 +92,7 @@ public class ReplicationImmutableMessageImpl implements ReplicationMessage {
         }
         return String.join(ReplicationMessage.KEYSEPARATOR, primaryKeys.stream().map(col ->value(col))
                 .filter(e->e.isPresent())
-                .map(e->(String)e.get())
+                .map(e->e.get().toString())
                 .collect(Collectors.toList()));
     }
 

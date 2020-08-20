@@ -130,7 +130,7 @@ public class TestTransformations {
 
     @Test
     public void testRemove() {
-        Assert.assertNull(addressMessage.without("zipcode").value("zipcode").get());
+        Assert.assertTrue(addressMessage.without("zipcode").value("zipcode").isEmpty());
     }
 
     @Test

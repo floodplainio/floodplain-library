@@ -126,6 +126,6 @@ public interface ReplicationMessage {
     ReplicationMessage withoutParamMessage();
 
     default String combinedKey() {
-        return primaryKeys().stream().map(k -> value(k).toString()).collect(Collectors.joining(KEYSEPARATOR));
+        return primaryKeys().stream().map(k -> value(k).get().toString()).collect(Collectors.joining(KEYSEPARATOR));
     }
 }
