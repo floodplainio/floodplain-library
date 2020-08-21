@@ -80,8 +80,6 @@ public class JSONDumpReplicationMessageParserImpl implements ReplicationMessageP
         try {
             node = ReplicationJSON.objectMapper.readTree(data);
             return ReplicationJSON.parseJSON(source, (ObjectNode) node);
-        } catch (JsonProcessingException e) {
-            return ReplicationFactory.createErrorReplicationMessage(e);
         } catch (IOException e) {
             return ReplicationFactory.createErrorReplicationMessage(e);
         }
@@ -124,7 +122,7 @@ public class JSONDumpReplicationMessageParserImpl implements ReplicationMessageP
     @Override
     public byte[] serializeMessageList(List<ReplicationMessage> data) {
         ArrayNode list = ReplicationJSON.objectMapper.createArrayNode();
-        data.stream().map(msg -> ReplicationJSON.toJSON(msg, includeNullValues)).forEach(e -> list.add(e));
+        data.stream().map(msg -> ReplicationJSON.toJSON(msg, includeNullValues)).forEach(list::add);
         try {
             ObjectWriter w = ReplicationJSON.objectMapper.writer();
             return w.writeValueAsBytes(list);

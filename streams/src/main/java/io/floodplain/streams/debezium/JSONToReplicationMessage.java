@@ -154,7 +154,6 @@ public class JSONToReplicationMessage {
         return ReplicationFactory.standardMessage(core).withOperation(o).atTime(millis);
     }
 
-
     private static Optional<JsonNode> findFirstChild(ArrayNode node, Predicate<JsonNode> pred) {
         return StreamSupport.stream(node.spliterator(), false).filter(pred).findFirst();
     }
@@ -212,7 +211,6 @@ public class JSONToReplicationMessage {
             case "io.debezium.time.Date":
                 int valueInt = value.asInt();
                 // TODO I have no clue, doubt if this work. Create a test for this.
-                // long timemillis = 24 * 60 * 60 * 1000 * (long) valueInt;
                 Calendar c = Calendar.getInstance();
                 c.add(Calendar.DAY_OF_YEAR, valueInt);
                 LocalDateTime ldt = LocalDateTime.ofEpochSecond(valueInt,0, ZoneOffset.UTC);

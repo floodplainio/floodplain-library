@@ -61,12 +61,9 @@ public class SinkTransformer implements TopologyPipeComponent {
         final String qualifiedSinkTopic = topic.qualifiedString(topologyContext);
         topologyConstructor.ensureTopicExists(topic, partitions);
         String qualifiedName;
-        if(name.isPresent()) {
-            // TODO effective deconflicting but ugly
-            qualifiedName = name.get().definition() + "_" +  topologyContext.topicName(name.get()+"_"+topic.qualifiedString(topologyContext));
-        } else {
-            qualifiedName = qualifiedSinkTopic; //topologyContext.applicationId();
-        }
+        // TODO effective deconflicting but ugly
+        //topologyContext.applicationId();
+        qualifiedName = name.map(processorName -> processorName.definition() + "_" + topologyContext.topicName(processorName + "_" + topic.qualifiedString(topologyContext))).orElse(qualifiedSinkTopic);
         topologyConstructor.addSink(qualifiedName);
         logger.info("Stack top for transformer: " + transformerNames.peek());
         Serializer<String> keySerializer = ReplicationTopologyParser.keySerializer(this.keyFormat);

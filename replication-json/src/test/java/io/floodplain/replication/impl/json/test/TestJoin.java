@@ -77,9 +77,10 @@ public class TestJoin {
         String joined = String.join("-", parts);
         Assert.assertEquals(organizationaddress.value(organizationaddress.primaryKeys().get(0)).get() + "-"
                 + organizationaddress.value(organizationaddress.primaryKeys().get(1)).get(), joined);
-        logger.info("Joined: " + joined);
+        logger.info("Joined: {}", joined);
         List<ReplicationMessage> list = new ArrayList<>();
         list.add(organizationaddress);
+        logger.info("Combined: {}", list);
 
     }
 

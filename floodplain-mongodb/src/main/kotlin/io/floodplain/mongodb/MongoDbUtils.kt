@@ -22,12 +22,10 @@ import com.mongodb.client.MongoDatabase
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeout
 
-private val logger = mu.KotlinLogging.logger {}
-
 suspend fun waitForMongoDbCondition(connectionString: String, database: String, timeout: Long = 200000L, check: (MongoDatabase) -> Any?): Any? {
     var returnValue: Any? = null
     MongoClients.create(connectionString)
-        .use({ client ->
+        .use { client ->
             val db = client.getDatabase(database)
             withTimeout(timeout) {
                 repeat(1000) {
@@ -39,6 +37,6 @@ suspend fun waitForMongoDbCondition(connectionString: String, database: String, 
                     delay(500)
                 }
             }
-        })
-        return returnValue
+        }
+    return returnValue
     }

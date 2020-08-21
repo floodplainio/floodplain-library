@@ -45,7 +45,7 @@ private val logger = mu.KotlinLogging.logger {}
 @kotlinx.coroutines.ExperimentalCoroutinesApi
 class FilmToGoogleSheets {
 
-    val spreadsheetId = "1MTAn1d13M8ptb2MkBHOSNK1gbJOOW1sFQoSfqa1JbXU"
+    private val spreadsheetId = "1MTAn1d13M8ptb2MkBHOSNK1gbJOOW1sFQoSfqa1JbXU"
 
     private val postgresContainer = InstantiatedContainer("floodplain/floodplain-postgres-demo:1.0.0", 5432)
 

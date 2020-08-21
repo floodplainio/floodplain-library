@@ -52,18 +52,25 @@ fun constructConnectorJson(topologyContext: TopologyContext, connectorName: Stri
     val configNode = objectMapper.createObjectNode()
     node.set<JsonNode>("config", configNode)
     parameters.forEach { (k: String, v: Any) ->
-        if (v is String) {
-            configNode.put(k, v as String?)
-        } else if (v is Int) {
-            configNode.put(k, v as Int?)
-        } else if (v is Long) {
-            configNode.put(k, v as Long?)
-        } else if (v is Float) {
-            configNode.put(k, v as Float?)
-        } else if (v is Double) {
-            configNode.put(k, v as Double?)
-        } else if (v is Boolean) {
-            configNode.put(k, v as Boolean?)
+        when (v) {
+            is String -> {
+                configNode.put(k, v as String?)
+            }
+            is Int -> {
+                configNode.put(k, v as Int?)
+            }
+            is Long -> {
+                configNode.put(k, v as Long?)
+            }
+            is Float -> {
+                configNode.put(k, v as Float?)
+            }
+            is Double -> {
+                configNode.put(k, v as Double?)
+            }
+            is Boolean -> {
+                configNode.put(k, v as Boolean?)
+            }
         }
     }
     // override name to match general name
@@ -136,7 +143,7 @@ fun instantiateSinkConfig(topologyContext: TopologyContext, config: SinkConfig, 
 
         val localSink = floodplainSinkFromTask(task, config)
         materializedSink.topics.forEach { topic ->
-            val list = result.computeIfAbsent(topic) { _ -> mutableListOf() }
+            val list = result.computeIfAbsent(topic) { mutableListOf() }
             list.add(localSink)
         }
     }

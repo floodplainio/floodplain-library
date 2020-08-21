@@ -23,7 +23,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.floodplain.replication.api.ReplicationMessage;
-import io.floodplain.replication.impl.protobuf.FallbackReplicationMessageParser;
 import io.floodplain.streams.debezium.DebeziumParseException;
 import io.floodplain.streams.debezium.JSONToReplicationMessage;
 import io.floodplain.streams.debezium.TableIdentifier;
@@ -42,7 +41,6 @@ import java.util.Optional;
 
 public class ConnectReplicationMessageSerde implements Serde<ReplicationMessage> {
 
-    private final FallbackReplicationMessageParser parser = new FallbackReplicationMessageParser();
     private static final Logger logger = LoggerFactory.getLogger(ConnectReplicationMessageSerde.class);
     private static final ConnectKeySerde keySerde = new ConnectKeySerde();
     private static final ObjectMapper objectMapper = new ObjectMapper();
@@ -127,8 +125,8 @@ public class ConnectReplicationMessageSerde implements Serde<ReplicationMessage>
     @Override
     public Serializer<ReplicationMessage> serializer() {
 
-        boolean schemaEnable = false;
-        boolean debug = false;
+        final boolean schemaEnable = false;
+        final boolean debug = false;
 
         return new Serializer<>() {
 

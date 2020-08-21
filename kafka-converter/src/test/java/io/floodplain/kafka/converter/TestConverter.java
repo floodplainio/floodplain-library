@@ -28,6 +28,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
+import java.util.Objects;
 
 public class TestConverter {
 
@@ -43,7 +44,7 @@ public class TestConverter {
     public void testConverter() throws IOException {
         ReplicationMessageConverter converter = new ReplicationMessageConverter();
         converter.configure(Collections.emptyMap(), false);
-        SchemaAndValue sav = converter.toConnectData("any", readStream(TestConverter.class.getClassLoader().getResourceAsStream("example.json")));
+        SchemaAndValue sav = converter.toConnectData("any", readStream(Objects.requireNonNull(TestConverter.class.getClassLoader().getResourceAsStream("example.json"))));
         logger.info("Result: {}",sav.value());
     }
 

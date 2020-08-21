@@ -42,10 +42,9 @@ import java.util.*;
 
 public class ReplicationProtobufTest {
 
-    private ReplicationMessageParser protoBufParser = new ProtobufReplicationMessageParser();
-    private ReplicationMessageParser jsonParser = new JSONReplicationMessageParserImpl();
+    private final ReplicationMessageParser protoBufParser = new ProtobufReplicationMessageParser();
+    private final ReplicationMessageParser jsonParser = new JSONReplicationMessageParserImpl();
     private final static Logger logger = LoggerFactory.getLogger(ReplicationProtobufTest.class);
-
 
     @BeforeClass
     public static void setup() {
@@ -89,7 +88,6 @@ public class ReplicationProtobufTest {
         Object value2 = rm.value("anint").get();
         Assert.assertTrue(value2 instanceof Integer);
     }
-
 
     @Test
     public void testDate() throws IOException {
@@ -189,10 +187,8 @@ public class ReplicationProtobufTest {
         types.put("key", ValueType.STRING);
         values.put("empty", null);
         types.put("empty", ValueType.STRING);
-
         ReplicationMessage msg = ReplicationFactory.fromMap("key", values, types);
         Assert.assertTrue(msg.value("empty").isEmpty());
-//		String json = new String(msg.toBytes(jsonparser));
         byte[] protobytes = msg.toBytes(parser);
         ReplicationMessage reserialized = parser.parseBytes(Optional.empty(), protobytes);
         Assert.assertTrue(reserialized.value("empty").isEmpty());
@@ -222,36 +218,26 @@ public class ReplicationProtobufTest {
     public void testParamMessage() {
         try (InputStream is = ReplicationProtobufTest.class.getResourceAsStream("organizationwithparam.json")) {
             ReplicationMessage rm = jsonParser.parseStream(is);
-
             byte[] bb = protoBufParser.serialize(rm);
-
             ReplicationMessage repl = protoBufParser.parseBytes(Optional.empty(), bb);
-
             Assert.assertTrue(repl.paramMessage().isPresent());
             Assert.assertEquals(12, repl.paramMessage().get().value("col2").get());
             logger.info("Names: " + repl.queueKey() + " names: " + repl.columnNames() + "\n sub: " + repl.message().subMessageNames() + " subli: " + repl.subMessageListNames());
-
-
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
     @Test
     public void testSubmessageMessage() {
         try (InputStream is = ReplicationProtobufTest.class.getResourceAsStream("submessage.json")) {
             ReplicationMessage rm = jsonParser.parseStream(is);
-
             byte[] bb = protoBufParser.serialize(rm);
             ReplicationMessage repl = protoBufParser.parseBytes(Optional.empty(), bb);
             logger.info("Names: " + repl.queueKey() + " names: " + repl.columnNames() + "\n sub: " + repl.message().subMessageNames() + " subli: " + repl.subMessageListNames());
-
-
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
 }

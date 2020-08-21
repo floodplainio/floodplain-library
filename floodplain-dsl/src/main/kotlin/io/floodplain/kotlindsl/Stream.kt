@@ -69,11 +69,11 @@ class Stream(val context: TopologyContext) {
         sourceConfigurations.add(c)
     }
 
-    fun sinkConfigurations(): List<SinkConfig> {
+    private fun sinkConfigurations(): List<SinkConfig> {
         return sinkConfigurations.toList()
     }
 
-    fun sourceConfigurations(): List<SourceConfig> {
+    private fun sourceConfigurations(): List<SourceConfig> {
         return sourceConfigurations.toList()
     }
 

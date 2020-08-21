@@ -118,8 +118,7 @@ public class ImmutableMessageImpl implements ImmutableMessage {
             return Optional.ofNullable(values.get(name));
         }
         String submp = name.substring(0, path);
-        final Optional<Object> value = subMessage(submp).orElse(ImmutableFactory.empty()).value(name.substring(path + 1));
-        return value;
+        return subMessage(submp).orElse(ImmutableFactory.empty()).value(name.substring(path + 1));
     }
 
     @Override

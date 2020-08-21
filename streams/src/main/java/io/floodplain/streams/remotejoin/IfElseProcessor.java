@@ -28,8 +28,6 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 public class IfElseProcessor extends AbstractProcessor<String, ReplicationMessage> {
-
-
     private final static Logger logger = LoggerFactory.getLogger(IfElseProcessor.class);
     private final Predicate<ReplicationMessage> condition;
     private final String ifTrueProcessorName;

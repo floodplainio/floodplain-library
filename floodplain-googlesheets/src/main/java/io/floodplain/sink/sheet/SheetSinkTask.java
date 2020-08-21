@@ -68,7 +68,7 @@ public class SheetSinkTask extends SinkTask {
 
 	/**
 	 * For testing
-	 * @return
+	 * @return The sheet sink service
 	 */
 	public SheetSink getSheetSink() {
 		return this.sheetSink;
@@ -89,27 +89,23 @@ public class SheetSinkTask extends SinkTask {
 
 	private List<UpdateTuple> extractTuples(Collection<SinkRecord> records) {
 		LinkedHashMap<Integer,UpdateTuple> result = new LinkedHashMap<>();
-//		List<UpdateTuple> result = new ArrayList<>();
 		logger.info("Inserting {} records",records.size());
 		for (SinkRecord sinkRecord : records) {
 			Map<String,Object> toplevel = (Map<String, Object>) sinkRecord.value();
 			// TODO figure this out
-			if((Map<String, Object>) toplevel ==null) {
+			if(toplevel ==null) {
 				logger.info("Ignoring delete of key: {}", sinkRecord.key());
 			} else {
-				Integer row = (Integer) ((Map<String, Object>) toplevel).get("_row");
+				Integer row = (Integer) toplevel.get("_row");
 				if(row==null) {
 					throw new IllegalArgumentException("Invalid message for Google Sheets: Every message should have an int or long field named: '_row', marking the row where it should be inserted ");
 				}
-				List<List<Object>> res = sheetSink.extractRow((Map<String, Object>) toplevel, this.columns);
-//				logger.warn("res: "+res);
-//				logger.warn("Would update: {} : {} res: {}",spreadsheetId,startColumn+currentRow,res);
+				List<List<Object>> res = sheetSink.extractRow(toplevel, this.columns);
 				int currentRow = row+startRow;
 				UpdateTuple ut = new UpdateTuple(startColumn+currentRow, res);
 				result.put(currentRow,ut);
 			}
 		}
-		
 		return new ArrayList<>(result.values());
 	}
 

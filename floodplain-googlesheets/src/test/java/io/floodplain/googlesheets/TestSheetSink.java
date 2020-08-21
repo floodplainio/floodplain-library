@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import io.floodplain.sink.sheet.SheetSink;
@@ -49,7 +48,7 @@ public class TestSheetSink {
 		values.put("countryid", "NL");
 		UpdateTuple ut = new UpdateTuple("A6",sink.extractRow(values, new String[]{"streetname","housenumber","zipcode","city","countryid"}));
 		UpdateTuple ut2 = new UpdateTuple("A8",sink.extractRow(values, new String[]{"streetname","housenumber","zipcode","city","countryid"}));
-		sink.updateRange(spreadsheetId, "A5", sink.extractRow(values, new String[]{"streetname","housenumber","zipcode","city","countryid"})); ;
+		sink.updateRange(spreadsheetId, "A5", sink.extractRow(values, new String[]{"streetname","housenumber","zipcode","city","countryid"}));
 		List<UpdateTuple> tuples = new ArrayList<>();
 		tuples.add(ut);
 		tuples.add(ut2);

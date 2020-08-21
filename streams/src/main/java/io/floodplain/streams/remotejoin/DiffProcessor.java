@@ -27,8 +27,6 @@ import org.apache.kafka.streams.processor.ProcessorContext;
 import org.apache.kafka.streams.state.KeyValueStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -76,9 +74,6 @@ public class DiffProcessor extends AbstractProcessor<String, ReplicationMessage>
                 context().forward(key, createMessage(key)
                         .withSubMessage("old", previous.message())
                         .withOperation(Operation.DELETE));
-
-            } else {
-                // -- 'unknown' delete, ignore
             }
         } else {
             ReplicationMessage previous = lookupStore.get(key);

@@ -29,7 +29,7 @@ import kotlinx.coroutines.flow.onEach
 
 private val logger = mu.KotlinLogging.logger {}
 
-class MySQLConfig(val topologyContext: TopologyContext, val name: String, val offsetId: String, private val hostname: String, private val port: Int, private val username: String, private val password: String, private val database: String) : SourceConfig {
+class MySQLConfig(val topologyContext: TopologyContext, val name: String, private val offsetId: String, private val hostname: String, private val port: Int, private val username: String, private val password: String, private val database: String) : SourceConfig {
 
     private val sourceElements: MutableList<SourceTopic> = mutableListOf()
 

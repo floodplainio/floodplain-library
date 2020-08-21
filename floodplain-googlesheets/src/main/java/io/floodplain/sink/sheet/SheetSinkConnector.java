@@ -18,10 +18,7 @@
  */
 package io.floodplain.sink.sheet;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.kafka.common.config.ConfigDef;
 import org.apache.kafka.connect.connector.Task;
@@ -53,9 +50,7 @@ public class SheetSinkConnector extends SinkConnector {
 
 	@Override
 	public List<Map<String, String>> taskConfigs(int maxTasks) {
-		Map<String,String> taskConfig = new HashMap<>();
-		taskConfig.putAll(props);
-		return Arrays.asList(taskConfig);
+		return Collections.singletonList(new HashMap<>(props));
 	}
 
 	@Override

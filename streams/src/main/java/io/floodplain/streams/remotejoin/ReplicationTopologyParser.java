@@ -98,6 +98,7 @@ public class ReplicationTopologyParser {
     }
 
 
+    // I think we need to use the topologyContext
     public static void addDiffProcessor(Topology current, TopologyContext topologyContext,
                                          TopologyConstructor topologyConstructor, String fromProcessor,
                                          String diffProcessorNamePrefix) {
@@ -195,19 +196,6 @@ public class ReplicationTopologyParser {
         logger.info("Granting access for processor: {} to store: {}", sourceProcessorName, sourceProcessorName);
 
         return sourceProcessorName;
-    }
-
-    private static Flatten parseFlatten(String flatten) {
-        if (flatten == null) {
-            return Flatten.NONE;
-        }
-        if ("true".equals(flatten) || "first".equals(flatten)) {
-            return Flatten.FIRST;
-        }
-        if ("last".equals(flatten)) {
-            return Flatten.LAST;
-        }
-        return Flatten.NONE;
     }
 
     public static String addSingleJoinGrouped(final Topology current, TopologyContext topologyContext,
@@ -343,7 +331,7 @@ public class ReplicationTopologyParser {
         removeProcessorStack.push(primToSecondaryRemoveProcessor);
 
 //		topologyConstructor
-        topology.addProcessor(materialize ? "_proc" + reduceName : reduceName, () -> new StoreStateProcessor(reduceStoreName, keyExtractor), addProcessorStack.peek(), removeProcessorStack.peek());
+        topology.addProcessor(materialize ? "_proc" + reduceName : reduceName, () -> new StoreStateProcessor(reduceStoreName), addProcessorStack.peek(), removeProcessorStack.peek());
         addStateStoreMapping(topologyConstructor.processorStateStoreMapper, materialize ? "_proc" + reduceName : reduceName, reduceStoreName);
         addStateStoreMapping(topologyConstructor.processorStateStoreMapper, reduceReader, reduceStoreName);
         addStateStoreMapping(topologyConstructor.processorStateStoreMapper, reduceReader, inputStoreName);

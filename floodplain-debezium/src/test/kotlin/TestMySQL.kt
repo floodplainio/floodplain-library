@@ -74,6 +74,7 @@ class TestMySQL {
     }
 
     private fun send(changeRecord: ChangeRecord) {
+        logger.info("Record detected: {} {} {}", changeRecord.topic, changeRecord.key, changeRecord.value)
         TODO("Not yet implemented")
     }
 

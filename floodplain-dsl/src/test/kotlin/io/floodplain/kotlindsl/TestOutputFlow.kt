@@ -33,7 +33,7 @@ import org.junit.Test
 class TestOutputFlow {
 
     @Test
-    fun testChunkin() {
+    fun testChunkOperator() {
         val flow: Flow<Triple<Topic, String, IMessage?>> = flow {
             repeat(10) {
                 val topic = Topic.from("TopicNr$it")

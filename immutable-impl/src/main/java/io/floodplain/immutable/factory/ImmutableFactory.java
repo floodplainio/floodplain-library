@@ -53,10 +53,6 @@ public class ImmutableFactory {
         return new ImmutableMessageImpl(values, types, submessage, submessages);
     }
 
-    public static ImmutableMessageParser createParser() {
-        return new JSONImmutableMessageParserImpl();
-    }
-
     public static String ndJson(ImmutableMessage msg) throws IOException {
         return ImmutableJSON.ndJson(msg);
     }

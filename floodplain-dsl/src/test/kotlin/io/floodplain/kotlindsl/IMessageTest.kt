@@ -38,27 +38,6 @@ import kotlin.test.assertNull
 
 @Suppress("UNCHECKED_CAST")
 class IMessageTest {
-
-    // STRING,
-    // INTEGER,
-    // LONG,
-    // DOUBLE,
-    // DECIMAL,
-    // FLOAT,
-    // BOOLEAN,
-    // BINARY_DIGEST,
-    // DATE,
-    // LIST,
-    // BINARY,
-    // COORDINATE,
-    // CLOCKTIME,
-    // STOPWATCHTIME,
-    // IMMUTABLE,
-    // UNKNOWN,
-    // IMMUTABLELIST,
-    // ENUM,
-    // STRINGLIST
-
     private val parser: ReplicationMessageParser = JSONReplicationMessageParserImpl()
 
     val exampleMessage = empty()

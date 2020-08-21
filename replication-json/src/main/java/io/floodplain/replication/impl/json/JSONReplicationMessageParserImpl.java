@@ -50,10 +50,6 @@ public class JSONReplicationMessageParserImpl implements ReplicationMessageParse
         return ReplicationJSON.parseJSON(source, on);
     }
 
-    protected boolean prettyPrint() {
-        return ReplicationMessage.usePretty;
-    }
-
     @Override
     public ReplicationMessage parseBytes(Optional<String> source, byte[] data) {
         if (data == null) {

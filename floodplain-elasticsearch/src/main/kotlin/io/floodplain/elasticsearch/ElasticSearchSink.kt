@@ -43,7 +43,7 @@ class ElasticSearchSinkConfig(val name: String, val uri: String, val context: To
     SinkConfig {
     var sinkTask: ElasticsearchSinkTask? = null
     val materializedConfigs: MutableList<MaterializedConfig> = mutableListOf()
-    var instantiatedSinkElements: Map<Topic, MutableList<FloodplainSink>>? = null
+    private var instantiatedSinkElements: Map<Topic, MutableList<FloodplainSink>>? = null
 
     override fun materializeConnectorConfig(topologyContext: TopologyContext): List<MaterializedConfig> {
         return materializedConfigs

@@ -18,6 +18,7 @@
  */
 package io.floodplain
 
+import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import kotlinx.coroutines.channels.produce
 import kotlinx.coroutines.channels.ticker
@@ -34,6 +35,7 @@ import kotlinx.coroutines.selects.select
  * @param size: After this number of entries, the buffer will be propagated immediately
  * @param duration: The operation will not wait longer for entries than this number (in millis)
  */
+@OptIn(ObsoleteCoroutinesApi::class)
 fun <T> Flow<T>.bufferTimeout(size: Int, duration: Long): Flow<List<T>> {
     require(size > 0) { "Window size should be greater than 0" }
     require(duration > 0) { "Duration should be greater than 0" }

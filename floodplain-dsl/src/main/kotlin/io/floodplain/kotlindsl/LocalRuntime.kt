@@ -239,7 +239,7 @@ class LocalDriverContext(
     fun closeSinks() {
         this.sinkConfigurations().flatMap { config ->
             config.sinkElements().values
-        }.flatMap { it }
+        }.flatten()
             .forEach { it.close() }
     }
 
@@ -281,14 +281,13 @@ class LocalDriverContext(
     private fun outputFlowSingle(): Flow<Triple<Topic, String, ByteArray?>> {
         return callbackFlow {
             driver.setOutputListener { record ->
+                // Ignore changelog topics
                 if (!record.topic().endsWith("changelog")) {
                     val key = Serdes.String().deserializer().deserialize(record.topic(), record.key())
                     val topic = Topic.fromQualified(record.topic())
                     if (this.isActive) {
                         sendBlocking(Triple(topic, key, record.value()))
                     }
-                } else {
-                    // noop, skipping changelog items
                 }
             }
             logger.info("Outputflow connected!")
@@ -303,12 +302,6 @@ class LocalDriverContext(
         if (!inputs().contains(qualifiedTopicName)) {
             logger.debug("Missing topic: $topic available topics: ${inputs()}")
         }
-        // if(rawInputTopics.containsKey(qualifiedTopicName)) {
-        //     rawInputTopics[qualifiedTopicName]
-        //     // TODO better exception type?
-        //     throw java.lang.RuntimeException("Parsed input topic: $qualifiedTopicName is already present as a raw type")
-        // }
-
         val inputTopic = inputTopics.computeIfAbsent(qualifiedTopicName) {
             driver.createInputTopic(
                 qualifiedTopicName,
@@ -317,7 +310,6 @@ class LocalDriverContext(
             )
         }
         val replicationMsg = ReplicationFactory.standardMessage(msg.toImmutable())
-        // val parsedKey = JSONToReplicationMessage.processDebeziumJSONKey(key)
         inputTopic.pipeInput(key, replicationMsg)
     }
 

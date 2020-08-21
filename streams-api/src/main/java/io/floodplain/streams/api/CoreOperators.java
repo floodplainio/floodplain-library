@@ -21,9 +21,6 @@ package io.floodplain.streams.api;
 import io.floodplain.immutable.api.ImmutableMessage;
 import io.floodplain.immutable.factory.ImmutableFactory;
 import io.floodplain.replication.api.ReplicationMessage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
@@ -31,7 +28,6 @@ import java.util.stream.Collectors;
 public class CoreOperators {
     private static final int TOPIC_PARTITION_COUNT = 1;
     private static final int TOPIC_REPLICATION_COUNT = 1;
-    private static final Logger logger = LoggerFactory.getLogger(CoreOperators.class);
 
     private CoreOperators() {
     }

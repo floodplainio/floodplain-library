@@ -34,17 +34,15 @@ import io.floodplain.streams.api.Topic
 import io.floodplain.streams.api.TopologyContext
 import java.util.Optional
 
-private val logger = mu.KotlinLogging.logger {}
-
 fun Stream.logSinkConfig(name: String): LogSinkConfiguration {
-    val logSinkConfig = LogSinkConfiguration(name, this)
+    val logSinkConfig = LogSinkConfiguration(name)
     this.addSinkConfiguration(logSinkConfig)
     return logSinkConfig
 }
 
-class LogSinkConfiguration(val name: String, private val owner: Stream) : SinkConfig {
+class LogSinkConfiguration(val name: String) : SinkConfig {
     val materializedConfigs: MutableList<MaterializedConfig> = mutableListOf()
-    var instantiatedSinkElements: Map<Topic, MutableList<FloodplainSink>>? = null
+    private var instantiatedSinkElements: Map<Topic, MutableList<FloodplainSink>>? = null
 
     override fun materializeConnectorConfig(topologyContext: TopologyContext): List<MaterializedConfig> {
         return materializedConfigs

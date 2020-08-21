@@ -90,10 +90,10 @@ public class ReplicationImmutableMessageImpl implements ReplicationMessage {
         if (primaryKeys.size() == 0) {
             return "NO_KEY_PRESENT";
         }
-        return String.join(ReplicationMessage.KEYSEPARATOR, primaryKeys.stream().map(col ->value(col))
-                .filter(e->e.isPresent())
+        return primaryKeys.stream().map(this::value)
+                .filter(Optional::isPresent)
                 .map(e->e.get().toString())
-                .collect(Collectors.toList()));
+                .collect(Collectors.joining(ReplicationMessage.KEYSEPARATOR));
     }
 
     @Override
@@ -162,26 +162,26 @@ public class ReplicationImmutableMessageImpl implements ReplicationMessage {
         Map<String, ValueType> t = new HashMap<>();
         for (Entry<String, Object> e : values.entrySet()) {
             Object val = e.getValue();
-            if (val == null) {
-//				t.put(e.getKey(), "unknown");
-            } else if (val instanceof Long) {
-                t.put(e.getKey(), ValueType.LONG);
-            } else if (val instanceof Double) {
-                t.put(e.getKey(), ValueType.DOUBLE);
-            } else if (val instanceof Integer) {
-                t.put(e.getKey(), ValueType.INTEGER);
-            } else if (val instanceof Float) {
-                t.put(e.getKey(), ValueType.FLOAT);
-            } else if (val instanceof Date) {
-                t.put(e.getKey(), ValueType.DATE);
-            } else if (val instanceof Boolean) {
-                t.put(e.getKey(), ValueType.BOOLEAN);
-            } else if (val instanceof String) {
-                t.put(e.getKey(), ValueType.STRING);
-            } else {
-                logger.warn("Unknown type::: {}", val.getClass());
-                t.put(e.getKey(), ValueType.STRING);
+            if (val != null) {
+                if (val instanceof Long) {
+                    t.put(e.getKey(), ValueType.LONG);
+                } else if (val instanceof Double) {
+                    t.put(e.getKey(), ValueType.DOUBLE);
+                } else if (val instanceof Integer) {
+                    t.put(e.getKey(), ValueType.INTEGER);
+                } else if (val instanceof Float) {
+                    t.put(e.getKey(), ValueType.FLOAT);
+                } else if (val instanceof Date) {
+                    t.put(e.getKey(), ValueType.DATE);
+                } else if (val instanceof Boolean) {
+                    t.put(e.getKey(), ValueType.BOOLEAN);
+                } else if (val instanceof String) {
+                    t.put(e.getKey(), ValueType.STRING);
+                } else {
+                    logger.warn("Unknown type::: {}", val.getClass());
+                    t.put(e.getKey(), ValueType.STRING);
 
+                }
             }
         }
         return t;

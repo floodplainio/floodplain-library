@@ -65,12 +65,10 @@ public class ConnectKeySerde implements Serde<String> {
 
     @Override
     public Serializer<String> serializer() {
-
-        return new Serializer<String>() {
+        return new Serializer<>() {
 
             @Override
             public void close() {
-
             }
 
             @Override

@@ -25,19 +25,12 @@ import io.floodplain.replication.factory.ReplicationFactory;
 import io.floodplain.replication.impl.json.JSONReplicationMessageParserImpl;
 import io.floodplain.replication.impl.protobuf.FallbackReplicationMessageParser;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 public class TestSer {
-// /TODO protobuf binaries
-
-    @Before
-    public void setup() {
-
-    }
 
     @Test
     public void testBinaryJSON() {
@@ -59,8 +52,7 @@ public class TestSer {
         ReplicationMessage r = ReplicationFactory.empty().with("binary", payload, ImmutableMessage.ValueType.BINARY);
         byte[] encoded = r.toBytes(parser);
         ReplicationMessage s = parser.parseBytes(Optional.of("binary"), encoded);
-        final byte[] deserialized = (byte[]) s.value("binary").get();
-        return deserialized;
+        return (byte[]) s.value("binary").get();
     }
 
 

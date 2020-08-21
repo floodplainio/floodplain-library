@@ -33,12 +33,10 @@ public class StoreStateProcessor extends AbstractProcessor<String, ReplicationMe
 
     private final String lookupStoreName;
     private KeyValueStore<String, ImmutableMessage> lookupStore;
-    private final Optional<BiFunction<ImmutableMessage, ImmutableMessage, String>> keyExtractor;
     public static final String COMMONKEY = "singlerestore";
 
-    public StoreStateProcessor(String lookupStoreName, Optional<BiFunction<ImmutableMessage, ImmutableMessage, String>> keyExtractor) {
+    public StoreStateProcessor(String lookupStoreName) {
         this.lookupStoreName = lookupStoreName;
-        this.keyExtractor = keyExtractor;
     }
 
     @SuppressWarnings("unchecked")

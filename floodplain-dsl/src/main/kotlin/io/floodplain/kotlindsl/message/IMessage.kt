@@ -25,8 +25,6 @@ import io.floodplain.immutable.factory.ImmutableFactory
 import java.math.BigDecimal
 import kotlin.streams.toList
 
-private val logger = mu.KotlinLogging.logger {}
-
 interface IMessage {
     operator fun get(path: String): Any?
     fun message(path: String): IMessage
@@ -159,12 +157,12 @@ private data class IMessageImpl(private val content: MutableMap<String, Any>) : 
 
     private fun parsePath(path: List<String>): Pair<IMessageImpl, String> {
         if (path.size > 1) {
-            val subelement: Any? = content[path[0]]
-            subelement ?: throw NullPointerException("Can't parse path list: $path, element ${path[0]} is missing")
-            if (subelement !is IMessageImpl) {
-                throw ClassCastException("Path element ${path[0]} should be a message but it is a ${subelement::class}")
+            val subElement: Any? = content[path[0]]
+            subElement ?: throw NullPointerException("Can't parse path list: $path, element ${path[0]} is missing")
+            if (subElement !is IMessageImpl) {
+                throw ClassCastException("Path element ${path[0]} should be a message but it is a ${subElement::class}")
             }
-            return subelement.parsePath(path.subList(1, path.size))
+            return subElement.parsePath(path.subList(1, path.size))
         }
         return Pair(this, path[0])
     }
@@ -237,7 +235,7 @@ private data class IMessageImpl(private val content: MutableMap<String, Any>) : 
                 is List<*> -> maybeSetList(name, elt, subMessageList, values, types)
                 is ImmutableMessage -> subMessage[name] = elt
                 else -> {
-                    values[name] = elt; types.put(name, ImmutableFactory.resolveTypeFromValue(elt))
+                    values[name] = elt; types[name] = ImmutableFactory.resolveTypeFromValue(elt)
                 }
             }
         }

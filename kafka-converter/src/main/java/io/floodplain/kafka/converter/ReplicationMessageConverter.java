@@ -117,7 +117,7 @@ public class ReplicationMessageConverter implements Converter {
             ReplicationMessage replMessage = ReplicationFactory.getInstance().parseBytes(Optional.empty(), value);
             Map<String, Object> valueMap = replMessage.valueMap(true, Collections.emptySet());
             if (this.schemaEnable) {
-                Map<String, Object> valueWithPayload = new HashMap<String, Object>();
+                Map<String, Object> valueWithPayload = new HashMap<>();
                 valueWithPayload.put("payload", valueMap);
                 valueMap = valueWithPayload;
             }

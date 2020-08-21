@@ -121,7 +121,7 @@ public class TestTransformations {
 
     @Test
     public void testSpecificKey() {
-        ReplicationMessage id = addressMessage.withPrimaryKeys(Arrays.asList("zipcode"));
+        ReplicationMessage id = addressMessage.withPrimaryKeys(Collections.singletonList("zipcode"));
         Assert.assertEquals(1, id.primaryKeys().size());
         Assert.assertEquals("zipcode", id.primaryKeys().stream().findFirst().get());
         Assert.assertEquals(id.value("zipcode").get(), id.queueKey());
@@ -155,8 +155,8 @@ public class TestTransformations {
 
     @Test
     public void testEqual() {
-        Assert.assertTrue(addressMessage.equals(addressIdenticalMessage));
-        Assert.assertTrue(addressIdenticalMessage.equals(addressMessage));
+        Assert.assertEquals(addressMessage, addressIdenticalMessage);
+        Assert.assertEquals(addressIdenticalMessage, addressMessage);
     }
 
     @Test

@@ -26,6 +26,11 @@ import io.floodplain.kotlindsl.Stream
 import io.floodplain.kotlindsl.Transformer
 import io.floodplain.kotlindsl.floodplainSinkFromTask
 import io.floodplain.reactive.source.topology.SinkTransformer
+import io.floodplain.sink.sheet.SheetSinkTask.COLUMNS
+import io.floodplain.sink.sheet.SheetSinkTask.SPREADSHEETID
+import io.floodplain.sink.sheet.SheetSinkTask.STARTCOLUMN
+import io.floodplain.sink.sheet.SheetSinkTask.STARTROW
+import io.floodplain.sink.sheet.SheetSinkTask.TOPIC
 import io.floodplain.streams.api.ProcessorName
 import io.floodplain.streams.api.Topic
 import io.floodplain.streams.api.TopologyContext
@@ -66,11 +71,11 @@ class GoogleSheetConfiguration(val name: String) : SinkConfig {
             )
             // SheetSinkTask.SPREADSHEETID to spreadsheetId,
             // SheetSinkTask.COLUMNS to columns.joinToString(",")
-            settings.put(SheetSinkTask.SPREADSHEETID, it.spreadsheetId)
-            settings.put(SheetSinkTask.COLUMNS, it.columns.joinToString(","))
-            settings.put(SheetSinkTask.TOPIC, it.topic.qualifiedString(topologyContext))
-            settings.put(SheetSinkTask.STARTCOLUMN, it.startColumn)
-            settings.put(SheetSinkTask.STARTROW, it.startRow.toString())
+            settings[SPREADSHEETID] = it.spreadsheetId
+            settings[COLUMNS] = it.columns.joinToString(",")
+            settings[TOPIC] = it.topic.qualifiedString(topologyContext)
+            settings[STARTCOLUMN] = it.startColumn
+            settings[STARTROW] = it.startRow.toString()
             // settings.put(SheetSinkTask.STARTCOLUMN,)
             MaterializedConfig(name, listOf(it.topic), settings)
         }

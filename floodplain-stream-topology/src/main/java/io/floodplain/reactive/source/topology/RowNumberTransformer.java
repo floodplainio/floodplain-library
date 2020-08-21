@@ -41,11 +41,6 @@ public class RowNumberTransformer implements TopologyPipeComponent {
         transformerNames.push(rowNum);
     }
 
-    public static void addGroupTransformer(Stack<String> transformerNames, int pipeId, Topology topology,
-                                           TopologyContext topologyContext, TopologyConstructor topologyConstructor, Function<ReplicationMessage, String> keyExtractor, String transformerName) {
-
-    }
-
     @Override
     public boolean materializeParent() {
         return false;

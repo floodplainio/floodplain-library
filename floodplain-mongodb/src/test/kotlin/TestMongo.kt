@@ -44,13 +44,11 @@ class TestMongo {
     var container: GenericContainer<*>? = null
 
     init {
-
-        // var envVar = System.getenv("EMBED_CONTAINER")
-            container = KGenericContainer("mongo:latest")
-                .apply { withExposedPorts(27017) }
-            container?.start()
-            address = container?.getHost()
-            port = container?.getFirstMappedPort()
+        container = KGenericContainer("mongo:latest")
+            .apply { withExposedPorts(27017) }
+        container?.start()
+        address = container?.getHost()
+        port = container?.getFirstMappedPort()
     }
 
     @Test
@@ -82,7 +80,7 @@ class TestMongo {
                 flushSinks()
                 withTimeout(100000) {
                     repeat(1000) {
-                        var collectionCount = collection
+                        val collectionCount = collection
                             .countDocuments()
                         if (collectionCount == 50L) {
                             return@withTimeout
@@ -93,7 +91,7 @@ class TestMongo {
                 }
                 // assertEquals(50L, elements)
 
-                var doccount = collection
+                val doccount = collection
                     .countDocuments()
                 logger.info("Count of Documents: $doccount")
                 assertEquals(50L, doccount)
@@ -140,9 +138,9 @@ class TestMongo {
                 // assertEquals(50L, elements2)
                 withTimeout(100000) {
                     repeat(1000) {
-                        var col1count = collection1
+                        val col1count = collection1
                             .countDocuments()
-                        var col2count = collection2
+                        val col2count = collection2
                             .countDocuments()
                         if (col1count == 50L && col2count == 50L) {
                             return@withTimeout

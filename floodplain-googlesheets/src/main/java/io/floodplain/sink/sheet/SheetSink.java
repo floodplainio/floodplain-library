@@ -55,11 +55,6 @@ import org.slf4j.LoggerFactory;
 
 
 public class SheetSink {
-	private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
-	private static final String TOKENS_DIRECTORY_PATH = "tokens";
-	private static final List<String> SCOPES = Collections.singletonList(SheetsScopes.SPREADSHEETS);
-
-	private static final ObjectMapper objectMapper = new ObjectMapper();
 	private static GoogleCredential credential;
 	private final static Logger logger = LoggerFactory.getLogger(SheetSink.class);
 
@@ -72,8 +67,6 @@ public class SheetSink {
 	private static Sheets createSheetsService() throws IOException, GeneralSecurityException {
 		HttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
 		JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
-		final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-
 		HttpRequestInitializer credential = getCredential(); // getCredentials(HTTP_TRANSPORT,clientId,clientSecret,projectId);
 		return new Sheets.Builder(httpTransport, jsonFactory, credential)
 				.setApplicationName("Google-Sheets/0.1")

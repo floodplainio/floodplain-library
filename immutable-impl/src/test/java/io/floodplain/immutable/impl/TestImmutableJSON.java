@@ -66,14 +66,14 @@ public class TestImmutableJSON {
         ImmutableMessage created = empty.with("Aap/Noot", 3, INTEGER);
         Optional<ImmutableMessage> sub = created.subMessage("Aap");
         Assert.assertTrue(sub.isPresent());
-        Assert.assertEquals(3, sub.get().value("Noot").get());
+        Assert.assertEquals(3, sub.get().value("Noot").orElse(-1));
     }
 
     @Test
     public void testGetSubValue() {
         ImmutableMessage empty = ImmutableFactory.empty();
         ImmutableMessage created = empty.with("Aap/Noot", 3, INTEGER);
-        Assert.assertEquals(3, created.value("Aap/Noot").get());
+        Assert.assertEquals(3, created.value("Aap/Noot").orElse(-1));
     }
 
     @Test
@@ -81,7 +81,7 @@ public class TestImmutableJSON {
         ImmutableMessage created = ImmutableFactory.empty().with("Aap", 3, INTEGER);
         ImmutableMessage someOther = ImmutableFactory.empty().with("Noot", 4, INTEGER);
         ImmutableMessage combined = created.with("submessage", someOther, IMMUTABLE);
-        Assert.assertEquals(4, combined.value("submessage/Noot").get());
+        Assert.assertEquals(4, combined.value("submessage/Noot").orElse(-1));
     }
 
 
