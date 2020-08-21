@@ -18,12 +18,10 @@
  */
 package io.floodplain.kotlindsl.sink
 
-import io.floodplain.kotlindsl.Config
 import io.floodplain.kotlindsl.FloodplainSink
-import io.floodplain.kotlindsl.InputReceiver
-import io.floodplain.kotlindsl.MaterializedSink
+import io.floodplain.kotlindsl.MaterializedConfig
 import io.floodplain.kotlindsl.PartialStream
-import io.floodplain.kotlindsl.SourceTopic
+import io.floodplain.kotlindsl.SinkConfig
 import io.floodplain.kotlindsl.Stream
 import io.floodplain.kotlindsl.Transformer
 import io.floodplain.kotlindsl.floodplainSinkFromTask
@@ -44,19 +42,11 @@ fun Stream.logSinkConfig(name: String): LogSinkConfiguration {
     return logSinkConfig
 }
 
-class LogSinkConfiguration(val name: String, private val owner: Stream) : Config {
-    val materializedConfigs: MutableList<MaterializedSink> = mutableListOf()
+class LogSinkConfiguration(val name: String, private val owner: Stream) : SinkConfig {
+    val materializedConfigs: MutableList<MaterializedConfig> = mutableListOf()
     var instantiatedSinkElements: Map<Topic, MutableList<FloodplainSink>>? = null
 
-    override fun sourceElements(): List<SourceTopic> {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun connectSource(inputReceiver: InputReceiver) {
-        TODO("Not yet implemented")
-    }
-
-    override fun materializeConnectorConfig(topologyContext: TopologyContext): List<MaterializedSink> {
+    override fun materializeConnectorConfig(topologyContext: TopologyContext): List<MaterializedConfig> {
         return materializedConfigs
     }
 
@@ -89,7 +79,7 @@ fun PartialStream.logSink(sinkName: String, topicName: String, config: LogSinkCo
         "topics" to topicName,
         "schema.ignore" to "true",
         "type.name" to "_doc")
-    config.materializedConfigs.add(MaterializedSink(config.name, listOf(topic), sinkConfig))
+    config.materializedConfigs.add(MaterializedConfig(config.name, listOf(topic), sinkConfig))
     val conn = LogSinkConnector()
     conn.start(sinkConfig)
     val task = conn.taskClass().getDeclaredConstructor().newInstance() as LogSinkTask

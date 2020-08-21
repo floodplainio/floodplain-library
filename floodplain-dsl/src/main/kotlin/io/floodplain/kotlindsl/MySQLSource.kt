@@ -29,7 +29,7 @@ import kotlinx.coroutines.flow.onEach
 
 private val logger = mu.KotlinLogging.logger {}
 
-class MySQLConfig(val topologyContext: TopologyContext, val name: String, val offsetId: String, private val hostname: String, private val port: Int, private val username: String, private val password: String, private val database: String) : Config {
+class MySQLConfig(val topologyContext: TopologyContext, val name: String, val offsetId: String, private val hostname: String, private val port: Int, private val username: String, private val password: String, private val database: String) : SourceConfig {
 
     private val sourceElements: MutableList<SourceTopic> = mutableListOf()
 
@@ -54,20 +54,8 @@ class MySQLConfig(val topologyContext: TopologyContext, val name: String, val of
         logger.info("connectSource completed")
     }
 
-    override fun sinkTask(): Any? {
-        return null
-    }
-
-    override fun instantiateSinkElements(topologyContext: TopologyContext) {
-        TODO("Not yet implemented")
-    }
-
-    override fun sinkElements(): Map<Topic, MutableList<FloodplainSink>> {
-        TODO("Not yet implemented")
-    }
-
-    override fun materializeConnectorConfig(topologyContext: TopologyContext): List<MaterializedSink> {
-        return listOf(MaterializedSink(name, emptyList(), mapOf(
+    override fun materializeConnectorConfig(topologyContext: TopologyContext): List<MaterializedConfig> {
+        return listOf(MaterializedConfig(name, emptyList(), mapOf(
                 "connector.class" to "io.debezium.connector.mysql.MySqlConnector",
                 "database.hostname" to hostname,
                 "database.port" to port.toString(),
@@ -78,6 +66,7 @@ class MySQLConfig(val topologyContext: TopologyContext, val name: String, val of
                 "database.whitelist" to database,
                 "key.converter" to "org.apache.kafka.connect.json.JsonConverter",
                 "value.converter" to "org.apache.kafka.connect.json.JsonConverter",
+            // TODO Deal with this, is it required?
                 "database.history.kafka.bootstrap.servers" to "kafka:9092",
                 "database.history.kafka.topic" to "dbhistory.wordpress",
                 "include.schema.changes" to "false"

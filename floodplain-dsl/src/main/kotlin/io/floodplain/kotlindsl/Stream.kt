@@ -43,8 +43,8 @@ private val logger = mu.KotlinLogging.logger {}
 class Stream(val context: TopologyContext) {
 
     private val sources: MutableList<Source> = ArrayList()
-    private val sinkConfigurations: MutableList<Config> = mutableListOf()
-    private val sourceConfigurations: MutableList<Config> = mutableListOf()
+    private val sinkConfigurations: MutableList<SinkConfig> = mutableListOf()
+    private val sourceConfigurations: MutableList<SourceConfig> = mutableListOf()
 
     /**
      * Adds a source instance, should only be called from source implementations
@@ -57,7 +57,7 @@ class Stream(val context: TopologyContext) {
     /**
      * Adds a sink config, should only be called from a sink implementation
      */
-    fun addSinkConfiguration(c: Config): Config {
+    fun addSinkConfiguration(c: SinkConfig): SinkConfig {
         sinkConfigurations.add(c)
         return c
     }
@@ -65,15 +65,15 @@ class Stream(val context: TopologyContext) {
     /**
      * Adds a source config, should only be called from a source implementation
      */
-    fun addSourceConfiguration(c: Config) {
+    fun addSourceConfiguration(c: SourceConfig) {
         sourceConfigurations.add(c)
     }
 
-    fun sinkConfigurations(): List<Config> {
+    fun sinkConfigurations(): List<SinkConfig> {
         return sinkConfigurations.toList()
     }
 
-    fun sourceConfigurations(): List<Config> {
+    fun sourceConfigurations(): List<SourceConfig> {
         return sourceConfigurations.toList()
     }
 

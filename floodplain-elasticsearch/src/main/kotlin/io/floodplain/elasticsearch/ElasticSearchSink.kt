@@ -20,12 +20,10 @@ package io.floodplain.elasticsearch
 
 import io.confluent.connect.elasticsearch.ElasticsearchSinkConnector
 import io.confluent.connect.elasticsearch.ElasticsearchSinkTask
-import io.floodplain.kotlindsl.Config
 import io.floodplain.kotlindsl.FloodplainSink
-import io.floodplain.kotlindsl.InputReceiver
-import io.floodplain.kotlindsl.MaterializedSink
+import io.floodplain.kotlindsl.MaterializedConfig
 import io.floodplain.kotlindsl.PartialStream
-import io.floodplain.kotlindsl.SourceTopic
+import io.floodplain.kotlindsl.SinkConfig
 import io.floodplain.kotlindsl.Stream
 import io.floodplain.kotlindsl.Transformer
 import io.floodplain.kotlindsl.floodplainSinkFromTask
@@ -42,20 +40,13 @@ fun Stream.elasticSearchConfig(name: String, uri: String): ElasticSearchSinkConf
 }
 
 class ElasticSearchSinkConfig(val name: String, val uri: String, val context: TopologyContext) :
-    Config {
+    SinkConfig {
     var sinkTask: ElasticsearchSinkTask? = null
-    val materializedConfigs: MutableList<MaterializedSink> = mutableListOf()
+    val materializedConfigs: MutableList<MaterializedConfig> = mutableListOf()
     var instantiatedSinkElements: Map<Topic, MutableList<FloodplainSink>>? = null
 
-    override fun materializeConnectorConfig(topologyContext: TopologyContext): List<MaterializedSink> {
+    override fun materializeConnectorConfig(topologyContext: TopologyContext): List<MaterializedConfig> {
         return materializedConfigs
-    }
-
-    override fun sourceElements(): List<SourceTopic> {
-        return emptyList()
-    }
-
-    override suspend fun connectSource(inputReceiver: InputReceiver) {
     }
 
     override fun sinkTask(): Any? {
@@ -87,7 +78,7 @@ fun PartialStream.elasticSearchSink(sinkName: String, topicName: String, config:
         "schema.ignore" to "true",
         "behavior.on.null.values" to "delete",
         "type.name" to "_doc")
-    config.materializedConfigs.add(MaterializedSink(config.name, listOf(topic), sinkConfig))
+    config.materializedConfigs.add(MaterializedConfig(config.name, listOf(topic), sinkConfig))
     val conn = ElasticsearchSinkConnector()
     conn.start(sinkConfig)
     val task = conn.taskClass().getDeclaredConstructor().newInstance() as ElasticsearchSinkTask

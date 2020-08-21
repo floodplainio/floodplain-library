@@ -60,15 +60,21 @@ interface Config {
      * The map is essentially a Kafka Connect configuration, and will be converted to JSON and posted to Kafka Connect
      * For some
      */
-    fun materializeConnectorConfig(topologyContext: TopologyContext): List<MaterializedSink>
+    fun materializeConnectorConfig(topologyContext: TopologyContext): List<MaterializedConfig>
+}
+
+interface SourceConfig : Config {
     fun sourceElements(): List<SourceTopic>
     suspend fun connectSource(inputReceiver: InputReceiver)
+}
+
+interface SinkConfig : Config {
     fun sinkTask(): Any?
     fun instantiateSinkElements(topologyContext: TopologyContext)
     fun sinkElements(): Map<Topic, List<FloodplainSink>>
 }
 
-class MaterializedSink(val name: String, val topics: List<Topic>, val settings: Map<String, String>)
+class MaterializedConfig(val name: String, val topics: List<Topic>, val settings: Map<String, String>)
 
 interface SourceTopic {
     fun topic(): Topic
@@ -79,7 +85,7 @@ interface SourceTopic {
 interface FloodplainSink {
     fun send(topic: Topic, elements: List<Pair<String, Map<String, Any>?>>, topologyContext: TopologyContext)
     // fun send(elements: List<Pair<Topic,IMessage?>>)
-    fun config(): Config
+    fun config(): SinkConfig
     fun flush()
     fun close()
     fun taskObject(): Any?

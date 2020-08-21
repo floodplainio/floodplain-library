@@ -121,11 +121,11 @@ private fun postToHttpJava11(url: URL, jsonString: String) {
     }
 }
 
-fun floodplainSinkFromTask(task: SinkTask, config: Config): FloodplainSink {
+fun floodplainSinkFromTask(task: SinkTask, config: SinkConfig): FloodplainSink {
     return LocalConnectorSink(task, config)
 }
 
-fun instantiateSinkConfig(topologyContext: TopologyContext, config: Config, connector: () -> SinkConnector): Map<Topic, MutableList<FloodplainSink>> {
+fun instantiateSinkConfig(topologyContext: TopologyContext, config: SinkConfig, connector: () -> SinkConnector): Map<Topic, MutableList<FloodplainSink>> {
     val result = mutableMapOf<Topic, MutableList<FloodplainSink>>()
     val materializedSinks = config.materializeConnectorConfig(topologyContext)
     materializedSinks.map { materializedSink ->
@@ -143,7 +143,7 @@ fun instantiateSinkConfig(topologyContext: TopologyContext, config: Config, conn
     return result
 }
 
-private class LocalConnectorSink(private val task: SinkTask, val config: Config) : FloodplainSink {
+private class LocalConnectorSink(private val task: SinkTask, val config: SinkConfig) : FloodplainSink {
     private val offsetCounter = AtomicLong(System.currentTimeMillis())
     override fun send(topic: Topic, elements: List<Pair<String, Map<String, Any>?>>, topologyContext: TopologyContext) {
         logger.info("Inserting # of documents ${elements.size} for topic: $topic")
@@ -153,7 +153,7 @@ private class LocalConnectorSink(private val task: SinkTask, val config: Config)
         task.put(list)
     }
 
-    override fun config(): Config {
+    override fun config(): SinkConfig {
         return config
     }
 

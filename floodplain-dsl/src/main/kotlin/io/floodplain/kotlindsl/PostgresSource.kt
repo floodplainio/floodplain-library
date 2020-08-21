@@ -28,7 +28,7 @@ import kotlinx.coroutines.flow.collect
 
 private val logger = mu.KotlinLogging.logger {}
 
-class PostgresConfig(val topologyContext: TopologyContext, val name: String, val offsetId: String, private val hostname: String, private val port: Int, private val username: String, private val password: String, private val database: String, val defaultSchema: String? = null) : Config {
+class PostgresConfig(val topologyContext: TopologyContext, val name: String, val offsetId: String, private val hostname: String, private val port: Int, private val username: String, private val password: String, private val database: String, val defaultSchema: String? = null) : SourceConfig {
 
     private val sourceElements: MutableList<SourceTopic> = mutableListOf()
 
@@ -54,20 +54,8 @@ class PostgresConfig(val topologyContext: TopologyContext, val name: String, val
         }
     }
 
-    override fun sinkTask(): Any? {
-        return null
-    }
-
-    override fun instantiateSinkElements(topologyContext: TopologyContext) {
-        TODO("Not yet implemented")
-    }
-
-    override fun sinkElements(): Map<Topic, MutableList<FloodplainSink>> {
-        TODO("Not yet implemented")
-    }
-
-    override fun materializeConnectorConfig(topologyContext: TopologyContext): List<MaterializedSink> {
-        return listOf(MaterializedSink(name, emptyList(), mapOf(
+    override fun materializeConnectorConfig(topologyContext: TopologyContext): List<MaterializedConfig> {
+        return listOf(MaterializedConfig(name, emptyList(), mapOf(
                 "connector.class" to "io.debezium.connector.postgresql.PostgresConnector",
                 "database.hostname" to hostname,
                 "database.port" to port.toString(),

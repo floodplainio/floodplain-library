@@ -18,12 +18,10 @@
  */
 package io.floodplain.sink.sheet
 
-import io.floodplain.kotlindsl.Config
 import io.floodplain.kotlindsl.FloodplainSink
-import io.floodplain.kotlindsl.InputReceiver
-import io.floodplain.kotlindsl.MaterializedSink
+import io.floodplain.kotlindsl.MaterializedConfig
 import io.floodplain.kotlindsl.PartialStream
-import io.floodplain.kotlindsl.SourceTopic
+import io.floodplain.kotlindsl.SinkConfig
 import io.floodplain.kotlindsl.Stream
 import io.floodplain.kotlindsl.Transformer
 import io.floodplain.kotlindsl.floodplainSinkFromTask
@@ -36,7 +34,7 @@ import java.util.Optional
 private val logger = mu.KotlinLogging.logger {}
 
 fun PartialStream.googleSheetsSink(topicDefinition: String, googleSheetId: String, columns: List<String>, startColumn: String = "A", startRow: Int = 1, config: GoogleSheetConfiguration) {
-    var sheetConnectorClass = SheetSinkConnector::class.java.name
+    val sheetConnectorClass = SheetSinkConnector::class.java.name
     logger.info("Sheet connector: $sheetConnectorClass")
     val topic = Topic.from(topicDefinition)
     val sheetSink = GoogleSheetSink(topic, googleSheetId, columns, startColumn, startRow)
@@ -52,12 +50,12 @@ fun Stream.googleSheetConfig(name: String): GoogleSheetConfiguration {
     return googleSheetConfiguration
 }
 
-class GoogleSheetConfiguration(val name: String) : Config {
+class GoogleSheetConfiguration(val name: String) : SinkConfig {
     private var googleTask: SheetSinkTask? = null
     private val sheetSinks = mutableListOf<GoogleSheetSink>()
     private var instantiatedSinkElements: Map<Topic, MutableList<FloodplainSink>>? = null
 
-    override fun materializeConnectorConfig(topologyContext: TopologyContext): List<MaterializedSink> {
+    override fun materializeConnectorConfig(topologyContext: TopologyContext): List<MaterializedConfig> {
         return sheetSinks.map {
             val settings = mutableMapOf("connector.class" to SheetSinkConnector::class.java.name,
                 "value.converter.schemas.enable" to "false",
@@ -74,15 +72,10 @@ class GoogleSheetConfiguration(val name: String) : Config {
             settings.put(SheetSinkTask.STARTCOLUMN, it.startColumn)
             settings.put(SheetSinkTask.STARTROW, it.startRow.toString())
             // settings.put(SheetSinkTask.STARTCOLUMN,)
-            MaterializedSink(name, listOf(it.topic), settings)
+            MaterializedConfig(name, listOf(it.topic), settings)
         }
     }
-    override fun sourceElements(): List<SourceTopic> {
-        return emptyList()
-    }
 
-    override suspend fun connectSource(inputReceiver: InputReceiver) {
-    }
     override fun sinkElements(): Map<Topic, MutableList<FloodplainSink>> {
         return instantiatedSinkElements ?: emptyMap()
     }

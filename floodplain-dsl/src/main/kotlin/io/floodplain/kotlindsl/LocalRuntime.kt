@@ -91,8 +91,8 @@ interface LocalContext : InputReceiver {
     fun getStateStoreNames(): Set<String>
     fun topologyContext(): TopologyContext
     fun topologyConstructor(): TopologyConstructor
-    fun sourceConfigurations(): List<Config>
-    fun sinkConfigurations(): List<Config>
+    fun sourceConfigurations(): List<SourceConfig>
+    fun sinkConfigurations(): List<SinkConfig>
     fun connectJobs(): List<Job>
     fun flushSinks()
     suspend fun connectSource()
@@ -112,8 +112,8 @@ fun runLocalTopology(
     LocalContext.() -> Unit,
     topologyConstructor: TopologyConstructor,
     context: TopologyContext,
-    sourceConfigs: List<Config>,
-    sinkConfigs: List<Config>
+    sourceConfigs: List<SourceConfig>,
+    sinkConfigs: List<SinkConfig>
 ) {
     val storageFolder = "teststorage/store"
     val props = Properties()
@@ -154,8 +154,8 @@ class LocalDriverContext(
     private val driver: TopologyTestDriver,
     private val topologyContext: TopologyContext,
     private val topologyConstructor: TopologyConstructor,
-    private val sourceConfigs: List<Config>,
-    private val sinkConfigs: List<Config>,
+    private val sourceConfigs: List<SourceConfig>,
+    private val sinkConfigs: List<SinkConfig>,
     private val bufferTime: Int?
 ) : LocalContext {
 
@@ -168,11 +168,11 @@ class LocalDriverContext(
     private val replicationMessageParser = ReplicationFactory.getInstance()
     // private val connectReplicationMessageSerde = ConnectReplicationMessageSerde()
     // private val connectKeySerde = ConnectKeySerde()
-    override fun sourceConfigurations(): List<Config> {
+    override fun sourceConfigurations(): List<SourceConfig> {
         return sourceConfigs
     }
 
-    override fun sinkConfigurations(): List<Config> {
+    override fun sinkConfigurations(): List<SinkConfig> {
         return sinkConfigs
     }
 

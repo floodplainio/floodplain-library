@@ -20,12 +20,10 @@ package io.floodplain.mongodb
 
 import com.mongodb.kafka.connect.MongoSinkConnector
 import com.mongodb.kafka.connect.sink.MongoSinkTask
-import io.floodplain.kotlindsl.Config
 import io.floodplain.kotlindsl.FloodplainSink
-import io.floodplain.kotlindsl.InputReceiver
-import io.floodplain.kotlindsl.MaterializedSink
+import io.floodplain.kotlindsl.MaterializedConfig
 import io.floodplain.kotlindsl.PartialStream
-import io.floodplain.kotlindsl.SourceTopic
+import io.floodplain.kotlindsl.SinkConfig
 import io.floodplain.kotlindsl.Stream
 import io.floodplain.kotlindsl.Transformer
 import io.floodplain.reactive.source.topology.SinkTransformer
@@ -40,13 +38,13 @@ import org.apache.kafka.connect.sink.SinkTask
 
 private val logger = mu.KotlinLogging.logger {}
 
-class MongoConfig(val name: String, val uri: String, val database: String) : Config {
+class MongoConfig(val name: String, val uri: String, val database: String) : SinkConfig {
 
     var sinkTask: MongoSinkTask? = null
     val sinkInstancePair: MutableList<Pair<String, Topic>> = mutableListOf()
     var instantiatedSinkElements: Map<Topic, List<FloodplainSink>>? = null
 
-    override fun materializeConnectorConfig(topologyContext: TopologyContext): List<MaterializedSink> {
+    override fun materializeConnectorConfig(topologyContext: TopologyContext): List<MaterializedConfig> {
         val additional = mutableMapOf<String, String>()
         sinkInstancePair.forEach { (key, value) -> additional.put("topic.override.${value.qualifiedString(topologyContext)}.collection", key) }
         logger.debug("Pairs: $sinkInstancePair")
@@ -74,24 +72,7 @@ class MongoConfig(val name: String, val uri: String, val database: String) : Con
         settings.forEach { (key, value) ->
             logger.info { "Setting: $key value: $value" }
         }
-        return listOf(MaterializedSink(name, sinkInstancePair.map { (_, topic) -> topic }.toList(), settings))
-    }
-
-    override fun sourceElements(): List<SourceTopic> {
-        return emptyList()
-    }
-
-    // fun sink(collection: String, topicDefinition: String, parent: PartialStream) {
-    //     val topic = Topic.from(topicDefinition)
-    //     sinkInstancePair.add(collection to topic)
-    //     val sinkName = ProcessorName.from(name)
-    //     val sink = SinkTransformer(Optional.of(sinkName), topic, false, Optional.empty(), Topic.FloodplainKeyFormat.CONNECT_KEY_JSON, Topic.FloodplainBodyFormat.CONNECT_JSON)
-    //     val transform = Transformer(sink)
-    //     parent.addTransformer(transform)
-    // }
-
-    override suspend fun connectSource(inputReceiver: InputReceiver) {
-        throw UnsupportedOperationException("MongoSink can not be used as a source")
+        return listOf(MaterializedConfig(name, sinkInstancePair.map { (_, topic) -> topic }.toList(), settings))
     }
 
     override fun sinkElements(): Map<Topic, List<FloodplainSink>> {
@@ -125,7 +106,7 @@ class MongoConfig(val name: String, val uri: String, val database: String) : Con
     }
 }
 
-private class MongoFloodplainSink(private val task: SinkTask, private val config: Config) : FloodplainSink {
+private class MongoFloodplainSink(private val task: SinkTask, private val config: SinkConfig) : FloodplainSink {
     private val offsetCounter = AtomicLong(System.currentTimeMillis())
 
     override fun send(topic: Topic, elements: List<Pair<String, Map<String, Any>?>>, topologyContext: TopologyContext) {
@@ -146,7 +127,7 @@ private class MongoFloodplainSink(private val task: SinkTask, private val config
         logger.info("Inserting into mongodb size: ${list.size} duration: $insertTime")
     }
 
-    override fun config(): Config {
+    override fun config(): SinkConfig {
         return config
     }
 
