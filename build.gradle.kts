@@ -62,10 +62,10 @@ subprojects {
     apply(plugin = "org.jetbrains.dokka")
     apply(plugin = "com.github.hierynomus.license-base")
     apply(plugin = "jacoco")
-    apply(plugin = "checkstyle")
-    if (useSpotBugs(this)) {
-        apply(plugin = "com.github.spotbugs")
-    }
+    // apply(plugin = "checkstyle")
+    // if (useSpotBugs(this)) {
+    //     apply(plugin = "com.github.spotbugs")
+    // }
     jacoco {
         reportsDir = rootDir.resolve("jacocoReport").resolve(projectDir.name)
         reportsDir.mkdirs()
@@ -154,16 +154,16 @@ subprojects {
                 name = "Snapshots"
                 url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
                 credentials {
-                    username = (project.findProperty("gpr.user") ?: System.getenv("CENTRAL_USERNAME")) as String
-                    password = (project.findProperty("gpr.key") ?: System.getenv("CENTRAL_PASSWORD")) as String
+                    username = (project.findProperty("gpr.user") ?: System.getenv("CENTRAL_USERNAME") ?: "") as String
+                    password = (project.findProperty("gpr.key") ?: System.getenv("CENTRAL_PASSWORD") ?: "") as String
                 }
             }
             maven {
                 name = "Staging"
                 url = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
                 credentials {
-                    username = (project.findProperty("gpr.user") ?: System.getenv("CENTRAL_USERNAME")) as String
-                    password = (project.findProperty("gpr.key") ?: System.getenv("CENTRAL_PASSWORD")) as String
+                    username = (project.findProperty("gpr.user") ?: System.getenv("CENTRAL_USERNAME") ?: "") as String
+                    password = (project.findProperty("gpr.key") ?: System.getenv("CENTRAL_PASSWORD") ?: "") as String
                 }
             }
         }
