@@ -31,13 +31,13 @@ import io.floodplain.mongodb.mongoConfig
 import io.floodplain.mongodb.mongoSink
 import io.floodplain.test.InstantiatedContainer
 import io.floodplain.test.useIntegraton
-import kotlin.test.assertEquals
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeout
 import org.bson.Document
 import org.junit.After
 import org.junit.Test
+import kotlin.test.assertEquals
 
 private val logger = mu.KotlinLogging.logger {}
 
@@ -129,16 +129,16 @@ class FilmToMongoDB {
                     MongoClients.create("mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}")
                         .use { client ->
                             repeat(1000) {
-                            val collection = client.getDatabase(database).getCollection("filmwithactors")
-                            hits = collection.countDocuments(Document("actors", Document("\$ne", null)))
-                            logger.info("Count of Documents: $hits in database: $database")
-                            if (hits == 997L) {
-                                return@withTimeout
+                                val collection = client.getDatabase(database).getCollection("filmwithactors")
+                                hits = collection.countDocuments(Document("actors", Document("\$ne", null)))
+                                logger.info("Count of Documents: $hits in database: $database")
+                                if (hits == 997L) {
+                                    return@withTimeout
+                                }
+                                delay(1000)
                             }
-                            delay(1000)
                         }
                 }
-            }
             }
             val diff = System.currentTimeMillis() - start
             logger.info("Elapsed: $diff millis")

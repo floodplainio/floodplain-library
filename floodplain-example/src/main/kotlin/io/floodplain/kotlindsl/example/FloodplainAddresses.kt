@@ -39,48 +39,49 @@ fun main() {
         val mongoConfig = mongoConfig("mongosink", "mongodb://mongo", "@mongodump")
         listOf(
             postgresSource("address", postgresConfig) {
-            joinRemote({ msg -> "${msg["city_id"]}" }, false) {
-                postgresSource("city", postgresConfig) {
-                    joinRemote({ msg -> "${msg["country_id"]}" }, false) {
-                        postgresSource("country", postgresConfig) {}
-                    }
-                    set { _, msg, state ->
-                        msg.set("country", state)
+                joinRemote({ msg -> "${msg["city_id"]}" }, false) {
+                    postgresSource("city", postgresConfig) {
+                        joinRemote({ msg -> "${msg["country_id"]}" }, false) {
+                            postgresSource("country", postgresConfig) {}
+                        }
+                        set { _, msg, state ->
+                            msg.set("country", state)
+                        }
                     }
                 }
-            }
-            set { _, msg, state ->
-                msg.set("city", state)
-            }
-            sink("@address")
-        },
+                set { _, msg, state ->
+                    msg.set("city", state)
+                }
+                sink("@address")
+            },
             postgresSource("customer", postgresConfig) {
-            joinRemote({ m -> "${m["address_id"]}" }, false) {
-                source("@address") {}
+                joinRemote({ m -> "${m["address_id"]}" }, false) {
+                    source("@address") {}
+                }
+                set { _, msg, state ->
+                    msg.set("address", state)
+                }
+                mongoSink("customer", "@customer", mongoConfig)
+            },
+            postgresSource("store", postgresConfig) {
+                joinRemote({ m -> "${m["address_id"]}" }, false) {
+                    source("@address") {}
+                }
+                set { _, msg, state ->
+                    msg.set("address", state)
+                }
+                mongoSink("store", "@store", mongoConfig)
+            },
+            postgresSource("staff", postgresConfig) {
+                joinRemote({ m -> "${m["address_id"]}" }, false) {
+                    source("@address") {}
+                }
+                set { _, msg, state ->
+                    msg.set("address", state)
+                }
+                mongoSink("staff", "@staff", mongoConfig)
             }
-            set { _, msg, state ->
-                msg.set("address", state)
-            }
-            mongoSink("customer", "@customer", mongoConfig)
-        },
-        postgresSource("store", postgresConfig) {
-            joinRemote({ m -> "${m["address_id"]}" }, false) {
-                source("@address") {}
-            }
-            set { _, msg, state ->
-                msg.set("address", state)
-            }
-            mongoSink("store", "@store", mongoConfig)
-        },
-        postgresSource("staff", postgresConfig) {
-            joinRemote({ m -> "${m["address_id"]}" }, false) {
-                source("@address") {}
-            }
-            set { _, msg, state ->
-                msg.set("address", state)
-            }
-            mongoSink("staff", "@staff", mongoConfig)
-        })
+        )
     }.renderAndSchedule(URL("http://localhost:8083/connectors"), "localhost:9092")
     logger.info { "done!" }
 }

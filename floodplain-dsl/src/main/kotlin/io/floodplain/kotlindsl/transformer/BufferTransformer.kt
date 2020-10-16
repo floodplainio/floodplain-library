@@ -23,9 +23,9 @@ import io.floodplain.streams.api.TopologyContext
 import io.floodplain.streams.remotejoin.ReplicationTopologyParser.addMaterializeStore
 import io.floodplain.streams.remotejoin.ReplicationTopologyParser.addPersistentCache
 import io.floodplain.streams.remotejoin.TopologyConstructor
+import org.apache.kafka.streams.Topology
 import java.time.Duration
 import java.util.Stack
-import org.apache.kafka.streams.Topology
 
 class BufferTransformer(private val duration: Duration, private val maxSize: Int, private val inMemory: Boolean) : TopologyPipeComponent {
     var materialize = false

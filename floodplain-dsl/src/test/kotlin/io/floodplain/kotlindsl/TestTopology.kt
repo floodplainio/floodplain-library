@@ -25,14 +25,14 @@ import io.floodplain.kotlindsl.sink.logSinkConfig
 import io.floodplain.replication.api.ReplicationMessage
 import io.floodplain.streams.api.Topic
 import io.floodplain.streams.remotejoin.StoreStateProcessor
+import kotlinx.coroutines.delay
+import org.apache.kafka.streams.state.KeyValueStore
 import java.lang.IllegalArgumentException
 import java.math.BigDecimal
 import java.time.Duration
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
-import kotlinx.coroutines.delay
-import org.apache.kafka.streams.state.KeyValueStore
 
 private val logger = mu.KotlinLogging.logger {}
 
@@ -40,9 +40,9 @@ private val logger = mu.KotlinLogging.logger {}
 class TestTopology {
 
     @Test
-        /**
-         * Test the simplest imaginable pipe: One source and one sink.
-         */
+    /**
+     * Test the simplest imaginable pipe: One source and one sink.
+     */
     fun testSimple() {
         stream {
             source("@sometopic") {
@@ -76,7 +76,8 @@ class TestTopology {
         stream {
             source("mysource") {
                 set {
-                    _, primary, _ -> primary.set("name", "Frank")
+                    _, primary, _ ->
+                    primary.set("name", "Frank")
                 }
                 sink("people")
             }
@@ -295,11 +296,15 @@ class TestTopology {
     fun testSimpleScan() {
         stream {
             source("@source") {
-                scan({ msg -> msg["total"] = 0; msg }, {
-                    set { _, _, acc -> acc["total"] = acc["total"] as Int + 1; acc }
-                }, {
-                    set { _, _, acc -> acc["total"] = acc["total"] as Int - 1; acc }
-                })
+                scan(
+                    { msg -> msg["total"] = 0; msg },
+                    {
+                        set { _, _, acc -> acc["total"] = acc["total"] as Int + 1; acc }
+                    },
+                    {
+                        set { _, _, acc -> acc["total"] = acc["total"] as Int - 1; acc }
+                    }
+                )
                 each { key, msg, acc -> logger.info("Each: $key -> $msg -> $acc") }
 
                 sink("@output")
@@ -321,22 +326,27 @@ class TestTopology {
     fun testSimpleScanWithDecimals() {
         stream {
             source("@source") {
-                scan({
-                    empty().set("total", BigDecimal.valueOf(0))
-                }, {
-                    set {
-                        _, _, acc -> acc["total"] = (acc["total"] as BigDecimal).add(BigDecimal.valueOf(1))
-                        acc
-                    }
-                }, {
-                    set { _, _, acc ->
-                        if (acc["total"] != null) {
-                            logger.info("A: $acc")
+                scan(
+                    {
+                        empty().set("total", BigDecimal.valueOf(0))
+                    },
+                    {
+                        set {
+                            _, _, acc ->
+                            acc["total"] = (acc["total"] as BigDecimal).add(BigDecimal.valueOf(1))
+                            acc
                         }
-                        acc["total"] = (acc["total"] as BigDecimal).subtract(BigDecimal.valueOf(1))
-                        acc
+                    },
+                    {
+                        set { _, _, acc ->
+                            if (acc["total"] != null) {
+                                logger.info("A: $acc")
+                            }
+                            acc["total"] = (acc["total"] as BigDecimal).subtract(BigDecimal.valueOf(1))
+                            acc
+                        }
                     }
-                })
+                )
                 each { key, msg, acc -> logger.info("Each: $key -> $msg -> $acc") }
                 sink("@output")
             }
@@ -359,11 +369,16 @@ class TestTopology {
     fun testScan() {
         stream {
             source("@source") {
-                scan({ msg -> msg["groupKey"] as String }, { msg -> msg["total"] = 0; msg }, {
-                    set { _, _, acc -> acc["total"] = acc["total"] as Int + 1; acc }
-                }, {
-                    set { _, _, acc -> acc["total"] = acc["total"] as Int - 1; acc }
-                })
+                scan(
+                    { msg -> msg["groupKey"] as String },
+                    { msg -> msg["total"] = 0; msg },
+                    {
+                        set { _, _, acc -> acc["total"] = acc["total"] as Int + 1; acc }
+                    },
+                    {
+                        set { _, _, acc -> acc["total"] = acc["total"] as Int - 1; acc }
+                    }
+                )
                 each { key, msg, acc -> logger.info("Each: $key -> $msg -> $acc") }
 
                 sink("@output")
@@ -406,13 +421,19 @@ class TestTopology {
     fun testScanGroupedSimple() {
         stream {
             source("@source") {
-                scan({ msg -> msg["groupKey"] as String }, { msg -> msg["total"] = 0; msg }, {
-                    set { _, _, acc -> acc["total"] = acc["total"] as Int + 1; acc }
-                }, {
-                    set { _, _, acc -> acc["total"] = acc["total"] as Int - 1; acc }
-                })
+                scan(
+                    { msg -> msg["groupKey"] as String },
+                    { msg -> msg["total"] = 0; msg },
+                    {
+                        set { _, _, acc -> acc["total"] = acc["total"] as Int + 1; acc }
+                    },
+                    {
+                        set { _, _, acc -> acc["total"] = acc["total"] as Int - 1; acc }
+                    }
+                )
                 each {
-                        key, msg, acc -> logger.info("Each: $key -> $msg -> $acc")
+                    key, msg, acc ->
+                    logger.info("Each: $key -> $msg -> $acc")
                 }
 
                 sink("@output")
@@ -431,17 +452,17 @@ class TestTopology {
         stream {
             source("@source") {
                 fork(
-                        {
-                            filter { _, value -> value["category"] == "category1" }
-                            sink("@category1")
-                        },
-                        {
-                            filter { _, value -> value["category"] == "category2" }
-                            sink("@category2")
-                        },
-                        {
-                            sink("@all")
-                        }
+                    {
+                        filter { _, value -> value["category"] == "category1" }
+                        sink("@category1")
+                    },
+                    {
+                        filter { _, value -> value["category"] == "category2" }
+                        sink("@category2")
+                    },
+                    {
+                        sink("@all")
+                    }
                 )
                 sink("@sink")
             }
@@ -581,8 +602,10 @@ class TestTopology {
 
     @Test
     fun testRawJsonInput() {
-        val originalKey = """{"schema":{"type":"struct","fields":[{"type":"int32","optional":false,"field":"film_id"}],"optional":false,"name":"instance_mypostgres.public.film.Key"},"payload":{"film_id":965}}"""
-        val body = """{"schema":{"type":"struct","fields":[{"type":"struct","fields":[{"type":"int32","optional":false,"field":"film_id"},{"type":"string","optional":false,"field":"title"},{"type":"string","optional":true,"field":"description"},{"type":"int32","optional":true,"field":"release_year"},{"type":"int16","optional":false,"field":"language_id"},{"type":"int16","optional":false,"field":"rental_duration"},{"type":"bytes","optional":false,"name":"org.apache.kafka.connect.data.Decimal","version":1,"parameters":{"scale":"2","connect.decimal.precision":"4"},"field":"rental_rate"},{"type":"int16","optional":true,"field":"length"},{"type":"bytes","optional":false,"name":"org.apache.kafka.connect.data.Decimal","version":1,"parameters":{"scale":"2","connect.decimal.precision":"5"},"field":"replacement_cost"},{"type":"string","optional":true,"name":"io.debezium.data.Enum","version":1,"parameters":{"allowed":"G,PG,PG-13,R,NC-17"},"field":"rating"},{"type":"int64","optional":false,"name":"io.debezium.time.MicroTimestamp","version":1,"field":"last_update"},{"type":"array","items":{"type":"string","optional":true},"optional":true,"field":"special_features"}],"optional":true,"name":"instance_mypostgres.public.film.Value","field":"before"},{"type":"struct","fields":[{"type":"int32","optional":false,"field":"film_id"},{"type":"string","optional":false,"field":"title"},{"type":"string","optional":true,"field":"description"},{"type":"int32","optional":true,"field":"release_year"},{"type":"int16","optional":false,"field":"language_id"},{"type":"int16","optional":false,"field":"rental_duration"},{"type":"bytes","optional":false,"name":"org.apache.kafka.connect.data.Decimal","version":1,"parameters":{"scale":"2","connect.decimal.precision":"4"},"field":"rental_rate"},{"type":"int16","optional":true,"field":"length"},{"type":"bytes","optional":false,"name":"org.apache.kafka.connect.data.Decimal","version":1,"parameters":{"scale":"2","connect.decimal.precision":"5"},"field":"replacement_cost"},{"type":"string","optional":true,"name":"io.debezium.data.Enum","version":1,"parameters":{"allowed":"G,PG,PG-13,R,NC-17"},"field":"rating"},{"type":"int64","optional":false,"name":"io.debezium.time.MicroTimestamp","version":1,"field":"last_update"},{"type":"array","items":{"type":"string","optional":true},"optional":true,"field":"special_features"}],"optional":true,"name":"instance_mypostgres.public.film.Value","field":"after"},{"type":"struct","fields":[{"type":"string","optional":false,"field":"version"},{"type":"string","optional":false,"field":"connector"},{"type":"string","optional":false,"field":"name"},{"type":"int64","optional":false,"field":"ts_ms"},{"type":"string","optional":true,"name":"io.debezium.data.Enum","version":1,"parameters":{"allowed":"true,last,false"},"default":"false","field":"snapshot"},{"type":"string","optional":false,"field":"db"},{"type":"string","optional":false,"field":"schema"},{"type":"string","optional":false,"field":"table"},{"type":"int64","optional":true,"field":"txId"},{"type":"int64","optional":true,"field":"lsn"},{"type":"int64","optional":true,"field":"xmin"}],"optional":false,"name":"io.debezium.connector.postgresql.Source","field":"source"},{"type":"string","optional":false,"field":"op"},{"type":"int64","optional":true,"field":"ts_ms"},{"type":"struct","fields":[{"type":"string","optional":false,"field":"id"},{"type":"int64","optional":false,"field":"total_order"},{"type":"int64","optional":false,"field":"data_collection_order"}],"optional":true,"field":"transaction"}],"optional":false,"name":"instance_mypostgres.public.film.Envelope"},"payload":{"before":null,"after":{"film_id":778,"title":"Secrets Paradise","description":"A Fateful Saga of a Cat And a Frisbee who must Kill a Girl in A Manhattan Penthouse","release_year":2006,"language_id":1,"rental_duration":3,"rental_rate":"AfM=","length":109,"replacement_cost":"CcM=","rating":"G","last_update":1369579858951000,"special_features":["Trailers","Commentaries"]},"source":{"version":"1.2.0.Final","connector":"postgresql","name":"instance-mypostgres","ts_ms":1594564042739,"snapshot":"true","db":"dvdrental","schema":"public","table":"film","txId":751,"lsn":30998528,"xmin":null},"op":"r","ts_ms":1594564042739,"transaction":null}}"""
+        val originalKey =
+            """{"schema":{"type":"struct","fields":[{"type":"int32","optional":false,"field":"film_id"}],"optional":false,"name":"instance_mypostgres.public.film.Key"},"payload":{"film_id":965}}"""
+        val body =
+            """{"schema":{"type":"struct","fields":[{"type":"struct","fields":[{"type":"int32","optional":false,"field":"film_id"},{"type":"string","optional":false,"field":"title"},{"type":"string","optional":true,"field":"description"},{"type":"int32","optional":true,"field":"release_year"},{"type":"int16","optional":false,"field":"language_id"},{"type":"int16","optional":false,"field":"rental_duration"},{"type":"bytes","optional":false,"name":"org.apache.kafka.connect.data.Decimal","version":1,"parameters":{"scale":"2","connect.decimal.precision":"4"},"field":"rental_rate"},{"type":"int16","optional":true,"field":"length"},{"type":"bytes","optional":false,"name":"org.apache.kafka.connect.data.Decimal","version":1,"parameters":{"scale":"2","connect.decimal.precision":"5"},"field":"replacement_cost"},{"type":"string","optional":true,"name":"io.debezium.data.Enum","version":1,"parameters":{"allowed":"G,PG,PG-13,R,NC-17"},"field":"rating"},{"type":"int64","optional":false,"name":"io.debezium.time.MicroTimestamp","version":1,"field":"last_update"},{"type":"array","items":{"type":"string","optional":true},"optional":true,"field":"special_features"}],"optional":true,"name":"instance_mypostgres.public.film.Value","field":"before"},{"type":"struct","fields":[{"type":"int32","optional":false,"field":"film_id"},{"type":"string","optional":false,"field":"title"},{"type":"string","optional":true,"field":"description"},{"type":"int32","optional":true,"field":"release_year"},{"type":"int16","optional":false,"field":"language_id"},{"type":"int16","optional":false,"field":"rental_duration"},{"type":"bytes","optional":false,"name":"org.apache.kafka.connect.data.Decimal","version":1,"parameters":{"scale":"2","connect.decimal.precision":"4"},"field":"rental_rate"},{"type":"int16","optional":true,"field":"length"},{"type":"bytes","optional":false,"name":"org.apache.kafka.connect.data.Decimal","version":1,"parameters":{"scale":"2","connect.decimal.precision":"5"},"field":"replacement_cost"},{"type":"string","optional":true,"name":"io.debezium.data.Enum","version":1,"parameters":{"allowed":"G,PG,PG-13,R,NC-17"},"field":"rating"},{"type":"int64","optional":false,"name":"io.debezium.time.MicroTimestamp","version":1,"field":"last_update"},{"type":"array","items":{"type":"string","optional":true},"optional":true,"field":"special_features"}],"optional":true,"name":"instance_mypostgres.public.film.Value","field":"after"},{"type":"struct","fields":[{"type":"string","optional":false,"field":"version"},{"type":"string","optional":false,"field":"connector"},{"type":"string","optional":false,"field":"name"},{"type":"int64","optional":false,"field":"ts_ms"},{"type":"string","optional":true,"name":"io.debezium.data.Enum","version":1,"parameters":{"allowed":"true,last,false"},"default":"false","field":"snapshot"},{"type":"string","optional":false,"field":"db"},{"type":"string","optional":false,"field":"schema"},{"type":"string","optional":false,"field":"table"},{"type":"int64","optional":true,"field":"txId"},{"type":"int64","optional":true,"field":"lsn"},{"type":"int64","optional":true,"field":"xmin"}],"optional":false,"name":"io.debezium.connector.postgresql.Source","field":"source"},{"type":"string","optional":false,"field":"op"},{"type":"int64","optional":true,"field":"ts_ms"},{"type":"struct","fields":[{"type":"string","optional":false,"field":"id"},{"type":"int64","optional":false,"field":"total_order"},{"type":"int64","optional":false,"field":"data_collection_order"}],"optional":true,"field":"transaction"}],"optional":false,"name":"instance_mypostgres.public.film.Envelope"},"payload":{"before":null,"after":{"film_id":778,"title":"Secrets Paradise","description":"A Fateful Saga of a Cat And a Frisbee who must Kill a Girl in A Manhattan Penthouse","release_year":2006,"language_id":1,"rental_duration":3,"rental_rate":"AfM=","length":109,"replacement_cost":"CcM=","rating":"G","last_update":1369579858951000,"special_features":["Trailers","Commentaries"]},"source":{"version":"1.2.0.Final","connector":"postgresql","name":"instance-mypostgres","ts_ms":1594564042739,"snapshot":"true","db":"dvdrental","schema":"public","table":"film","txId":751,"lsn":30998528,"xmin":null},"op":"r","ts_ms":1594564042739,"transaction":null}}"""
 
         stream {
             val logSinkConfig = logSinkConfig("logname")

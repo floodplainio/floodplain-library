@@ -76,7 +76,8 @@ fun PartialStream.logSink(sinkName: String, topicName: String, config: LogSinkCo
 
         "topics" to topicName,
         "schema.ignore" to "true",
-        "type.name" to "_doc")
+        "type.name" to "_doc"
+    )
     config.materializedConfigs.add(MaterializedConfig(config.name, listOf(topic), sinkConfig))
     val conn = LogSinkConnector()
     conn.start(sinkConfig)

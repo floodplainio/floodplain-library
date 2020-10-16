@@ -30,10 +30,10 @@ import io.floodplain.mongodb.mongoSink
 import io.floodplain.mongodb.waitForMongoDbCondition
 import io.floodplain.test.InstantiatedContainer
 import io.floodplain.test.useIntegraton
-import kotlin.test.assertNotNull
 import kotlinx.coroutines.cancel
 import org.junit.After
 import org.junit.Test
+import kotlin.test.assertNotNull
 
 private val logger = mu.KotlinLogging.logger {}
 

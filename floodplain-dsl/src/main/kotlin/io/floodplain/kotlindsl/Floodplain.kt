@@ -128,7 +128,8 @@ fun PartialStream.buffer(duration: Duration, maxSize: Int = 10000, inMemory: Boo
  */
 fun PartialStream.set(transform: (String, IMessage, IMessage) -> IMessage): Transformer {
     val transformer: (String, ImmutableMessage, ImmutableMessage) -> ImmutableMessage = {
-        key: String, msg: ImmutableMessage, param: ImmutableMessage -> transform.invoke(key, fromImmutable(msg), fromImmutable(param)).toImmutable()
+        key: String, msg: ImmutableMessage, param: ImmutableMessage ->
+        transform.invoke(key, fromImmutable(msg), fromImmutable(param)).toImmutable()
     }
     val set = SetTransformer(transformer)
     return addTransformer(Transformer(set))
@@ -277,7 +278,8 @@ fun streams(generation: String = "any", instance: String = "instance", init: Str
     val pipe = Stream(topologyContext)
     val sources = pipe.init()
     sources.forEach {
-        e -> pipe.addSource(e)
+        e ->
+        pipe.addSource(e)
     }
     return pipe
 }

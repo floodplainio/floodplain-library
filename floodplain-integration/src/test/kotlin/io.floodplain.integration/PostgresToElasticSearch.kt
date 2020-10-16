@@ -32,17 +32,17 @@ import io.floodplain.kotlindsl.source
 import io.floodplain.kotlindsl.streams
 import io.floodplain.test.InstantiatedContainer
 import io.floodplain.test.useIntegraton
-import java.net.URI
-import java.net.http.HttpClient
-import java.net.http.HttpRequest
-import java.net.http.HttpResponse
-import java.time.Duration
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeout
 import org.junit.After
 import org.junit.Assert
 import org.junit.Test
+import java.net.URI
+import java.net.http.HttpClient
+import java.net.http.HttpRequest
+import java.net.http.HttpResponse
+import java.time.Duration
 
 private val logger = mu.KotlinLogging.logger {}
 
@@ -118,7 +118,8 @@ class PostgresToElasticSearch {
                         msg.set("address", state)
                     }
                     elasticSearchSink("@staff", "@staff", elasticConfig)
-                })
+                }
+            )
         }.renderAndExecute {
             logger.info("Outputs: ${outputs()}")
             val index = topologyContext().topicName("@customer")

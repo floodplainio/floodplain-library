@@ -25,13 +25,13 @@ import io.floodplain.kotlindsl.stream
 import io.floodplain.kotlindsl.streams
 import io.floodplain.mongodb.mongoConfig
 import io.floodplain.mongodb.mongoSink
-import java.util.Date
-import kotlin.test.assertEquals
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeout
 import org.bson.Document
 import org.junit.Test
 import org.testcontainers.containers.GenericContainer
+import java.util.Date
+import kotlin.test.assertEquals
 
 private val logger = mu.KotlinLogging.logger {}
 
@@ -119,7 +119,7 @@ class TestMongo {
             // delay(5000)
             MongoClients.create("mongodb://$address:$port").use { client ->
                 val database = client.getDatabase("mongo-connect-test")
-                    val collection1 = database.getCollection("collection1")
+                val collection1 = database.getCollection("collection1")
                 val collection2 = database.getCollection("collection2")
                 collection1.deleteMany(Document())
                 collection2.deleteMany(Document())

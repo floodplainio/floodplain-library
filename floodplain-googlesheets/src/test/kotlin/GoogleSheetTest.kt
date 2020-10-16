@@ -51,7 +51,13 @@ class GoogleSheetTest {
                     msg
                 }
                 googleSheetsSink(
-                    "outputtopic", spreadsheetId, listOf("column1", "column2"), "A", 1, config)
+                    "outputtopic",
+                    spreadsheetId,
+                    listOf("column1", "column2"),
+                    "A",
+                    1,
+                    config
+                )
             }
         }.renderAndExecute {
             input("topic", "k1", empty().set("column1", "kol1").set("column2", "otherkol1").set("id", 1))

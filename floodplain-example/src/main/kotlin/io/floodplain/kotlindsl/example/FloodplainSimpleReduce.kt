@@ -29,7 +29,6 @@ import io.floodplain.mongodb.mongoConfig
 import io.floodplain.mongodb.mongoSink
 import kotlinx.coroutines.delay
 import java.math.BigDecimal
-import java.net.URL
 
 fun main() {
     stream("bla") {
@@ -38,7 +37,9 @@ fun main() {
         postgresSource("customer", postgresConfig) {
             join {
                 postgresSource("payment", postgresConfig) {
-                    scan({ msg -> msg["customer_id"].toString() }, { empty().set("total", BigDecimal(0)) },
+                    scan(
+                        { msg -> msg["customer_id"].toString() },
+                        { empty().set("total", BigDecimal(0)) },
                         {
                             set { _, msg, state ->
                                 state["total"] = (state["total"] as BigDecimal).add(msg["amount"] as BigDecimal)
@@ -46,8 +47,10 @@ fun main() {
                             }
                         },
                         {
-                            set { _, msg, state -> state["total"] = (state["total"] as BigDecimal).add(msg["amount"] as BigDecimal)
-                                ; state }
+                            set { _, msg, state ->
+                                state["total"] = (state["total"] as BigDecimal).add(msg["amount"] as BigDecimal)
+                                ; state
+                            }
                         }
                     )
                 }

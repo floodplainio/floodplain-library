@@ -34,24 +34,28 @@ import io.floodplain.mongodb.mongoSink
 import io.floodplain.mongodb.waitForMongoDbCondition
 import io.floodplain.test.InstantiatedContainer
 import io.floodplain.test.useIntegraton
-import kotlin.test.assertNotNull
 import kotlinx.coroutines.delay
 import org.junit.After
 import org.junit.Ignore
 import org.junit.Test
+import kotlin.test.assertNotNull
 
 private val logger = mu.KotlinLogging.logger {}
 
 @Suppress("UNCHECKED_CAST")
 class MySQLTest {
 
-    private val mysqlContainer = InstantiatedContainer("debezium/example-mysql:1.2", 3306, mapOf(
-        "MYSQL_ROOT_PASSWORD" to "mysecretpassword",
-        "MYSQL_DATABASE" to "wpdb",
-        "MYSQL_USER" to "mysqluser",
-        "MYSQL_PASSWORD" to "mysqlpw",
-        "MYSQL_ROOT_HOST" to "%"
-    ))
+    private val mysqlContainer = InstantiatedContainer(
+        "debezium/example-mysql:1.2",
+        3306,
+        mapOf(
+            "MYSQL_ROOT_PASSWORD" to "mysecretpassword",
+            "MYSQL_DATABASE" to "wpdb",
+            "MYSQL_USER" to "mysqluser",
+            "MYSQL_PASSWORD" to "mysqlpw",
+            "MYSQL_ROOT_HOST" to "%"
+        )
+    )
     private val mongoContainer = InstantiatedContainer("mongo:latest", 27017)
 
     @After

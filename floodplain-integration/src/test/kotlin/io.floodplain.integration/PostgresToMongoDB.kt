@@ -36,14 +36,14 @@ import io.floodplain.mongodb.mongoSink
 import io.floodplain.mongodb.waitForMongoDbCondition
 import io.floodplain.test.InstantiatedContainer
 import io.floodplain.test.useIntegraton
-import java.math.BigDecimal
-import kotlin.test.assertNotNull
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeout
 import org.junit.After
 import org.junit.Ignore
 import org.junit.Test
+import java.math.BigDecimal
+import kotlin.test.assertNotNull
 
 private val logger = mu.KotlinLogging.logger {}
 
@@ -87,28 +87,28 @@ class TestCombinedMongo {
             )
             // val addressMap = mutableMapOf<String, IMessage>()
             postgresSource("address", postgresConfig) {
-                    // each { key, _, _ ->
-                    //     logger.info("KEYYA {} -> {}", key, key.javaClass)
-                    // }
-                    joinRemote({ msg -> "${msg["city_id"]}" }, false) {
-                        postgresSource("city", postgresConfig) {
-                        }
+                // each { key, _, _ ->
+                //     logger.info("KEYYA {} -> {}", key, key.javaClass)
+                // }
+                joinRemote({ msg -> "${msg["city_id"]}" }, false) {
+                    postgresSource("city", postgresConfig) {
                     }
-                    set { _, msg, state ->
-                        msg["city"] = state
-                        // addressMap.put(key, msg)
-                        // val correctAddresses = addressMap.filter { (k, v) ->
-                        //     v["city"] != null
-                        // }.map { (k, v) -> k }
-                            // .count(
-                        // logger.info("Corr addresses: " + correctAddresses.size)
-                        // logger.info("Corr: " + correctAddresses)
-                        // logger.info("KEYYJ {}\n{}", key, msg)
-                        msg
-                    }
-                    // logSink("someSink","@sometopic",logConfig)
-                    mongoSink("address", "@address", mongoConfig)
                 }
+                set { _, msg, state ->
+                    msg["city"] = state
+                    // addressMap.put(key, msg)
+                    // val correctAddresses = addressMap.filter { (k, v) ->
+                    //     v["city"] != null
+                    // }.map { (k, v) -> k }
+                    // .count(
+                    // logger.info("Corr addresses: " + correctAddresses.size)
+                    // logger.info("Corr: " + correctAddresses)
+                    // logger.info("KEYYJ {}\n{}", key, msg)
+                    msg
+                }
+                // logSink("someSink","@sometopic",logConfig)
+                mongoSink("address", "@address", mongoConfig)
+            }
         }.renderAndExecute {
             val database = topologyContext().topicName("@mongodump")
             flushSinks()
@@ -219,7 +219,8 @@ class TestCombinedMongo {
                         msg
                     }
                     mongoSink("staff", "@staff", mongoConfig)
-                })
+                }
+            )
         }.renderAndExecute {
             val database = topologyContext().topicName("@mongodump")
             flushSinks()
@@ -238,7 +239,8 @@ class TestCombinedMongo {
                 }
             } as Long?
             assertNotNull(hits)
-            connectJobs().forEach { it.cancel("ciao!") } }
+            connectJobs().forEach { it.cancel("ciao!") }
+        }
     }
     @Test @Ignore
     fun testSimpleReduce() {
@@ -261,23 +263,26 @@ class TestCombinedMongo {
                 "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
                 "@mongodump"
             )
-            listOf(postgresSource("payment", postgresConfig) {
-                scan({ empty().set("total", BigDecimal(0)) },
-                    {
-                        set { _, msg, state ->
-                            state["total"] = (state["total"] as BigDecimal).add(msg["amount"] as BigDecimal)
-                            state
+            listOf(
+                postgresSource("payment", postgresConfig) {
+                    scan(
+                        { empty().set("total", BigDecimal(0)) },
+                        {
+                            set { _, msg, state ->
+                                state["total"] = (state["total"] as BigDecimal).add(msg["amount"] as BigDecimal)
+                                state
+                            }
+                        },
+                        {
+                            set { _, msg, state ->
+                                state["total"] = (state["total"] as BigDecimal).subtract(msg["amount"] as BigDecimal)
+                                state
+                            }
                         }
-                    },
-                    {
-                        set { _, msg, state ->
-                            state["total"] = (state["total"] as BigDecimal).subtract(msg["amount"] as BigDecimal)
-                            state
-                        }
-                    }
-                )
-                mongoSink("justtotal", "@myfinaltopic", mongoConfig)
-            })
+                    )
+                    mongoSink("justtotal", "@myfinaltopic", mongoConfig)
+                }
+            )
         }.renderAndExecute {
             val database = topologyContext().topicName("@mongodump")
 
@@ -327,26 +332,32 @@ class TestCombinedMongo {
                     each { _, mms, _ ->
                         logger.info("Customer: $mms")
                     }
-                join {
-                    postgresSource("payment", postgresConfig) {
-                        scan({ msg -> msg["customer_id"].toString() }, { empty().set("total", BigDecimal(0)) },
-                            {
-                                set { _, msg, state ->
-                                    state["total"] = (state["total"] as BigDecimal).add(msg["amount"] as BigDecimal)
-                                    state
+                    join {
+                        postgresSource("payment", postgresConfig) {
+                            scan(
+                                { msg -> msg["customer_id"].toString() },
+                                { empty().set("total", BigDecimal(0)) },
+                                {
+                                    set { _, msg, state ->
+                                        state["total"] = (state["total"] as BigDecimal).add(msg["amount"] as BigDecimal)
+                                        state
+                                    }
+                                },
+                                {
+                                    set { _, msg, state ->
+                                        state["total"] = (state["total"] as BigDecimal).add(msg["amount"] as BigDecimal)
+                                        ; state
+                                    }
                                 }
-                            },
-                            {
-                                set { _, msg, state -> state["total"] = (state["total"] as BigDecimal).add(msg["amount"] as BigDecimal)
-                                    ; state }
-                            }
-                        )
+                            )
+                        }
                     }
+                    set { _, customer, paymenttotal ->
+                        customer["payments"] = paymenttotal["total"]; customer
+                    }
+                    mongoSink("paymentpercustomer", "myfinaltopic", mongoConfig)
                 }
-                set { _, customer, paymenttotal ->
-                    customer["payments"] = paymenttotal["total"]; customer
-                }
-                mongoSink("paymentpercustomer", "myfinaltopic", mongoConfig) })
+            )
         }.renderAndExecute {
             val database = topologyContext().topicName("@mongodump")
             val items = waitForMongoDbCondition("mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}", database) { currentDatabase ->

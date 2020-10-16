@@ -22,12 +22,6 @@ import io.debezium.engine.ChangeEvent
 import io.debezium.engine.DebeziumEngine
 import io.debezium.engine.format.Json
 import io.floodplain.ChangeRecord
-import java.nio.file.Path
-import java.util.Properties
-import java.util.UUID
-import java.util.concurrent.atomic.AtomicBoolean
-import java.util.concurrent.atomic.AtomicLong
-import kotlin.system.measureTimeMillis
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.awaitClose
@@ -36,6 +30,12 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.launch
+import java.nio.file.Path
+import java.util.Properties
+import java.util.UUID
+import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.AtomicLong
+import kotlin.system.measureTimeMillis
 
 private val logger = mu.KotlinLogging.logger {}
 
@@ -131,9 +131,11 @@ private fun runDebeziumServer(props: Properties): Flow<ChangeRecord> {
             .build()
         engineKillSwitch.engine = engine
         GlobalScope.launch {
-            logger.info("Engine ran for: " + measureTimeMillis {
-                engine.run()
-            })
+            logger.info(
+                "Engine ran for: " + measureTimeMillis {
+                    engine.run()
+                }
+            )
             logger.info("Debezium source engine terminated. Total time in send: ${totalTimeInSend.get()}")
         }
         awaitClose {

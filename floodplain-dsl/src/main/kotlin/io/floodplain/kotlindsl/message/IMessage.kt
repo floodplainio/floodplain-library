@@ -73,7 +73,7 @@ private data class IMessageImpl(private val content: MutableMap<String, Any>) : 
     }
     override fun string(path: String): String {
         return optionalString(path)
-                ?: throw NullPointerException("Can't obtain string from path: $path as it is absent")
+            ?: throw NullPointerException("Can't obtain string from path: $path as it is absent")
     }
 
     override fun integer(path: String): Int {

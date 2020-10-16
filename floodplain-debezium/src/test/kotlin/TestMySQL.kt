@@ -22,12 +22,12 @@ import io.debezium.engine.ChangeEvent
 import io.debezium.engine.DebeziumEngine
 import io.debezium.engine.format.Json
 import io.floodplain.ChangeRecord
+import org.junit.Ignore
+import org.junit.Test
 import java.nio.file.Path
 import java.util.Properties
 import java.util.UUID
 import kotlin.system.measureTimeMillis
-import org.junit.Ignore
-import org.junit.Test
 
 private val logger = mu.KotlinLogging.logger {}
 
@@ -56,21 +56,21 @@ class TestMySQL {
         val engine = DebeziumEngine.create(Json::class.java)
             .using(props)
             .notifying { record: ChangeEvent<String, String> ->
-                    val perf = measureTimeMillis {
-                        send(
-                            ChangeRecord(
-                                record.destination(),
-                                record.key(),
-                                record.value()?.toByteArray()
-                            )
+                val perf = measureTimeMillis {
+                    send(
+                        ChangeRecord(
+                            record.destination(),
+                            record.key(),
+                            record.value()?.toByteArray()
                         )
-                    }
-                    if (perf > 1000) {
-                        logger.debug("Send ran for: $perf")
-                    }
+                    )
+                }
+                if (perf > 1000) {
+                    logger.debug("Send ran for: $perf")
+                }
             }
             .build()
-            engine.run()
+        engine.run()
     }
 
     private fun send(changeRecord: ChangeRecord) {

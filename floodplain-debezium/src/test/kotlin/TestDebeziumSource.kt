@@ -20,13 +20,13 @@ package io.floodplain.debezium.postgres
 
 import io.floodplain.ChangeRecord
 import io.floodplain.test.InstantiatedContainer
-import java.util.UUID
-import kotlin.test.assertEquals
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Test
+import java.util.UUID
+import kotlin.test.assertEquals
 
 class TestDebeziumSource {
 
@@ -36,8 +36,10 @@ class TestDebeziumSource {
     fun testShortRun() {
         runBlocking {
             val resultList = mutableListOf<ChangeRecord>()
-            createDebeziumChangeFlow("mypostgres", "io.debezium.connector.postgresql.PostgresConnector", postgresContainer.host, postgresContainer.exposedPort, "dvdrental", "postgres", "mysecretpassword", UUID.randomUUID().toString(),
-                emptyMap())
+            createDebeziumChangeFlow(
+                "mypostgres", "io.debezium.connector.postgresql.PostgresConnector", postgresContainer.host, postgresContainer.exposedPort, "dvdrental", "postgres", "mysecretpassword", UUID.randomUUID().toString(),
+                emptyMap()
+            )
                 .take(500)
                 .toList(resultList)
             assertEquals(500, resultList.size)

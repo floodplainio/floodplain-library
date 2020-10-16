@@ -102,7 +102,8 @@ subprojects {
                 "-Xopt-in=kotlin.ExperimentalStdlibApi",
                 "-Xopt-in=kotlinx.coroutines.FlowPreview",
                 "-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
-                "-Xopt-in=kotlin.time.ExperimentalTime")
+                "-Xopt-in=kotlin.time.ExperimentalTime"
+            )
         }
     }
 
@@ -190,9 +191,9 @@ fun customizePom(publication: MavenPublication) {
             url.set("https://floodplain.io")
         }
         issueManagement {
-                system.set("GitHub")
-                url.set("https://github.com/floodplainio/floodplain-library/issues")
-            }
+            system.set("GitHub")
+            url.set("https://github.com/floodplainio/floodplain-library/issues")
+        }
         licenses {
             license {
                 name.set("Apache License 2.0")
@@ -208,9 +209,9 @@ fun customizePom(publication: MavenPublication) {
             }
         }
         scm {
-                url.set("https://github.com/floodplainio/floodplainio/floodplain-library")
-                connection.set("scm:git:git://github.com/floodplainio/floodplain-library.git")
-                developerConnection.set("scm:git:ssh://git@github.com:floodplainio/floodplain-library.git")
-            }
+            url.set("https://github.com/floodplainio/floodplainio/floodplain-library")
+            connection.set("scm:git:git://github.com/floodplainio/floodplain-library.git")
+            developerConnection.set("scm:git:ssh://git@github.com:floodplainio/floodplain-library.git")
+        }
     }
 }

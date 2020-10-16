@@ -30,11 +30,11 @@ import io.floodplain.reactive.source.topology.SinkTransformer
 import io.floodplain.streams.api.ProcessorName
 import io.floodplain.streams.api.Topic
 import io.floodplain.streams.api.TopologyContext
+import org.apache.kafka.connect.sink.SinkRecord
+import org.apache.kafka.connect.sink.SinkTask
 import java.util.Optional
 import java.util.concurrent.atomic.AtomicLong
 import kotlin.system.measureTimeMillis
-import org.apache.kafka.connect.sink.SinkRecord
-import org.apache.kafka.connect.sink.SinkTask
 
 private val logger = mu.KotlinLogging.logger {}
 
@@ -55,19 +55,21 @@ class MongoConfig(val name: String, val uri: String, val database: String) : Sin
         logger.debug("Topics: $topics")
 
         val generationalDatabase = topologyContext.topicName(database)
-        val settings = mutableMapOf("connector.class" to "com.mongodb.kafka.connect.MongoSinkConnector",
-                "value.converter.schemas.enable" to "false",
-                "key.converter.schemas.enable" to "false",
-                "value.converter" to "org.apache.kafka.connect.json.JsonConverter",
-                // "key.converter" to "io.floodplain.kafka.converter.ReplicationMessageConverter",
-                "key.converter" to "org.apache.kafka.connect.json.JsonConverter",
-                "document.id.strategy" to "com.mongodb.kafka.connect.sink.processor.id.strategy.FullKeyStrategy",
-                "delete.on.null.values" to "true",
-                "debug" to "true",
-                "connection.uri" to uri,
-                "database" to generationalDatabase,
-                "collection" to collections,
-                "topics" to topics)
+        val settings = mutableMapOf(
+            "connector.class" to "com.mongodb.kafka.connect.MongoSinkConnector",
+            "value.converter.schemas.enable" to "false",
+            "key.converter.schemas.enable" to "false",
+            "value.converter" to "org.apache.kafka.connect.json.JsonConverter",
+            // "key.converter" to "io.floodplain.kafka.converter.ReplicationMessageConverter",
+            "key.converter" to "org.apache.kafka.connect.json.JsonConverter",
+            "document.id.strategy" to "com.mongodb.kafka.connect.sink.processor.id.strategy.FullKeyStrategy",
+            "delete.on.null.values" to "true",
+            "debug" to "true",
+            "connection.uri" to uri,
+            "database" to generationalDatabase,
+            "collection" to collections,
+            "topics" to topics
+        )
         settings.putAll(additional)
         settings.forEach { (key, value) ->
             logger.info { "Setting: $key value: $value" }

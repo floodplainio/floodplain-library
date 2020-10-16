@@ -23,6 +23,11 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import io.floodplain.kotlindsl.message.empty
 import io.floodplain.kotlindsl.source
 import io.floodplain.kotlindsl.stream
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.withTimeout
+import org.junit.Test
+import org.testcontainers.containers.GenericContainer
+import org.testcontainers.shaded.com.fasterxml.jackson.databind.node.NullNode
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
@@ -30,11 +35,6 @@ import java.net.http.HttpResponse
 import java.util.Date
 import java.util.UUID
 import kotlin.test.assertEquals
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.withTimeout
-import org.junit.Test
-import org.testcontainers.containers.GenericContainer
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.node.NullNode
 
 private val logger = mu.KotlinLogging.logger {}
 
@@ -49,8 +49,9 @@ class TestElasticSearch {
 
     init {
         container = KGenericContainer("docker.elastic.co/elasticsearch/elasticsearch-oss:7.7.0")
-            .apply { withExposedPorts(9200)
-                .withEnv("discovery.type", "single-node")
+            .apply {
+                withExposedPorts(9200)
+                    .withEnv("discovery.type", "single-node")
             }
         container?.start()
         address = container?.getHost()
@@ -70,7 +71,8 @@ class TestElasticSearch {
             // for now TODO remove
             // address = "localhost"
             // port = 9200
-            val poem = """It's a high pitched sound
+            val poem =
+                """It's a high pitched sound
                 Hot rubber eternally pressing against a blackened pavement
                 A wheel is forever
                 A car is infinity times four 

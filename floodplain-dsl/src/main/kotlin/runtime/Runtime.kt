@@ -30,30 +30,42 @@ import java.nio.charset.StandardCharsets
 
 class LocalArgs(parser: ArgParser) {
     val force by parser.flagging(
-        "-f", "--force",
-        help = "force redeploy of connect modules. Not for local executions.")
+        "-f",
+        "--force",
+        help = "force redeploy of connect modules. Not for local executions."
+    )
 
     val id by parser.storing(
-        "-i", "--id",
-        help = "run as this application id. Subsequent runs with the same id will re-use storage. Will be random if unspecified. For local runs this will only affect disk storage, for Kafka based runs topics / consumer as well")
+        "-i",
+        "--id",
+        help = "run as this application id. Subsequent runs with the same id will re-use storage. Will be random if unspecified. For local runs this will only affect disk storage, for Kafka based runs topics / consumer as well"
+    )
         .default<String?>(null)
 
     val bufferTime by parser.storing(
-        "-b", "--bufferTime",
-        help = "Hints max buffering time. Longer increases latency, but might improve thoughput, esp. for high-latency sinks. Only for local runs.") { toInt() }
+        "-b",
+        "--bufferTime",
+        help = "Hints max buffering time. Longer increases latency, but might improve thoughput, esp. for high-latency sinks. Only for local runs."
+    ) { toInt() }
         .default(1000)
 
     val kafka by parser.storing(
-        "-k", "--kafka",
-        help = """Point to a kafka cluster e.g. localhost:9092 if none is given, floodplain will run in kafkaless mode. 
-|                 If a kafka cluster is supplied, you probably need a --connect as well""".trimMargin())
+        "-k",
+        "--kafka",
+        help =
+            """Point to a kafka cluster e.g. localhost:9092 if none is given, floodplain will run in kafkaless mode. 
+|                 If a kafka cluster is supplied, you probably need a --connect as well""".trimMargin()
+    )
         .default<String?>(null)
 
     val connect by parser.storing(
-        "-c", "--connect",
-        help = """point to a connect instance e.g. http://localhost:8083
+        "-c",
+        "--connect",
+        help =
+            """point to a connect instance e.g. http://localhost:8083
         |Make sure that this connect instance contains all required connector code
-        """.trimMargin())
+        """.trimMargin()
+    )
         .default<String?>(null)
 }
 

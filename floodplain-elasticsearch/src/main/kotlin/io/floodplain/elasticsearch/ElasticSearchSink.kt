@@ -77,7 +77,8 @@ fun PartialStream.elasticSearchSink(sinkName: String, topicName: String, config:
         "topics" to topic.qualifiedString(config.context),
         "schema.ignore" to "true",
         "behavior.on.null.values" to "delete",
-        "type.name" to "_doc")
+        "type.name" to "_doc"
+    )
     config.materializedConfigs.add(MaterializedConfig(config.name, listOf(topic), sinkConfig))
     val conn = ElasticsearchSinkConnector()
     conn.start(sinkConfig)

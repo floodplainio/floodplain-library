@@ -22,9 +22,9 @@ import io.floodplain.debezium.postgres.createDebeziumChangeFlow
 import io.floodplain.reactive.source.topology.TopicSource
 import io.floodplain.streams.api.Topic
 import io.floodplain.streams.api.TopologyContext
-import java.lang.IllegalArgumentException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
+import java.lang.IllegalArgumentException
 
 private val logger = mu.KotlinLogging.logger {}
 
@@ -55,18 +55,24 @@ class PostgresConfig(val topologyContext: TopologyContext, val name: String, val
     }
 
     override fun materializeConnectorConfig(topologyContext: TopologyContext): List<MaterializedConfig> {
-        return listOf(MaterializedConfig(name, emptyList(), mapOf(
-                "connector.class" to "io.debezium.connector.postgresql.PostgresConnector",
-                "database.hostname" to hostname,
-                "database.port" to port.toString(),
-                "database.dbname" to database,
-                "database.user" to username,
-                "database.password" to password,
-                "key.converter" to "org.apache.kafka.connect.json.JsonConverter",
-                "value.converter" to "org.apache.kafka.connect.json.JsonConverter",
-                // TODO"table.whitelist": "public.inventory"
-                "public.inventory" to sourceElements.map { e -> "${e.schema()}.${e.table()}" }.joinToString(",")
-        )))
+        return listOf(
+            MaterializedConfig(
+                name,
+                emptyList(),
+                mapOf(
+                    "connector.class" to "io.debezium.connector.postgresql.PostgresConnector",
+                    "database.hostname" to hostname,
+                    "database.port" to port.toString(),
+                    "database.dbname" to database,
+                    "database.user" to username,
+                    "database.password" to password,
+                    "key.converter" to "org.apache.kafka.connect.json.JsonConverter",
+                    "value.converter" to "org.apache.kafka.connect.json.JsonConverter",
+                    // TODO"table.whitelist": "public.inventory"
+                    "public.inventory" to sourceElements.map { e -> "${e.schema()}.${e.table()}" }.joinToString(",")
+                )
+            )
+        )
     }
 
     fun addSourceElement(elt: DebeziumSourceElement) {

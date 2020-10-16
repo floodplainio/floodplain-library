@@ -39,4 +39,4 @@ suspend fun waitForMongoDbCondition(connectionString: String, database: String, 
             }
         }
     return returnValue
-    }
+}

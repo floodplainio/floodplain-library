@@ -13,9 +13,9 @@ import io.floodplain.mongodb.mongoConfig
 import io.floodplain.mongodb.mongoSink
 import io.floodplain.mongodb.waitForMongoDbCondition
 import io.floodplain.test.useIntegraton
-import kotlin.test.assertNotNull
 import org.junit.Ignore
 import org.junit.Test
+import kotlin.test.assertNotNull
 
 private val logger = mu.KotlinLogging.logger {}
 

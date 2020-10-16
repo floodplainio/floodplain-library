@@ -25,10 +25,6 @@ import io.floodplain.streams.base.RocksDBConfigurationSetter
 import io.floodplain.streams.base.StreamOperators
 import io.floodplain.streams.remotejoin.ReplicationTopologyParser
 import io.floodplain.streams.remotejoin.TopologyConstructor
-import java.net.URL
-import java.util.Properties
-import java.util.Stack
-import java.util.UUID
 import kotlinx.coroutines.runBlocking
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.producer.ProducerConfig
@@ -37,6 +33,10 @@ import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.StreamsConfig
 import org.apache.kafka.streams.Topology
 import org.apache.kafka.streams.processor.WallclockTimestampExtractor
+import java.net.URL
+import java.util.Properties
+import java.util.Stack
+import java.util.UUID
 
 private val logger = mu.KotlinLogging.logger {}
 
@@ -88,23 +88,30 @@ class Stream(val context: TopologyContext) {
         return topology
     }
     fun renderAndExecute(applicationId: String? = null, bufferTime: Int? = null, localCmds: suspend LocalContext.() -> Unit) {
-            val topologyConstructor = TopologyConstructor()
-            val (topology, sources, sinks) = render(topologyConstructor)
-            // val offsetPath = Paths.get("offset_" + UUID.randomUUID())
-            val sourceConfigs = this@Stream.sourceConfigurations
-            val sinkConfigs = this@Stream.sinkConfigurations
-            // logger.info("Using offset path: $offsetPath sources: ${ this@Stream.sourceConfigurations.first()}")
-            logger.info("Testing topology:\n${topology.describe()}")
-            logger.info("Testing sources:\n$sources")
-            logger.info("Testing sinks:\n$sinks")
-            logger.info("Sourcetopics: \n${topologyConstructor.desiredTopicNames().map { it.qualifiedString(context) }}")
+        val topologyConstructor = TopologyConstructor()
+        val (topology, sources, sinks) = render(topologyConstructor)
+        // val offsetPath = Paths.get("offset_" + UUID.randomUUID())
+        val sourceConfigs = this@Stream.sourceConfigurations
+        val sinkConfigs = this@Stream.sinkConfigurations
+        // logger.info("Using offset path: $offsetPath sources: ${ this@Stream.sourceConfigurations.first()}")
+        logger.info("Testing topology:\n${topology.describe()}")
+        logger.info("Testing sources:\n$sources")
+        logger.info("Testing sinks:\n$sinks")
+        logger.info("Sourcetopics: \n${topologyConstructor.desiredTopicNames().map { it.qualifiedString(context) }}")
 
-            runLocalTopology(applicationId ?: UUID.randomUUID().toString(),
-                bufferTime,
-                topology, localCmds, topologyConstructor, context, sourceConfigs, sinkConfigs)
+        runLocalTopology(
+            applicationId ?: UUID.randomUUID().toString(),
+            bufferTime,
+            topology,
+            localCmds,
+            topologyConstructor,
+            context,
+            sourceConfigs,
+            sinkConfigs
+        )
     }
 
-        /**
+    /**
      * Will create an executable definition of the str
      * eam (@see render), then will start the topology by starting a streams
      * instance pointing at the kafka cluster at kafkaHosts, using the supplied clientId.
@@ -156,7 +163,8 @@ class Stream(val context: TopologyContext) {
             stream.close()
         }
         stream.setStateListener { newState: KafkaStreams.State?, oldState: KafkaStreams.State? ->
-            logger.info("State moving from {} to {}", oldState, newState, stream.state()) }
+            logger.info("State moving from {} to {}", oldState, newState, stream.state())
+        }
         stream.start()
         return stream
     }

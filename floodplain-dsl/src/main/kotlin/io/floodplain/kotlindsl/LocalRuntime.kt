@@ -31,11 +31,6 @@ import io.floodplain.streams.api.Topic
 import io.floodplain.streams.api.TopologyContext
 import io.floodplain.streams.remotejoin.TopologyConstructor
 import io.floodplain.streams.serializer.ReplicationMessageSerde
-import java.nio.file.Files
-import java.nio.file.Path
-import java.time.Duration
-import java.time.Instant
-import java.util.Properties
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.GlobalScope
@@ -64,6 +59,11 @@ import org.apache.kafka.streams.Topology
 import org.apache.kafka.streams.TopologyTestDriver
 import org.apache.kafka.streams.processor.WallclockTimestampExtractor
 import org.apache.kafka.streams.state.KeyValueStore
+import java.nio.file.Files
+import java.nio.file.Path
+import java.time.Duration
+import java.time.Instant
+import java.util.Properties
 
 private val logger = mu.KotlinLogging.logger {}
 
@@ -203,18 +203,18 @@ class LocalDriverContext(
                 .map { (topic, flow) -> topic to flow.bufferTimeout(2000, bufferTime?.toLong() ?: 1000) }
                 .toMap()
             val sinks = sinksByTopic()
-                outputFlows.forEach { (topic, flow) ->
-                    logger.info("Connecting topic $topic to sink: ${sinks[topic]}")
-                    this.launch {
-                        flow.collect { elements ->
-                            sinks[topic]?.forEach {
-                                // logger.info("Buffered. Sending size: ${elements.size} topic: $topic")
-                                it.send(topic, elements, topologyContext)
-                            }
+            outputFlows.forEach { (topic, flow) ->
+                logger.info("Connecting topic $topic to sink: ${sinks[topic]}")
+                this.launch {
+                    flow.collect { elements ->
+                        sinks[topic]?.forEach {
+                            // logger.info("Buffered. Sending size: ${elements.size} topic: $topic")
+                            it.send(topic, elements, topologyContext)
                         }
                     }
                 }
             }
+        }
         outputJob.start()
         logger.info("output job connected")
         val inputJob = GlobalScope.launch {

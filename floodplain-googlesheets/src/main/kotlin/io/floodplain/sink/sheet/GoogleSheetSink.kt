@@ -62,7 +62,8 @@ class GoogleSheetConfiguration(val name: String) : SinkConfig {
 
     override fun materializeConnectorConfig(topologyContext: TopologyContext): List<MaterializedConfig> {
         return sheetSinks.map {
-            val settings = mutableMapOf("connector.class" to SheetSinkConnector::class.java.name,
+            val settings = mutableMapOf(
+                "connector.class" to SheetSinkConnector::class.java.name,
                 "value.converter.schemas.enable" to "false",
                 "key.converter.schemas.enable" to "false",
                 "value.converter" to "org.apache.kafka.connect.json.JsonConverter",

@@ -37,72 +37,75 @@ fun main() {
         val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental", "public")
         val mongoConfig = mongoConfig("mongosink", "mongodb://mongo", "@mongodump")
         listOf(
-                postgresSource("address", postgresConfig) {
-                    joinRemote({ msg -> "${msg["city_id"]}" }, false) {
-                        postgresSource("city", postgresConfig) {
-                            joinRemote({ msg -> "${msg["country_id"]}" }, false) {
-                                postgresSource("country", postgresConfig) {}
-                            }
-                            set { _, msg, state ->
-                                msg.set("country", state)
-                            }
+            postgresSource("address", postgresConfig) {
+                joinRemote({ msg -> "${msg["city_id"]}" }, false) {
+                    postgresSource("city", postgresConfig) {
+                        joinRemote({ msg -> "${msg["country_id"]}" }, false) {
+                            postgresSource("country", postgresConfig) {}
+                        }
+                        set { _, msg, state ->
+                            msg.set("country", state)
                         }
                     }
-                    set { _, msg, state ->
-                        msg.set("city", state)
+                }
+                set { _, msg, state ->
+                    msg.set("city", state)
+                }
+                sink("@address")
+            },
+            postgresSource("customer", postgresConfig) {
+                joinRemote({ m -> "${m["address_id"]}" }, false) {
+                    source("@address") {}
+                }
+                set { _, msg, state ->
+                    msg.set("address", state)
+                }
+                join(optional = true) {
+                    source("@customertotals") {}
+                }
+                set { _, customer, totals ->
+                    customer["total"] = totals["total"]; customer
+                }
+                mongoSink("customer", "customer", mongoConfig)
+            },
+            postgresSource("store", postgresConfig) {
+                joinRemote({ m -> "${m["address_id"]}" }, false) {
+                    source("@address") {}
+                }
+                set { _, msg, state ->
+                    msg.set("address", state)
+                }
+                mongoSink("store", "store", mongoConfig)
+            },
+            postgresSource("staff", postgresConfig) {
+                joinRemote({ m -> "${m["address_id"]}" }, false) {
+                    source("@address") {}
+                }
+                set { _, msg, state ->
+                    msg.set("address", state)
+                }
+                mongoSink("staff", "staff", mongoConfig)
+            },
+            postgresSource("payment", postgresConfig) {
+                scan(
+                    { msg -> msg["customer_id"].toString() },
+                    { msg -> empty().set("total", 0.0).set("customer_id", msg["customer_id"]) },
+                    {
+                        set { _, msg, state ->
+                            state["total"] = state["total"] as Double + msg["amount"] as Double
+                            state["customer_id"] = msg["customer_id"]!!
+                            state
+                        }
+                    },
+                    {
+                        set { _, msg, state -> state["total"] = state["total"] as Double - msg["amount"] as Double; state }
                     }
-                    sink("@address")
-                },
-                postgresSource("customer", postgresConfig) {
-                    joinRemote({ m -> "${m["address_id"]}" }, false) {
-                        source("@address") {}
-                    }
-                    set { _, msg, state ->
-                        msg.set("address", state)
-                    }
-                    join(optional = true) {
-                        source("@customertotals") {}
-                    }
-                    set { _, customer, totals ->
-                        customer["total"] = totals["total"]; customer
-                    }
-                    mongoSink("customer", "customer", mongoConfig)
-                },
-                postgresSource("store", postgresConfig) {
-                    joinRemote({ m -> "${m["address_id"]}" }, false) {
-                        source("@address") {}
-                    }
-                    set { _, msg, state ->
-                        msg.set("address", state)
-                    }
-                    mongoSink("store", "store", mongoConfig)
-                },
-                postgresSource("staff", postgresConfig) {
-                    joinRemote({ m -> "${m["address_id"]}" }, false) {
-                        source("@address") {}
-                    }
-                    set { _, msg, state ->
-                        msg.set("address", state)
-                    }
-                    mongoSink("staff", "staff", mongoConfig)
-                },
-                postgresSource("payment", postgresConfig) {
-                    scan({ msg -> msg["customer_id"].toString() }, { msg -> empty().set("total", 0.0).set("customer_id", msg["customer_id"]) },
-                            {
-                                set { _, msg, state ->
-                                    state["total"] = state["total"] as Double + msg["amount"] as Double
-                                    state["customer_id"] = msg["customer_id"]!!
-                                    state
-                                }
-                            },
-                            {
-                                set { _, msg, state -> state["total"] = state["total"] as Double - msg["amount"] as Double; state }
-                            }
-                    )
-                    set { _, customer, totals ->
-                        customer["total"] = totals["total"]; customer
-                    }
-                    sink("@customertotals")
-                })
+                )
+                set { _, customer, totals ->
+                    customer["total"] = totals["total"]; customer
+                }
+                sink("@customertotals")
+            }
+        )
     }.renderAndSchedule(URL("http://localhost:8083/connectors"), "localhost:9092")
 }

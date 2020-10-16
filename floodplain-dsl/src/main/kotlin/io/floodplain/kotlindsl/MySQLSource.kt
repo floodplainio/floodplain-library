@@ -42,35 +42,41 @@ class MySQLConfig(val topologyContext: TopologyContext, val name: String, privat
         broadcastFlow
             .onEach { logger.info("Record found: ${it.topic} ${it.key}") }
             .collect {
-            val availableSourceTopics = sourceElements.map { sourceElement -> sourceElement.topic().qualifiedString(topologyContext) }.toSet()
-            if (availableSourceTopics.contains(it.topic)) {
-                if (it.value != null) {
-                    inputReceiver.input(it.topic, it.key.toByteArray(), it.value!!)
-                } else {
-                    inputReceiver.delete(it.topic, it.key)
+                val availableSourceTopics = sourceElements.map { sourceElement -> sourceElement.topic().qualifiedString(topologyContext) }.toSet()
+                if (availableSourceTopics.contains(it.topic)) {
+                    if (it.value != null) {
+                        inputReceiver.input(it.topic, it.key.toByteArray(), it.value!!)
+                    } else {
+                        inputReceiver.delete(it.topic, it.key)
+                    }
                 }
             }
-        }
         logger.info("connectSource completed")
     }
 
     override fun materializeConnectorConfig(topologyContext: TopologyContext): List<MaterializedConfig> {
-        return listOf(MaterializedConfig(name, emptyList(), mapOf(
-                "connector.class" to "io.debezium.connector.mysql.MySqlConnector",
-                "database.hostname" to hostname,
-                "database.port" to port.toString(),
-                "database.dbname" to database,
-                "database.user" to username,
-                "database.password" to password,
-                "database.server.name" to name,
-                "database.whitelist" to database,
-                "key.converter" to "org.apache.kafka.connect.json.JsonConverter",
-                "value.converter" to "org.apache.kafka.connect.json.JsonConverter",
-            // TODO Deal with this, is it required?
-                "database.history.kafka.bootstrap.servers" to "kafka:9092",
-                "database.history.kafka.topic" to "dbhistory.wordpress",
-                "include.schema.changes" to "false"
-        )))
+        return listOf(
+            MaterializedConfig(
+                name,
+                emptyList(),
+                mapOf(
+                    "connector.class" to "io.debezium.connector.mysql.MySqlConnector",
+                    "database.hostname" to hostname,
+                    "database.port" to port.toString(),
+                    "database.dbname" to database,
+                    "database.user" to username,
+                    "database.password" to password,
+                    "database.server.name" to name,
+                    "database.whitelist" to database,
+                    "key.converter" to "org.apache.kafka.connect.json.JsonConverter",
+                    "value.converter" to "org.apache.kafka.connect.json.JsonConverter",
+                    // TODO Deal with this, is it required?
+                    "database.history.kafka.bootstrap.servers" to "kafka:9092",
+                    "database.history.kafka.topic" to "dbhistory.wordpress",
+                    "include.schema.changes" to "false"
+                )
+            )
+        )
     }
 
     fun addSourceElement(elt: DebeziumSourceElement) {

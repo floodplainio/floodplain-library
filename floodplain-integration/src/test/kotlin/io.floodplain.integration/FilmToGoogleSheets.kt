@@ -31,14 +31,14 @@ import io.floodplain.sink.sheet.googleSheetsSink
 import io.floodplain.streams.api.Topic
 import io.floodplain.test.InstantiatedContainer
 import io.floodplain.test.useIntegraton
-import java.math.BigDecimal
-import kotlin.system.measureTimeMillis
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeout
 import org.junit.After
 import org.junit.Test
+import java.math.BigDecimal
+import kotlin.system.measureTimeMillis
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 private val logger = mu.KotlinLogging.logger {}
 
@@ -62,8 +62,10 @@ class FilmToGoogleSheets {
         }
         val sheetSink = SheetSink()
         // First, clear the spreadsheet
-        val rangesToClear = listOf("Sheet1!" +
-            "A1:H1100")
+        val rangesToClear = listOf(
+            "Sheet1!" +
+                "A1:H1100"
+        )
         val clearedOk = sheetSink.clear(spreadsheetId, rangesToClear)
         assertEquals(rangesToClear, clearedOk, "Clearing seems to have failed")
         stream {
@@ -116,7 +118,7 @@ class FilmToGoogleSheets {
             logger.info("Google sheet sink took: $elapsed millis")
             val value = coreSink.getRange(spreadsheetId, "B3").first()?.first()
             assertEquals(value, "Academy Dinosaur")
-            }
+        }
     }
 
     @Test
@@ -140,7 +142,8 @@ class FilmToGoogleSheets {
             )
             val sheetConfig = googleSheetConfig("sheets")
             postgresSource("payment", postgresConfig) {
-                scan({ empty().set("total", BigDecimal(0)) },
+                scan(
+                    { empty().set("total", BigDecimal(0)) },
                     {
                         set { _, msg, state ->
                             state["total"] = (state["total"] as BigDecimal).add(msg["amount"] as BigDecimal)

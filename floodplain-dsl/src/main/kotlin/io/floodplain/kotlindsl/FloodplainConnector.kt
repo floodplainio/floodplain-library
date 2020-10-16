@@ -23,6 +23,9 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ArrayNode
 import io.floodplain.streams.api.Topic
 import io.floodplain.streams.api.TopologyContext
+import org.apache.kafka.connect.sink.SinkConnector
+import org.apache.kafka.connect.sink.SinkRecord
+import org.apache.kafka.connect.sink.SinkTask
 import java.io.IOException
 import java.net.URL
 import java.net.http.HttpClient
@@ -33,9 +36,6 @@ import java.time.Duration
 import java.util.Collections
 import java.util.concurrent.atomic.AtomicLong
 import java.util.function.Consumer
-import org.apache.kafka.connect.sink.SinkConnector
-import org.apache.kafka.connect.sink.SinkRecord
-import org.apache.kafka.connect.sink.SinkTask
 
 private val logger = mu.KotlinLogging.logger {}
 private val objectMapper = ObjectMapper()
