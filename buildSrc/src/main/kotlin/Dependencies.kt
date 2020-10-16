@@ -18,12 +18,12 @@ fun isReleaseVersion(): Boolean {
 
 object FloodplainDeps {
     const val floodplain_version = "0.10.1-SNAPSHOT"
-    const val jackson_version = "2.11.0"
-    const val kafka_version = "2.5.0"
+    const val jackson_version = "2.11.3"
+    const val kafka_version = "2.6.0"
     const val slf4j_version = "1.7.30"
     const val mysql_version = "8.0.20"
     const val mongodb_version = "3.12.5"
-    const val debezium_version = "1.2.1.Final"
+    const val debezium_version = "1.3.0.Final"
     const val testContainer_version = "1.15.0-rc2"
     const val kotlin_coroutines_version = "1.4.0-M1"
     const val debeziumCore = "io.debezium:debezium-core:$debezium_version"

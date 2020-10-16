@@ -321,7 +321,7 @@ class LocalDriverContext(
         try {
             driver.pipeRawRecord(qualifiedTopicName, Instant.now().toEpochMilli(), key, msg)
         } catch (e: Throwable) {
-            // logger.error("Error sending input data",e)
+            logger.error("Error sending input data",e)
         }
         // val parsedKey = JSONToReplicationMessage.processDebeziumJSONKey(key)
         // val replicationMessage = JSONToReplicationMessage.processDebeziumBody(msg).withOperation(ReplicationMessage.Operation.UPDATE)
