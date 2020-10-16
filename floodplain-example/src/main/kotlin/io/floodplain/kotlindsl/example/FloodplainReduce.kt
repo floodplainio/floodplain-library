@@ -27,13 +27,21 @@ import io.floodplain.kotlindsl.set
 import io.floodplain.kotlindsl.stream
 import io.floodplain.mongodb.mongoConfig
 import io.floodplain.mongodb.mongoSink
+import io.floodplain.sink.sheet.googleSheetConfig
+import io.floodplain.sink.sheet.googleSheetsSink
+import kotlinx.coroutines.delay
 import java.math.BigDecimal
 import java.net.URL
 
+private val spreadsheetId = "1MTAn1d13M8ptb2MkBHOSNK1gbJOOW1sFQoSfqa1JbXU"
+
 fun main() {
+
+
     val instance = stream("genxx") {
         val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental", "public")
-        val mongoConfig = mongoConfig("mongosink", "mongodb://mongo", "mongodump")
+        // val mongoConfig = mongoConfig("mongosink", "mongodb://mongo", "mongodump")
+        val sheetConfig = googleSheetConfig("sheets")
         postgresSource("customer", postgresConfig) {
             join {
                 postgresSource("payment", postgresConfig) {
@@ -45,18 +53,20 @@ fun main() {
                                 }
                             },
                             {
-                                set { _, msg, state -> state["total"] = (state["total"] as BigDecimal).add(msg["amount"] as BigDecimal)
+                                set { _, msg, state -> state["total"] = (state["total"] as BigDecimal).subtract(msg["amount"] as BigDecimal)
                                     ; state }
                             }
                     )
                 }
             }
             set { _, customer, paymenttotal ->
-                customer["payments"] = paymenttotal["total"]; customer
+                customer["payments"] = paymenttotal["total"]
+                customer["_row"] = customer.integer("customer_id"); customer
             }
-            mongoSink("justtotal", "myfinaltopic", mongoConfig)
+            // mongoSink("justtotal", "myfinaltopic", mongoConfig)
+            googleSheetsSink("myfinaltopic", spreadsheetId, listOf("customer_id","first_name", "last_name", "email", "payments"), "A", 1, sheetConfig)
         }
+    }.renderAndExecute {
+        delay(1000000)
     }
-
-        instance.renderAndSchedule(URL("http://localhost:8083/connectors"), "localhost:9092", true)
 }

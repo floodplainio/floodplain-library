@@ -18,6 +18,7 @@
  */
 package io.floodplain.kotlindsl.example
 
+import io.floodplain.kotlindsl.join
 import io.floodplain.kotlindsl.message.empty
 import io.floodplain.kotlindsl.postgresSource
 import io.floodplain.kotlindsl.postgresSourceConfig
@@ -26,6 +27,7 @@ import io.floodplain.kotlindsl.set
 import io.floodplain.kotlindsl.stream
 import io.floodplain.mongodb.mongoConfig
 import io.floodplain.mongodb.mongoSink
+import kotlinx.coroutines.delay
 import java.math.BigDecimal
 import java.net.URL
 
@@ -33,22 +35,29 @@ fun main() {
     stream("bla") {
         val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental", "public")
         val mongoConfig = mongoConfig("mongosink", "mongodb://mongo", "mongodump")
-        postgresSource("payment", postgresConfig) {
-            scan({ empty().set("total", BigDecimal(0)) },
-                {
-                    set { _, msg, state ->
-                        state["total"] = (state["total"] as BigDecimal).add(msg["amount"] as BigDecimal)
-                        state
-                    }
-                },
-                {
-                    set { _, msg, state ->
-                        state["total"] = (state["total"] as BigDecimal).subtract(msg["amount"] as BigDecimal)
-                        state
-                    }
+        postgresSource("customer", postgresConfig) {
+            join {
+                postgresSource("payment", postgresConfig) {
+                    scan({ msg -> msg["customer_id"].toString() }, { empty().set("total", BigDecimal(0)) },
+                        {
+                            set { _, msg, state ->
+                                state["total"] = (state["total"] as BigDecimal).add(msg["amount"] as BigDecimal)
+                                state
+                            }
+                        },
+                        {
+                            set { _, msg, state -> state["total"] = (state["total"] as BigDecimal).add(msg["amount"] as BigDecimal)
+                                ; state }
+                        }
+                    )
                 }
-            )
-            mongoSink("justtotal", "@myfinaltopic", mongoConfig)
+            }
+            set { _, customer, paymenttotal ->
+                customer["payments"] = paymenttotal["total"]; customer
+            }
+            mongoSink("justtotal", "myfinaltopic", mongoConfig)
         }
-    }.renderAndSchedule(URL("http://localhost:8083/connectors"), "localhost:9092")
+    }.renderAndExecute {
+        delay(1000000)
+    }
 }

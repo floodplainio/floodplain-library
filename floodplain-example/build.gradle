@@ -22,6 +22,7 @@ apply plugin: "com.github.johnrengelman.shadow"
 dependencies {
     implementation(project(":floodplain-dsl"))
     implementation(project(":floodplain-mongodb"))
+    implementation(project(":floodplain-googlesheets"))
     implementation(project(":streams-api"))
     implementation(project(":streams"))
     implementation(project(":replication-api"))
