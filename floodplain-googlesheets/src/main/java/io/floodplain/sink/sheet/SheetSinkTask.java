@@ -32,7 +32,7 @@ public class SheetSinkTask extends SinkTask {
 
 	public static final String SPREADSHEETID = "spreadsheetId";
 	public static final String COLUMNS = "columns";
-	public static final String TOPIC = "topic";
+	public static final String TOPICS = "topics";
 	public static final String STARTROW = "startRow";
 	public static final String STARTCOLUMN = "startColumn";
 

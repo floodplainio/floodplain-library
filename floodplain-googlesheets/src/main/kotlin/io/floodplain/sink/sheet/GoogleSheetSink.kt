@@ -30,7 +30,7 @@ import io.floodplain.sink.sheet.SheetSinkTask.COLUMNS
 import io.floodplain.sink.sheet.SheetSinkTask.SPREADSHEETID
 import io.floodplain.sink.sheet.SheetSinkTask.STARTCOLUMN
 import io.floodplain.sink.sheet.SheetSinkTask.STARTROW
-import io.floodplain.sink.sheet.SheetSinkTask.TOPIC
+import io.floodplain.sink.sheet.SheetSinkTask.TOPICS
 import io.floodplain.streams.api.ProcessorName
 import io.floodplain.streams.api.Topic
 import io.floodplain.streams.api.TopologyContext
@@ -73,7 +73,7 @@ class GoogleSheetConfiguration(val name: String) : SinkConfig {
             // SheetSinkTask.COLUMNS to columns.joinToString(",")
             settings[SPREADSHEETID] = it.spreadsheetId
             settings[COLUMNS] = it.columns.joinToString(",")
-            settings[TOPIC] = it.topic.qualifiedString(topologyContext)
+            settings[TOPICS] = it.topic.qualifiedString(topologyContext)
             settings[STARTCOLUMN] = it.startColumn
             settings[STARTROW] = it.startRow.toString()
             // settings.put(SheetSinkTask.STARTCOLUMN,)

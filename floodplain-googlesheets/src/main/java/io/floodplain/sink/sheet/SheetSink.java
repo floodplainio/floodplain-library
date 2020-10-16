@@ -73,7 +73,7 @@ public class SheetSink {
 				.build();
 	}
 
-	public static Credential getCredential() throws IOException {
+	private static Credential getCredential() throws IOException {
 		String path = Optional.ofNullable(System.getenv("GOOGLE_SHEETS_CREDENTIAL_PATH")).orElse("/kafka/credentials.json");
 		if (credential == null) {
 			try (InputStream is = new FileInputStream(path)) {
