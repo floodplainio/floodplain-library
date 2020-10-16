@@ -25,7 +25,7 @@ object FloodplainDeps {
     const val mongodb_version = "3.12.5"
     const val debezium_version = "1.2.1.Final"
     const val testContainer_version = "1.15.0-rc2"
-    const val kotlin_coroutines_version = "1.3.9"
+    const val kotlin_coroutines_version = "1.4.0-M1"
     const val debeziumCore = "io.debezium:debezium-core:$debezium_version"
     const val debeziumPostgres  = "io.debezium:debezium-connector-postgres:$debezium_version"
     const val debeziumMySQL     = "io.debezium:debezium-connector-mysql:$debezium_version"
