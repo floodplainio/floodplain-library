@@ -1,8 +1,7 @@
 package io.floodplain.build
 
 object Versions {
-    const val gradle = "3.5.0"
-    const val kotlin = "1.4.0"
+    const val kotlin = "1.4.10"
 
     /* test */
     const val junit = "4.12"
@@ -17,12 +16,12 @@ fun isReleaseVersion(): Boolean {
 }
 
 object FloodplainDeps {
-    const val floodplain_version = "0.10.1-SNAPSHOT"
+    const val floodplain_version = "1.0.0-SNAPSHOT"
     const val jackson_version = "2.11.3"
     const val kafka_version = "2.6.0"
     const val slf4j_version = "1.7.30"
-    const val mysql_version = "8.0.20"
-    const val mongodb_version = "3.12.5"
+    const val mysql_version = "8.0.21"
+    const val mongodb_version = "4.1.1"
     const val debezium_version = "1.3.0.Final"
     const val testContainer_version = "1.15.0-rc2"
     const val kotlin_coroutines_version = "1.4.0-M1"
@@ -33,12 +32,12 @@ object FloodplainDeps {
     const val debeziumServerCore= "io.debezium:debezium-server-core:$debezium_version"
     const val cdiApi            = "jakarta.enterprise:jakarta.enterprise.cdi-api:2.0.2"
     const val microProfileConfig= "org.eclipse.microprofile.config:microprofile-config-api:1.3"
-    const val jUnit             = "junit:junit:4.12"
+    const val jUnit             = "junit:junit:4.13.1"
     const val mongoClientSync   = "org.mongodb:mongodb-driver-sync:$mongodb_version"
     const val slf4j             = "org.slf4j:slf4j-api:$slf4j_version"
     const val slf4jLog4j        = "org.slf4j:slf4j-log4j12:$slf4j_version"
     const val protobuf          = "com.google.protobuf:protobuf-java:3.11.4"
-    const val kotlinLogging     = "io.github.microutils:kotlin-logging:1.8.3"
+    const val kotlinLogging     = "io.github.microutils:kotlin-logging:2.0.3"
     const val jacksonCore       = "com.fasterxml.jackson.core:jackson-core:$jackson_version"
     const val jacksonDatabind   = "com.fasterxml.jackson.core:jackson-databind:$jackson_version"
     const val kafkaClient       = "org.apache.kafka:kafka-clients:$kafka_version"

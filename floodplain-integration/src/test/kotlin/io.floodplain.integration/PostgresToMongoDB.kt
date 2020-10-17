@@ -112,7 +112,10 @@ class TestCombinedMongo {
         }.renderAndExecute {
             val database = topologyContext().topicName("@mongodump")
             flushSinks()
-            val hits = waitForMongoDbCondition("mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}", database) { databaseInstance ->
+            val hits = waitForMongoDbCondition(
+                "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
+                database
+            ) { databaseInstance ->
                 val collection = databaseInstance.getCollection("address")
                 val countDocuments = collection.countDocuments()
                 logger.info("# of documents: $countDocuments")
@@ -224,7 +227,10 @@ class TestCombinedMongo {
         }.renderAndExecute {
             val database = topologyContext().topicName("@mongodump")
             flushSinks()
-            val hits = waitForMongoDbCondition("mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}", database) { databaseInstance ->
+            val hits = waitForMongoDbCondition(
+                "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
+                database
+            ) { databaseInstance ->
                 val staff = databaseInstance.getCollection("staff")
                 val staffCount = staff.countDocuments()
                 val store = databaseInstance.getCollection("store")
@@ -360,7 +366,10 @@ class TestCombinedMongo {
             )
         }.renderAndExecute {
             val database = topologyContext().topicName("@mongodump")
-            val items = waitForMongoDbCondition("mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}", database) { currentDatabase ->
+            val items = waitForMongoDbCondition(
+                "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
+                database
+            ) { currentDatabase ->
                 val collection = currentDatabase.getCollection("paymentpercustomer")
                 val items = collection.countDocuments()
                 // TODO improve

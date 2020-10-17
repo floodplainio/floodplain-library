@@ -52,7 +52,11 @@ class PostgresToElasticSearch {
     private val objectMapper = ObjectMapper()
 
     private val postgresContainer = InstantiatedContainer("floodplain/floodplain-postgres-demo:1.0.0", 5432)
-    private val elasticSearchContainer = InstantiatedContainer("docker.elastic.co/elasticsearch/elasticsearch-oss:7.7.0", 9200, mapOf("discovery.type" to "single-node"))
+    private val elasticSearchContainer = InstantiatedContainer(
+        "docker.elastic.co/elasticsearch/elasticsearch-oss:7.7.0",
+        9200,
+        mapOf("discovery.type" to "single-node")
+    )
 
     @After
     fun shutdown() {
@@ -69,7 +73,10 @@ class PostgresToElasticSearch {
         logger.debug("startdebug")
         streams("any", "myinstance") {
             val postgresConfig = postgresSourceConfig("mypostgres", postgresContainer.host, postgresContainer.exposedPort, "postgres", "mysecretpassword", "dvdrental", "public")
-            val elasticConfig = elasticSearchConfig("elastic", "http://${elasticSearchContainer.host}:${elasticSearchContainer.exposedPort}")
+            val elasticConfig = elasticSearchConfig(
+                "elastic",
+                "http://${elasticSearchContainer.host}:${elasticSearchContainer.exposedPort}"
+            )
 
             listOf(
                 postgresSource("address", postgresConfig) {
@@ -123,7 +130,9 @@ class PostgresToElasticSearch {
         }.renderAndExecute {
             logger.info("Outputs: ${outputs()}")
             val index = topologyContext().topicName("@customer")
-            logger.warn("Will query: \"http://${elasticSearchContainer.host}:${elasticSearchContainer.exposedPort}/${index}\"")
+            logger.warn(
+                "Will query: \"http://${elasticSearchContainer.host}:${elasticSearchContainer.exposedPort}/${index}\""
+            )
             // delay(10000)
 
             // find a customer from Amersfoort. There should be one.
@@ -131,7 +140,10 @@ class PostgresToElasticSearch {
             withTimeout(100000) {
                 repeat(1000) {
                     try {
-                        val node = query("http://${elasticSearchContainer.host}:${elasticSearchContainer.exposedPort}/$index", "q=Amersfoort")
+                        val node = query(
+                            "http://${elasticSearchContainer.host}:${elasticSearchContainer.exposedPort}/$index",
+                            "q=Amersfoort"
+                        )
                         logger.info("Resulting node: {}", node)
                         val found = node.get("hits")?.get("total")?.get("value")?.asInt()
                         if (found != null && found > 0) {
@@ -159,8 +171,19 @@ class PostgresToElasticSearch {
         }
         logger.debug("startdebug")
         streams("any", "myinstance") {
-            val postgresConfig = postgresSourceConfig("mypostgres", postgresContainer.host, postgresContainer.exposedPort, "postgres", "mysecretpassword", "dvdrental", "public")
-            val elasticConfig = elasticSearchConfig("elastic", "http://${elasticSearchContainer.host}:${elasticSearchContainer.exposedPort}")
+            val postgresConfig = postgresSourceConfig(
+                "mypostgres",
+                postgresContainer.host,
+                postgresContainer.exposedPort,
+                "postgres",
+                "mysecretpassword",
+                "dvdrental",
+                "public"
+            )
+            val elasticConfig = elasticSearchConfig(
+                "elastic",
+                "http://${elasticSearchContainer.host}:${elasticSearchContainer.exposedPort}"
+            )
             listOf(
                 postgresSource("customer", postgresConfig) {
                     joinRemote({ m -> "${m["address_id"]}" }, false) {
@@ -186,7 +209,10 @@ class PostgresToElasticSearch {
             withTimeout(200000) {
                 repeat(1000) {
                     try {
-                        val node = query("http://${elasticSearchContainer.host}:${elasticSearchContainer.exposedPort}/$index", "q=*Chungho*")
+                        val node = query(
+                            "http://${elasticSearchContainer.host}:${elasticSearchContainer.exposedPort}/$index",
+                            "q=*Chungho*"
+                        )
                         logger.info("Resulting node: {}", node)
                         val found = node.get("hits")?.get("total")?.get("value")?.asInt()
                         if (found != null && found > 0) {

@@ -42,8 +42,11 @@ class TestElasticSearch {
 
     private val objectMapper = ObjectMapper()
 
-    private val container = InstantiatedContainer("docker.elastic.co/elasticsearch/elasticsearch-oss:7.7.0",
-        9200, mapOf("discovery.type" to "single-node"))
+    private val container = InstantiatedContainer(
+        "docker.elastic.co/elasticsearch/elasticsearch-oss:7.7.0",
+        9200,
+        mapOf("discovery.type" to "single-node")
+    )
 
     @Test
     fun testElasticInsert() {

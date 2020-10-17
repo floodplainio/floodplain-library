@@ -1,5 +1,7 @@
 import io.floodplain.build.FloodplainDeps
 import io.floodplain.build.isReleaseVersion
+import io.gitlab.arturbosch.detekt.Detekt
+import io.floodplain.build.Versions
 
 buildscript {
     repositories {
@@ -10,20 +12,21 @@ buildscript {
     }
     dependencies {
         classpath("gradle.plugin.com.hierynomus.gradle.plugins:license-gradle-plugin:0.15.0")
-        classpath("com.github.johnrengelman.shadow:com.github.johnrengelman.shadow.gradle.plugin:6.0.0")
-        classpath("gradle.plugin.com.github.spotbugs.snom:spotbugs-gradle-plugin:4.5.0")
+        classpath("com.github.johnrengelman.shadow:com.github.johnrengelman.shadow.gradle.plugin:6.1.0")
+        classpath("gradle.plugin.com.github.spotbugs.snom:spotbugs-gradle-plugin:4.5.1")
     }
 }
 plugins {
     id("eclipse")
-    id("org.jetbrains.kotlin.jvm") version "1.4.0"
-    id("org.jetbrains.kotlin.plugin.allopen") version "1.4.0"
+    id("org.jetbrains.kotlin.jvm") version "1.4.10"
+    id("org.jetbrains.kotlin.plugin.allopen") version "1.4.10"
     id("com.github.johnrengelman.shadow") version "5.2.0"
     id("org.jlleitschuh.gradle.ktlint") version "9.4.1"
     id("com.palantir.graal") version "0.7.0-5-g838c2ab"
     id("org.jetbrains.dokka") version "0.10.1"
     id("com.github.hierynomus.license-base").version("0.15.0")
-    id("com.github.spotbugs") version "4.5.0"
+    id("com.github.spotbugs") version "4.5.1"
+    id("io.gitlab.arturbosch.detekt") version "1.14.1"
     signing
     `maven-publish`
     `java-library`
@@ -62,10 +65,10 @@ subprojects {
     apply(plugin = "org.jetbrains.dokka")
     apply(plugin = "com.github.hierynomus.license-base")
     apply(plugin = "jacoco")
-    // apply(plugin = "checkstyle")
-    // if (useSpotBugs(this)) {
-    //     apply(plugin = "com.github.spotbugs")
-    // }
+    apply(plugin = "checkstyle")
+    if (useSpotBugs(this)) {
+        apply(plugin = "com.github.spotbugs")
+    }
     jacoco {
         reportsDir = rootDir.resolve("jacocoReport").resolve(projectDir.name)
         reportsDir.mkdirs()
@@ -213,5 +216,23 @@ fun customizePom(publication: MavenPublication) {
             connection.set("scm:git:git://github.com/floodplainio/floodplain-library.git")
             developerConnection.set("scm:git:ssh://git@github.com:floodplainio/floodplain-library.git")
         }
+    }
+}
+
+val detektAll by tasks.registering(Detekt::class) {
+    description = "Runs over whole code base without the starting overhead for each module."
+    parallel = true
+    buildUponDefaultConfig = true
+    setSource(files(projectDir))
+    // this.setConfig(files(project.rootDir.resolve("reports/failfast.yml")))
+    // config = files(project.rootDir.resolve("reports/failfast.yml"))
+    include("**/*.kt")
+    include("**/*.kts")
+    exclude("**/resources/**")
+    exclude("**/build/**")
+    // baseline.set(project.rootDir.resolve("reports/baseline.xml"))
+    reports {
+        xml.enabled = false
+        html.enabled = true
     }
 }

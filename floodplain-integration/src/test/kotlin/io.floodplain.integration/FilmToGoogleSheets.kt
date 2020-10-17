@@ -94,7 +94,7 @@ class FilmToGoogleSheets {
             // delay(5000)
             val ll = this.sinksByTopic()[Topic.from("outputtopic")]?.first()
             val task = ll!!.taskObject() as SheetSinkTask // ?.config()?.sinkTask()!! as SheetSinkTask
-            val coreSink = task.getSheetSink()
+            val coreSink = task.sheetSink
             // coreSink.
             logger.info("Outputs: ${outputs()}")
             delay(5000)

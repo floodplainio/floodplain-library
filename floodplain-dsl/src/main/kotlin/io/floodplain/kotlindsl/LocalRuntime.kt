@@ -267,7 +267,7 @@ class LocalDriverContext(
                 val result = if (value == null) null else mapper.convertValue(parsed, object : TypeReference<Map<String, Any>>() {})
                 Triple(topic, key, result)
             }
-            .shareIn(context,SharingStarted.Lazily)
+            .shareIn(context, SharingStarted.Lazily)
             // .asFlow()
             .handleErrors()
         return topics.map { topic ->
@@ -322,7 +322,7 @@ class LocalDriverContext(
         try {
             driver.pipeRawRecord(qualifiedTopicName, Instant.now().toEpochMilli(), key, msg)
         } catch (e: Throwable) {
-            logger.error("Error sending input data",e)
+            logger.error("Error sending input data", e)
         }
         // val parsedKey = JSONToReplicationMessage.processDebeziumJSONKey(key)
         // val replicationMessage = JSONToReplicationMessage.processDebeziumBody(msg).withOperation(ReplicationMessage.Operation.UPDATE)

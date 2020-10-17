@@ -89,7 +89,10 @@ class MySQLTest {
             }
         }.renderAndExecute {
             val databaseInstance = topologyContext().topicName("@mongodump")
-            val hits = waitForMongoDbCondition("mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}", databaseInstance) { database ->
+            val hits = waitForMongoDbCondition(
+                "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
+                databaseInstance
+            ) { database ->
                 val collection = database.getCollection("customers")
                 val countDocuments = collection.countDocuments()
                 logger.info("# of documents: $countDocuments")
@@ -128,7 +131,10 @@ class MySQLTest {
             }
         }.runWithArguments { topologyContext ->
             val databaseInstance = topologyContext.topicName("@mongodump")
-            val hits = waitForMongoDbCondition("mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}", databaseInstance) { database ->
+            val hits = waitForMongoDbCondition(
+                "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
+                databaseInstance
+            ) { database ->
                 val customerCount = database.getCollection("customers").countDocuments()
                 val orderCount = database.getCollection("orders").countDocuments()
                 val productCount = database.getCollection("products").countDocuments()
@@ -193,7 +199,10 @@ class MySQLTest {
         }.renderAndExecute {
             // delay(1000000)
             val databaseInstance = topologyContext().topicName("@mongodump")
-            val hits = waitForMongoDbCondition("mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}", databaseInstance) { database ->
+            val hits = waitForMongoDbCondition(
+                "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
+                databaseInstance
+            ) { database ->
                 val customerCount = database.getCollection("customers").countDocuments()
                 val orderCount = database.getCollection("orders").countDocuments()
                 val productCount = database.getCollection("products").countDocuments()
@@ -211,7 +220,14 @@ class MySQLTest {
     @Test @Ignore
     fun testWordpress() {
         stream {
-            val mysqlConfig = mysqlSourceConfig("mysqlsource", "localhost", 3306, "root", "mysecretpassword", "wpdb")
+            val mysqlConfig = mysqlSourceConfig(
+                "mysqlsource",
+                "localhost",
+                3306,
+                "root",
+                "mysecretpassword",
+                "wpdb"
+            )
             val mongoConfig = mongoConfig("mongosink", "mongodb://localhost", "@mongodump2")
             mysqlSource("wpdb.wp_posts", mysqlConfig) {
                 each { key, msg, _ ->

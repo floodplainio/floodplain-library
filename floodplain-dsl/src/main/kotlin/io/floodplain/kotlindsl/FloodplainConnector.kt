@@ -39,13 +39,18 @@ import java.util.function.Consumer
 
 private val logger = mu.KotlinLogging.logger {}
 private val objectMapper = ObjectMapper()
+const val DEFAULT_HTTP_TIMEOUT = 10L
 val httpClient: HttpClient = HttpClient.newBuilder()
     .version(HttpClient.Version.HTTP_1_1)
     .followRedirects(HttpClient.Redirect.NORMAL)
-    .connectTimeout(Duration.ofSeconds(10))
+    .connectTimeout(Duration.ofSeconds(DEFAULT_HTTP_TIMEOUT))
     .build()
 
-fun constructConnectorJson(topologyContext: TopologyContext, connectorName: String, parameters: Map<String, Any>): String {
+fun constructConnectorJson(
+    topologyContext: TopologyContext,
+    connectorName: String,
+    parameters: Map<String, Any>
+): String {
     val generatedName = topologyContext.topicName(connectorName)
     val node = objectMapper.createObjectNode()
     node.put("name", generatedName)
@@ -79,7 +84,13 @@ fun constructConnectorJson(topologyContext: TopologyContext, connectorName: Stri
     return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(node)
 }
 
-fun startConstructor(connectorName: String, topologyContext: TopologyContext, connectURL: URL, jsonString: String, force: Boolean) {
+fun startConstructor(
+    connectorName: String,
+    topologyContext: TopologyContext,
+    connectURL: URL,
+    jsonString: String,
+    force: Boolean
+) {
     val generatedName = topologyContext.topicName(connectorName)
     val current = existingConnectors(connectURL)
     if (current.contains(generatedName)) {
@@ -124,7 +135,10 @@ private fun postToHttpJava11(url: URL, jsonString: String) {
     val response: HttpResponse<String> = httpClient.send(request, BodyHandlers.ofString())
     if (response.statusCode() >= 400) {
         logger.error("Scheduling connector failed. Request: $jsonString")
-        throw IOException("Error calling connector: ${response.uri()} code: ${response.statusCode()} body: ${response.body()}")
+        throw IOException(
+            "Error calling connector: ${response.uri()} " +
+                "code: ${response.statusCode()} body: ${response.body()}"
+        )
     }
 }
 

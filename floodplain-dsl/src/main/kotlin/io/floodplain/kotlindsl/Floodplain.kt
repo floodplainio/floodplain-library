@@ -93,16 +93,21 @@ interface FloodplainSink {
  * Filter a source. The supplied lambda should return 'true' if the message should be propagated, 'false' if not.
  */
 fun PartialStream.filter(flt: (String, IMessage) -> Boolean) {
-    val transformerFilter: (String, ImmutableMessage) -> Boolean = { key, msg: ImmutableMessage -> flt.invoke(key, fromImmutable(msg)) }
+    val transformerFilter: (String, ImmutableMessage) ->
+    Boolean = { key, msg: ImmutableMessage -> flt.invoke(key, fromImmutable(msg)) }
     val transformer = FilterTransformer(transformerFilter)
     addTransformer(Transformer(transformer))
 }
 
 /**
- * Perform the supplied lambda for each message. You can use this for logging or other side effects, this function should not influence the semantics of the stream
+ * Perform the supplied lambda for each message. You can use this for logging or other side effects,
+ * this function should not influence the semantics of the stream
  */
 fun PartialStream.each(transform: (String, IMessage, IMessage) -> Unit): Transformer {
-    val transformer: (String, ImmutableMessage, ImmutableMessage) -> Unit = { key: String, msg: ImmutableMessage, param: ImmutableMessage -> transform.invoke(key, fromImmutable(msg), fromImmutable(param)) }
+    val transformer: (String, ImmutableMessage, ImmutableMessage) -> Unit =
+        { key: String, msg: ImmutableMessage, param: ImmutableMessage ->
+            transform.invoke(key, fromImmutable(msg), fromImmutable(param))
+        }
     val each = EachTransformer(transformer)
     return addTransformer(Transformer(each))
 }
@@ -123,7 +128,8 @@ fun PartialStream.buffer(duration: Duration, maxSize: Int = 10000, inMemory: Boo
  * A 'set' is also required for more complicated combinations. Typically after a join you use a 'set' to merge the messages
  * from both sources.
  * The first message is the original message from the join, the second message the result from the 'secondary' source.
- * The second message will be lost after this operation, so you need to append anything you want to keep from the inner source to the outer source here.
+ * The second message will be lost after this operation, so you need to append anything you want to keep from the inner
+ * source to the outer source here.
  * Alternatively, you can create an all-new message and just add the things you are interested in, and return that.
  */
 fun PartialStream.set(transform: (String, IMessage, IMessage) -> IMessage): Transformer {
@@ -138,10 +144,11 @@ fun PartialStream.set(transform: (String, IMessage, IMessage) -> IMessage): Tran
 // fun PartialPipe.copy()
 /**
  * Join the current source with another source, that has a different key.
- * @param key This lambda should extract the key we want to use from the current source. Keys are always strings in floodplain
+ * @param key This lambda should extract the key we want to use from the current source.
+ * Keys are always strings in floodplain.
  * So it takes a message from the source, and returns the (string) key to join with
- * @param optional If true, this transformation will also emit a result when there is no matching result. Consider that this might
- * result in more emissions, so that could carry a performance penalty
+ * @param optional If true, this transformation will also emit a result when there is no matching result.
+ * Consider that this might result in more emissions, so that could carry a performance penalty
  * @param source The source to join with
  *
  */
@@ -152,7 +159,8 @@ fun PartialStream.joinRemote(key: (IMessage) -> String, optional: Boolean = fals
 }
 
 /**
- * Group a source, using the key from the lambda. The messages will be unchanged, only the key will have the supplied key pre-pended.
+ * Group a source, using the key from the lambda. The messages will be unchanged,
+ * only the key will have the supplied key pre-pended.
  */
 fun PartialStream.group(key: (IMessage) -> String) {
     val keyExtractor: (ImmutableMessage, ImmutableMessage) -> String = { msg, _ -> key.invoke(fromImmutable(msg)) }
@@ -164,13 +172,22 @@ fun PartialStream.group(key: (IMessage) -> String) {
  * Use an existing source
  */
 fun Stream.source(topic: String, init: Source.() -> Unit): Source {
-    val sourceElement = TopicSource(Topic.from(topic), Topic.FloodplainKeyFormat.FLOODPLAIN_STRING, Topic.FloodplainBodyFormat.FLOODPLAIN_JSON)
+    val sourceElement = TopicSource(
+        Topic.from(topic),
+        Topic.FloodplainKeyFormat.FLOODPLAIN_STRING,
+        Topic.FloodplainBodyFormat.FLOODPLAIN_JSON
+    )
     val source = Source(sourceElement)
     source.init()
     return source
 }
 
-fun Stream.externalSource(topic: String, keyFormat: Topic.FloodplainKeyFormat, valueFormat: Topic.FloodplainBodyFormat, init: Source.() -> Unit): Source {
+fun Stream.externalSource(
+    topic: String,
+    keyFormat: Topic.FloodplainKeyFormat,
+    valueFormat: Topic.FloodplainBodyFormat,
+    init: Source.() -> Unit
+): Source {
     val sourceElement = TopicSource(Topic.from(topic), keyFormat, valueFormat)
     val source = Source(sourceElement)
     source.init()
@@ -181,7 +198,14 @@ fun Stream.externalSource(topic: String, keyFormat: Topic.FloodplainKeyFormat, v
  * Creates a simple sink that will contain the result of the current transformation. Multiple sinks may not be added.
  */
 fun PartialStream.sink(topic: String, materializeParent: Boolean = false): Transformer {
-    val sink = SinkTransformer(Optional.empty(), Topic.from(topic), materializeParent, Optional.empty(), Topic.FloodplainKeyFormat.FLOODPLAIN_STRING, Topic.FloodplainBodyFormat.FLOODPLAIN_JSON)
+    val sink = SinkTransformer(
+        Optional.empty(),
+        Topic.from(topic),
+        materializeParent,
+        Optional.empty(),
+        Topic.FloodplainKeyFormat.FLOODPLAIN_STRING,
+        Topic.FloodplainBodyFormat.FLOODPLAIN_JSON
+    )
     return addTransformer(Transformer(sink))
 }
 
@@ -214,29 +238,42 @@ fun PartialStream.joinGrouped(optional: Boolean = false, debug: Boolean = false,
 }
 
 /**
- * Scan is effectively a 'reduce' operator (The 'scan' name is used in Rx, which means a reduce operator that emits a 'running aggregate' every time
- * it consumes a message). A real reduce makes no sense in infinite streams (as it would emit
- * a single item when the stream completes, which never happens).
+ * Scan is effectively a 'reduce' operator (The 'scan' name is used in Rx, which means a reduce operator that emits a
+ * 'running aggregate' every time it consumes a message). A real reduce makes no sense in infinite streams (as it would
+ * emit a single item when the stream completes, which never happens).
  * It is a little bit more complicated than a regular reduce operator, as it also allows deleting items
- * @param key This lambda extracts the aggregate key from the message. In SQL terminology, it is the 'group by'. Scan will create a aggregation
- * bucket for each distinct key
+ * @param key This lambda extracts the aggregate key from the message. In SQL terminology, it is the 'group by'.
+ * Scan will create a aggregation bucket for each distinct key
  * @param initial Create the initial value for the aggregator
- *
  */
-fun PartialStream.scan(key: (IMessage) -> String, initial: (IMessage) -> IMessage, onAdd: Block.() -> Transformer, onRemove: Block.() -> Transformer) {
+fun PartialStream.scan(
+    key: (IMessage) -> String,
+    initial: (IMessage) -> IMessage,
+    onAdd: Block.() -> Transformer,
+    onRemove: Block.() -> Transformer
+) {
     val keyExtractor: (ImmutableMessage, ImmutableMessage) -> String = { msg, _ -> key.invoke(fromImmutable(msg)) }
     val initialConstructor: (ImmutableMessage) -> ImmutableMessage = { msg -> initial.invoke(fromImmutable(msg)).toImmutable() }
     val onAddBlock = Block()
     onAdd.invoke(onAddBlock)
     val onRemoveBlock = Block()
     onRemove.invoke(onRemoveBlock)
-    addTransformer(Transformer(ScanTransformer(keyExtractor, initialConstructor, onAddBlock.transformers.map { e -> e.component }, onRemoveBlock.transformers.map { e -> e.component })))
+    addTransformer(
+        Transformer(
+            ScanTransformer(
+                keyExtractor,
+                initialConstructor,
+                onAddBlock.transformers.map { e -> e.component },
+                onRemoveBlock.transformers.map { e -> e.component }
+            )
+        )
+    )
 }
 
 /**
- * Scan is effectively a 'reduce' operator (The 'scan' name is used in Rx, which means a reduce operator that emits a 'running aggregate' every time
- * it consumes a message). A real reduce makes no sense in infinite streams (as it would emit
- * a single item when the stream completes, which never happens).
+ * Scan is effectively a 'reduce' operator (The 'scan' name is used in Rx, which means a reduce operator that emits a
+ * 'running aggregate' every time it consumes a message). A real reduce makes no sense in infinite streams
+ * (as it would emit a single item when the stream completes, which never happens).
  * It is a little bit more complicated than a regular reduce operator, as it also allows deleting items
  * This version of scan has no key, it does an aggregate over the entire topic, so it ends up being a single-key topic
  * @param initial Create the initial value for the aggregator
@@ -248,7 +285,16 @@ fun PartialStream.scan(initial: (IMessage) -> IMessage, onAdd: Block.() -> Trans
     onAdd.invoke(onAddBlock)
     val onRemoveBlock = Block()
     onRemove.invoke(onRemoveBlock)
-    addTransformer(Transformer(ScanTransformer(null, initialConstructor, onAddBlock.transformers.map { e -> e.component }, onRemoveBlock.transformers.map { e -> e.component })))
+    addTransformer(
+        Transformer(
+            ScanTransformer(
+                null,
+                initialConstructor,
+                onAddBlock.transformers.map { e -> e.component },
+                onRemoveBlock.transformers.map { e -> e.component }
+            )
+        )
+    )
 }
 
 /**
@@ -261,12 +307,14 @@ fun PartialStream.fork(vararg destinations: Block.() -> Transformer): Transforme
 }
 /**
  * Create a new top level stream instance
- * @param generation This is a string that indicates this current run. If you stop this run and restart it, it will continue where it left off.
- * This might take some getting used to. Usually, when you are developing, you change your code, and restart.
- * In the case of a data transformation like floodplain, it might mean that nothing will happen: All data has already been transformed.
- * To make sure all data gets reprocessed, change the generation. It is a string, with no further meaning within the framework, you can choose what
- * meaning you want to attach. You can increment a number, use a sort of time stamp, or even a git commit.
+ * @param generation This is a string that indicates this current run. If you stop this run and restart it, it will
+ * continue where it left off. This might take some getting used to. Usually, when you are developing, you change your
+ * code, and restart. In the case of a data transformation like floodplain, it might mean that nothing will happen:
+ * All data has already been transformed. To make sure all data gets reprocessed, change the generation. It is a string,
+ * with no further meaning within the framework, you can choose what meaning you want to attach. You can increment a
+ * number, use a sort of time stamp, or even a git commit.
  */
+
 fun stream(generation: String = "any", instance: String = "instance", init: Stream.() -> Source): Stream {
     val topologyContext = TopologyContext.context(Optional.empty(), instance, generation)
     val pipe = Stream(topologyContext)

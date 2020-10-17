@@ -38,14 +38,17 @@ class LocalArgs(parser: ArgParser) {
     val id by parser.storing(
         "-i",
         "--id",
-        help = "run as this application id. Subsequent runs with the same id will re-use storage. Will be random if unspecified. For local runs this will only affect disk storage, for Kafka based runs topics / consumer as well"
+        help = "run as this application id. Subsequent runs with the same id will re-use storage. " +
+            "Will be random if unspecified. For local runs this will only affect disk storage, for Kafka " +
+            "based runs topics / consumer as well"
     )
         .default<String?>(null)
 
     val bufferTime by parser.storing(
         "-b",
         "--bufferTime",
-        help = "Hints max buffering time. Longer increases latency, but might improve thoughput, esp. for high-latency sinks. Only for local runs."
+        help = "Hints max buffering time. Longer increases latency, but might improve thoughput, esp. for " +
+            "high-latency sinks. Only for local runs."
     ) { toInt() }
         .default(1000)
 

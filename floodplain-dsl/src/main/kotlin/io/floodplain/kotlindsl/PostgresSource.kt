@@ -28,7 +28,17 @@ import java.lang.IllegalArgumentException
 
 private val logger = mu.KotlinLogging.logger {}
 
-class PostgresConfig(val topologyContext: TopologyContext, val name: String, val offsetId: String, private val hostname: String, private val port: Int, private val username: String, private val password: String, private val database: String, val defaultSchema: String? = null) : SourceConfig {
+class PostgresConfig(
+    val topologyContext: TopologyContext,
+    val name: String,
+    val offsetId: String,
+    private val hostname: String,
+    private val port: Int,
+    private val username: String,
+    private val password: String,
+    private val database: String,
+    val defaultSchema: String? = null
+) : SourceConfig {
 
     private val sourceElements: MutableList<SourceTopic> = mutableListOf()
 
@@ -69,7 +79,9 @@ class PostgresConfig(val topologyContext: TopologyContext, val name: String, val
                     "key.converter" to "org.apache.kafka.connect.json.JsonConverter",
                     "value.converter" to "org.apache.kafka.connect.json.JsonConverter",
                     // TODO"table.whitelist": "public.inventory"
-                    "public.inventory" to sourceElements.map { e -> "${e.schema()}.${e.table()}" }.joinToString(",")
+                    "public.inventory" to sourceElements
+                        .map { e -> "${e.schema()}.${e.table()}" }
+                        .joinToString(",")
                 )
             )
         )
@@ -80,12 +92,31 @@ class PostgresConfig(val topologyContext: TopologyContext, val name: String, val
     }
 
     private fun directSource(offsetId: String): Flow<ChangeRecord> {
-        return createDebeziumChangeFlow(topologyContext.topicName(name), "io.debezium.connector.postgresql.PostgresConnector", hostname, port, database, username, password, offsetId)
+        return createDebeziumChangeFlow(
+            topologyContext.topicName(name),
+            "io.debezium.connector.postgresql.PostgresConnector",
+            hostname,
+            port,
+            database,
+            username,
+            password,
+            offsetId
+        )
     }
 }
 
-fun Stream.postgresSourceConfig(name: String, hostname: String, port: Int, username: String, password: String, database: String, defaultSchema: String?): PostgresConfig {
-    val postgresConfig = PostgresConfig(this.context, name, context.applicationId(), hostname, port, username, password, database, defaultSchema)
+fun Stream.postgresSourceConfig(
+    name: String,
+    hostname: String,
+    port: Int,
+    username: String,
+    password: String,
+    database: String,
+    defaultSchema: String?
+): PostgresConfig {
+    val postgresConfig = PostgresConfig(
+        this.context, name, context.applicationId(), hostname, port, username, password, database, defaultSchema
+    )
     addSourceConfiguration(postgresConfig)
     return postgresConfig
 }

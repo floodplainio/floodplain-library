@@ -84,7 +84,11 @@ class FilmSimple {
         }.renderAndExecute {
             val database = topologyContext().topicName("@mongodump")
             flushSinks()
-            val hits = waitForMongoDbCondition("mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}", database) { currentDatabase ->
+            val hits = waitForMongoDbCondition(
+                "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
+                database
+            ) {
+                currentDatabase ->
                 val collection = currentDatabase.getCollection("filmwithactors")
                 val countDocuments = collection.countDocuments()
                 if (countDocuments == 1000L) {
@@ -133,7 +137,10 @@ class FilmSimple {
         }.runWithArguments { topologyContext ->
             val database = topologyContext.topicName("@mongodump")
             // flushSinks()
-            val hits = waitForMongoDbCondition("mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}", database) { currentDatabase ->
+            val hits = waitForMongoDbCondition(
+                "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
+                database
+            ) { currentDatabase ->
                 val collection = currentDatabase.getCollection("filmwithactors")
                 val countDocuments = collection.countDocuments()
                 if (countDocuments == 1000L) {
@@ -183,7 +190,10 @@ class FilmSimple {
         }.renderAndExecute {
             val database = topologyContext().topicName("@mongodump")
             flushSinks()
-            val hits = waitForMongoDbCondition("mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}", database) { mongoDatabase ->
+            val hits = waitForMongoDbCondition(
+                "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
+                database
+            ) { mongoDatabase ->
                 val collection = mongoDatabase.getCollection("filmwithactors")
                 val countDocuments = collection.countDocuments()
                 if (countDocuments == 1000L) {
