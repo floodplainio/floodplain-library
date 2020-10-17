@@ -201,6 +201,7 @@ public class ImmutableMessageImpl implements ImmutableMessage {
         return this;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public ImmutableMessage with(String key, Object value, ValueType type) {
 

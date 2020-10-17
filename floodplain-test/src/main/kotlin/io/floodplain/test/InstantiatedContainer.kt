@@ -19,6 +19,7 @@
 package io.floodplain.test
 
 import org.testcontainers.containers.GenericContainer
+import org.testcontainers.utility.DockerImageName
 
 val useIntegraton: Boolean by lazy {
     System.getenv("NO_INTEGRATION") == null
@@ -29,7 +30,7 @@ val useIntegraton: Boolean by lazy {
  */
 class InstantiatedContainer(image: String, port: Int, env: Map<String, String> = emptyMap()) {
 
-    class KGenericContainer(imageName: String) : GenericContainer<KGenericContainer>(imageName)
+    class KGenericContainer(imageName: String) : GenericContainer<KGenericContainer>(DockerImageName.parse(imageName))
     var container: KGenericContainer?
     var host: String
     var exposedPort: Int = -1

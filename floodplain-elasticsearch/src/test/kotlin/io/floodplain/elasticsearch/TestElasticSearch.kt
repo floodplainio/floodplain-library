@@ -23,10 +23,10 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import io.floodplain.kotlindsl.message.empty
 import io.floodplain.kotlindsl.source
 import io.floodplain.kotlindsl.stream
+import io.floodplain.test.InstantiatedContainer
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeout
 import org.junit.Test
-import org.testcontainers.containers.GenericContainer
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.node.NullNode
 import java.net.URI
 import java.net.http.HttpClient
@@ -42,25 +42,12 @@ class TestElasticSearch {
 
     private val objectMapper = ObjectMapper()
 
-    class KGenericContainer(imageName: String) : GenericContainer<KGenericContainer>(imageName)
-    var address: String? = "localhost"
-    var port: Int? = 0
-    var container: GenericContainer<*>? = null
-
-    init {
-        container = KGenericContainer("docker.elastic.co/elasticsearch/elasticsearch-oss:7.7.0")
-            .apply {
-                withExposedPorts(9200)
-                    .withEnv("discovery.type", "single-node")
-            }
-        container?.start()
-        address = container?.getHost()
-        port = container?.getFirstMappedPort()
-    }
+    private val container = InstantiatedContainer("docker.elastic.co/elasticsearch/elasticsearch-oss:7.7.0",
+        9200, mapOf("discovery.type" to "single-node"))
 
     @Test
     fun testElasticInsert() {
-        val uri = "http://$address:$port"
+        val uri = "http://${container.host}:${container.exposedPort}"
         stream {
             source("sometopic") {
                 val config = elasticSearchConfig("elasticName", uri)
@@ -116,7 +103,9 @@ class TestElasticSearch {
     }
 
     private fun queryUUIDHits(query: String): Int {
-        val node = queryUUID("http://$address:$port", "q=$query")
+        val uri = "http://${container.host}:${container.exposedPort}"
+
+        val node = queryUUID(uri, "q=$query")
         logger.info("Query uri: $node")
         val error = node.get("error")
         if (error == null || error is NullNode) {

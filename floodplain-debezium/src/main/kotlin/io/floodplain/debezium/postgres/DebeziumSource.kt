@@ -100,7 +100,7 @@ fun createDebeziumChangeFlow(name: String, taskClass: String, hostname: String, 
 private fun runDebeziumServer(props: Properties): Flow<ChangeRecord> {
     val engineKillSwitch = EngineKillSwitch()
     val totalTimeInSend = AtomicLong(0L)
-    return callbackFlow<ChangeRecord> {
+    return callbackFlow {
         val engine = DebeziumEngine.create(Json::class.java)
             .using(props)
             .notifying { record: ChangeEvent<String, String> ->

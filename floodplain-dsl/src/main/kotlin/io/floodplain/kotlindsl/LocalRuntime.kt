@@ -38,13 +38,13 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.sendBlocking
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.broadcastIn
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newSingleThreadContext
@@ -197,6 +197,7 @@ class LocalDriverContext(
     private fun <T> Flow<T>.handleErrors(): Flow<T> =
         catch { e -> logger.error("Error in flow $e") }
 
+    @OptIn(kotlinx.coroutines.ObsoleteCoroutinesApi::class)
     override fun connectSourceAndSink(): List<Job> {
         val outputJob = GlobalScope.launch(newSingleThreadContext("TopologySource"), CoroutineStart.UNDISPATCHED) {
             val outputFlows = outputFlows(this)
@@ -266,8 +267,8 @@ class LocalDriverContext(
                 val result = if (value == null) null else mapper.convertValue(parsed, object : TypeReference<Map<String, Any>>() {})
                 Triple(topic, key, result)
             }
-            .broadcastIn(context)
-            .asFlow()
+            .shareIn(context,SharingStarted.Lazily)
+            // .asFlow()
             .handleErrors()
         return topics.map { topic ->
             val flow = sourceFlow.filter { (incomingTopic, _, _) ->

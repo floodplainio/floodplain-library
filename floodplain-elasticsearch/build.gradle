@@ -9,6 +9,7 @@ dependencies {
     implementation(project(":streams"))
     implementation(project(":floodplain-stream-topology"))
     implementation(project(":floodplain-dsl"))
+    implementation(project(":floodplain-test"))
     implementation("io.confluent:kafka-connect-elasticsearch:5.5.0")
     implementation(FloodplainDeps.kotlinCoroutines)
     testImplementation("org.jetbrains.kotlin:kotlin-test")

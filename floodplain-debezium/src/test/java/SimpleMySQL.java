@@ -54,9 +54,7 @@ public class SimpleMySQL {
 // Create the engine with this configuration ...
         try (DebeziumEngine<ChangeEvent<String, String>> engine = DebeziumEngine.create(Json.class)
                 .using(props)
-                .notifying(record -> {
-                    System.out.println(record);
-                }).build()
+                .notifying(System.out::println).build()
         ) {
             Executors.newSingleThreadExecutor().execute(engine);
 
