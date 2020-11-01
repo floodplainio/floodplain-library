@@ -23,6 +23,7 @@ dependencies {
     implementation(project(":floodplain-dsl"))
     implementation(project(":floodplain-mongodb"))
     implementation(project(":floodplain-googlesheets"))
+    implementation(project(":floodplain-elasticsearch"))
     implementation(project(":streams-api"))
     implementation(project(":streams"))
     implementation(project(":replication-api"))
