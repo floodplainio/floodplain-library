@@ -88,7 +88,7 @@ suspend fun run(stream: Stream, arguments: Array<out String?>, localContext: (su
                 throw RuntimeException("When supplying kafka, supply connect too")
             }
             val streamsInstance = stream.renderAndSchedule(URL(connect), kafka!!, force)
-            remoteContext?.invoke(streamsInstance, stream.context)
+            remoteContext?.invoke(streamsInstance, stream.topologyContext)
         } else {
             stream.renderAndExecute(id, bufferTime) {
                 localContext?.invoke(this, this.topologyContext())

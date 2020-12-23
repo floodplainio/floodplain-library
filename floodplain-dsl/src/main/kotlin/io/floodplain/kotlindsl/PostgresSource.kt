@@ -54,7 +54,7 @@ class PostgresConfig(
         logger.info("connectSource completed")
     }
     private fun acceptRecord(inputReceiver: InputReceiver, record: ChangeRecord) {
-        val availableSourceTopics = sourceElements.map { sourceElement -> sourceElement.topic().qualifiedString(topologyContext) }.toSet()
+        val availableSourceTopics = sourceElements.map { sourceElement -> sourceElement.topic().qualifiedString() }.toSet()
         if (availableSourceTopics.contains(record.topic)) {
             if (record.value != null) {
                 inputReceiver.input(record.topic, record.key.toByteArray(), record.value!!)
@@ -115,7 +115,7 @@ fun Stream.postgresSourceConfig(
     defaultSchema: String?
 ): PostgresConfig {
     val postgresConfig = PostgresConfig(
-        this.context, name, context.applicationId(), hostname, port, username, password, database, defaultSchema
+        this.topologyContext, name, topologyContext.applicationId(), hostname, port, username, password, database, defaultSchema
     )
     addSourceConfiguration(postgresConfig)
     return postgresConfig
@@ -126,18 +126,18 @@ fun Stream.postgresSource(table: String, config: PostgresConfig, schema: String?
     if (effectiveSchema == null) {
         throw IllegalArgumentException("No schema defined, and also no default schema")
     }
-    val topic = Topic.from("${config.name}.$effectiveSchema.$table")
+    val topic = Topic.from("${config.name}.$effectiveSchema.$table",topologyContext)
     val topicSource = TopicSource(topic, Topic.FloodplainKeyFormat.CONNECT_KEY_JSON, Topic.FloodplainBodyFormat.CONNECT_JSON)
     config.addSourceElement(DebeziumSourceElement(topic, effectiveSchema, table))
-    val databaseSource = Source(topicSource)
+    val databaseSource = Source(topicSource,topologyContext)
     databaseSource.init()
     return databaseSource
 }
 
 fun Stream.postgresSource(name: String, table: String, schema: String, init: Source.() -> Unit): Source {
-    val topic = Topic.from("$name.$schema.$table")
+    val topic = Topic.from("$name.$schema.$table",topologyContext)
     val topicSource = TopicSource(topic, Topic.FloodplainKeyFormat.CONNECT_KEY_JSON, Topic.FloodplainBodyFormat.CONNECT_JSON)
-    val databaseSource = Source(topicSource)
+    val databaseSource = Source(topicSource,topologyContext)
     databaseSource.init()
     return databaseSource
 }

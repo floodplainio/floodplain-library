@@ -35,7 +35,7 @@ import io.floodplain.streams.api.TopologyContext
 import java.util.Optional
 
 fun Stream.elasticSearchConfig(name: String, uri: String): ElasticSearchSinkConfig {
-    val c = ElasticSearchSinkConfig(name, uri, this.context)
+    val c = ElasticSearchSinkConfig(name, uri, this.topologyContext)
     return this.addSinkConfiguration(c) as ElasticSearchSinkConfig
 }
 
@@ -63,9 +63,9 @@ class ElasticSearchSinkConfig(val name: String, val uri: String, val context: To
 
 fun PartialStream.elasticSearchSink(sinkName: String, topicName: String, config: ElasticSearchSinkConfig): FloodplainSink {
     val sinkProcessorName = ProcessorName.from(sinkName)
-    val topic = Topic.from(topicName)
+    val topic = Topic.from(topicName,topologyContext)
     val sinkTransformer = SinkTransformer(Optional.of(sinkProcessorName), topic, false, Optional.empty(), Topic.FloodplainKeyFormat.FLOODPLAIN_STRING, Topic.FloodplainBodyFormat.CONNECT_JSON)
-    addTransformer(Transformer(sinkTransformer))
+    addTransformer(Transformer(sinkTransformer,topologyContext))
 
     val sinkConfig = mapOf(
         "connector.class" to "io.confluent.connect.elasticsearch.ElasticsearchSinkConnector",
@@ -74,7 +74,7 @@ fun PartialStream.elasticSearchSink(sinkName: String, topicName: String, config:
         "type.name" to "_doc",
         "value.converter" to "org.apache.kafka.connect.json.JsonConverter",
         "key.converter" to "org.apache.kafka.connect.json.JsonConverter", // maps not supported by elasticsearch
-        "topics" to topic.qualifiedString(config.context),
+        "topics" to topic.qualifiedString(),
         "schema.ignore" to "true",
         "behavior.on.null.values" to "delete",
         "type.name" to "_doc"

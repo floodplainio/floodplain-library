@@ -205,7 +205,7 @@ class MySQLTest {
             val hits = waitForMongoDbCondition(
                 "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
                 databaseInstance,
-                500000
+                60000
             ) { database ->
                 val customerCount = database.getCollection("customers").countDocuments()
                 val orderCount = database.getCollection("orders").countDocuments()

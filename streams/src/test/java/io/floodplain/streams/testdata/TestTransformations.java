@@ -78,18 +78,18 @@ public class TestTransformations {
     public void testTopicNameConstruction() {
         final TopologyContext topologyContext = TopologyContext.context(Optional.of("MYTENANT"), "111");
         String result = topologyContext.topicName("TOPICNAME");
-        Assert.assertEquals("MYTENANT-currentinstance-TOPICNAME", result);
+        Assert.assertEquals("MYTENANT-TOPICNAME", result);
 
         result = topologyContext.topicName("@TOPICNAME");
-        Assert.assertEquals("MYTENANT-111-currentinstance-TOPICNAME", result);
+        Assert.assertEquals("MYTENANT-111-TOPICNAME", result);
 
         TopologyContext topologyContextWithoutTenant = TopologyContext.context(Optional.empty(), "111");
         result = topologyContextWithoutTenant.topicName("TOPICNAME");
-        Assert.assertEquals("currentinstance-TOPICNAME", result);
+        Assert.assertEquals("TOPICNAME", result);
 
         result = topologyContextWithoutTenant.topicName("@TOPICNAME");
 
-        Assert.assertEquals("111-currentinstance-TOPICNAME", result);
+        Assert.assertEquals("111-TOPICNAME", result);
 
 
         logger.info("Result: {}", result);

@@ -261,7 +261,7 @@ class LocalDriverContext(
 
         val sourceFlow = outputFlowSingle()
             .map { (topic, key, value) ->
-                val parsed = if (value == null) null else deserializer.deserialize(topic.qualifiedString(topologyContext), value) as ObjectNode
+                val parsed = if (value == null) null else deserializer.deserialize(topic.qualifiedString(), value) as ObjectNode
                 val result = if (value == null) null else mapper.convertValue(parsed, object : TypeReference<Map<String, Any>>() {})
                 Triple(topic, key, result)
             }
@@ -283,7 +283,7 @@ class LocalDriverContext(
                 // Ignore changelog topics
                 if (!record.topic().endsWith("changelog")) {
                     val key = Serdes.String().deserializer().deserialize(record.topic(), record.key())
-                    val topic = Topic.fromQualified(record.topic())
+                    val topic = Topic.fromQualified(record.topic(),topologyContext)
                     if (this.isActive) {
                         sendBlocking(Triple(topic, key, record.value()))
                     }

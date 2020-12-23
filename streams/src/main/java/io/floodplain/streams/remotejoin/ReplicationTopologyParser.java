@@ -112,8 +112,8 @@ public class ReplicationTopologyParser {
                                           TopologyConstructor topologyConstructor, Topic topic, Deserializer<?> keyDeserializer, Deserializer<?> valueDeserializer) {
         topologyConstructor.addDesiredTopic(topic, Optional.empty());
         if (!topologyConstructor.sources.containsKey(topic)) {
-            currentBuilder.addSource(topic.qualifiedString(context), keyDeserializer, valueDeserializer, topic.qualifiedString(context));
-            topologyConstructor.sources.put(topic, topic.qualifiedString(context));
+            currentBuilder.addSource(topic.qualifiedString(), keyDeserializer, valueDeserializer, topic.qualifiedString());
+            topologyConstructor.sources.put(topic, topic.qualifiedString());
         }
     }
 
@@ -172,11 +172,11 @@ public class ReplicationTopologyParser {
 
     public static String addSourceStore(final Topology currentBuilder, TopologyContext context, TopologyConstructor topologyConstructor, Topic sourceTopicName, Topic.FloodplainKeyFormat keyFormat, Topic.FloodplainBodyFormat bodyFormat, boolean materializeStore) {
         // TODO It might be better to fail if the topic does not exist? -> Well depends, if it is external yes, but if it is created by the same instance, then no.
-        final String sourceProcessorName = sourceTopicName.prefixedString("SOURCE", context);
+        final String sourceProcessorName = sourceTopicName.prefixedString("SOURCE");
         String sourceName;
         if (!topologyConstructor.sources.containsKey(sourceTopicName)) {
             sourceName = sourceProcessorName + "_src";
-            currentBuilder.addSource(sourceName, keyDeserializer(keyFormat), bodyDeserializer(bodyFormat), sourceTopicName.qualifiedString(context));
+            currentBuilder.addSource(sourceName, keyDeserializer(keyFormat), bodyDeserializer(bodyFormat), sourceTopicName.qualifiedString());
             topologyConstructor.sources.put(sourceTopicName, sourceName);
             if (materializeStore) {
                 currentBuilder.addProcessor(sourceProcessorName, () -> new StoreProcessor(STORE_PREFIX + sourceProcessorName), sourceName);

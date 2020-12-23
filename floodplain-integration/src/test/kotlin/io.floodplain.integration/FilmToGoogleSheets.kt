@@ -92,7 +92,7 @@ class FilmToGoogleSheets {
             }
         }.renderAndExecute {
             // delay(5000)
-            val ll = this.sinksByTopic()[Topic.from("outputtopic")]?.first()
+            val ll = this.sinksByTopic()[Topic.from("outputtopic",topologyContext())]?.first()
             val task = ll!!.taskObject() as SheetSinkTask // ?.config()?.sinkTask()!! as SheetSinkTask
             val coreSink = task.sheetSink
             // coreSink.
@@ -165,7 +165,7 @@ class FilmToGoogleSheets {
             }
         }.renderAndExecute {
             // delay(5000)
-            val ll = this.sinksByTopic()[Topic.from("outputtopic")]?.first()
+            val ll = this.sinksByTopic()[Topic.from("outputtopic",topologyContext())]?.first()
             val task = ll!!.taskObject() as SheetSinkTask // ?.config()?.sinkTask()!! as SheetSinkTask
             val coreSink = task.getSheetSink()
             // coreSink.

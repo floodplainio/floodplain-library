@@ -40,7 +40,7 @@ import java.util.UUID
 
 private val logger = mu.KotlinLogging.logger {}
 
-class Stream(val context: TopologyContext) {
+class Stream(override val topologyContext: TopologyContext): FloodplainOperator {
 
     private val sources: MutableList<Source> = ArrayList()
     private val sinkConfigurations: MutableList<SinkConfig> = mutableListOf()
@@ -82,7 +82,7 @@ class Stream(val context: TopologyContext) {
         val reactivePipes = sources.map { e -> e.toReactivePipe() }
         val stack = Stack<String>()
         for (reactivePipe in reactivePipes) {
-            ReactivePipeParser.processPipe(context, topologyConstructor, topology, topologyConstructor.generateNewStreamId(), stack, reactivePipe, false)
+            ReactivePipeParser.processPipe(topologyContext, topologyConstructor, topology, topologyConstructor.generateNewStreamId(), stack, reactivePipe, false)
         }
         ReplicationTopologyParser.materializeStateStores(topologyConstructor, topology)
         return topology
@@ -97,7 +97,7 @@ class Stream(val context: TopologyContext) {
         logger.info("Testing topology:\n${topology.describe()}")
         logger.info("Testing sources:\n$sources")
         logger.info("Testing sinks:\n$sinks")
-        logger.info("Sourcetopics: \n${topologyConstructor.desiredTopicNames().map { it.qualifiedString(context) }}")
+        logger.info("Sourcetopics: \n${topologyConstructor.desiredTopicNames().map { it.qualifiedString() }}")
 
         runLocalTopology(
             applicationId ?: UUID.randomUUID().toString(),
@@ -105,7 +105,7 @@ class Stream(val context: TopologyContext) {
             topology,
             localCmds,
             topologyConstructor,
-            context,
+            topologyContext,
             sourceConfigs,
             sinkConfigs
         )
@@ -120,18 +120,18 @@ class Stream(val context: TopologyContext) {
     fun renderAndSchedule(connectorURL: URL?, kafkaHosts: String, force: Boolean = false): KafkaStreams {
         val topologyConstructor = TopologyConstructor()
         val (topology, sources, sinks) = render(topologyConstructor)
-        topologyConstructor.createTopicsAsNeeded(context, kafkaHosts)
+        topologyConstructor.createTopicsAsNeeded(topologyContext, kafkaHosts)
         sources.forEach { (name, json) ->
             connectorURL?.let {
-                startConstructor(name, context, it, json, force)
+                startConstructor(name, topologyContext, it, json, force)
             }
         }
         sinks.forEach { (name, json) ->
             connectorURL?.let {
-                startConstructor(name, context, it, json, force)
+                startConstructor(name, topologyContext, it, json, force)
             }
         }
-        val appId = context.topicName("@applicationId")
+        val appId = topologyContext.topicName("@applicationId")
         val streams = runTopology(topology, appId, kafkaHosts, "storagePath")
         logger.info { "Topology running!" }
         return streams
@@ -146,14 +146,14 @@ class Stream(val context: TopologyContext) {
     private fun render(topologyConstructor: TopologyConstructor): Triple<Topology, List<Pair<String, String>>, List<Pair<String, String>>> {
         val topology = renderTopology(topologyConstructor)
         val sources = sourceConfigurations().flatMap { element ->
-            element.materializeConnectorConfig(context)
+            element.materializeConnectorConfig(topologyContext)
         }.map {
-            it.name to constructConnectorJson(context, it.name, it.settings)
+            it.name to constructConnectorJson(topologyContext, it.name, it.settings)
         }
         val sinks = sinkConfigurations().flatMap { element ->
-            element.materializeConnectorConfig(context)
+            element.materializeConnectorConfig(topologyContext)
         }.map {
-            it.name to constructConnectorJson(context, it.name, it.settings)
+            it.name to constructConnectorJson(topologyContext, it.name, it.settings)
         }
         return Triple(topology, sources, sinks)
     }

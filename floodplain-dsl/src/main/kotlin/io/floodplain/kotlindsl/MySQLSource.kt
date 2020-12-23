@@ -42,7 +42,7 @@ class MySQLConfig(val topologyContext: TopologyContext, val name: String, privat
         broadcastFlow
             .onEach { logger.info("Record found: ${it.topic} ${it.key}") }
             .collect {
-                val availableSourceTopics = sourceElements.map { sourceElement -> sourceElement.topic().qualifiedString(topologyContext) }.toSet()
+                val availableSourceTopics = sourceElements.map { sourceElement -> sourceElement.topic().qualifiedString() }.toSet()
                 if (availableSourceTopics.contains(it.topic)) {
                     if (it.value != null) {
                         inputReceiver.input(it.topic, it.key.toByteArray(), it.value!!)
@@ -101,17 +101,17 @@ class MySQLConfig(val topologyContext: TopologyContext, val name: String, privat
 }
 
 fun Stream.mysqlSourceConfig(name: String, hostname: String, port: Int, username: String, password: String, database: String): MySQLConfig {
-    val mySQLConfig = MySQLConfig(this.context, name, context.applicationId(), hostname, port, username, password, database)
+    val mySQLConfig = MySQLConfig(this.topologyContext, name, topologyContext.applicationId(), hostname, port, username, password, database)
     addSourceConfiguration(mySQLConfig)
     return mySQLConfig
 }
 
 fun Stream.mysqlSource(table: String, config: MySQLConfig, init: Source.() -> Unit): Source {
 
-    val topic = Topic.from("${config.name}.$table")
+    val topic = Topic.from("${config.name}.$table",topologyContext)
     val topicSource = TopicSource(topic, Topic.FloodplainKeyFormat.CONNECT_KEY_JSON, Topic.FloodplainBodyFormat.CONNECT_JSON)
     config.addSourceElement(DebeziumSourceElement(topic, null, table))
-    val databaseSource = Source(topicSource)
+    val databaseSource = Source(topicSource,topologyContext)
     databaseSource.init()
     return databaseSource
 }

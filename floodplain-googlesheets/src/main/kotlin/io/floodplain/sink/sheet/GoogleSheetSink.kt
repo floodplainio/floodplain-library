@@ -41,11 +41,11 @@ private val logger = mu.KotlinLogging.logger {}
 fun PartialStream.googleSheetsSink(topicDefinition: String, googleSheetId: String, columns: List<String>, startColumn: String = "A", startRow: Int = 1, config: GoogleSheetConfiguration) {
     val sheetConnectorClass = SheetSinkConnector::class.java.name
     logger.info("Sheet connector: $sheetConnectorClass")
-    val topic = Topic.from(topicDefinition)
+    val topic = Topic.from(topicDefinition,topologyContext)
     val sheetSink = GoogleSheetSink(topic, googleSheetId, columns, startColumn, startRow)
     config.addSink(sheetSink)
     val sink = SinkTransformer(Optional.of(ProcessorName.from(config.name)), topic, false, Optional.empty(), Topic.FloodplainKeyFormat.CONNECT_KEY_JSON, Topic.FloodplainBodyFormat.CONNECT_JSON)
-    addTransformer(Transformer(sink))
+    addTransformer(Transformer(sink,topologyContext))
 }
 
 class GoogleSheetSink(val topic: Topic, val spreadsheetId: String, val columns: List<String>, val startColumn: String = "A", val startRow: Int = 1)
@@ -74,7 +74,7 @@ class GoogleSheetConfiguration(val name: String) : SinkConfig {
             // SheetSinkTask.COLUMNS to columns.joinToString(",")
             settings[SPREADSHEETID] = it.spreadsheetId
             settings[COLUMNS] = it.columns.joinToString(",")
-            settings[TOPICS] = it.topic.qualifiedString(topologyContext)
+            settings[TOPICS] = it.topic.qualifiedString()
             settings[STARTCOLUMN] = it.startColumn
             settings[STARTROW] = it.startRow.toString()
             // settings.put(SheetSinkTask.STARTCOLUMN,)

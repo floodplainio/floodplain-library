@@ -46,12 +46,12 @@ class MongoConfig(val name: String, val uri: String, val database: String) : Sin
 
     override fun materializeConnectorConfig(topologyContext: TopologyContext): List<MaterializedConfig> {
         val additional = mutableMapOf<String, String>()
-        sinkInstancePair.forEach { (key, value) -> additional.put("topic.override.${value.qualifiedString(topologyContext)}.collection", key) }
+        sinkInstancePair.forEach { (key, value) -> additional.put("topic.override.${value.qualifiedString()}.collection", key) }
         logger.debug("Pairs: $sinkInstancePair")
         val collections: String = sinkInstancePair.joinToString(",") { e -> e.first }
         logger.debug("Collections: $collections")
         val topics: String =
-            sinkInstancePair.joinToString(",") { (_, topic) -> topic.qualifiedString(topologyContext) }
+            sinkInstancePair.joinToString(",") { (_, topic) -> topic.qualifiedString() }
         logger.debug("Topics: $topics")
 
         val generationalDatabase = topologyContext.topicName(database)
@@ -113,7 +113,7 @@ private class MongoFloodplainSink(private val task: SinkTask, private val config
 
     override fun send(topic: Topic, elements: List<Pair<String, Map<String, Any>?>>, topologyContext: TopologyContext) {
         val list = elements.map { (key, value) ->
-            SinkRecord(topic.qualifiedString(topologyContext), 0, null, key, null, value, offsetCounter.incrementAndGet())
+            SinkRecord(topic.qualifiedString(), 0, null, key, null, value, offsetCounter.incrementAndGet())
         }.toList()
         val insertTime = measureTimeMillis {
             try {
@@ -152,10 +152,10 @@ fun Stream.mongoConfig(name: String, uri: String, database: String): MongoConfig
 }
 
 fun PartialStream.mongoSink(collection: String, topicDefinition: String, config: MongoConfig) {
-    val topic = Topic.from(topicDefinition)
+    val topic = Topic.from(topicDefinition,topologyContext)
     config.sinkInstancePair.add(collection to topic)
     val sinkName = ProcessorName.from(config.name)
     val sink = SinkTransformer(Optional.of(sinkName), topic, false, Optional.empty(), Topic.FloodplainKeyFormat.CONNECT_KEY_JSON, Topic.FloodplainBodyFormat.CONNECT_JSON)
-    val transform = Transformer(sink)
+    val transform = Transformer(sink, topologyContext)
     addTransformer(transform)
 }

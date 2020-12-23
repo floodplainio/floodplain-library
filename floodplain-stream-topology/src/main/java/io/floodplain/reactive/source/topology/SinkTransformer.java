@@ -58,12 +58,12 @@ public class SinkTransformer implements TopologyPipeComponent {
     @Override
     public void addToTopology(Stack<String> transformerNames, int pipeId, Topology topology, TopologyContext topologyContext, TopologyConstructor topologyConstructor) {
 
-        final String qualifiedSinkTopic = topic.qualifiedString(topologyContext);
+        final String qualifiedSinkTopic = topic.qualifiedString();
         topologyConstructor.ensureTopicExists(topic, partitions);
         String qualifiedName;
         // TODO effective deconflicting but ugly
         //topologyContext.applicationId();
-        qualifiedName = name.map(processorName -> processorName.definition() + "_" + topologyContext.topicName(processorName + "_" + topic.qualifiedString(topologyContext))).orElse(qualifiedSinkTopic);
+        qualifiedName = name.map(processorName -> processorName.definition() + "_" + topologyContext.topicName(processorName + "_" + topic.qualifiedString())).orElse(qualifiedSinkTopic);
         topologyConstructor.addSink(qualifiedName);
         logger.info("Stack top for transformer: " + transformerNames.peek());
         Serializer<String> keySerializer = ReplicationTopologyParser.keySerializer(this.keyFormat);

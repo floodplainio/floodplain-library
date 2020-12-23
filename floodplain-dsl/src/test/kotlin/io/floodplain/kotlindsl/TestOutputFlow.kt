@@ -22,6 +22,7 @@ import io.floodplain.bufferTimeout
 import io.floodplain.kotlindsl.message.IMessage
 import io.floodplain.kotlindsl.message.empty
 import io.floodplain.streams.api.Topic
+import io.floodplain.streams.api.TopologyContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.fold
@@ -29,14 +30,16 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
+import java.util.Optional
 
 class TestOutputFlow {
 
     @Test
     fun testChunkOperator() {
+        val topologyContext: TopologyContext = TopologyContext.context(Optional.empty(),"any")
         val flow: Flow<Triple<Topic, String, IMessage?>> = flow {
             repeat(10) {
-                val topic = Topic.from("TopicNr$it")
+                val topic = Topic.from("TopicNr$it",topologyContext)
                 repeat(100) { msgNr ->
                     val msg = empty().set("element", msgNr)
                     emit(Triple(topic, "key$msgNr", msg))

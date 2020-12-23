@@ -24,7 +24,7 @@ public class Topic {
 
     private final String topicDefinition;
     private final String qualifiedDefinition;
-
+    private final TopologyContext topologyContext;
 
     public enum FloodplainBodyFormat {
         CONNECT_JSON, FLOODPLAIN_JSON
@@ -36,36 +36,33 @@ public class Topic {
 
 
     //    private static final TopologyContext mockContext = TopologyContext.context("instance","gen");
-    private Topic(String topicDefinition, String qualifiedDefinition) {
+    private Topic(TopologyContext topologyContext, String topicDefinition, String qualifiedDefinition) {
+        this.topologyContext = topologyContext;
         this.topicDefinition = topicDefinition;
         this.qualifiedDefinition = qualifiedDefinition;
     }
 
-    public static Topic from(String topicDefinition) {
-        return new Topic(topicDefinition,null);
+    public static Topic from(String topicDefinition, TopologyContext topologyContext) {
+        return new Topic(topologyContext,topicDefinition,null);
     }
 
-    public static Topic fromQualified(String qualifiedDefinition) {
-        return new Topic(null,qualifiedDefinition);
+    public static Topic fromQualified(String qualifiedDefinition, TopologyContext topologyContext) {
+        return new Topic(topologyContext,null,qualifiedDefinition);
     }
 
-    public String qualifiedString(TopologyContext topologyContext) {
+    public String qualifiedString() {
         if(qualifiedDefinition!=null) {
             return qualifiedDefinition;
         }
         return topologyContext.topicName(topicDefinition);
     }
 
-    public String prefixedString(String prefix, TopologyContext topologyContext) {
-        return prefix+"_"+qualifiedString(topologyContext);
+    public String prefixedString(String prefix) {
+        return prefix+"_"+qualifiedString();
     }
 
     public String toString() {
-        if(topicDefinition!=null) {
-            return topicDefinition;
-        } else {
-            return unqualify(qualifiedDefinition);
-        }
+        return qualifiedString();
     }
 
     private String unqualify(String qualified) {
@@ -86,7 +83,8 @@ public class Topic {
         if (this == o) return true;
         if (!(o instanceof Topic)) return false;
         Topic topic = (Topic) o;
-        return this.toString().equals(topic.toString());
+        return this.qualifiedString().equals(topic.qualifiedString());
+//        return this.toString().equals(topic.toString());
     }
 
     @Override

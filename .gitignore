@@ -3,6 +3,7 @@
 .DS_Store
 bin/
 buildOutputCleanup
+*.hprof
 .vscode
 .project
 .settings
@@ -11,7 +12,9 @@ sharedstore
 storagePath
 teststorage
 floodplain-dsl/teststorage
+jacocoReport/
 lsp
+mongodata/
 
 # Ignore Gradle build output directory
 build
