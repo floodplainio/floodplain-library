@@ -35,6 +35,7 @@ import javax.inject.Named;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -110,6 +111,8 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
                 return clocktimeFormat.format((Date) val);
             case ENUM:
                 return val.toString();
+            case DECIMAL:
+                return ((BigDecimal)val).toPlainString();
             default:
                 throw new UnsupportedOperationException("Unknown type: " + type);
         }
@@ -152,6 +155,8 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
                     logger.warn("Error parsing date: " + value + " with type: " + val.getType().name(), e);
                     return null;
                 }
+            case DECIMAL:
+                return new BigDecimal(value);
             case LIST:
                 return value;
             case ENUM:
@@ -187,6 +192,9 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
                 return Replication.ValueProtobuf.ValueType.CLOCKTIME;
             case ENUM:
                 return Replication.ValueProtobuf.ValueType.ENUM;
+            case DECIMAL:
+                // TODO not correct, rebuild proto
+                return Replication.ValueProtobuf.ValueType.DECIMAL;
             case STOPWATCHTIME:
             case IMMUTABLE:
             case UNKNOWN:
@@ -221,6 +229,8 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
                 return ImmutableMessage.ValueType.BINARY;
             case ENUM:
                 return ImmutableMessage.ValueType.ENUM;
+            case DECIMAL:
+                return ImmutableMessage.ValueType.DECIMAL;
             case UNRECOGNIZED:
                 return ImmutableMessage.ValueType.UNKNOWN;
         }

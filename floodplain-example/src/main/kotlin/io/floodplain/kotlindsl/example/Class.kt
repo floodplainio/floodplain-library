@@ -18,108 +18,39 @@
  */
 package io.floodplain.kotlindsl.example
 
-import io.floodplain.kotlindsl.each
-import io.floodplain.kotlindsl.filter
-import io.floodplain.kotlindsl.group
-import io.floodplain.kotlindsl.join
-import io.floodplain.kotlindsl.joinGrouped
-import io.floodplain.kotlindsl.joinRemote
 import io.floodplain.kotlindsl.set
-import io.floodplain.kotlindsl.sink
-
 import io.floodplain.kotlindsl.source
 import io.floodplain.kotlindsl.streams
+import io.floodplain.mongodb.mongoConfig
+import io.floodplain.mongodb.mongoSink
+import java.net.URL
 
 private val logger = mu.KotlinLogging.logger {}
 
-
 fun main() {
 
-    val generation = "generation16"
+    val generation = "generation51"
     val deployment = "develop"
     val tenant = "KNBSB"
-    // val deployment = "develop"
-    streams(tenant,deployment, generation) {
+    streams(tenant, deployment, generation) {
+        val mongoConfig = mongoConfig("@mongosink", "mongodb://mongo", "@mongodump")
+
         listOf(
-            source("sportlinkkernel-ADDRESS") {
-            set { _, msg, _->
-                // TODO formatzipcode
-                msg["zipcode"] = msg.optionalString("zipcode")?:"".replace(" ","").trim()
-                msg.clear("updateby")
-                msg.clear("lastupdate")
-                msg
-            }
-            filter { key, msg ->
-                msg["zipcode"]!=null
-            }
-            // group { msg->
-            //     logger.info("key: $key\n>>>totalmessage: $msg")
-            //     msg.string("zipcode")
-            // }
-            joinRemote({msg->msg.string("zipcode")},false) {
-                source("sportlinkkernel-ZIPCODEPOSITION") {
-                    set { _, msg, _->
-                        msg.clear("updateby")
-                        msg.clear("lastupdate")
-                        msg["point"] = "${msg["longitude"]},${msg["latitude"]}"
-                        msg
-                    }
+            source("sportlinkkernel-CLASS") {
+                set { _, msg, _ ->
+                    msg.clearAll(listOf("updateby", "lastupdate"))
                 }
-            }
-            set { key, address, position ->
-                address["position"] = position
-                // logger.info("Key: $key")
-                // logger.info("address: $address")
-                // logger.info("position: $position")
-                address
-            }
-            each { key,msg,_->
-                logger.info("Key: $key")
-                logger.info("Msg: ${msg}")
-            }
-            joinRemote({msg->msg.string("zipcode")},false) {
-                source("sportlinkkernel-POSTCODETABLE") {
-                    set { _, msg, _ ->
-                        msg.clearAll(listOf("updateby","lastupdate","unipostcodereeksindicatie","huisnrtot","straatnaam","huisnrvan","woonplaats"))
-                        msg
-                    }
-                    group{ msg->msg["communityid"] as String }
-                    // each { key,msg,_->
-                    //     logger.info("PostcodeTableKey: $key")
-                    //     logger.info("PostcodeTableMsg: $msg")
-                    // }
-                    joinRemote({msg->msg.string("communityid")},false) {
-                        source("sportlinkkernel-COMMUNITY") {
-                            set { _, msg, _ ->
-                                msg["communityname"] = msg["name"]
-                                msg.clear("name")
-                                msg
-                            }
-                        }
-                    }
-                    set { _, postcode, community ->
-                        postcode["communityname"] = community["communityname"]
-                        postcode
-                    }
-                    // sink("@POSTCODE")
+                joinAttributes("sportlinkkernel-CLASSATTRIBUTE", "attribname", "attribvalue") {
+                    it.string("classid") + "<$>" + it.string("competitiontypeid") + "<$>" + it.string("organizingdistrictid")
                 }
-            }
-            // set { _, address, position ->
-            //     address["position"] = position
-            //     address
-            //
-            // }
-            sink("@addresswithposition")
-        },
-        source("sportlinkkernel-CLASS") {
-            joinGrouped (true,false) {
-                source("sportlinkkernel-CLASSATTRIBUTE") {
-                    group {  }
+                set { key, msg, attributes ->
+                    msg.merge(attributes)
+                    msg
                 }
+                mongoSink("class", "@sometopic", mongoConfig)
             }
-        }
-            )
-    }.renderAndSchedule(null, "10.8.0.7:9092")
+        )
+    }.renderAndSchedule(URL("http://localhost:8083/connectors"), "10.8.0.7:9092")
     logger.info { "done!" }
 }
 
@@ -128,4 +59,3 @@ fun main() {
 // <remove name="lastupdate"/>
 // <createcoordinate from="longitude,latitude" to="point"/>
 // </store>
-

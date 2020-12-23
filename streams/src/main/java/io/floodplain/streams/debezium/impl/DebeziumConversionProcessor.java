@@ -50,7 +50,7 @@ public class DebeziumConversionProcessor implements Processor<String, byte[]> {
         if (value == null) {
             return;
         }
-        KeyValue keyValue = JSONToReplicationMessage.parse(key,value);
+        KeyValue keyValue = JSONToReplicationMessage.parse(key, value);
         FallbackReplicationMessageParser ftm = new FallbackReplicationMessageParser(true);
         ReplicationMessage msg = ftm.parseBytes(Optional.empty(), keyValue.value);
         processorContext.forward(keyValue.key, msg);

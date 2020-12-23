@@ -109,7 +109,7 @@ public class OneToManyGroupedProcessor extends AbstractProcessor<String, Replica
 
         String actualKey = CoreOperators.ungroupKeyReverse(key);
         ReplicationMessage one = lookupStore.get(actualKey);
-        if(debug) {
+        if (debug) {
             long storeSize = lookupStore.approximateNumEntries();
             logger.info("# of elements in reverse store: {}", storeSize);
         }

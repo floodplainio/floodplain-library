@@ -78,19 +78,19 @@ public class OneToOneProcessor extends AbstractProcessor<String, ReplicationMess
             key = key.substring(0, key.length() - PreJoinProcessor.REVERSE_IDENTIFIER.length());
             lookupStore = forwardLookupStore;
         }
-        if(debug) {
-            logger.info("Joining key: {} reverse: {}",key,reverse);
+        if (debug) {
+            logger.info("Joining key: {} reverse: {}", key, reverse);
         }
 
         ReplicationMessage counterpart = lookupStore.get(key);
-        if(debug) {
-            if (counterpart==null) {
-                logger.info("Null Join (reverse? {}) key: {} lookupsize: {}",reverse,key,lookupStore.approximateNumEntries());
+        if (debug) {
+            if (counterpart == null) {
+                logger.info("Null Join (reverse? {}) key: {} lookupsize: {}", reverse, key, lookupStore.approximateNumEntries());
                 List<String> keys = new ArrayList<>();
-                lookupStore.all().forEachRemaining(k->keys.add(k.key));
+                lookupStore.all().forEachRemaining(k -> keys.add(k.key));
                 logger.info("Keys: {}", String.join(",", keys));
             } else {
-                logger.info("Join Result: {} {}",key,counterpart.toFlatString(ReplicationFactory.getInstance()));
+                logger.info("Join Result: {} {}", key, counterpart.toFlatString(ReplicationFactory.getInstance()));
             }
         }
 

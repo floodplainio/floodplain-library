@@ -69,7 +69,7 @@ public class CacheProcessor extends AbstractProcessor<String, ReplicationMessage
         this.context = context;
 //        this.startedAt = System.currentTimeMillis();
 //        STORE_tenant-deployment-gen-instance-buffer_1_1
-        this.lookupStore = (KeyValueStore<String, ReplicationMessage>) context.getStateStore(STORE_PREFIX+cacheProcName);
+        this.lookupStore = (KeyValueStore<String, ReplicationMessage>) context.getStateStore(STORE_PREFIX + cacheProcName);
 
         long runInterval = Math.max((cacheTime.toMillis() / 10), 1000);
 
@@ -94,7 +94,7 @@ public class CacheProcessor extends AbstractProcessor<String, ReplicationMessage
                     logger.warn("Reached max cache size!");
                     context.forward(key, message);
                 } else {
-                    cache.put(key, new CacheEntry(message,context.timestamp()));
+                    cache.put(key, new CacheEntry(message, context.timestamp()));
                 }
             } else {
                 lookupStore.put(key, message.with(CACHED_AT_KEY, System.currentTimeMillis(), ImmutableMessage.ValueType.LONG));
@@ -106,7 +106,7 @@ public class CacheProcessor extends AbstractProcessor<String, ReplicationMessage
     @Override
     public void close() {
         synchronized (sync) {
-            for (Map.Entry<String,CacheEntry> entry : cache.entrySet()) {
+            for (Map.Entry<String, CacheEntry> entry : cache.entrySet()) {
                 context.forward(entry.getKey(), entry.getValue().getEntry());
                 cache.remove(entry.getKey());
             }
@@ -122,7 +122,7 @@ public class CacheProcessor extends AbstractProcessor<String, ReplicationMessage
         int expiredEntries = 0;
         if (memoryCache) {
             Set<String> toForward = new HashSet<>();
-            for (Map.Entry<String,CacheEntry> entry : cache.entrySet()) {
+            for (Map.Entry<String, CacheEntry> entry : cache.entrySet()) {
                 if (entry.getValue().isExpired(ms)) {
                     toForward.add(entry.getKey());
                 }
@@ -161,7 +161,7 @@ public class CacheProcessor extends AbstractProcessor<String, ReplicationMessage
         }
         // This branch is only for in-memory
         long duration = System.currentTimeMillis() - ms;
-        if (entries > 0 ) {
+        if (entries > 0) {
             logger.info("Checked cache {} - {} entries, {} expired entries in {}ms", this.cacheProcName, entries, expiredEntries, duration);
         }
     }

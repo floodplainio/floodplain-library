@@ -73,9 +73,9 @@ public class ManyToOneGroupedProcessor extends AbstractProcessor<String, Replica
 
     @Override
     public void process(String key, ReplicationMessage message) {
-        if(key.contains("{")) {
+        if (key.contains("{")) {
             // TODO remove, it is a bit barbaric
-            throw new RuntimeException("Failed. bad key: "+key);
+            throw new RuntimeException("Failed. bad key: " + key);
         }
         boolean reverse = false;
         if (key.endsWith(PreJoinProcessor.REVERSE_IDENTIFIER)) {

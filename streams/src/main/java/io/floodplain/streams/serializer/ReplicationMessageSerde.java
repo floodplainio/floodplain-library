@@ -59,13 +59,13 @@ public class ReplicationMessageSerde implements Serde<ReplicationMessage> {
 
             @Override
             public void configure(Map<String, ?> config, boolean isKey) {
-                logger.info("Configuring deserializer: {}",config);
+                logger.info("Configuring deserializer: {}", config);
 
             }
 
             @Override
             public ReplicationMessage deserialize(String topic, byte[] data) {
-                return parser.parseBytes(Optional.of(topic),data);
+                return parser.parseBytes(Optional.of(topic), data);
             }
         };
     }

@@ -19,7 +19,6 @@
 package io.floodplain.streams.remotejoin;
 
 import io.floodplain.replication.api.ReplicationMessage;
-import org.apache.kafka.common.serialization.Serializer;
 import org.apache.kafka.streams.processor.AbstractProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +32,7 @@ public class LogProcessor extends AbstractProcessor<String, ReplicationMessage> 
 
     @Override
     public void process(String key, ReplicationMessage value) {
-        logger.info("TTPP>> {} key serde: {} value serde: {}",key,context().keySerde(),context().valueSerde());
+        logger.info("TTPP>> {} key serde: {} value serde: {}", key, context().keySerde(), context().valueSerde());
         super.context().forward(key, value);
     }
 

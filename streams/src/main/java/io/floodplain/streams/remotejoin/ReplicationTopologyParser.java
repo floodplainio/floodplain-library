@@ -24,9 +24,7 @@ import io.floodplain.replication.api.ReplicationMessage;
 import io.floodplain.replication.api.ReplicationMessage.Operation;
 import io.floodplain.streams.api.Topic;
 import io.floodplain.streams.api.TopologyContext;
-import io.floodplain.streams.debezium.JSONToReplicationMessage;
 import io.floodplain.streams.remotejoin.ranged.GroupedUpdateProcessor;
-import io.floodplain.streams.remotejoin.ranged.ManyToManyGroupedProcessor;
 import io.floodplain.streams.remotejoin.ranged.ManyToOneGroupedProcessor;
 import io.floodplain.streams.remotejoin.ranged.OneToManyGroupedProcessor;
 import io.floodplain.streams.serializer.ConnectReplicationMessageSerde;
@@ -61,6 +59,7 @@ public class ReplicationTopologyParser {
 
     private static final ReplicationMessageSerde replicationMessageSerder = new ReplicationMessageSerde();
     private static final ConnectReplicationMessageSerde connectReplicationMessageSerder = new ConnectReplicationMessageSerde();
+
     public enum Flatten {FIRST, LAST, NONE}
 
     private static final Logger logger = LoggerFactory.getLogger(ReplicationTopologyParser.class);
@@ -100,8 +99,8 @@ public class ReplicationTopologyParser {
 
     // I think we need to use the topologyContext
     public static void addDiffProcessor(Topology current, TopologyContext topologyContext,
-                                         TopologyConstructor topologyConstructor, String fromProcessor,
-                                         String diffProcessorNamePrefix) {
+                                        TopologyConstructor topologyConstructor, String fromProcessor,
+                                        String diffProcessorNamePrefix) {
         // TODO I think the topologyContext should be used.
         current.addProcessor(diffProcessorNamePrefix, () -> new DiffProcessor(diffProcessorNamePrefix), fromProcessor);
         addStateStoreMapping(topologyConstructor.processorStateStoreMapper, diffProcessorNamePrefix, diffProcessorNamePrefix);
@@ -110,7 +109,7 @@ public class ReplicationTopologyParser {
     }
 
     public static void addLazySourceStore(final Topology currentBuilder, TopologyContext context,
-                                            TopologyConstructor topologyConstructor, Topic topic, Deserializer<?> keyDeserializer, Deserializer<?> valueDeserializer) {
+                                          TopologyConstructor topologyConstructor, Topic topic, Deserializer<?> keyDeserializer, Deserializer<?> valueDeserializer) {
         topologyConstructor.addDesiredTopic(topic, Optional.empty());
         if (!topologyConstructor.sources.containsKey(topic)) {
             currentBuilder.addSource(topic.qualifiedString(context), keyDeserializer, valueDeserializer, topic.qualifiedString(context));
@@ -137,7 +136,7 @@ public class ReplicationTopologyParser {
             case FLOODPLAIN_STRING:
                 return Serdes.String().deserializer();
         }
-        throw new IllegalArgumentException("Weird key format: "+keyFormat);
+        throw new IllegalArgumentException("Weird key format: " + keyFormat);
     }
 
     public static Serializer<String> keySerializer(Topic.FloodplainKeyFormat keyFormat) {
@@ -147,17 +146,17 @@ public class ReplicationTopologyParser {
             case FLOODPLAIN_STRING:
                 return Serdes.String().serializer();
         }
-        throw new IllegalArgumentException("Weird key format: "+keyFormat);
+        throw new IllegalArgumentException("Weird key format: " + keyFormat);
     }
 
     public static Deserializer<ReplicationMessage> bodyDeserializer(Topic.FloodplainBodyFormat bodyFormat) {
         switch (bodyFormat) {
-           case CONNECT_JSON:
-               return connectReplicationMessageSerder.deserializer();
-           case FLOODPLAIN_JSON:
-               return replicationMessageSerder.deserializer();
+            case CONNECT_JSON:
+                return connectReplicationMessageSerder.deserializer();
+            case FLOODPLAIN_JSON:
+                return replicationMessageSerder.deserializer();
         }
-        throw new IllegalArgumentException("Weird body format: "+bodyFormat);
+        throw new IllegalArgumentException("Weird body format: " + bodyFormat);
     }
 
     public static Serializer<ReplicationMessage> bodySerializer(Topic.FloodplainBodyFormat bodyFormat) {
@@ -167,13 +166,13 @@ public class ReplicationTopologyParser {
             case FLOODPLAIN_JSON:
                 return replicationMessageSerder.serializer();
         }
-        throw new IllegalArgumentException("Weird body format: "+bodyFormat);
+        throw new IllegalArgumentException("Weird body format: " + bodyFormat);
     }
 
 
     public static String addSourceStore(final Topology currentBuilder, TopologyContext context, TopologyConstructor topologyConstructor, Topic sourceTopicName, Topic.FloodplainKeyFormat keyFormat, Topic.FloodplainBodyFormat bodyFormat, boolean materializeStore) {
         // TODO It might be better to fail if the topic does not exist? -> Well depends, if it is external yes, but if it is created by the same instance, then no.
-        final String sourceProcessorName =  sourceTopicName.prefixedString("SOURCE",context);
+        final String sourceProcessorName = sourceTopicName.prefixedString("SOURCE", context);
         String sourceName;
         if (!topologyConstructor.sources.containsKey(sourceTopicName)) {
             sourceName = sourceProcessorName + "_src";
@@ -272,14 +271,14 @@ public class ReplicationTopologyParser {
                 , () -> new CacheProcessor(name, cacheTime, maxSize, inMemory)
                 , fromProcessorName
         );
-        logger.info("Buffer using statestore: {}",STORE_PREFIX+name);
-        addStateStoreMapping(topologyConstructor.processorStateStoreMapper, name, STORE_PREFIX+name);
-        topologyConstructor.stateStoreSupplier.put(STORE_PREFIX+name, createMessageStoreSupplier(STORE_PREFIX+name, true));
+        logger.info("Buffer using statestore: {}", STORE_PREFIX + name);
+        addStateStoreMapping(topologyConstructor.processorStateStoreMapper, name, STORE_PREFIX + name);
+        topologyConstructor.stateStoreSupplier.put(STORE_PREFIX + name, createMessageStoreSupplier(STORE_PREFIX + name, true));
     }
 
     public static String addReducer(final Topology topology, TopologyContext topologyContext, TopologyConstructor topologyConstructor,
                                     Stack<String> transformerNames, int currentPipeId, List<TopologyPipeComponent> onAdd, List<TopologyPipeComponent> onRemove,
-                                    Function<ImmutableMessage,ImmutableMessage> initialMessage, boolean materialize, Optional<BiFunction<ImmutableMessage, ImmutableMessage, String>> keyExtractor) {
+                                    Function<ImmutableMessage, ImmutableMessage> initialMessage, boolean materialize, Optional<BiFunction<ImmutableMessage, ImmutableMessage, String>> keyExtractor) {
 
         String parentName = transformerNames.peek();
         String reduceReader = topologyContext.qualifiedName("reduce", transformerNames.size(), currentPipeId);
@@ -294,7 +293,7 @@ public class ReplicationTopologyParser {
 
         String reduceName = topologyContext.qualifiedName("reduce", transformerNames.size(), currentPipeId);
 
-        String reduceStoreName = STORE_PREFIX +"accumulator_"+ reduceName;
+        String reduceStoreName = STORE_PREFIX + "accumulator_" + reduceName;
         String inputStoreName = STORE_PREFIX + parentName + "_reduce_inputstore";
 
         topology.addProcessor(reduceReader, () -> new ReduceReadProcessor(inputStoreName, reduceStoreName, initialMessage, keyExtractor), parentName);
@@ -381,7 +380,7 @@ public class ReplicationTopologyParser {
                     STORE_PREFIX + fromProcessorName,
                     STORE_PREFIX + withProcessorName,
                     optional,
-                    (msg, comsg) -> msg.withParamMessage(comsg.message()),debug);
+                    (msg, comsg) -> msg.withParamMessage(comsg.message()), debug);
         }
         String procName = materialize ? "proc_" + name : name;
         current.addProcessor(

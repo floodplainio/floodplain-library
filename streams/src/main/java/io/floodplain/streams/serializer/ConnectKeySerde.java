@@ -51,13 +51,13 @@ public class ConnectKeySerde implements Serde<String> {
 
             @Override
             public void configure(Map<String, ?> config, boolean isKey) {
-                logger.info("Configuring deserializer: {}",config);
+                logger.info("Configuring deserializer: {}", config);
 
             }
 
             @Override
             public String deserialize(String topic, byte[] data) {
-                logger.error("Not implemented!!!!!! for topic: {}",topic);
+                logger.error("Not implemented!!!!!! for topic: {}", topic);
                 return "ERROR_NOP";
             }
         };

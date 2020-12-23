@@ -38,8 +38,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -64,8 +62,8 @@ public class JSONToReplicationMessage {
     public static KeyValue parse(String keyInput, byte[] data) {
         try {
             JsonNode mapped = objectMapper.readTree(keyInput);
-            if(!(mapped instanceof ObjectNode)) {
-                throw new ClassCastException("Expected debezium style key. Not type: "+mapped.getClass()+" data: "+new String(data, StandardCharsets.UTF_8));
+            if (!(mapped instanceof ObjectNode)) {
+                throw new ClassCastException("Expected debezium style key. Not type: " + mapped.getClass() + " data: " + new String(data, StandardCharsets.UTF_8));
             }
             ObjectNode keynode = (ObjectNode) mapped;
             TableIdentifier key = processDebeziumKey(keynode);
@@ -78,7 +76,7 @@ public class JSONToReplicationMessage {
             final ReplicationMessage convOptional = convertToReplication(false, valuenode, Optional.empty());
 
             byte[] serialized = ReplicationFactory.getInstance().serialize(convOptional);
-            return new KeyValue(key.combinedKey,serialized);
+            return new KeyValue(key.combinedKey, serialized);
         } catch (IOException e) {
             logger.error("Error: ", e);
         }
@@ -98,7 +96,7 @@ public class JSONToReplicationMessage {
             }
             return convertToReplication(false, valuenode, Optional.empty());
         } catch (IOException e) {
-            throw new RuntimeException("JSON parse issue while parsing expected json to replication message: "+new String(data, StandardCharsets.UTF_8),e);
+            throw new RuntimeException("JSON parse issue while parsing expected json to replication message: " + new String(data, StandardCharsets.UTF_8), e);
         }
 
     }
@@ -150,7 +148,8 @@ public class JSONToReplicationMessage {
         ObjectNode payload = (ObjectNode) node.get("payload");
         long millis = payload.get("ts_ms").asLong();
         Operation o = resolveOperation(payload, payload.get("op").asText());
-        ImmutableMessage core = convert(node, s->{}, isKey, Optional.of(o), table);
+        ImmutableMessage core = convert(node, s -> {
+        }, isKey, Optional.of(o), table);
         return ReplicationFactory.standardMessage(core).withOperation(o).atTime(millis);
     }
 
@@ -213,7 +212,7 @@ public class JSONToReplicationMessage {
                 // TODO I have no clue, doubt if this work. Create a test for this.
                 Calendar c = Calendar.getInstance();
                 c.add(Calendar.DAY_OF_YEAR, valueInt);
-                LocalDateTime ldt = LocalDateTime.ofEpochSecond(valueInt,0, ZoneOffset.UTC);
+                LocalDateTime ldt = LocalDateTime.ofEpochSecond(valueInt, 0, ZoneOffset.UTC);
                 return format.format(ldt);
             case "io.debezium.time.ZonedTimestamp":
                 Instant instant = Instant.parse(value.asText());
@@ -326,8 +325,8 @@ public class JSONToReplicationMessage {
         }
     }
 
-    public static ReplicationMessage processDebeziumBody(byte[] data,Optional<String> table) throws DebeziumParseException {
-        if(data == null) {
+    public static ReplicationMessage processDebeziumBody(byte[] data, Optional<String> table) throws DebeziumParseException {
+        if (data == null) {
             return null;
         }
         try {
@@ -337,7 +336,7 @@ public class JSONToReplicationMessage {
             }
             return convertToReplication(false, valueNode, table);
         } catch (IOException e) {
-            throw new DebeziumParseException("Error parsing debezium body",e);
+            throw new DebeziumParseException("Error parsing debezium body", e);
         }
 
     }
@@ -348,6 +347,6 @@ public class JSONToReplicationMessage {
         Optional<Object> tableId = converted.value("__dbz__physicalTableIdentifier");
         fields.remove("__dbz__physicalTableIdentifier");
         // for demo, shouldn't do any harm
-        return new TableIdentifier(tableId.map(e->(String)e).orElse(on.get("schema").get("name").asText()), converted, fields);
+        return new TableIdentifier(tableId.map(e -> (String) e).orElse(on.get("schema").get("name").asText()), converted, fields);
     }
 }

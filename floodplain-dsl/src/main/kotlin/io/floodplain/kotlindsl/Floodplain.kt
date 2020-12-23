@@ -82,6 +82,7 @@ interface SourceTopic {
 
 interface FloodplainSink {
     fun send(topic: Topic, elements: List<Pair<String, Map<String, Any>?>>, topologyContext: TopologyContext)
+
     // fun send(elements: List<Pair<Topic,IMessage?>>)
     fun config(): SinkConfig
     fun flush()
@@ -133,10 +134,11 @@ fun PartialStream.buffer(duration: Duration, maxSize: Int = 10000, inMemory: Boo
  * Alternatively, you can create an all-new message and just add the things you are interested in, and return that.
  */
 fun PartialStream.set(transform: (String, IMessage, IMessage) -> IMessage): Transformer {
-    val transformer: (String, ImmutableMessage, ImmutableMessage) -> ImmutableMessage = {
-        key: String, msg: ImmutableMessage, param: ImmutableMessage ->
-        transform.invoke(key, fromImmutable(msg), fromImmutable(param)).toImmutable()
-    }
+    val transformer: (String, ImmutableMessage, ImmutableMessage) -> ImmutableMessage =
+        { key: String, msg: ImmutableMessage, param: ImmutableMessage ->
+            // println("|> key: $key msg: $msg param: $param")
+            transform.invoke(key, fromImmutable(msg), fromImmutable(param)).toImmutable()
+        }
     val set = SetTransformer(transformer)
     return addTransformer(Transformer(set))
 }
@@ -168,10 +170,21 @@ fun PartialStream.group(key: (IMessage) -> String) {
     addTransformer(Transformer(group))
 }
 
+fun Stream.table(topic: String, init: Source.() -> Unit): Source {
+    val sourceElement = TopicSource(
+        Topic.fromQualified(topic),
+        Topic.FloodplainKeyFormat.CONNECT_KEY_JSON,
+        Topic.FloodplainBodyFormat.FLOODPLAIN_JSON
+    )
+    val source = Source(sourceElement)
+    source.init()
+    return source
+}
+
 /**
  * Use an existing source
  */
-fun Stream.source(topic: String, init: Source.() -> Unit): Source {
+fun source(topic: String, init: Source.() -> Unit): Source {
     val sourceElement = TopicSource(
         Topic.from(topic),
         Topic.FloodplainKeyFormat.FLOODPLAIN_STRING,
@@ -182,7 +195,7 @@ fun Stream.source(topic: String, init: Source.() -> Unit): Source {
     return source
 }
 
-fun Stream.externalSource(
+fun externalSource(
     topic: String,
     keyFormat: Topic.FloodplainKeyFormat,
     valueFormat: Topic.FloodplainBodyFormat,
@@ -212,7 +225,8 @@ fun PartialStream.sink(topic: String, materializeParent: Boolean = false): Trans
 /**
  * Creates a simple sink that takes a lambda that will  */
 fun PartialStream.dynamicSink(name: String, extractor: (String, IMessage) -> String): Transformer {
-    val sink = DynamicSinkTransformer(name, Optional.empty()) { key, value -> extractor.invoke(key, fromImmutable(value)) }
+    val sink =
+        DynamicSinkTransformer(name, Optional.empty()) { key, value -> extractor.invoke(key, fromImmutable(value)) }
     return addTransformer(Transformer(sink))
 }
 
@@ -221,8 +235,8 @@ fun PartialStream.dynamicSink(name: String, extractor: (String, IMessage) -> Str
  * @param optional: If set to true, it will also emit a value if there is no counterpart (yet) in the supplied source.
  * Note that setting this to true can cause a performance penalty, as more items could be emitted.
  */
-fun PartialStream.join(optional: Boolean = false, debug: Boolean = false, source: () -> Source) {
-    val jrt = JoinWithTransformer(optional, false, source.invoke().toReactivePipe(), debug)
+fun PartialStream.join(optional: Boolean = false, debug: Boolean = false, source: PartialStream.() -> Source) {
+    val jrt = JoinWithTransformer(optional, false, source.invoke(this).toReactivePipe(), debug)
     addTransformer(Transformer(jrt))
 }
 
@@ -232,7 +246,12 @@ fun PartialStream.join(optional: Boolean = false, debug: Boolean = false, source
  * @param optional: If set to true, it will also emit a value if there is no counterpart (yet) in the supplied source.
  * Note that setting this to true can cause a performance penalty, as more items could be emitted.
  */
-fun PartialStream.joinGrouped(optional: Boolean = false, debug: Boolean = false, source: () -> Source) {
+fun PartialStream.joinGrouped(
+    optional: Boolean = false,
+    debug: Boolean = false,
+    multiple: Boolean = true,
+    source: () -> Source
+) {
     val jrt = JoinWithTransformer(optional, true, source.invoke().toReactivePipe(), debug)
     addTransformer(Transformer(jrt))
 }
@@ -253,7 +272,8 @@ fun PartialStream.scan(
     onRemove: Block.() -> Transformer
 ) {
     val keyExtractor: (ImmutableMessage, ImmutableMessage) -> String = { msg, _ -> key.invoke(fromImmutable(msg)) }
-    val initialConstructor: (ImmutableMessage) -> ImmutableMessage = { msg -> initial.invoke(fromImmutable(msg)).toImmutable() }
+    val initialConstructor: (ImmutableMessage) -> ImmutableMessage =
+        { msg -> initial.invoke(fromImmutable(msg)).toImmutable() }
     val onAddBlock = Block()
     onAdd.invoke(onAddBlock)
     val onRemoveBlock = Block()
@@ -279,13 +299,18 @@ fun PartialStream.scan(
  * @param initial Create the initial value for the aggregator
  *
  */
-fun PartialStream.scan(initial: (IMessage) -> IMessage, onAdd: Block.() -> Transformer, onRemove: Block.() -> Transformer) {
-    val initialConstructor: (ImmutableMessage) -> ImmutableMessage = { msg -> initial.invoke(fromImmutable(msg)).toImmutable() }
+fun PartialStream.scan(
+    initial: (IMessage) -> IMessage,
+    onAdd: Block.() -> Transformer,
+    onRemove: Block.() -> Transformer
+): Transformer {
+    val initialConstructor: (ImmutableMessage) -> ImmutableMessage =
+        { msg -> initial.invoke(fromImmutable(msg)).toImmutable() }
     val onAddBlock = Block()
     onAdd.invoke(onAddBlock)
     val onRemoveBlock = Block()
     onRemove.invoke(onRemoveBlock)
-    addTransformer(
+    return addTransformer(
         Transformer(
             ScanTransformer(
                 null,
@@ -305,6 +330,7 @@ fun PartialStream.fork(vararg destinations: Block.() -> Transformer): Transforme
     val forkTransformer = ForkTransformer(blocks)
     return addTransformer(Transformer(forkTransformer))
 }
+
 /**
  * Create a new top level stream instance
  * @param generation This is a string that indicates this current run. If you stop this run and restart it, it will
@@ -314,19 +340,28 @@ fun PartialStream.fork(vararg destinations: Block.() -> Transformer): Transforme
  * with no further meaning within the framework, you can choose what meaning you want to attach. You can increment a
  * number, use a sort of time stamp, or even a git commit.
  */
+fun stream(tenant: String, deployment: String?, generation: String = "any", init: Stream.() -> Source): Stream {
+    val topologyContext = TopologyContext.context(Optional.of(tenant), Optional.ofNullable(deployment), generation)
+    val pipe = Stream(topologyContext)
+    return pipe.addSource(pipe.init())
+}
 
-fun stream(generation: String = "any", instance: String = "instance", init: Stream.() -> Source): Stream {
-    val topologyContext = TopologyContext.context(Optional.empty(), instance, generation)
+fun stream(generation: String = "any", init: Stream.() -> Source): Stream {
+    val topologyContext = TopologyContext.context(Optional.empty(), generation)
     val pipe = Stream(topologyContext)
     return pipe.addSource(pipe.init())
 }
 
 fun streams(generation: String = "any", instance: String = "instance", init: Stream.() -> List<Source>): Stream {
-    val topologyContext = TopologyContext.context(Optional.empty(), instance, generation)
+    return streams(null, null, generation, init)
+}
+
+fun streams(tenant: String?, deployment: String?, generation: String = "any", init: Stream.() -> List<Source>): Stream {
+    val topologyContext =
+        TopologyContext.context(Optional.ofNullable(tenant), Optional.ofNullable(deployment), generation)
     val pipe = Stream(topologyContext)
     val sources = pipe.init()
-    sources.forEach {
-        e ->
+    sources.forEach { e ->
         pipe.addSource(e)
     }
     return pipe

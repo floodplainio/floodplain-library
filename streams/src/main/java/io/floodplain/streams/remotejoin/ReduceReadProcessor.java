@@ -38,12 +38,12 @@ public class ReduceReadProcessor extends AbstractProcessor<String, ReplicationMe
 
     private final String accumulatorStoreName;
     private final String inputStoreName;
-    private final Function<ImmutableMessage,ImmutableMessage> initial;
+    private final Function<ImmutableMessage, ImmutableMessage> initial;
     private final Optional<BiFunction<ImmutableMessage, ImmutableMessage, String>> keyExtractor;
     private KeyValueStore<String, ImmutableMessage> accumulatorStore;
     private KeyValueStore<String, ReplicationMessage> inputStore;
 
-    public ReduceReadProcessor(String inputStoreName, String accumulatorStoreName, Function<ImmutableMessage,ImmutableMessage> initial, Optional<BiFunction<ImmutableMessage, ImmutableMessage, String>> keyExtractor) {
+    public ReduceReadProcessor(String inputStoreName, String accumulatorStoreName, Function<ImmutableMessage, ImmutableMessage> initial, Optional<BiFunction<ImmutableMessage, ImmutableMessage, String>> keyExtractor) {
         this.accumulatorStoreName = accumulatorStoreName;
         this.inputStoreName = inputStoreName;
         this.initial = initial;
@@ -66,7 +66,7 @@ public class ReduceReadProcessor extends AbstractProcessor<String, ReplicationMe
         if (stored == null) {
             // no stored value, so must be upsert.
             if (inputValue == null || inputValue.operation() == Operation.DELETE) {
-                logger.warn("Issue: Deleting (?) a message that isn't there. Is this bad? Dropping message. key: {} inputvalue: {}",key,inputValue);
+                logger.warn("Issue: Deleting (?) a message that isn't there. Is this bad? Dropping message. key: {} inputvalue: {}", key, inputValue);
                 return;
             }
             extracted = keyExtractor.orElse((m, s) -> StoreStateProcessor.COMMONKEY)
@@ -87,19 +87,19 @@ public class ReduceReadProcessor extends AbstractProcessor<String, ReplicationMe
             value = stored.withOperation(Operation.DELETE).withParamMessage(param);
             inputStore.delete(key);
         } else {
-            if(storedAccumulator==null) {
+            if (storedAccumulator == null) {
                 storedAccumulator = initial.apply(inputValue.message());
             }
             value = value.withParamMessage(storedAccumulator);
             if (stored != null) {
                 // already present, propagate old value first as delete
 //                context().forward(key, stored.withOperation(Operation.DELETE).withParamMessage(storedAccumulator != null ? storedAccumulator : initial.apply(inputValue.message())));
-                forwardMessage(extracted,stored.withOperation(Operation.DELETE).withParamMessage(storedAccumulator != null ? storedAccumulator : initial.apply(inputValue.message())));
+                forwardMessage(extracted, stored.withOperation(Operation.DELETE).withParamMessage(storedAccumulator != null ? storedAccumulator : initial.apply(inputValue.message())));
                 storedAccumulator = this.accumulatorStore.get(extracted);
             }
             value = value.withParamMessage(storedAccumulator);
         }
-        forwardMessage(extracted,value);
+        forwardMessage(extracted, value);
 
     }
 

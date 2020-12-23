@@ -76,14 +76,14 @@ public class TestTransformations {
 
     @Test
     public void testTopicNameConstruction() {
-        final TopologyContext topologyContext = TopologyContext.context(Optional.of("MYTENANT"), "currentinstance", "111");
+        final TopologyContext topologyContext = TopologyContext.context(Optional.of("MYTENANT"), "111");
         String result = topologyContext.topicName("TOPICNAME");
         Assert.assertEquals("MYTENANT-currentinstance-TOPICNAME", result);
 
         result = topologyContext.topicName("@TOPICNAME");
         Assert.assertEquals("MYTENANT-111-currentinstance-TOPICNAME", result);
 
-        TopologyContext topologyContextWithoutTenant = TopologyContext.context(Optional.empty(), "currentinstance", "111");
+        TopologyContext topologyContextWithoutTenant = TopologyContext.context(Optional.empty(), "111");
         result = topologyContextWithoutTenant.topicName("TOPICNAME");
         Assert.assertEquals("currentinstance-TOPICNAME", result);
 
@@ -92,8 +92,7 @@ public class TestTransformations {
         Assert.assertEquals("111-currentinstance-TOPICNAME", result);
 
 
-
-        logger.info("Result: {}",result);
+        logger.info("Result: {}", result);
     }
 
     @Test
@@ -189,8 +188,6 @@ public class TestTransformations {
         Assert.assertTrue(addressMessage.equalsToMessage(addressIdenticalMessage));
         Assert.assertFalse(addressMessage.equalsToMessage(differentAddressMessage));
     }
-
-
 
 
 }

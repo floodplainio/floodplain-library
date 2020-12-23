@@ -19,8 +19,8 @@ public class TestDeserializeDelete {
     @Test
     public void testDeleteFilmActorExample() throws IOException, DebeziumParseException {
         InputStream is = getClass().getClassLoader().getResourceAsStream("delete_film_actor.json");
-        Assert.assertNotNull("Missing resource",is);
+        Assert.assertNotNull("Missing resource", is);
         ReplicationMessage rm = JSONToReplicationMessage.processDebeziumBody(is.readAllBytes(), Optional.of("buba"));
-        logger.info("Rm: {}",rm);
+        logger.info("Rm: {}", rm);
     }
 }

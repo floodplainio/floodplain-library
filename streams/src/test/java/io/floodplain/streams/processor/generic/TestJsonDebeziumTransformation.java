@@ -60,6 +60,6 @@ public class TestJsonDebeziumTransformation {
         ReplicationFactory.setInstance(new JSONReplicationMessageParserImpl());
         ReplicationMessage msg = JSONToReplicationMessage.convertToReplication(false, (ObjectNode) node, Optional.of("photo"));
         final String serialized = new String(msg.toBytes(ReplicationFactory.getInstance()), StandardCharsets.UTF_8);
-        logger.info("serialized: {}",serialized);
+        logger.info("serialized: {}", serialized);
     }
 }

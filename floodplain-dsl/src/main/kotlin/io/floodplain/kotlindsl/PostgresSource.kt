@@ -134,6 +134,14 @@ fun Stream.postgresSource(table: String, config: PostgresConfig, schema: String?
     return databaseSource
 }
 
+fun Stream.postgresSource(name: String, table: String, schema: String, init: Source.() -> Unit): Source {
+    val topic = Topic.from("$name.$schema.$table")
+    val topicSource = TopicSource(topic, Topic.FloodplainKeyFormat.CONNECT_KEY_JSON, Topic.FloodplainBodyFormat.CONNECT_JSON)
+    val databaseSource = Source(topicSource)
+    databaseSource.init()
+    return databaseSource
+}
+
 class DebeziumSourceElement(val prefix: Topic, val schema: String? = null, val table: String) : SourceTopic {
     override fun topic(): Topic {
         return prefix

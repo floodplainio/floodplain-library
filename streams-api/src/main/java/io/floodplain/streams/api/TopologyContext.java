@@ -32,20 +32,25 @@ public class TopologyContext {
     private static class NameQualifier implements Function<String,String> {
 
         private final Optional<String> tenant;
-        private final String instance;
+        private final Optional<String> deployment;
         private final String generation;
 
-        public NameQualifier(Optional<String> tenant, String instance, String generation) {
+        public NameQualifier(Optional<String> tenant, Optional<String> deployment, String generation) {
             this.tenant = tenant;
-            this.instance = instance;
+            this.deployment = deployment;
             this.generation = generation;
         }
         @Override
         public String apply(String name) {
             // Dashes are problematic. Maybe hard-fail whenever we create a source / sink that contains a dash?
             // Otherwise this creates a weird 'silent error state' where simply nothing happens.
+            // TODO removed return on containing a dash
             if(name.contains("-") || name.contains(":")) {
                 return name;
+            }
+            long dashCount = name.chars().filter(ch -> ch == '-').count();
+            if(dashCount > 1) {
+                logger.warn("Multidash -> This is problematic: {}",name);
             }
             if(!name.startsWith("@") && name.contains("@")) {
                 logger.warn("This is problematic: {}",name);
@@ -55,19 +60,19 @@ public class TopologyContext {
                 String[] withInstance = name.split(":");
                 if (tenant.isPresent()) {
                     if (withInstance.length > 1) {
-                        return tenant.get() + "-" + generation + "-" + withInstance[0].substring(1) + "-" + withInstance[1];
+                        return tenant.get() + "-" + deployment.map(e->e+"-").orElse("") + generation + "-" + withInstance[0].substring(1) + "-" + withInstance[1];
                     } else {
-                        return tenant.get() + "-" + generation + "-" + instance + "-" + name.substring(1);
+                        return tenant.get() + "-" + deployment.map(e->e+"-").orElse("") + generation + "-" + name.substring(1);
                     }
                 } else {
                     if (withInstance.length > 1) {
                         return generation + "-" + withInstance[0].substring(1) + "-" + withInstance[1];
                     } else {
-                        return generation + "-" + instance + "-" + name.substring(1);
+                        return generation  + "-" + name.substring(1);
                     }
                 }
             } else {
-                return tenant.map(s -> s + "-" + instance + "-" + name).orElseGet(() -> instance + "-" + name);
+                return tenant.map(s -> s + "-").orElse("") + deployment .map(e->e+"-").orElse("")+ name;
             }
         }
     }
@@ -75,8 +80,15 @@ public class TopologyContext {
     public static TopologyContext context(Function<String,String> qualifier) {
         return new TopologyContext(qualifier);
     }
-    public static TopologyContext context(Optional<String> tenant, String instance, String generation) {
-        return new TopologyContext(new NameQualifier(tenant,instance,generation));
+    public static TopologyContext context(Optional<String> tenant, Optional<String> deployment, String generation) {
+        if(deployment.isPresent() && tenant.isEmpty()) {
+            throw new IllegalArgumentException("Can not have a deployment without a deployment: "+tenant+" generation: "+generation);
+        }
+        return new TopologyContext(new NameQualifier(tenant,deployment,generation));
+    }
+
+    public static TopologyContext context(Optional<String> tenant, String generation) {
+        return new TopologyContext(new NameQualifier(tenant,Optional.empty(),generation));
     }
 
     public TopologyContext(Function<String, String> qualifier) {

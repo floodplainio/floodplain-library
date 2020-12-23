@@ -52,8 +52,6 @@ public class ImmutableTypeParser {
                 return "enum";
             case DECIMAL:
                 return "decimal";
-            default:
-                break;
         }
         throw new UnsupportedOperationException("Unknown type: " + type);
 

@@ -43,12 +43,14 @@ interface IMessage {
     fun boolean(path: String): Boolean
     fun optionalBoolean(path: String): Boolean?
     fun optionalString(path: String): String?
-    fun clear(path: String)
+    fun clear(path: String): IMessage
+    fun clearAll(paths: List<String>): IMessage
     fun isEmpty(): Boolean
     operator fun set(path: String, value: Any?): IMessage
     fun copy(): IMessage
     fun toImmutable(): ImmutableMessage
     fun data(): Map<String, Any>
+    fun merge(msg: IMessage): IMessage
 }
 
 private data class IMessageImpl(private val content: MutableMap<String, Any>) : IMessage {
@@ -167,9 +169,15 @@ private data class IMessageImpl(private val content: MutableMap<String, Any>) : 
         return Pair(this, path[0])
     }
 
-    override fun clear(path: String) {
+    override fun clear(path: String): IMessage {
         val (msg, name) = parsePath(path.split("/"))
         msg.content.remove(name)
+        return msg
+    }
+
+    override fun clearAll(paths: List<String>): IMessage {
+        paths.forEach { clear(it) }
+        return this
     }
 
     override fun isEmpty(): Boolean {
@@ -280,6 +288,13 @@ private data class IMessageImpl(private val content: MutableMap<String, Any>) : 
                 else -> value
             }
         }.toMap()
+    }
+
+    override fun merge(msg: IMessage): IMessage {
+        msg.data().forEach { (k, v) ->
+            set(k, v)
+        }
+        return this
     }
 
     override fun equals(other: Any?): Boolean {

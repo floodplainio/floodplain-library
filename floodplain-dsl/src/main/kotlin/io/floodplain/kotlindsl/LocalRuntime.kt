@@ -166,8 +166,6 @@ class LocalDriverContext(
     private val outputTopics = mutableMapOf<String, TestOutputTopic<String, ReplicationMessage>>()
 
     private val replicationMessageParser = ReplicationFactory.getInstance()
-    // private val connectReplicationMessageSerde = ConnectReplicationMessageSerde()
-    // private val connectKeySerde = ConnectKeySerde()
     override fun sourceConfigurations(): List<SourceConfig> {
         return sourceConfigs
     }

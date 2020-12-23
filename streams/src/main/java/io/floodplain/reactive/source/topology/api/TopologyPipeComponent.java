@@ -30,16 +30,17 @@ import java.util.Stack;
  */
 public interface TopologyPipeComponent {
     /**
-     * @param transformerNames The list of transformers in the current stream (so in general it is empty for sources)
-     * @param currentPipeId Every time start a new (sub) stream, it needs to get a new pipe id.
-     * @param topology The topology we are using right now
-     * @param topologyContext Immutable datastructure for this run.
+     * @param transformerNames    The list of transformers in the current stream (so in general it is empty for sources)
+     * @param currentPipeId       Every time start a new (sub) stream, it needs to get a new pipe id.
+     * @param topology            The topology we are using right now
+     * @param topologyContext     Immutable datastructure for this run.
      * @param topologyConstructor Mutable state for topology
      */
     void addToTopology(Stack<String> transformerNames, int currentPipeId, Topology topology, TopologyContext topologyContext, TopologyConstructor topologyConstructor);
 
     /**
      * Returns
+     *
      * @return true if this component requires its parent transformer to be materialized.
      */
     boolean materializeParent();

@@ -26,7 +26,6 @@ import org.apache.kafka.streams.processor.ProcessorContext;
 import org.apache.kafka.streams.state.KeyValueStore;
 
 import java.util.Optional;
-import java.util.function.BiFunction;
 
 public class StoreStateProcessor extends AbstractProcessor<String, ReplicationMessage> {
 
@@ -52,7 +51,7 @@ public class StoreStateProcessor extends AbstractProcessor<String, ReplicationMe
         Optional<ImmutableMessage> paramMessage = inputValue.paramMessage();
 
         // Use .get() here, I prefer to fail when that is missing//.get();
-        if(paramMessage.isEmpty()) {
+        if (paramMessage.isEmpty()) {
             throw new RuntimeException("In store state there should definitely be a secondary message");
         }
         ImmutableMessage storeMessage = paramMessage.get();

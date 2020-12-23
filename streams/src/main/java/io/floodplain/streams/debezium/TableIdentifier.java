@@ -51,7 +51,7 @@ public class TableIdentifier {
             combinedKey = fields.stream()
                     .map(keyMessage::value)
                     .filter(Optional::isPresent)
-                    .map(e->e.get().toString())
+                    .map(e -> e.get().toString())
                     .collect(Collectors.joining(ReplicationMessage.KEYSEPARATOR));
         } else {
             deployment = primary[0];
@@ -62,7 +62,7 @@ public class TableIdentifier {
             combinedKey = fields.stream()
                     .map(keyMessage::value)
                     .filter(Optional::isPresent)
-                    .map(e->e.get().toString())
+                    .map(e -> e.get().toString())
                     .collect(Collectors.joining(ReplicationMessage.KEYSEPARATOR));
         }
 

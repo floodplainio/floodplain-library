@@ -52,7 +52,7 @@ public interface ReplicationMessage {
     boolean equals(Object o);
 
     enum Operation {
-        UPDATE, DELETE, NONE, COMMIT, MERGE
+        UPDATE, DELETE, NONE, COMMIT, MERGE, INITIAL
     }
 
     String queueKey();

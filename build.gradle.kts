@@ -1,7 +1,6 @@
 import io.floodplain.build.FloodplainDeps
 import io.floodplain.build.isReleaseVersion
 import io.gitlab.arturbosch.detekt.Detekt
-import io.floodplain.build.Versions
 
 buildscript {
     repositories {

@@ -71,7 +71,8 @@ public class Topic {
     private String unqualify(String qualified) {
         String[] parts = qualified.split("-");
         if(parts.length < 2) {
-            throw new RuntimeException("Can not unqualify topic: "+qualified+" as there are not enough parts");
+//            throw new RuntimeException("Can not unqualify topic: "+qualified+" as there are not enough parts");
+            return qualified;
         }
         if(parts.length >= 3) {
             return "@"+parts[parts.length-1];

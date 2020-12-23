@@ -44,6 +44,7 @@ public class ConnectReplicationMessageSerde implements Serde<ReplicationMessage>
     private static final Logger logger = LoggerFactory.getLogger(ConnectReplicationMessageSerde.class);
     private static final ConnectKeySerde keySerde = new ConnectKeySerde();
     private static final ObjectMapper objectMapper = new ObjectMapper();
+
     @Override
     public void close() {
 
@@ -70,6 +71,7 @@ public class ConnectReplicationMessageSerde implements Serde<ReplicationMessage>
 //            }
 //        };
     }
+
     public static Deserializer<String> keyDeserialize() {
         return new Deserializer<>() {
 
@@ -79,7 +81,7 @@ public class ConnectReplicationMessageSerde implements Serde<ReplicationMessage>
 
             @Override
             public void configure(Map<String, ?> config, boolean isKey) {
-                logger.info("Configuring key deserializer: {}",config);
+                logger.info("Configuring key deserializer: {}", config);
 
             }
 
@@ -89,11 +91,12 @@ public class ConnectReplicationMessageSerde implements Serde<ReplicationMessage>
                     return parseConnectKey(data);
                 } catch (IOException e) {
                     String raw = new String(data, StandardCharsets.UTF_8);
-                    throw new RuntimeException("Error deserializing key: "+raw,e);
+                    throw new RuntimeException("Error deserializing key: " + raw, e);
                 }
             }
         };
     }
+
     @Override
     public Deserializer<ReplicationMessage> deserializer() {
         return new Deserializer<>() {
@@ -104,7 +107,7 @@ public class ConnectReplicationMessageSerde implements Serde<ReplicationMessage>
 
             @Override
             public void configure(Map<String, ?> config, boolean isKey) {
-                logger.info("Configuring deserializer: {}",config);
+                logger.info("Configuring deserializer: {}", config);
 
             }
 
@@ -113,9 +116,9 @@ public class ConnectReplicationMessageSerde implements Serde<ReplicationMessage>
                 try {
 
 //                    JSONToReplicationMessage.convertToReplication(false,objectMapper.readTree(data))
-                    return JSONToReplicationMessage.processDebeziumBody(data,Optional.of(topic));
+                    return JSONToReplicationMessage.processDebeziumBody(data, Optional.of(topic));
                 } catch (DebeziumParseException e) {
-                    throw new RuntimeException("Error parsing replmessage",e);
+                    throw new RuntimeException("Error parsing replmessage", e);
                 }
 //                return parser.parseBytes(Optional.of(topic), data);
             }
@@ -142,7 +145,7 @@ public class ConnectReplicationMessageSerde implements Serde<ReplicationMessage>
 
             @Override
             public byte[] serialize(String topic, ReplicationMessage replMessage) {
-                if (replMessage == null || replMessage.operation()== ReplicationMessage.Operation.DELETE) {
+                if (replMessage == null || replMessage.operation() == ReplicationMessage.Operation.DELETE) {
                     return null;
                 }
                 Map<String, Object> valueMap = replMessage.valueMap(true, Collections.emptySet());
@@ -153,8 +156,8 @@ public class ConnectReplicationMessageSerde implements Serde<ReplicationMessage>
                 }
                 try {
                     byte[] val = objectMapper.writeValueAsBytes(valueMap);
-                    if(debug) {
-                        logger.info("to Connect value. topic: {} value {}}",topic,new String(val, StandardCharsets.UTF_8));
+                    if (debug) {
+                        logger.info("to Connect value. topic: {} value {}}", topic, new String(val, StandardCharsets.UTF_8));
                     }
                     return val;
                 } catch (JsonProcessingException e) {

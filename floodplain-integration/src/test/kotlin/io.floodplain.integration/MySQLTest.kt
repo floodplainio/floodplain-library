@@ -180,6 +180,9 @@ class MySQLTest {
                         customer["addresses"] = addressList
                         customer
                     }
+                    each { key, customer, _ ->
+                        logger.info("Result Key: $key message: $customer")
+                    }
                     mongoSink("customers", "@customers", mongoConfig)
                 },
                 mysqlSource("inventory.products", mysqlConfig) {
@@ -201,7 +204,8 @@ class MySQLTest {
             val databaseInstance = topologyContext().topicName("@mongodump")
             val hits = waitForMongoDbCondition(
                 "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
-                databaseInstance
+                databaseInstance,
+                500000
             ) { database ->
                 val customerCount = database.getCollection("customers").countDocuments()
                 val orderCount = database.getCollection("orders").countDocuments()
