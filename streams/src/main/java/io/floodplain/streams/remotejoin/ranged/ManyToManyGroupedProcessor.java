@@ -35,7 +35,7 @@ public class ManyToManyGroupedProcessor extends AbstractProcessor<String, Replic
 
     public ManyToManyGroupedProcessor(String fromProcessor, String withProcessor,
                                       Optional<Predicate<String, ReplicationMessage>> associationBypass,
-                                      boolean optional, BiFunction<ReplicationMessage, List<ReplicationMessage>) {
+                                      boolean optional) {
 
         this.fromProcessorName = fromProcessor;
         this.withProcessorName = withProcessor;
