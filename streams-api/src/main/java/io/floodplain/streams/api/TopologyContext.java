@@ -45,7 +45,8 @@ public class TopologyContext {
             // Dashes are problematic. Maybe hard-fail whenever we create a source / sink that contains a dash?
             // Otherwise this creates a weird 'silent error state' where simply nothing happens.
             // TODO removed return on containing a dash
-            if(name.contains("-") || name.contains(":")) {
+//            if(name.contains("-") || name.contains(":")) {
+            if( name.contains(":")) {
                 return name;
             }
             long dashCount = name.chars().filter(ch -> ch == '-').count();

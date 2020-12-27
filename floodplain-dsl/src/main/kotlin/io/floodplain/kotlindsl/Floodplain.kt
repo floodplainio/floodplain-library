@@ -22,6 +22,7 @@ package io.floodplain.kotlindsl
 
 import io.floodplain.immutable.api.ImmutableMessage
 import io.floodplain.kotlindsl.message.IMessage
+import io.floodplain.kotlindsl.message.empty
 import io.floodplain.kotlindsl.message.fromImmutable
 import io.floodplain.kotlindsl.transformer.BufferTransformer
 import io.floodplain.kotlindsl.transformer.DiffTransformer
@@ -38,6 +39,7 @@ import io.floodplain.reactive.source.topology.SinkTransformer
 import io.floodplain.reactive.source.topology.TopicSource
 import io.floodplain.reactive.source.topology.api.TopologyPipeComponent
 import io.floodplain.reactive.topology.ReactivePipe
+import io.floodplain.replication.api.ReplicationMessage
 import io.floodplain.streams.api.Topic
 import io.floodplain.streams.api.TopologyContext
 import java.time.Duration
@@ -159,10 +161,61 @@ fun PartialStream.set(transform: (String, IMessage, IMessage) -> IMessage): Tran
  */
 fun PartialStream.joinRemote(key: (IMessage) -> String, optional: Boolean = false, source: () -> Source) {
     val keyExtractor: (ImmutableMessage, ImmutableMessage) -> String = { msg, _ -> key.invoke(fromImmutable(msg)) }
-    val jrt = JoinRemoteTransformer(source.invoke().toReactivePipe(), keyExtractor, optional)
+    val jrt = JoinRemoteTransformer(source.invoke().toReactivePipe(), keyExtractor, optional,false)
     addTransformer(Transformer(jrt,topologyContext))
 }
 
+fun PartialStream.joinRemote(vararg keys: String, optional: Boolean = false, source: () -> Source) {
+    joinRemote({ msg->
+        keys.joinToString(ReplicationMessage.KEYSEPARATOR) { msg[it].toString() }
+    },optional,source)
+}
+
+fun PartialStream.joinMulti(key: (IMessage) -> String,secondaryKey: (IMessage) -> String, optional: Boolean = false, source: () -> Source) {
+    val keyExtractor: (ImmutableMessage, ImmutableMessage) -> String = { msg, _ -> key.invoke(fromImmutable(msg)) }
+    val secondarySource = source()
+    secondarySource.group(secondaryKey)
+
+    val jrt = JoinRemoteTransformer(secondarySource.toReactivePipe(), keyExtractor, optional,true)
+    addTransformer(Transformer(jrt,topologyContext))
+}
+// TODO move these functions to floodplain
+fun PartialStream.joinAttributes(withTopic: String, nameAttribute: String, valueAttribute: String, vararg keys: String) {
+    return joinAttributes(withTopic,nameAttribute,valueAttribute) { msg->
+        keys.joinToString(ReplicationMessage.KEYSEPARATOR) { msg[it].toString() }
+    }
+}
+fun PartialStream.joinAttributes(withTopic: String, nameAttribute: String, valueAttribute: String, keyExtract: (IMessage) -> String) {
+    join(optional = true, debug = false) {
+        source(withTopic) {
+            scan(
+                keyExtract,
+                {
+                        _ ->
+                    empty()
+                },
+                {
+                    set {
+                            _, msg, acc ->
+                        val name = msg[nameAttribute] as String?
+                        val value = msg[valueAttribute]
+                        if (name == null) {
+                            println("weird")
+                        }
+                        acc.set(name!!, value)
+                        acc
+                    }
+                },
+                {
+                    set {
+                            _, msg, acc ->
+                        acc.clear(msg[nameAttribute] as String); acc
+                    }
+                }
+            )
+        }
+    }
+}
 /**
  * Group a source, using the key from the lambda. The messages will be unchanged,
  * only the key will have the supplied key pre-pended.
@@ -173,6 +226,9 @@ fun PartialStream.group(key: (IMessage) -> String) {
     addTransformer(Transformer(group,topologyContext))
 }
 
+/**
+ * Use a debezium table
+ */
 fun Stream.table(topic: String, init: Source.() -> Unit): Source {
     val sourceElement = TopicSource(
         Topic.fromQualified(topic,topologyContext),
@@ -187,7 +243,7 @@ fun Stream.table(topic: String, init: Source.() -> Unit): Source {
 /**
  * Use an existing source
  */
-fun FloodplainOperator.source(topic: String, init: Source.() -> Unit): Source {
+fun FloodplainOperator.source(topic: String, init: Source.() -> Unit = {}): Source {
     val sourceElement = TopicSource(
         Topic.from(topic,topologyContext),
         Topic.FloodplainKeyFormat.FLOODPLAIN_STRING,
@@ -195,6 +251,7 @@ fun FloodplainOperator.source(topic: String, init: Source.() -> Unit): Source {
     )
     val source = Source(sourceElement,topologyContext)
     source.init()
+
     return source
 }
 
@@ -221,6 +278,21 @@ fun PartialStream.sink(topic: String, materializeParent: Boolean = false): Trans
         Optional.empty(),
         Topic.FloodplainKeyFormat.FLOODPLAIN_STRING,
         Topic.FloodplainBodyFormat.FLOODPLAIN_JSON
+    )
+    return addTransformer(Transformer(sink,topologyContext))
+}
+
+/**
+ * Creates a simple sink that will contain the result of the current transformation. Multiple sinks may not be added.
+ */
+fun PartialStream.externalSink(topic: String, materializeParent: Boolean = false): Transformer {
+    val sink = SinkTransformer(
+        Optional.empty(),
+        Topic.from(topic,topologyContext),
+        materializeParent,
+        Optional.empty(),
+        Topic.FloodplainKeyFormat.CONNECT_KEY_JSON,
+        Topic.FloodplainBodyFormat.CONNECT_JSON
     )
     return addTransformer(Transformer(sink,topologyContext))
 }
@@ -331,7 +403,7 @@ fun PartialStream.scan(
 /**
  * Fork the current stream to other downstreams
  */
-fun PartialStream.fork(vararg destinations: Block.() -> Transformer): Transformer {
+fun PartialStream.fork(vararg destinations: Block.() -> Unit): Transformer {
     val blocks = destinations.map { dd -> val b = Block(topologyContext); dd.invoke(b); b }.toList()
     val forkTransformer = ForkTransformer(blocks)
     return addTransformer(Transformer(forkTransformer,topologyContext))

@@ -1,28 +1,13 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
 package io.floodplain.streams.remotejoin.ranged;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.BiFunction;
+
 import io.floodplain.replication.api.ReplicationMessage;
-import io.floodplain.replication.api.ReplicationMessage.Operation;
 import io.floodplain.streams.api.CoreOperators;
 import io.floodplain.streams.remotejoin.PreJoinProcessor;
-import io.floodplain.streams.remotejoin.ReplicationTopologyParser;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.kstream.Predicate;
 import org.apache.kafka.streams.processor.AbstractProcessor;
@@ -32,41 +17,40 @@ import org.apache.kafka.streams.state.KeyValueStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.BiFunction;
+import static io.floodplain.streams.remotejoin.ReplicationTopologyParser.STORE_PREFIX;
 
 public class ManyToManyGroupedProcessor extends AbstractProcessor<String, ReplicationMessage> {
 
     private static final Logger logger = LoggerFactory.getLogger(ManyToManyGroupedProcessor.class);
 
-    private final String fromProcessorName;
-    private final String withProcessorName;
-    private final boolean optional;
+    private String fromProcessorName;
+    private String withProcessorName;
+    private boolean optional;
 
-    private final BiFunction<ReplicationMessage, List<ReplicationMessage>, ReplicationMessage> manyToManyJoinFunction;
+    private BiFunction<ReplicationMessage, List<ReplicationMessage>, ReplicationMessage> manyToManyJoinFunction;
     private KeyValueStore<String, ReplicationMessage> forwardLookupStore;
     private KeyValueStore<String, ReplicationMessage> reverseLookupStore;
 
     private final Predicate<String, ReplicationMessage> associationBypass;
 
     public ManyToManyGroupedProcessor(String fromProcessor, String withProcessor,
-                                      Optional<Predicate<String, ReplicationMessage>> associationBypass, boolean optional) {
+                                      Optional<Predicate<String, ReplicationMessage>> associationBypass,
+                                      boolean optional, BiFunction<ReplicationMessage, List<ReplicationMessage>) {
 
         this.fromProcessorName = fromProcessor;
         this.withProcessorName = withProcessor;
         this.optional = optional;
         this.associationBypass = associationBypass.orElse((k, v) -> true);
-        manyToManyJoinFunction = CoreOperators.getListJoinFunctionToParam(false);
+        this.manyToManyJoinFunction = CoreOperators.getListJoinFunctionToParam(false);
+
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public void init(ProcessorContext context) {
         super.init(context);
-        this.forwardLookupStore = (KeyValueStore<String, ReplicationMessage>) context.getStateStore(ReplicationTopologyParser.STORE_PREFIX + fromProcessorName);
-        this.reverseLookupStore = (KeyValueStore<String, ReplicationMessage>) context.getStateStore(ReplicationTopologyParser.STORE_PREFIX + withProcessorName);
+        this.forwardLookupStore = (KeyValueStore<String, ReplicationMessage>) context.getStateStore(STORE_PREFIX + fromProcessorName);
+        this.reverseLookupStore = (KeyValueStore<String, ReplicationMessage>) context.getStateStore(STORE_PREFIX + withProcessorName);
     }
 
     @Override
@@ -94,13 +78,13 @@ public class ManyToManyGroupedProcessor extends AbstractProcessor<String, Replic
             return;
         }
 
-        KeyValueIterator<String, ReplicationMessage> it = forwardLookupStore.range(actualKey + "|", actualKey + "}");
-        while (it.hasNext()) {
-            KeyValue<String, ReplicationMessage> keyValue = it.next();
-            // TODO fix this
-            forwardJoin(keyValue.key, keyValue.value);
+        try (KeyValueIterator<String, ReplicationMessage> it = forwardLookupStore.range(actualKey + "|",
+                actualKey + "}")) {
+            while (it.hasNext()) {
+                KeyValue<String, ReplicationMessage> keyValue = it.next();
+                forwardJoin(keyValue.key, keyValue.value);
+            }
         }
-
     }
 
     private void forwardJoin(String key, ReplicationMessage message) {
@@ -121,10 +105,10 @@ public class ManyToManyGroupedProcessor extends AbstractProcessor<String, Replic
                 return;
             }
         } catch (Throwable t) {
-            logger.error("Error on checking filter predicate", t);
+            logger.error("Error on checking filter predicate: {}", t);
         }
 
-        if (message.operation() == Operation.DELETE) {
+        if (message.operation() == ReplicationMessage.Operation.DELETE) {
             // We don't need to take special action on a delete. The message has been
             // removed from the forwardStore
             // already (in the storeProcessor), and no action is needed on the joined part.
@@ -138,10 +122,12 @@ public class ManyToManyGroupedProcessor extends AbstractProcessor<String, Replic
         // If we are a many to many, do a ranged lookup in the reverseLookupStore. Add
         // each match to the list, and pass it on to the join function
         List<ReplicationMessage> messageList = new ArrayList<>();
-        KeyValueIterator<String, ReplicationMessage> it = reverseLookupStore.range(reverseLookupName + "|", reverseLookupName + "}");
-        while (it.hasNext()) {
-            KeyValue<String, ReplicationMessage> keyValue = it.next();
-            messageList.add(keyValue.value);
+        try (KeyValueIterator<String, ReplicationMessage> it = reverseLookupStore.range(reverseLookupName + "|",
+                reverseLookupName + "}")) {
+            while (it.hasNext()) {
+                KeyValue<String, ReplicationMessage> keyValue = it.next();
+                messageList.add(keyValue.value);
+            }
         }
         final ReplicationMessage joined;
         joined = manyToManyJoinFunction.apply(withOperation, messageList);
@@ -149,7 +135,7 @@ public class ManyToManyGroupedProcessor extends AbstractProcessor<String, Replic
         if (optional || !messageList.isEmpty()) {
             forwardMessage(actualKey, joined);
         } else {
-            forwardMessage(actualKey, joined.withOperation(Operation.DELETE));
+            forwardMessage(actualKey, joined.withOperation(ReplicationMessage.Operation.DELETE));
         }
 
     }
@@ -157,7 +143,7 @@ public class ManyToManyGroupedProcessor extends AbstractProcessor<String, Replic
     private void forwardMessage(String key, ReplicationMessage innerMessage) {
         context().forward(key, innerMessage);
         // flush downstream stores with null:
-        if (innerMessage.operation() == Operation.DELETE) {
+        if (innerMessage.operation() == ReplicationMessage.Operation.DELETE) {
             logger.debug("Delete forwarded, appending null forward with key: {}", key);
             context().forward(key, null);
         }

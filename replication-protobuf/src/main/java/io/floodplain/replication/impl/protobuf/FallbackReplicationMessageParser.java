@@ -51,8 +51,8 @@ public class FallbackReplicationMessageParser implements ReplicationMessageParse
     private final static Logger logger = LoggerFactory.getLogger(FallbackReplicationMessageParser.class);
 
     public FallbackReplicationMessageParser() {
-//        this(true);
-        this("PROTOBUF".equals(System.getenv("REPLICATION_MESSAGE_FORMAT")) || "PROTOBUF".equals(System.getProperty("REPLICATION_MESSAGE_FORMAT")));
+        this(true);
+//        this("PROTOBUF".equals(System.getenv("REPLICATION_MESSAGE_FORMAT")) || "PROTOBUF".equals(System.getProperty("REPLICATION_MESSAGE_FORMAT")));
 //		InvalidProtocolBufferException e;
     }
 

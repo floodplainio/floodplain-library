@@ -40,6 +40,9 @@ public class Topic {
         this.topologyContext = topologyContext;
         this.topicDefinition = topicDefinition;
         this.qualifiedDefinition = qualifiedDefinition;
+        if(qualifiedDefinition!=null && qualifiedDefinition.contains("@")) {
+            System.err.println("No");
+        }
     }
 
     public static Topic from(String topicDefinition, TopologyContext topologyContext) {

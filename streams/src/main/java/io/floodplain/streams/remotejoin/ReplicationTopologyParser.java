@@ -22,9 +22,11 @@ import io.floodplain.immutable.api.ImmutableMessage;
 import io.floodplain.reactive.source.topology.api.TopologyPipeComponent;
 import io.floodplain.replication.api.ReplicationMessage;
 import io.floodplain.replication.api.ReplicationMessage.Operation;
+import io.floodplain.streams.api.CoreOperators;
 import io.floodplain.streams.api.Topic;
 import io.floodplain.streams.api.TopologyContext;
 import io.floodplain.streams.remotejoin.ranged.GroupedUpdateProcessor;
+import io.floodplain.streams.remotejoin.ranged.ManyToManyGroupedProcessor;
 import io.floodplain.streams.remotejoin.ranged.ManyToOneGroupedProcessor;
 import io.floodplain.streams.remotejoin.ranged.OneToManyGroupedProcessor;
 import io.floodplain.streams.serializer.ConnectReplicationMessageSerde;
@@ -170,7 +172,7 @@ public class ReplicationTopologyParser {
     }
 
 
-    public static String addSourceStore(final Topology currentBuilder, TopologyContext context, TopologyConstructor topologyConstructor, Topic sourceTopicName, Topic.FloodplainKeyFormat keyFormat, Topic.FloodplainBodyFormat bodyFormat, boolean materializeStore) {
+    public static String addSourceStore(final Topology currentBuilder, TopologyConstructor topologyConstructor, Topic sourceTopicName, Topic.FloodplainKeyFormat keyFormat, Topic.FloodplainBodyFormat bodyFormat, boolean materializeStore) {
         // TODO It might be better to fail if the topic does not exist? -> Well depends, if it is external yes, but if it is created by the same instance, then no.
         final String sourceProcessorName = sourceTopicName.prefixedString("SOURCE");
         String sourceName;
@@ -200,7 +202,7 @@ public class ReplicationTopologyParser {
     public static String addSingleJoinGrouped(final Topology current, TopologyContext topologyContext,
                                               TopologyConstructor topologyConstructor, String fromProcessor, String name,
                                               Optional<Predicate<String, ReplicationMessage>> associationBypass,
-                                              String withProcessor, boolean optional, boolean materialize) {
+                                              String withProcessor, boolean optional, boolean materialize, boolean isList) {
 
         String firstNamePre = name + "-forwardpre";
         String secondNamePre = name + "-reversepre";
@@ -217,8 +219,15 @@ public class ReplicationTopologyParser {
                 , withProcessor
         ).addProcessor(
                 finalJoin
-                , () ->
+                , ()->(!isList) ?
                         new ManyToOneGroupedProcessor(
+                                fromProcessor,
+                                withProcessor,
+                                associationBypass,
+                                optional
+                        )
+                        :
+                        new ManyToManyGroupedProcessor(
                                 fromProcessor,
                                 withProcessor,
                                 associationBypass,
