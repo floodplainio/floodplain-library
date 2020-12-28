@@ -1,0 +1,26 @@
+version: "2"
+services:
+  mongo:
+    image: mongo:latest
+    container_name: "mongo"
+    environment:
+      - MONGO_DATA_DIR=/data/db
+    volumes:
+      - ./mongodata:/data/db
+    ports:
+      - 27017:27017
+    logging:
+      driver: none
+    command: mongod # --quiet
+  connect:
+    image: floodplain/debezium-with-mongodb:1.0
+    #floodplain/debezium-with-mongodb:1.0.1
+    ports:
+      - "8083:8083"
+#    volumes:
+#      - /Users/frank/sheetkey.json:/kafka/credentials.json
+    environment:
+      - BOOTSTRAP_SERVERS=10.8.0.7:9092
+      - CONFIG_STORAGE_TOPIC=topic-config2
+      - OFFSET_STORAGE_TOPIC=offset-storage2
+      - LOG_LEVEL=INFO
