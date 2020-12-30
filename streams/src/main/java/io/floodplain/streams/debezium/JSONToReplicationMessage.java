@@ -209,9 +209,8 @@ public class JSONToReplicationMessage {
         switch (namedType.get()) {
             case "io.debezium.time.Date":
                 int valueInt = value.asInt();
-                // TODO I have no clue, doubt if this work. Create a test for this.
-                Calendar c = Calendar.getInstance();
-                c.add(Calendar.DAY_OF_YEAR, valueInt);
+//                Calendar c = Calendar.getInstance();
+//                c.add(Calendar.DAY_OF_YEAR, valueInt);
                 LocalDateTime ldt = LocalDateTime.ofEpochSecond(valueInt, 0, ZoneOffset.UTC);
                 return format.format(ldt);
             case "io.debezium.time.ZonedTimestamp":

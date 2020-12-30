@@ -29,16 +29,22 @@ import io.floodplain.kotlindsl.message.fromImmutable
 import io.floodplain.replication.api.ReplicationMessageParser
 import io.floodplain.replication.factory.ReplicationFactory
 import io.floodplain.replication.impl.json.JSONReplicationMessageParserImpl
+import io.floodplain.replication.impl.protobuf.impl.ProtobufReplicationMessageParser
 import java.math.BigDecimal
+import java.util.Date
 import java.util.Optional
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
+private val logger = mu.KotlinLogging.logger {}
+
+
 @Suppress("UNCHECKED_CAST")
 class IMessageTest {
     private val parser: ReplicationMessageParser = JSONReplicationMessageParserImpl()
+    private val protoParser: ReplicationMessageParser = ProtobufReplicationMessageParser()
 
     val exampleMessage = empty()
         .set("adouble", 1.1)
@@ -48,6 +54,7 @@ class IMessageTest {
         .set("astring", "somestring")
         .set("aboolean", false)
         .set("alist", listOf("foo", "bar"))
+        .set("adate", Date())
 
     private fun createComplexMessage(): IMessage {
         val list = List(2) { exampleMessage.copy() }
@@ -56,12 +63,19 @@ class IMessageTest {
             .set("sub", exampleMessage.copy())
     }
 
-    // Utility function to check if a message remains unchanged after serialization and deserialization
+
+    // Utility function to check if a message remains unchanged after serialization and deserialization for all parsers
     private fun convertThereAndBack(input: IMessage): IMessage {
+        val afterJSON = convertThereAndBack(input,parser)
+        return convertThereAndBack(input,protoParser)
+    }
+
+    // Utility function to check if a message remains unchanged after serialization and deserialization for a specific parser
+    private fun convertThereAndBack(input: IMessage, currentParser: ReplicationMessageParser): IMessage {
         val immutable = input.toImmutable()
         val repl = ReplicationFactory.standardMessage(immutable)
-        val serialized = parser.serialize(repl)
-        val deserialized = parser.parseBytes(Optional.empty(), serialized)
+        val serialized = currentParser.serialize(repl)
+        val deserialized = currentParser.parseBytes(Optional.empty(), serialized)
         return fromImmutable(deserialized.message())
     }
 
@@ -169,5 +183,14 @@ class IMessageTest {
         val original = createComplexMessage()
         val msg = convertThereAndBack(original)
         assertEquals(original, msg)
+    }
+
+    @Test
+    fun testDate() {
+        val original = exampleMessage.copy()
+        val msg = convertThereAndBack(original)
+        assertNotNull(msg.optionalDate("adate"))
+        val dt = msg.date("adate");
+        logger.info("Date recovered: $dt")
     }
 }

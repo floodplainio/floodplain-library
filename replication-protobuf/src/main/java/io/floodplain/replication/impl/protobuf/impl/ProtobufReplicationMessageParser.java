@@ -113,12 +113,14 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
                 return val.toString();
             case DECIMAL:
                 return ((BigDecimal)val).toPlainString();
+            case STRINGLIST:
+                List<String> v = (List<String>)val;
+                return v.stream().collect(Collectors.joining(","));
             default:
                 throw new UnsupportedOperationException("Unknown type: " + type);
         }
     }
 
-    //	"2017-03-31 11:28:46.00"
     private static Object protobufValue(Replication.ValueProtobuf val, SimpleDateFormat dataFormat, SimpleDateFormat clockTimeFormat) {
         if (val.getIsNull()) {
             return null;
@@ -161,6 +163,8 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
                 return value;
             case ENUM:
                 return value;
+            case STRINGLIST:
+                return Arrays.asList(value.split(","));
             default:
                 return null;
         }

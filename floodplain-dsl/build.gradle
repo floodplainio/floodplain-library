@@ -6,6 +6,7 @@ dependencies {
     implementation(project(":replication-api"))
     implementation(project(":replication-impl"))
     implementation(project(":replication-json"))
+    implementation(project(":replication-protobuf"))
     implementation(project(":streams"))
     implementation(project(":streams-api"))
     implementation(project(":floodplain-stream-topology"))

@@ -157,6 +157,7 @@ public class ReplicationJSON {
                 if (value instanceof String) {
                     m.put("Value", (String) value);
                 } else {
+                    // TODO re-use formatter. This is pretty inefficient, but beware of threading issues when re-using
                     String t = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SS").format((Date) value);
                     m.put("Value", t);
                 }

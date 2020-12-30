@@ -23,6 +23,7 @@ package io.floodplain.kotlindsl.message
 import io.floodplain.immutable.api.ImmutableMessage
 import io.floodplain.immutable.factory.ImmutableFactory
 import java.math.BigDecimal
+import java.util.Date
 import kotlin.streams.toList
 
 interface IMessage {
@@ -32,6 +33,8 @@ interface IMessage {
     fun integer(path: String): Int
     fun optionalInteger(path: String): Int?
 
+    fun date(path: String): Date
+    fun optionalDate(path: String): Date?
     fun long(path: String): Long
     fun optionalLong(path: String): Long?
     fun list(path: String): List<String>
@@ -91,13 +94,25 @@ private data class IMessageImpl(private val content: MutableMap<String, Any>) : 
         return raw
     }
     override fun long(path: String): Long {
-        return optionalLong(path) ?: throw NullPointerException("Can't obtain int from path: $path as it is absent")
+        return optionalLong(path) ?: throw NullPointerException("Can't obtain long from path: $path as it is absent")
     }
 
     override fun optionalLong(path: String): Long? {
         val raw = get(path) ?: return null
         if (raw !is Long) {
             throw ClassCastException("Path element $path should be an long but it is a ${raw::class}")
+        }
+        return raw
+    }
+
+    override fun date(path: String): Date {
+        return optionalDate(path) ?: throw NullPointerException("Can't obtain date from path: $path as it is absent")
+    }
+
+    override fun optionalDate(path: String): Date? {
+        val raw = get(path) ?: return null
+        if (raw !is Date) {
+            throw ClassCastException("Path element $path should be an date but it is a ${raw::class}")
         }
         return raw
     }

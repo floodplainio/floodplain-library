@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Date;
 import java.util.Optional;
 
 import static io.floodplain.immutable.api.ImmutableMessage.ValueType.*;
@@ -82,6 +83,15 @@ public class TestImmutableJSON {
         ImmutableMessage someOther = ImmutableFactory.empty().with("Noot", 4, INTEGER);
         ImmutableMessage combined = created.with("submessage", someOther, IMMUTABLE);
         Assert.assertEquals(4, combined.value("submessage/Noot").orElse(-1));
+    }
+
+    @Test
+    public void testDate() {
+        Date d = new Date();
+        ImmutableMessage created = ImmutableFactory.empty().with("Date", d, DATE);
+        Object result = created.value("Date").get();
+        Assert.assertEquals(d,result);
+        Assert.assertEquals(DATE,created.columnType("Date"));
     }
 
 
