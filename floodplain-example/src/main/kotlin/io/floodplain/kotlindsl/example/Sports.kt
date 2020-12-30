@@ -51,10 +51,6 @@ fun main() {
                 filter { key, msg ->
                     msg["zipcode"] != null
                 }
-                // group { msg->
-                //     logger.info("key: $key\n>>>totalmessage: $msg")
-                //     msg.string("zipcode")
-                // }
                 joinRemote({ msg -> msg.string("zipcode") }, false) {
                     source("sportlinkkernel-ZIPCODEPOSITION") {
                         set { _, msg, _ ->
@@ -65,16 +61,9 @@ fun main() {
                         }
                     }
                 }
-                set { key, address, position ->
+                set { _, address, position ->
                     address["position"] = position
-                    // logger.info("Key: $key")
-                    // logger.info("address: $address")
-                    // logger.info("position: $position")
                     address
-                }
-                each { key, msg, _ ->
-                    logger.info("Key: $key")
-                    logger.info("Msg: $msg")
                 }
                 // Join with a remote key, that is grouped itself
                 joinMulti({ msg -> msg.string("zipcode") }, { msg -> msg.string("postcode") },false) {
