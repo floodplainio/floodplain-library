@@ -152,7 +152,6 @@ class TestTopology {
     @Test
     fun testMultipleSinks() {
         stream("somegen") {
-            val sinkconf = logSinkConfig("sinkconf")
             source("src") {
                 group { message -> message["subkey"] as String }
                 externalSink("mysink")

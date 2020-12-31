@@ -65,7 +65,7 @@ class IMessageTest {
     // Utility function to check if a message remains unchanged after serialization and deserialization for all parsers
     private fun convertThereAndBack(input: IMessage): IMessage {
         val afterJSON = convertThereAndBack(input, parser)
-        return convertThereAndBack(input, protoParser)
+        return convertThereAndBack(afterJSON, protoParser)
     }
 
     // Utility function to check if a message remains unchanged after serialization and deserialization for a specific parser

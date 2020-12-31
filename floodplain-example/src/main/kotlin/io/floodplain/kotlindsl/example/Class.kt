@@ -25,7 +25,6 @@ import io.floodplain.kotlindsl.set
 import io.floodplain.kotlindsl.sink
 import io.floodplain.kotlindsl.source
 import io.floodplain.kotlindsl.stream
-import io.floodplain.kotlindsl.topology
 import io.floodplain.mongodb.mongoConfig
 import io.floodplain.mongodb.mongoSink
 import io.floodplain.replication.api.ReplicationMessage.KEYSEPARATOR
@@ -40,9 +39,6 @@ fun main() {
     val deployment = "develop"
     val tenant = "KNBSB"
 
-    topology(tenant, deployment, generation) {
-        source("bla")
-    }
     stream(tenant, deployment, generation) {
         val mongoConfig = mongoConfig("@mongosink", "mongodb://mongo", "@mongodump")
         source("sportlinkkernel-CLASS") {

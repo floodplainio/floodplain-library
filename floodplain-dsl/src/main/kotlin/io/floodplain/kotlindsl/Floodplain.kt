@@ -438,42 +438,19 @@ fun PartialStream.fork(vararg destinations: Block.() -> Unit): Transformer {
  * with no further meaning within the framework, you can choose what meaning you want to attach. You can increment a
  * number, use a sort of time stamp, or even a git commit.
  */
-fun stream(tenant: String, deployment: String?, generation: String = "any", init: Stream.() -> Unit): Stream {
-    val topologyContext = TopologyContext.context(Optional.of(tenant), Optional.ofNullable(deployment), generation)
-    val pipe = Stream(topologyContext)
-    pipe.init()
-    return pipe
-}
-
-fun topology(tenant: String?, deployment: String?, generation: String = "any", init: Stream.() -> Unit): Stream {
+fun stream(tenant: String? = null, deployment: String? = null, generation: String = "any", init: Stream.() -> Unit): Stream {
     val topologyContext = TopologyContext.context(Optional.ofNullable(tenant), Optional.ofNullable(deployment), generation)
     val pipe = Stream(topologyContext)
     pipe.init()
     return pipe
 }
-
-fun stream(generation: String = "any", init: Stream.() -> Unit): Stream {
-    val topologyContext = TopologyContext.context(Optional.empty(), generation)
-    val pipe = Stream(topologyContext)
-    pipe.init()
-    // pipe.addSource(pipe.init())
-    return pipe
-}
-
-fun streams(generation: String = "any", init: Stream.() -> List<Source>): Stream {
-    return streams(null, null, generation, init)
-}
-
-fun streams(tenant: String?, deployment: String?, generation: String = "any", init: Stream.() -> List<Source>): Stream {
-    val topologyContext =
-        TopologyContext.context(Optional.ofNullable(tenant), Optional.ofNullable(deployment), generation)
-    val pipe = Stream(topologyContext)
-    val sources = pipe.init()
-    sources.forEach { e ->
-        pipe.addSource(e)
-    }
-    return pipe
-}
+// fun stream(generation: String = "any", init: Stream.() -> Unit): Stream {
+//     val topologyContext = TopologyContext.context(Optional.empty(), generation)
+//     val pipe = Stream(topologyContext)
+//     pipe.init()
+//     // pipe.addSource(pipe.init())
+//     return pipe
+// }
 
 /**
  * Sources wrap a TopologyPipeComponent
