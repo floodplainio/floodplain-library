@@ -151,7 +151,7 @@ class MySQLTest {
 
     @Test
     fun testInventory() {
-        streams {
+        stream {
             val mysqlConfig = mysqlSourceConfig(
                 "mypostgres",
                 mysqlContainer.host,
@@ -165,7 +165,6 @@ class MySQLTest {
                 "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
                 "@mongodump"
             )
-            listOf(
                 mysqlSource("inventory.customers", mysqlConfig) {
                     each { key, customer, _ ->
                         logger.info("Key: $key message: $customer")
@@ -184,7 +183,7 @@ class MySQLTest {
                         logger.info("Result Key: $key message: $customer")
                     }
                     mongoSink("customers", "@customers", mongoConfig)
-                },
+                }
                 mysqlSource("inventory.products", mysqlConfig) {
                     join {
                         mysqlSource("inventory.products_on_hand", mysqlConfig) {}
@@ -194,11 +193,10 @@ class MySQLTest {
                         product
                     }
                     mongoSink("products", "@products", mongoConfig)
-                },
+                }
                 mysqlSource("inventory.orders", mysqlConfig) {
                     mongoSink("orders", "@orders", mongoConfig)
                 }
-            )
         }.renderAndExecute {
             // delay(1000000)
             val databaseInstance = topologyContext().topicName("@mongodump")

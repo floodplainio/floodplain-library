@@ -18,13 +18,12 @@
  */
 package io.floodplain.kotlindsl.example
 
-import io.floodplain.kotlindsl.each
 import io.floodplain.kotlindsl.filter
 import io.floodplain.kotlindsl.joinMulti
 import io.floodplain.kotlindsl.joinRemote
 import io.floodplain.kotlindsl.set
 import io.floodplain.kotlindsl.source
-import io.floodplain.kotlindsl.streams
+import io.floodplain.kotlindsl.stream
 import io.floodplain.mongodb.mongoConfig
 import io.floodplain.mongodb.mongoSink
 import java.net.URL
@@ -37,73 +36,71 @@ fun main() {
     val deployment = "develop"
     val tenant = "KNBSB"
     // val deployment = "develop"
-    streams(tenant, deployment, generation) {
-        val mongoConfig = mongoConfig("@mongosink", "mongodb://mongo", "@mongodump")
-        listOf(
-            source("sportlinkkernel-ADDRESS") {
+    stream(tenant, deployment, generation) {
+    val mongoConfig = mongoConfig("@mongosink", "mongodb://mongo", "@mongodump")
+    source("sportlinkkernel-ADDRESS") {
+        set { _, msg, _ ->
+            // TODO formatzipcode
+            msg["zipcode"] = msg.optionalString("zipcode") ?: "".replace(" ", "").trim()
+            msg.clear("updateby")
+            msg.clear("lastupdate")
+            msg
+        }
+        filter { key, msg ->
+            msg["zipcode"] != null
+        }
+        joinRemote({ msg -> msg.string("zipcode") }, false) {
+            source("sportlinkkernel-ZIPCODEPOSITION") {
                 set { _, msg, _ ->
-                    // TODO formatzipcode
-                    msg["zipcode"] = msg.optionalString("zipcode") ?: "".replace(" ", "").trim()
                     msg.clear("updateby")
                     msg.clear("lastupdate")
+                    msg["point"] = "${msg["longitude"]},${msg["latitude"]}"
                     msg
                 }
-                filter { key, msg ->
-                    msg["zipcode"] != null
-                }
-                joinRemote({ msg -> msg.string("zipcode") }, false) {
-                    source("sportlinkkernel-ZIPCODEPOSITION") {
-                        set { _, msg, _ ->
-                            msg.clear("updateby")
-                            msg.clear("lastupdate")
-                            msg["point"] = "${msg["longitude"]},${msg["latitude"]}"
-                            msg
-                        }
-                    }
-                }
-                set { _, address, position ->
-                    address["position"] = position
-                    address
-                }
-                // Join with a remote key, that is grouped itself
-                joinMulti({ msg -> msg.string("zipcode") }, { msg -> msg.string("postcode") },false) {
-                    source("sportlinkkernel-POSTCODETABLE") {
-                        set { _, msg, _ ->
-                            msg.clearAll(listOf("updateby", "lastupdate", "unipostcodereeksindicatie", "huisnrtot", "straatnaam", "huisnrvan", "woonplaats"))
-                            msg
-                        }
-                        // group { msg -> msg["communityid"] as String }
-                        // each { key,msg,_->
-                        //     logger.info("PostcodeTableKey: $key")
-                        //     logger.info("PostcodeTableMsg: $msg")
-                        // }
-                        joinRemote({ msg -> msg.string("communityid") }, false) {
-                            source("sportlinkkernel-COMMUNITY") {
-                                // set { _, msg, _ ->
-                                //     msg["communityname"] = msg["name"]
-                                //     msg.clear("name")
-                                //     msg
-                                // }
-                            }
-                        }
-                        set { _, postcode, community ->
-                            postcode["communityname"] = community["name"]
-                            postcode
-                        }
-
-                        // sink("@CLASS")
-                    }
-                }
-                set { _, address, postcodelist ->
-                    val message = postcodelist.messageList("list")?.firstOrNull()
-                    address["Community"] = message
-                    address["postcodelist"] = postcodelist
-                    address
-                }
-                mongoSink("address", "@address", mongoConfig)
-
             }
-        )
+        }
+        set { _, address, position ->
+            address["position"] = position
+            address
+        }
+        // Join with a remote key, that is grouped itself
+        joinMulti({ msg -> msg.string("zipcode") }, { msg -> msg.string("postcode") },false) {
+            source("sportlinkkernel-POSTCODETABLE") {
+                set { _, msg, _ ->
+                    msg.clearAll(listOf("updateby", "lastupdate", "unipostcodereeksindicatie", "huisnrtot", "straatnaam", "huisnrvan", "woonplaats"))
+                    msg
+                }
+                // group { msg -> msg["communityid"] as String }
+                // each { key,msg,_->
+                //     logger.info("PostcodeTableKey: $key")
+                //     logger.info("PostcodeTableMsg: $msg")
+                // }
+                joinRemote({ msg -> msg.string("communityid") }, false) {
+                    source("sportlinkkernel-COMMUNITY") {
+                        // set { _, msg, _ ->
+                        //     msg["communityname"] = msg["name"]
+                        //     msg.clear("name")
+                        //     msg
+                        // }
+                    }
+                }
+                set { _, postcode, community ->
+                    postcode["communityname"] = community["name"]
+                    postcode
+                }
+
+                // sink("@CLASS")
+            }
+        }
+        set { _, address, postcodelist ->
+            val message = postcodelist.messageList("list")?.firstOrNull()
+            address["Community"] = message
+            address["postcodelist"] = postcodelist
+            address
+        }
+        mongoSink("address", "@address", mongoConfig)
+
+    }
     }.renderAndSchedule(URL("http://localhost:8083/connectors"), "10.8.0.7:9092")
     logger.info { "done!" }
 }

@@ -45,7 +45,7 @@ fun PartialStream.googleSheetsSink(topicDefinition: String, googleSheetId: Strin
     val sheetSink = GoogleSheetSink(topic, googleSheetId, columns, startColumn, startRow)
     config.addSink(sheetSink)
     val sink = SinkTransformer(Optional.of(ProcessorName.from(config.name)), topic, false, Optional.empty(), Topic.FloodplainKeyFormat.CONNECT_KEY_JSON, Topic.FloodplainBodyFormat.CONNECT_JSON)
-    addTransformer(Transformer(sink,topologyContext))
+    addTransformer(Transformer(rootTopology,sink,topologyContext))
 }
 
 class GoogleSheetSink(val topic: Topic, val spreadsheetId: String, val columns: List<String>, val startColumn: String = "A", val startRow: Int = 1)

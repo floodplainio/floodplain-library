@@ -121,25 +121,27 @@ fun Stream.postgresSourceConfig(
     return postgresConfig
 }
 
-fun Stream.postgresSource(table: String, config: PostgresConfig, schema: String? = null, init: Source.() -> Unit): Source {
+fun PartialStream.postgresSource(table: String, config: PostgresConfig, schema: String? = null, init: Source.() -> Unit): Source {
     val effectiveSchema = schema ?: config.defaultSchema
-    if (effectiveSchema == null) {
-        throw IllegalArgumentException("No schema defined, and also no default schema")
-    }
+    ?: throw IllegalArgumentException("No schema defined, and also no default schema")
     val topic = Topic.from("${config.name}.$effectiveSchema.$table",topologyContext)
     val topicSource = TopicSource(topic, Topic.FloodplainKeyFormat.CONNECT_KEY_JSON, Topic.FloodplainBodyFormat.CONNECT_JSON)
     config.addSourceElement(DebeziumSourceElement(topic, effectiveSchema, table))
-    val databaseSource = Source(topicSource,topologyContext)
+    val databaseSource = Source(rootTopology,topicSource,topologyContext)
     databaseSource.init()
     return databaseSource
 }
+fun Stream.postgresSource(table: String, config: PostgresConfig, schema: String? = null, init: Source.() -> Unit) {
+    val databaseSource = PartialStream(this).postgresSource(table, config, schema, init)
+    addSource(databaseSource)
+}
 
-fun Stream.postgresSource(name: String, table: String, schema: String, init: Source.() -> Unit): Source {
+fun Stream.postgresSource(name: String, table: String, schema: String, init: Source.() -> Unit) {
     val topic = Topic.from("$name.$schema.$table",topologyContext)
     val topicSource = TopicSource(topic, Topic.FloodplainKeyFormat.CONNECT_KEY_JSON, Topic.FloodplainBodyFormat.CONNECT_JSON)
-    val databaseSource = Source(topicSource,topologyContext)
+    val databaseSource = Source(this, topicSource,topologyContext)
     databaseSource.init()
-    return databaseSource
+    addSource(databaseSource)
 }
 
 class DebeziumSourceElement(val prefix: Topic, val schema: String? = null, val table: String) : SourceTopic {

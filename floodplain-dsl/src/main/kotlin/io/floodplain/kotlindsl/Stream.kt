@@ -40,7 +40,7 @@ import java.util.UUID
 
 private val logger = mu.KotlinLogging.logger {}
 
-class Stream(override val topologyContext: TopologyContext): FloodplainOperator {
+class Stream(override val topologyContext: TopologyContext): FloodplainSourceContainer {
 
     private val sources: MutableList<Source> = ArrayList()
     private val sinkConfigurations: MutableList<SinkConfig> = mutableListOf()
@@ -49,9 +49,8 @@ class Stream(override val topologyContext: TopologyContext): FloodplainOperator 
     /**
      * Adds a source instance, should only be called from source implementations
      */
-    fun addSource(source: Source): Stream {
+    override fun addSource(source: Source) {
         sources.add(source)
-        return this
     }
 
     /**
@@ -221,4 +220,7 @@ class Stream(override val topologyContext: TopologyContext): FloodplainOperator 
         }
         // io.floodplain.runtime.runWithArguments(this@Stream, arrayOf(*args), { after(it) }, { after() })
     }
+
+    override val rootTopology: Stream
+        get() = this
 }

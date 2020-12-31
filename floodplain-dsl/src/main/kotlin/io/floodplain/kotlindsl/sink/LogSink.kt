@@ -65,7 +65,7 @@ fun PartialStream.logSink(sinkName: String, topicName: String, config: LogSinkCo
     val sinkProcessorName = ProcessorName.from(sinkName)
     val topic = Topic.from(topicName,topologyContext)
     val sinkTransformer = SinkTransformer(Optional.of(sinkProcessorName), topic, false, Optional.empty(), Topic.FloodplainKeyFormat.FLOODPLAIN_STRING, Topic.FloodplainBodyFormat.CONNECT_JSON)
-    addTransformer(Transformer(sinkTransformer,topologyContext))
+    addTransformer(Transformer(rootTopology, sinkTransformer,topologyContext))
 
     val sinkConfig = mapOf(
         "connector.class" to "io.floodplain.sink.LogSinkConnector",

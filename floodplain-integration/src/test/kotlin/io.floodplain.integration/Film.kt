@@ -24,7 +24,6 @@ import io.floodplain.kotlindsl.set
 import io.floodplain.kotlindsl.sink
 import io.floodplain.kotlindsl.source
 import io.floodplain.kotlindsl.stream
-import io.floodplain.kotlindsl.streams
 import io.floodplain.mongodb.mongoConfig
 import io.floodplain.mongodb.mongoSink
 import io.floodplain.mongodb.waitForMongoDbCondition
@@ -159,7 +158,7 @@ class FilmSimple {
             logger.info("Not performing integration tests, doesn't seem to work in circleci")
             return
         }
-        streams {
+        stream {
 
             val postgresConfig = postgresSourceConfig(
                 "mypostgres",
@@ -175,18 +174,16 @@ class FilmSimple {
                 "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
                 "@mongodump"
             )
-            listOf(
                 postgresSource("film", postgresConfig) {
                     // Clear the last_update field, it makes no sense in a denormalized situation
                     set { _, film, _ ->
                         film["last_update"] = null; film
                     }
                     sink("@intermediatesink")
-                },
+                }
                 source("@intermediatesink") {
                     mongoSink("filmwithactors", "@filmwithcat", mongoConfig)
                 }
-            )
         }.renderAndExecute {
             val database = topologyContext().topicName("@mongodump")
             flushSinks()

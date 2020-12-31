@@ -156,6 +156,6 @@ fun PartialStream.mongoSink(collection: String, topicDefinition: String, config:
     config.sinkInstancePair.add(collection to topic)
     val sinkName = ProcessorName.from(config.name)
     val sink = SinkTransformer(Optional.of(sinkName), topic, false, Optional.empty(), Topic.FloodplainKeyFormat.CONNECT_KEY_JSON, Topic.FloodplainBodyFormat.CONNECT_JSON)
-    val transform = Transformer(sink, topologyContext)
+    val transform = Transformer(rootTopology, sink, topologyContext)
     addTransformer(transform)
 }

@@ -101,20 +101,18 @@ class TestMongo {
 
     @Test
     fun testMultipleSink() {
-        streams {
+        stream {
             val config = mongoConfig("mongoClient", "mongodb://$address:$port", "mongo-connect-test")
-            listOf(
-                source("sometopic") {
-                    each { _, msg, _ -> logger.info("message: $msg") }
-                    filter { _, msg -> msg.long("counter") % 2 == 0L }
-                    mongoSink("collection1", "myindex1", config)
-                },
-                source("sometopic") {
-                    each { _, msg, _ -> logger.info("message: $msg") }
-                    filter { _, msg -> msg.long("counter") % 2 == 1L }
-                    mongoSink("collection2", "myindex2", config)
-                }
-            )
+            source("sometopic") {
+                each { _, msg, _ -> logger.info("message: $msg") }
+                filter { _, msg -> msg.long("counter") % 2 == 0L }
+                mongoSink("collection1", "myindex1", config)
+            }
+            source("sometopic") {
+                each { _, msg, _ -> logger.info("message: $msg") }
+                filter { _, msg -> msg.long("counter") % 2 == 1L }
+                mongoSink("collection2", "myindex2", config)
+            }
         }.renderAndExecute {
             // delay(5000)
             MongoClients.create("mongodb://$address:$port").use { client ->

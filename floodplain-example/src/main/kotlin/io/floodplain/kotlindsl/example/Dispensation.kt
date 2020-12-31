@@ -26,6 +26,7 @@ import io.floodplain.kotlindsl.joinRemote
 import io.floodplain.kotlindsl.set
 import io.floodplain.kotlindsl.sink
 import io.floodplain.kotlindsl.source
+import io.floodplain.kotlindsl.stream
 import io.floodplain.kotlindsl.streams
 import io.floodplain.mongodb.mongoConfig
 import io.floodplain.mongodb.mongoSink
@@ -40,31 +41,28 @@ fun main() {
     val generation = "generation12"
     val deployment = "develop"
     val tenant = "KNBSB"
-    streams(tenant, deployment, generation) {
+    stream(tenant, deployment, generation) {
         val mongoConfig = mongoConfig("@mongosink", "mongodb://mongo", "@mongodump")
-
-        listOf(
-            source("sportlinkkernel-DISPENSATION") {
-                set { _, msg, _ ->
-                    msg.clearAll(listOf("updateby", "lastupdate"))
-                }
-                fork({
-                    filter { key,msg->
-                        msg["targetorganizationid"] != null
-                    }
-                    sink("@organizationdispensation")
-                    mongoSink("organizationdispensation","@mongoorganizationdispensation",mongoConfig)
-                }, {
-                    filter { key,msg->
-                        msg["targetpersonid"] != null
-                    }
-                    sink("@persondispensation")
-                    mongoSink("persondispensation","@mongopersondispensation",mongoConfig)
-                })
-                sink("@class", false)
-                // mongoSink("class", "@class", mongoConfig)
+        source("sportlinkkernel-DISPENSATION") {
+            set { _, msg, _ ->
+                msg.clearAll(listOf("updateby", "lastupdate"))
             }
-        )
+            fork({
+                filter { key,msg->
+                    msg["targetorganizationid"] != null
+                }
+                sink("@organizationdispensation")
+                mongoSink("organizationdispensation","@mongoorganizationdispensation",mongoConfig)
+            }, {
+                filter { key,msg->
+                    msg["targetpersonid"] != null
+                }
+                sink("@persondispensation")
+                mongoSink("persondispensation","@mongopersondispensation",mongoConfig)
+            })
+            sink("@class", false)
+            // mongoSink("class", "@class", mongoConfig)
+        }
     }.renderAndSchedule(URL("http://localhost:8083/connectors"), "10.8.0.7:9092")
     logger.info { "done!" }
 }

@@ -161,7 +161,7 @@ class TestCombinedMongo {
             logger.info("Not performing integration tests; doesn't seem to work in circleci")
             return
         }
-        streams("any", "myinstance") {
+        stream("any", "myinstance") {
             val postgresConfig = postgresSourceConfig(
                 "mypostgres",
                 postgresContainer.host,
@@ -176,54 +176,52 @@ class TestCombinedMongo {
                 "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
                 "@mongodump"
             )
-            listOf(
-                postgresSource("address", postgresConfig) {
-                    joinRemote({ msg -> "${msg["city_id"]}" }, false) {
-                        postgresSource("city", postgresConfig) {
-                            joinRemote({ msg -> "${msg["country_id"]}" }, false) {
-                                postgresSource("country", postgresConfig) {}
-                            }
-                            set { _, msg, state ->
-                                msg.set("country", state)
-                            }
+            postgresSource("address", postgresConfig) {
+                joinRemote({ msg -> "${msg["city_id"]}" }, false) {
+                    postgresSource("city", postgresConfig) {
+                        joinRemote({ msg -> "${msg["country_id"]}" }, false) {
+                            postgresSource("country", postgresConfig) {}
+                        }
+                        set { _, msg, state ->
+                            msg.set("country", state)
                         }
                     }
-                    set { _, msg, state ->
-                        msg.set("city", state)
-                    }
-                    sink("@address", false)
-                    // mongoSink("address", "@address",  mongoConfig)
-                },
-                postgresSource("customer", postgresConfig) {
-                    joinRemote({ m -> "${m["address_id"]}" }, false) {
-                        source("@address") {}
-                    }
-                    set { _, msg, state ->
-                        msg.set("address", state)
-                    }
-                    mongoSink("customer", "@customer", mongoConfig)
-                },
-                postgresSource("store", postgresConfig) {
-                    joinRemote({ m -> "${m["address_id"]}" }, false) {
-                        source("@address") {}
-                    }
-                    set { _, msg, state ->
-                        msg.set("address", state)
-                    }
-                    mongoSink("store", "@store", mongoConfig)
-                },
-                postgresSource("staff", postgresConfig) {
-                    joinRemote({ m -> "${m["address_id"]}" }, false) {
-                        source("@address") {}
-                    }
-                    set { _, msg, state ->
-                        msg["address"] = state
-                        msg["address_id"] = null
-                        msg
-                    }
-                    mongoSink("staff", "@staff", mongoConfig)
                 }
-            )
+                set { _, msg, state ->
+                    msg.set("city", state)
+                }
+                sink("@address", false)
+                // mongoSink("address", "@address",  mongoConfig)
+            }
+            postgresSource("customer", postgresConfig) {
+                joinRemote({ m -> "${m["address_id"]}" }, false) {
+                    source("@address") {}
+                }
+                set { _, msg, state ->
+                    msg.set("address", state)
+                }
+                mongoSink("customer", "@customer", mongoConfig)
+            }
+            postgresSource("store", postgresConfig) {
+                joinRemote({ m -> "${m["address_id"]}" }, false) {
+                    source("@address") {}
+                }
+                set { _, msg, state ->
+                    msg.set("address", state)
+                }
+                mongoSink("store", "@store", mongoConfig)
+            }
+            postgresSource("staff", postgresConfig) {
+                joinRemote({ m -> "${m["address_id"]}" }, false) {
+                    source("@address") {}
+                }
+                set { _, msg, state ->
+                    msg["address"] = state
+                    msg["address_id"] = null
+                    msg
+                }
+                mongoSink("staff", "@staff", mongoConfig)
+            }
         }.renderAndExecute {
             val database = topologyContext().topicName("@mongodump")
             flushSinks()
@@ -254,7 +252,7 @@ class TestCombinedMongo {
             logger.info("Not performing integration tests; doesn't seem to work in circleci")
             return
         }
-        streams {
+        stream {
             val postgresConfig = postgresSourceConfig(
                 "mypostgres",
                 postgresContainer.host,
@@ -269,26 +267,24 @@ class TestCombinedMongo {
                 "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
                 "@mongodump"
             )
-            listOf(
-                postgresSource("payment", postgresConfig) {
-                    scan(
-                        { empty().set("total", BigDecimal(0)) },
-                        {
-                            set { _, msg, state ->
-                                state["total"] = (state["total"] as BigDecimal).add(msg["amount"] as BigDecimal)
-                                state
-                            }
-                        },
-                        {
-                            set { _, msg, state ->
-                                state["total"] = (state["total"] as BigDecimal).subtract(msg["amount"] as BigDecimal)
-                                state
-                            }
+            postgresSource("payment", postgresConfig) {
+                scan(
+                    { empty().set("total", BigDecimal(0)) },
+                    {
+                        set { _, msg, state ->
+                            state["total"] = (state["total"] as BigDecimal).add(msg["amount"] as BigDecimal)
+                            state
                         }
-                    )
-                    mongoSink("justtotal", "@myfinaltopic", mongoConfig)
-                }
-            )
+                    },
+                    {
+                        set { _, msg, state ->
+                            state["total"] = (state["total"] as BigDecimal).subtract(msg["amount"] as BigDecimal)
+                            state
+                        }
+                    }
+                )
+                mongoSink("justtotal", "@myfinaltopic", mongoConfig)
+            }
         }.renderAndExecute {
             val database = topologyContext().topicName("@mongodump")
 
@@ -318,7 +314,7 @@ class TestCombinedMongo {
             logger.info("Not performing integration tests; doesn't seem to work in circleci")
             return
         }
-        streams {
+        stream {
             val postgresConfig = postgresSourceConfig(
                 "mypostgres",
                 postgresContainer.host,
@@ -333,37 +329,35 @@ class TestCombinedMongo {
                 "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
                 "@mongodump"
             )
-            listOf(
-                postgresSource("customer", postgresConfig) {
-                    each { _, mms, _ ->
-                        logger.info("Customer: $mms")
-                    }
-                    join {
-                        postgresSource("payment", postgresConfig) {
-                            scan(
-                                { msg -> msg["customer_id"].toString() },
-                                { empty().set("total", BigDecimal(0)) },
-                                {
-                                    set { _, msg, state ->
-                                        state["total"] = (state["total"] as BigDecimal).add(msg["amount"] as BigDecimal)
-                                        state
-                                    }
-                                },
-                                {
-                                    set { _, msg, state ->
-                                        state["total"] = (state["total"] as BigDecimal).add(msg["amount"] as BigDecimal)
-                                        ; state
-                                    }
-                                }
-                            )
-                        }
-                    }
-                    set { _, customer, paymenttotal ->
-                        customer["payments"] = paymenttotal["total"]; customer
-                    }
-                    mongoSink("paymentpercustomer", "myfinaltopic", mongoConfig)
+            postgresSource("customer", postgresConfig) {
+                each { _, mms, _ ->
+                    logger.info("Customer: $mms")
                 }
-            )
+                join {
+                    postgresSource("payment", postgresConfig) {
+                        scan(
+                            { msg -> msg["customer_id"].toString() },
+                            { empty().set("total", BigDecimal(0)) },
+                            {
+                                set { _, msg, state ->
+                                    state["total"] = (state["total"] as BigDecimal).add(msg["amount"] as BigDecimal)
+                                    state
+                                }
+                            },
+                            {
+                                set { _, msg, state ->
+                                    state["total"] = (state["total"] as BigDecimal).add(msg["amount"] as BigDecimal)
+                                    ; state
+                                }
+                            }
+                        )
+                    }
+                }
+                set { _, customer, paymenttotal ->
+                    customer["payments"] = paymenttotal["total"]; customer
+                }
+                mongoSink("paymentpercustomer", "myfinaltopic", mongoConfig)
+            }
         }.renderAndExecute {
             val database = topologyContext().topicName("@mongodump")
             val items = waitForMongoDbCondition(
