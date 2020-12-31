@@ -152,7 +152,7 @@ fun Stream.mongoConfig(name: String, uri: String, database: String): MongoConfig
 }
 
 fun PartialStream.mongoSink(collection: String, topicDefinition: String, config: MongoConfig) {
-    val topic = Topic.from(topicDefinition,topologyContext)
+    val topic = Topic.from(topicDefinition, topologyContext)
     config.sinkInstancePair.add(collection to topic)
     val sinkName = ProcessorName.from(config.name)
     val sink = SinkTransformer(Optional.of(sinkName), topic, false, Optional.empty(), Topic.FloodplainKeyFormat.CONNECT_KEY_JSON, Topic.FloodplainBodyFormat.CONNECT_JSON)

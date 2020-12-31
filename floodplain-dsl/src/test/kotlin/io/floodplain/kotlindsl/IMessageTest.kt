@@ -40,7 +40,6 @@ import kotlin.test.assertNull
 
 private val logger = mu.KotlinLogging.logger {}
 
-
 @Suppress("UNCHECKED_CAST")
 class IMessageTest {
     private val parser: ReplicationMessageParser = JSONReplicationMessageParserImpl()
@@ -63,11 +62,10 @@ class IMessageTest {
             .set("sub", exampleMessage.copy())
     }
 
-
     // Utility function to check if a message remains unchanged after serialization and deserialization for all parsers
     private fun convertThereAndBack(input: IMessage): IMessage {
-        val afterJSON = convertThereAndBack(input,parser)
-        return convertThereAndBack(input,protoParser)
+        val afterJSON = convertThereAndBack(input, parser)
+        return convertThereAndBack(input, protoParser)
     }
 
     // Utility function to check if a message remains unchanged after serialization and deserialization for a specific parser
@@ -190,7 +188,7 @@ class IMessageTest {
         val original = exampleMessage.copy()
         val msg = convertThereAndBack(original)
         assertNotNull(msg.optionalDate("adate"))
-        val dt = msg.date("adate");
+        val dt = msg.date("adate")
         logger.info("Date recovered: $dt")
     }
 }

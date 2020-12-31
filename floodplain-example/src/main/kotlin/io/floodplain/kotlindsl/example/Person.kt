@@ -18,19 +18,12 @@
  */
 package io.floodplain.kotlindsl.example
 
-import io.floodplain.kotlindsl.PartialStream
-import io.floodplain.kotlindsl.join
 import io.floodplain.kotlindsl.joinAttributes
-import io.floodplain.kotlindsl.message.IMessage
-import io.floodplain.kotlindsl.message.empty
-import io.floodplain.kotlindsl.scan
 import io.floodplain.kotlindsl.set
 import io.floodplain.kotlindsl.source
 import io.floodplain.kotlindsl.stream
-import io.floodplain.kotlindsl.table
 import io.floodplain.mongodb.mongoConfig
 import io.floodplain.mongodb.mongoSink
-import io.floodplain.replication.api.ReplicationMessage.KEYSEPARATOR
 import java.net.URL
 
 private val logger = mu.KotlinLogging.logger {}
@@ -46,7 +39,7 @@ fun main() {
             set { _, msg, _ ->
                 msg.clearAll(listOf("updateby", "lastupdate"))
             }
-            joinAttributes("sportlinkkernel-PERSONATTRIBUTE", "attribname", "attribvalue","personid")
+            joinAttributes("sportlinkkernel-PERSONATTRIBUTE", "attribname", "attribvalue", "personid")
             set { _, msg, attributes ->
                 msg.merge(attributes)
             }

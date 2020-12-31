@@ -22,7 +22,6 @@ import io.floodplain.kotlindsl.filter
 import io.floodplain.kotlindsl.message.empty
 import io.floodplain.kotlindsl.source
 import io.floodplain.kotlindsl.stream
-import io.floodplain.kotlindsl.streams
 import io.floodplain.mongodb.mongoConfig
 import io.floodplain.mongodb.mongoSink
 import kotlinx.coroutines.delay

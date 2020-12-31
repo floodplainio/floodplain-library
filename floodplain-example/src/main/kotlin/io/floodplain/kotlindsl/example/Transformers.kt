@@ -27,7 +27,7 @@ fun combineDateTime(date: Date, time: Date): Date {
 
 fun filterValidCalendarActivityId(key: String, calendarDay: IMessage): Boolean {
     val activityId = calendarDay.optionalInteger("activityid")
-    if ( activityId == null) {
+    if (activityId == null) {
         logger.warn(
             "Null activityid! key: {}. Message: {}",
             key,

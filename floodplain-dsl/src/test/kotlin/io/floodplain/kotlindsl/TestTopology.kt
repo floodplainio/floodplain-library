@@ -156,7 +156,7 @@ class TestTopology {
             source("src") {
                 group { message -> message["subkey"] as String }
                 externalSink("mysink")
-                externalSink("myothersink" )
+                externalSink("myothersink")
             }
         }.renderAndExecute {
             val record1 = empty().set("subkey", "subkey1")
@@ -165,7 +165,6 @@ class TestTopology {
             input("src", "key2", record2)
             assertEquals(2, outputSize("mysink"), "Expected two messages in topic")
             assertEquals(2, outputSize("myothersink"), "Expected two messages in topic")
-
         }
     }
     @Test

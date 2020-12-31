@@ -107,10 +107,10 @@ fun Stream.mysqlSourceConfig(name: String, hostname: String, port: Int, username
 }
 
 fun PartialStream.mysqlSource(table: String, config: MySQLConfig, init: Source.() -> Unit): Source {
-    val topic = Topic.from("${config.name}.$table",topologyContext)
+    val topic = Topic.from("${config.name}.$table", topologyContext)
     val topicSource = TopicSource(topic, Topic.FloodplainKeyFormat.CONNECT_KEY_JSON, Topic.FloodplainBodyFormat.CONNECT_JSON)
     config.addSourceElement(DebeziumSourceElement(topic, null, table))
-    val databaseSource = Source(rootTopology, topicSource,topologyContext)
+    val databaseSource = Source(rootTopology, topicSource, topologyContext)
     databaseSource.init()
     return databaseSource
 }

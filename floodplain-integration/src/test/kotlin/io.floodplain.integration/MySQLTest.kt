@@ -28,7 +28,6 @@ import io.floodplain.kotlindsl.mysqlSource
 import io.floodplain.kotlindsl.mysqlSourceConfig
 import io.floodplain.kotlindsl.set
 import io.floodplain.kotlindsl.stream
-import io.floodplain.kotlindsl.streams
 import io.floodplain.mongodb.mongoConfig
 import io.floodplain.mongodb.mongoSink
 import io.floodplain.mongodb.waitForMongoDbCondition
@@ -165,38 +164,38 @@ class MySQLTest {
                 "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
                 "@mongodump"
             )
-                mysqlSource("inventory.customers", mysqlConfig) {
-                    each { key, customer, _ ->
-                        logger.info("Key: $key message: $customer")
-                    }
-                    joinGrouped(true) {
-                        mysqlSource("inventory.addresses", mysqlConfig) {
-                            group { msg -> "${msg["customer_id"]}" }
-                        }
-                    }
-                    set { _, customer, addresses ->
-                        val addressList: List<IMessage> = addresses["list"] as List<IMessage>
-                        customer["addresses"] = addressList
-                        customer
-                    }
-                    each { key, customer, _ ->
-                        logger.info("Result Key: $key message: $customer")
-                    }
-                    mongoSink("customers", "@customers", mongoConfig)
+            mysqlSource("inventory.customers", mysqlConfig) {
+                each { key, customer, _ ->
+                    logger.info("Key: $key message: $customer")
                 }
-                mysqlSource("inventory.products", mysqlConfig) {
-                    join {
-                        mysqlSource("inventory.products_on_hand", mysqlConfig) {}
+                joinGrouped(true) {
+                    mysqlSource("inventory.addresses", mysqlConfig) {
+                        group { msg -> "${msg["customer_id"]}" }
                     }
-                    set { _, product, product_on_hand ->
-                        product["quantity"] = product_on_hand.integer("quantity")
-                        product
-                    }
-                    mongoSink("products", "@products", mongoConfig)
                 }
-                mysqlSource("inventory.orders", mysqlConfig) {
-                    mongoSink("orders", "@orders", mongoConfig)
+                set { _, customer, addresses ->
+                    val addressList: List<IMessage> = addresses["list"] as List<IMessage>
+                    customer["addresses"] = addressList
+                    customer
                 }
+                each { key, customer, _ ->
+                    logger.info("Result Key: $key message: $customer")
+                }
+                mongoSink("customers", "@customers", mongoConfig)
+            }
+            mysqlSource("inventory.products", mysqlConfig) {
+                join {
+                    mysqlSource("inventory.products_on_hand", mysqlConfig) {}
+                }
+                set { _, product, product_on_hand ->
+                    product["quantity"] = product_on_hand.integer("quantity")
+                    product
+                }
+                mongoSink("products", "@products", mongoConfig)
+            }
+            mysqlSource("inventory.orders", mysqlConfig) {
+                mongoSink("orders", "@orders", mongoConfig)
+            }
         }.renderAndExecute {
             // delay(1000000)
             val databaseInstance = topologyContext().topicName("@mongodump")

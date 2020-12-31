@@ -36,10 +36,10 @@ class TestOutputFlow {
 
     @Test
     fun testChunkOperator() {
-        val topologyContext: TopologyContext = TopologyContext.context(Optional.empty(),"any")
+        val topologyContext: TopologyContext = TopologyContext.context(Optional.empty(), "any")
         val flow: Flow<Triple<Topic, String, IMessage?>> = flow {
             repeat(10) {
-                val topic = Topic.from("TopicNr$it",topologyContext)
+                val topic = Topic.from("TopicNr$it", topologyContext)
                 repeat(100) { msgNr ->
                     val msg = empty().set("element", msgNr)
                     emit(Triple(topic, "key$msgNr", msg))

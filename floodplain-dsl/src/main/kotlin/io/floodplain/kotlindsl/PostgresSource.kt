@@ -123,11 +123,11 @@ fun Stream.postgresSourceConfig(
 
 fun PartialStream.postgresSource(table: String, config: PostgresConfig, schema: String? = null, init: Source.() -> Unit): Source {
     val effectiveSchema = schema ?: config.defaultSchema
-    ?: throw IllegalArgumentException("No schema defined, and also no default schema")
-    val topic = Topic.from("${config.name}.$effectiveSchema.$table",topologyContext)
+        ?: throw IllegalArgumentException("No schema defined, and also no default schema")
+    val topic = Topic.from("${config.name}.$effectiveSchema.$table", topologyContext)
     val topicSource = TopicSource(topic, Topic.FloodplainKeyFormat.CONNECT_KEY_JSON, Topic.FloodplainBodyFormat.CONNECT_JSON)
     config.addSourceElement(DebeziumSourceElement(topic, effectiveSchema, table))
-    val databaseSource = Source(rootTopology,topicSource,topologyContext)
+    val databaseSource = Source(rootTopology, topicSource, topologyContext)
     databaseSource.init()
     return databaseSource
 }
@@ -137,9 +137,9 @@ fun Stream.postgresSource(table: String, config: PostgresConfig, schema: String?
 }
 
 fun Stream.postgresSource(name: String, table: String, schema: String, init: Source.() -> Unit) {
-    val topic = Topic.from("$name.$schema.$table",topologyContext)
+    val topic = Topic.from("$name.$schema.$table", topologyContext)
     val topicSource = TopicSource(topic, Topic.FloodplainKeyFormat.CONNECT_KEY_JSON, Topic.FloodplainBodyFormat.CONNECT_JSON)
-    val databaseSource = Source(this, topicSource,topologyContext)
+    val databaseSource = Source(this, topicSource, topologyContext)
     databaseSource.init()
     addSource(databaseSource)
 }

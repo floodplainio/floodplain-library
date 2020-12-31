@@ -63,9 +63,9 @@ class ElasticSearchSinkConfig(val name: String, val uri: String, val context: To
 
 fun PartialStream.elasticSearchSink(sinkName: String, topicName: String, config: ElasticSearchSinkConfig): FloodplainSink {
     val sinkProcessorName = ProcessorName.from(sinkName)
-    val topic = Topic.from(topicName,topologyContext)
+    val topic = Topic.from(topicName, topologyContext)
     val sinkTransformer = SinkTransformer(Optional.of(sinkProcessorName), topic, false, Optional.empty(), Topic.FloodplainKeyFormat.FLOODPLAIN_STRING, Topic.FloodplainBodyFormat.CONNECT_JSON)
-    addTransformer(Transformer(rootTopology,sinkTransformer,topologyContext))
+    addTransformer(Transformer(rootTopology, sinkTransformer, topologyContext))
 
     val sinkConfig = mapOf(
         "connector.class" to "io.confluent.connect.elasticsearch.ElasticsearchSinkConnector",

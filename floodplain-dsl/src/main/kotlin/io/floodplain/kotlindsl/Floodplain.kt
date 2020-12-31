@@ -117,17 +117,17 @@ fun PartialStream.each(transform: (String, IMessage, IMessage) -> Unit): Transfo
             transform.invoke(key, fromImmutable(msg), fromImmutable(param))
         }
     val each = EachTransformer(transformer)
-    return addTransformer(Transformer(this.rootTopology,each,topologyContext))
+    return addTransformer(Transformer(this.rootTopology, each, topologyContext))
 }
 
 fun PartialStream.diff(): Transformer {
     val diffTransformer = DiffTransformer()
-    return addTransformer(Transformer(this.rootTopology, diffTransformer,topologyContext))
+    return addTransformer(Transformer(this.rootTopology, diffTransformer, topologyContext))
 }
 
 fun PartialStream.buffer(duration: Duration, maxSize: Int = 10000, inMemory: Boolean = false): Transformer {
     val bufferTransformer = BufferTransformer(duration, maxSize, inMemory)
-    return addTransformer(Transformer(this.rootTopology, bufferTransformer,topologyContext))
+    return addTransformer(Transformer(this.rootTopology, bufferTransformer, topologyContext))
 }
 
 /**
@@ -147,7 +147,7 @@ fun PartialStream.set(transform: (String, IMessage, IMessage) -> IMessage): Tran
             transform.invoke(key, fromImmutable(msg), fromImmutable(param)).toImmutable()
         }
     val set = SetTransformer(transformer)
-    return addTransformer(Transformer(this.rootTopology, set,topologyContext))
+    return addTransformer(Transformer(this.rootTopology, set, topologyContext))
 }
 
 // fun PartialPipe.copy()
@@ -163,27 +163,31 @@ fun PartialStream.set(transform: (String, IMessage, IMessage) -> IMessage): Tran
  */
 fun PartialStream.joinRemote(key: (IMessage) -> String, optional: Boolean = false, source: () -> Source) {
     val keyExtractor: (ImmutableMessage, ImmutableMessage) -> String = { msg, _ -> key.invoke(fromImmutable(msg)) }
-    val jrt = JoinRemoteTransformer(source.invoke().toReactivePipe(), keyExtractor, optional,false)
-    addTransformer(Transformer(this.rootTopology, jrt,topologyContext))
+    val jrt = JoinRemoteTransformer(source.invoke().toReactivePipe(), keyExtractor, optional, false)
+    addTransformer(Transformer(this.rootTopology, jrt, topologyContext))
 }
 
 fun PartialStream.joinRemote(vararg keys: String, optional: Boolean = false, source: () -> Source) {
-    joinRemote({ msg->
-        keys.joinToString(ReplicationMessage.KEYSEPARATOR) { msg[it].toString() }
-    },optional,source)
+    joinRemote(
+        { msg ->
+            keys.joinToString(ReplicationMessage.KEYSEPARATOR) { msg[it].toString() }
+        },
+        optional,
+        source
+    )
 }
 
-fun PartialStream.joinMulti(key: (IMessage) -> String,secondaryKey: (IMessage) -> String, optional: Boolean = false, source: () -> Source) {
+fun PartialStream.joinMulti(key: (IMessage) -> String, secondaryKey: (IMessage) -> String, optional: Boolean = false, source: () -> Source) {
     val keyExtractor: (ImmutableMessage, ImmutableMessage) -> String = { msg, _ -> key.invoke(fromImmutable(msg)) }
     val secondarySource = source()
     secondarySource.group(secondaryKey)
 
-    val jrt = JoinRemoteTransformer(secondarySource.toReactivePipe(), keyExtractor, optional,true)
-    addTransformer(Transformer(this.rootTopology, jrt,topologyContext))
+    val jrt = JoinRemoteTransformer(secondarySource.toReactivePipe(), keyExtractor, optional, true)
+    addTransformer(Transformer(this.rootTopology, jrt, topologyContext))
 }
 // TODO move these functions to floodplain
 fun PartialStream.joinAttributes(withTopic: String, nameAttribute: String, valueAttribute: String, vararg keys: String) {
-    return joinAttributes(withTopic,nameAttribute,valueAttribute) { msg->
+    return joinAttributes(withTopic, nameAttribute, valueAttribute) { msg ->
         keys.joinToString(ReplicationMessage.KEYSEPARATOR) { msg[it].toString() }
     }
 }
@@ -193,12 +197,12 @@ fun PartialStream.joinAttributes(withTopic: String, nameAttribute: String, value
             scan(
                 keyExtract,
                 {
-                        _ ->
+                    _ ->
                     empty()
                 },
                 {
                     set {
-                            _, msg, acc ->
+                        _, msg, acc ->
                         val name = msg[nameAttribute] as String?
                         val value = msg[valueAttribute]
                         if (name == null) {
@@ -210,7 +214,7 @@ fun PartialStream.joinAttributes(withTopic: String, nameAttribute: String, value
                 },
                 {
                     set {
-                            _, msg, acc ->
+                        _, msg, acc ->
                         acc.clear(msg[nameAttribute] as String); acc
                     }
                 }
@@ -225,7 +229,7 @@ fun PartialStream.joinAttributes(withTopic: String, nameAttribute: String, value
 fun PartialStream.group(key: (IMessage) -> String) {
     val keyExtractor: (ImmutableMessage, ImmutableMessage) -> String = { msg, _ -> key.invoke(fromImmutable(msg)) }
     val group = GroupTransformer(keyExtractor)
-    addTransformer(Transformer(this.rootTopology, group,topologyContext))
+    addTransformer(Transformer(this.rootTopology, group, topologyContext))
 }
 
 /**
@@ -233,11 +237,11 @@ fun PartialStream.group(key: (IMessage) -> String) {
  */
 fun Stream.table(topic: String, init: Source.() -> Unit) {
     val sourceElement = TopicSource(
-        Topic.fromQualified(topic,topologyContext),
+        Topic.fromQualified(topic, topologyContext),
         Topic.FloodplainKeyFormat.CONNECT_KEY_JSON,
         Topic.FloodplainBodyFormat.FLOODPLAIN_JSON
     )
-    val source = Source(this,sourceElement,topologyContext)
+    val source = Source(this, sourceElement, topologyContext)
     source.init()
     rootTopology.addSource(source)
 }
@@ -245,24 +249,24 @@ fun Stream.table(topic: String, init: Source.() -> Unit) {
 /**
  * Use an existing source
  */
-fun PartialStream.source(topic: String, init: Source.() -> Unit = {}): Source{
+fun PartialStream.source(topic: String, init: Source.() -> Unit = {}): Source {
     val sourceElement = TopicSource(
-        Topic.from(topic,topologyContext),
+        Topic.from(topic, topologyContext),
         Topic.FloodplainKeyFormat.FLOODPLAIN_STRING,
         Topic.FloodplainBodyFormat.FLOODPLAIN_JSON
     )
-    val source = Source(this.rootTopology,sourceElement,topologyContext)
+    val source = Source(this.rootTopology, sourceElement, topologyContext)
     source.init()
     return source
 }
 
 fun Stream.source(topic: String, init: Source.() -> Unit = {}) {
     val sourceElement = TopicSource(
-        Topic.from(topic,topologyContext),
+        Topic.from(topic, topologyContext),
         Topic.FloodplainKeyFormat.FLOODPLAIN_STRING,
         Topic.FloodplainBodyFormat.FLOODPLAIN_JSON
     )
-    val source = Source(this.rootTopology,sourceElement,topologyContext)
+    val source = Source(this.rootTopology, sourceElement, topologyContext)
     source.init()
     addSource(source)
 }
@@ -273,8 +277,8 @@ fun Stream.externalSource(
     valueFormat: Topic.FloodplainBodyFormat,
     init: Source.() -> Unit
 ) {
-    val sourceElement = TopicSource(Topic.from(topic,this.topologyContext), keyFormat, valueFormat)
-    val source = Source(this,sourceElement,this.topologyContext)
+    val sourceElement = TopicSource(Topic.from(topic, this.topologyContext), keyFormat, valueFormat)
+    val source = Source(this, sourceElement, this.topologyContext)
     source.init()
     rootTopology.addSource(source)
 }
@@ -285,13 +289,13 @@ fun Stream.externalSource(
 fun PartialStream.sink(topic: String, materializeParent: Boolean = false): Transformer {
     val sink = SinkTransformer(
         Optional.empty(),
-        Topic.from(topic,topologyContext),
+        Topic.from(topic, topologyContext),
         materializeParent,
         Optional.empty(),
         Topic.FloodplainKeyFormat.FLOODPLAIN_STRING,
         Topic.FloodplainBodyFormat.FLOODPLAIN_JSON
     )
-    return addTransformer(Transformer(this.rootTopology, sink,topologyContext))
+    return addTransformer(Transformer(this.rootTopology, sink, topologyContext))
 }
 
 /**
@@ -300,13 +304,13 @@ fun PartialStream.sink(topic: String, materializeParent: Boolean = false): Trans
 fun PartialStream.externalSink(topic: String, materializeParent: Boolean = false): Transformer {
     val sink = SinkTransformer(
         Optional.empty(),
-        Topic.from(topic,topologyContext),
+        Topic.from(topic, topologyContext),
         materializeParent,
         Optional.empty(),
         Topic.FloodplainKeyFormat.CONNECT_KEY_JSON,
         Topic.FloodplainBodyFormat.CONNECT_JSON
     )
-    return addTransformer(Transformer(this.rootTopology, sink,topologyContext))
+    return addTransformer(Transformer(this.rootTopology, sink, topologyContext))
 }
 
 /**
@@ -314,7 +318,7 @@ fun PartialStream.externalSink(topic: String, materializeParent: Boolean = false
 fun PartialStream.dynamicSink(name: String, extractor: (String, IMessage) -> String): Transformer {
     val sink =
         DynamicSinkTransformer(name, Optional.empty()) { key, value -> extractor.invoke(key, fromImmutable(value)) }
-    return addTransformer(Transformer(rootTopology, sink,topologyContext))
+    return addTransformer(Transformer(rootTopology, sink, topologyContext))
 }
 
 /**
@@ -324,7 +328,7 @@ fun PartialStream.dynamicSink(name: String, extractor: (String, IMessage) -> Str
  */
 fun PartialStream.join(optional: Boolean = false, debug: Boolean = false, source: PartialStream.() -> Source) {
     val jrt = JoinWithTransformer(optional, false, source.invoke(this).toReactivePipe(), debug)
-    addTransformer(Transformer(rootTopology, jrt,topologyContext))
+    addTransformer(Transformer(rootTopology, jrt, topologyContext))
 }
 
 /**
@@ -340,7 +344,7 @@ fun PartialStream.joinGrouped(
     source: () -> Source
 ) {
     val jrt = JoinWithTransformer(optional, true, source.invoke().toReactivePipe(), debug)
-    addTransformer(Transformer(rootTopology, jrt,topologyContext))
+    addTransformer(Transformer(rootTopology, jrt, topologyContext))
 }
 
 /**
@@ -373,7 +377,8 @@ fun PartialStream.scan(
                 initialConstructor,
                 onAddBlock.transformers.map { e -> e.component },
                 onRemoveBlock.transformers.map { e -> e.component }
-            ),topologyContext
+            ),
+            topologyContext
         )
     )
 }
@@ -409,7 +414,8 @@ fun PartialStream.scan(
                 initialConstructor,
                 onAddBlock.transformers.map { e -> e.component },
                 onRemoveBlock.transformers.map { e -> e.component }
-            ),topologyContext
+            ),
+            topologyContext
         )
     )
 }
@@ -420,7 +426,7 @@ fun PartialStream.scan(
 fun PartialStream.fork(vararg destinations: Block.() -> Unit): Transformer {
     val blocks = destinations.map { dd -> val b = Block(rootTopology, topologyContext); dd.invoke(b); b }.toList()
     val forkTransformer = ForkTransformer(blocks)
-    return addTransformer(Transformer(rootTopology, forkTransformer,topologyContext))
+    return addTransformer(Transformer(rootTopology, forkTransformer, topologyContext))
 }
 
 /**
@@ -450,7 +456,7 @@ fun stream(generation: String = "any", init: Stream.() -> Unit): Stream {
     val topologyContext = TopologyContext.context(Optional.empty(), generation)
     val pipe = Stream(topologyContext)
     pipe.init()
-    //pipe.addSource(pipe.init())
+    // pipe.addSource(pipe.init())
     return pipe
 }
 
@@ -469,8 +475,6 @@ fun streams(tenant: String?, deployment: String?, generation: String = "any", in
     return pipe
 }
 
-
-
 /**
  * Sources wrap a TopologyPipeComponent
  */
@@ -488,7 +492,7 @@ class Source(override val rootTopology: Stream, val component: TopologyPipeCompo
 /**
  * Common superclass for sources or 'pipe segments', either a source, transformer or block
  */
-open class PartialStream(override val rootTopology: Stream): FloodplainOperator {
+open class PartialStream(override val rootTopology: Stream) : FloodplainOperator {
     val transformers: MutableList<Transformer> = mutableListOf()
     fun addTransformer(transformer: Transformer): Transformer {
         transformers.add(transformer)
@@ -499,10 +503,9 @@ open class PartialStream(override val rootTopology: Stream): FloodplainOperator 
         get() = rootTopology.topologyContext
 }
 
-interface FloodplainSourceContainer: FloodplainOperator {
+interface FloodplainSourceContainer : FloodplainOperator {
     fun addSource(source: Source)
 }
-
 
 interface FloodplainOperator {
     val topologyContext: TopologyContext

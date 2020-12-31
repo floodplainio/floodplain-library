@@ -174,16 +174,16 @@ class FilmSimple {
                 "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
                 "@mongodump"
             )
-                postgresSource("film", postgresConfig) {
-                    // Clear the last_update field, it makes no sense in a denormalized situation
-                    set { _, film, _ ->
-                        film["last_update"] = null; film
-                    }
-                    sink("@intermediatesink")
+            postgresSource("film", postgresConfig) {
+                // Clear the last_update field, it makes no sense in a denormalized situation
+                set { _, film, _ ->
+                    film["last_update"] = null; film
                 }
-                source("@intermediatesink") {
-                    mongoSink("filmwithactors", "@filmwithcat", mongoConfig)
-                }
+                sink("@intermediatesink")
+            }
+            source("@intermediatesink") {
+                mongoSink("filmwithactors", "@filmwithcat", mongoConfig)
+            }
         }.renderAndExecute {
             val database = topologyContext().topicName("@mongodump")
             flushSinks()

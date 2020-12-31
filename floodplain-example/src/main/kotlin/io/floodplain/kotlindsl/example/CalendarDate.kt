@@ -1,12 +1,6 @@
 package io.floodplain.kotlindsl.example
 
 import io.floodplain.kotlindsl.each
-import io.floodplain.kotlindsl.filter
-import io.floodplain.kotlindsl.group
-import io.floodplain.kotlindsl.join
-import io.floodplain.kotlindsl.joinAttributes
-import io.floodplain.kotlindsl.joinGrouped
-import io.floodplain.kotlindsl.message.IMessage
 import io.floodplain.kotlindsl.set
 import io.floodplain.kotlindsl.source
 import io.floodplain.kotlindsl.stream
@@ -25,8 +19,7 @@ fun main() {
         val mongoConfig = mongoConfig("@mongosink", "mongodb://mongo", "@mongodump")
         source("sportlinkkernel-CALENDARDAY") {
             each { key, main, _ ->
-                logger.info("Key: $key message: ${main}")
-
+                logger.info("Key: $key message: $main")
             }
             mongoSink("calendarday", "@sometopic", mongoConfig)
         }

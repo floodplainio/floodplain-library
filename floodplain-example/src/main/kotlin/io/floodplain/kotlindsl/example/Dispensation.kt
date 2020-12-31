@@ -18,21 +18,15 @@
  */
 package io.floodplain.kotlindsl.example
 
-import io.floodplain.kotlindsl.buffer
 import io.floodplain.kotlindsl.filter
 import io.floodplain.kotlindsl.fork
-import io.floodplain.kotlindsl.joinAttributes
-import io.floodplain.kotlindsl.joinRemote
 import io.floodplain.kotlindsl.set
 import io.floodplain.kotlindsl.sink
 import io.floodplain.kotlindsl.source
 import io.floodplain.kotlindsl.stream
-import io.floodplain.kotlindsl.streams
 import io.floodplain.mongodb.mongoConfig
 import io.floodplain.mongodb.mongoSink
-import io.floodplain.replication.api.ReplicationMessage.KEYSEPARATOR
 import java.net.URL
-import java.time.Duration
 
 private val logger = mu.KotlinLogging.logger {}
 
@@ -47,19 +41,22 @@ fun main() {
             set { _, msg, _ ->
                 msg.clearAll(listOf("updateby", "lastupdate"))
             }
-            fork({
-                filter { key,msg->
-                    msg["targetorganizationid"] != null
+            fork(
+                {
+                    filter { key, msg ->
+                        msg["targetorganizationid"] != null
+                    }
+                    sink("@organizationdispensation")
+                    mongoSink("organizationdispensation", "@mongoorganizationdispensation", mongoConfig)
+                },
+                {
+                    filter { key, msg ->
+                        msg["targetpersonid"] != null
+                    }
+                    sink("@persondispensation")
+                    mongoSink("persondispensation", "@mongopersondispensation", mongoConfig)
                 }
-                sink("@organizationdispensation")
-                mongoSink("organizationdispensation","@mongoorganizationdispensation",mongoConfig)
-            }, {
-                filter { key,msg->
-                    msg["targetpersonid"] != null
-                }
-                sink("@persondispensation")
-                mongoSink("persondispensation","@mongopersondispensation",mongoConfig)
-            })
+            )
             sink("@class", false)
             // mongoSink("class", "@class", mongoConfig)
         }

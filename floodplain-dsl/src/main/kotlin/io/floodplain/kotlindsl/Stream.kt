@@ -40,7 +40,7 @@ import java.util.UUID
 
 private val logger = mu.KotlinLogging.logger {}
 
-class Stream(override val topologyContext: TopologyContext): FloodplainSourceContainer {
+class Stream(override val topologyContext: TopologyContext) : FloodplainSourceContainer {
 
     private val sources: MutableList<Source> = ArrayList()
     private val sinkConfigurations: MutableList<SinkConfig> = mutableListOf()

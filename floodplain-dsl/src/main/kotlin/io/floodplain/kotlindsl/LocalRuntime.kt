@@ -283,7 +283,7 @@ class LocalDriverContext(
                 // Ignore changelog topics
                 if (!record.topic().endsWith("changelog")) {
                     val key = Serdes.String().deserializer().deserialize(record.topic(), record.key())
-                    val topic = Topic.fromQualified(record.topic(),topologyContext)
+                    val topic = Topic.fromQualified(record.topic(), topologyContext)
                     if (this.isActive) {
                         sendBlocking(Triple(topic, key, record.value()))
                     }

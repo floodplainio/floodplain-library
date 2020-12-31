@@ -2,7 +2,6 @@ package io.floodplain.kotlindsl.example
 
 import io.floodplain.kotlindsl.filter
 import io.floodplain.kotlindsl.group
-import io.floodplain.kotlindsl.join
 import io.floodplain.kotlindsl.joinAttributes
 import io.floodplain.kotlindsl.joinGrouped
 import io.floodplain.kotlindsl.message.IMessage
@@ -24,25 +23,25 @@ fun main() {
         source("sportlinkkernel-MATCH") {
             set { _, match, _ ->
                 match.clearAll(listOf("updateby", "lastupdate"))
-                match["publicmatchid"] = createPublicId("M",776533757,403789397,2030118221,match.integer("matchid"))
+                match["publicmatchid"] = createPublicId("M", 776533757, 403789397, 2030118221, match.integer("matchid"))
                 // <publicid field="matchid" to="publicmatchid" prefix="M" prime="776533757" modInverse="403789397" random="2030118221"/>
                 match
             }
-            joinAttributes("sportlinkkernel-MATCHATTRIBUTE","attribname","attribvalue","matchid")
+            joinAttributes("sportlinkkernel-MATCHATTRIBUTE", "attribname", "attribvalue", "matchid")
             set { _, msg, attributes ->
                 msg.merge(attributes)
             }
             joinGrouped {
                 source("sportlinkkernel-CALENDARDAY") {
                     // match["matchdatetime"] = combineDateTime(match.date("calendardate"),match.date("startdatetime"))
-                    filter { key, msg->
-                        filterValidCalendarActivityId(key,msg)
+                    filter { key, msg ->
+                        filterValidCalendarActivityId(key, msg)
                     }
                     set { _, calendarday, _ ->
                         calendarday.clearAll(listOf("updateby", "lastupdate"))
                         calendarday
                     }
-                    group { msg->msg.integer("activityid").toString() }
+                    group { msg -> msg.integer("activityid").toString() }
                 }
             }
             set { _, match, calendarday ->
