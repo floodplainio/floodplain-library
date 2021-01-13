@@ -19,6 +19,7 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
     testImplementation(FloodplainDeps.jacksonCore)
     testImplementation(FloodplainDeps.jacksonDatabind)
-    testCompile(FloodplainDeps.testContainer)
+    testImplementation(FloodplainDeps.testContainer)
+    testImplementation(FloodplainDeps.testContainerKafka)
     testImplementation(FloodplainDeps.mongoClientSync)
 }

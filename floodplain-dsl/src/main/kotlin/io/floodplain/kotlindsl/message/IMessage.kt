@@ -47,7 +47,7 @@ interface IMessage {
     fun optionalBoolean(path: String): Boolean?
     fun optionalString(path: String): String?
     fun clear(path: String): IMessage
-    fun clearAll(paths: List<String>): IMessage
+    fun clearAll(paths: List<String>): IMessage // TODO use varargs?
     fun isEmpty(): Boolean
     operator fun set(path: String, value: Any?): IMessage
     fun copy(): IMessage

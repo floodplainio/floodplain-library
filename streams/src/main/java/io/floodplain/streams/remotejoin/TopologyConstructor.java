@@ -71,7 +71,7 @@ public class TopologyConstructor {
         Map<String, Object> config = new HashMap<>();
         config.put("bootstrap.servers", kafkaHosts);
         config.put("client.id", UUID.randomUUID().toString());
-
+        config.put("cleanup.policy","compact");
         AdminClient adminClient = AdminClient.create(config);
         Set<String> topics = new HashSet<String>();
 
