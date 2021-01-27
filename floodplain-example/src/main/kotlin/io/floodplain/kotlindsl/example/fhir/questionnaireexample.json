@@ -1,0 +1,22 @@
+{
+  "resourceType": "Questionnaire",
+  "id": "74252",
+  "meta": {
+    "versionId": "1",
+    "lastUpdated": "2020-04-26T03:14:18.223+02:00"
+  },
+  "identifier": [
+    {
+      "use": "official",
+      "system": "urn:system",
+      "value": "58edbc3b-ecb8-42b1-9d7c-9f0fe354d25d"
+    },
+    {
+      "use": "official",
+      "system": "urn:quin:cms:questionnaire",
+      "value": "715"
+    }
+  ],
+  "name": "Acne",
+  "title": "Acne"
+}

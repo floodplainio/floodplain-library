@@ -1,0 +1,42 @@
+{
+  "resourceType": "Observation",
+  "id": "10901",
+  "meta": {
+    "versionId": "2",
+    "lastUpdated": "2019-10-22T11:33:00.667+02:00"
+  },
+  "status": "corrected",
+  "category": [
+    {
+      "coding": [
+        {
+          "system": "urn:quin:cms:question",
+          "code": "5008",
+          "display": "CMS Question ID: 5008"
+        }
+      ]
+    }
+  ],
+  "code": {
+    "coding": [
+      {
+        "system": "http://snomed.info/sct",
+        "code": "219006",
+        "display": "219006"
+      }
+    ]
+  },
+  "subject": {
+    "reference": "Patient/10899"
+  },
+  "performer": [
+    {
+      "reference": "Patient/10899"
+    }
+  ],
+  "derivedFrom": [
+    {
+      "reference": "QuestionnaireResponse/10900"
+    }
+  ]
+}
