@@ -2,22 +2,19 @@ import io.floodplain.build.FloodplainDeps
 
 plugins {
     // Apply the java-library plugin to add support for Java Library
-    id "java"
-    id "application"
-    id "com.github.johnrengelman.shadow"
-    id "com.palantir.graal"
+    id("java")
+    id("application")
+    // id("com.github.johnrengelman.shadow")
+    id("com.palantir.graal")
 }
 
-
-graal {
-    graalVersion("19.3.2")
-    javaVersion("11")
-    mainClass("io.floodplain.kotlindsl.example.FloodplainFilmWithActorsKt")
-    outputName("Floodplain")
-}
-mainClassName = "io.floodplain.kotlindsl.example.FloodplainFilmWithActorsKt"
-
-apply plugin: "com.github.johnrengelman.shadow"
+//
+// graal {
+//     graalVersion("19.3.2")
+//     javaVersion("11")
+//     mainClass("io.floodplain.kotlindsl.example.FloodplainFilmWithActorsKt")
+//     outputName("Floodplain")
+// }
 
 dependencies {
     implementation(project(":floodplain-dsl"))
@@ -41,9 +38,9 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
 }
-shadowJar {
-    mergeServiceFiles {
-        path = "META-INF/custom"
-        exclude "META-INF/services/javax.xml.stream.*"
-    }
-}
+// shadowJar {
+//     mergeServiceFiles {
+//         path = "META-INF/custom"
+//         exclude "META-INF/services/javax.xml.stream.*"
+//     }
+// }

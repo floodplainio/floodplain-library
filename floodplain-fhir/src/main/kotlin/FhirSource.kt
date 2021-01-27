@@ -1,3 +1,5 @@
+package io.floodplain.fhir
+
 import ca.uhn.fhir.context.FhirContext
 import ca.uhn.fhir.parser.IParser
 import com.fasterxml.jackson.databind.JsonNode

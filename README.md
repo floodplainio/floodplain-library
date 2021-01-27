@@ -1,5 +1,10 @@
 # Welcome to Floodplain!
 
+Floodplain 1.3.1 is out. Notable features:
+
+- More consistent handling of date types. Floodplain does no longer uses the old java.util.Date class. It now uses: DATE / TIMESTAMP / CLOCKTIME types that map to LocalDate, LocalDateTime and LocalTime.
+- Support for FHIR based sources (i.e. Kafka Topics in FHIR / JSON format)
+
 Floodplain is a Kotlin based stream processing framework, check [https://www.floodplain.io/](https://www.floodplain.io/) for in-depth documentation.
 
 Circle CI Build Status:

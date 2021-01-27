@@ -1,22 +1,20 @@
 package io.floodplain.kotlindsl.example
 
-import fhirSource
+import io.floodplain.fhir.fhirSource
 import io.floodplain.kotlindsl.debeziumSource
 import io.floodplain.kotlindsl.each
-import io.floodplain.kotlindsl.externalSource
 import io.floodplain.kotlindsl.group
-import io.floodplain.kotlindsl.join
 import io.floodplain.kotlindsl.joinGrouped
 import io.floodplain.kotlindsl.joinRemote
 import io.floodplain.kotlindsl.message.IMessage
 import io.floodplain.kotlindsl.message.empty
 import io.floodplain.kotlindsl.set
-import io.floodplain.kotlindsl.source
 import io.floodplain.kotlindsl.stream
 import io.floodplain.mongodb.mongoConfig
 import io.floodplain.mongodb.mongoSink
 import org.hl7.fhir.r4.model.Organization
 import java.net.URL
+
 private val logger = mu.KotlinLogging.logger {}
 
 fun main() {

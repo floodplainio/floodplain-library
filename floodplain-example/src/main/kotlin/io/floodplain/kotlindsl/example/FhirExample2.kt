@@ -1,6 +1,6 @@
 package io.floodplain.kotlindsl.example
 
-import fhirGeneric
+import io.floodplain.fhir.fhirGeneric
 import io.floodplain.kotlindsl.each
 import io.floodplain.kotlindsl.group
 import io.floodplain.kotlindsl.joinGrouped
