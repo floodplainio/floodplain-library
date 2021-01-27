@@ -131,12 +131,7 @@ public class  CreateTopics
         configs.put(segment_time, time);
         if (compact)
         {
-            // Old talk messages are deleted.
-            // Other messages are compacted and deleted when null
-            if (topic_name.endsWith("Talk"))
-                configs.put(cleanup_policy, delete_policy);
-            else
-                configs.put(cleanup_policy, compact_policy);
+            configs.put(cleanup_policy, compact_policy);
             configs.put(dirty2clean, ratio);
         }
         return new_topic.configs(configs);

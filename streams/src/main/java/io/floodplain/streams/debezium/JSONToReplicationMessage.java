@@ -38,9 +38,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Consumer;
@@ -56,7 +54,6 @@ public class JSONToReplicationMessage {
 
 
     //TODO Beware of threading issues
-//    private final static DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SS");
     private final static DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SS");
 
     public static KeyValue parse(String keyInput, byte[] data) {
@@ -176,9 +173,10 @@ public class JSONToReplicationMessage {
         switch (namedType.get()) {
             case "io.debezium.time.Date":
                 return ValueType.DATE;
+            case "io.debezium.time.MicroTimestamp":
             case "io.debezium.time.ZonedTimestamp":
             case "io.debezium.time.NanoTimestamp":
-            case "io.debezium.time.MicroTimestamp":
+                return ValueType.TIMESTAMP;
             case "io.debezium.data.VariableScaleDecimal":
                 return ValueType.LONG;
             case "org.apache.kafka.connect.data.Decimal":
@@ -191,6 +189,8 @@ public class JSONToReplicationMessage {
                 return ValueType.LONG;
             case "io.debezium.data.Enum":
                 return ValueType.ENUM;
+            case "io.debezium.data.Uuid":
+                return ValueType.STRING;
             default:
                 logger.warn("Unknown type with name, this will probably fail: {}", namedType.get());
                 return resolveSimpleType(type);
@@ -209,17 +209,23 @@ public class JSONToReplicationMessage {
         switch (namedType.get()) {
             case "io.debezium.time.Date":
                 int valueInt = value.asInt();
+                return LocalDate.ofEpochDay(valueInt);
 //                Calendar c = Calendar.getInstance();
 //                c.add(Calendar.DAY_OF_YEAR, valueInt);
-                LocalDateTime ldt = LocalDateTime.ofEpochSecond(valueInt, 0, ZoneOffset.UTC);
-                return format.format(ldt);
+//                LocalDateTime ldt = LocalDateTime.ofEpochSecond(valueInt, 0, ZoneOffset.UTC);
+//                return format.format(ldt);
             case "io.debezium.time.ZonedTimestamp":
-                Instant instant = Instant.parse(value.asText());
-                return instant.toEpochMilli();
+                // TODO Unsure about this one
+                return new Date(value.asLong());
             case "io.debezium.time.NanoTimestamp":
-                long l2 = Long.parseLong(value.asText());
-                Instant instant2 = Instant.ofEpochMilli(l2);
-                return instant2.toEpochMilli();
+                long nano = value.asLong();
+                Instant instant2 = Instant.ofEpochMilli(nano / 1000_000).plusNanos(nano % 1000_000);
+                return LocalDateTime.ofInstant(instant2, ZoneId.systemDefault());
+            case "io.debezium.time.MicroTimestamp":
+                long l3 = value.asLong(); // Long.parseLong(value.asText());
+                long remain = l3 % 1000;
+                Instant instant3 = Instant.ofEpochMilli(l3 / 1000).plusNanos(remain * 1000);
+                return LocalDateTime.ofInstant(instant3, ZoneId.systemDefault());
             case "io.debezium.data.VariableScaleDecimal":
                 ObjectNode node = (ObjectNode) value;
                 int scale = node.get("scale").asInt();
@@ -233,6 +239,7 @@ public class JSONToReplicationMessage {
                 Optional<ObjectNode> typeParams = Optional.ofNullable((ObjectNode) typeParameters.get("parameters"));
                 return parseDecimal(Base64.getDecoder().decode(decval), typeParams);
             case "io.debezium.data.Enum":
+            case "io.debezium.data.Uuid":
                 return value.asText();
             default:
                 return resolveSimple(type, value);
@@ -249,7 +256,6 @@ public class JSONToReplicationMessage {
             return decoded.longValue();
 
         }
-
     }
 
     private static Object resolveSimple(String type, JsonNode value) {

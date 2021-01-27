@@ -22,7 +22,6 @@ import io.floodplain.immutable.api.ImmutableMessage;
 import io.floodplain.reactive.source.topology.api.TopologyPipeComponent;
 import io.floodplain.replication.api.ReplicationMessage;
 import io.floodplain.replication.api.ReplicationMessage.Operation;
-import io.floodplain.streams.api.CoreOperators;
 import io.floodplain.streams.api.Topic;
 import io.floodplain.streams.api.TopologyContext;
 import io.floodplain.streams.remotejoin.ranged.GroupedUpdateProcessor;
@@ -59,8 +58,8 @@ public class ReplicationTopologyParser {
     private static final Serde<ReplicationMessage> messageSerde = new ReplicationMessageSerde();
     private static final Serde<ImmutableMessage> immutableMessageSerde = new ImmutableMessageSerde();
 
-    private static final ReplicationMessageSerde replicationMessageSerder = new ReplicationMessageSerde();
-    private static final ConnectReplicationMessageSerde connectReplicationMessageSerder = new ConnectReplicationMessageSerde();
+    private static final ReplicationMessageSerde replicationMessageSerde = new ReplicationMessageSerde();
+    private static final ConnectReplicationMessageSerde connectReplicationMessageSerde = new ConnectReplicationMessageSerde();
 
     public enum Flatten {FIRST, LAST, NONE}
 
@@ -154,9 +153,9 @@ public class ReplicationTopologyParser {
     public static Deserializer<ReplicationMessage> bodyDeserializer(Topic.FloodplainBodyFormat bodyFormat) {
         switch (bodyFormat) {
             case CONNECT_JSON:
-                return connectReplicationMessageSerder.deserializer();
+                return connectReplicationMessageSerde.deserializer();
             case FLOODPLAIN_JSON:
-                return replicationMessageSerder.deserializer();
+                return replicationMessageSerde.deserializer();
         }
         throw new IllegalArgumentException("Weird body format: " + bodyFormat);
     }
@@ -164,21 +163,25 @@ public class ReplicationTopologyParser {
     public static Serializer<ReplicationMessage> bodySerializer(Topic.FloodplainBodyFormat bodyFormat) {
         switch (bodyFormat) {
             case CONNECT_JSON:
-                return connectReplicationMessageSerder.serializer();
+                return connectReplicationMessageSerde.serializer();
             case FLOODPLAIN_JSON:
-                return replicationMessageSerder.serializer();
+                return replicationMessageSerde.serializer();
         }
         throw new IllegalArgumentException("Weird body format: " + bodyFormat);
     }
 
 
     public static String addSourceStore(final Topology currentBuilder, TopologyConstructor topologyConstructor, Topic sourceTopicName, Topic.FloodplainKeyFormat keyFormat, Topic.FloodplainBodyFormat bodyFormat, boolean materializeStore) {
+        return addSourceStore(currentBuilder,topologyConstructor,sourceTopicName,keyDeserializer(keyFormat), bodyDeserializer(bodyFormat),materializeStore);
+    }
+
+    public static String addSourceStore(final Topology currentBuilder, TopologyConstructor topologyConstructor, Topic sourceTopicName, Deserializer<String> keyDeserializer, Deserializer<ReplicationMessage> bodyDeserializer, boolean materializeStore) {
         // TODO It might be better to fail if the topic does not exist? -> Well depends, if it is external yes, but if it is created by the same instance, then no.
         final String sourceProcessorName = sourceTopicName.prefixedString("SOURCE");
         String sourceName;
         if (!topologyConstructor.sources.containsKey(sourceTopicName)) {
             sourceName = sourceProcessorName + "_src";
-            currentBuilder.addSource(sourceName, keyDeserializer(keyFormat), bodyDeserializer(bodyFormat), sourceTopicName.qualifiedString());
+            currentBuilder.addSource(sourceName, keyDeserializer, bodyDeserializer, sourceTopicName.qualifiedString());
             topologyConstructor.sources.put(sourceTopicName, sourceName);
             if (materializeStore) {
                 currentBuilder.addProcessor(sourceProcessorName, () -> new StoreProcessor(STORE_PREFIX + sourceProcessorName), sourceName);

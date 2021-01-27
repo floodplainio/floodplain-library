@@ -38,7 +38,7 @@ import kotlin.system.measureTimeMillis
 
 private val logger = mu.KotlinLogging.logger {}
 
-class MongoConfig(val name: String, val uri: String, val database: String) : SinkConfig {
+class MongoConfig(val name: String, private val uri: String, private val database: String) : SinkConfig {
 
     var sinkTask: MongoSinkTask? = null
     val sinkInstancePair: MutableList<Pair<String, Topic>> = mutableListOf()

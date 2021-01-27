@@ -67,7 +67,7 @@ class TestCombinedMongo {
             logger.info("Not performing integration tests; doesn't seem to work in circleci")
             return
         }
-        stream("any", "myinstance") {
+        stream("any") {
             val postgresConfig = postgresSourceConfig(
                 "mypostgres",
                 postgresContainer.host,
@@ -160,7 +160,7 @@ class TestCombinedMongo {
             logger.info("Not performing integration tests; doesn't seem to work in circleci")
             return
         }
-        stream("any", "myinstance") {
+        stream("any") {
             val postgresConfig = postgresSourceConfig(
                 "mypostgres",
                 postgresContainer.host,
