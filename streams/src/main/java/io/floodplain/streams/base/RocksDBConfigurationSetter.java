@@ -44,7 +44,7 @@ public class RocksDBConfigurationSetter implements RocksDBConfigSetter {
         // options.setMaxBytesForLevelBase(90000000);
         // options.setMaxBytesForLevelMultiplier(10);
 
-        BlockBasedTableConfig tableConfig = new BlockBasedTableConfig();
+        BlockBasedTableConfig tableConfig = (BlockBasedTableConfig) options.tableFormatConfig(); // new BlockBasedTableConfig();
         tableConfig.setBlockCacheSize(getBlockCacheSize());
         tableConfig.setBlockSize(getBlockSize());
 
