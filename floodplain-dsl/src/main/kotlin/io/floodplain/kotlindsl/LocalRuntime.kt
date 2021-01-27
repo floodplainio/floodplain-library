@@ -69,16 +69,18 @@ private val logger = mu.KotlinLogging.logger {}
 
 interface InputReceiver {
     fun input(topic: String, key: String, msg: IMessage)
+    fun inputQualified(topic: String, key: String, msg: IMessage)
 
     fun input(topic: String, key: ByteArray, msg: ByteArray)
+    fun inputQualified(topic: String, key: ByteArray, msg: ByteArray)
     fun delete(topic: String, key: String)
+    fun deleteQualified(topic: String, key: String)
     fun inputs(): Set<String>
 }
 
 interface LocalContext : InputReceiver {
     fun output(topic: String): Pair<String, IMessage>
     fun skip(topic: String, number: Int)
-
     /**
      * Doesn't work, outputs get created lazily, so only sinks that have been accessed before are counted
      */
@@ -254,9 +256,10 @@ class LocalDriverContext(
         return result
     }
 
+    // TODO Why not imessage?
     private fun outputFlows(context: CoroutineScope): Map<Topic, Flow<Pair<String, Map<String, Any>?>>> {
         val topics = topics()
-        val deserializer = JsonDeserializer()
+        val deserializer = JsonDeserializer() // TODO protobuf issue, topic is not in json connect
         val mapper = ObjectMapper()
 
         val sourceFlow = outputFlowSingle()
@@ -298,6 +301,11 @@ class LocalDriverContext(
 
     override fun input(topic: String, key: String, msg: IMessage) {
         val qualifiedTopicName = topologyContext.topicName(topic)
+        inputQualified(qualifiedTopicName,key,msg)
+    }
+
+    override fun inputQualified(topic: String, key: String, msg: IMessage) {
+        val qualifiedTopicName = topic //topologyContext.topicName(topic)
         if (!inputs().contains(qualifiedTopicName)) {
             logger.debug("Missing topic: $topic available topics: ${inputs()}")
         }
@@ -314,6 +322,11 @@ class LocalDriverContext(
 
     override fun input(topic: String, key: ByteArray, msg: ByteArray) {
         val qualifiedTopicName = topologyContext.topicName(topic)
+        inputQualified(qualifiedTopicName,key,msg)
+    }
+
+    override fun inputQualified(topic: String, key: ByteArray, msg: ByteArray) {
+        val qualifiedTopicName = topic // topologyContext.topicName(topic)
         if (!inputs().contains(qualifiedTopicName)) {
             logger.debug("Missing topic: $topic available topics: ${inputs()}")
         }
@@ -345,9 +358,13 @@ class LocalDriverContext(
 
     override fun delete(topic: String, key: String) {
         val qualifiedTopicName = topologyContext.topicName(topic)
-        val inputTopic = inputTopics.computeIfAbsent(qualifiedTopicName) {
+        deleteQualified(qualifiedTopicName,key)
+    }
+
+    override fun deleteQualified(topic: String, key: String) {
+        val inputTopic = inputTopics.computeIfAbsent(topic) {
             driver.createInputTopic(
-                qualifiedTopicName,
+                topic,
                 Serdes.String().serializer(),
                 ReplicationMessageSerde().serializer()
             )

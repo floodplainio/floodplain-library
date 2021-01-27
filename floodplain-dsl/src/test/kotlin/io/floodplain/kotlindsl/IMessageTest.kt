@@ -31,6 +31,8 @@ import io.floodplain.replication.factory.ReplicationFactory
 import io.floodplain.replication.impl.json.JSONReplicationMessageParserImpl
 import io.floodplain.replication.impl.protobuf.impl.ProtobufReplicationMessageParser
 import java.math.BigDecimal
+import java.time.LocalDate
+import java.time.LocalTime
 import java.util.Date
 import java.util.Optional
 import kotlin.test.Test
@@ -53,7 +55,7 @@ class IMessageTest {
         .set("astring", "somestring")
         .set("aboolean", false)
         .set("alist", listOf("foo", "bar"))
-        .set("adate", Date())
+        .set("adate", LocalDate.of(2013,3,3))
 
     private fun createComplexMessage(): IMessage {
         val list = List(2) { exampleMessage.copy() }
@@ -183,6 +185,29 @@ class IMessageTest {
         assertEquals(original, msg)
     }
 
+    @Test
+    fun testMessageWithDate() {
+        val localDate = LocalDate.of(2013,3,3)
+        val exampleMessage = empty()
+            .set("adate", localDate)
+        logger.info("A date: $localDate")
+        val msg = convertThereAndBack(exampleMessage)
+        val actualDate = msg["adate"]
+        assertEquals(LocalDate.of(2013,3,3), actualDate)
+        assertEquals(exampleMessage, msg)
+    }
+
+    @Test
+    fun testMessageWithTime() {
+        val localTime = LocalTime.of(23,30,3)
+        val exampleMessage = empty()
+            .set("atime", localTime)
+        logger.info("A timw: $localTime")
+        val msg = convertThereAndBack(exampleMessage,parser)
+        val actualDate = msg.time("atime")
+        assertEquals(localTime.toSecondOfDay(), actualDate.toSecondOfDay())
+        assertEquals(exampleMessage, msg)
+    }
     @Test
     fun testDate() {
         val original = exampleMessage.copy()

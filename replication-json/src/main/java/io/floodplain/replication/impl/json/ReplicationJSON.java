@@ -40,6 +40,12 @@ import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.TemporalAccessor;
 import java.util.*;
 import java.util.Map.Entry;
 
@@ -50,6 +56,10 @@ public class ReplicationJSON {
     private final static Logger logger = LoggerFactory.getLogger(ReplicationJSON.class);
     public static final ObjectMapper objectMapper = new ObjectMapper();
 
+    public static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    public static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SS");
+
+    public static final DateTimeFormatter clocktimeFormatter =  DateTimeFormatter.ofPattern("HH:mm:ss");
 
     public static ReplicationMessage parseReplicationMessage(byte[] data, Optional<String> source) throws IOException {
         return ReplicationJSON.parseJSON(source, (ObjectNode) parseJSON(data));
@@ -156,9 +166,12 @@ public class ReplicationJSON {
             case DATE:
                 if (value instanceof String) {
                     m.put("Value", (String) value);
+                } else if (value instanceof LocalDateTime) {
+                    String t = dateFormatter.format((LocalDateTime) value);
+                    m.put("Value", t);
+
                 } else {
-                    // TODO re-use formatter. This is pretty inefficient, but beware of threading issues when re-using
-                    String t = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SS").format((Date) value);
+                    String t = dateFormatter.format((LocalDate) value);
                     m.put("Value", t);
                 }
                 return;
@@ -166,7 +179,7 @@ public class ReplicationJSON {
                 if (value instanceof String) {
                     m.put("Value", (String) value);
                 } else {
-                    String c = new SimpleDateFormat("HH:mm:ss").format((Date) value);
+                    String c = clocktimeFormatter.format((TemporalAccessor) value);
                     m.put("Value", c);
                 }
 
@@ -235,17 +248,20 @@ public class ReplicationJSON {
             case DATE:
                 //"2011-10-03 15:01:06.00"
                 try {
-                    return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SS").parse(jsonNode.asText());
-                } catch (ParseException e) {
+                    String formattedDate = jsonNode.asText();
+
+                    return LocalDate.parse(formattedDate, formattedDate.length() >10 ? dateTimeFormatter : dateFormatter);
+//                    return dateFormatter.parse(jsonNode.asText());
+//                    return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SS").parse(jsonNode.asText());
+                } catch (DateTimeParseException e) {
                     logger.warn("Cannot parse date {} = returning null", jsonNode.asText());
                     return null;
                 }
             case CLOCKTIME:
                 //"15:01:06"
                 try {
-                    // TODO refactor this, this is pretty expensive, use DateTimeFormatter
-                    return new SimpleDateFormat("HH:mm:ss").parse(jsonNode.asText());
-                } catch (ParseException e) {
+                    return LocalTime.parse(jsonNode.asText(),clocktimeFormatter);
+                } catch (DateTimeParseException e) {
                     logger.warn("Cannot parse clocktime {} = returning null", jsonNode.asText());
 
                     return null;
@@ -328,7 +344,7 @@ public class ReplicationJSON {
                     node.put(key, (Boolean) o);
                     break;
                 case DATE:
-                    node.put(key, ((Date) o).toGMTString());
+                    node.put(key, ((LocalDate) o).format(dateFormatter));
                     break;
                 case DECIMAL:
                     node.put(key,((BigDecimal)o).toPlainString());

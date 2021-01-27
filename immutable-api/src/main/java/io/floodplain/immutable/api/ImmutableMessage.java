@@ -37,6 +37,7 @@ public interface ImmutableMessage {
         BOOLEAN,
         BINARY_DIGEST,
         DATE,
+        TIMESTAMP,
         BINARY,
         CLOCKTIME,
         STOPWATCHTIME,

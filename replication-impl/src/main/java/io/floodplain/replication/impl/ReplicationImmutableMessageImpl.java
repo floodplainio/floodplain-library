@@ -115,7 +115,6 @@ public class ReplicationImmutableMessageImpl implements ReplicationMessage {
             return super.equals(other);
         }
         return key.equals(other.queueKey());
-//		return key.equals(((ReplicationImmutableMessageImpl)other).queueKey());
     }
 
     public int hashCode() {
@@ -132,7 +131,6 @@ public class ReplicationImmutableMessageImpl implements ReplicationMessage {
         t.printStackTrace(System.out);
         this.transactionId = null;
         this.timestamp = -1;
-//		this.status = null;
         this.operation = Operation.UPDATE;
         this.primaryKeys = Collections.emptyList();
         this.immutableMessage = ImmutableFactory.create(Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap());

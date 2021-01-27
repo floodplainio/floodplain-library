@@ -36,8 +36,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
 import java.math.BigDecimal;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -63,16 +66,13 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
         }
     }
 
-    private static SimpleDateFormat dateFormat() {
-        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SS");
-    }
+    public static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    public static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SS");
 
-    private static SimpleDateFormat clocktimeFormat() {
-        return new SimpleDateFormat("HH:mm:ss");
-    }
+    public static final DateTimeFormatter clocktimeFormatter =  DateTimeFormatter.ofPattern("HH:mm:ss");
 
 
-    private static String serializeValue(ImmutableMessage.ValueType type, Object val, SimpleDateFormat dateFormat, SimpleDateFormat clocktimeFormat) {
+    private static String serializeValue(ImmutableMessage.ValueType type, Object val) {
         if (val == null) {
             return null;
         }
@@ -103,14 +103,31 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
                 if (val instanceof String) {
                     return (String) val;
                 }
-                return dateFormat.format((Date) val);
+                if(val instanceof LocalDateTime) {
+                    return dateFormatter.format((LocalDateTime) val);
+                }
+                if(val instanceof LocalDate) {
+                    return dateFormatter.format((LocalDate) val);
+                }
+                logger.info("Unexpected date type: {}",val);
             case CLOCKTIME:
                 if (val instanceof String) {
                     return (String) val;
                 }
-                return clocktimeFormat.format((Date) val);
+                if(val instanceof LocalDateTime) {
+                    return dateTimeFormatter.format((LocalDateTime) val);
+                }
+                if(val instanceof LocalDate) {
+                    dateFormatter.format((LocalDate) val);
+                }
+                return clocktimeFormatter.format((LocalTime) val);
             case ENUM:
                 return val.toString();
+            case TIMESTAMP:
+                if(val instanceof LocalDateTime) {
+                    return dateTimeFormatter.format((LocalDateTime) val);
+                }
+                throw new UnsupportedOperationException("Unknown type: " + type);
             case DECIMAL:
                 return ((BigDecimal)val).toPlainString();
             case STRINGLIST:
@@ -121,7 +138,7 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
         }
     }
 
-    private static Object protobufValue(Replication.ValueProtobuf val, SimpleDateFormat dataFormat, SimpleDateFormat clockTimeFormat) {
+    private static Object protobufValue(Replication.ValueProtobuf val) {
         if (val.getIsNull()) {
             return null;
         }
@@ -145,16 +162,16 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
                 return value;
             case DATE:
                 try {
-                    return dataFormat.parse(value);
-                } catch (ParseException e) {
+                    return LocalDate.parse(value,dateFormatter);
+                } catch (DateTimeParseException e) {
                     logger.warn("Error parsing date: " + value + " with type: " + val.getType().name(), e);
                     return null;
                 }
             case CLOCKTIME:
                 try {
-                    return clockTimeFormat.parse(value);
-                } catch (ParseException e) {
-                    logger.warn("Error parsing date: " + value + " with type: " + val.getType().name(), e);
+                    return clocktimeFormatter.parse(value);
+                } catch (DateTimeParseException e) {
+                    logger.warn("Error parsing clocktime: " + value + " with type: " + val.getType().name(), e);
                     return null;
                 }
             case DECIMAL:
@@ -188,6 +205,8 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
                 return Replication.ValueProtobuf.ValueType.BINARY_DIGEST;
             case DATE:
                 return Replication.ValueProtobuf.ValueType.DATE;
+            case TIMESTAMP:
+                return Replication.ValueProtobuf.ValueType.TIMESTAMP;
             case STRINGLIST:
                 return Replication.ValueProtobuf.ValueType.STRINGLIST;
             case BINARY:
@@ -197,7 +216,6 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
             case ENUM:
                 return Replication.ValueProtobuf.ValueType.ENUM;
             case DECIMAL:
-                // TODO not correct, rebuild proto
                 return Replication.ValueProtobuf.ValueType.DECIMAL;
             case STOPWATCHTIME:
             case IMMUTABLE:
@@ -227,6 +245,8 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
                 return ImmutableMessage.ValueType.BINARY_DIGEST;
             case DATE:
                 return ImmutableMessage.ValueType.DATE;
+            case TIMESTAMP:
+                return ImmutableMessage.ValueType.TIMESTAMP;
             case CLOCKTIME:
                 return ImmutableMessage.ValueType.CLOCKTIME;
             case BINARY:
@@ -235,17 +255,19 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
                 return ImmutableMessage.ValueType.ENUM;
             case DECIMAL:
                 return ImmutableMessage.ValueType.DECIMAL;
+            case LIST:
+                return ImmutableMessage.ValueType.STRINGLIST;
             case UNRECOGNIZED:
                 return ImmutableMessage.ValueType.UNKNOWN;
         }
         return ImmutableMessage.ValueType.UNKNOWN;
     }
 
-    public static ImmutableMessage parseImmutableMessage(Replication.ReplicationMessageProtobuf source, SimpleDateFormat dataFormat, SimpleDateFormat clockTimeFormat) {
-        return parseImmutableMessage(source, true, dataFormat, clockTimeFormat);
+    public static ImmutableMessage parseImmutableMessage(Replication.ReplicationMessageProtobuf source) {
+        return parseImmutableMessage(source, true);
     }
 
-    public static ImmutableMessage parseImmutableMessage(Replication.ReplicationMessageProtobuf source, boolean checkMagic, SimpleDateFormat dateFormat, SimpleDateFormat clockTimeFormat) {
+    public static ImmutableMessage parseImmutableMessage(Replication.ReplicationMessageProtobuf source, boolean checkMagic) {
         Map<String, Object> values = new HashMap<>();
         Map<String, ImmutableMessage.ValueType> types = new HashMap<>();
 
@@ -255,22 +277,22 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
 
         for (Entry<String, Replication.ValueProtobuf> b : source.getValuesMap().entrySet()) {
             types.put(b.getKey(), convertType(b.getValue().getType()));
-            values.put(b.getKey(), protobufValue(b.getValue(), dateFormat, clockTimeFormat));
+            values.put(b.getKey(), protobufValue(b.getValue()));
         }
         Map<String, ImmutableMessage> submessage = new HashMap<>();
         for (Entry<String, Replication.ReplicationMessageProtobuf> elt : source.getSubmessageMap().entrySet()) {
-            submessage.put(elt.getKey(), parseImmutableMessage(elt.getValue(), dateFormat, clockTimeFormat));
+            submessage.put(elt.getKey(), parseImmutableMessage(elt.getValue()));
         }
         Map<String, List<ImmutableMessage>> submessagelist = new HashMap<>();
         for (Entry<String, Replication.ReplicationMessageListProtobuf> elt : source.getSubmessageListMap().entrySet()) {
-            List<ImmutableMessage> rm = elt.getValue().getElementsList().stream().map(r -> parseImmutableMessage(r, dateFormat, clockTimeFormat)).collect(Collectors.toList());
+            List<ImmutableMessage> rm = elt.getValue().getElementsList().stream().map(r -> parseImmutableMessage(r)).collect(Collectors.toList());
             submessagelist.put(elt.getKey(), rm);
         }
         return ImmutableFactory.create(values, types, submessage, submessagelist);
 
     }
 
-    public static ReplicationMessage parse(Optional<String> topicSrc, Replication.ReplicationMessageProtobuf source, Optional<Runnable> commitAction, SimpleDateFormat dateFormat, SimpleDateFormat clockTimeFormat) {
+    public static ReplicationMessage parse(Optional<String> topicSrc, Replication.ReplicationMessageProtobuf source, Optional<Runnable> commitAction) {
         Map<String, Object> values = new HashMap<>();
         Map<String, ImmutableMessage.ValueType> types = new HashMap<>();
 
@@ -279,18 +301,18 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
         }
         for (Entry<String, Replication.ValueProtobuf> b : source.getValuesMap().entrySet()) {
             types.put(b.getKey(), convertType(b.getValue().getType()));
-            values.put(b.getKey(), protobufValue(b.getValue(), dateFormat, clockTimeFormat));
+            values.put(b.getKey(), protobufValue(b.getValue()));
         }
         Map<String, ImmutableMessage> submessage = new HashMap<>();
         for (Entry<String, Replication.ReplicationMessageProtobuf> elt : source.getSubmessageMap().entrySet()) {
-            submessage.put(elt.getKey(), parseImmutableMessage(elt.getValue(), dateFormat, clockTimeFormat));
+            submessage.put(elt.getKey(), parseImmutableMessage(elt.getValue()));
         }
         Map<String, List<ImmutableMessage>> submessagelist = new HashMap<>();
         for (Entry<String, Replication.ReplicationMessageListProtobuf> elt : source.getSubmessageListMap().entrySet()) {
-            List<ImmutableMessage> rm = elt.getValue().getElementsList().stream().map(r -> parseImmutableMessage(r, dateFormat, clockTimeFormat)).collect(Collectors.toList());
+            List<ImmutableMessage> rm = elt.getValue().getElementsList().stream().map(r -> parseImmutableMessage(r)).collect(Collectors.toList());
             submessagelist.put(elt.getKey(), rm);
         }
-        Optional<ImmutableMessage> paramMsg = Optional.ofNullable(source.getParamMessage()).map(msg -> parseImmutableMessage(msg, false, dateFormat, clockTimeFormat));
+        Optional<ImmutableMessage> paramMsg = Optional.ofNullable(source.getParamMessage()).map(msg -> parseImmutableMessage(msg, false));
         return ReplicationFactory.createReplicationMessage(topicSrc, Optional.empty(), Optional.empty(), source.getTransactionId(), source.getTimestamp(), ReplicationMessage.Operation.valueOf(source.getOperation().name()), source.getPrimarykeysList().stream().collect(Collectors.toList()), types, values, submessage, submessagelist, commitAction, paramMsg);
     }
 
@@ -321,8 +343,8 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
     }
 
     private static Replication.ReplicationMessageProtobuf toProto(ImmutableMessage msg, String transactionId, ReplicationMessage.Operation operation, long timestamp, List<String> primaryKeys, Optional<ImmutableMessage> paramMessage) {
-        SimpleDateFormat dataFormat = dateFormat();
-        SimpleDateFormat clockTimeFormat = clocktimeFormat();
+//        DateTimeFormatter dateFormat = dateFormat();
+//        DateTimeFormatter clockTimeFormat = clocktimeFormat();
 
         Map<String, Replication.ValueProtobuf> val = msg.values().entrySet()
                 .stream()
@@ -353,7 +375,7 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
 
                                 }
                             } else {
-                                final String serializeValue = serializeValue(type, value.orElse(null), dataFormat, clockTimeFormat);
+                                final String serializeValue = serializeValue(type, value.orElse(null));
                                 if (serializeValue == null) {
                                     return new ValueTuple(e.getKey(), Replication.ValueProtobuf.newBuilder()
                                             .setType(Replication.ValueProtobuf.ValueType.CLOCKTIME)
@@ -416,7 +438,7 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
         Replication.ReplicationMessageProtobuf parsed;
         try {
             parsed = Replication.ReplicationMessageProtobuf.parseFrom(data);
-            return parse(source, parsed, Optional.empty(), dateFormat(), clocktimeFormat());
+            return parse(source, parsed, Optional.empty());
         } catch (InvalidProtocolBufferException e) {
             logger.error("InvalidProtocolBufferException: ", e);
             return ReplicationFactory.createErrorReplicationMessage(e);
@@ -426,14 +448,11 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
 
     @Override
     public List<ReplicationMessage> parseMessageList(Optional<String> source, byte[] data) {
-        SimpleDateFormat dataFormat = dateFormat();
-        SimpleDateFormat clockTimeFormat = clocktimeFormat();
-
         if (data == null) {
             return Collections.emptyList();
         }
         try {
-            return Replication.ReplicationMessageListProtobuf.parseFrom(data).getElementsList().stream().map(e -> parse(source, e, Optional.empty(), dataFormat, clockTimeFormat)).collect(Collectors.toList());
+            return Replication.ReplicationMessageListProtobuf.parseFrom(data).getElementsList().stream().map(e -> parse(source, e, Optional.empty())).collect(Collectors.toList());
         } catch (InvalidProtocolBufferException e) {
             logger.error("Error invalid: ", e);
             return Arrays.asList(ReplicationFactory.createErrorReplicationMessage(e));
@@ -442,10 +461,8 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
 
     @Override
     public ReplicationMessage parseStream(Optional<String> source, InputStream data) {
-        SimpleDateFormat dataFormat = dateFormat();
-        SimpleDateFormat clockTimeFormat = clocktimeFormat();
         try {
-            return parse(Optional.empty(), Replication.ReplicationMessageProtobuf.parseFrom(data), Optional.empty(), dataFormat, clockTimeFormat);
+            return parse(Optional.empty(), Replication.ReplicationMessageProtobuf.parseFrom(data), Optional.empty());
         } catch (IOException e) {
             logger.error("Error: ", e);
             return ReplicationFactory.createErrorReplicationMessage(e);
@@ -459,8 +476,6 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
 
     @Override
     public List<ReplicationMessage> parseMessageList(Optional<String> source, InputStream data) {
-        SimpleDateFormat dataFormat = dateFormat();
-        SimpleDateFormat clockTimeFormat = clocktimeFormat();
         try {
             // make small pushback
             PushbackInputStream pis = new PushbackInputStream(data, 2);
@@ -476,7 +491,7 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
                 throw new IllegalArgumentException("Bad magic byte" + (short) pre[1]);
             }
             pis.unread(pre);
-            return Replication.ReplicationMessageListProtobuf.parseFrom(pis).getElementsList().stream().map(e -> parse(Optional.empty(), e, Optional.empty(), dataFormat, clockTimeFormat)).collect(Collectors.toList());
+            return Replication.ReplicationMessageListProtobuf.parseFrom(pis).getElementsList().stream().map(e -> parse(Optional.empty(), e, Optional.empty())).collect(Collectors.toList());
         } catch (IOException e) {
             logger.error("Error: ", e);
             return Arrays.asList(ReplicationFactory.createErrorReplicationMessage(e));

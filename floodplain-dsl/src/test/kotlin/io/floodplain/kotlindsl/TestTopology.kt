@@ -82,7 +82,7 @@ class TestTopology {
                 sink("people")
             }
         }.renderAndExecute {
-            input("mysource", "1", empty().set("species", "human"))
+            inputQualified("mysource", "1", empty().set("species", "human"))
             logger.info("outputs: ${outputs()}")
             val (_, value) = output("people")
             logger.info("Person found: $value")
@@ -513,7 +513,7 @@ class TestTopology {
     fun testRawInput() {
         val data = javaClass.classLoader.getResource("decimalwithscale.json")?.readBytes()
             ?: throw IllegalArgumentException("Missing json file for decimalwithscale.json")
-        stream("generation") {
+        stream {
             externalSource("@source", Topic.FloodplainKeyFormat.FLOODPLAIN_STRING, Topic.FloodplainBodyFormat.CONNECT_JSON) {
                 sink("@sinktopic")
             }

@@ -23,7 +23,9 @@ package io.floodplain.kotlindsl.message
 import io.floodplain.immutable.api.ImmutableMessage
 import io.floodplain.immutable.factory.ImmutableFactory
 import java.math.BigDecimal
-import java.util.Date
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
 import kotlin.streams.toList
 
 interface IMessage {
@@ -32,9 +34,13 @@ interface IMessage {
     fun string(path: String): String
     fun integer(path: String): Int
     fun optionalInteger(path: String): Int?
+    fun dateTime(path: String): LocalDateTime
+    fun optionalDateTime(path: String): LocalDateTime?
 
-    fun date(path: String): Date
-    fun optionalDate(path: String): Date?
+    fun time(path: String): LocalTime
+    fun optionalTime(path: String): LocalTime?
+    fun date(path: String): LocalDate
+    fun optionalDate(path: String): LocalDate?
     fun long(path: String): Long
     fun optionalLong(path: String): Long?
     fun list(path: String): List<String>
@@ -93,6 +99,31 @@ private data class IMessageImpl(private val content: MutableMap<String, Any>) : 
         }
         return raw
     }
+
+    override fun dateTime(path: String): LocalDateTime {
+       return optionalDateTime(path) ?: throw NullPointerException("Can't obtain datetime from path: $path as it is absent")
+    }
+
+    override fun optionalDateTime(path: String): LocalDateTime? {
+        val raw = get(path) ?: return null
+        if (raw !is LocalDateTime) {
+            throw ClassCastException("Path element $path should be an datetime but it is a ${raw::class}")
+        }
+        return raw
+    }
+
+    override fun time(path: String): LocalTime {
+        return optionalTime(path) ?: throw NullPointerException("Can't obtain datetime from path: $path as it is absent")
+    }
+
+    override fun optionalTime(path: String): LocalTime? {
+        val raw = get(path) ?: return null
+        if (raw !is LocalTime) {
+            throw ClassCastException("Path element $path should be an time but it is a ${raw::class}")
+        }
+        return raw
+    }
+
     override fun long(path: String): Long {
         return optionalLong(path) ?: throw NullPointerException("Can't obtain long from path: $path as it is absent")
     }
@@ -105,13 +136,13 @@ private data class IMessageImpl(private val content: MutableMap<String, Any>) : 
         return raw
     }
 
-    override fun date(path: String): Date {
+    override fun date(path: String): LocalDate {
         return optionalDate(path) ?: throw NullPointerException("Can't obtain date from path: $path as it is absent")
     }
 
-    override fun optionalDate(path: String): Date? {
+    override fun optionalDate(path: String): LocalDate? {
         val raw = get(path) ?: return null
-        if (raw !is Date) {
+        if (raw !is LocalDate) {
             throw ClassCastException("Path element $path should be an date but it is a ${raw::class}")
         }
         return raw

@@ -283,6 +283,22 @@ fun Stream.externalSource(
     rootTopology.addSource(source)
 }
 
+fun Stream.debeziumSource(topicSource: String, init: Source.()->Unit = {}) {
+    rootTopology.addSource(existingDebeziumSource(topicSource, this, init))
+}
+
+fun FloodplainOperator.debeziumSource(topicSource: String, init: Source.()->Unit = {}): Source {
+    return existingDebeziumSource(topicSource, this.rootTopology, init)
+}
+
+private fun existingDebeziumSource(topicSource: String, rootTopology: Stream, init: Source.()->Unit = {}): Source {
+    val topic = Topic.fromQualified(topicSource, rootTopology.topologyContext)
+    val sourceElement = TopicSource(topic, Topic.FloodplainKeyFormat.CONNECT_KEY_JSON, Topic.FloodplainBodyFormat.CONNECT_JSON)
+    val source = Source(rootTopology, sourceElement, rootTopology.topologyContext)
+    source.init()
+    return source
+}
+
 /**
  * Creates a simple sink that will contain the result of the current transformation. Multiple sinks may not be added.
  */

@@ -30,6 +30,9 @@ import org.slf4j.LoggerFactory;
 import javax.enterprise.context.ApplicationScoped;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -70,6 +73,12 @@ public class ImmutableFactory {
             return ValueType.FLOAT;
         } else if (val instanceof Date) {
             return ValueType.DATE;
+        } else if (val instanceof LocalDate) {
+            return ValueType.DATE;
+        } else if (val instanceof LocalTime) {
+            return ValueType.CLOCKTIME;
+        } else if (val instanceof LocalDateTime) {
+            return ValueType.TIMESTAMP;
         } else if (val instanceof Boolean) {
             return ValueType.BOOLEAN;
         } else if (val instanceof String) {

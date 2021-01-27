@@ -37,6 +37,9 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 
 
@@ -93,7 +96,7 @@ public class ReplicationProtobufTest {
     public void testDate() throws IOException {
         try (InputStream is = getClass().getResourceAsStream("submessage.json")) {
             ReplicationMessage rm = jsonParser.parseStream(is);
-            Date dd = (Date) rm.value("formdate").get();
+            LocalDate dd = (LocalDate) rm.value("formdate").get();
             logger.info(">> {}", dd);
         }
     }
@@ -119,21 +122,14 @@ public class ReplicationProtobufTest {
     public void testClocktime() {
         try (InputStream is = ReplicationProtobufTest.class.getResourceAsStream("calendarday.json")) {
             ReplicationMessage rm = jsonParser.parseStream(is);
-            Calendar c = Calendar.getInstance();
-            c.set(1970, 0, 1, 17, 0, 0);
-            final Date columnValue = (Date) rm.value("starttime").get();
-            logger.info("Comp: {}", columnValue.compareTo(c.getTime()));
-            logger.info("columnValue: {}", columnValue);
-            logger.info("columnValue: {}", c.getTime());
-            Assert.assertTrue(Math.abs(c.getTime().getTime() - columnValue.getTime()) < 1000);
+            final LocalTime columnValue = (LocalTime) rm.value("starttime").get();
+            Assert.assertEquals(columnValue.getMinute(),0 );
+            Assert.assertEquals(columnValue.getHour(),17 );
             Assert.assertEquals(7, rm.values().size());
             byte[] bb = protoBufParser.serialize(rm);
             logger.info("bytes: " + bb.length);
             ReplicationMessage rm2 = protoBufParser.parseBytes(Optional.empty(), bb);
             Assert.assertEquals(7, rm2.values().size());
-
-            final Date columnValue2 = (Date) rm2.value("starttime").get();
-            Assert.assertTrue(Math.abs(c.getTime().getTime() - columnValue2.getTime()) < 1000);
         } catch (IOException e) {
             e.printStackTrace();
         }

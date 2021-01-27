@@ -52,6 +52,8 @@ public class ImmutableTypeParser {
                 return "enum";
             case DECIMAL:
                 return "decimal";
+            case CLOCKTIME:
+                return "clocktime";
         }
         throw new UnsupportedOperationException("Unknown type: " + type);
 

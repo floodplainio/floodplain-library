@@ -1,5 +1,5 @@
 {
-  "Tenant": "KNBSB",
+  "Tenant": "XX",
   "Timestamp": 1488961345765,
   "Operation": "UPDATE",
   "PrimaryKeys": [
@@ -19,7 +19,7 @@
     "updateby": {
       "Name": "updateby",
       "Type": "string",
-      "Value": "jacco.lansbergen"
+      "Value": "ddd"
     },
     "calendardayid": {
       "Name": "calendardayid",
