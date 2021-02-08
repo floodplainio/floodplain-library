@@ -15,6 +15,7 @@ import io.floodplain.kotlindsl.Source
 import io.floodplain.kotlindsl.Stream
 import io.floodplain.kotlindsl.message.IMessage
 import io.floodplain.kotlindsl.message.empty
+import io.floodplain.kotlindsl.qualifiedTopic
 import io.floodplain.kotlindsl.stream
 import io.floodplain.reactive.source.topology.CustomTopicSource
 import io.floodplain.replication.factory.ReplicationFactory
@@ -35,22 +36,34 @@ fun <T : IBaseResource>parseFhirToMsg(parser: IParser, data: ByteArray, transfor
 }
 
 fun PartialStream.fhirGeneric(topic: String, init: Source.() -> Unit = {}): Source {
+    return fhirExistingSource(qualifiedTopic(topic),::genericResource,this.rootTopology,init)
+}
+
+fun PartialStream.fhirGeneric(topic: Topic, init: Source.() -> Unit = {}): Source {
     return fhirExistingSource(topic,::genericResource,this.rootTopology,init)
 }
 
 fun Stream.fhirGeneric(topic: String, init: Source.() -> Unit = {}) {
+    addSource(fhirExistingSource(qualifiedTopic(topic),::genericResource,this,init))
+}
+
+fun Stream.fhirGeneric(topic: Topic, init: Source.() -> Unit = {}) {
     addSource(fhirExistingSource(topic,::genericResource,this,init))
 }
 
-fun <T : IBaseResource> PartialStream.fhirSource(topic: String, transform: (T)-> IMessage, init: Source.() -> Unit = {}): Source {
+fun <T : IBaseResource> PartialStream.fhirSource(topic: Topic, transform: (T)-> IMessage, init: Source.() -> Unit = {}): Source {
     return fhirExistingSource(topic,transform,this.rootTopology, init)
 }
 
 fun <T : IBaseResource> Stream.fhirSource(topic: String, transform: (T)-> IMessage, init: Source.() -> Unit = {}) {
+    addSource(fhirExistingSource(qualifiedTopic(topic),transform,this.rootTopology, init))
+}
+
+fun <T : IBaseResource> Stream.fhirSource(topic: Topic, transform: (T)-> IMessage, init: Source.() -> Unit = {}) {
     addSource(fhirExistingSource(topic,transform,this.rootTopology, init))
 }
 
-fun <T : IBaseResource> fhirExistingSource(topic: String, transform: (T)-> IMessage, rootTopology: Stream, init: Source.() -> Unit = {}): Source {
+private fun <T : IBaseResource> fhirExistingSource(topic: Topic, transform: (T)-> IMessage, rootTopology: Stream, init: Source.() -> Unit = {}): Source {
     val context = FhirContext.forR4()
     val parser: IParser = context.newJsonParser()
     // TODO re-use these?
@@ -60,9 +73,9 @@ fun <T : IBaseResource> fhirExistingSource(topic: String, transform: (T)-> IMess
     }
 
     val sourceElement = CustomTopicSource(
-        Topic.fromQualified(topic,rootTopology.topologyContext),
         // Topic.from(topic, topologyContext),
-        {data->Serdes.String().deserializer().deserialize(topic,data)},
+        topic,
+        {data->Serdes.String().deserializer().deserialize(topic.qualifiedString(),data)},
         {data->parseInput(data)}
     )
     val source = Source(rootTopology, sourceElement, rootTopology.topologyContext)

@@ -57,7 +57,7 @@ fun main() {
                 msg.merge(attributes)
                 msg
             }
-            sink("@class", false)
+            sink("@class")
             // mongoSink("class", "@class", mongoConfig)
         }
         source("sportlinkkernel-COMPETITIONTYPE") {

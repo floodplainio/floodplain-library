@@ -151,11 +151,21 @@ fun Stream.mongoConfig(name: String, uri: String, database: String): MongoConfig
     return c
 }
 
+fun PartialStream.toMongo(collection: String, topicDefinition: String, config: MongoConfig) {
+    val topic = Topic.fromQualified(topicDefinition, topologyContext)
+    config.sinkInstancePair.add(collection to topic)
+    val sinkName = ProcessorName.from(config.name)
+    val sink = SinkTransformer(Optional.of(sinkName), topic, Optional.empty(), Topic.FloodplainKeyFormat.CONNECT_KEY_JSON, Topic.FloodplainBodyFormat.CONNECT_JSON)
+    val transform = Transformer(rootTopology, sink, topologyContext)
+    addTransformer(transform)
+}
+
+@Deprecated("Automatically qualifies topic, use toMongo and explicitly qualify topic")
 fun PartialStream.mongoSink(collection: String, topicDefinition: String, config: MongoConfig) {
     val topic = Topic.from(topicDefinition, topologyContext)
     config.sinkInstancePair.add(collection to topic)
     val sinkName = ProcessorName.from(config.name)
-    val sink = SinkTransformer(Optional.of(sinkName), topic, false, Optional.empty(), Topic.FloodplainKeyFormat.CONNECT_KEY_JSON, Topic.FloodplainBodyFormat.CONNECT_JSON)
+    val sink = SinkTransformer(Optional.of(sinkName), topic, Optional.empty(), Topic.FloodplainKeyFormat.CONNECT_KEY_JSON, Topic.FloodplainBodyFormat.FLOODPLAIN_JSON)
     val transform = Transformer(rootTopology, sink, topologyContext)
     addTransformer(transform)
 }

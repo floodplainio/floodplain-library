@@ -48,7 +48,7 @@ fun main() {
                 match["CalendarDay"] = calendarday["list"] ?: emptyList<IMessage>()
                 match
             }
-            mongoSink("match", "@sometopic", mongoConfig)
+            mongoSink("match", "$tenant-$deployment-$deployment-sometopic", mongoConfig)
         }
     }.renderAndSchedule(URL("http://localhost:8083/connectors"), "10.8.0.7:9092")
 }

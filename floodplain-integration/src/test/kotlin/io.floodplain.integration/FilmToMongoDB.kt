@@ -19,6 +19,7 @@
 package io.floodplain.integration
 
 import com.mongodb.client.MongoClients
+import io.floodplain.kotlindsl.each
 import io.floodplain.kotlindsl.group
 import io.floodplain.kotlindsl.joinGrouped
 import io.floodplain.kotlindsl.joinRemote
@@ -115,7 +116,6 @@ class FilmToMongoDB {
                 }
                 // pass this message to the mongo sink
                 mongoSink("filmwithactors", "@filmwithcat", mongoConfig)
-                // mongoSink("film", "@film", mongoConfig)
             }
         }.renderAndExecute {
             logger.info("Outputs: ${outputs()}")

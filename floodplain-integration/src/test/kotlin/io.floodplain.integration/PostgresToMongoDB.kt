@@ -67,7 +67,7 @@ class TestCombinedMongo {
             logger.info("Not performing integration tests; doesn't seem to work in circleci")
             return
         }
-        stream("any") {
+        stream("sometenant") {
             val postgresConfig = postgresSourceConfig(
                 "mypostgres",
                 postgresContainer.host,
@@ -189,7 +189,7 @@ class TestCombinedMongo {
                 set { _, msg, state ->
                     msg.set("city", state)
                 }
-                sink("@address", false)
+                sink("@address")
                 // mongoSink("address", "@address",  mongoConfig)
             }
             postgresSource("customer", postgresConfig) {

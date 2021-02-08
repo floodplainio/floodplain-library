@@ -8,6 +8,7 @@ import io.floodplain.kotlindsl.joinGrouped
 import io.floodplain.kotlindsl.joinRemote
 import io.floodplain.kotlindsl.message.IMessage
 import io.floodplain.kotlindsl.message.empty
+import io.floodplain.kotlindsl.qualifiedTopic
 import io.floodplain.kotlindsl.set
 import io.floodplain.kotlindsl.stream
 import io.floodplain.mongodb.mongoConfig
@@ -19,19 +20,17 @@ private val logger = mu.KotlinLogging.logger {}
 
 fun main() {
 
-    val generation = "20"
-    val deployment = "local"
-    stream(deployment, generation) {
+    stream("quin","local", "20") {
         val mongoConfig = mongoConfig("@mongosink", "mongodb://root:OmXBJ3uGp3@datadriven-mongodb", "@mongodump")
-        fhirSource("local-Organization", ::organizationParserSimple) {
+        fhirSource("$deployment-Organization", ::organizationParserSimple) {
             each { _, msg, _ ->
                 logger.info("Organization name: ${msg["name"]}")
             }
             mongoSink("Org1","@sinktopic",mongoConfig)
         }
-        debeziumSource("quin-dev-videoservices.public.video_call_entity") {
+        debeziumSource("$tenant-$deployment-videoservices.public.video_call_entity") {
             joinRemote("patient_details_id") {
-                debeziumSource("quin-dev-videoservices.public.patient_details_entity") {}
+                debeziumSource("$tenant-$deployment-videoservices.public.patient_details_entity") {}
             }
             set { _, call, patient ->
                  call["patient"] = patient
@@ -39,9 +38,9 @@ fun main() {
             }
             mongoSink("VideoCallEntity","@video_call_entity",mongoConfig)
         }
-        debeziumSource("quin-dev-videoservices.public.patient_details_entity") {
+        debeziumSource("$tenant-$deployment-videoservices.public.patient_details_entity") {
             joinGrouped {
-                debeziumSource("quin-dev-videoservices.public.video_call_entity") {
+                debeziumSource("$tenant-$deployment-videoservices.public.video_call_entity") {
                     group { it.string("patient_details_id") }
                 }
             }

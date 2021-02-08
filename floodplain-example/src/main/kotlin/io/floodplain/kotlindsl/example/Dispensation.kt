@@ -57,7 +57,7 @@ fun main() {
                     mongoSink("persondispensation", "@mongopersondispensation", mongoConfig)
                 }
             )
-            sink("@class", false)
+            sink("@class")
             // mongoSink("class", "@class", mongoConfig)
         }
     }.renderAndSchedule(URL("http://localhost:8083/connectors"), "10.8.0.7:9092")
