@@ -53,9 +53,6 @@ public class JSONToReplicationMessage {
     private final static Logger logger = LoggerFactory.getLogger(JSONToReplicationMessage.class);
 
 
-    //TODO Beware of threading issues
-    private final static DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SS");
-
     public static KeyValue parse(String keyInput, byte[] data) {
         try {
             JsonNode mapped = objectMapper.readTree(keyInput);

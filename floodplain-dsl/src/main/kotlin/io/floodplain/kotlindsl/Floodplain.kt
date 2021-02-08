@@ -142,8 +142,7 @@ fun PartialStream.buffer(duration: Duration, maxSize: Int = 10000, inMemory: Boo
  */
 fun PartialStream.set(transform: (String, IMessage, IMessage) -> IMessage): Transformer {
     val transformer: (String, ImmutableMessage, ImmutableMessage) -> ImmutableMessage =
-        { key: String, msg: ImmutableMessage, param: ImmutableMessage ->
-            // println("|> key: $key msg: $msg param: $param")
+        { key, msg, param ->
             transform.invoke(key, fromImmutable(msg), fromImmutable(param)).toImmutable()
         }
     val set = SetTransformer(transformer)
@@ -177,8 +176,8 @@ fun PartialStream.joinRemote(vararg keys: String, optional: Boolean = false, sou
     )
 }
 
-fun PartialStream.joinMulti(key: (IMessage) -> String, secondaryKey: (IMessage) -> String, optional: Boolean = false, source: () -> Source) {
-    val keyExtractor: (ImmutableMessage, ImmutableMessage) -> String = { msg, _ -> key.invoke(fromImmutable(msg)) }
+fun PartialStream.joinMulti(key: (IMessage) -> String?, secondaryKey: (IMessage) -> String, optional: Boolean = false, source: () -> Source) {
+    val keyExtractor: (ImmutableMessage, ImmutableMessage) -> String? = { msg, _ -> key.invoke(fromImmutable(msg)) }
     val secondarySource = source()
     secondarySource.group(secondaryKey)
 
@@ -250,25 +249,34 @@ fun Stream.table(topic: String, init: Source.() -> Unit) {
  * Use an existing source
  */
 fun PartialStream.source(topic: String, init: Source.() -> Unit = {}): Source {
+    return createSource(Topic.from(topic, rootTopology.topologyContext), rootTopology, init)
+}
+
+fun Stream.source(topic: String, init: Source.() -> Unit = {}) {
+    addSource(createSource(Topic.from(topic, rootTopology.topologyContext),this,init))
+}
+
+private fun createSource(
+    topic: Topic,
+    rootTopology: Stream,
+    init: Source.() -> Unit
+): Source {
     val sourceElement = TopicSource(
-        Topic.from(topic, topologyContext),
+        topic,
         Topic.FloodplainKeyFormat.FLOODPLAIN_STRING,
         Topic.FloodplainBodyFormat.FLOODPLAIN_JSON
     )
-    val source = Source(this.rootTopology, sourceElement, topologyContext)
+    val source = Source(rootTopology, sourceElement, rootTopology.topologyContext)
     source.init()
     return source
 }
 
-fun Stream.source(topic: String, init: Source.() -> Unit = {}) {
-    val sourceElement = TopicSource(
-        Topic.from(topic, topologyContext),
-        Topic.FloodplainKeyFormat.FLOODPLAIN_STRING,
-        Topic.FloodplainBodyFormat.FLOODPLAIN_JSON
-    )
-    val source = Source(this.rootTopology, sourceElement, topologyContext)
-    source.init()
-    addSource(source)
+fun FloodplainOperator.topic(name: String): Topic {
+    return Topic.from(name,topologyContext)
+}
+
+fun FloodplainOperator.qualifiedTopic(name: String): Topic {
+    return Topic.fromQualified(name,topologyContext)
 }
 
 fun Stream.externalSource(
@@ -302,11 +310,10 @@ private fun existingDebeziumSource(topicSource: String, rootTopology: Stream, in
 /**
  * Creates a simple sink that will contain the result of the current transformation. Multiple sinks may not be added.
  */
-fun PartialStream.sink(topic: String, materializeParent: Boolean = false): Transformer {
+fun PartialStream.sink(topic: String): Transformer {
     val sink = SinkTransformer(
         Optional.empty(),
         Topic.from(topic, topologyContext),
-        materializeParent,
         Optional.empty(),
         Topic.FloodplainKeyFormat.FLOODPLAIN_STRING,
         Topic.FloodplainBodyFormat.FLOODPLAIN_JSON
@@ -317,11 +324,10 @@ fun PartialStream.sink(topic: String, materializeParent: Boolean = false): Trans
 /**
  * Creates a simple sink that will contain the result of the current transformation. Multiple sinks may not be added.
  */
-fun PartialStream.externalSink(topic: String, materializeParent: Boolean = false): Transformer {
+fun PartialStream.externalSink(topic: String): Transformer {
     val sink = SinkTransformer(
         Optional.empty(),
         Topic.from(topic, topologyContext),
-        materializeParent,
         Optional.empty(),
         Topic.FloodplainKeyFormat.CONNECT_KEY_JSON,
         Topic.FloodplainBodyFormat.CONNECT_JSON

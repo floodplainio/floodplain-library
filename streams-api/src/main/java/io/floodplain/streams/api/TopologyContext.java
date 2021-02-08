@@ -28,6 +28,21 @@ public class TopologyContext {
 
     private static final Logger logger = LoggerFactory.getLogger(TopologyContext.class);
     private final Function<String, String> qualifier;
+    private final Optional<String> tenant;
+    private final Optional<String> deployment;
+    private final String generation;
+
+    public Optional<String> getTenant() {
+        return this.tenant;
+    }
+
+    public Optional<String> getDeployment() {
+        return this.deployment;
+    }
+
+    public String getGeneration() {
+        return this.generation;
+    }
 
     private static class NameQualifier implements Function<String,String> {
 
@@ -78,22 +93,25 @@ public class TopologyContext {
         }
     }
 
-    public static TopologyContext context(Function<String,String> qualifier) {
-        return new TopologyContext(qualifier);
+    private static TopologyContext context(String generation, Function<String,String> qualifier) {
+        return new TopologyContext(Optional.empty(),Optional.empty(),generation, qualifier);
     }
     public static TopologyContext context(Optional<String> tenant, Optional<String> deployment, String generation) {
-        if(deployment.isPresent() && tenant.isEmpty()) {
-            throw new IllegalArgumentException("Can not have a deployment without a deployment: "+tenant+" generation: "+generation);
-        }
-        return new TopologyContext(new NameQualifier(tenant,deployment,generation));
+//        if(deployment.isPresent() && tenant.isEmpty()) {
+//            throw new IllegalArgumentException("Can not have a deployment without a deployment: "+tenant+" generation: "+generation);
+//        }
+        return new TopologyContext(tenant,deployment,generation,new NameQualifier(tenant,deployment,generation));
     }
 
     public static TopologyContext context(Optional<String> tenant, String generation) {
-        return new TopologyContext(new NameQualifier(tenant,Optional.empty(),generation));
+        return new TopologyContext(tenant,Optional.empty(),generation,new NameQualifier(tenant,Optional.empty(),generation));
     }
 
-    public TopologyContext(Function<String, String> qualifier) {
+    public TopologyContext(Optional<String> tenant, Optional<String> deployment, String generation, Function<String, String> qualifier) {
         this.qualifier = qualifier;
+        this.tenant = tenant;
+        this.deployment = deployment;
+        this.generation = generation;
     }
 
     public String applicationId() {

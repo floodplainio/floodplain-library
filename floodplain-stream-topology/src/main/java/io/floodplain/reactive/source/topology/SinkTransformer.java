@@ -18,8 +18,10 @@
  */
 package io.floodplain.reactive.source.topology;
 
+import io.floodplain.immutable.api.ImmutableMessage;
 import io.floodplain.reactive.source.topology.api.TopologyPipeComponent;
 import io.floodplain.replication.api.ReplicationMessage;
+import io.floodplain.replication.factory.ReplicationFactory;
 import io.floodplain.streams.api.ProcessorName;
 import io.floodplain.streams.api.Topic;
 import io.floodplain.streams.api.TopologyContext;
@@ -38,7 +40,6 @@ public class SinkTransformer implements TopologyPipeComponent {
 
     private final Optional<ProcessorName> name;
     private final Optional<Integer> partitions;
-    private final boolean materializeParent;
     private final Topic.FloodplainKeyFormat keyFormat;
     private final Topic.FloodplainBodyFormat valueFormat;
     private final Topic topic;
@@ -46,11 +47,12 @@ public class SinkTransformer implements TopologyPipeComponent {
 
     private final static Logger logger = LoggerFactory.getLogger(SinkTransformer.class);
 
-    public SinkTransformer(Optional<ProcessorName> name, Topic topic, boolean materializeParent, Optional<Integer> partitions, Topic.FloodplainKeyFormat keyFormat, Topic.FloodplainBodyFormat valueFormat) {
+    private boolean materializeParent = false;
+    private boolean debug = false;
+    public SinkTransformer(Optional<ProcessorName> name, Topic topic, Optional<Integer> partitions, Topic.FloodplainKeyFormat keyFormat, Topic.FloodplainBodyFormat valueFormat) {
         this.name = name;
         this.topic = topic;
         this.partitions = partitions;
-        this.materializeParent = materializeParent;
         this.keyFormat = keyFormat;
         this.valueFormat = valueFormat;
     }
@@ -68,7 +70,11 @@ public class SinkTransformer implements TopologyPipeComponent {
         logger.info("Stack top for transformer: " + transformerNames.peek());
         Serializer<String> keySerializer = ReplicationTopologyParser.keySerializer(this.keyFormat);
         Serializer<ReplicationMessage> valueSerializer = ReplicationTopologyParser.bodySerializer(this.valueFormat);
+        if(debug) {
+            debug("debug_"+qualifiedName, topology,keySerializer,valueSerializer,transformerNames);
+        }
         topology.addSink(qualifiedName, qualifiedSinkTopic, keySerializer, valueSerializer, transformerNames.peek());
+
 //
 //        if(connectFormat) {
 //            Serializer<String> connectKeySerde = stringKeys ? Serdes.String().serializer() : new ConnectKeySerde().serializer();
@@ -79,6 +85,17 @@ public class SinkTransformer implements TopologyPipeComponent {
 //        }
     }
 
+    private void debug(String name, Topology topology, Serializer<String> keySerializer, Serializer<ReplicationMessage> valueSerializer, Stack<String> transformerNames) {
+        ImmutableMessage.TriConsumer cons = (key, message, secondary) -> {
+            ReplicationMessage m = ReplicationFactory.standardMessage(message);
+            byte[] data = valueSerializer.serialize("unknown",m);
+            String str = new String(data);
+            logger.info("DEBIG: "+str);
+        };
+        EachProcessor processor = new EachProcessor(cons);
+        topology.addProcessor(name, ()->processor,transformerNames.peek());
+    }
+
 
     @Override
     public boolean materializeParent() {
@@ -87,7 +104,7 @@ public class SinkTransformer implements TopologyPipeComponent {
 
     @Override
     public void setMaterialize() {
-        throw new UnsupportedOperationException("Sinks should never be materialized");
+        this.materializeParent = true;
     }
 
 

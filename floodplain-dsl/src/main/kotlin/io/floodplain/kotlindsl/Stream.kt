@@ -33,6 +33,7 @@ import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.StreamsConfig
 import org.apache.kafka.streams.Topology
 import org.apache.kafka.streams.processor.WallclockTimestampExtractor
+import java.lang.StringBuilder
 import java.net.URL
 import java.util.Properties
 import java.util.Stack
@@ -45,6 +46,34 @@ class Stream(override val topologyContext: TopologyContext) : FloodplainSourceCo
     private val sources: MutableList<Source> = ArrayList()
     private val sinkConfigurations: MutableList<SinkConfig> = mutableListOf()
     private val sourceConfigurations: MutableList<SourceConfig> = mutableListOf()
+    val tenant: String? = topologyContext.tenant.orElse(null)
+    val deployment: String? = topologyContext.deployment.orElse(null)
+    val generation: String = topologyContext.generation
+
+    fun topic(name: String): String {
+        val buffer = StringBuilder()
+        if(tenant!=null) {
+            buffer.append("$tenant-")
+        }
+        if(deployment!=null) {
+            buffer.append("$deployment-")
+        }
+        buffer.append(name)
+        return buffer.toString()
+    }
+
+    fun generationalTopic(name: String): String {
+        val buffer = StringBuilder()
+        if(tenant!=null) {
+            buffer.append("$tenant-")
+        }
+        if(deployment!=null) {
+            buffer.append("$deployment-")
+        }
+        buffer.append("$generation-")
+        buffer.append(name)
+        return buffer.toString()
+    }
 
     /**
      * Adds a source instance, should only be called from source implementations
@@ -106,7 +135,8 @@ class Stream(override val topologyContext: TopologyContext) : FloodplainSourceCo
             topologyConstructor,
             topologyContext,
             sourceConfigs,
-            sinkConfigs
+            sinkConfigs,
+            sinks
         )
     }
 

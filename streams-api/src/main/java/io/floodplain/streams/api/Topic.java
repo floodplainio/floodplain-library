@@ -37,11 +37,13 @@ public class Topic {
 
     //    private static final TopologyContext mockContext = TopologyContext.context("instance","gen");
     private Topic(TopologyContext topologyContext, String topicDefinition, String qualifiedDefinition) {
+        // only one will be used
         this.topologyContext = topologyContext;
         this.topicDefinition = topicDefinition;
         this.qualifiedDefinition = qualifiedDefinition;
         if(qualifiedDefinition!=null && qualifiedDefinition.contains("@")) {
             System.err.println("No");
+
         }
     }
 

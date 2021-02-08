@@ -21,12 +21,12 @@ package io.floodplain.kotlindsl
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.node.ObjectNode
 import io.floodplain.bufferTimeout
 import io.floodplain.kotlindsl.message.IMessage
 import io.floodplain.kotlindsl.message.fromImmutable
 import io.floodplain.replication.api.ReplicationMessage
 import io.floodplain.replication.factory.ReplicationFactory
+import io.floodplain.replication.impl.protobuf.FallbackReplicationMessageParser
 import io.floodplain.streams.api.Topic
 import io.floodplain.streams.api.TopologyContext
 import io.floodplain.streams.remotejoin.TopologyConstructor
@@ -63,6 +63,8 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.time.Duration
 import java.time.Instant
+import java.util.Collections
+import java.util.Optional
 import java.util.Properties
 
 private val logger = mu.KotlinLogging.logger {}
@@ -110,12 +112,12 @@ fun runLocalTopology(
     applicationId: String,
     bufferTime: Int?,
     topology: Topology,
-    localCmds: suspend
-    LocalContext.() -> Unit,
+    localCmds: suspend LocalContext.() -> Unit,
     topologyConstructor: TopologyConstructor,
     context: TopologyContext,
     sourceConfigs: List<SourceConfig>,
-    sinkConfigs: List<SinkConfig>
+    sinkConfigs: List<SinkConfig>,
+    sinks: List<Pair<String, String>>
 ) {
     val storageFolder = "teststorage/store"
     val props = Properties()
@@ -130,7 +132,7 @@ fun runLocalTopology(
     props.setProperty(StreamsConfig.STATE_DIR_CONFIG, storageFolder)
     props.setProperty(StreamsConfig.BUILT_IN_METRICS_VERSION_CONFIG, StreamsConfig.METRICS_LATEST)
     val driver = TopologyTestDriver(topology, props)
-    val contextInstance = LocalDriverContext(driver, context, topologyConstructor, sourceConfigs, sinkConfigs, bufferTime)
+    val contextInstance = LocalDriverContext(driver, context, topologyConstructor, sourceConfigs, sinkConfigs, sinks, bufferTime)
     val jobs = contextInstance.connectSourceAndSink()
     contextInstance.connectJobs.addAll(jobs)
     try {
@@ -158,6 +160,7 @@ class LocalDriverContext(
     private val topologyConstructor: TopologyConstructor,
     private val sourceConfigs: List<SourceConfig>,
     private val sinkConfigs: List<SinkConfig>,
+    private val sinks: List<Pair<String, String>>,
     private val bufferTime: Int?
 ) : LocalContext {
 
@@ -261,10 +264,21 @@ class LocalDriverContext(
         val topics = topics()
         val deserializer = JsonDeserializer() // TODO protobuf issue, topic is not in json connect
         val mapper = ObjectMapper()
-
+        val fallback = FallbackReplicationMessageParser()
         val sourceFlow = outputFlowSingle()
             .map { (topic, key, value) ->
-                val parsed = if (value == null) null else deserializer.deserialize(topic.qualifiedString(), value) as ObjectNode
+                // if(value!=null) {
+                //     val v = String(value)
+                //     logger.info("PPP: $v")
+                // }
+
+                // val parsed = if (value == null) null else deserializer.deserialize(topic.qualifiedString(),value)
+
+                // fallback.parseBytes(Optional.ofNullable(topic.qualifiedString()),value).valueMap(false,
+                //     Collections.emptySet())
+                val parsed = if (value == null) null else fallback.parseBytes(Optional.ofNullable(topic.qualifiedString()),value).valueMap(false,
+                    Collections.emptySet())
+
                 val result = if (value == null) null else mapper.convertValue(parsed, object : TypeReference<Map<String, Any>>() {})
                 Triple(topic, key, result)
             }

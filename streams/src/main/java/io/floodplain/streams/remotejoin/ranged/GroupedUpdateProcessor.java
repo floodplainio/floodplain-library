@@ -55,8 +55,8 @@ public class GroupedUpdateProcessor extends AbstractProcessor<String, Replicatio
     @SuppressWarnings("unchecked")
     @Override
     public void init(ProcessorContext context) {
-        this.lookupStore = (KeyValueStore<String, ReplicationMessage>) context.getStateStore(lookupStoreName);
-        this.mappingStore = (KeyValueStore<String, ReplicationMessage>) context.getStateStore(mappingStoreName);
+        this.lookupStore = context.getStateStore(lookupStoreName);
+        this.mappingStore = context.getStateStore(mappingStoreName);
         super.init(context);
     }
 

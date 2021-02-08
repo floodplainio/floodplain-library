@@ -23,6 +23,7 @@ import java.util.Objects;
 public class ProcessorName {
     private final String definition;
 
+    @Deprecated
     public static ProcessorName from(String definition) {
         return new ProcessorName(definition);
     }
