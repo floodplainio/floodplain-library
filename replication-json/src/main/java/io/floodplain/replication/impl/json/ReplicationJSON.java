@@ -175,6 +175,11 @@ public class ReplicationJSON {
                     m.put("Value", t);
                 }
                 return;
+            case TIMESTAMP:
+//        } else if (value instanceof LocalDateTime) {
+                String t = dateFormatter.format((LocalDateTime) value);
+                m.put("Value", t);
+                return;
             case CLOCKTIME:
                 if (value instanceof String) {
                     m.put("Value", (String) value);
@@ -182,7 +187,6 @@ public class ReplicationJSON {
                     String c = clocktimeFormatter.format((TemporalAccessor) value);
                     m.put("Value", c);
                 }
-
                 return;
             case STRINGLIST:
                 ArrayNode stringArrayNode = m.putArray("Value");

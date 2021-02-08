@@ -54,6 +54,8 @@ public class ImmutableTypeParser {
                 return "decimal";
             case CLOCKTIME:
                 return "clocktime";
+            case TIMESTAMP:
+                return "timestamp";
         }
         throw new UnsupportedOperationException("Unknown type: " + type);
 
