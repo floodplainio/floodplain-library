@@ -1,7 +1,7 @@
 package io.floodplain.build
 
 object Versions {
-    const val kotlin = "1.4.10"
+    const val kotlin = "1.4.30"
 
     /* test */
     const val junit = "4.12"
@@ -24,7 +24,7 @@ object FloodplainDeps {
     const val mongodb_version = "4.1.1"
     const val debezium_version = "1.3.0.Final"
     const val testContainer_version = "1.15.1"
-    const val kotlin_coroutines_version = "1.4.0-M1"
+    const val kotlin_coroutines_version = "1.4.2"
     const val debeziumCore        = "io.debezium:debezium-core:$debezium_version"
     const val debeziumPostgres    = "io.debezium:debezium-connector-postgres:$debezium_version"
     const val debeziumMySQL       = "io.debezium:debezium-connector-mysql:$debezium_version"
