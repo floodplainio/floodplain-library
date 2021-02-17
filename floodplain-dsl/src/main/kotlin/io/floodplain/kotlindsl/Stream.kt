@@ -149,7 +149,27 @@ class Stream(override val topologyContext: TopologyContext) : FloodplainSourceCo
         return renderAndSchedule(connectorURL,prop[StreamsConfig.BOOTSTRAP_SERVERS_CONFIG] as String,force,propMap)
     }
 
-    /**
+    fun renderAndSchedule(connectorURL: URL?, kafkaHosts: String, kafkaUsername: String, kafkaPassword: String, force: Boolean = false): KafkaStreams {
+        val properties = mapOf(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG to "",
+            "security.protocol" to "SASL_SSL",
+            "sasl.jaas.config" to "org.apache.kafka.common.security.plain.PlainLoginModule   required username='$kafkaUsername'   password='$kafkaPassword'",
+            "sasl.mechanism" to "PLAIN",
+            "acks" to "all"
+            )
+        return renderAndSchedule(connectorURL,kafkaHosts,force,properties)
+    }
+
+    // bootstrap.servers=pkc-lq8v7.eu-central-1.aws.confluent.cloud:9092
+    // security.protocol=SASL_SSL
+    // sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule   required username='KHKPHRFSQQ5KIXDJ'   password='Epznzmrw4BVOCmh3L6rTGfB3rnXoYNeCij6xwzDS4gmyXZn8Bb79nvvSjuqbTXYI';
+    // sasl.mechanism=PLAIN
+    // # Required for correctness in Apache Kafka clients prior to 2.6
+    // client.dns.lookup=use_all_dns_ips
+    // # Best practice for Kafka producer to prevent data loss
+    // acks=all
+
+
+        /**
      * Will create an executable definition of the str
      * eam (@see render), then will start the topology by starting a streams
      * instance pointing at the kafka cluster at kafkaHosts, using the supplied clientId.

@@ -3,20 +3,17 @@ package io.floodplain.kotlindsl.example
 import io.floodplain.fhir.fhirGeneric
 import io.floodplain.kotlindsl.Stream
 import io.floodplain.kotlindsl.debeziumSource
-import io.floodplain.kotlindsl.each
 import io.floodplain.kotlindsl.filter
 import io.floodplain.kotlindsl.group
 import io.floodplain.kotlindsl.joinGrouped
 import io.floodplain.kotlindsl.joinMulti
 import io.floodplain.kotlindsl.joinRemote
-import io.floodplain.kotlindsl.message.IMessage
 import io.floodplain.kotlindsl.set
 import io.floodplain.kotlindsl.sink
 import io.floodplain.kotlindsl.source
 import io.floodplain.kotlindsl.stream
 import io.floodplain.mongodb.MongoConfig
 import io.floodplain.mongodb.mongoConfig
-import io.floodplain.mongodb.mongoSink
 import io.floodplain.mongodb.toMongo
 import java.net.URL
 
@@ -38,7 +35,7 @@ fun Stream.conditionsWithResponse(mongoConfig: MongoConfig) {
         //     condition
         // }
         sink("$deployment-$generation-ConditionWithResponse")
-        mongoSink("ConditionWithQuestionnaire","$deployment-$generation-ConditionWithQuestionnaire",mongoConfig)
+        toMongo("ConditionWithQuestionnaire","$deployment-$generation-ConditionWithQuestionnaire",mongoConfig)
     }
 }
 
@@ -60,10 +57,7 @@ fun Stream.patientsWithConditions(mongoConfig: MongoConfig) {
 fun Stream.appointments(mongoConfig: MongoConfig) {
     debeziumSource("quin-$deployment-appointmentservices.public.appointment_entity") {
         joinRemote("patient_details_id") {
-            debeziumSource("quin-$deployment-appointmentservices.public.patient_details_entity") {
-
-            }
-
+            debeziumSource("quin-$deployment-appointmentservices.public.patient_details_entity")
         }
         set { k, appointment, patient ->
             logger.info("Merging key: $k video: $appointment with patient: $patient")
