@@ -67,9 +67,10 @@ public class TopologyConstructor {
         desiredTopics.put(topicName, partitionCount);
     }
 
-    public void createTopicsAsNeeded(TopologyContext topologyContext, String kafkaHosts) {
-        Map<String, Object> config = new HashMap<>();
-        config.put("bootstrap.servers", kafkaHosts);
+    public void createTopicsAsNeeded(Map<String,Object> settings) {
+        Map<String, Object> config = new HashMap<>(settings);
+//        config.put("bootstrap.servers", kafkaHosts);
+        // TODO remove these?
         config.put("client.id", UUID.randomUUID().toString());
         config.put("cleanup.policy","compact");
         AdminClient adminClient = AdminClient.create(config);

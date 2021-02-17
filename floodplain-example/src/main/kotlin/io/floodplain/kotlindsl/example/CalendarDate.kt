@@ -1,7 +1,6 @@
 package io.floodplain.kotlindsl.example
 
 import io.floodplain.kotlindsl.each
-import io.floodplain.kotlindsl.set
 import io.floodplain.kotlindsl.source
 import io.floodplain.kotlindsl.stream
 import io.floodplain.mongodb.mongoConfig

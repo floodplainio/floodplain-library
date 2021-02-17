@@ -33,6 +33,7 @@ import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.StreamsConfig
 import org.apache.kafka.streams.Topology
 import org.apache.kafka.streams.processor.WallclockTimestampExtractor
+import java.io.InputStream
 import java.lang.StringBuilder
 import java.net.URL
 import java.util.Properties
@@ -140,16 +141,24 @@ class Stream(override val topologyContext: TopologyContext) : FloodplainSourceCo
         )
     }
 
+    fun renderAndSchedule(connectorURL: URL?, settings: InputStream, force: Boolean = false): KafkaStreams {
+        val prop = Properties()
+        prop.load(settings)
+        val propMap = mutableMapOf<String,Any>()
+        prop.forEach { (k,v)-> propMap.put(k as String,v) }
+        return renderAndSchedule(connectorURL,prop[StreamsConfig.BOOTSTRAP_SERVERS_CONFIG] as String,force,propMap)
+    }
+
     /**
      * Will create an executable definition of the str
      * eam (@see render), then will start the topology by starting a streams
      * instance pointing at the kafka cluster at kafkaHosts, using the supplied clientId.
      * Finally, it will POST the supplied
      */
-    fun renderAndSchedule(connectorURL: URL?, kafkaHosts: String, force: Boolean = false): KafkaStreams {
+    fun renderAndSchedule(connectorURL: URL?, kafkaHosts: String,  force: Boolean = false,settings: Map<String,Any>? = null): KafkaStreams {
         val topologyConstructor = TopologyConstructor()
         val (topology, sources, sinks) = render(topologyConstructor)
-        topologyConstructor.createTopicsAsNeeded(topologyContext, kafkaHosts)
+        topologyConstructor.createTopicsAsNeeded(settings?: mapOf(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG to kafkaHosts))
         sources.forEach { (name, json) ->
             connectorURL?.let {
                 startConstructor(name, topologyContext, it, json, force)
@@ -161,7 +170,11 @@ class Stream(override val topologyContext: TopologyContext) : FloodplainSourceCo
             }
         }
         val appId = topologyContext.topicName("@applicationId")
-        val streams = runTopology(topology, appId, kafkaHosts, "storagePath")
+        val extra: MutableMap<String,Any> = mutableMapOf()
+        if(settings!=null) {
+            extra.putAll(settings)
+        }
+        val streams = runTopology(topology, appId, kafkaHosts, "storagePath", extra)
         logger.info { "Topology running!" }
         return streams
     }
@@ -187,8 +200,12 @@ class Stream(override val topologyContext: TopologyContext) : FloodplainSourceCo
         return Triple(topology, sources, sinks)
     }
 
-    private fun runTopology(topology: Topology, applicationId: String, kafkaHosts: String, storagePath: String): KafkaStreams {
-        val props = createProperties(applicationId, kafkaHosts, storagePath)
+    private fun runTopology(topology: Topology, applicationId: String, kafkaHosts: String, storagePath: String, extra: MutableMap<String,Any>): KafkaStreams {
+        extra[StreamsConfig.BOOTSTRAP_SERVERS_CONFIG] = kafkaHosts
+        extra[StreamsConfig.APPLICATION_ID_CONFIG] = applicationId
+        extra[StreamsConfig.STATE_DIR_CONFIG] = storagePath
+
+        val props = createProperties(extra)
         val stream = KafkaStreams(topology, props)
         logger.info("CurrentTopology:\n ${topology.describe()}")
         stream.setUncaughtExceptionHandler { thread: Thread, exception: Throwable? ->
@@ -202,15 +219,12 @@ class Stream(override val topologyContext: TopologyContext) : FloodplainSourceCo
         return stream
     }
 
-    private fun createProperties(applicationId: String, brokers: String, storagePath: String): Properties {
+    private fun createProperties(extra: Map<String,Any>): Properties {
         val streamsConfiguration = Properties()
         // Give the Streams application a unique name.  The name must be unique in the Kafka cluster
         // against which the application is run.
-        logger.info("Creating application with name: {}", applicationId)
-        logger.info("Creating application id: {}", applicationId)
-        logger.info("Starting instance in storagePath: {}", storagePath)
-        streamsConfiguration[StreamsConfig.APPLICATION_ID_CONFIG] = applicationId
-        streamsConfiguration[StreamsConfig.BOOTSTRAP_SERVERS_CONFIG] = brokers
+        streamsConfiguration.putAll(extra)
+        // logger.info("Starting instance in storagePath: {}", storagePath)
         streamsConfiguration[StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG] = Serdes.String().javaClass
         streamsConfiguration[StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG] = StreamOperators.replicationSerde.javaClass
         streamsConfiguration[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = "earliest"
@@ -220,7 +234,7 @@ class Stream(override val topologyContext: TopologyContext) : FloodplainSourceCo
         streamsConfiguration[ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG] = 7200000
         streamsConfiguration[ConsumerConfig.MAX_POLL_RECORDS_CONFIG] = 100
         streamsConfiguration[ProducerConfig.COMPRESSION_TYPE_CONFIG] = "lz4"
-        streamsConfiguration[StreamsConfig.STATE_DIR_CONFIG] = storagePath
+        // streamsConfiguration[StreamsConfig.STATE_DIR_CONFIG] = storagePath
         streamsConfiguration[StreamsConfig.NUM_STREAM_THREADS_CONFIG] = 1
         streamsConfiguration[StreamsConfig.NUM_STANDBY_REPLICAS_CONFIG] = 0
         streamsConfiguration[StreamsConfig.RETRIES_CONFIG] = 50

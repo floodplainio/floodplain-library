@@ -31,13 +31,12 @@ val useIntegraton: Boolean by lazy {
 class InstantiatedContainer(image: String, port: Int, env: Map<String, String> = emptyMap()) {
 
     class KGenericContainer(imageName: String) : GenericContainer<KGenericContainer>(DockerImageName.parse(imageName))
-    var container: KGenericContainer?
+    var container: KGenericContainer? = KGenericContainer(image)
+        .apply { withExposedPorts(port) }
+        .apply { withEnv(env) }
     var host: String
     var exposedPort: Int = -1
     init {
-        container = KGenericContainer(image)
-            .apply { withExposedPorts(port) }
-            .apply { withEnv(env) }
         container?.start()
         host = container?.host ?: "localhost"
         exposedPort = container?.firstMappedPort ?: -1
