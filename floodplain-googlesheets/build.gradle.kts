@@ -1,7 +1,7 @@
 import io.floodplain.build.FloodplainDeps
 
 plugins {
-    id "com.github.johnrengelman.shadow"
+    id ("com.github.johnrengelman.shadow")
 
 }
 
@@ -27,13 +27,33 @@ dependencies {
     implementation(FloodplainDeps.kotlinCoroutines)
 }
 
-shadowJar {
-    dependencies {
-        // exclude dependencies provided in the kafka connect classpath
-        exclude dependency("org.apache.kafka:connect-api:2.4.0")
-        exclude dependency("org.apache.kafka:kafka-clients:2.4.0")
-        exclude dependency("net.jpountz.lz4:.*:.*")
-        exclude dependency("org.xerial.snappy:.*:.*")
-        exclude dependency("org.slf4j:.*:.*")
+tasks {
+    named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar") {
+        archiveBaseName.set("shadow")
+        mergeServiceFiles()
+        exclude("org.apache.kafka:connect-api:*")
+        exclude("org.apache.kafka:kafka-clients:*")
+        exclude("net.jpountz.lz4:.*:.*")
+        exclude("org.xerial.snappy:.*:.*")
+        exclude("org.slf4j:.*:.*")
+        // manifest {
+        //     attributes(mapOf("Main-Class" to "com.github.csolem.gradle.shadow.kotlin.example.App"))
+        // }
     }
 }
+
+tasks {
+    build {
+        dependsOn(shadowJar)
+    }
+}
+// shadowJar {
+//     dependencies {
+//         // exclude dependencies provided in the kafka connect classpath
+//         exclude dependency("org.apache.kafka:connect-api:2.4.0")
+//         exclude dependency("org.apache.kafka:kafka-clients:2.4.0")
+//         exclude dependency("net.jpountz.lz4:.*:.*")
+//         exclude dependency("org.xerial.snappy:.*:.*")
+//         exclude dependency("org.slf4j:.*:.*")
+//     }
+// }
