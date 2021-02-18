@@ -149,13 +149,15 @@ class Stream(override val topologyContext: TopologyContext) : FloodplainSourceCo
         return renderAndSchedule(connectorURL,prop[StreamsConfig.BOOTSTRAP_SERVERS_CONFIG] as String,force,propMap)
     }
 
-    fun renderAndSchedule(connectorURL: URL?, kafkaHosts: String, kafkaUsername: String, kafkaPassword: String, force: Boolean = false): KafkaStreams {
-        val properties = mapOf(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG to "",
+
+    fun Stream.renderAndSchedule(connectorURL: URL?, kafkaHosts: String, kafkaUsername: String, kafkaPassword: String,replicationFactor: Int, force: Boolean = false): KafkaStreams {
+        val properties = mapOf(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG to kafkaHosts,
             "security.protocol" to "SASL_SSL",
-            "sasl.jaas.config" to "org.apache.kafka.common.security.plain.PlainLoginModule   required username='$kafkaUsername'   password='$kafkaPassword'",
+            "sasl.jaas.config" to "org.apache.kafka.common.security.plain.PlainLoginModule   required username='$kafkaUsername'   password='$kafkaPassword';",
             "sasl.mechanism" to "PLAIN",
-            "acks" to "all"
-            )
+            "acks" to "all",
+            StreamsConfig.REPLICATION_FACTOR_CONFIG to replicationFactor
+        )
         return renderAndSchedule(connectorURL,kafkaHosts,force,properties)
     }
 
@@ -245,21 +247,22 @@ class Stream(override val topologyContext: TopologyContext) : FloodplainSourceCo
         // against which the application is run.
         streamsConfiguration.putAll(extra)
         // logger.info("Starting instance in storagePath: {}", storagePath)
-        streamsConfiguration[StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG] = Serdes.String().javaClass
-        streamsConfiguration[StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG] = StreamOperators.replicationSerde.javaClass
-        streamsConfiguration[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = "earliest"
-        streamsConfiguration[ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG] = 30000
-        streamsConfiguration[ConsumerConfig.REQUEST_TIMEOUT_MS_CONFIG] = 40000
-        streamsConfiguration[ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG] = 5000
-        streamsConfiguration[ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG] = 7200000
-        streamsConfiguration[ConsumerConfig.MAX_POLL_RECORDS_CONFIG] = 100
-        streamsConfiguration[ProducerConfig.COMPRESSION_TYPE_CONFIG] = "lz4"
-        // streamsConfiguration[StreamsConfig.STATE_DIR_CONFIG] = storagePath
-        streamsConfiguration[StreamsConfig.NUM_STREAM_THREADS_CONFIG] = 1
-        streamsConfiguration[StreamsConfig.NUM_STANDBY_REPLICAS_CONFIG] = 0
-        streamsConfiguration[StreamsConfig.RETRIES_CONFIG] = 50
-        streamsConfiguration[StreamsConfig.REPLICATION_FACTOR_CONFIG] = CoreOperators.topicReplicationCount()
-        streamsConfiguration[StreamsConfig.DEFAULT_TIMESTAMP_EXTRACTOR_CLASS_CONFIG] = WallclockTimestampExtractor::class.java
+        streamsConfiguration.putIfAbsent(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG,Serdes.String().javaClass)
+        streamsConfiguration.putIfAbsent(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG,Serdes.String().javaClass)
+        streamsConfiguration.putIfAbsent(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG,StreamOperators.replicationSerde.javaClass)
+        streamsConfiguration.putIfAbsent(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,"earliest")
+        streamsConfiguration.putIfAbsent(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG,30000)
+        streamsConfiguration.putIfAbsent(ConsumerConfig.REQUEST_TIMEOUT_MS_CONFIG,40000)
+        streamsConfiguration.putIfAbsent(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG,5000)
+        streamsConfiguration.putIfAbsent(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG,7200000)
+        streamsConfiguration.putIfAbsent(ConsumerConfig.MAX_POLL_RECORDS_CONFIG,100)
+        streamsConfiguration.putIfAbsent(ProducerConfig.COMPRESSION_TYPE_CONFIG,"lz4")
+        // streamsConfiguration.putIfAbsent(StreamsConfig.STATE_DIR_CONFIG,storagePath)
+        streamsConfiguration.putIfAbsent(StreamsConfig.NUM_STREAM_THREADS_CONFIG,1)
+        streamsConfiguration.putIfAbsent(StreamsConfig.NUM_STANDBY_REPLICAS_CONFIG,0)
+        streamsConfiguration.putIfAbsent(StreamsConfig.RETRIES_CONFIG,50)
+        streamsConfiguration.putIfAbsent(StreamsConfig.REPLICATION_FACTOR_CONFIG,CoreOperators.topicReplicationCount())
+        streamsConfiguration.putIfAbsent(StreamsConfig.DEFAULT_TIMESTAMP_EXTRACTOR_CLASS_CONFIG,WallclockTimestampExtractor::class.java)
 
         // 24h for now
         streamsConfiguration["retention.ms"] = 3600 * 24 * 1000
