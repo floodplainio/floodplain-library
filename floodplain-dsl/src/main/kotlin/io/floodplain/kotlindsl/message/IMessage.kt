@@ -101,7 +101,7 @@ private data class IMessageImpl(private val content: MutableMap<String, Any>) : 
     }
 
     override fun dateTime(path: String): LocalDateTime {
-       return optionalDateTime(path) ?: throw NullPointerException("Can't obtain datetime from path: $path as it is absent")
+        return optionalDateTime(path) ?: throw NullPointerException("Can't obtain datetime from path: $path as it is absent")
     }
 
     override fun optionalDateTime(path: String): LocalDateTime? {

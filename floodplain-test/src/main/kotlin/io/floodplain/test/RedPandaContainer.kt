@@ -41,7 +41,7 @@ class RedPandaContainer(image: String, port: Int, env: Map<String, String> = emp
             //     "while [ ! -f $STARTER_SCRIPT ]; do sleep 1; echo woopp; done; $STARTER_SCRIPT"
             // )
             withCreateContainerCmdModifier { cmd ->
-                println("Bommmp: "+cmd)
+                println("Bommmp: " + cmd)
                 cmd.withEntrypoint("sh -c while [ ! -f $STARTER_SCRIPT ]; do sleep 1; done; $STARTER_SCRIPT")
             }
             println("Command parts: ${commandParts.asList()}")
@@ -55,29 +55,29 @@ class RedPandaContainer(image: String, port: Int, env: Map<String, String> = emp
                 return
             }
             val kafkaURL = "$host:$port"
-            val startCommand = """
+            val startCommand =
+                """
                 #!/usr/bin/env bash
                 echo woooop
                 set -e
                 supercronic -quiet /etc/cron.d/rpk-status.cron &
                 exec rpk start --advertise-kafka-addr $kafkaURL $@
-            """.trimIndent()
+                """.trimIndent()
             // val startCommand = "rpk start --advertise-kafka-addr $kafkaURL"
             copyFileToContainer(
                 Transferable.of(startCommand.toByteArray(StandardCharsets.UTF_8), 511), // octal 777
                 STARTER_SCRIPT
             )
             // "start", "--advertise-kafka-addr", "kafka:9092"
-
         }
     }
     var container: KGenericContainer = KGenericContainer(image)
-        .apply { withExposedPorts(port)}
+        .apply { withExposedPorts(port) }
         // .apply { var self = this; port.toTypedArray().forEach { self = withExposedPorts(it) }; self }
         .apply { withEnv(env) }
-        // .apply { var self = this; if(commands!=null) { self = withCommand(command)}; self }
-        // .apply {val cmds: Array<String> = arrayOf(*commands); withCommand(arrayOf("a")) }
-        // .apply { if(customize!=null) customize(this) else this}
+    // .apply { var self = this; if(commands!=null) { self = withCommand(command)}; self }
+    // .apply {val cmds: Array<String> = arrayOf(*commands); withCommand(arrayOf("a")) }
+    // .apply { if(customize!=null) customize(this) else this}
     // var host: String
     var exposedPort: Int = -1
     init {

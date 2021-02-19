@@ -276,8 +276,10 @@ class LocalDriverContext(
 
                 // fallback.parseBytes(Optional.ofNullable(topic.qualifiedString()),value).valueMap(false,
                 //     Collections.emptySet())
-                val parsed = if (value == null) null else fallback.parseBytes(Optional.ofNullable(topic.qualifiedString()),value).valueMap(false,
-                    Collections.emptySet())
+                val parsed = if (value == null) null else fallback.parseBytes(Optional.ofNullable(topic.qualifiedString()), value).valueMap(
+                    false,
+                    Collections.emptySet()
+                )
 
                 val result = if (value == null) null else mapper.convertValue(parsed, object : TypeReference<Map<String, Any>>() {})
                 Triple(topic, key, result)
@@ -315,11 +317,11 @@ class LocalDriverContext(
 
     override fun input(topic: String, key: String, msg: IMessage) {
         val qualifiedTopicName = topologyContext.topicName(topic)
-        inputQualified(qualifiedTopicName,key,msg)
+        inputQualified(qualifiedTopicName, key, msg)
     }
 
     override fun inputQualified(topic: String, key: String, msg: IMessage) {
-        val qualifiedTopicName = topic //topologyContext.topicName(topic)
+        val qualifiedTopicName = topic // topologyContext.topicName(topic)
         if (!inputs().contains(qualifiedTopicName)) {
             logger.debug("Missing topic: $topic available topics: ${inputs()}")
         }
@@ -336,7 +338,7 @@ class LocalDriverContext(
 
     override fun input(topic: String, key: ByteArray, msg: ByteArray) {
         val qualifiedTopicName = topologyContext.topicName(topic)
-        inputQualified(qualifiedTopicName,key,msg)
+        inputQualified(qualifiedTopicName, key, msg)
     }
 
     override fun inputQualified(topic: String, key: ByteArray, msg: ByteArray) {
@@ -372,7 +374,7 @@ class LocalDriverContext(
 
     override fun delete(topic: String, key: String) {
         val qualifiedTopicName = topologyContext.topicName(topic)
-        deleteQualified(qualifiedTopicName,key)
+        deleteQualified(qualifiedTopicName, key)
     }
 
     override fun deleteQualified(topic: String, key: String) {

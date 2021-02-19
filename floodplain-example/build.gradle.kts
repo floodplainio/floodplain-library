@@ -4,17 +4,7 @@ plugins {
     // Apply the java-library plugin to add support for Java Library
     id("java")
     id("application")
-    // id("com.github.johnrengelman.shadow")
-    id("com.palantir.graal")
 }
-
-//
-// graal {
-//     graalVersion("19.3.2")
-//     javaVersion("11")
-//     mainClass("io.floodplain.kotlindsl.example.FloodplainFilmWithActorsKt")
-//     outputName("Floodplain")
-// }
 
 dependencies {
     implementation(project(":floodplain-dsl"))

@@ -1,8 +1,7 @@
 import io.floodplain.build.FloodplainDeps
 
 plugins {
-    id ("com.github.johnrengelman.shadow")
-
+    id("com.github.johnrengelman.shadow")
 }
 
 dependencies {
@@ -16,10 +15,10 @@ dependencies {
     // This dependency is used internally, and not exposed to consumers on their own compile classpath.
     implementation("com.google.guava:guava:28.0-jre")
 
-	implementation("com.google.oauth-client:google-oauth-client-jetty:1.30.5")
-	implementation("com.google.apis:google-api-services-sheets:v4-rev607-1.25.0")
-	implementation("org.apache.kafka:connect-api:2.5.0")
-	implementation("com.fasterxml.jackson.core:jackson-databind:2.10.2")
+    implementation("com.google.oauth-client:google-oauth-client-jetty:1.30.5")
+    implementation("com.google.apis:google-api-services-sheets:v4-rev607-1.25.0")
+    implementation("org.apache.kafka:connect-api:2.5.0")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.10.2")
     implementation(project(":floodplain-dsl"))
     implementation(project(":floodplain-stream-topology"))
     implementation(project(":streams-api"))

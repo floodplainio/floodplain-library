@@ -253,7 +253,7 @@ fun PartialStream.source(topic: String, init: Source.() -> Unit = {}): Source {
 }
 
 fun Stream.source(topic: String, init: Source.() -> Unit = {}) {
-    addSource(createSource(Topic.from(topic, rootTopology.topologyContext),this,init))
+    addSource(createSource(Topic.from(topic, rootTopology.topologyContext), this, init))
 }
 
 private fun createSource(
@@ -272,11 +272,11 @@ private fun createSource(
 }
 
 fun FloodplainOperator.topic(name: String): Topic {
-    return Topic.from(name,topologyContext)
+    return Topic.from(name, topologyContext)
 }
 
 fun FloodplainOperator.qualifiedTopic(name: String): Topic {
-    return Topic.fromQualified(name,topologyContext)
+    return Topic.fromQualified(name, topologyContext)
 }
 
 fun Stream.externalSource(
@@ -291,15 +291,15 @@ fun Stream.externalSource(
     rootTopology.addSource(source)
 }
 
-fun Stream.debeziumSource(topicSource: String, init: Source.()->Unit = {}) {
+fun Stream.debeziumSource(topicSource: String, init: Source.() -> Unit = {}) {
     rootTopology.addSource(existingDebeziumSource(topicSource, this, init))
 }
 
-fun FloodplainOperator.debeziumSource(topicSource: String, init: Source.()->Unit = {}): Source {
+fun FloodplainOperator.debeziumSource(topicSource: String, init: Source.() -> Unit = {}): Source {
     return existingDebeziumSource(topicSource, this.rootTopology, init)
 }
 
-private fun existingDebeziumSource(topicSource: String, rootTopology: Stream, init: Source.()->Unit = {}): Source {
+private fun existingDebeziumSource(topicSource: String, rootTopology: Stream, init: Source.() -> Unit = {}): Source {
     val topic = Topic.fromQualified(topicSource, rootTopology.topologyContext)
     val sourceElement = TopicSource(topic, Topic.FloodplainKeyFormat.CONNECT_KEY_JSON, Topic.FloodplainBodyFormat.CONNECT_JSON)
     val source = Source(rootTopology, sourceElement, rootTopology.topologyContext)

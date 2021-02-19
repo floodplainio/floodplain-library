@@ -25,58 +25,57 @@ import org.hl7.fhir.instance.model.api.IBaseResource
 import org.hl7.fhir.r4.model.Patient
 import java.io.ByteArrayInputStream
 
-
 private val objectMapper = ObjectMapper()
 val fhirParser: IParser = FhirContext.forR4().newJsonParser()
 
-fun <T : IBaseResource>parseFhirToMsg(parser: IParser, data: ByteArray, transform: (T)-> IMessage): IMessage {
+fun <T : IBaseResource> parseFhirToMsg(parser: IParser, data: ByteArray, transform: (T) -> IMessage): IMessage {
     val resource = parser.parseResource(ByteArrayInputStream(data))
     // TODO make sure to create a clear error message if classcast issues arise
     return transform(resource as T)
 }
 
 fun PartialStream.fhirGeneric(topic: String, init: Source.() -> Unit = {}): Source {
-    return fhirExistingSource(qualifiedTopic(topic),::genericResource,this.rootTopology,init)
+    return fhirExistingSource(qualifiedTopic(topic), ::genericResource, this.rootTopology, init)
 }
 
 fun PartialStream.fhirGeneric(topic: Topic, init: Source.() -> Unit = {}): Source {
-    return fhirExistingSource(topic,::genericResource,this.rootTopology,init)
+    return fhirExistingSource(topic, ::genericResource, this.rootTopology, init)
 }
 
 fun Stream.fhirGeneric(topic: String, init: Source.() -> Unit = {}) {
-    addSource(fhirExistingSource(qualifiedTopic(topic),::genericResource,this,init))
+    addSource(fhirExistingSource(qualifiedTopic(topic), ::genericResource, this, init))
 }
 
 fun Stream.fhirGeneric(topic: Topic, init: Source.() -> Unit = {}) {
-    addSource(fhirExistingSource(topic,::genericResource,this,init))
+    addSource(fhirExistingSource(topic, ::genericResource, this, init))
 }
 
-fun <T : IBaseResource> PartialStream.fhirSource(topic: Topic, transform: (T)-> IMessage, init: Source.() -> Unit = {}): Source {
-    return fhirExistingSource(topic,transform,this.rootTopology, init)
+fun <T : IBaseResource> PartialStream.fhirSource(topic: Topic, transform: (T) -> IMessage, init: Source.() -> Unit = {}): Source {
+    return fhirExistingSource(topic, transform, this.rootTopology, init)
 }
 
-fun <T : IBaseResource> Stream.fhirSource(topic: String, transform: (T)-> IMessage, init: Source.() -> Unit = {}) {
-    addSource(fhirExistingSource(qualifiedTopic(topic),transform,this.rootTopology, init))
+fun <T : IBaseResource> Stream.fhirSource(topic: String, transform: (T) -> IMessage, init: Source.() -> Unit = {}) {
+    addSource(fhirExistingSource(qualifiedTopic(topic), transform, this.rootTopology, init))
 }
 
-fun <T : IBaseResource> Stream.fhirSource(topic: Topic, transform: (T)-> IMessage, init: Source.() -> Unit = {}) {
-    addSource(fhirExistingSource(topic,transform,this.rootTopology, init))
+fun <T : IBaseResource> Stream.fhirSource(topic: Topic, transform: (T) -> IMessage, init: Source.() -> Unit = {}) {
+    addSource(fhirExistingSource(topic, transform, this.rootTopology, init))
 }
 
-private fun <T : IBaseResource> fhirExistingSource(topic: Topic, transform: (T)-> IMessage, rootTopology: Stream, init: Source.() -> Unit = {}): Source {
+private fun <T : IBaseResource> fhirExistingSource(topic: Topic, transform: (T) -> IMessage, rootTopology: Stream, init: Source.() -> Unit = {}): Source {
     val context = FhirContext.forR4()
     val parser: IParser = context.newJsonParser()
     // TODO re-use these?
-    val parseInput = { data: ByteArray->
-        val transformedMessage = parseFhirToMsg<T>(parser, data,transform)
+    val parseInput = { data: ByteArray ->
+        val transformedMessage = parseFhirToMsg<T>(parser, data, transform)
         ReplicationFactory.standardMessage(transformedMessage.toImmutable())
     }
 
     val sourceElement = CustomTopicSource(
         // Topic.from(topic, topologyContext),
         topic,
-        {data->Serdes.String().deserializer().deserialize(topic.qualifiedString(),data)},
-        {data->parseInput(data)}
+        { data -> Serdes.String().deserializer().deserialize(topic.qualifiedString(), data) },
+        { data -> parseInput(data) }
     )
     val source = Source(rootTopology, sourceElement, rootTopology.topologyContext)
     source.init()
@@ -91,7 +90,7 @@ fun genericResource(resource: IBaseResource): IMessage {
 private fun parseMessage(objectMessage: ObjectNode): IMessage {
     val message = empty()
     objectMessage.fields().forEach { (field, value) ->
-        parseJSONObject(message,value,field)
+        parseJSONObject(message, value, field)
     }
     return message
 }
@@ -103,13 +102,13 @@ private fun parseJSONObject(current: IMessage, json: JsonNode, field: String) {
             // no-op
         }
         JsonNodeType.NUMBER -> {
-            if(json.isFloat) {
+            if (json.isFloat) {
                 current[field] = (json as NumericNode).floatValue()
             }
-            if(json.isLong) {
+            if (json.isLong) {
                 current[field] = (json as NumericNode).longValue()
             }
-            if(json.isInt) {
+            if (json.isInt) {
                 current[field] = (json as NumericNode).intValue()
             }
         }
@@ -121,25 +120,24 @@ private fun parseJSONObject(current: IMessage, json: JsonNode, field: String) {
         }
         JsonNodeType.ARRAY -> {
             val array = json as ArrayNode
-            if(array.isEmpty) {
+            if (array.isEmpty) {
                 return
             }
             val first = array[0]
             if (first.isObject) {
-                current[field] = array.map { element->
+                current[field] = array.map { element ->
                     parseMessage(element as ObjectNode)
                 }.toList()
-            } else if(first.isTextual) {
-                current[field] = array.map { element->
+            } else if (first.isTextual) {
+                current[field] = array.map { element ->
                     (element as TextNode).textValue()
                 }.joinToString(",")
             }
         }
         JsonNodeType.OBJECT -> {
-            current[field]  = parseMessage(json as ObjectNode)
+            current[field] = parseMessage(json as ObjectNode)
         }
     }
-
 }
 
 fun main() {
@@ -151,7 +149,6 @@ fun main() {
         return message
     }
 
-
     fun patientGeneric(patient: Patient) {
         val context = FhirContext.forR4()
         val parser: IParser = context.newJsonParser()
@@ -160,8 +157,7 @@ fun main() {
         val json = objectMapper.readTree(stringed)
     }
     stream {
-        fhirSource<Patient>("sometopic",::patientToMessage) {
-
+        fhirSource<Patient>("sometopic", ::patientToMessage) {
         }
     }
 }

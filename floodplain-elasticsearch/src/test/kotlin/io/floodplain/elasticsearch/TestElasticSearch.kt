@@ -55,7 +55,7 @@ class TestElasticSearch {
         val uri = "http://${container.host}:${container.exposedPort}"
         stream {
             source("sometopic") {
-                each { _, iMessage, _ ->  logger.info("Message: $iMessage")}
+                each { _, iMessage, _ -> logger.info("Message: $iMessage") }
                 val config = elasticSearchConfig("elasticName", uri)
                 elasticSearchSink("mysinkname", "myindex", config)
             }

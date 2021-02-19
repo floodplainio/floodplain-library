@@ -1,6 +1,5 @@
 package io.floodplain.integration
 
-import io.floodplain.test.InstantiatedContainer
 import org.apache.kafka.clients.admin.AdminClient
 import org.junit.Ignore
 import org.junit.Test

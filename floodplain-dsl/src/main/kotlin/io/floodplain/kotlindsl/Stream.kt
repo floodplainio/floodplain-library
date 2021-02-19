@@ -53,10 +53,10 @@ class Stream(override val topologyContext: TopologyContext) : FloodplainSourceCo
 
     fun topic(name: String): String {
         val buffer = StringBuilder()
-        if(tenant!=null) {
+        if (tenant != null) {
             buffer.append("$tenant-")
         }
-        if(deployment!=null) {
+        if (deployment != null) {
             buffer.append("$deployment-")
         }
         buffer.append(name)
@@ -65,10 +65,10 @@ class Stream(override val topologyContext: TopologyContext) : FloodplainSourceCo
 
     fun generationalTopic(name: String): String {
         val buffer = StringBuilder()
-        if(tenant!=null) {
+        if (tenant != null) {
             buffer.append("$tenant-")
         }
-        if(deployment!=null) {
+        if (deployment != null) {
             buffer.append("$deployment-")
         }
         buffer.append("$generation-")
@@ -144,21 +144,21 @@ class Stream(override val topologyContext: TopologyContext) : FloodplainSourceCo
     fun renderAndSchedule(connectorURL: URL?, settings: InputStream, force: Boolean = false): KafkaStreams {
         val prop = Properties()
         prop.load(settings)
-        val propMap = mutableMapOf<String,Any>()
-        prop.forEach { (k,v)-> propMap.put(k as String,v) }
-        return renderAndSchedule(connectorURL,prop[StreamsConfig.BOOTSTRAP_SERVERS_CONFIG] as String,force,propMap)
+        val propMap = mutableMapOf<String, Any>()
+        prop.forEach { (k, v) -> propMap.put(k as String, v) }
+        return renderAndSchedule(connectorURL, prop[StreamsConfig.BOOTSTRAP_SERVERS_CONFIG] as String, force, propMap)
     }
 
-
-    fun renderAndSchedule(connectorURL: URL?, kafkaHosts: String, kafkaUsername: String, kafkaPassword: String,replicationFactor: Int, force: Boolean = false): KafkaStreams {
-        val properties = mapOf(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG to kafkaHosts,
+    fun renderAndSchedule(connectorURL: URL?, kafkaHosts: String, kafkaUsername: String, kafkaPassword: String, replicationFactor: Int, force: Boolean = false): KafkaStreams {
+        val properties = mapOf(
+            StreamsConfig.BOOTSTRAP_SERVERS_CONFIG to kafkaHosts,
             "security.protocol" to "SASL_SSL",
             "sasl.jaas.config" to "org.apache.kafka.common.security.plain.PlainLoginModule   required username='$kafkaUsername'   password='$kafkaPassword';",
             "sasl.mechanism" to "PLAIN",
             "acks" to "all",
             StreamsConfig.REPLICATION_FACTOR_CONFIG to replicationFactor
         )
-        return renderAndSchedule(connectorURL,kafkaHosts,force,properties)
+        return renderAndSchedule(connectorURL, kafkaHosts, force, properties)
     }
 
     // bootstrap.servers=pkc-lq8v7.eu-central-1.aws.confluent.cloud:9092
@@ -170,17 +170,16 @@ class Stream(override val topologyContext: TopologyContext) : FloodplainSourceCo
     // # Best practice for Kafka producer to prevent data loss
     // acks=all
 
-
-        /**
+    /**
      * Will create an executable definition of the str
      * eam (@see render), then will start the topology by starting a streams
      * instance pointing at the kafka cluster at kafkaHosts, using the supplied clientId.
      * Finally, it will POST the supplied
      */
-    fun renderAndSchedule(connectorURL: URL?, kafkaHosts: String,  force: Boolean = false,settings: Map<String,Any>? = null): KafkaStreams {
+    fun renderAndSchedule(connectorURL: URL?, kafkaHosts: String, force: Boolean = false, settings: Map<String, Any>? = null): KafkaStreams {
         val topologyConstructor = TopologyConstructor()
         val (topology, sources, sinks) = render(topologyConstructor)
-        topologyConstructor.createTopicsAsNeeded(settings?: mapOf(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG to kafkaHosts))
+        topologyConstructor.createTopicsAsNeeded(settings ?: mapOf(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG to kafkaHosts))
         sources.forEach { (name, json) ->
             connectorURL?.let {
                 startConstructor(name, topologyContext, it, json, force)
@@ -192,8 +191,8 @@ class Stream(override val topologyContext: TopologyContext) : FloodplainSourceCo
             }
         }
         val appId = topologyContext.topicName("@applicationId")
-        val extra: MutableMap<String,Any> = mutableMapOf()
-        if(settings!=null) {
+        val extra: MutableMap<String, Any> = mutableMapOf()
+        if (settings != null) {
             extra.putAll(settings)
         }
         val streams = runTopology(topology, appId, kafkaHosts, "storagePath", extra)
@@ -222,7 +221,7 @@ class Stream(override val topologyContext: TopologyContext) : FloodplainSourceCo
         return Triple(topology, sources, sinks)
     }
 
-    private fun runTopology(topology: Topology, applicationId: String, kafkaHosts: String, storagePath: String, extra: MutableMap<String,Any>): KafkaStreams {
+    private fun runTopology(topology: Topology, applicationId: String, kafkaHosts: String, storagePath: String, extra: MutableMap<String, Any>): KafkaStreams {
         extra[StreamsConfig.BOOTSTRAP_SERVERS_CONFIG] = kafkaHosts
         extra[StreamsConfig.APPLICATION_ID_CONFIG] = applicationId
         extra[StreamsConfig.STATE_DIR_CONFIG] = storagePath
@@ -241,28 +240,28 @@ class Stream(override val topologyContext: TopologyContext) : FloodplainSourceCo
         return stream
     }
 
-    private fun createProperties(extra: Map<String,Any>): Properties {
+    private fun createProperties(extra: Map<String, Any>): Properties {
         val streamsConfiguration = Properties()
         // Give the Streams application a unique name.  The name must be unique in the Kafka cluster
         // against which the application is run.
         streamsConfiguration.putAll(extra)
         // logger.info("Starting instance in storagePath: {}", storagePath)
-        streamsConfiguration.putIfAbsent(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG,Serdes.String().javaClass)
-        streamsConfiguration.putIfAbsent(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG,Serdes.String().javaClass)
-        streamsConfiguration.putIfAbsent(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG,StreamOperators.replicationSerde.javaClass)
-        streamsConfiguration.putIfAbsent(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,"earliest")
-        streamsConfiguration.putIfAbsent(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG,30000)
-        streamsConfiguration.putIfAbsent(ConsumerConfig.REQUEST_TIMEOUT_MS_CONFIG,40000)
-        streamsConfiguration.putIfAbsent(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG,5000)
-        streamsConfiguration.putIfAbsent(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG,7200000)
-        streamsConfiguration.putIfAbsent(ConsumerConfig.MAX_POLL_RECORDS_CONFIG,100)
-        streamsConfiguration.putIfAbsent(ProducerConfig.COMPRESSION_TYPE_CONFIG,"lz4")
+        streamsConfiguration.putIfAbsent(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().javaClass)
+        streamsConfiguration.putIfAbsent(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().javaClass)
+        streamsConfiguration.putIfAbsent(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, StreamOperators.replicationSerde.javaClass)
+        streamsConfiguration.putIfAbsent(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest")
+        streamsConfiguration.putIfAbsent(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, 30000)
+        streamsConfiguration.putIfAbsent(ConsumerConfig.REQUEST_TIMEOUT_MS_CONFIG, 40000)
+        streamsConfiguration.putIfAbsent(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, 5000)
+        streamsConfiguration.putIfAbsent(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 7200000)
+        streamsConfiguration.putIfAbsent(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 100)
+        streamsConfiguration.putIfAbsent(ProducerConfig.COMPRESSION_TYPE_CONFIG, "lz4")
         // streamsConfiguration.putIfAbsent(StreamsConfig.STATE_DIR_CONFIG,storagePath)
-        streamsConfiguration.putIfAbsent(StreamsConfig.NUM_STREAM_THREADS_CONFIG,1)
-        streamsConfiguration.putIfAbsent(StreamsConfig.NUM_STANDBY_REPLICAS_CONFIG,0)
-        streamsConfiguration.putIfAbsent(StreamsConfig.RETRIES_CONFIG,50)
-        streamsConfiguration.putIfAbsent(StreamsConfig.REPLICATION_FACTOR_CONFIG,CoreOperators.topicReplicationCount())
-        streamsConfiguration.putIfAbsent(StreamsConfig.DEFAULT_TIMESTAMP_EXTRACTOR_CLASS_CONFIG,WallclockTimestampExtractor::class.java)
+        streamsConfiguration.putIfAbsent(StreamsConfig.NUM_STREAM_THREADS_CONFIG, 1)
+        streamsConfiguration.putIfAbsent(StreamsConfig.NUM_STANDBY_REPLICAS_CONFIG, 0)
+        streamsConfiguration.putIfAbsent(StreamsConfig.RETRIES_CONFIG, 50)
+        streamsConfiguration.putIfAbsent(StreamsConfig.REPLICATION_FACTOR_CONFIG, CoreOperators.topicReplicationCount())
+        streamsConfiguration.putIfAbsent(StreamsConfig.DEFAULT_TIMESTAMP_EXTRACTOR_CLASS_CONFIG, WallclockTimestampExtractor::class.java)
 
         // 24h for now
         streamsConfiguration["retention.ms"] = 3600 * 24 * 1000

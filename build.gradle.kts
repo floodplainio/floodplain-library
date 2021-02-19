@@ -17,15 +17,14 @@ buildscript {
 }
 plugins {
     id("eclipse")
-    id("org.jetbrains.kotlin.jvm") version "1.4.30"
-    id("org.jetbrains.kotlin.plugin.allopen") version "1.4.30"
+    id("org.jetbrains.kotlin.jvm") version "1.4.20"
+    id("org.jetbrains.kotlin.plugin.allopen") version "1.4.20"
     id("com.github.johnrengelman.shadow") version "5.2.0"
     id("org.jlleitschuh.gradle.ktlint") version "9.4.1"
-    id("com.palantir.graal") version "0.7.0-5-g838c2ab"
     id("org.jetbrains.dokka") version "0.10.1"
     id("com.github.hierynomus.license-base").version("0.15.0")
-    id("com.github.spotbugs") version "4.5.1"
-    id("io.gitlab.arturbosch.detekt") version "1.14.1"
+    id("com.github.spotbugs") version "4.6.0"
+    id("io.gitlab.arturbosch.detekt") version "1.15.0"
     signing
     `maven-publish`
     `java-library`

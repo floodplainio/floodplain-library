@@ -21,8 +21,8 @@ class TestFhirSource {
     fun testParse() {
         val parser: IParser = FhirContext.forR4().newJsonParser()
         val data = this::class.java.classLoader.getResource("patient-example.json").readBytes()
-        val msg = parseFhirToMsg(parser,data,::patientToMessage)
-        Assert.assertEquals("Chalmers",msg["name"])
+        val msg = parseFhirToMsg(parser, data, ::patientToMessage)
+        Assert.assertEquals("Chalmers", msg["name"])
     }
 
     @Test
