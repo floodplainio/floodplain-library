@@ -150,7 +150,7 @@ class Stream(override val topologyContext: TopologyContext) : FloodplainSourceCo
     }
 
 
-    fun Stream.renderAndSchedule(connectorURL: URL?, kafkaHosts: String, kafkaUsername: String, kafkaPassword: String,replicationFactor: Int, force: Boolean = false): KafkaStreams {
+    fun renderAndSchedule(connectorURL: URL?, kafkaHosts: String, kafkaUsername: String, kafkaPassword: String,replicationFactor: Int, force: Boolean = false): KafkaStreams {
         val properties = mapOf(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG to kafkaHosts,
             "security.protocol" to "SASL_SSL",
             "sasl.jaas.config" to "org.apache.kafka.common.security.plain.PlainLoginModule   required username='$kafkaUsername'   password='$kafkaPassword';",
