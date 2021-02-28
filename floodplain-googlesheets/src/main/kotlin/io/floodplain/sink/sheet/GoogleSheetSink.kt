@@ -51,7 +51,7 @@ fun PartialStream.googleSheetsSink(topicDefinition: String, googleSheetId: Strin
 
 class GoogleSheetSink(val topic: Topic, val spreadsheetId: String, val columns: List<String>, val startColumn: String = "A", val startRow: Int = 1)
 fun Stream.googleSheetConfig(name: String): GoogleSheetConfiguration {
-    val googleSheetConfiguration = GoogleSheetConfiguration(topologyContext,topologyConstructor, name)
+    val googleSheetConfiguration = GoogleSheetConfiguration(topologyContext, topologyConstructor, name)
     this.addSinkConfiguration(googleSheetConfiguration)
     return googleSheetConfiguration
 }
@@ -62,7 +62,7 @@ class GoogleSheetConfiguration(override val topologyContext: TopologyContext, ov
     private var instantiatedSinkElements: Map<Topic, MutableList<FloodplainSink>>? = null
 
     override fun materializeConnectorConfig(): List<MaterializedConfig> {
-        sheetSinks.forEach { e-> topologyConstructor.addDesiredTopic(e.topic, Optional.of(1)) }
+        sheetSinks.forEach { e -> topologyConstructor.addDesiredTopic(e.topic, Optional.of(1)) }
         return sheetSinks.map {
             val settings = mutableMapOf(
                 "connector.class" to SheetSinkConnector::class.java.name,

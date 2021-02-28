@@ -213,7 +213,7 @@ class LocalDriverContext(
                     flow.collect { elements ->
                         sinks[topic]?.forEach {
                             // logger.info("Buffered. Sending size: ${elements.size} topic: $topic")
-                            it.send(topic, elements, topologyContext)
+                            it.send(topic, elements)
                         }
                     }
                 }

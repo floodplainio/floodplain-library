@@ -36,7 +36,7 @@ import io.floodplain.streams.remotejoin.TopologyConstructor
 import java.util.Optional
 
 fun Stream.logSinkConfig(name: String): LogSinkConfiguration {
-    val logSinkConfig = LogSinkConfiguration(topologyContext,topologyConstructor, name)
+    val logSinkConfig = LogSinkConfiguration(topologyContext, topologyConstructor, name)
     this.addSinkConfiguration(logSinkConfig)
     return logSinkConfig
 }
@@ -72,9 +72,7 @@ fun PartialStream.logSink(sinkName: String, topicName: String, config: LogSinkCo
         "connector.class" to "io.floodplain.sink.LogSinkConnector",
         "tasks.max" to "1",
         "value.converter" to "org.apache.kafka.connect.json.JsonConverter",
-        // "key.converter" to "org.apache.kafka.connect.json.JsonConverter", // maps not supported by elasticsearch
         "key.converter" to "org.apache.kafka.connect.storage.StringConverter", // "org.apache.kafka.connect.json.JsonConverter",
-
         "topics" to topicName,
         "schema.ignore" to "true",
         "type.name" to "_doc"

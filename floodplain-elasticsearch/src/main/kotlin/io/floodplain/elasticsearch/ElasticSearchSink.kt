@@ -36,7 +36,7 @@ import io.floodplain.streams.remotejoin.TopologyConstructor
 import java.util.Optional
 
 fun Stream.elasticSearchConfig(name: String, uri: String): ElasticSearchSinkConfig {
-    val c = ElasticSearchSinkConfig(topologyContext,topologyConstructor, name, uri, this.topologyContext)
+    val c = ElasticSearchSinkConfig(topologyContext, topologyConstructor, name, uri, this.topologyContext)
     return this.addSinkConfiguration(c) as ElasticSearchSinkConfig
 }
 

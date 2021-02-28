@@ -40,7 +40,7 @@ class GoogleSheetTest {
     @Test
     fun testGoogleSheet() {
         // sanity check
-        GoogleSheetConfiguration(TopologyContext.context(Optional.empty(),"1"), TopologyConstructor(),"connectorName")
+        GoogleSheetConfiguration(TopologyContext.context(Optional.empty(), "1"), TopologyConstructor(), "connectorName")
     }
 
     @Test

@@ -90,11 +90,8 @@ interface SourceTopic {
     fun table(): String
 }
 
-// TODO can remove topologycontext
 interface FloodplainSink {
-    fun send(topic: Topic, elements: List<Pair<String, Map<String, Any>?>>, topologyContext: TopologyContext)
-
-    // fun send(elements: List<Pair<Topic,IMessage?>>)
+    fun send(topic: Topic, elements: List<Pair<String, Map<String, Any>?>>)
     fun config(): SinkConfig
     fun flush()
     fun close()

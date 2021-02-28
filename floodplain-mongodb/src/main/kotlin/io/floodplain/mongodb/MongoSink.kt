@@ -47,7 +47,7 @@ class MongoConfig(override val topologyContext: TopologyContext, override val to
 
     override fun materializeConnectorConfig(): List<MaterializedConfig> {
         val additional = mutableMapOf<String, String>()
-        sinkInstancePair.forEach { (key, value) ->  topologyConstructor.addDesiredTopic(value, Optional.empty()) }
+        sinkInstancePair.forEach { (key, value) -> topologyConstructor.addDesiredTopic(value, Optional.empty()) }
         sinkInstancePair.forEach { (key, value) -> additional.put("topic.override.${value.qualifiedString()}.collection", key) }
         logger.debug("Pairs: $sinkInstancePair")
         val collections: String = sinkInstancePair.joinToString(",") { e -> e.first }
@@ -113,7 +113,7 @@ class MongoConfig(override val topologyContext: TopologyContext, override val to
 private class MongoFloodplainSink(private val task: SinkTask, private val config: SinkConfig) : FloodplainSink {
     private val offsetCounter = AtomicLong(System.currentTimeMillis())
 
-    override fun send(topic: Topic, elements: List<Pair<String, Map<String, Any>?>>, topologyContext: TopologyContext) {
+    override fun send(topic: Topic, elements: List<Pair<String, Map<String, Any>?>>) {
         val list = elements.map { (key, value) ->
             SinkRecord(topic.qualifiedString(), 0, null, key, null, value, offsetCounter.incrementAndGet())
         }.toList()

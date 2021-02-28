@@ -30,7 +30,7 @@ import kotlinx.coroutines.flow.onEach
 
 private val logger = mu.KotlinLogging.logger {}
 
-class MySQLConfig(override val topologyContext: TopologyContext, override val topologyConstructor: TopologyConstructor,  val name: String, private val offsetId: String, private val hostname: String, private val port: Int, private val username: String, private val password: String, private val database: String) : SourceConfig {
+class MySQLConfig(override val topologyContext: TopologyContext, override val topologyConstructor: TopologyConstructor, val name: String, private val offsetId: String, private val hostname: String, private val port: Int, private val username: String, private val password: String, private val database: String) : SourceConfig {
 
     private val sourceElements: MutableList<SourceTopic> = mutableListOf()
 
@@ -102,7 +102,7 @@ class MySQLConfig(override val topologyContext: TopologyContext, override val to
 }
 
 fun Stream.mysqlSourceConfig(name: String, hostname: String, port: Int, username: String, password: String, database: String): MySQLConfig {
-    val mySQLConfig = MySQLConfig(this.topologyContext,this.topologyConstructor, name, topologyContext.applicationId(), hostname, port, username, password, database)
+    val mySQLConfig = MySQLConfig(this.topologyContext, this.topologyConstructor, name, topologyContext.applicationId(), hostname, port, username, password, database)
     addSourceConfiguration(mySQLConfig)
     return mySQLConfig
 }
