@@ -32,20 +32,21 @@ import io.floodplain.reactive.source.topology.SinkTransformer
 import io.floodplain.streams.api.ProcessorName
 import io.floodplain.streams.api.Topic
 import io.floodplain.streams.api.TopologyContext
+import io.floodplain.streams.remotejoin.TopologyConstructor
 import java.util.Optional
 
 fun Stream.elasticSearchConfig(name: String, uri: String): ElasticSearchSinkConfig {
-    val c = ElasticSearchSinkConfig(name, uri, this.topologyContext)
+    val c = ElasticSearchSinkConfig(topologyContext,topologyConstructor, name, uri, this.topologyContext)
     return this.addSinkConfiguration(c) as ElasticSearchSinkConfig
 }
 
-class ElasticSearchSinkConfig(val name: String, val uri: String, val context: TopologyContext) :
+class ElasticSearchSinkConfig(override val topologyContext: TopologyContext, override val topologyConstructor: TopologyConstructor, val name: String, val uri: String, val context: TopologyContext) :
     SinkConfig {
     var sinkTask: ElasticsearchSinkTask? = null
     val materializedConfigs: MutableList<MaterializedConfig> = mutableListOf()
     private var instantiatedSinkElements: Map<Topic, MutableList<FloodplainSink>>? = null
 
-    override fun materializeConnectorConfig(topologyContext: TopologyContext): List<MaterializedConfig> {
+    override fun materializeConnectorConfig(): List<MaterializedConfig> {
         return materializedConfigs
     }
 
@@ -53,8 +54,8 @@ class ElasticSearchSinkConfig(val name: String, val uri: String, val context: To
         return sinkTask
     }
 
-    override fun instantiateSinkElements(topologyContext: TopologyContext) {
-        instantiatedSinkElements = instantiateSinkConfig(topologyContext, this) { ElasticsearchSinkConnector() }
+    override fun instantiateSinkElements() {
+        instantiatedSinkElements = instantiateSinkConfig(this) { ElasticsearchSinkConnector() }
     }
     override fun sinkElements(): Map<Topic, MutableList<FloodplainSink>> {
         return instantiatedSinkElements ?: emptyMap()

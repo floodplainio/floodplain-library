@@ -146,9 +146,9 @@ fun floodplainSinkFromTask(task: SinkTask, config: SinkConfig): FloodplainSink {
     return LocalConnectorSink(task, config)
 }
 
-fun instantiateSinkConfig(topologyContext: TopologyContext, config: SinkConfig, connector: () -> SinkConnector): Map<Topic, MutableList<FloodplainSink>> {
+fun instantiateSinkConfig(config: SinkConfig, connector: () -> SinkConnector): Map<Topic, MutableList<FloodplainSink>> {
     val result = mutableMapOf<Topic, MutableList<FloodplainSink>>()
-    val materializedSinks = config.materializeConnectorConfig(topologyContext)
+    val materializedSinks = config.materializeConnectorConfig()
     materializedSinks.map { materializedSink ->
         val connectorInstance = connector()
         connector().start(materializedSink.settings)

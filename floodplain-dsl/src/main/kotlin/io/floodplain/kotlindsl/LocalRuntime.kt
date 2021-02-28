@@ -229,7 +229,7 @@ class LocalDriverContext(
     }
 
     private fun topics(): Set<Topic> {
-        return sinkConfigurations().flatMap { it.materializeConnectorConfig(topologyContext) }.flatMap { it.topics }.toSet()
+        return sinkConfigurations().flatMap { it.materializeConnectorConfig() }.flatMap { it.topics }.toSet()
         // .materializeConnectorConfig(topologyContext) .flatMap { it.sinkElements().keys }
     }
 
@@ -250,7 +250,7 @@ class LocalDriverContext(
     override fun sinksByTopic(): Map<Topic, List<FloodplainSink>> {
         val result = mutableMapOf<Topic, MutableList<FloodplainSink>>()
         this.sinkConfigurations().flatMap {
-            it.instantiateSinkElements(topologyContext)
+            it.instantiateSinkElements()
             it.sinkElements().entries
         }.forEach { entry ->
             val list = result.computeIfAbsent(entry.key) { mutableListOf() }

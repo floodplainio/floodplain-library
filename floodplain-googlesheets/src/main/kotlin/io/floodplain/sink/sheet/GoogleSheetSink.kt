@@ -34,6 +34,7 @@ import io.floodplain.sink.sheet.SheetSinkTask.TOPICS
 import io.floodplain.streams.api.ProcessorName
 import io.floodplain.streams.api.Topic
 import io.floodplain.streams.api.TopologyContext
+import io.floodplain.streams.remotejoin.TopologyConstructor
 import java.util.Optional
 
 private val logger = mu.KotlinLogging.logger {}
@@ -50,17 +51,18 @@ fun PartialStream.googleSheetsSink(topicDefinition: String, googleSheetId: Strin
 
 class GoogleSheetSink(val topic: Topic, val spreadsheetId: String, val columns: List<String>, val startColumn: String = "A", val startRow: Int = 1)
 fun Stream.googleSheetConfig(name: String): GoogleSheetConfiguration {
-    val googleSheetConfiguration = GoogleSheetConfiguration(name)
+    val googleSheetConfiguration = GoogleSheetConfiguration(topologyContext,topologyConstructor, name)
     this.addSinkConfiguration(googleSheetConfiguration)
     return googleSheetConfiguration
 }
 
-class GoogleSheetConfiguration(val name: String) : SinkConfig {
+class GoogleSheetConfiguration(override val topologyContext: TopologyContext, override val topologyConstructor: TopologyConstructor, val name: String) : SinkConfig {
     private var googleTask: SheetSinkTask? = null
     private val sheetSinks = mutableListOf<GoogleSheetSink>()
     private var instantiatedSinkElements: Map<Topic, MutableList<FloodplainSink>>? = null
 
-    override fun materializeConnectorConfig(topologyContext: TopologyContext): List<MaterializedConfig> {
+    override fun materializeConnectorConfig(): List<MaterializedConfig> {
+        sheetSinks.forEach { e-> topologyConstructor.addDesiredTopic(e.topic, Optional.of(1)) }
         return sheetSinks.map {
             val settings = mutableMapOf(
                 "connector.class" to SheetSinkConnector::class.java.name,
@@ -86,9 +88,9 @@ class GoogleSheetConfiguration(val name: String) : SinkConfig {
         return instantiatedSinkElements ?: emptyMap()
     }
 
-    override fun instantiateSinkElements(topologyContext: TopologyContext) {
+    override fun instantiateSinkElements() {
         val result = mutableMapOf<Topic, MutableList<FloodplainSink>>()
-        materializeConnectorConfig(topologyContext).forEach { materializedSink ->
+        materializeConnectorConfig().forEach { materializedSink ->
             val connector = SheetSinkConnector()
             connector.start(materializedSink.settings)
             val task = connector.taskClass().getDeclaredConstructor().newInstance() as SheetSinkTask

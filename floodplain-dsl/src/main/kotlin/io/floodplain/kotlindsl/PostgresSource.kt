@@ -22,6 +22,7 @@ import io.floodplain.debezium.postgres.createDebeziumChangeFlow
 import io.floodplain.reactive.source.topology.TopicSource
 import io.floodplain.streams.api.Topic
 import io.floodplain.streams.api.TopologyContext
+import io.floodplain.streams.remotejoin.TopologyConstructor
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import java.lang.IllegalArgumentException
@@ -29,7 +30,8 @@ import java.lang.IllegalArgumentException
 private val logger = mu.KotlinLogging.logger {}
 
 class PostgresConfig(
-    val topologyContext: TopologyContext,
+    override val topologyContext: TopologyContext,
+    override val topologyConstructor: TopologyConstructor,
     val name: String,
     val offsetId: String,
     private val hostname: String,
@@ -64,7 +66,7 @@ class PostgresConfig(
         }
     }
 
-    override fun materializeConnectorConfig(topologyContext: TopologyContext): List<MaterializedConfig> {
+    override fun materializeConnectorConfig(): List<MaterializedConfig> {
         return listOf(
             MaterializedConfig(
                 name,
@@ -115,7 +117,7 @@ fun Stream.postgresSourceConfig(
     defaultSchema: String?
 ): PostgresConfig {
     val postgresConfig = PostgresConfig(
-        this.topologyContext, name, topologyContext.applicationId(), hostname, port, username, password, database, defaultSchema
+        this.topologyContext, this.topologyConstructor, name, topologyContext.applicationId(), hostname, port, username, password, database, defaultSchema
     )
     addSourceConfiguration(postgresConfig)
     return postgresConfig

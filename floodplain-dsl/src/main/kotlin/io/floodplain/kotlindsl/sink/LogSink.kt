@@ -32,19 +32,20 @@ import io.floodplain.sink.LogSinkTask
 import io.floodplain.streams.api.ProcessorName
 import io.floodplain.streams.api.Topic
 import io.floodplain.streams.api.TopologyContext
+import io.floodplain.streams.remotejoin.TopologyConstructor
 import java.util.Optional
 
 fun Stream.logSinkConfig(name: String): LogSinkConfiguration {
-    val logSinkConfig = LogSinkConfiguration(name)
+    val logSinkConfig = LogSinkConfiguration(topologyContext,topologyConstructor, name)
     this.addSinkConfiguration(logSinkConfig)
     return logSinkConfig
 }
 
-class LogSinkConfiguration(val name: String) : SinkConfig {
+class LogSinkConfiguration(override val topologyContext: TopologyContext, override val topologyConstructor: TopologyConstructor, val name: String) : SinkConfig {
     val materializedConfigs: MutableList<MaterializedConfig> = mutableListOf()
     private var instantiatedSinkElements: Map<Topic, MutableList<FloodplainSink>>? = null
 
-    override fun materializeConnectorConfig(topologyContext: TopologyContext): List<MaterializedConfig> {
+    override fun materializeConnectorConfig(): List<MaterializedConfig> {
         return materializedConfigs
     }
 
@@ -52,8 +53,8 @@ class LogSinkConfiguration(val name: String) : SinkConfig {
         return null
     }
 
-    override fun instantiateSinkElements(topologyContext: TopologyContext) {
-        instantiatedSinkElements = instantiateSinkConfig(topologyContext, this) { LogSinkConnector() }
+    override fun instantiateSinkElements() {
+        instantiatedSinkElements = instantiateSinkConfig(this) { LogSinkConnector() }
     }
 
     override fun sinkElements(): Map<Topic, MutableList<FloodplainSink>> {

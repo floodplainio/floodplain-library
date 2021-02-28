@@ -24,8 +24,11 @@ import io.floodplain.kotlindsl.stream
 import io.floodplain.sink.sheet.GoogleSheetConfiguration
 import io.floodplain.sink.sheet.googleSheetConfig
 import io.floodplain.sink.sheet.googleSheetsSink
+import io.floodplain.streams.api.TopologyContext
+import io.floodplain.streams.remotejoin.TopologyConstructor
 import kotlinx.coroutines.delay
 import org.junit.Test
+import java.util.Optional
 
 private val logger = mu.KotlinLogging.logger {}
 
@@ -37,7 +40,7 @@ class GoogleSheetTest {
     @Test
     fun testGoogleSheet() {
         // sanity check
-        GoogleSheetConfiguration("connectorName")
+        GoogleSheetConfiguration(TopologyContext.context(Optional.empty(),"1"), TopologyConstructor(),"connectorName")
     }
 
     @Test

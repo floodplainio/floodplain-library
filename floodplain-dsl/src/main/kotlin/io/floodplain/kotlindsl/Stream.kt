@@ -42,7 +42,7 @@ import java.util.UUID
 
 private val logger = mu.KotlinLogging.logger {}
 
-class Stream(override val topologyContext: TopologyContext) : FloodplainSourceContainer {
+class Stream(override val topologyContext: TopologyContext, val topologyConstructor: TopologyConstructor) : FloodplainSourceContainer {
 
     private val sources: MutableList<Source> = ArrayList()
     private val sinkConfigurations: MutableList<SinkConfig> = mutableListOf()
@@ -106,7 +106,7 @@ class Stream(override val topologyContext: TopologyContext) : FloodplainSourceCo
         return sourceConfigurations.toList()
     }
 
-    private fun renderTopology(topologyConstructor: TopologyConstructor): Topology {
+    private fun renderTopology(): Topology {
         val topology = Topology()
         val reactivePipes = sources.map { e -> e.toReactivePipe() }
         val stack = Stack<String>()
@@ -118,7 +118,7 @@ class Stream(override val topologyContext: TopologyContext) : FloodplainSourceCo
     }
     fun renderAndExecute(applicationId: String? = null, bufferTime: Int? = null, localCmds: suspend LocalContext.() -> Unit) {
         val topologyConstructor = TopologyConstructor()
-        val (topology, sources, sinks) = render(topologyConstructor)
+        val (topology, sources, sinks) = render()
         // val offsetPath = Paths.get("offset_" + UUID.randomUUID())
         val sourceConfigs = this@Stream.sourceConfigurations
         val sinkConfigs = this@Stream.sinkConfigurations
@@ -178,7 +178,7 @@ class Stream(override val topologyContext: TopologyContext) : FloodplainSourceCo
      */
     fun renderAndSchedule(connectorURL: URL?, kafkaHosts: String, force: Boolean = false, settings: Map<String, Any>? = null): KafkaStreams {
         val topologyConstructor = TopologyConstructor()
-        val (topology, sources, sinks) = render(topologyConstructor)
+        val (topology, sources, sinks) = render()
         topologyConstructor.createTopicsAsNeeded(settings ?: mapOf(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG to kafkaHosts))
         sources.forEach { (name, json) ->
             connectorURL?.let {
@@ -206,15 +206,15 @@ class Stream(override val topologyContext: TopologyContext) : FloodplainSourceCo
      * - A list of kafka connect source pairs (name to json definition)
      * - A list of kafka connect sink pairs (name to json definition)
      */
-    private fun render(topologyConstructor: TopologyConstructor): Triple<Topology, List<Pair<String, String>>, List<Pair<String, String>>> {
-        val topology = renderTopology(topologyConstructor)
+    private fun render(): Triple<Topology, List<Pair<String, String>>, List<Pair<String, String>>> {
+        val topology = renderTopology()
         val sources = sourceConfigurations().flatMap { element ->
-            element.materializeConnectorConfig(topologyContext)
+            element.materializeConnectorConfig()
         }.map {
             it.name to constructConnectorJson(topologyContext, it.name, it.settings)
         }
         val sinks = sinkConfigurations().flatMap { element ->
-            element.materializeConnectorConfig(topologyContext)
+            element.materializeConnectorConfig()
         }.map {
             it.name to constructConnectorJson(topologyContext, it.name, it.settings)
         }

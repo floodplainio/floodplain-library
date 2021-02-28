@@ -42,6 +42,7 @@ import io.floodplain.reactive.topology.ReactivePipe
 import io.floodplain.replication.api.ReplicationMessage
 import io.floodplain.streams.api.Topic
 import io.floodplain.streams.api.TopologyContext
+import io.floodplain.streams.remotejoin.TopologyConstructor
 import java.time.Duration
 import java.util.Optional
 
@@ -59,12 +60,15 @@ open class Transformer(rootTopology: Stream, val component: TopologyPipeComponen
  */
 interface Config {
 
+    val topologyContext: TopologyContext
+    val topologyConstructor: TopologyConstructor
+
     /**
      * Connector configs must implement this method, returning a name + map.
      * The map is essentially a Kafka Connect configuration, and will be converted to JSON and posted to Kafka Connect
      * For some
      */
-    fun materializeConnectorConfig(topologyContext: TopologyContext): List<MaterializedConfig>
+    fun materializeConnectorConfig(): List<MaterializedConfig>
 }
 
 interface SourceConfig : Config {
@@ -74,7 +78,7 @@ interface SourceConfig : Config {
 
 interface SinkConfig : Config {
     fun sinkTask(): Any?
-    fun instantiateSinkElements(topologyContext: TopologyContext)
+    fun instantiateSinkElements()
     fun sinkElements(): Map<Topic, List<FloodplainSink>>
 }
 
@@ -462,7 +466,7 @@ fun PartialStream.fork(vararg destinations: Block.() -> Unit): Transformer {
  */
 fun stream(tenant: String? = null, deployment: String? = null, generation: String = "any", init: Stream.() -> Unit): Stream {
     val topologyContext = TopologyContext.context(Optional.ofNullable(tenant), Optional.ofNullable(deployment), generation)
-    val pipe = Stream(topologyContext)
+    val pipe = Stream(topologyContext, TopologyConstructor())
     pipe.init()
     return pipe
 }

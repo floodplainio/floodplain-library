@@ -22,6 +22,7 @@ import io.floodplain.debezium.postgres.createDebeziumChangeFlow
 import io.floodplain.reactive.source.topology.TopicSource
 import io.floodplain.streams.api.Topic
 import io.floodplain.streams.api.TopologyContext
+import io.floodplain.streams.remotejoin.TopologyConstructor
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onCompletion
@@ -29,7 +30,7 @@ import kotlinx.coroutines.flow.onEach
 
 private val logger = mu.KotlinLogging.logger {}
 
-class MySQLConfig(val topologyContext: TopologyContext, val name: String, private val offsetId: String, private val hostname: String, private val port: Int, private val username: String, private val password: String, private val database: String) : SourceConfig {
+class MySQLConfig(override val topologyContext: TopologyContext, override val topologyConstructor: TopologyConstructor,  val name: String, private val offsetId: String, private val hostname: String, private val port: Int, private val username: String, private val password: String, private val database: String) : SourceConfig {
 
     private val sourceElements: MutableList<SourceTopic> = mutableListOf()
 
@@ -54,7 +55,7 @@ class MySQLConfig(val topologyContext: TopologyContext, val name: String, privat
         logger.info("connectSource completed")
     }
 
-    override fun materializeConnectorConfig(topologyContext: TopologyContext): List<MaterializedConfig> {
+    override fun materializeConnectorConfig(): List<MaterializedConfig> {
         return listOf(
             MaterializedConfig(
                 name,
@@ -101,7 +102,7 @@ class MySQLConfig(val topologyContext: TopologyContext, val name: String, privat
 }
 
 fun Stream.mysqlSourceConfig(name: String, hostname: String, port: Int, username: String, password: String, database: String): MySQLConfig {
-    val mySQLConfig = MySQLConfig(this.topologyContext, name, topologyContext.applicationId(), hostname, port, username, password, database)
+    val mySQLConfig = MySQLConfig(this.topologyContext,this.topologyConstructor, name, topologyContext.applicationId(), hostname, port, username, password, database)
     addSourceConfiguration(mySQLConfig)
     return mySQLConfig
 }

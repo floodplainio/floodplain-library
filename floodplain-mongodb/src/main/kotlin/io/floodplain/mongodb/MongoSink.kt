@@ -30,6 +30,7 @@ import io.floodplain.reactive.source.topology.SinkTransformer
 import io.floodplain.streams.api.ProcessorName
 import io.floodplain.streams.api.Topic
 import io.floodplain.streams.api.TopologyContext
+import io.floodplain.streams.remotejoin.TopologyConstructor
 import org.apache.kafka.connect.sink.SinkRecord
 import org.apache.kafka.connect.sink.SinkTask
 import java.util.Optional
@@ -38,14 +39,15 @@ import kotlin.system.measureTimeMillis
 
 private val logger = mu.KotlinLogging.logger {}
 
-class MongoConfig(val name: String, private val uri: String, private val database: String) : SinkConfig {
+class MongoConfig(override val topologyContext: TopologyContext, override val topologyConstructor: TopologyConstructor, val name: String, private val uri: String, private val database: String) : SinkConfig {
 
     var sinkTask: MongoSinkTask? = null
     val sinkInstancePair: MutableList<Pair<String, Topic>> = mutableListOf()
     var instantiatedSinkElements: Map<Topic, List<FloodplainSink>>? = null
 
-    override fun materializeConnectorConfig(topologyContext: TopologyContext): List<MaterializedConfig> {
+    override fun materializeConnectorConfig(): List<MaterializedConfig> {
         val additional = mutableMapOf<String, String>()
+        sinkInstancePair.forEach { (key, value) ->  topologyConstructor.addDesiredTopic(value, Optional.empty()) }
         sinkInstancePair.forEach { (key, value) -> additional.put("topic.override.${value.qualifiedString()}.collection", key) }
         logger.debug("Pairs: $sinkInstancePair")
         val collections: String = sinkInstancePair.joinToString(",") { e -> e.first }
@@ -53,7 +55,6 @@ class MongoConfig(val name: String, private val uri: String, private val databas
         val topics: String =
             sinkInstancePair.joinToString(",") { (_, topic) -> topic.qualifiedString() }
         logger.debug("Topics: $topics")
-
         val generationalDatabase = topologyContext.topicName(database)
         val settings = mutableMapOf(
             "connector.class" to "com.mongodb.kafka.connect.MongoSinkConnector",
@@ -84,8 +85,8 @@ class MongoConfig(val name: String, private val uri: String, private val databas
     override fun sinkElements(): Map<Topic, List<FloodplainSink>> {
         return instantiatedSinkElements ?: emptyMap()
     }
-    override fun instantiateSinkElements(topologyContext: TopologyContext) {
-        instantiatedSinkElements = materializeConnectorConfig(topologyContext)
+    override fun instantiateSinkElements() {
+        instantiatedSinkElements = materializeConnectorConfig()
             .map {
 
                 val connector = MongoSinkConnector()
@@ -95,9 +96,6 @@ class MongoConfig(val name: String, private val uri: String, private val databas
                 task.start(it.settings)
                 sinkTask = task
 
-                // sinkInstancePair
-                //     .map { (name,topic)-> topic to listOf(MongoFloodplainSink(task, this))}
-                //     .toMap()
                 val localSink = MongoFloodplainSink(task, this)
                 it.topics
                     .map { topic -> topic to listOf(localSink) }
@@ -150,7 +148,7 @@ private class MongoFloodplainSink(private val task: SinkTask, private val config
  * to all sink objects
  */
 fun Stream.mongoConfig(name: String, uri: String, database: String): MongoConfig {
-    val c = MongoConfig(name, uri, database)
+    val c = MongoConfig(topologyContext, topologyConstructor, name, uri, database)
     this.addSinkConfiguration(c)
     return c
 }
