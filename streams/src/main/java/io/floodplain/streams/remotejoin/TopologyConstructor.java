@@ -26,6 +26,8 @@ import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.streams.state.KeyValueStore;
 import org.apache.kafka.streams.state.StoreBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.concurrent.ExecutionException;
@@ -33,12 +35,16 @@ import java.util.stream.Collectors;
 
 public class TopologyConstructor {
 
+    private static final Logger logger = LoggerFactory.getLogger(TopologyConstructor.class);
+
     public final Map<String, List<String>> processorStateStoreMapper = new HashMap<>();
     public final Map<String, StoreBuilder<KeyValueStore<String, ReplicationMessage>>> stateStoreSupplier = new HashMap<>();
     public final Map<String, StoreBuilder<KeyValueStore<String, ImmutableMessage>>> immutableStoreSupplier = new HashMap<>();
     // TODO: Could be optional, only needed in xml based stream code
     public final Set<String> stores = new HashSet<>();
     public final Set<String> sinks = new HashSet<>();
+
+
 
     /**
      * Key is the topic object, value is the 'name' of the topic. Often the same as the topic name, but makes it possible to
@@ -86,6 +92,7 @@ public class TopologyConstructor {
                 .filter(e -> !topics.contains(e.getKey().qualifiedString()))
                 .map(e -> new NewTopic(e.getKey().qualifiedString(), e.getValue(), Optional.empty()))
                 .collect(Collectors.toList());
+        logger.info("Creating missing topics: {}",toBeCreated.stream().map(e->e.name()).collect(Collectors.joining(",")));
         try {
             adminClient.createTopics(toBeCreated).all().get();
         } catch (InterruptedException | ExecutionException e) {

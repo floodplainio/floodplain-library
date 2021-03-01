@@ -117,7 +117,6 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
         return topology
     }
     fun renderAndExecute(applicationId: String? = null, bufferTime: Int? = null, localCmds: suspend LocalContext.() -> Unit) {
-        val topologyConstructor = TopologyConstructor()
         val (topology, sources, sinks) = render()
         // val offsetPath = Paths.get("offset_" + UUID.randomUUID())
         val sourceConfigs = this@Stream.sourceConfigurations
@@ -177,7 +176,6 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
      * Finally, it will POST the supplied
      */
     fun renderAndSchedule(connectorURL: URL?, kafkaHosts: String, force: Boolean = false, settings: Map<String, Any>? = null): KafkaStreams {
-        val topologyConstructor = TopologyConstructor()
         val (topology, sources, sinks) = render()
         topologyConstructor.createTopicsAsNeeded(settings ?: mapOf(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG to kafkaHosts))
         sources.forEach { (name, json) ->
