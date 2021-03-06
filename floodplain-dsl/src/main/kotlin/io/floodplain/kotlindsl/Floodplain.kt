@@ -247,14 +247,31 @@ fun Stream.table(topic: String, init: Source.() -> Unit) {
 }
 
 /**
- * Use an existing source
+ * Create sub source
  */
 fun PartialStream.source(topic: String, init: Source.() -> Unit = {}): Source {
     return createSource(Topic.from(topic, rootTopology.topologyContext), rootTopology, init)
 }
 
+/**
+ * Create toplevel source
+ */
 fun Stream.source(topic: String, init: Source.() -> Unit = {}) {
     addSource(createSource(Topic.from(topic, rootTopology.topologyContext), this, init))
+}
+
+/**
+* Create sub source (without qualifying with tenant / deployment / gen)
+*/
+fun PartialStream.from(topic: String, init: Source.() -> Unit = {}): Source {
+    return createSource(Topic.fromQualified(topic, rootTopology.topologyContext), rootTopology, init)
+}
+
+/**
+ * Create toplevel source (without qualifying with tenant / deployment / gen)
+ */
+fun Stream.from(topic: String, init: Source.() -> Unit = {}) {
+    addSource(createSource(Topic.fromQualified(topic, rootTopology.topologyContext), this, init))
 }
 
 private fun createSource(
@@ -309,12 +326,26 @@ private fun existingDebeziumSource(topicSource: String, rootTopology: Stream, in
 }
 
 /**
- * Creates a simple sink that will contain the result of the current transformation. Multiple sinks may not be added.
+ * Creates a simple sink that will contain the result of the current transformation.
  */
 fun PartialStream.sink(topic: String): Transformer {
     val sink = SinkTransformer(
         Optional.empty(),
         Topic.from(topic, topologyContext),
+        Optional.empty(),
+        Topic.FloodplainKeyFormat.FLOODPLAIN_STRING,
+        Topic.FloodplainBodyFormat.FLOODPLAIN_JSON
+    )
+    return addTransformer(Transformer(this.rootTopology, sink, topologyContext))
+}
+
+/**
+ * Creates a simple sink that will contain the result of the current transformation. Will not qualify with tenant / deployment
+ */
+fun PartialStream.toInternal(topic: String): Transformer {
+    val sink = SinkTransformer(
+        Optional.empty(),
+        Topic.fromQualified(topic, topologyContext),
         Optional.empty(),
         Topic.FloodplainKeyFormat.FLOODPLAIN_STRING,
         Topic.FloodplainBodyFormat.FLOODPLAIN_JSON

@@ -50,6 +50,10 @@ fun Stream.fhirGeneric(topic: Topic, init: Source.() -> Unit = {}) {
     addSource(fhirExistingSource(topic, ::genericResource, this, init))
 }
 
+fun <T : IBaseResource> PartialStream.fhirSource(topic: String, transform: (T) -> IMessage, init: Source.() -> Unit = {}): Source {
+    return fhirSource<T>(Topic.fromQualified(topic,topologyContext),transform,init)
+}
+
 fun <T : IBaseResource> PartialStream.fhirSource(topic: Topic, transform: (T) -> IMessage, init: Source.() -> Unit = {}): Source {
     return fhirExistingSource(topic, transform, this.rootTopology, init)
 }

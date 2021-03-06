@@ -49,12 +49,9 @@ class MongoConfig(override val topologyContext: TopologyContext, override val to
         val additional = mutableMapOf<String, String>()
         sinkInstancePair.forEach { (key, value) -> topologyConstructor.addDesiredTopic(value, Optional.empty()) }
         sinkInstancePair.forEach { (key, value) -> additional.put("topic.override.${value.qualifiedString()}.collection", key) }
-        logger.debug("Pairs: $sinkInstancePair")
         val collections: String = sinkInstancePair.joinToString(",") { e -> e.first }
-        logger.debug("Collections: $collections")
         val topics: String =
             sinkInstancePair.joinToString(",") { (_, topic) -> topic.qualifiedString() }
-        logger.debug("Topics: $topics")
         val generationalDatabase = topologyContext.topicName(database)
         val settings = mutableMapOf(
             "connector.class" to "com.mongodb.kafka.connect.MongoSinkConnector",
