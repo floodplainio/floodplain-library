@@ -97,6 +97,8 @@ public class TopologyConstructor {
             adminClient.createTopics(toBeCreated).all().get();
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException("Issue creating topics: " + desiredTopics.keySet(), e);
+        } finally {
+            adminClient.close();
         }
     }
 
