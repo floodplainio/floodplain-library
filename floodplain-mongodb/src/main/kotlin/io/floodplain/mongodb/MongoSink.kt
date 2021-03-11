@@ -18,8 +18,8 @@
  */
 package io.floodplain.mongodb
 
+import com.mongodb.kafka.connect.MongoSinkConnector
 import io.floodplain.kotlindsl.AbstractSinkConfig
-import io.floodplain.kotlindsl.FloodplainSink
 import io.floodplain.kotlindsl.MaterializedConfig
 import io.floodplain.kotlindsl.PartialStream
 import io.floodplain.kotlindsl.Stream
@@ -72,13 +72,11 @@ class MongoConfig(override val topologyContext: TopologyContext, override val to
         return listOf(MaterializedConfig(name, sinkInstancePair.map { (_, topic) -> topic }.toList(), settings))
     }
 
-    override fun sinkElements(): Map<Topic, List<FloodplainSink>> {
-        return mapOf() // instantiatedSinkElements ?: emptyMap() // TODO disabled
-    }
-
     override fun sinkTask(): Any? {
         return sinkTask
     }
+
+
 }
 
 /**

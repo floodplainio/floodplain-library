@@ -104,6 +104,10 @@ abstract class AbstractSinkConfig: SinkConfig {
         }.toList()
 
     }
+    override fun sinkElements(): Map<Topic, List<FloodplainSink>> {
+        return instantiateSinkConfig(this)
+    }
+
 }
 
 

@@ -252,12 +252,16 @@ class LocalDriverContext(
 
     override fun sinksByTopic(): Map<Topic, List<FloodplainSink>> {
         val result = mutableMapOf<Topic, MutableList<FloodplainSink>>()
-        this.sinkConfigurations().flatMap {
-            it.instantiateSinkElements()
-            it.sinkElements().entries
+        this.sinkConfigurations().map {
+            instantiateSinkConfig(it)
+
+            // it.instantiateSinkElements()
+            // it.sinkElements().entries
         }.forEach { entry ->
-            val list = result.computeIfAbsent(entry.key) { mutableListOf() }
-            list.addAll(entry.value)
+            entry.entries.forEach { (key,value)->
+                val list = result.computeIfAbsent(key) { mutableListOf() }
+                list.addAll(value)
+            }
         }
         return result
     }
@@ -303,6 +307,7 @@ class LocalDriverContext(
         return callbackFlow {
             driver.setOutputListener { record ->
                 // Ignore changelog topics
+                logger.info(">>>>>>>> record: ${String(record.value())}")
                 if (!record.topic().endsWith("changelog")) {
                     val key = Serdes.String().deserializer().deserialize(record.topic(), record.key())
                     val topic = Topic.fromQualified(record.topic(), topologyContext)

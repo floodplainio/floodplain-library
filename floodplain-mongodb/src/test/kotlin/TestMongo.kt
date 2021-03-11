@@ -24,6 +24,7 @@ import io.floodplain.kotlindsl.source
 import io.floodplain.kotlindsl.stream
 import io.floodplain.mongodb.mongoConfig
 import io.floodplain.mongodb.mongoSink
+import io.floodplain.mongodb.toMongo
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeout
 import org.bson.Document
@@ -52,13 +53,14 @@ class TestMongo {
 
     @Test
     fun testSink() {
+        logger.info("Starting sink")
         stream {
             val config = mongoConfig("mongoClient", "mongodb://$address:$port", "mongo-connect-test")
 
             source("sometopic") {
                 each { _, msg, _ -> logger.info("message: $msg") }
                 filter { _, msg -> msg.long("counter") % 2 == 0L }
-                mongoSink("test-collection", "myindex", config)
+                toMongo("test-collection", "myindex", config)
             }
         }.renderAndExecute {
             // delay(5000)

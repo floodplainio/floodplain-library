@@ -148,12 +148,12 @@ fun floodplainSinkFromTask(task: SinkTask, config: SinkConfig): FloodplainSink {
     return LocalConnectorSink(task, config)
 }
 
-fun instantiateSinkConfig(config: SinkConfig, connector: () -> SinkConnector): SinkConnector {
+fun instantiateSinkConfig(config: SinkConfig): MutableMap<Topic, MutableList<FloodplainSink>> {
     val result = mutableMapOf<Topic, MutableList<FloodplainSink>>()
     val materializedSinks = config.materializeConnectorConfig()
-    val instance =  materializedSinks.map { materializedSink ->
-        val connectorInstance = connector()
-        connector().start(materializedSink.settings)
+    materializedSinks.forEach { materializedSink ->
+        val connectorInstance =  Class.forName(materializedSink.settings["connector.class"]).getDeclaredConstructor().newInstance() as SinkConnector
+        connectorInstance.start(materializedSink.settings)
         val task = connectorInstance.taskClass().getDeclaredConstructor().newInstance() as SinkTask
         task.start(materializedSink.settings)
 
@@ -162,9 +162,9 @@ fun instantiateSinkConfig(config: SinkConfig, connector: () -> SinkConnector): S
             val list = result.computeIfAbsent(topic) { mutableListOf() }
             list.add(localSink)
         }
-        connectorInstance
-    }.first()
-    return instance
+    }
+    return result
+    // return instance
     // return connectorInstance to instance
 }
 
