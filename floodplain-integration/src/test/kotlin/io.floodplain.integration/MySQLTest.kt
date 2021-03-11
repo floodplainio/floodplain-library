@@ -148,7 +148,7 @@ class MySQLTest {
         }
     }
 
-    @Test @Ignore // TODO fix sinks
+    @Test
     fun testInventory() {
         stream {
             val mysqlConfig = mysqlSourceConfig(
