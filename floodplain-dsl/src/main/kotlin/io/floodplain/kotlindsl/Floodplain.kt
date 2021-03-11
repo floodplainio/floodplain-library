@@ -43,8 +43,16 @@ import io.floodplain.replication.api.ReplicationMessage
 import io.floodplain.streams.api.Topic
 import io.floodplain.streams.api.TopologyContext
 import io.floodplain.streams.remotejoin.TopologyConstructor
+import org.apache.kafka.connect.sink.SinkConnector
+import org.apache.kafka.connect.sink.SinkRecord
+import org.apache.kafka.connect.sink.SinkTask
+import java.lang.RuntimeException
 import java.time.Duration
 import java.util.Optional
+import java.util.concurrent.atomic.AtomicLong
+import kotlin.system.measureTimeMillis
+
+private val logger = mu.KotlinLogging.logger {}
 
 /**
  * Super (wrapper) class for all components (source, transformer or sink)
@@ -78,9 +86,27 @@ interface SourceConfig : Config {
 
 interface SinkConfig : Config {
     fun sinkTask(): Any?
-    fun instantiateSinkElements()
+    fun instantiateSinkElements(): List<Map<String, String>>
     fun sinkElements(): Map<Topic, List<FloodplainSink>>
 }
+
+abstract class AbstractSinkConfig: SinkConfig {
+    // var instantiatedSinkElements: Map<Topic, List<FloodplainSink>>? = null
+    var sinkTask: SinkTask? = null
+    var floodplainSink: FloodplainSink? = null
+    var connector: SinkConnector? = null
+    override fun instantiateSinkElements(): List<Map<String, String>> {
+        val configs = materializeConnectorConfig()
+        if(configs.size > 1) {
+            throw RuntimeException("Multiple configs not supported for now")
+        }
+        return configs.map {
+            it.settings
+        }.toList()
+
+    }
+}
+
 
 class MaterializedConfig(val name: String, val topics: List<Topic>, val settings: Map<String, String>)
 
@@ -197,7 +223,6 @@ fun PartialStream.joinAttributes(withTopic: String, nameAttribute: String, value
             scan(
                 keyExtract,
                 {
-                    _ ->
                     empty()
                 },
                 {
@@ -551,4 +576,39 @@ class Block(rootTopology: Stream, override val topologyContext: TopologyContext)
     // override fun addSource(source: Source) {
     //     throw UnsupportedOperationException("Blocks shouldn't add sources")
     // }
+}
+
+
+class AbstractFloodplainSink(private val task: SinkTask, private val config: SinkConfig) : FloodplainSink {
+    private val offsetCounter = AtomicLong(System.currentTimeMillis())
+
+    override fun send(topic: Topic, elements: List<Pair<String, Map<String, Any>?>>) {
+        val list = elements.map { (key, value) ->
+            SinkRecord(topic.qualifiedString(), 0, null, key, null, value, offsetCounter.incrementAndGet())
+        }.toList()
+        val insertTime = measureTimeMillis {
+            try {
+                task.put(list)
+            } catch (e: Throwable) {
+                e.printStackTrace()
+            }
+        }
+        logger.info("Inserting into mongodb size: ${list.size} duration: $insertTime")
+    }
+
+    override fun config(): SinkConfig {
+        return config
+    }
+
+    override fun flush() {
+        task.flush(emptyMap())
+    }
+
+    override fun close() {
+        task.close(emptyList())
+    }
+
+    override fun taskObject(): Any? {
+        TODO("Not yet implemented")
+    }
 }

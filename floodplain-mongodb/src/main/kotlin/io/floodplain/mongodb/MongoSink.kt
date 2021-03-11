@@ -18,12 +18,10 @@
  */
 package io.floodplain.mongodb
 
-import com.mongodb.kafka.connect.MongoSinkConnector
-import com.mongodb.kafka.connect.sink.MongoSinkTask
+import io.floodplain.kotlindsl.AbstractSinkConfig
 import io.floodplain.kotlindsl.FloodplainSink
 import io.floodplain.kotlindsl.MaterializedConfig
 import io.floodplain.kotlindsl.PartialStream
-import io.floodplain.kotlindsl.SinkConfig
 import io.floodplain.kotlindsl.Stream
 import io.floodplain.kotlindsl.Transformer
 import io.floodplain.reactive.source.topology.SinkTransformer
@@ -31,19 +29,15 @@ import io.floodplain.streams.api.ProcessorName
 import io.floodplain.streams.api.Topic
 import io.floodplain.streams.api.TopologyContext
 import io.floodplain.streams.remotejoin.TopologyConstructor
-import org.apache.kafka.connect.sink.SinkRecord
-import org.apache.kafka.connect.sink.SinkTask
+import org.apache.kafka.connect.cli.ConnectStandalone
 import java.util.Optional
-import java.util.concurrent.atomic.AtomicLong
-import kotlin.system.measureTimeMillis
 
 private val logger = mu.KotlinLogging.logger {}
 
-class MongoConfig(override val topologyContext: TopologyContext, override val topologyConstructor: TopologyConstructor, val name: String, private val uri: String, private val database: String) : SinkConfig {
+class MongoConfig(override val topologyContext: TopologyContext, override val topologyConstructor: TopologyConstructor, val name: String, private val uri: String, private val database: String) :
+    AbstractSinkConfig() {
 
-    var sinkTask: MongoSinkTask? = null
     val sinkInstancePair: MutableList<Pair<String, Topic>> = mutableListOf()
-    var instantiatedSinkElements: Map<Topic, List<FloodplainSink>>? = null
 
     override fun materializeConnectorConfig(): List<MaterializedConfig> {
         val additional = mutableMapOf<String, String>()
@@ -80,26 +74,7 @@ class MongoConfig(override val topologyContext: TopologyContext, override val to
     }
 
     override fun sinkElements(): Map<Topic, List<FloodplainSink>> {
-        return instantiatedSinkElements ?: emptyMap()
-    }
-    override fun instantiateSinkElements() {
-        instantiatedSinkElements = materializeConnectorConfig()
-            .map {
-
-                val connector = MongoSinkConnector()
-                logger.info("Mongo SEttings: ${it.settings}")
-                connector.start(it.settings)
-                val task = connector.taskClass().getDeclaredConstructor().newInstance() as MongoSinkTask
-                task.start(it.settings)
-                sinkTask = task
-
-                val localSink = MongoFloodplainSink(task, this)
-                it.topics
-                    .map { topic -> topic to listOf(localSink) }
-                    .toMap()
-
-                // name to MongoFloodplainSink(task, this)
-            }.first() // I know there is only one
+        return mapOf() // instantiatedSinkElements ?: emptyMap() // TODO disabled
     }
 
     override fun sinkTask(): Any? {
@@ -107,39 +82,6 @@ class MongoConfig(override val topologyContext: TopologyContext, override val to
     }
 }
 
-private class MongoFloodplainSink(private val task: SinkTask, private val config: SinkConfig) : FloodplainSink {
-    private val offsetCounter = AtomicLong(System.currentTimeMillis())
-
-    override fun send(topic: Topic, elements: List<Pair<String, Map<String, Any>?>>) {
-        val list = elements.map { (key, value) ->
-            SinkRecord(topic.qualifiedString(), 0, null, key, null, value, offsetCounter.incrementAndGet())
-        }.toList()
-        val insertTime = measureTimeMillis {
-            try {
-                task.put(list)
-            } catch (e: Throwable) {
-                e.printStackTrace()
-            }
-        }
-        logger.info("Inserting into mongodb size: ${list.size} duration: $insertTime")
-    }
-
-    override fun config(): SinkConfig {
-        return config
-    }
-
-    override fun flush() {
-        task.flush(emptyMap())
-    }
-
-    override fun close() {
-        task.close(emptyList())
-    }
-
-    override fun taskObject(): Any? {
-        TODO("Not yet implemented")
-    }
-}
 /**
  * Creates a config for this specific connector type, add the required params as needed. This config object will be passed
  * to all sink objects
@@ -150,6 +92,13 @@ fun Stream.mongoConfig(name: String, uri: String, database: String): MongoConfig
     return c
 }
 
+fun Stream.localMongoConfig(name: String, uri: String, database: String): MongoConfig {
+    val c = MongoConfig(topologyContext, topologyConstructor, name, uri, database)
+    this.addLocalSinkConfiguration(c)
+    return c
+}
+
+
 fun PartialStream.toMongo(collection: String, topicDefinition: String, config: MongoConfig) {
     val topic = Topic.fromQualified(topicDefinition, topologyContext)
     config.sinkInstancePair.add(collection to topic)
@@ -158,6 +107,8 @@ fun PartialStream.toMongo(collection: String, topicDefinition: String, config: M
     val transform = Transformer(rootTopology, sink, topologyContext)
     addTransformer(transform)
 }
+
+
 
 @Deprecated("Automatically qualifies topic, use toMongo and explicitly qualify topic")
 fun PartialStream.mongoSink(collection: String, topicDefinition: String, config: MongoConfig) {

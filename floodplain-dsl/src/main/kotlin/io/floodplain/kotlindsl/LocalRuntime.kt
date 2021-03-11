@@ -50,6 +50,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.runBlocking
 import org.apache.kafka.common.serialization.Serdes
+import org.apache.kafka.common.utils.Utils
 import org.apache.kafka.connect.json.JsonDeserializer
 import org.apache.kafka.streams.KeyValue
 import org.apache.kafka.streams.StreamsConfig
@@ -132,7 +133,8 @@ fun runLocalTopology(
     props.setProperty(StreamsConfig.STATE_DIR_CONFIG, storageFolder)
     props.setProperty(StreamsConfig.BUILT_IN_METRICS_VERSION_CONFIG, StreamsConfig.METRICS_LATEST)
     val driver = TopologyTestDriver(topology, props)
-    val contextInstance = LocalDriverContext(driver, context, topologyConstructor, sourceConfigs, sinkConfigs, sinks, bufferTime)
+
+    val contextInstance = LocalDriverContext(driver, context, topologyConstructor, Utils.propsToStringMap(props), sourceConfigs, sinkConfigs, sinks, bufferTime)
     val jobs = contextInstance.connectSourceAndSink()
     contextInstance.connectJobs.addAll(jobs)
     try {
@@ -158,6 +160,7 @@ class LocalDriverContext(
     private val driver: TopologyTestDriver,
     private val topologyContext: TopologyContext,
     private val topologyConstructor: TopologyConstructor,
+    private val config: Map<String,String>,
     private val sourceConfigs: List<SourceConfig>,
     private val sinkConfigs: List<SinkConfig>,
     private val sinks: List<Pair<String, String>>,

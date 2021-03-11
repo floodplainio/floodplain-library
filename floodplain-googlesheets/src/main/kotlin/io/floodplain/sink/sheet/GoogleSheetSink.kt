@@ -18,13 +18,12 @@
  */
 package io.floodplain.sink.sheet
 
+import io.floodplain.kotlindsl.AbstractSinkConfig
 import io.floodplain.kotlindsl.FloodplainSink
 import io.floodplain.kotlindsl.MaterializedConfig
 import io.floodplain.kotlindsl.PartialStream
-import io.floodplain.kotlindsl.SinkConfig
 import io.floodplain.kotlindsl.Stream
 import io.floodplain.kotlindsl.Transformer
-import io.floodplain.kotlindsl.floodplainSinkFromTask
 import io.floodplain.reactive.source.topology.SinkTransformer
 import io.floodplain.sink.sheet.SheetSinkTask.COLUMNS
 import io.floodplain.sink.sheet.SheetSinkTask.SPREADSHEETID
@@ -56,7 +55,8 @@ fun Stream.googleSheetConfig(name: String): GoogleSheetConfiguration {
     return googleSheetConfiguration
 }
 
-class GoogleSheetConfiguration(override val topologyContext: TopologyContext, override val topologyConstructor: TopologyConstructor, val name: String) : SinkConfig {
+class GoogleSheetConfiguration(override val topologyContext: TopologyContext, override val topologyConstructor: TopologyConstructor, val name: String) :
+    AbstractSinkConfig() {
     private var googleTask: SheetSinkTask? = null
     private val sheetSinks = mutableListOf<GoogleSheetSink>()
     private var instantiatedSinkElements: Map<Topic, MutableList<FloodplainSink>>? = null
@@ -88,23 +88,6 @@ class GoogleSheetConfiguration(override val topologyContext: TopologyContext, ov
         return instantiatedSinkElements ?: emptyMap()
     }
 
-    override fun instantiateSinkElements() {
-        val result = mutableMapOf<Topic, MutableList<FloodplainSink>>()
-        materializeConnectorConfig().forEach { materializedSink ->
-            val connector = SheetSinkConnector()
-            connector.start(materializedSink.settings)
-            val task = connector.taskClass().getDeclaredConstructor().newInstance() as SheetSinkTask
-            googleTask = task
-            task.start(materializedSink.settings)
-            val sink = floodplainSinkFromTask(task, this)
-            materializedSink.topics.forEach {
-                val list = result.computeIfAbsent(it) { mutableListOf() }
-                list.add(sink)
-            }
-        }
-        instantiatedSinkElements = result
-        // return result
-    }
 
     override fun sinkTask(): Any? {
         return googleTask

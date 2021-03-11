@@ -6,6 +6,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation(project(":floodplain-stream-topology"))
     implementation("org.mongodb.kafka:mongo-kafka-connect:1.2.0")
+    implementation(FloodplainDeps.kafkaConnectRuntime)
     implementation(project(":streams-api"))
     implementation(project(":streams"))
     implementation(FloodplainDeps.mongoClientSync)

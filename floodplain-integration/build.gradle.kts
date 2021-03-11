@@ -21,5 +21,6 @@ dependencies {
     testImplementation(FloodplainDeps.jacksonDatabind)
     testImplementation(FloodplainDeps.testContainer)
     testImplementation(FloodplainDeps.testContainerKafka)
+    testImplementation(FloodplainDeps.debeziumTestContainers)
     testImplementation(FloodplainDeps.mongoClientSync)
 }

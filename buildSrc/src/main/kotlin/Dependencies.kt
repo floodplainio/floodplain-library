@@ -30,6 +30,7 @@ object FloodplainDeps {
     const val debeziumMySQL       = "io.debezium:debezium-connector-mysql:$debezium_version"
     const val debeziumEmbedded    = "io.debezium:debezium-embedded:$debezium_version"
     const val debeziumServerCore  = "io.debezium:debezium-server-core:$debezium_version"
+    const val debeziumTestContainers = "io.debezium:debezium-testing-testcontainers:$debezium_version"
     const val cdiApi              = "jakarta.enterprise:jakarta.enterprise.cdi-api:2.0.2"
     const val microProfileConfig  = "org.eclipse.microprofile.config:microprofile-config-api:1.3"
     const val jUnit               = "junit:junit:4.13.1"

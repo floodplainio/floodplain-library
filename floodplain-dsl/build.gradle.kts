@@ -21,6 +21,7 @@ dependencies {
     implementation(FloodplainDeps.argParser)
     testCompile(FloodplainDeps.jUnit)
     testCompile(FloodplainDeps.testContainer)
+    implementation(FloodplainDeps.kafkaConnectRuntime)
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation(FloodplainDeps.kotlinCoroutines)
     testImplementation("org.jetbrains.kotlin:kotlin-test")

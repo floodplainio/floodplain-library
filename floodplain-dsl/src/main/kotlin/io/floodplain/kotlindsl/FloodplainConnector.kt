@@ -99,12 +99,14 @@ fun startConstructor(
             deleteConnector(generatedName, connectURL)
         } else {
             logger.warn("Connector: {} already present, ignoring", generatedName)
+            // TODO return from here?
         }
     }
     postToHttpJava11(connectURL, jsonString)
 }
 
 private fun existingConnectors(url: URL): List<String> {
+    logger.info("Connecting to URL: $url")
     val response = httpClient.send(HttpRequest.newBuilder().uri(url.toURI()).build(), BodyHandlers.ofInputStream())
     val an = objectMapper.readTree(response.body()) as ArrayNode
     val result: MutableList<String> = ArrayList()
@@ -146,10 +148,10 @@ fun floodplainSinkFromTask(task: SinkTask, config: SinkConfig): FloodplainSink {
     return LocalConnectorSink(task, config)
 }
 
-fun instantiateSinkConfig(config: SinkConfig, connector: () -> SinkConnector): Map<Topic, MutableList<FloodplainSink>> {
+fun instantiateSinkConfig(config: SinkConfig, connector: () -> SinkConnector): SinkConnector {
     val result = mutableMapOf<Topic, MutableList<FloodplainSink>>()
     val materializedSinks = config.materializeConnectorConfig()
-    materializedSinks.map { materializedSink ->
+    val instance =  materializedSinks.map { materializedSink ->
         val connectorInstance = connector()
         connector().start(materializedSink.settings)
         val task = connectorInstance.taskClass().getDeclaredConstructor().newInstance() as SinkTask
@@ -160,11 +162,13 @@ fun instantiateSinkConfig(config: SinkConfig, connector: () -> SinkConnector): M
             val list = result.computeIfAbsent(topic) { mutableListOf() }
             list.add(localSink)
         }
-    }
-    return result
+        connectorInstance
+    }.first()
+    return instance
+    // return connectorInstance to instance
 }
 
-private class LocalConnectorSink(private val task: SinkTask, val config: SinkConfig) : FloodplainSink {
+class LocalConnectorSink(private val task: SinkTask, val config: SinkConfig) : FloodplainSink {
     private val offsetCounter = AtomicLong(System.currentTimeMillis())
     override fun send(topic: Topic, elements: List<Pair<String, Map<String, Any>?>>) {
         logger.info("Inserting # of documents ${elements.size} for topic: $topic")

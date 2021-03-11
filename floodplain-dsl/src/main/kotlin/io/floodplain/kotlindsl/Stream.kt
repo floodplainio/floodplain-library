@@ -39,6 +39,22 @@ import java.net.URL
 import java.util.Properties
 import java.util.Stack
 import java.util.UUID
+import org.apache.kafka.common.utils.Time
+import org.apache.kafka.connect.connector.policy.ConnectorClientConfigOverridePolicy
+import org.apache.kafka.connect.runtime.Connect
+import org.apache.kafka.connect.runtime.Herder
+import org.apache.kafka.connect.runtime.Worker
+import org.apache.kafka.connect.runtime.WorkerConfig
+import org.apache.kafka.connect.runtime.isolation.Plugins
+import org.apache.kafka.connect.runtime.rest.RestServer
+import org.apache.kafka.connect.runtime.standalone.StandaloneConfig
+import org.apache.kafka.connect.runtime.standalone.StandaloneHerder
+import org.apache.kafka.connect.storage.FileOffsetBackingStore
+import org.apache.kafka.connect.util.ConnectUtils
+import java.net.URI
+
+
+
 
 private val logger = mu.KotlinLogging.logger {}
 
@@ -47,6 +63,9 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
     private val sources: MutableList<Source> = ArrayList()
     private val sinkConfigurations: MutableList<SinkConfig> = mutableListOf()
     private val sourceConfigurations: MutableList<SourceConfig> = mutableListOf()
+
+    private val localSinkConfigurations: MutableList<AbstractSinkConfig> = mutableListOf()
+
     val tenant: String? = topologyContext.tenant.orElse(null)
     val deployment: String? = topologyContext.deployment.orElse(null)
     val generation: String = topologyContext.generation
@@ -89,6 +108,13 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
     fun addSinkConfiguration(c: SinkConfig): SinkConfig {
         sinkConfigurations.add(c)
         return c
+    }
+
+    /**
+     * Adds a sink config, should only be called from a sink implementation
+     */
+    fun addLocalSinkConfiguration(c: AbstractSinkConfig) {
+        localSinkConfigurations.add(c)
     }
 
     /**
@@ -143,8 +169,8 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
     fun renderAndSchedule(connectorURL: URL?, settings: InputStream, force: Boolean = false): KafkaStreams {
         val prop = Properties()
         prop.load(settings)
-        val propMap = mutableMapOf<String, Any>()
-        prop.forEach { (k, v) -> propMap.put(k as String, v) }
+        val propMap = mutableMapOf<String, String>()
+        prop.forEach { (k, v) -> propMap.put(k as String, v as String) }
         return renderAndSchedule(connectorURL, prop[StreamsConfig.BOOTSTRAP_SERVERS_CONFIG] as String, force, propMap)
     }
 
@@ -155,19 +181,11 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
             "sasl.jaas.config" to "org.apache.kafka.common.security.plain.PlainLoginModule   required username='$kafkaUsername'   password='$kafkaPassword';",
             "sasl.mechanism" to "PLAIN",
             "acks" to "all",
-            StreamsConfig.REPLICATION_FACTOR_CONFIG to replicationFactor
+            StreamsConfig.REPLICATION_FACTOR_CONFIG to replicationFactor.toString()
         )
         return renderAndSchedule(connectorURL, kafkaHosts, force, properties)
     }
 
-    // bootstrap.servers=pkc-lq8v7.eu-central-1.aws.confluent.cloud:9092
-    // security.protocol=SASL_SSL
-    // sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule   required username='KHKPHRFSQQ5KIXDJ'   password='Epznzmrw4BVOCmh3L6rTGfB3rnXoYNeCij6xwzDS4gmyXZn8Bb79nvvSjuqbTXYI';
-    // sasl.mechanism=PLAIN
-    // # Required for correctness in Apache Kafka clients prior to 2.6
-    // client.dns.lookup=use_all_dns_ips
-    // # Best practice for Kafka producer to prevent data loss
-    // acks=all
 
     /**
      * Will create an executable definition of the str
@@ -175,9 +193,44 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
      * instance pointing at the kafka cluster at kafkaHosts, using the supplied clientId.
      * Finally, it will POST the supplied
      */
-    fun renderAndSchedule(connectorURL: URL?, kafkaHosts: String, force: Boolean = false, settings: Map<String, Any>? = null): KafkaStreams {
+    fun renderAndRun(kafkaHosts: String, replicationFactor: Int, extraSettings: Map<String, Any>? = null, kafkaUsername: String? = null, kafkaPassword: String? = null): KafkaStreams {
+        val (topology, materializedConnectors) = renderLocal()
+        val properties = mutableMapOf<String,Any>(
+            StreamsConfig.BOOTSTRAP_SERVERS_CONFIG to kafkaHosts,
+            "acks" to "all",
+            StreamsConfig.REPLICATION_FACTOR_CONFIG to replicationFactor
+        )
+        if(kafkaUsername!=null && kafkaPassword!=null) {
+            properties["security.protocol"] = "SASL_SSL"
+            properties["sasl.jaas.config"] = "\"org.apache.kafka.common.security.plain.PlainLoginModule   required username='$kafkaUsername'   password='$kafkaPassword';\""
+            properties["sasl.mechanism"] = "PLAIN"
+        }
+
+        topologyConstructor.createTopicsAsNeeded(properties)
+
+        val appId = topologyContext.applicationId()
+        val extra: MutableMap<String, Any> = mutableMapOf()
+        if (extraSettings != null) {
+            extra.putAll(extraSettings)
+        }
+        val streams = runTopology(topology, appId, kafkaHosts, "storagePath", extra)
+        materializedConnectors.forEach {
+            logger.info("Starting connector named: ${it.name} to settings: ${it.settings}")
+        }
+        logger.info { "Topology running!" }
+        return streams
+    }
+
+    /**
+     * Will create an executable definition of the str
+     * eam (@see render), then will start the topology by starting a streams
+     * instance pointing at the kafka cluster at kafkaHosts, using the supplied clientId.
+     * Finally, it will POST the supplied
+     */
+    fun renderAndSchedule(connectorURL: URL?, kafkaHosts: String, force: Boolean = false, initialSettings: Map<String, String>? = null, monitor: (suspend Stream.(KafkaStreams)->Unit)? = null): KafkaStreams {
         val (topology, sources, sinks) = render()
-        topologyConstructor.createTopicsAsNeeded(settings ?: mapOf(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG to kafkaHosts))
+        val settings = initialSettings ?: mapOf(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG to kafkaHosts)
+        topologyConstructor.createTopicsAsNeeded(settings)
         sources.forEach { (name, json) ->
             connectorURL?.let {
                 startConstructor(name, topologyContext, it, json, force)
@@ -188,14 +241,102 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
                 startConstructor(name, topologyContext, it, json, force)
             }
         }
+        var herder: Herder? = null
+        if(localSinkConfigurations.isNotEmpty()) {
+            herder = startLocalConnect(settings)
+        }
+        var count = 0
+        localSinkConfigurations.flatMap {
+            it.instantiateSinkElements()
+        }.forEach {
+            val localSettings = mutableMapOf<String,String>()
+            localSettings.putAll(it)
+            val name = "conn-${count++}"
+            localSettings["name"] = name
+            herder?.putConnectorConfig(name,localSettings,true) { err,created ->
+                if(err!=null) {
+                    logger.error("Error creating connector:",err)
+                }
+                logger.info("something happened")
+            }
+        }
         val appId = topologyContext.topicName("@applicationId")
         val extra: MutableMap<String, Any> = mutableMapOf()
-        if (settings != null) {
             extra.putAll(settings)
-        }
         val streams = runTopology(topology, appId, kafkaHosts, "storagePath", extra)
         logger.info { "Topology running!" }
+        runBlocking {
+            monitor?.invoke(this@Stream,streams)
+        }
         return streams
+    }
+
+    private fun startLocalConnect(initialWorkerProps: Map<String, String>): Herder {
+        val workerProps = mutableMapOf<String,String>()
+        workerProps.putAll(initialWorkerProps)
+        workerProps.put("key.converter","org.apache.kafka.connect.json.JsonConverter")
+        workerProps.put("value.converter","org.apache.kafka.connect.json.JsonConverter")
+        workerProps["offset.storage.file.filename"] = "offset"
+        val plugins = Plugins(workerProps)
+        val config = StandaloneConfig(workerProps)
+        val time: Time = Time.SYSTEM
+        val connectorClientConfigOverridePolicy: ConnectorClientConfigOverridePolicy = plugins.newPlugin(
+            config.getString(WorkerConfig.CONNECTOR_CLIENT_POLICY_CLASS_CONFIG),
+            config, ConnectorClientConfigOverridePolicy::class.java
+        )
+        val kafkaClusterId: String = ConnectUtils.lookupKafkaClusterId(config)
+        logger.debug("Kafka cluster ID: $kafkaClusterId")
+
+        val rest = RestServer(config)
+        rest.initializeServer()
+        val advertisedUrl: URI = rest.advertisedUrl()
+        val workerId: String = advertisedUrl.getHost().toString() + ":" + advertisedUrl.getPort()
+
+        val worker = Worker(
+            workerId, time, plugins, config, FileOffsetBackingStore(),
+            connectorClientConfigOverridePolicy
+        )
+
+
+        val herder: Herder = StandaloneHerder(worker, kafkaClusterId, connectorClientConfigOverridePolicy)
+        val connect = Connect(herder, rest)
+
+        connect.start()
+        logger.info("Connect started!!")
+        return herder
+        // try {
+        //     // for (connectorPropsFile in Arrays.copyOfRange(args, 1, args.length)) {
+        //     //     val connectorProps: Map<String, String> = Utils.propsToStringMap(Utils.loadProps(connectorPropsFile))
+        //     //     val cb: FutureCallback<Herder.Created<ConnectorInfo>> =
+        //     //         FutureCallback(object : Callback<Herder.Created<ConnectorInfo?>?>() {
+        //     //             fun onCompletion(error: Throwable?, info: Herder.Created<ConnectorInfo>) {
+        //     //                 if (error != null) log.error(
+        //     //                     "Failed to create job for {}",
+        //     //                     connectorPropsFile
+        //     //                 ) else log.info("Created connector {}", info.result().name())
+        //     //             }
+        //     //         })
+        //     //     herder.putConnectorConfig(
+        //     //         connectorProps[ConnectorConfig.NAME_CONFIG],
+        //     //         connectorProps, false, cb
+        //     //     )
+        //     //     cb.get()
+        //     // }
+        // } catch (t: Throwable) {
+        //     logger.error("Stopping after connector error", t)
+        //     connect.stop()
+        // }
+    }
+
+    private fun renderLocal(): Pair<Topology,List<MaterializedConfig>> {
+        val topology = renderTopology()
+        val sources = sourceConfigurations().flatMap { element ->
+            element.materializeConnectorConfig()
+        }
+        val sinks = sinkConfigurations().flatMap { element ->
+            element.materializeConnectorConfig()
+        }
+        return topology to sources + sinks
     }
 
     /**
