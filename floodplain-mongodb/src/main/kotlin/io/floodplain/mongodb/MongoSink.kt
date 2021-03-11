@@ -29,7 +29,6 @@ import io.floodplain.streams.api.ProcessorName
 import io.floodplain.streams.api.Topic
 import io.floodplain.streams.api.TopologyContext
 import io.floodplain.streams.remotejoin.TopologyConstructor
-import org.apache.kafka.connect.cli.ConnectStandalone
 import java.util.Optional
 
 private val logger = mu.KotlinLogging.logger {}

@@ -19,12 +19,7 @@ package org.apache.kafka.streams;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.streams.test.TestRecord;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.StringJoiner;
+import java.util.*;
 
 /**
  * {@code TestOutputTopic} is used to read records from a topic in {@link TopologyTestDriver}.

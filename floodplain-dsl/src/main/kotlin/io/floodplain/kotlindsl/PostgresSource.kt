@@ -25,7 +25,6 @@ import io.floodplain.streams.api.TopologyContext
 import io.floodplain.streams.remotejoin.TopologyConstructor
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
-import java.lang.IllegalArgumentException
 
 private val logger = mu.KotlinLogging.logger {}
 

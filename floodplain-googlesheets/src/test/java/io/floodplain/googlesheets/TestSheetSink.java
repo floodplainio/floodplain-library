@@ -18,17 +18,16 @@
  */
 package io.floodplain.googlesheets;
 
+import io.floodplain.sink.sheet.SheetSink;
+import io.floodplain.sink.sheet.UpdateTuple;
+import org.junit.Test;
+
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.junit.Test;
-
-import io.floodplain.sink.sheet.SheetSink;
-import io.floodplain.sink.sheet.UpdateTuple;
 
 public class TestSheetSink {
 

@@ -21,6 +21,7 @@ package io.floodplain.streams.api;
 import io.floodplain.immutable.api.ImmutableMessage;
 import io.floodplain.immutable.factory.ImmutableFactory;
 import io.floodplain.replication.api.ReplicationMessage;
+
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;

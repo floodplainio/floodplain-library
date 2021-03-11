@@ -29,17 +29,8 @@ import kotlinx.coroutines.runBlocking
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.common.serialization.Serdes
-import org.apache.kafka.streams.KafkaStreams
-import org.apache.kafka.streams.StreamsConfig
-import org.apache.kafka.streams.Topology
-import org.apache.kafka.streams.processor.WallclockTimestampExtractor
-import java.io.InputStream
-import java.lang.StringBuilder
-import java.net.URL
-import java.util.Properties
-import java.util.Stack
-import java.util.UUID
 import org.apache.kafka.common.utils.Time
+import org.apache.kafka.common.utils.Utils
 import org.apache.kafka.connect.connector.policy.ConnectorClientConfigOverridePolicy
 import org.apache.kafka.connect.runtime.Connect
 import org.apache.kafka.connect.runtime.Herder
@@ -51,10 +42,16 @@ import org.apache.kafka.connect.runtime.standalone.StandaloneConfig
 import org.apache.kafka.connect.runtime.standalone.StandaloneHerder
 import org.apache.kafka.connect.storage.FileOffsetBackingStore
 import org.apache.kafka.connect.util.ConnectUtils
+import org.apache.kafka.streams.KafkaStreams
+import org.apache.kafka.streams.StreamsConfig
+import org.apache.kafka.streams.Topology
+import org.apache.kafka.streams.processor.WallclockTimestampExtractor
+import java.io.InputStream
 import java.net.URI
-
-
-
+import java.net.URL
+import java.util.Properties
+import java.util.Stack
+import java.util.UUID
 
 private val logger = mu.KotlinLogging.logger {}
 
@@ -169,9 +166,7 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
     fun renderAndSchedule(connectorURL: URL?, settings: InputStream, force: Boolean = false): KafkaStreams {
         val prop = Properties()
         prop.load(settings)
-        val propMap = mutableMapOf<String, String>()
-        prop.forEach { (k, v) -> propMap.put(k as String, v as String) }
-        return renderAndSchedule(connectorURL, prop[StreamsConfig.BOOTSTRAP_SERVERS_CONFIG] as String, force, propMap)
+        return renderAndSchedule(connectorURL, prop[StreamsConfig.BOOTSTRAP_SERVERS_CONFIG] as String, force, Utils.propsToStringMap(prop))
     }
 
     fun renderAndSchedule(connectorURL: URL?, kafkaHosts: String, kafkaUsername: String, kafkaPassword: String, replicationFactor: Int, force: Boolean = false): KafkaStreams {
@@ -184,41 +179,6 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
             StreamsConfig.REPLICATION_FACTOR_CONFIG to replicationFactor.toString()
         )
         return renderAndSchedule(connectorURL, kafkaHosts, force, properties)
-    }
-
-
-    /**
-     * Will create an executable definition of the str
-     * eam (@see render), then will start the topology by starting a streams
-     * instance pointing at the kafka cluster at kafkaHosts, using the supplied clientId.
-     * Finally, it will POST the supplied
-     */
-    fun renderAndRun(kafkaHosts: String, replicationFactor: Int, extraSettings: Map<String, Any>? = null, kafkaUsername: String? = null, kafkaPassword: String? = null): KafkaStreams {
-        val (topology, materializedConnectors) = renderLocal()
-        val properties = mutableMapOf<String,Any>(
-            StreamsConfig.BOOTSTRAP_SERVERS_CONFIG to kafkaHosts,
-            "acks" to "all",
-            StreamsConfig.REPLICATION_FACTOR_CONFIG to replicationFactor
-        )
-        if(kafkaUsername!=null && kafkaPassword!=null) {
-            properties["security.protocol"] = "SASL_SSL"
-            properties["sasl.jaas.config"] = "\"org.apache.kafka.common.security.plain.PlainLoginModule   required username='$kafkaUsername'   password='$kafkaPassword';\""
-            properties["sasl.mechanism"] = "PLAIN"
-        }
-
-        topologyConstructor.createTopicsAsNeeded(properties)
-
-        val appId = topologyContext.applicationId()
-        val extra: MutableMap<String, Any> = mutableMapOf()
-        if (extraSettings != null) {
-            extra.putAll(extraSettings)
-        }
-        val streams = runTopology(topology, appId, kafkaHosts, "storagePath", extra)
-        materializedConnectors.forEach {
-            logger.info("Starting connector named: ${it.name} to settings: ${it.settings}")
-        }
-        logger.info { "Topology running!" }
-        return streams
     }
 
     /**
@@ -241,25 +201,7 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
                 startConstructor(name, topologyContext, it, json, force)
             }
         }
-        var herder: Herder? = null
-        if(localSinkConfigurations.isNotEmpty()) {
-            herder = startLocalConnect(settings)
-        }
-        var count = 0
-        localSinkConfigurations.flatMap {
-            it.instantiateSinkElements()
-        }.forEach {
-            val localSettings = mutableMapOf<String,String>()
-            localSettings.putAll(it)
-            val name = "conn-${count++}"
-            localSettings["name"] = name
-            herder?.putConnectorConfig(name,localSettings,true) { err,created ->
-                if(err!=null) {
-                    logger.error("Error creating connector:",err)
-                }
-                logger.info("something happened")
-            }
-        }
+        instantiateLocalSinks(settings)
         val appId = topologyContext.topicName("@applicationId")
         val extra: MutableMap<String, Any> = mutableMapOf()
             extra.putAll(settings)
@@ -271,11 +213,33 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
         return streams
     }
 
+    private fun instantiateLocalSinks(settings: Map<String, String>) {
+        var herder: Herder? = null
+        if (localSinkConfigurations.isNotEmpty()) {
+            herder = startLocalConnect(settings)
+        }
+        var count = 0
+        localSinkConfigurations.flatMap {
+            it.instantiateSinkElements()
+        }.forEach {
+            val localSettings = mutableMapOf<String, String>()
+            localSettings.putAll(it)
+            val name = "conn-${count++}"
+            localSettings["name"] = name
+            herder?.putConnectorConfig(name, localSettings, true) { err, created ->
+                if (err != null) {
+                    logger.error("Error creating connector:", err)
+                }
+                logger.info("Instantiated: ${created?.created()} result: ${created?.result()}")
+            }
+        }
+    }
+
     private fun startLocalConnect(initialWorkerProps: Map<String, String>): Herder {
         val workerProps = mutableMapOf<String,String>()
         workerProps.putAll(initialWorkerProps)
-        workerProps.put("key.converter","org.apache.kafka.connect.json.JsonConverter")
-        workerProps.put("value.converter","org.apache.kafka.connect.json.JsonConverter")
+        workerProps["key.converter"] = "org.apache.kafka.connect.json.JsonConverter"
+        workerProps["value.converter"] = "org.apache.kafka.connect.json.JsonConverter"
         workerProps["offset.storage.file.filename"] = "offset"
         val plugins = Plugins(workerProps)
         val config = StandaloneConfig(workerProps)
@@ -290,7 +254,7 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
         val rest = RestServer(config)
         rest.initializeServer()
         val advertisedUrl: URI = rest.advertisedUrl()
-        val workerId: String = advertisedUrl.getHost().toString() + ":" + advertisedUrl.getPort()
+        val workerId: String = advertisedUrl.host.toString() + ":" + advertisedUrl.port
 
         val worker = Worker(
             workerId, time, plugins, config, FileOffsetBackingStore(),
@@ -384,7 +348,6 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
         // Give the Streams application a unique name.  The name must be unique in the Kafka cluster
         // against which the application is run.
         streamsConfiguration.putAll(extra)
-        // logger.info("Starting instance in storagePath: {}", storagePath)
         streamsConfiguration.putIfAbsent(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().javaClass)
         streamsConfiguration.putIfAbsent(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().javaClass)
         streamsConfiguration.putIfAbsent(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, StreamOperators.replicationSerde.javaClass)
@@ -395,10 +358,8 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
         streamsConfiguration.putIfAbsent(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 7200000)
         streamsConfiguration.putIfAbsent(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 100)
         streamsConfiguration.putIfAbsent(ProducerConfig.COMPRESSION_TYPE_CONFIG, "lz4")
-        // streamsConfiguration.putIfAbsent(StreamsConfig.STATE_DIR_CONFIG,storagePath)
         streamsConfiguration.putIfAbsent(StreamsConfig.NUM_STREAM_THREADS_CONFIG, 1)
         streamsConfiguration.putIfAbsent(StreamsConfig.NUM_STANDBY_REPLICAS_CONFIG, 0)
-        streamsConfiguration.putIfAbsent(StreamsConfig.RETRIES_CONFIG, 50)
         streamsConfiguration.putIfAbsent(StreamsConfig.REPLICATION_FACTOR_CONFIG, CoreOperators.topicReplicationCount())
         streamsConfiguration.putIfAbsent(StreamsConfig.DEFAULT_TIMESTAMP_EXTRACTOR_CLASS_CONFIG, WallclockTimestampExtractor::class.java)
 
@@ -423,7 +384,6 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
         runBlocking {
             io.floodplain.runtime.run(this@Stream, args, { after(it) }, { _, topologyContext -> after(topologyContext) })
         }
-        // io.floodplain.runtime.runWithArguments(this@Stream, arrayOf(*args), { after(it) }, { after() })
     }
 
     override val rootTopology: Stream

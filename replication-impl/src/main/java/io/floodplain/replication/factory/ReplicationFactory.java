@@ -24,7 +24,10 @@ import io.floodplain.replication.api.ReplicationMessage;
 import io.floodplain.replication.api.ReplicationMessageParser;
 import io.floodplain.replication.impl.ReplicationImmutableMessageImpl;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public class ReplicationFactory {
     private static ReplicationMessageParser instance;

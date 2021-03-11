@@ -27,7 +27,6 @@ import io.floodplain.streams.api.Topic;
 import io.floodplain.streams.api.TopologyContext;
 import io.floodplain.streams.remotejoin.ReplicationTopologyParser;
 import io.floodplain.streams.remotejoin.TopologyConstructor;
-
 import org.apache.kafka.common.serialization.Serializer;
 import org.apache.kafka.streams.Topology;
 import org.slf4j.Logger;

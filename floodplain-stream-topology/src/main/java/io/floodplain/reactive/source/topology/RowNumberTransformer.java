@@ -19,14 +19,12 @@
 package io.floodplain.reactive.source.topology;
 
 import io.floodplain.reactive.source.topology.api.TopologyPipeComponent;
-import io.floodplain.replication.api.ReplicationMessage;
 import io.floodplain.streams.api.TopologyContext;
 import io.floodplain.streams.remotejoin.ReplicationTopologyParser;
 import io.floodplain.streams.remotejoin.TopologyConstructor;
 import org.apache.kafka.streams.Topology;
 
 import java.util.Stack;
-import java.util.function.Function;
 
 public class RowNumberTransformer implements TopologyPipeComponent {
 

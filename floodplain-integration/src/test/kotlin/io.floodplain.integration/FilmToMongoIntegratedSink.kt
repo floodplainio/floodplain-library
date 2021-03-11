@@ -23,11 +23,9 @@ import io.floodplain.kotlindsl.postgresSource
 import io.floodplain.kotlindsl.postgresSourceConfig
 import io.floodplain.kotlindsl.stream
 import io.floodplain.mongodb.localMongoConfig
-import io.floodplain.mongodb.mongoConfig
 import io.floodplain.mongodb.toMongo
 import io.floodplain.test.InstantiatedContainer
 import io.floodplain.test.InstantiatedKafkaContainer
-import io.floodplain.test.useIntegraton
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeout
 import org.junit.After
@@ -43,7 +41,7 @@ private val logger = mu.KotlinLogging.logger {}
 @kotlinx.coroutines.ExperimentalCoroutinesApi
 class FilmToMongoIntegratedSink {
 
-    private val containerNetwork = Network.newNetwork();
+    private val containerNetwork = Network.newNetwork()
     private val kafkaContainer = InstantiatedKafkaContainer { it.withNetwork(containerNetwork).withNetworkAliases("kafka")} // KafkaContainer("5.5.3").withEmbeddedZookeeper().withExposedPorts(9092)
     private val postgresContainer = InstantiatedContainer("floodplain/floodplain-postgres-demo:1.0.0", 5432,mapOf()) {it.withNetwork(containerNetwork).withNetworkAliases("postgres")}
     private val mongoContainer = InstantiatedContainer("mongo:latest", 27017,mapOf()) { it.withNetwork(containerNetwork).withNetworkAliases("mongo") }
@@ -83,12 +81,7 @@ class FilmToMongoIntegratedSink {
      */
     @Test
     fun testPostgresRunLocal() {
-        val server = "${kafkaContainer.exposedPort}"
-        if (!useIntegraton) {
-            logger.info("Not performing integration tests, doesn't seem to work in circleci")
-            return
-        }
-        val kafkaStream = stream {
+        stream {
             val postgresConfig = postgresSourceConfig(
                 "mypostgres",
                 "postgres",

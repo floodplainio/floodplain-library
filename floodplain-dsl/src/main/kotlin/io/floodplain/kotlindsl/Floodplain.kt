@@ -46,7 +46,6 @@ import io.floodplain.streams.remotejoin.TopologyConstructor
 import org.apache.kafka.connect.sink.SinkConnector
 import org.apache.kafka.connect.sink.SinkRecord
 import org.apache.kafka.connect.sink.SinkTask
-import java.lang.RuntimeException
 import java.time.Duration
 import java.util.Optional
 import java.util.concurrent.atomic.AtomicLong

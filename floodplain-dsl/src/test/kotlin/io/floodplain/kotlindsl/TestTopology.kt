@@ -27,7 +27,6 @@ import io.floodplain.streams.api.Topic
 import io.floodplain.streams.remotejoin.StoreStateProcessor
 import kotlinx.coroutines.delay
 import org.apache.kafka.streams.state.KeyValueStore
-import java.lang.IllegalArgumentException
 import java.math.BigDecimal
 import java.time.Duration
 import kotlin.test.Test

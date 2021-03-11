@@ -15,11 +15,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Map;
-import java.util.Optional;
 
 public class TestGenerateConnectData {
 

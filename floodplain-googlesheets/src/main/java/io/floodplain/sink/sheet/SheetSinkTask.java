@@ -18,15 +18,15 @@
  */
 package io.floodplain.sink.sheet;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicLong;
-
 import org.apache.kafka.connect.sink.SinkRecord;
 import org.apache.kafka.connect.sink.SinkTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class SheetSinkTask extends SinkTask {
 

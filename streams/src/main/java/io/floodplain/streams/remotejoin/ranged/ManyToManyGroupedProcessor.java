@@ -1,10 +1,5 @@
 package io.floodplain.streams.remotejoin.ranged;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.BiFunction;
-
 import io.floodplain.replication.api.ReplicationMessage;
 import io.floodplain.streams.api.CoreOperators;
 import io.floodplain.streams.remotejoin.PreJoinProcessor;
@@ -16,6 +11,11 @@ import org.apache.kafka.streams.state.KeyValueIterator;
 import org.apache.kafka.streams.state.KeyValueStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.BiFunction;
 
 import static io.floodplain.streams.remotejoin.ReplicationTopologyParser.STORE_PREFIX;
 

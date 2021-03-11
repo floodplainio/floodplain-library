@@ -20,7 +20,6 @@ package io.floodplain.test
 
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.containers.KafkaContainer
-import org.testcontainers.containers.Network
 import org.testcontainers.utility.DockerImageName
 import java.time.Duration
 

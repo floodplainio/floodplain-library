@@ -1,7 +1,6 @@
 package io.floodplain.kotlindsl.example;
 
 import java.math.BigInteger;
-import java.util.Map;
 
 public class CreatePublicIdTransformer {
     private static final int MAX_INT = Integer.MAX_VALUE;

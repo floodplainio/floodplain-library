@@ -20,9 +20,7 @@ package io.floodplain.immutable.factory;
 
 import io.floodplain.immutable.api.ImmutableMessage;
 import io.floodplain.immutable.api.ImmutableMessage.ValueType;
-import io.floodplain.immutable.api.ImmutableMessageParser;
 import io.floodplain.immutable.impl.ImmutableMessageImpl;
-import io.floodplain.immutable.impl.JSONImmutableMessageParserImpl;
 import io.floodplain.immutable.json.ImmutableJSON;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

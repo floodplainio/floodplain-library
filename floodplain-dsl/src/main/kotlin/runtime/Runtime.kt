@@ -24,7 +24,6 @@ import io.floodplain.kotlindsl.LocalContext
 import io.floodplain.kotlindsl.Stream
 import io.floodplain.streams.api.TopologyContext
 import java.io.OutputStreamWriter
-import java.lang.RuntimeException
 import java.net.URL
 import java.nio.charset.StandardCharsets
 

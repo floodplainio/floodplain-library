@@ -1,5 +1,3 @@
-import org.gradle.kotlin.dsl.`kotlin-dsl`
-
 plugins {
     `kotlin-dsl`
     id("org.jetbrains.kotlin.jvm").version("1.4.20")

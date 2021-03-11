@@ -21,7 +21,6 @@ package io.floodplain.streams.remotejoin;
 import io.floodplain.immutable.api.ImmutableMessage;
 import io.floodplain.replication.api.ReplicationMessage;
 import io.floodplain.streams.api.Topic;
-import io.floodplain.streams.api.TopologyContext;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.streams.state.KeyValueStore;
