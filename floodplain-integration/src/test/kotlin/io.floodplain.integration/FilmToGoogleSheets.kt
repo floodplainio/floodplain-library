@@ -34,6 +34,7 @@ import io.floodplain.test.useIntegraton
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeout
 import org.junit.After
+import org.junit.Ignore
 import org.junit.Test
 import java.math.BigDecimal
 import kotlin.system.measureTimeMillis
@@ -54,7 +55,7 @@ class FilmToGoogleSheets {
         postgresContainer.close()
     }
 
-    @Test
+    @Test @Ignore // disable google sheet integration tests. Resource restrictions are too tight nowadays
     fun testPostgresGoogleSheets() {
         if (!useIntegraton) {
             logger.info("Not performing integration tests, doesn't seem to work in circleci")
@@ -121,7 +122,7 @@ class FilmToGoogleSheets {
         }
     }
 
-    @Test
+    @Test @Ignore // disable google sheet integration tests. Resource restrictions are too tight nowadays
     fun testReduceGoogleSheets() {
         if (!useIntegraton) {
             logger.info("Not performing integration tests, doesn't seem to work in circleci")
