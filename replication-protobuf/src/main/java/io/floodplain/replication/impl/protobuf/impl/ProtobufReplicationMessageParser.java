@@ -256,6 +256,7 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
             case DECIMAL:
                 return ImmutableMessage.ValueType.DECIMAL;
             case LIST:
+            case STRINGLIST:
                 return ImmutableMessage.ValueType.STRINGLIST;
             case UNRECOGNIZED:
                 return ImmutableMessage.ValueType.UNKNOWN;
