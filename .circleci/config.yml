@@ -35,7 +35,7 @@ jobs: # a collection of steps
             ls -l ~
             export GOOGLE_SHEETS_CREDENTIAL_PATH=~/sheetkey.json
             # Format the arguments to "./gradlew test"
-            ./gradlew jacocoTestReport --info --stacktrace
+            ./gradlew test --info --stacktrace
       - save_cache:
           paths:
             - ~/.gradle/wrapper
