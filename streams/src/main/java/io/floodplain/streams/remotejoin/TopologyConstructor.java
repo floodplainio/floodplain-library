@@ -81,6 +81,7 @@ public class TopologyConstructor {
         AdminClient adminClient = AdminClient.create(config);
         Set<String> topics = new HashSet<String>();
 
+        logger.info("Required topics: {}",desiredTopics);
         try {
             topics.addAll(adminClient.listTopics().names().get());
         } catch (InterruptedException | ExecutionException e) {
@@ -89,7 +90,7 @@ public class TopologyConstructor {
         List<NewTopic> toBeCreated = desiredTopics.entrySet()
                 .stream()
                 .filter(e -> !topics.contains(e.getKey().qualifiedString()))
-                .map(e -> new NewTopic(e.getKey().qualifiedString(), e.getValue(), Optional.empty()))
+                .map(e -> createTopic(e.getKey(),e.getValue()))
                 .collect(Collectors.toList());
         logger.info("Creating missing topics: {}",toBeCreated.stream().map(e->e.name()).collect(Collectors.joining(",")));
         try {
@@ -99,6 +100,12 @@ public class TopologyConstructor {
         } finally {
             adminClient.close();
         }
+    }
+
+    private NewTopic createTopic(Topic topic, Optional<Integer> partitions) {
+        int effectivePartitions = partitions.orElse(1);
+        NewTopic result = new NewTopic(topic.qualifiedString(), Optional.of(effectivePartitions), Optional.empty());
+        return result.configs(Map.of("cleanup.policy", "compact"));
     }
 
     public int generateNewStreamId() {
