@@ -20,6 +20,7 @@ package io.floodplain.elasticsearch
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.NullNode
 import io.floodplain.kotlindsl.each
 import io.floodplain.kotlindsl.message.empty
 import io.floodplain.kotlindsl.source
@@ -29,7 +30,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeout
 import org.junit.Ignore
 import org.junit.Test
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.node.NullNode
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
