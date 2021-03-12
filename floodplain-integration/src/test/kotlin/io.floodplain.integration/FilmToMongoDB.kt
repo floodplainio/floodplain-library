@@ -53,9 +53,6 @@ class FilmToMongoDB {
         mongoContainer.close()
     }
 
-    /**
-     * Test the simplest imaginable pipe: One source and one sink.
-     */
     @Test
     fun testPostgresSource() {
         if (!useIntegraton) {

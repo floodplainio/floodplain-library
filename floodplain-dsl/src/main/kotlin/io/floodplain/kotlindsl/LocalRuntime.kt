@@ -307,7 +307,6 @@ class LocalDriverContext(
         return callbackFlow {
             driver.setOutputListener { record ->
                 // Ignore changelog topics
-                logger.info(">>>>>>>> record: ${String(record.value())}")
                 if (!record.topic().endsWith("changelog")) {
                     val key = Serdes.String().deserializer().deserialize(record.topic(), record.key())
                     val topic = Topic.fromQualified(record.topic(), topologyContext)

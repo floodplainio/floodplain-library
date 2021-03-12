@@ -36,7 +36,6 @@ import kotlin.test.assertNotNull
 
 private val logger = mu.KotlinLogging.logger {}
 
-@kotlinx.coroutines.ExperimentalCoroutinesApi
 class FilmSimple {
 
     private val postgresContainer = InstantiatedContainer("floodplain/floodplain-postgres-demo:1.0.0", 5432)
@@ -58,7 +57,6 @@ class FilmSimple {
             return
         }
         stream {
-
             val postgresConfig = postgresSourceConfig(
                 "mypostgres",
                 postgresContainer.host,
