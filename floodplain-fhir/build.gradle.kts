@@ -5,6 +5,8 @@ dependencies {
     testCompile(FloodplainDeps.jUnit)
     implementation(FloodplainDeps.jacksonCore)
     implementation(FloodplainDeps.jacksonDatabind)
+    implementation(FloodplainDeps.jacksonDatabind310)
+
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation(project(":floodplain-stream-topology"))
     implementation(project(":floodplain-dsl"))

@@ -1,10 +1,10 @@
 package io.floodplain.build
 
 object Versions {
-    const val kotlin = "1.4.20"
+    const val kotlin = "1.4.31"
 
     /* test */
-    const val junit = "4.12"
+    const val junit = "4.13.2"
 }
 
 object Libs {
@@ -16,15 +16,15 @@ fun isReleaseVersion(): Boolean {
 }
 
 object FloodplainDeps {
-    const val floodplain_version = "1.3.13-SNAPSHOT"
-    const val jackson_version = "2.11.3"
+    const val floodplain_version = "1.4.1-SNAPSHOT"
+    const val jackson_version = "2.12.2"
     const val kafka_version = "2.7.0"
     const val slf4j_version = "1.7.30"
-    const val mysql_version = "8.0.21"
-    const val mongodb_version = "4.1.1"
-    const val debezium_version = "1.3.0.Final"
-    const val testContainer_version = "1.15.1"
-    const val kotlin_coroutines_version = "1.4.2"
+    const val mysql_version = "8.0.23"
+    const val mongodb_version = "4.2.2"
+    const val debezium_version = "1.4.2.Final"
+    const val testContainer_version = "1.15.2"
+    const val kotlin_coroutines_version = "1.4.3"
     const val debeziumCore        = "io.debezium:debezium-core:$debezium_version"
     const val debeziumPostgres    = "io.debezium:debezium-connector-postgres:$debezium_version"
     const val debeziumMySQL       = "io.debezium:debezium-connector-mysql:$debezium_version"
@@ -38,9 +38,10 @@ object FloodplainDeps {
     const val slf4j               = "org.slf4j:slf4j-api:$slf4j_version"
     const val slf4jLog4j          = "org.slf4j:slf4j-log4j12:$slf4j_version"
     const val protobuf            = "com.google.protobuf:protobuf-java:3.11.4"
-    const val kotlinLogging       = "io.github.microutils:kotlin-logging:2.0.3"
+    const val kotlinLogging       = "io.github.microutils:kotlin-logging:2.0.6"
     const val jacksonCore         = "com.fasterxml.jackson.core:jackson-core:$jackson_version"
     const val jacksonDatabind     = "com.fasterxml.jackson.core:jackson-databind:$jackson_version"
+    const val jacksonDatabind310  = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jackson_version"
     const val kafkaClient         = "org.apache.kafka:kafka-clients:$kafka_version"
     const val kafkaConnectApi     = "org.apache.kafka:connect-api:$kafka_version"
     const val kafkaConnectRuntime = "org.apache.kafka:connect-runtime:$kafka_version"

@@ -9,6 +9,7 @@ dependencies {
     implementation(project(":replication-json"))
     implementation(project(":replication-protobuf"))
     implementation(project(":kafka-converter"))
+    implementation(FloodplainDeps.jacksonDatabind310)
     testCompile(FloodplainDeps.jUnit)
     compile(FloodplainDeps.kafkaClient)
     compile(FloodplainDeps.kafkaStreams)
