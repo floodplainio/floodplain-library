@@ -31,8 +31,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -42,13 +43,15 @@ public class ImmutableJSON {
     private static final Logger logger = LoggerFactory.getLogger(ImmutableJSON.class);
     public static final ObjectMapper objectMapper = new ObjectMapper();
 
+    private static final DateTimeFormatter dateTimeParser  = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SS");
+    private static final DateTimeFormatter timeParser  = DateTimeFormatter.ofPattern("HH:mm:ss");
     private ImmutableJSON() {
         // -- no instances
     }
 
     public static ObjectNode json(ImmutableMessage msg) throws IOException {
         ObjectNode node = objectMapper.createObjectNode();
-        msg.toTypedDataMap().entrySet().forEach(e -> resolveValue(objectMapper, node, e.getKey(), e.getValue().type, Optional.ofNullable(e.getValue().value), false));
+        msg.toTypedDataMap().forEach((key1, value) -> resolveValue(node, key1, value.type, Optional.ofNullable(value.value), false));
         for (Entry<String, List<ImmutableMessage>> e : msg.subMessageListMap().entrySet()) {
 
             String key = e.getKey();
@@ -94,24 +97,20 @@ public class ImmutableJSON {
         msg.columnNames().forEach(column -> {
             ValueType type = msg.columnType(column);
             result.put(column + ".type", ImmutableTypeParser.typeName(type));
-            resolveValue(objectMapper, result, column, type, msg.value(column), includeNullValues);
+            resolveValue(result, column, type, msg.value(column), includeNullValues);
         });
-        msg.subMessageListMap().entrySet().forEach(e -> {
-            String key = e.getKey();
+        msg.subMessageListMap().forEach((key, value) -> {
             ArrayNode nd = objectMapper.createArrayNode();
-            e.getValue().stream().map(x -> toJSON(x, includeNullValues, includeTypes)).forEach(nd::add);
+            value.stream().map(x -> toJSON(x, includeNullValues, includeTypes)).forEach(nd::add);
             result.set(key, nd);
         });
-        msg.subMessageMap().entrySet().forEach(e -> {
-            String key = e.getKey();
-            result.set(key, toJSON(e.getValue(), includeNullValues, includeTypes));
-        });
+        msg.subMessageMap().forEach((key, value) -> result.set(key, toJSON(value, includeNullValues, includeTypes)));
         return result;
     }
 
 
-    private static void resolveValue(ObjectMapper objectMapper, ObjectNode m, String key, ValueType type, Optional<Object> maybeValue, boolean includeNullValues) {
-        if (!maybeValue.isPresent()) {
+    private static void resolveValue(ObjectNode m, String key, ValueType type, Optional<Object> maybeValue, boolean includeNullValues) {
+        if (maybeValue.isEmpty()) {
             if (includeNullValues) {
                 m.putNull(key);
             }
@@ -146,16 +145,14 @@ public class ImmutableJSON {
                 if (value instanceof String) {
                     m.put(key, (String) value);
                 } else {
-                    String t = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SS").format((Date) value);
-                    m.put(key, t);
+                    m.put(key, dateTimeParser.format((LocalDateTime)value));
                 }
                 return;
             case CLOCKTIME:
                 if (value instanceof String) {
                     m.put(key, (String) value);
                 } else {
-                    String c = new SimpleDateFormat("HH:mm:ss").format((Date) value);
-                    m.put(key, c);
+                    m.put(key, timeParser.format((LocalTime)value));
                 }
 
                 return;

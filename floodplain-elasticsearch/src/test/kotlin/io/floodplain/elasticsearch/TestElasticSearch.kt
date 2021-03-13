@@ -34,7 +34,8 @@ import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
-import java.util.Date
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 import java.util.UUID
 import kotlin.test.assertEquals
 
@@ -74,9 +75,9 @@ class TestElasticSearch {
             repeat(1) {
                 val msg = empty()
                     .set("body", poem)
-                    .set("time", Date().time)
+                    .set("time", LocalDateTime.now().toEpochSecond(ZoneOffset.UTC))
                     .set("uuid", uuid)
-                input("sometopic", uuid, msg)
+                inputQualified("sometopic", uuid, msg)
                 logger.info("inserting number: $it and uuid: $uuid")
             }
             withTimeout(600000) {

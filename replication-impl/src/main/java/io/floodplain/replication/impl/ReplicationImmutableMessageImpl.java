@@ -25,6 +25,8 @@ import io.floodplain.replication.api.ReplicationMessageParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.Predicate;
@@ -170,6 +172,7 @@ public class ReplicationImmutableMessageImpl implements ReplicationMessage {
                 } else if (val instanceof Float) {
                     t.put(e.getKey(), ValueType.FLOAT);
                 } else if (val instanceof Date) {
+                    logger.warn("Obsolete date object encountered in replicationmessage");
                     t.put(e.getKey(), ValueType.DATE);
                 } else if (val instanceof Boolean) {
                     t.put(e.getKey(), ValueType.BOOLEAN);
@@ -353,7 +356,7 @@ public class ReplicationImmutableMessageImpl implements ReplicationMessage {
 
     @Override
     public ReplicationMessage now() {
-        return atTime(new Date().getTime());
+        return atTime(LocalDateTime.now().toEpochSecond(ZoneOffset.UTC));
     }
 
     @Override

@@ -252,7 +252,7 @@ public class ReplicationTopologyParser {
     }
 
 
-    public static String addGroupedProcessor(final Topology current, TopologyContext topologyContext, TopologyConstructor topologyConstructor, String name, String from, boolean ignoreOriginalKey,
+    public static String addGroupedProcessor(final Topology current, TopologyContext topologyContext, TopologyConstructor topologyConstructor, String name, String from,
                                              Function<ReplicationMessage, String> keyExtractor, Optional<ProcessorSupplier<String, ReplicationMessage>> transformerSupplier) {
 
         String mappingStoreName;
@@ -270,7 +270,7 @@ public class ReplicationTopologyParser {
         topologyConstructor.stores.add(STORE_PREFIX + mappingStoreName);
         topologyConstructor.stateStoreSupplier.put(STORE_PREFIX + name, createMessageStoreSupplier(STORE_PREFIX + name, true));
         topologyConstructor.stateStoreSupplier.put(STORE_PREFIX + mappingStoreName, createMessageStoreSupplier(STORE_PREFIX + mappingStoreName, true));
-        current.addProcessor(name, () -> new GroupedUpdateProcessor(STORE_PREFIX + name, keyExtractor, STORE_PREFIX + mappingStoreName, ignoreOriginalKey), transformProcessor);
+        current.addProcessor(name, () -> new GroupedUpdateProcessor(STORE_PREFIX + name, keyExtractor, STORE_PREFIX + mappingStoreName), transformProcessor);
         return name;
     }
 

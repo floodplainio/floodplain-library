@@ -70,6 +70,7 @@ public class ImmutableFactory {
         } else if (val instanceof Float) {
             return ValueType.FLOAT;
         } else if (val instanceof Date) {
+            logger.warn("Obsolete date object encountered");
             return ValueType.DATE;
         } else if (val instanceof LocalDate) {
             return ValueType.DATE;

@@ -35,21 +35,17 @@ public class GroupedUpdateProcessor extends AbstractProcessor<String, Replicatio
     private KeyValueStore<String, ReplicationMessage> lookupStore;
     private KeyValueStore<String, ReplicationMessage> mappingStore;
     private final Function<ReplicationMessage, String> keyExtract;
-    private final boolean ignoreOriginalKey;
     private final boolean log;
 
 
     private final static Logger logger = LoggerFactory.getLogger(GroupedUpdateProcessor.class);
 
 
-    public GroupedUpdateProcessor(String lookupStoreName, Function<ReplicationMessage, String> keyExtract, String mappingStoreName, boolean ignoreOriginalKey) {
+    public GroupedUpdateProcessor(String lookupStoreName, Function<ReplicationMessage, String> keyExtract, String mappingStoreName) {
         this.lookupStoreName = lookupStoreName;
         this.mappingStoreName = mappingStoreName;
         this.keyExtract = keyExtract;
-        this.ignoreOriginalKey = ignoreOriginalKey;
-        this.log = false
-
-        ;
+        this.log = false;
     }
 
     @SuppressWarnings("unchecked")
@@ -70,7 +66,7 @@ public class GroupedUpdateProcessor extends AbstractProcessor<String, Replicatio
         if (msg != null) {
             String assembled = assembleGroupedKey(key, msg);
             if (log) {
-                logger.info("Processor: {}, Assembling key. Ignoring original: {}, original: {} assembled: {}", lookupStoreName, ignoreOriginalKey, key, assembled);
+                logger.info("Processor: {}, Assembling key. original: {} assembled: {}", lookupStoreName, key, assembled);
             }
             if (msg.operation() == Operation.DELETE) {
                 lookupStore.delete(assembled);
@@ -79,7 +75,7 @@ public class GroupedUpdateProcessor extends AbstractProcessor<String, Replicatio
                 // Check if we have a previous mapping
                 ReplicationMessage previousVersion = mappingStore.get(key);
                 if (previousVersion != null) {
-                    String previousAssembled = ignoreOriginalKey ? key : assembleGroupedKey(key, previousVersion);
+                    String previousAssembled = assembleGroupedKey(key, previousVersion);
                     if (!assembled.equals(previousAssembled)) {
                         // Remove old version for this msg from the grouped store - apparently it is now
                         // mapped to a different assembled key
@@ -101,9 +97,6 @@ public class GroupedUpdateProcessor extends AbstractProcessor<String, Replicatio
         }
         if (key.indexOf('|') != -1) {
             throw new IllegalArgumentException("Can't prefix with key. Already a grouped key: " + key + " prepending with: " + extracted);
-        }
-        if (ignoreOriginalKey) {
-            return extracted;
         }
         return extracted + "|" + key;
     }

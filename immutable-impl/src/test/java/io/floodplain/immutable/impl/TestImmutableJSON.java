@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Optional;
 
 import static io.floodplain.immutable.api.ImmutableMessage.ValueType.*;
@@ -87,7 +87,7 @@ public class TestImmutableJSON {
 
     @Test
     public void testDate() {
-        Date d = new Date();
+        LocalDate d = LocalDate.now();
         ImmutableMessage created = ImmutableFactory.empty().with("Date", d, DATE);
         Object result = created.value("Date").get();
         Assert.assertEquals(d,result);

@@ -53,8 +53,7 @@ public class GroupTransformer implements TopologyPipeComponent {
                                            TopologyContext topologyContext, TopologyConstructor topologyConstructor, Function<ReplicationMessage, String> keyExtractor, String transformerName) {
         String from = transformerNames.peek();
         String name = topologyContext.qualifiedName(transformerName, transformerNames.size(), pipeId);
-        boolean ignoreOriginalKey = false;
-        String grouped = ReplicationTopologyParser.addGroupedProcessor(topology, topologyContext, topologyConstructor, name, from, ignoreOriginalKey, keyExtractor, Optional.empty());
+        String grouped = ReplicationTopologyParser.addGroupedProcessor(topology, topologyContext, topologyConstructor, name, from, keyExtractor, Optional.empty());
         transformerNames.push(grouped);
     }
 

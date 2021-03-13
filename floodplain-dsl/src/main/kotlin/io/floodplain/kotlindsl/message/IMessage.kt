@@ -61,6 +61,8 @@ interface IMessage {
     fun data(): Map<String, Any>
     fun merge(msg: IMessage): IMessage
     fun messageList(path: String): List<IMessage>?
+    fun messageElement(path: String, index: Int): IMessage?
+
 }
 
 private data class IMessageImpl(private val content: MutableMap<String, Any>) : IMessage {
@@ -190,6 +192,10 @@ private data class IMessageImpl(private val content: MutableMap<String, Any>) : 
             throw ClassCastException("Path element $path should be an double but it is a ${raw::class}")
         }
         return raw as List<IMessage>
+    }
+
+    override fun messageElement(path: String, index: Int): IMessage? {
+        return messageList(path)?.get(index)
     }
 
     override fun boolean(path: String): Boolean {

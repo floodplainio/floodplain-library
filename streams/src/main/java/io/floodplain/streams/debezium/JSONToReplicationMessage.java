@@ -38,10 +38,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.*;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -215,7 +212,8 @@ public class JSONToReplicationMessage {
 //                return format.format(ldt);
             case "io.debezium.time.ZonedTimestamp":
                 // TODO Unsure about this one
-                return new Date(value.asLong());
+                return ZonedDateTime.ofInstant(Instant.ofEpochMilli(value.asLong()),ZoneId.systemDefault());
+//                return new Date(value.asLong());
             case "io.debezium.time.NanoTimestamp":
                 long nano = value.asLong();
                 Instant instant2 = Instant.ofEpochMilli(nano / 1000_000).plusNanos(nano % 1000_000);

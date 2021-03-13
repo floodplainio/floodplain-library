@@ -2,8 +2,6 @@ package io.floodplain.kotlindsl.example
 
 import io.floodplain.kotlindsl.message.IMessage
 import java.math.BigInteger
-import java.util.Calendar
-import java.util.Date
 
 private val logger = mu.KotlinLogging.logger {}
 
@@ -11,18 +9,6 @@ fun createPublicId(prefix: String, prime: Int, modInverse: Int, random: Int, fie
     val opt: Optimus = Optimus(prime, modInverse, random)
     val result = opt.encode(field)
     return prefix + result
-}
-
-fun combineDateTime(date: Date, time: Date): Date {
-    val cal = Calendar.getInstance()
-    cal.time = date
-    val cal2 = Calendar.getInstance()
-    cal2.time = time
-
-    cal[Calendar.HOUR_OF_DAY] = cal2[Calendar.HOUR_OF_DAY]
-    cal[Calendar.MINUTE] = cal2[Calendar.MINUTE]
-    cal[Calendar.SECOND] = cal2[Calendar.SECOND]
-    return cal.time
 }
 
 fun filterValidCalendarActivityId(key: String, calendarDay: IMessage): Boolean {

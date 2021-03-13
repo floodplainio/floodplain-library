@@ -22,6 +22,7 @@ import io.floodplain.kotlindsl.filter
 import io.floodplain.kotlindsl.message.empty
 import io.floodplain.kotlindsl.source
 import io.floodplain.kotlindsl.stream
+import io.floodplain.kotlindsl.topic
 import io.floodplain.mongodb.mongoConfig
 import io.floodplain.mongodb.mongoSink
 import io.floodplain.mongodb.toMongo
@@ -30,7 +31,8 @@ import kotlinx.coroutines.withTimeout
 import org.bson.Document
 import org.junit.Test
 import org.testcontainers.containers.GenericContainer
-import java.util.Date
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 import kotlin.test.assertEquals
 
 private val logger = mu.KotlinLogging.logger {}
@@ -73,9 +75,9 @@ class TestMongo {
                     val trip = empty()
                         .set("line1", "I bolt white high through snowfall cold")
                         .set("line2", "I am lightning in the night $it")
-                        .set("time", Date().time)
+                        .set("time", LocalDateTime.now().toEpochSecond(ZoneOffset.UTC))
                         .set("counter", it.toLong())
-                    input("sometopic", "somekey_$it", trip)
+                    input(topic("sometopic"), "somekey_$it", trip)
                 }
                 // val elements = outputSize("myindex")
                 flushSinks()
@@ -125,9 +127,9 @@ class TestMongo {
 
                 repeat(100) {
                     val trip = empty().set("body", "I am a fluffy rabbit number $it and I have fluffy feet")
-                        .set("time", Date().time)
+                        .set("time", LocalDateTime.now().toEpochSecond(ZoneOffset.UTC))
                         .set("counter", it.toLong())
-                    input("sometopic", "somekey_$it", trip)
+                    input(topic("sometopic"), "somekey_$it", trip)
                 }
                 // val elements1 = outputSize("myindex1")
                 // val elements2 = outputSize("myindex2")

@@ -215,4 +215,12 @@ class IMessageTest {
         val dt = msg.date("adate")
         logger.info("Date recovered: $dt")
     }
+
+    @Test
+    fun testQueryMessageListElement() {
+        val msg = createComplexMessage()
+        val id = msg.messageList("sublist")?.get(0)?.string("astring")
+        val id2 = msg.messageElement("sublist",0)?.string("astring")
+        assertEquals(id,id2)
+    }
 }

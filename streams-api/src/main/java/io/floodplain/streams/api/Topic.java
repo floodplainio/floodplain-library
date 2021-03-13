@@ -37,14 +37,10 @@ public class Topic {
 
     //    private static final TopologyContext mockContext = TopologyContext.context("instance","gen");
     private Topic(TopologyContext topologyContext, String topicDefinition, String qualifiedDefinition) {
-        // only one will be used
         this.topologyContext = topologyContext;
+        // only one will be used
         this.topicDefinition = topicDefinition;
         this.qualifiedDefinition = qualifiedDefinition;
-        if(qualifiedDefinition!=null && qualifiedDefinition.contains("@")) {
-            System.err.println("No");
-
-        }
     }
 
     public static Topic from(String topicDefinition, TopologyContext topologyContext) {
@@ -68,19 +64,6 @@ public class Topic {
 
     public String toString() {
         return qualifiedString();
-    }
-
-    private String unqualify(String qualified) {
-        String[] parts = qualified.split("-");
-        if(parts.length < 2) {
-//            throw new RuntimeException("Can not unqualify topic: "+qualified+" as there are not enough parts");
-            return qualified;
-        }
-        if(parts.length >= 3) {
-            return "@"+parts[parts.length-1];
-
-        }
-        return parts[parts.length-1];
     }
 
     @Override

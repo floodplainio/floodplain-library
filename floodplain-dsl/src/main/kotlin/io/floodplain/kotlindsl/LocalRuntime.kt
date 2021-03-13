@@ -70,8 +70,8 @@ import java.util.Properties
 
 private val logger = mu.KotlinLogging.logger {}
 
-interface InputReceiver {
-    fun input(topic: String, key: String, msg: IMessage)
+interface InputReceiver: FloodplainOperator {
+    fun input(topic: Topic, key: String, msg: IMessage)
     fun inputQualified(topic: String, key: String, msg: IMessage)
 
     fun input(topic: String, key: ByteArray, msg: ByteArray)
@@ -83,6 +83,7 @@ interface InputReceiver {
 
 interface LocalContext : InputReceiver {
     fun output(topic: String): Pair<String, IMessage>
+    fun outputQualified(topic: String): Pair<String, IMessage>
     fun skip(topic: String, number: Int)
     /**
      * Doesn't work, outputs get created lazily, so only sinks that have been accessed before are counted
@@ -90,7 +91,9 @@ interface LocalContext : InputReceiver {
     fun outputs(): Set<String>
     fun outputSize(topic: String): Long
     fun deleted(topic: String): String
+    fun deletedQualified(topic: String): String
     fun isEmpty(topic: String): Boolean
+    fun isEmptyQualified(topic: String): Boolean
     fun advanceWallClockTime(duration: Duration)
     fun stateStore(name: String): KeyValueStore<String, ReplicationMessage>
     fun getStateStoreNames(): Set<String>
@@ -114,6 +117,7 @@ fun runLocalTopology(
     bufferTime: Int?,
     topology: Topology,
     localCmds: suspend LocalContext.() -> Unit,
+    rootTopology: Stream,
     topologyConstructor: TopologyConstructor,
     context: TopologyContext,
     sourceConfigs: List<SourceConfig>,
@@ -134,7 +138,7 @@ fun runLocalTopology(
     props.setProperty(StreamsConfig.BUILT_IN_METRICS_VERSION_CONFIG, StreamsConfig.METRICS_LATEST)
     val driver = TopologyTestDriver(topology, props)
 
-    val contextInstance = LocalDriverContext(driver, context, topologyConstructor, Utils.propsToStringMap(props), sourceConfigs, sinkConfigs, sinks, bufferTime)
+    val contextInstance = LocalDriverContext(driver, rootTopology, context, topologyConstructor, Utils.propsToStringMap(props), sourceConfigs, sinkConfigs, sinks, bufferTime)
     val jobs = contextInstance.connectSourceAndSink()
     contextInstance.connectJobs.addAll(jobs)
     try {
@@ -158,7 +162,8 @@ fun runLocalTopology(
 
 class LocalDriverContext(
     private val driver: TopologyTestDriver,
-    private val topologyContext: TopologyContext,
+    override val rootTopology: Stream,
+    override val topologyContext: TopologyContext,
     private val topologyConstructor: TopologyConstructor,
     private val config: Map<String,String>,
     private val sourceConfigs: List<SourceConfig>,
@@ -323,9 +328,8 @@ class LocalDriverContext(
         }
     }
 
-    override fun input(topic: String, key: String, msg: IMessage) {
-        val qualifiedTopicName = topologyContext.topicName(topic)
-        inputQualified(qualifiedTopicName, key, msg)
+    override fun input(topic: Topic, key: String, msg: IMessage) {
+        inputQualified(topic.qualifiedString(), key, msg)
     }
 
     override fun inputQualified(topic: String, key: String, msg: IMessage) {
@@ -359,25 +363,6 @@ class LocalDriverContext(
         } catch (e: Throwable) {
             logger.error("Error sending input data", e)
         }
-        // val parsedKey = JSONToReplicationMessage.processDebeziumJSONKey(key)
-        // val replicationMessage = JSONToReplicationMessage.processDebeziumBody(msg).withOperation(ReplicationMessage.Operation.UPDATE)
-        // val inputTopic = inputTopics.computeIfAbsent(qualifiedTopicName) {
-        //     driver.createInputTopic(
-        //         qualifiedTopicName,
-        //         // connectKeySerde.serializer(),
-        //         // ReplicationTopologyParser.keySerializer(Topic.FloodplainKeyFormat.CONNECT_KEY_JSON),
-        //         Serdes.String().serializer(),
-        //         // ReplicationTopologyParser.bodySerializer(Topic.FloodplainBodyFormat.CONNECT_JSON)
-        //         ReplicationMessageSerde().serializer()
-        //     )
-        //     // connectKeySerde.serializer()
-        //     // driver.
-        // }
-        // // driver.createInputTopic()
-        // // val replicationMsg = ReplicationFactory.standardMessage(parsed.toImmutable())
-        // inputTopic.pipeInput(parsedKey, replicationMessage)
-        // // val parsed = connectReplicationMessageSerde.deserializer().deserialize(qualifiedTopicName,msg)
-        // // input(topic,key, parsed)
     }
 
     override fun delete(topic: String, key: String) {
@@ -397,7 +382,9 @@ class LocalDriverContext(
     }
 
     override fun output(topic: String): Pair<String, IMessage> {
-        val qualifiedTopicName = topologyContext.topicName(topic)
+        return outputQualified(topologyContext.topicName(topic))
+    }
+    override fun outputQualified(qualifiedTopicName: String): Pair<String, IMessage> {
         val outputTopic = outputTopics.computeIfAbsent(qualifiedTopicName) {
             driver.createOutputTopic(
                 qualifiedTopicName,
@@ -410,7 +397,7 @@ class LocalDriverContext(
         return if (op == ReplicationMessage.Operation.DELETE) {
             logger.info("delete detected! isnull? ${keyVal.value}")
             logger.info("retrying...")
-            output(topic)
+            output(qualifiedTopicName)
         } else {
             Pair(keyVal.key, fromImmutable(keyVal.value!!.message()))
         }
@@ -435,20 +422,22 @@ class LocalDriverContext(
     }
 
     override fun deleted(topic: String): String {
-        val qualifiedTopicName = topologyContext.topicName(topic)
-        val outputTopic = outputTopics.computeIfAbsent(qualifiedTopicName) {
+        return deletedQualified(topologyContext.topicName(topic))
+    }
+    override fun deletedQualified(topic: String): String {
+        val outputTopic = outputTopics.computeIfAbsent(topic) {
             driver.createOutputTopic(
-                qualifiedTopicName,
+                topic,
                 Serdes.String().deserializer(),
                 ReplicationMessageSerde().deserializer()
             )
         }
-        logger.info("Looking for a tombstone message for topic $qualifiedTopicName")
+        logger.info("Looking for a tombstone message for topic $topic")
         val keyVal = outputTopic.readKeyValue()
         logger.info { "Found key ${keyVal.key} operation: ${keyVal.value?.operation()}" }
         if (keyVal.value != null) {
             if (keyVal.value.operation() == ReplicationMessage.Operation.DELETE) {
-                return deleted(topic)
+                return deletedQualified(topic)
             }
             logger.error { "Unexpected content: ${replicationMessageParser.describe(keyVal.value)} remaining queue: ${outputTopic.queueSize}" }
             throw RuntimeException("Expected delete message for key: ${keyVal.key}, but got a value: ${keyVal.value}")
@@ -457,10 +446,12 @@ class LocalDriverContext(
     }
 
     override fun isEmpty(topic: String): Boolean {
-        val qualifiedTopicName = topologyContext.topicName(topic)
-        val outputTopic = outputTopics.computeIfAbsent(qualifiedTopicName) {
+        return isEmptyQualified(topologyContext.topicName(topic))
+    }
+    override fun isEmptyQualified(topic: String): Boolean {
+        val outputTopic = outputTopics.computeIfAbsent(topic) {
             driver.createOutputTopic(
-                qualifiedTopicName,
+                topic,
                 Serdes.String().deserializer(),
                 ReplicationMessageSerde().deserializer()
             )

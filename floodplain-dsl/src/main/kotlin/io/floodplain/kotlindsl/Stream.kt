@@ -155,6 +155,7 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
             bufferTime,
             topology,
             localCmds,
+            this,
             topologyConstructor,
             topologyContext,
             sourceConfigs,

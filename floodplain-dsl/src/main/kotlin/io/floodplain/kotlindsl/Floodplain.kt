@@ -325,6 +325,11 @@ fun FloodplainOperator.qualifiedTopic(name: String): Topic {
     return Topic.fromQualified(name, topologyContext)
 }
 
+fun FloodplainOperator.generationalTopic(name: String): Topic {
+    return Topic.from("@$name",topologyContext)
+}
+
+
 fun Stream.externalSource(
     topic: String,
     keyFormat: Topic.FloodplainKeyFormat,
@@ -370,7 +375,7 @@ fun PartialStream.sink(topic: String): Transformer {
 /**
  * Creates a simple sink that will contain the result of the current transformation. Will not qualify with tenant / deployment
  */
-fun PartialStream.toInternal(topic: String): Transformer {
+fun PartialStream.sinkQualified(topic: String): Transformer {
     val sink = SinkTransformer(
         Optional.empty(),
         Topic.fromQualified(topic, topologyContext),
@@ -569,7 +574,6 @@ interface FloodplainSourceContainer : FloodplainOperator {
 interface FloodplainOperator {
     val topologyContext: TopologyContext
     val rootTopology: Stream
-    // fun addSource(source: Source)
 }
 
 /**
