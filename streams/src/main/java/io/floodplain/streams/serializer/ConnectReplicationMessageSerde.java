@@ -43,7 +43,7 @@ public class ConnectReplicationMessageSerde implements Serde<ReplicationMessage>
 
     private static final Logger logger = LoggerFactory.getLogger(ConnectReplicationMessageSerde.class);
     private static final ConnectKeySerde keySerde = new ConnectKeySerde();
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
 
     @Override
     public void close() {
