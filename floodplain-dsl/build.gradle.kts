@@ -19,6 +19,7 @@ dependencies {
     implementation(FloodplainDeps.debeziumMySQL)
     implementation(FloodplainDeps.debeziumEmbedded)
     implementation(FloodplainDeps.argParser)
+    implementation(FloodplainDeps.jacksonDatabind310)
     testCompile(FloodplainDeps.jUnit)
     testCompile(FloodplainDeps.testContainer)
     implementation(FloodplainDeps.kafkaConnectRuntime)

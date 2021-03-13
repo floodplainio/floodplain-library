@@ -271,6 +271,7 @@ class LocalDriverContext(
         val topics = topics()
         val deserializer = JsonDeserializer() // TODO protobuf issue, topic is not in json connect
         val mapper = ObjectMapper()
+        mapper.findAndRegisterModules()
         val fallback = FallbackReplicationMessageParser()
         val sourceFlow = outputFlowSingle()
             .map { (topic, key, value) ->
