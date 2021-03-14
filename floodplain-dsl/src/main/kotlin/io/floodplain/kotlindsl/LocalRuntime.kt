@@ -89,7 +89,7 @@ interface LocalContext : InputReceiver {
      */
     fun outputs(): Set<String>
     fun outputSize(topic: Topic): Long
-    fun deleted(topic: String): String
+    fun deleted(topic: Topic): String
     fun deletedQualified(topic: String): String
     fun isEmpty(topic: Topic): Boolean
     fun isEmptyQualified(topic: String): Boolean
@@ -408,8 +408,8 @@ class LocalDriverContext(
         return outputTopic.queueSize
     }
 
-    override fun deleted(topic: String): String {
-        return deletedQualified(topologyContext.topicName(topic))
+    override fun deleted(topic: Topic): String {
+        return deletedQualified(topic.qualifiedString())
     }
     override fun deletedQualified(topic: String): String {
         val outputTopic = outputTopics.computeIfAbsent(topic) {

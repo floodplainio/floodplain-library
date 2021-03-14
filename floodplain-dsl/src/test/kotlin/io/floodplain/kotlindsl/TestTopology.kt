@@ -106,7 +106,7 @@ class TestTopology {
             input(generationalTopic("sometopic"), "key1", empty().set("name", "gorilla"))
             delete(generationalTopic("sometopic"), "key1")
             output(generationalTopic("outputtopic"))
-            assertTrue(deleted("@outputtopic") == "key1", "Key mismatch")
+            assertTrue(deleted(generationalTopic("outputtopic")) == "key1", "Key mismatch")
             logger.info("Topic now empty: ${isEmpty(qualifiedTopic("outputtopic"))}")
         }
     }
@@ -153,7 +153,7 @@ class TestTopology {
             assertEquals("monkey", result["rightsub/subname"])
             delete(generationalTopic("left"), "key1")
             // TODO add tests to check store sizes
-            assertEquals("key1", deleted("@output"))
+            assertEquals("key1", deleted(generationalTopic("output")))
         }
     }
 
@@ -185,7 +185,7 @@ class TestTopology {
             logger.info("Result: $result")
             assertEquals("monkey", result["rightsub/subname"])
             delete(generationalTopic("left"), "key1")
-            assertEquals("key1", deleted("@output"))
+            assertEquals("key1", deleted(generationalTopic("output")))
         }
     }
 
@@ -279,7 +279,7 @@ class TestTopology {
             val subList3 = v5["rightsub"] as List<*>?
             assertEquals(0, subList3?.size ?: 0)
             delete(generationalTopic("left"), "key1")
-            assertEquals("key1", deleted("@output"))
+            assertEquals("key1", deleted(generationalTopic("output")))
         }
     }
 
@@ -313,7 +313,7 @@ class TestTopology {
             input(generationalTopic("right"), "otherkey2", record2)
 
             // TODO skip the 'ghost delete' I'm not too fond of this, this one should be skippable
-            deleted("@output")
+            deleted(generationalTopic("output"))
             val outputs = outputSize(generationalTopic("output"))
             assertEquals(2, outputs, "should have 2 elements")
             output(generationalTopic("output")) // skip one
@@ -327,7 +327,7 @@ class TestTopology {
             val subList2 = v4["rightsub"] as List<*>
             assertEquals(1, subList2.size)
             delete(generationalTopic("right"), "otherkey2")
-            assertEquals("key1", deleted("@output"))
+            assertEquals("key1", deleted(generationalTopic("output")))
         }
     }
 
