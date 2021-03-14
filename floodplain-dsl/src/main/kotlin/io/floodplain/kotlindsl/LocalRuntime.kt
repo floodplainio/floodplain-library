@@ -72,11 +72,10 @@ private val logger = mu.KotlinLogging.logger {}
 
 interface InputReceiver: FloodplainOperator {
     fun input(topic: Topic, key: String, msg: IMessage)
+    fun input(topic: Topic, key: ByteArray, msg: ByteArray)
     fun inputQualified(topic: String, key: String, msg: IMessage)
-
-    fun input(topic: String, key: ByteArray, msg: ByteArray)
     fun inputQualified(topic: String, key: ByteArray, msg: ByteArray)
-    fun delete(topic: String, key: String)
+    fun delete(topic: Topic, key: String)
     fun deleteQualified(topic: String, key: String)
     fun inputs(): Set<String>
 }
@@ -280,15 +279,6 @@ class LocalDriverContext(
         val fallback = FallbackReplicationMessageParser()
         val sourceFlow = outputFlowSingle()
             .map { (topic, key, value) ->
-                // if(value!=null) {
-                //     val v = String(value)
-                //     logger.info("PPP: $v")
-                // }
-
-                // val parsed = if (value == null) null else deserializer.deserialize(topic.qualifiedString(),value)
-
-                // fallback.parseBytes(Optional.ofNullable(topic.qualifiedString()),value).valueMap(false,
-                //     Collections.emptySet())
                 val parsed = if (value == null) null else fallback.parseBytes(Optional.ofNullable(topic.qualifiedString()), value).valueMap(
                     false,
                     Collections.emptySet()
@@ -348,26 +338,22 @@ class LocalDriverContext(
         inputTopic.pipeInput(key, replicationMsg)
     }
 
-    override fun input(topic: String, key: ByteArray, msg: ByteArray) {
-        val qualifiedTopicName = topologyContext.topicName(topic)
-        inputQualified(qualifiedTopicName, key, msg)
+    override fun input(topic: Topic, key: ByteArray, msg: ByteArray) {
+        inputQualified(topic.qualifiedString(), key, msg)
     }
-
     override fun inputQualified(topic: String, key: ByteArray, msg: ByteArray) {
-        val qualifiedTopicName = topic // topologyContext.topicName(topic)
-        if (!inputs().contains(qualifiedTopicName)) {
+        if (!inputs().contains(topic)) {
             logger.debug("Missing topic: $topic available topics: ${inputs()}")
         }
         try {
-            driver.pipeRawRecord(qualifiedTopicName, Instant.now().toEpochMilli(), key, msg)
+            driver.pipeRawRecord(topic, Instant.now().toEpochMilli(), key, msg)
         } catch (e: Throwable) {
             logger.error("Error sending input data", e)
         }
     }
 
-    override fun delete(topic: String, key: String) {
-        val qualifiedTopicName = topologyContext.topicName(topic)
-        deleteQualified(qualifiedTopicName, key)
+    override fun delete(topic: Topic, key: String) {
+        deleteQualified(topic.qualifiedString(), key)
     }
 
     override fun deleteQualified(topic: String, key: String) {
@@ -384,10 +370,10 @@ class LocalDriverContext(
     override fun output(topic: String): Pair<String, IMessage> {
         return outputQualified(topologyContext.topicName(topic))
     }
-    override fun outputQualified(qualifiedTopicName: String): Pair<String, IMessage> {
-        val outputTopic = outputTopics.computeIfAbsent(qualifiedTopicName) {
+    override fun outputQualified(topic: String): Pair<String, IMessage> {
+        val outputTopic = outputTopics.computeIfAbsent(topic) {
             driver.createOutputTopic(
-                qualifiedTopicName,
+                topic,
                 Serdes.String().deserializer(),
                 ReplicationMessageSerde().deserializer()
             )
@@ -397,7 +383,7 @@ class LocalDriverContext(
         return if (op == ReplicationMessage.Operation.DELETE) {
             logger.info("delete detected! isnull? ${keyVal.value}")
             logger.info("retrying...")
-            output(qualifiedTopicName)
+            output(topic)
         } else {
             Pair(keyVal.key, fromImmutable(keyVal.value!!.message()))
         }

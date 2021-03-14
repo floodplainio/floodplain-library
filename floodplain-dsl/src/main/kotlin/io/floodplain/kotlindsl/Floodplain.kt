@@ -326,6 +326,9 @@ fun FloodplainOperator.qualifiedTopic(name: String): Topic {
 }
 
 fun FloodplainOperator.generationalTopic(name: String): Topic {
+    if(name.startsWith("@")) {
+        throw RuntimeException("Can't create generationalTopic that starts with '@', remove the '@' from $name")
+    }
     return Topic.from("@$name",topologyContext)
 }
 

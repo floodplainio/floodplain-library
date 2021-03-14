@@ -104,7 +104,7 @@ class TestTopology {
             }
         }.renderAndExecute {
             input(generationalTopic("sometopic"), "key1", empty().set("name", "gorilla"))
-            delete("@sometopic", "key1")
+            delete(generationalTopic("sometopic"), "key1")
             output("@outputtopic")
             assertTrue(deleted("@outputtopic") == "key1", "Key mismatch")
             logger.info("Topic now empty: ${isEmpty("@outputtopic")}")
@@ -151,7 +151,7 @@ class TestTopology {
             val (_, result) = output("@output")
             logger.info("Result: $result")
             assertEquals("monkey", result["rightsub/subname"])
-            delete("@left", "key1")
+            delete(generationalTopic("left"), "key1")
             // TODO add tests to check store sizes
             assertEquals("key1", deleted("@output"))
         }
@@ -184,7 +184,7 @@ class TestTopology {
             val (_, result) = output("@output")
             logger.info("Result: $result")
             assertEquals("monkey", result["rightsub/subname"])
-            delete("@left", "key1")
+            delete(generationalTopic("left"), "key1")
             assertEquals("key1", deleted("@output"))
         }
     }
@@ -270,15 +270,15 @@ class TestTopology {
             assertEquals(2, subList.size)
             assertEquals(record1, subList[0])
             assertEquals(record2, subList[1])
-            delete("@right", "otherkey1")
+            delete(generationalTopic("right"), "otherkey1")
             val (_, v4) = output("@output")
             val subList2 = v4["rightsub"] as List<*>
             assertEquals(1, subList2.size)
-            delete("@right", "otherkey2")
+            delete(generationalTopic("right"), "otherkey2")
             val (_, v5) = output("@output")
             val subList3 = v5["rightsub"] as List<*>?
             assertEquals(0, subList3?.size ?: 0)
-            delete("@left", "key1")
+            delete(generationalTopic("left"), "key1")
             assertEquals("key1", deleted("@output"))
         }
     }
@@ -322,11 +322,11 @@ class TestTopology {
             assertEquals(2, subList.size)
             assertEquals(record1, subList[0])
             assertEquals(record2, subList[1])
-            delete("@right", "otherkey1")
+            delete(generationalTopic("right"), "otherkey1")
             val (_, v4) = output("@output")
             val subList2 = v4["rightsub"] as List<*>
             assertEquals(1, subList2.size)
-            delete("@right", "otherkey2")
+            delete(generationalTopic("right"), "otherkey2")
             assertEquals("key1", deleted("@output"))
         }
     }
@@ -449,7 +449,7 @@ class TestTopology {
             assertTrue(outputSize("@output") == 0L)
             logger.info("Value: $value")
             assertEquals(1, value["total"], "Entries with the same key should replace")
-            delete("@source", "key1")
+            delete(generationalTopic("source"), "key1")
             val (groupkey, afterDelete) = output("@output") // key1 deleted, so total should be 0 again
             assertEquals("group1", groupkey)
             assertEquals(0, afterDelete["total"])
@@ -461,10 +461,10 @@ class TestTopology {
             logger.info("Value: $ovalue")
             assertEquals(2, ovalue["total"], "Entries with different keys should add")
             input(generationalTopic("source"), "key1", empty().set("groupKey", "group1"))
-            delete("@source", "key1")
+            delete(generationalTopic("source"), "key1")
             val (_, ivalue) = output("@output")
             logger.info("Value:> $ivalue")
-            delete("@source", "key2")
+            delete(generationalTopic("source"), "key2")
 
             assertEquals(1, ivalue["total"], "Entries with different keys should add")
             skip("@output", 2)
@@ -497,7 +497,7 @@ class TestTopology {
             }
         }.renderAndExecute {
             input(generationalTopic("source"), "key1", empty().set("groupKey", "group1"))
-            delete("@source", "key1")
+            delete(generationalTopic("source"), "key1")
             skip("@output", 1)
             val (_, value) = output("@output") // key1 deleted, so total should be 0 again
             assertEquals(0, value["total"], "Entries with the same key should replace")
@@ -558,7 +558,7 @@ class TestTopology {
                 sink("@sinktopic")
             }
         }.renderAndExecute {
-            input("@source", "key1".toByteArray(), data)
+            input(generationalTopic("source"), "key1".toByteArray(), data)
             val (_, value) = output("@sinktopic")
             logger.info("value: $value")
             val amount = value.decimal("amount")
@@ -584,9 +584,9 @@ class TestTopology {
             input(generationalTopic("source"), "key1", empty().set("value", "value2"))
             assertEquals(3, outputSize("@output"))
             assertEquals(2, countStateStoreSize(stateStore))
-            delete("@source", "key1")
+            delete(generationalTopic("source"), "key1")
             assertEquals(4, outputSize("@output"))
-            delete("@source", "key2")
+            delete(generationalTopic("source"), "key2")
             assertEquals(5, outputSize("@output"))
             getStateStoreNames().forEach { k ->
                 logger.info("Key: $k")
@@ -660,20 +660,220 @@ class TestTopology {
     @Test
     fun testRawJsonInput() {
         val originalKey =
-            """{"schema":{"type":"struct","fields":[{"type":"int32","optional":false,"field":"film_id"}],"optional":false,"name":"instance_mypostgres.public.film.Key"},"payload":{"film_id":965}}"""
+            """
+                {
+                    "schema": {
+                        "type": "struct",
+                        "fields": [
+                            {
+                                "type": "int32",
+                                "optional": false,
+                                "field": "film_id"
+                            }
+                        ],
+                        "optional": false,
+                        "name": "instance_mypostgres.public.film.Key"
+                    },
+                    "payload": {
+                        "film_id": 965
+                    }
+                }                
+            """
         val body =
-            """{"schema":{"type":"struct","fields":[{"type":"struct","fields":[{"type":"int32","optional":false,"field":"film_id"},{"type":"string","optional":false,"field":"title"},{"type":"string","optional":true,"field":"description"},{"type":"int32","optional":true,"field":"release_year"},{"type":"int16","optional":false,"field":"language_id"},{"type":"int16","optional":false,"field":"rental_duration"},{"type":"bytes","optional":false,"name":"org.apache.kafka.connect.data.Decimal","version":1,"parameters":{"scale":"2","connect.decimal.precision":"4"},"field":"rental_rate"},{"type":"int16","optional":true,"field":"length"},{"type":"bytes","optional":false,"name":"org.apache.kafka.connect.data.Decimal","version":1,"parameters":{"scale":"2","connect.decimal.precision":"5"},"field":"replacement_cost"},{"type":"string","optional":true,"name":"io.debezium.data.Enum","version":1,"parameters":{"allowed":"G,PG,PG-13,R,NC-17"},"field":"rating"},{"type":"int64","optional":false,"name":"io.debezium.time.MicroTimestamp","version":1,"field":"last_update"},{"type":"array","items":{"type":"string","optional":true},"optional":true,"field":"special_features"}],"optional":true,"name":"instance_mypostgres.public.film.Value","field":"before"},{"type":"struct","fields":[{"type":"int32","optional":false,"field":"film_id"},{"type":"string","optional":false,"field":"title"},{"type":"string","optional":true,"field":"description"},{"type":"int32","optional":true,"field":"release_year"},{"type":"int16","optional":false,"field":"language_id"},{"type":"int16","optional":false,"field":"rental_duration"},{"type":"bytes","optional":false,"name":"org.apache.kafka.connect.data.Decimal","version":1,"parameters":{"scale":"2","connect.decimal.precision":"4"},"field":"rental_rate"},{"type":"int16","optional":true,"field":"length"},{"type":"bytes","optional":false,"name":"org.apache.kafka.connect.data.Decimal","version":1,"parameters":{"scale":"2","connect.decimal.precision":"5"},"field":"replacement_cost"},{"type":"string","optional":true,"name":"io.debezium.data.Enum","version":1,"parameters":{"allowed":"G,PG,PG-13,R,NC-17"},"field":"rating"},{"type":"int64","optional":false,"name":"io.debezium.time.MicroTimestamp","version":1,"field":"last_update"},{"type":"array","items":{"type":"string","optional":true},"optional":true,"field":"special_features"}],"optional":true,"name":"instance_mypostgres.public.film.Value","field":"after"},{"type":"struct","fields":[{"type":"string","optional":false,"field":"version"},{"type":"string","optional":false,"field":"connector"},{"type":"string","optional":false,"field":"name"},{"type":"int64","optional":false,"field":"ts_ms"},{"type":"string","optional":true,"name":"io.debezium.data.Enum","version":1,"parameters":{"allowed":"true,last,false"},"default":"false","field":"snapshot"},{"type":"string","optional":false,"field":"db"},{"type":"string","optional":false,"field":"schema"},{"type":"string","optional":false,"field":"table"},{"type":"int64","optional":true,"field":"txId"},{"type":"int64","optional":true,"field":"lsn"},{"type":"int64","optional":true,"field":"xmin"}],"optional":false,"name":"io.debezium.connector.postgresql.Source","field":"source"},{"type":"string","optional":false,"field":"op"},{"type":"int64","optional":true,"field":"ts_ms"},{"type":"struct","fields":[{"type":"string","optional":false,"field":"id"},{"type":"int64","optional":false,"field":"total_order"},{"type":"int64","optional":false,"field":"data_collection_order"}],"optional":true,"field":"transaction"}],"optional":false,"name":"instance_mypostgres.public.film.Envelope"},"payload":{"before":null,"after":{"film_id":778,"title":"Secrets Paradise","description":"A Fateful Saga of a Cat And a Frisbee who must Kill a Girl in A Manhattan Penthouse","release_year":2006,"language_id":1,"rental_duration":3,"rental_rate":"AfM=","length":109,"replacement_cost":"CcM=","rating":"G","last_update":1369579858951000,"special_features":["Trailers","Commentaries"]},"source":{"version":"1.2.0.Final","connector":"postgresql","name":"instance-mypostgres","ts_ms":1594564042739,"snapshot":"true","db":"dvdrental","schema":"public","table":"film","txId":751,"lsn":30998528,"xmin":null},"op":"r","ts_ms":1594564042739,"transaction":null}}"""
+            """
+                {
+                    "schema": {
+                        "type": "struct",
+                        "fields": [
+                            {
+                                "type": "struct",
+                                "fields": [
+                                    {
+                                        "type": "int32",
+                                        "optional": false,
+                                        "field": "film_id"
+                                    },
+                                    {
+                                        "type": "string",
+                                        "optional": false,
+                                        "field": "title"
+                                    },
+                                    {
+                                        "type": "string",
+                                        "optional": true,
+                                        "field": "description"
+                                    }
+                                ],
+                                "optional": true,
+                                "name": "instance_mypostgres.public.film.Value",
+                                "field": "before"
+                            },
+                            {
+                                "type": "struct",
+                                "fields": [
+                                    {
+                                        "type": "int32",
+                                        "optional": false,
+                                        "field": "film_id"
+                                    },
+                                    {
+                                        "type": "string",
+                                        "optional": false,
+                                        "field": "title"
+                                    },
+                                    {
+                                        "type": "string",
+                                        "optional": true,
+                                        "field": "description"
+                                    }
+                                ],
+                                "optional": true,
+                                "name": "instance_mypostgres.public.film.Value",
+                                "field": "after"
+                            },
+                            {
+                                "type": "struct",
+                                "fields": [
+                                    {
+                                        "type": "string",
+                                        "optional": false,
+                                        "field": "version"
+                                    },
+                                    {
+                                        "type": "string",
+                                        "optional": false,
+                                        "field": "connector"
+                                    },
+                                    {
+                                        "type": "string",
+                                        "optional": false,
+                                        "field": "name"
+                                    },
+                                    {
+                                        "type": "int64",
+                                        "optional": false,
+                                        "field": "ts_ms"
+                                    },
+                                    {
+                                        "type": "string",
+                                        "optional": true,
+                                        "name": "io.debezium.data.Enum",
+                                        "version": 1,
+                                        "parameters": {
+                                            "allowed": "true,last,false"
+                                        },
+                                        "default": "false",
+                                        "field": "snapshot"
+                                    },
+                                    {
+                                        "type": "string",
+                                        "optional": false,
+                                        "field": "db"
+                                    },
+                                    {
+                                        "type": "string",
+                                        "optional": false,
+                                        "field": "schema"
+                                    },
+                                    {
+                                        "type": "string",
+                                        "optional": false,
+                                        "field": "table"
+                                    },
+                                    {
+                                        "type": "int64",
+                                        "optional": true,
+                                        "field": "txId"
+                                    },
+                                    {
+                                        "type": "int64",
+                                        "optional": true,
+                                        "field": "lsn"
+                                    },
+                                    {
+                                        "type": "int64",
+                                        "optional": true,
+                                        "field": "xmin"
+                                    }
+                                ],
+                                "optional": false,
+                                "name": "io.debezium.connector.postgresql.Source",
+                                "field": "source"
+                            },
+                            {
+                                "type": "string",
+                                "optional": false,
+                                "field": "op"
+                            },
+                            {
+                                "type": "int64",
+                                "optional": true,
+                                "field": "ts_ms"
+                            },
+                            {
+                                "type": "struct",
+                                "fields": [
+                                    {
+                                        "type": "string",
+                                        "optional": false,
+                                        "field": "id"
+                                    },
+                                    {
+                                        "type": "int64",
+                                        "optional": false,
+                                        "field": "total_order"
+                                    },
+                                    {
+                                        "type": "int64",
+                                        "optional": false,
+                                        "field": "data_collection_order"
+                                    }
+                                ],
+                                "optional": true,
+                                "field": "transaction"
+                            }
+                        ],
+                        "optional": false,
+                        "name": "instance_mypostgres.public.film.Envelope"
+                    },
+                    "payload": {
+                        "before": null,
+                        "after": {
+                            "film_id": 778,
+                            "title": "Secrets Paradise",
+                            "description": "A Fateful Saga of a Cat And a Frisbee who must Kill a Girl in A Manhattan Penthouse"
+                        },
+                        "source": {
+                            "version": "1.2.0.Final",
+                            "connector": "postgresql",
+                            "name": "instance-mypostgres",
+                            "ts_ms": 1594564042739,
+                            "snapshot": "true",
+                            "db": "dvdrental",
+                            "schema": "public",
+                            "table": "film",
+                            "txId": 751,
+                            "lsn": 30998528,
+                            "xmin": null
+                        },
+                        "op": "r",
+                        "ts_ms": 1594564042739,
+                        "transaction": null
+                    }
+                }
+            """
 
         stream("aaa") {
             val logSinkConfig = logSinkConfig("logname")
             externalSource("@external", Topic.FloodplainKeyFormat.CONNECT_KEY_JSON, Topic.FloodplainBodyFormat.CONNECT_JSON) {
-                logSink("somesink", "@output", logSinkConfig)
+                // logSink("somesink", "@output", logSinkConfig)
+                sink("@output")
             }
         }.renderAndExecute {
-            input("@external", originalKey.toByteArray(), body.toByteArray())
-            // val (key,value) = output("@output")
-            // assertEquals(originalKey,key)
-            // logger.info("Result: $value")
+            input( generationalTopic("external"), originalKey.toByteArray(), body.toByteArray())
+            val (key,value) = output("@output")
+            assertEquals("965",key)
+            logger.info("Result: $value")
         }
     }
 
