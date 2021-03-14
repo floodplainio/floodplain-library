@@ -81,17 +81,17 @@ interface InputReceiver: FloodplainOperator {
 }
 
 interface LocalContext : InputReceiver {
-    fun output(topic: String): Pair<String, IMessage>
+    fun output(topic: Topic): Pair<String, IMessage>
     fun outputQualified(topic: String): Pair<String, IMessage>
-    fun skip(topic: String, number: Int)
+    fun skip(topic: Topic, number: Int)
     /**
      * Doesn't work, outputs get created lazily, so only sinks that have been accessed before are counted
      */
     fun outputs(): Set<String>
-    fun outputSize(topic: String): Long
+    fun outputSize(topic: Topic): Long
     fun deleted(topic: String): String
     fun deletedQualified(topic: String): String
-    fun isEmpty(topic: String): Boolean
+    fun isEmpty(topic: Topic): Boolean
     fun isEmptyQualified(topic: String): Boolean
     fun advanceWallClockTime(duration: Duration)
     fun stateStore(name: String): KeyValueStore<String, ReplicationMessage>
@@ -367,8 +367,8 @@ class LocalDriverContext(
         inputTopic.pipeInput(key, null)
     }
 
-    override fun output(topic: String): Pair<String, IMessage> {
-        return outputQualified(topologyContext.topicName(topic))
+    override fun output(topic: Topic): Pair<String, IMessage> {
+        return outputQualified(topic.qualifiedString())
     }
     override fun outputQualified(topic: String): Pair<String, IMessage> {
         val outputTopic = outputTopics.computeIfAbsent(topic) {
@@ -383,20 +383,21 @@ class LocalDriverContext(
         return if (op == ReplicationMessage.Operation.DELETE) {
             logger.info("delete detected! isnull? ${keyVal.value}")
             logger.info("retrying...")
-            output(topic)
+            // Don't really understand this FIXME
+            output(qualifiedTopic(topic))
         } else {
             Pair(keyVal.key, fromImmutable(keyVal.value!!.message()))
         }
     }
 
-    override fun skip(topic: String, number: Int) {
+    override fun skip(topic: Topic, number: Int) {
         repeat(number) {
             output(topic)
         }
     }
 
-    override fun outputSize(topic: String): Long {
-        val qualifiedTopicName = topologyContext.topicName(topic)
+    override fun outputSize(topic: Topic): Long {
+        val qualifiedTopicName = topic.qualifiedString()
         val outputTopic = outputTopics.computeIfAbsent(qualifiedTopicName) {
             driver.createOutputTopic(
                 qualifiedTopicName,
@@ -431,8 +432,8 @@ class LocalDriverContext(
         return keyVal.key
     }
 
-    override fun isEmpty(topic: String): Boolean {
-        return isEmptyQualified(topologyContext.topicName(topic))
+    override fun isEmpty(topic: Topic): Boolean {
+        return isEmptyQualified(topic.qualifiedString())
     }
     override fun isEmptyQualified(topic: String): Boolean {
         val outputTopic = outputTopics.computeIfAbsent(topic) {

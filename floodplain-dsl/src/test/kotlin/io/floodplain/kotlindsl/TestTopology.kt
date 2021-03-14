@@ -76,8 +76,8 @@ class TestTopology {
         }.renderAndExecute {
             input(generationalTopic("sometopic"), "key1", empty().set("name", "gorilla"))
             input(generationalTopic("sometopic"), "key1", empty().set("name", "monkey"))
-            assertEquals("gorilla", output("@outputTopic").second["name"])
-            assertEquals("monkey", output("@outputTopic").second["name"])
+            assertEquals("gorilla", output(generationalTopic("outputTopic")).second["name"])
+            assertEquals("monkey", output(generationalTopic("outputTopic")).second["name"])
         }
     }
 
@@ -105,9 +105,9 @@ class TestTopology {
         }.renderAndExecute {
             input(generationalTopic("sometopic"), "key1", empty().set("name", "gorilla"))
             delete(generationalTopic("sometopic"), "key1")
-            output("@outputtopic")
+            output(generationalTopic("outputtopic"))
             assertTrue(deleted("@outputtopic") == "key1", "Key mismatch")
-            logger.info("Topic now empty: ${isEmpty("@outputtopic")}")
+            logger.info("Topic now empty: ${isEmpty(qualifiedTopic("outputtopic"))}")
         }
     }
 
@@ -124,7 +124,7 @@ class TestTopology {
         }.renderAndExecute {
             inputQualified("mysource", "1", empty().set("species", "human"))
             logger.info("outputs: ${outputs()}")
-            val (_, value) = output("people")
+            val (_, value) = output(topic("people"))
             logger.info("Person found: $value")
         }
     }
@@ -142,13 +142,13 @@ class TestTopology {
                 sink("@output")
             }
         }.renderAndExecute {
-            assertTrue(isEmpty("@output"))
+            assertTrue(isEmpty(qualifiedTopic("output")))
             input(generationalTopic("left"), "key1", empty().set("name", "left1"))
-            assertTrue(isEmpty("@output"))
+            assertTrue(isEmpty(qualifiedTopic("output")))
             input(generationalTopic("left"), "wrongkey", empty().set("name", "nomatter"))
-            assertTrue(isEmpty("@output"))
+            assertTrue(isEmpty(qualifiedTopic("output")))
             input(generationalTopic("right"), "key1", empty().set("subname", "monkey"))
-            val (_, result) = output("@output")
+            val (_, result) = output(generationalTopic("output"))
             logger.info("Result: $result")
             assertEquals("monkey", result["rightsub/subname"])
             delete(generationalTopic("left"), "key1")
@@ -172,16 +172,16 @@ class TestTopology {
                 sink("@output")
             }
         }.renderAndExecute {
-            assertTrue(isEmpty("@output"))
+            assertTrue(isEmpty(generationalTopic("output")))
             val msg = empty().set("name", "left1")
             input(generationalTopic("left"), "key1", msg)
-            assertTrue(!isEmpty("@output"))
-            assertEquals(output("@output").second, msg)
+            assertTrue(!isEmpty(generationalTopic("output")))
+            assertEquals(output(generationalTopic("output")).second, msg)
             input(generationalTopic("left"), "otherkey", empty().set("name", "nomatter"))
-            assertTrue(!isEmpty("@output"))
-            assertEquals(output("@output").second, empty().set("name", "nomatter"))
+            assertTrue(!isEmpty(generationalTopic("output")))
+            assertEquals(output(generationalTopic("output")).second, empty().set("name", "nomatter"))
             input(generationalTopic("right"), "key1", empty().set("subname", "monkey"))
-            val (_, result) = output("@output")
+            val (_, result) = output(generationalTopic("output"))
             logger.info("Result: $result")
             assertEquals("monkey", result["rightsub/subname"])
             delete(generationalTopic("left"), "key1")
@@ -202,8 +202,8 @@ class TestTopology {
             val record2 = empty().set("subkey", "subkey2")
             input(topic("src"), "key1", record1)
             input(topic("src"), "key2", record2)
-            assertEquals(2, outputSize("mysink"), "Expected two messages in topic")
-            assertEquals(2, outputSize("myothersink"), "Expected two messages in topic")
+            assertEquals(2, outputSize(topic("mysink")), "Expected two messages in topic")
+            assertEquals(2, outputSize(topic("myothersink")), "Expected two messages in topic")
         }
     }
     @Test
@@ -218,10 +218,10 @@ class TestTopology {
             val record2 = empty().set("subkey", "subkey2")
             input(topic("src"), "key1", record1)
             input(topic("src"), "key2", record2)
-            val (k1, v1) = output("mysink")
+            val (k1, v1) = output(topic("mysink"))
             assertEquals("subkey1|key1", k1)
             assertEquals(record1, v1)
-            val (k2, v2) = output("mysink")
+            val (k2, v2) = output(topic("mysink"))
             assertEquals("subkey2|key2", k2)
             assertEquals(record2, v2)
 
@@ -248,34 +248,34 @@ class TestTopology {
                 sink("@output")
             }
         }.renderAndExecute {
-            assertTrue(isEmpty("@output"))
+            assertTrue(isEmpty(generationalTopic("output")))
             val leftRecord = empty().set("name", "left1")
             input(generationalTopic("left"), "key1", leftRecord)
-            assertTrue(!isEmpty("@output"))
+            assertTrue(!isEmpty(generationalTopic("output")))
             val record1 = empty().set("foreignkey", "key1").set("recorddata", "data1")
             val record2 = empty().set("foreignkey", "key1").set("recorddata", "data2")
             input(generationalTopic("right"), "otherkey1", record1)
             input(generationalTopic("right"), "otherkey2", record2)
 
-            val (key, value) = output("@output")
+            val (key, value) = output(generationalTopic("output"))
             assertEquals("key1", key)
             val sublist: List<IMessage> = (value["rightsub"] ?: emptyList<IMessage>()) as List<IMessage>
             assertTrue(sublist.isEmpty())
 
-            val outputs = outputSize("@output")
+            val outputs = outputSize(generationalTopic("output"))
             assertEquals(2, outputs, "should have 2 elements")
-            output("@output") // skip one
-            val (_, v3) = output("@output")
+            output(generationalTopic("output")) // skip one
+            val (_, v3) = output(generationalTopic("output"))
             val subList = v3["rightsub"] as List<*>
             assertEquals(2, subList.size)
             assertEquals(record1, subList[0])
             assertEquals(record2, subList[1])
             delete(generationalTopic("right"), "otherkey1")
-            val (_, v4) = output("@output")
+            val (_, v4) = output(generationalTopic("output"))
             val subList2 = v4["rightsub"] as List<*>
             assertEquals(1, subList2.size)
             delete(generationalTopic("right"), "otherkey2")
-            val (_, v5) = output("@output")
+            val (_, v5) = output(generationalTopic("output"))
             val subList3 = v5["rightsub"] as List<*>?
             assertEquals(0, subList3?.size ?: 0)
             delete(generationalTopic("left"), "key1")
@@ -302,7 +302,7 @@ class TestTopology {
                 sink("@output")
             }
         }.renderAndExecute {
-            assertTrue(isEmpty("@output"))
+            assertTrue(isEmpty(qualifiedTopic("output")))
             val leftRecord = empty().set("name", "left1")
             input(generationalTopic("left"), "key1", leftRecord)
 //            assertTrue(!isEmpty("@output"))
@@ -314,16 +314,16 @@ class TestTopology {
 
             // TODO skip the 'ghost delete' I'm not too fond of this, this one should be skippable
             deleted("@output")
-            val outputs = outputSize("@output")
+            val outputs = outputSize(generationalTopic("output"))
             assertEquals(2, outputs, "should have 2 elements")
-            output("@output") // skip one
-            val (_, v3) = output("@output")
+            output(generationalTopic("output")) // skip one
+            val (_, v3) = output(generationalTopic("output"))
             val subList = v3["rightsub"] as List<*>
             assertEquals(2, subList.size)
             assertEquals(record1, subList[0])
             assertEquals(record2, subList[1])
             delete(generationalTopic("right"), "otherkey1")
-            val (_, v4) = output("@output")
+            val (_, v4) = output(generationalTopic("output"))
             val subList2 = v4["rightsub"] as List<*>
             assertEquals(1, subList2.size)
             delete(generationalTopic("right"), "otherkey2")
@@ -344,7 +344,7 @@ class TestTopology {
             input(generationalTopic("source"), "key1", empty().set("name", "myname"))
             input(generationalTopic("source"), "key2", empty().set("name", "notmyname"))
             input(generationalTopic("source"), "key3", empty().set("name", "myname"))
-            assertEquals(2, outputSize("@output"))
+            assertEquals(2, outputSize(generationalTopic("output")))
 //            val (key,value) = output("@source")
         }
     }
@@ -369,10 +369,10 @@ class TestTopology {
         }.renderAndExecute {
             input(generationalTopic("source"), "key1", empty())
             input(generationalTopic("source"), "key1", empty())
-            output("@output") // initial key, total = 1
-            output("@output") // delete previous key, total = 0
-            val (key, value) = output("@output") // insert key again, total = 1
-            assertTrue(outputSize("@output") == 0L)
+            output(generationalTopic("output")) // initial key, total = 1
+            output(generationalTopic("output")) // delete previous key, total = 0
+            val (key, value) = output(generationalTopic("output")) // insert key again, total = 1
+            assertTrue(outputSize(generationalTopic("output")) == 0L)
             logger.info("Key: $key Value: $value")
             assertEquals(StoreStateProcessor.COMMONKEY, key)
             assertEquals(1, value["total"], "Entries with the same key should replace")
@@ -410,10 +410,10 @@ class TestTopology {
         }.renderAndExecute {
             input(generationalTopic("source"), "key1", empty().set("message", "message1"))
             input(generationalTopic("source"), "key1", empty().set("message", "message1"))
-            output("@output") // initial key, total = 1
-            output("@output") // delete previous key, total = 0
-            val (key, value) = output("@output") // insert key again, total = 1
-            assertTrue(outputSize("@output") == 0L)
+            output(generationalTopic("output")) // initial key, total = 1
+            output(generationalTopic("output")) // delete previous key, total = 0
+            val (key, value) = output(generationalTopic("output")) // insert key again, total = 1
+            assertTrue(outputSize(generationalTopic("output")) == 0L)
             logger.info("Key: $key Value: $value")
             assertEquals(StoreStateProcessor.COMMONKEY, key)
             assertEquals(BigDecimal(1), value["total"], "Entries with the same key should replace")
@@ -443,33 +443,33 @@ class TestTopology {
         }.renderAndExecute {
             input(generationalTopic("source"), "key1", empty().set("groupKey", "group1"))
             input(generationalTopic("source"), "key1", empty().set("groupKey", "group1"))
-            output("@output") // initial key, total = 1
-            output("@output") // delete previous key, total = 0
-            val (_, value) = output("@output") // insert key again, total = 1
-            assertTrue(outputSize("@output") == 0L)
+            output(generationalTopic("output")) // initial key, total = 1
+            output(generationalTopic("output")) // delete previous key, total = 0
+            val (_, value) = output(generationalTopic("output")) // insert key again, total = 1
+            assertTrue(outputSize(generationalTopic("output")) == 0L)
             logger.info("Value: $value")
             assertEquals(1, value["total"], "Entries with the same key should replace")
             delete(generationalTopic("source"), "key1")
-            val (groupkey, afterDelete) = output("@output") // key1 deleted, so total should be 0 again
+            val (groupkey, afterDelete) = output(generationalTopic("output")) // key1 deleted, so total should be 0 again
             assertEquals("group1", groupkey)
             assertEquals(0, afterDelete["total"])
             input(generationalTopic("source"), "key1", empty().set("groupKey", "group1"))
             input(generationalTopic("source"), "key2", empty().set("groupKey", "group1"))
-            output("@output")
+            output(generationalTopic("output"))
 
-            val (_, ovalue) = output("@output")
+            val (_, ovalue) = output(generationalTopic("output"))
             logger.info("Value: $ovalue")
             assertEquals(2, ovalue["total"], "Entries with different keys should add")
             input(generationalTopic("source"), "key1", empty().set("groupKey", "group1"))
             delete(generationalTopic("source"), "key1")
-            val (_, ivalue) = output("@output")
+            val (_, ivalue) = output(generationalTopic("output"))
             logger.info("Value:> $ivalue")
             delete(generationalTopic("source"), "key2")
 
             assertEquals(1, ivalue["total"], "Entries with different keys should add")
-            skip("@output", 2)
-            val (_, value2) = output("@output")
-            logger.info("Value: $value2 outputsize: ${outputSize("@output")}")
+            skip(generationalTopic("output"), 2)
+            val (_, value2) = output(generationalTopic("output"))
+            logger.info("Value: $value2 outputsize: ${outputSize(generationalTopic("output"))}")
             assertEquals(0, value2["total"], "Delete should subtract")
         }
     }
@@ -498,8 +498,8 @@ class TestTopology {
         }.renderAndExecute {
             input(generationalTopic("source"), "key1", empty().set("groupKey", "group1"))
             delete(generationalTopic("source"), "key1")
-            skip("@output", 1)
-            val (_, value) = output("@output") // key1 deleted, so total should be 0 again
+            skip(generationalTopic("output"), 1)
+            val (_, value) = output(generationalTopic("output")) // key1 deleted, so total should be 0 again
             assertEquals(0, value["total"], "Entries with the same key should replace")
         }
     }
@@ -525,11 +525,11 @@ class TestTopology {
             }
         }.renderAndExecute {
             input(generationalTopic("source"), "key1", empty().set("category", "category1"))
-            assertEquals(1, outputSize("@category1"))
-            assertEquals(0, outputSize("@category2"))
+            assertEquals(1, outputSize(generationalTopic("category1")))
+            assertEquals(0, outputSize(generationalTopic("category2")))
             input(generationalTopic("source"), "key2", empty().set("category", "category2"))
-            assertEquals(2, outputSize("@all"))
-            assertEquals(2, outputSize("@sink"))
+            assertEquals(2, outputSize(generationalTopic("all")))
+            assertEquals(2, outputSize(generationalTopic("sink")))
         }
     }
 
@@ -544,8 +544,8 @@ class TestTopology {
         }.renderAndExecute {
             input(generationalTopic("source"), "key1", empty().set("destination", "mydestination"))
             input(generationalTopic("source"), "key1", empty().set("destination", "otherdestination"))
-            assertEquals(1, outputSize("mydestination"))
-            assertEquals(1, outputSize("otherdestination"))
+            assertEquals(1, outputSize(topic("mydestination")))
+            assertEquals(1, outputSize(topic("otherdestination")))
         }
     }
 
@@ -559,7 +559,7 @@ class TestTopology {
             }
         }.renderAndExecute {
             input(generationalTopic("source"), "key1".toByteArray(), data)
-            val (_, value) = output("@sinktopic")
+            val (_, value) = output(generationalTopic("sinktopic"))
             logger.info("value: $value")
             val amount = value.decimal("amount")
             assertEquals(BigDecimal.valueOf(299, 2), amount)
@@ -578,16 +578,16 @@ class TestTopology {
             val stateStore = stateStore(topologyContext().topicName("@diff_1_1"))
             input(generationalTopic("source"), "key1", empty().set("value", "value1"))
             input(generationalTopic("source"), "key1", empty().set("value", "value1"))
-            assertEquals(1, outputSize("@output"))
+            assertEquals(1, outputSize(generationalTopic("output")))
             input(generationalTopic("source"), "key2", empty().set("value", "value1"))
-            assertEquals(2, outputSize("@output"))
+            assertEquals(2, outputSize(generationalTopic("output")))
             input(generationalTopic("source"), "key1", empty().set("value", "value2"))
-            assertEquals(3, outputSize("@output"))
+            assertEquals(3, outputSize(generationalTopic("output")))
             assertEquals(2, countStateStoreSize(stateStore))
             delete(generationalTopic("source"), "key1")
-            assertEquals(4, outputSize("@output"))
+            assertEquals(4, outputSize(generationalTopic("output")))
             delete(generationalTopic("source"), "key2")
-            assertEquals(5, outputSize("@output"))
+            assertEquals(5, outputSize(generationalTopic("output")))
             getStateStoreNames().forEach { k ->
                 logger.info("Key: $k")
             }
@@ -626,20 +626,20 @@ class TestTopology {
             val msg = empty().set("value", "value1")
             input(generationalTopic("source"), "key1", msg)
             // shouldn't have arrived yet:
-            assertTrue(isEmpty("@output"))
+            assertTrue(isEmpty(generationalTopic("output")))
             // advance time
             advanceWallClockTime(Duration.ofSeconds(15))
             // should have result:
-            assertTrue(!isEmpty("@output"))
+            assertTrue(!isEmpty(generationalTopic("output")))
             // same message:
-            assertEquals(msg, output("@output").second)
+            assertEquals(msg, output(generationalTopic("output")).second)
             // now make sure only one gets through
             val otherMsg = empty().set("value", "value2")
             input(generationalTopic("source"), "key1", msg)
             input(generationalTopic("source"), "key1", otherMsg)
             advanceWallClockTime(Duration.ofSeconds(15))
-            assertEquals(1, outputSize("@output"))
-            assertEquals(otherMsg, output("@output").second)
+            assertEquals(1, outputSize(generationalTopic("output")))
+            assertEquals(otherMsg, output(generationalTopic("output")).second)
             // now check size restriction. Max size is 10. Insert 20. expect 10 to come out.
             for (i in 0..19) {
                 input(generationalTopic("source"), "newkey$i", empty().set("value", "value$i"))
@@ -871,7 +871,7 @@ class TestTopology {
             }
         }.renderAndExecute {
             input( generationalTopic("external"), originalKey.toByteArray(), body.toByteArray())
-            val (key,value) = output("@output")
+            val (key,value) = output(generationalTopic("output"))
             assertEquals("965",key)
             logger.info("Result: $value")
         }
