@@ -16,7 +16,7 @@ fun isReleaseVersion(): Boolean {
 }
 
 object FloodplainDeps {
-    const val floodplain_version = "1.4.1-SNAPSHOT"
+    const val floodplain_version = "1.4.4-SNAPSHOT"
     const val jackson_version = "2.12.2"
     const val kafka_version = "2.7.0"
     const val slf4j_version = "1.7.30"
@@ -44,6 +44,7 @@ object FloodplainDeps {
     const val jacksonDatabind310  = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jackson_version"
     const val kafkaClient         = "org.apache.kafka:kafka-clients:$kafka_version"
     const val kafkaConnectApi     = "org.apache.kafka:connect-api:$kafka_version"
+    const val kafkaConnectFile    = "org.apache.kafka:connect-file:$kafka_version"
     const val kafkaConnectRuntime = "org.apache.kafka:connect-runtime:$kafka_version"
     const val kafkaStreams        = "org.apache.kafka:kafka-streams:$kafka_version"
     const val testContainer       = "org.testcontainers:testcontainers:$testContainer_version"

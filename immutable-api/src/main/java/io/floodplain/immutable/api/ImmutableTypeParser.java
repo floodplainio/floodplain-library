@@ -82,8 +82,9 @@ public class ImmutableTypeParser {
             case "binary_digest":
                 return ValueType.BINARY_DIGEST;
             case "date":
-            case "timestamp":
                 return ValueType.DATE;
+            case "timestamp":
+                return ValueType.TIMESTAMP;
             case "stringlist":
                 return ValueType.STRINGLIST;
             case "binary":

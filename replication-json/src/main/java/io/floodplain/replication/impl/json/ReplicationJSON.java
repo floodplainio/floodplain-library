@@ -55,7 +55,7 @@ public class ReplicationJSON {
     public static final ObjectMapper objectMapper = new ObjectMapper();
 
     public static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    public static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SS");
+    public static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS");
 
     public static final DateTimeFormatter clocktimeFormatter =  DateTimeFormatter.ofPattern("HH:mm:ss");
 
@@ -175,7 +175,7 @@ public class ReplicationJSON {
                 return;
             case TIMESTAMP:
 //        } else if (value instanceof LocalDateTime) {
-                String t = dateFormatter.format((LocalDateTime) value);
+                String t = dateTimeFormatter.format((LocalDateTime) value);
                 m.put("Value", t);
                 return;
             case CLOCKTIME:
@@ -257,6 +257,14 @@ public class ReplicationJSON {
 //                    return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SS").parse(jsonNode.asText());
                 } catch (DateTimeParseException e) {
                     logger.warn("Cannot parse date {} = returning null", jsonNode.asText());
+                    return null;
+                }
+            case TIMESTAMP:
+                try {
+                    String formattedDate = jsonNode.asText();
+                    return LocalDateTime.parse(formattedDate, formattedDate.length() >10 ? dateTimeFormatter : dateFormatter);
+                } catch (DateTimeParseException e) {
+                    logger.warn("Cannot parse date time {} = returning null", jsonNode.asText(),e);
                     return null;
                 }
             case CLOCKTIME:

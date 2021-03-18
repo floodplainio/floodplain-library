@@ -24,6 +24,10 @@ import io.floodplain.immutable.factory.ImmutableFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneOffset;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.Function;
@@ -83,7 +87,7 @@ public class ImmutableMessageImpl implements ImmutableMessage {
                 continue;
             }
             if (checkIgnoreList(ignore).apply(e.getKey())) {
-                result.put(e.getKey(), e.getValue());
+                result.put(e.getKey(), postProcessValue(e.getValue()));
             }
         }
         if (this.subMessageMap != null) {
@@ -105,6 +109,18 @@ public class ImmutableMessageImpl implements ImmutableMessage {
         return Collections.unmodifiableMap(result);
     }
 
+    private Object postProcessValue(Object value) {
+        if(value instanceof LocalDate) {
+            return ((LocalDate)value).toEpochDay();
+        }
+        if(value instanceof LocalDateTime) {
+            return ((LocalDateTime)value).toInstant(ZoneOffset.UTC).toEpochMilli();
+        }
+        if (value instanceof LocalTime) {
+            return ((LocalTime)value).toSecondOfDay();
+        }
+        return value;
+    }
 
     @Override
     public Set<String> columnNames() {

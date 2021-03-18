@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
@@ -98,7 +99,7 @@ public class ReplicationProtobufTest {
     public void testDate() throws IOException {
         try (InputStream is = getClass().getResourceAsStream("submessage.json")) {
             ReplicationMessage rm = jsonParser.parseStream(is);
-            LocalDate dd = (LocalDate) rm.value("formdate").get();
+            LocalDateTime dd = (LocalDateTime) rm.value("formdate").get();
             logger.info(">> {}", dd);
         }
     }

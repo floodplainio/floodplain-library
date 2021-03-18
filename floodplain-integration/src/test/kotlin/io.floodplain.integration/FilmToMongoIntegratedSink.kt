@@ -99,7 +99,7 @@ class FilmToMongoIntegratedSink {
             postgresSource("film", postgresConfig) {
                 toMongo("filmwithactors", "somtopic", mongoConfig)
             }
-        }.renderAndSchedule(URL("http://${debeziumContainer?.host}:${debeziumContainer?.exposedPort}/connectors"),"${kafkaContainer.host}:${kafkaContainer.exposedPort}",true, null) { kafkaStreams ->
+        }.renderAndSchedule(URL("http://${debeziumContainer?.host}:${debeziumContainer?.exposedPort}/connectors"),"${kafkaContainer.host}:${kafkaContainer.exposedPort}",true, mapOf()) { kafkaStreams ->
             val database = topologyContext.topicName("@mongodump")
             var hits = 0L
             val start = System.currentTimeMillis()

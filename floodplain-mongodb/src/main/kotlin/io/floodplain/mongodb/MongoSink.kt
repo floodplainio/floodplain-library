@@ -41,7 +41,8 @@ class MongoConfig(override val topologyContext: TopologyContext, override val to
     override fun materializeConnectorConfig(): List<MaterializedConfig> {
         val additional = mutableMapOf<String, String>()
         sinkInstancePair.forEach { (key, value) -> topologyConstructor.addDesiredTopic(value, Optional.empty()) }
-        sinkInstancePair.forEach { (key, value) -> additional.put("topic.override.${value.qualifiedString()}.collection", key) }
+        sinkInstancePair.forEach { (key, value) -> additional["topic.override.${value.qualifiedString()}.collection"] =
+            key }
         val collections: String = sinkInstancePair.joinToString(",") { e -> e.first }
         val topics: String =
             sinkInstancePair.joinToString(",") { (_, topic) -> topic.qualifiedString() }
