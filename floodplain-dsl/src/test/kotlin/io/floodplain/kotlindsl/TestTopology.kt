@@ -24,13 +24,16 @@ import io.floodplain.kotlindsl.sink.logSink
 import io.floodplain.kotlindsl.sink.logSinkConfig
 import io.floodplain.replication.api.ReplicationMessage
 import io.floodplain.streams.api.Topic
+import io.floodplain.streams.debezium.JSONToReplicationMessage
 import io.floodplain.streams.remotejoin.StoreStateProcessor
 import kotlinx.coroutines.delay
 import org.apache.kafka.streams.state.KeyValueStore
 import java.math.BigDecimal
 import java.time.Duration
+import java.util.Optional
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 private val logger = mu.KotlinLogging.logger {}
@@ -547,6 +550,15 @@ class TestTopology {
             assertEquals(1, outputSize(topic("mydestination")))
             assertEquals(1, outputSize(topic("otherdestination")))
         }
+    }
+
+    @Test
+    fun testReplicationParserForDateTime() {
+        val data = javaClass.classLoader.getResource("decimalwithscale.json")?.readBytes()
+            ?: throw IllegalArgumentException("Missing json file for decimalwithscale.json")
+        val replicationMessage = JSONToReplicationMessage.processDebeziumBody(data, Optional.empty());
+        val date = replicationMessage.value("payment_date")
+        assertNotNull(date)
     }
 
     @Test
