@@ -37,7 +37,7 @@ fun main() {
         val mongoConfig = mongoConfig("@mongosink", "mongodb://mongo", "@mongodump")
         source("sportlinkkernel-PERSON") {
             set { _, msg, _ ->
-                msg.clearAll(listOf("updateby", "lastupdate"))
+                msg.clearAll("updateby", "lastupdate")
             }
             joinAttributes("sportlinkkernel-PERSONATTRIBUTE", "attribname", "attribvalue", "personid")
             set { _, msg, attributes ->

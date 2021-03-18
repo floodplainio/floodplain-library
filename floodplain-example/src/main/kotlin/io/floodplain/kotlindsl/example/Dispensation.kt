@@ -39,7 +39,7 @@ fun main() {
         val mongoConfig = mongoConfig("@mongosink", "mongodb://mongo", "@mongodump")
         source("sportlinkkernel-DISPENSATION") {
             set { _, msg, _ ->
-                msg.clearAll(listOf("updateby", "lastupdate"))
+                msg.clearAll("updateby", "lastupdate")
             }
             fork(
                 {

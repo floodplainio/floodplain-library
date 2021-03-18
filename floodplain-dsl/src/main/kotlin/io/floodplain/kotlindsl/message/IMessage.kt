@@ -30,7 +30,7 @@ import kotlin.streams.toList
 
 interface IMessage {
     operator fun get(path: String): Any?
-    fun message(path: String): IMessage
+    fun message(path: String): IMessage?
     fun string(path: String): String
     fun integer(path: String): Int
     fun optionalInteger(path: String): Int?
@@ -53,7 +53,7 @@ interface IMessage {
     fun optionalBoolean(path: String): Boolean?
     fun optionalString(path: String): String?
     fun clear(path: String): IMessage
-    fun clearAll(paths: List<String>): IMessage // TODO use varargs?
+    fun clearAll(vararg fields: String): IMessage // TODO use varargs?
     fun isEmpty(): Boolean
     operator fun set(path: String, value: Any?): IMessage
     fun copy(): IMessage
@@ -73,7 +73,7 @@ private data class IMessageImpl(private val content: MutableMap<String, Any>) : 
         return msg.content.get(name)
     }
 
-    override fun message(path: String): IMessage {
+    override fun message(path: String): IMessage? {
         val raw = get(path)
         if (raw == null) {
             val created = empty()
@@ -236,8 +236,8 @@ private data class IMessageImpl(private val content: MutableMap<String, Any>) : 
         return msg
     }
 
-    override fun clearAll(paths: List<String>): IMessage {
-        paths.forEach { clear(it) }
+    override fun clearAll(vararg fields: String): IMessage {
+        fields.forEach { clear(it) }
         return this
     }
 

@@ -43,7 +43,7 @@ fun main() {
         val mongoConfig = mongoConfig("@mongosink", "mongodb://mongo", "@mongodump")
         source("sportlinkkernel-CLASS") {
             set { _, msg, _ ->
-                msg.clearAll(listOf("updateby", "lastupdate"))
+                msg.clearAll("updateby", "lastupdate")
             }
             joinAttributes(
                 "sportlinkkernel-CLASSATTRIBUTE",
@@ -62,7 +62,7 @@ fun main() {
         }
         source("sportlinkkernel-COMPETITIONTYPE") {
             set { _, msg, _ ->
-                msg.clearAll(listOf("updateby", "lastupdate"))
+                msg.clearAll("updateby", "lastupdate")
             }
             joinAttributes(
                 "sportlinkkernel-COMPETITIONTYPEATTRIBUTE",

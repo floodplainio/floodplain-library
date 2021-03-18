@@ -67,7 +67,7 @@ fun main() {
             joinMulti({ msg -> msg.string("zipcode") }, { msg -> msg.string("postcode") }, false) {
                 source("sportlinkkernel-POSTCODETABLE") {
                     set { _, msg, _ ->
-                        msg.clearAll(listOf("updateby", "lastupdate", "unipostcodereeksindicatie", "huisnrtot", "straatnaam", "huisnrvan", "woonplaats"))
+                        msg.clearAll("updateby", "lastupdate", "unipostcodereeksindicatie", "huisnrtot", "straatnaam", "huisnrvan", "woonplaats")
                         msg
                     }
                     // group { msg -> msg["communityid"] as String }

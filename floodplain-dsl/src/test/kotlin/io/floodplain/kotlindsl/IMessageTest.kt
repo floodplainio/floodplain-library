@@ -32,7 +32,9 @@ import io.floodplain.replication.impl.json.JSONReplicationMessageParserImpl
 import io.floodplain.replication.impl.protobuf.impl.ProtobufReplicationMessageParser
 import java.math.BigDecimal
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
+import java.time.ZoneOffset
 import java.util.Optional
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -66,6 +68,7 @@ class IMessageTest {
     // Utility function to check if a message remains unchanged after serialization and deserialization for all parsers
     private fun convertThereAndBack(input: IMessage): IMessage {
         val afterJSON = convertThereAndBack(input, parser)
+        println(afterJSON)
         return convertThereAndBack(afterJSON, protoParser)
     }
 
@@ -75,6 +78,7 @@ class IMessageTest {
         val repl = ReplicationFactory.standardMessage(immutable)
         val serialized = currentParser.serialize(repl)
         val deserialized = currentParser.parseBytes(Optional.empty(), serialized)
+        println("S: ${String(serialized)}")
         return fromImmutable(deserialized.message())
     }
 
@@ -205,6 +209,18 @@ class IMessageTest {
         val msg = convertThereAndBack(exampleMessage, parser)
         val actualDate = msg.time("atime")
         assertEquals(localTime.toSecondOfDay(), actualDate.toSecondOfDay())
+        assertEquals(exampleMessage, msg)
+    }
+
+    @Test
+    fun testMessageWithDateTime() {
+        val localTime = LocalDateTime.now();
+        val exampleMessage = empty()
+            .set("atime", localTime)
+        logger.info("A datetime: $localTime")
+        val msg = convertThereAndBack(exampleMessage, parser)
+        val actualDate = msg.dateTime("atime")
+        assertEquals(localTime.toInstant(ZoneOffset.UTC), actualDate.toInstant(ZoneOffset.UTC))
         assertEquals(exampleMessage, msg)
     }
     @Test

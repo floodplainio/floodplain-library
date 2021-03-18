@@ -22,7 +22,7 @@ fun main() {
         val mongoConfig = mongoConfig("@mongosink", "mongodb://mongo", "@mongodump")
         source("sportlinkkernel-MATCH") {
             set { _, match, _ ->
-                match.clearAll(listOf("updateby", "lastupdate"))
+                match.clearAll("updateby", "lastupdate")
                 match["publicmatchid"] = createPublicId("M", 776533757, 403789397, 2030118221, match.integer("matchid"))
                 // <publicid field="matchid" to="publicmatchid" prefix="M" prime="776533757" modInverse="403789397" random="2030118221"/>
                 match
@@ -38,7 +38,7 @@ fun main() {
                         filterValidCalendarActivityId(key, msg)
                     }
                     set { _, calendarday, _ ->
-                        calendarday.clearAll(listOf("updateby", "lastupdate"))
+                        calendarday.clearAll("updateby", "lastupdate")
                         calendarday
                     }
                     group { msg -> msg.integer("activityid").toString() }
