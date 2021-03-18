@@ -1,17 +1,17 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import io.floodplain.build.FloodplainDeps
 
-plugins {
-    id("com.github.johnrengelman.shadow")
-}
+// plugins {
+//     id("com.github.johnrengelman.shadow")
+// }
 
-tasks {
-    "shadowJar"(ShadowJar::class) {
-        mergeServiceFiles {
-            exclude("META-INF/services/javax.xml.stream.*")
-        }
-    }
-}
+// tasks {
+//     "shadowJar"(ShadowJar::class) {
+//         mergeServiceFiles {
+//             exclude("META-INF/services/javax.xml.stream.*")
+//         }
+//     }
+// }
 
 dependencies {
     implementation(project(":immutable-api"))

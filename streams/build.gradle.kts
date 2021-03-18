@@ -14,6 +14,7 @@ dependencies {
     compile(FloodplainDeps.kafkaClient)
     compile(FloodplainDeps.kafkaStreams)
     compile(FloodplainDeps.kafkaConnectApi)
+    // compile(FloodplainDeps.kafkaConnectFile)
     compile(FloodplainDeps.kafkaConnectRuntime)
     compile(FloodplainDeps.cdiApi)
     compile(FloodplainDeps.microProfileConfig)
