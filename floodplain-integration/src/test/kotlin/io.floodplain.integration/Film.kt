@@ -18,6 +18,7 @@
  */
 package io.floodplain.integration
 
+import io.floodplain.kotlindsl.each
 import io.floodplain.kotlindsl.postgresSource
 import io.floodplain.kotlindsl.postgresSourceConfig
 import io.floodplain.kotlindsl.set
@@ -26,6 +27,7 @@ import io.floodplain.kotlindsl.source
 import io.floodplain.kotlindsl.stream
 import io.floodplain.mongodb.mongoConfig
 import io.floodplain.mongodb.mongoSink
+import io.floodplain.mongodb.toMongo
 import io.floodplain.mongodb.waitForMongoDbCondition
 import io.floodplain.test.InstantiatedContainer
 import io.floodplain.test.useIntegraton
@@ -73,10 +75,10 @@ class FilmSimple {
             )
             postgresSource("film", postgresConfig) {
                 // Clear the last_update field, it makes no sense in a denormalized situation
-                set { _, film, _ ->
-                    film["last_update"] = null; film
+                each { _,msg,_ ->
+                    logger.info("Last update: ${msg["last_update"]?.javaClass}")
                 }
-                mongoSink("filmwithactors", "@filmwithcat", mongoConfig)
+                toMongo("filmwithactors", "$generation-filmwithcat", mongoConfig)
             }
         }.renderAndExecute {
             val database = topologyContext().topicName("@mongodump")
@@ -87,6 +89,9 @@ class FilmSimple {
             ) {
                 currentDatabase ->
                 val collection = currentDatabase.getCollection("filmwithactors")
+                collection.find().first()?.let {
+                    logger.info("Example doc: $it")
+                }
                 val countDocuments = collection.countDocuments()
                 if (countDocuments == 1000L) {
                     1000L

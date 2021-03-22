@@ -189,13 +189,13 @@ private data class IMessageImpl(private val content: MutableMap<String, Any>) : 
     override fun messageList(path: String): List<IMessage>? {
         val raw = get(path) ?: return null
         if (raw !is List<*>) {
-            throw ClassCastException("Path element $path should be an double but it is a ${raw::class}")
+            throw ClassCastException("Path element $path should be a list of messages but it is a ${raw::class}")
         }
         return raw as List<IMessage>
     }
 
     override fun messageElement(path: String, index: Int): IMessage? {
-        return messageList(path)?.get(index)
+        return messageList(path)?.getOrNull(index)
     }
 
     override fun boolean(path: String): Boolean {

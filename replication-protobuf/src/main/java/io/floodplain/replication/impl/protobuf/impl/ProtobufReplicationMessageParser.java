@@ -67,7 +67,7 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
     }
 
     public static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    public static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SS");
+    public static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS");
 
     public static final DateTimeFormatter clocktimeFormatter =  DateTimeFormatter.ofPattern("HH:mm:ss");
 
@@ -169,9 +169,16 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
                 }
             case CLOCKTIME:
                 try {
-                    return clocktimeFormatter.parse(value);
+                    return LocalTime.parse(value, clocktimeFormatter);
                 } catch (DateTimeParseException e) {
                     logger.warn("Error parsing clocktime: " + value + " with type: " + val.getType().name(), e);
+                    return null;
+                }
+            case TIMESTAMP:
+                try {
+                    return LocalDateTime.parse(value, dateTimeFormatter);
+                } catch (DateTimeParseException e) {
+                    logger.warn("Error parsing timestamp: " + value + " with type: " + val.getType().name(), e);
                     return null;
                 }
             case DECIMAL:
@@ -183,6 +190,7 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
             case STRINGLIST:
                 return Arrays.asList(value.split(","));
             default:
+                logger.warn("Unknown type: {} for value: {}",val.getType(),val.getValue());
                 return null;
         }
     }

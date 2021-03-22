@@ -214,11 +214,11 @@ class IMessageTest {
 
     @Test
     fun testMessageWithDateTime() {
-        val localTime = LocalDateTime.now();
+        val localTime = LocalDateTime.now()
         val exampleMessage = empty()
             .set("atime", localTime)
         logger.info("A datetime: $localTime")
-        val msg = convertThereAndBack(exampleMessage, parser)
+        val msg = convertThereAndBack(exampleMessage)
         val actualDate = msg.dateTime("atime")
         assertEquals(localTime.toInstant(ZoneOffset.UTC), actualDate.toInstant(ZoneOffset.UTC))
         assertEquals(exampleMessage, msg)
@@ -237,6 +237,10 @@ class IMessageTest {
         val msg = createComplexMessage()
         val id = msg.messageList("sublist")?.get(0)?.string("astring")
         val id2 = msg.messageElement("sublist",0)?.string("astring")
+        val nonExistingIndex = msg.messageElement("sublist",15)?.string("astring")
+        val nonExistingList = msg.messageElement("sublist2",0)?.string("astring")
         assertEquals(id,id2)
+        assertNull(nonExistingIndex)
+        assertNull(nonExistingList)
     }
 }

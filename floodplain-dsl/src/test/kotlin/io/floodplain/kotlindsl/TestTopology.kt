@@ -559,6 +559,7 @@ class TestTopology {
         val replicationMessage = JSONToReplicationMessage.processDebeziumBody(data, Optional.empty());
         val date = replicationMessage.value("payment_date")
         assertNotNull(date)
+
     }
 
     @Test

@@ -70,6 +70,10 @@ class FilmToMongoIntegration {
 
     @Before
     fun setup() {
+        if (!useIntegraton) {
+            logger.info("Not performing integration tests, doesn't seem to work in circleci")
+            return
+        }
         val bootstrap = "${kafkaContainer.host}:${kafkaContainer.exposedPort}"
         logger.info("kafka.getBootstrapServers(): ${kafkaContainer.container.bootstrapServers} bootstrap: $bootstrap")
         createTopics(bootstrap,"CONNECTOR_STORAGE")
@@ -91,6 +95,10 @@ class FilmToMongoIntegration {
 
     @After
     fun shutdown() {
+        if (!useIntegraton) {
+            logger.info("Not performing integration tests, doesn't seem to work in circleci")
+            return
+        }
         postgresContainer.close()
         mongoContainer.close()
         kafkaContainer.close()
@@ -102,12 +110,11 @@ class FilmToMongoIntegration {
      */
     @Test
     fun testPostgresRunLocal() {
-        val server = "${kafkaContainer.exposedPort}"
         if (!useIntegraton) {
             logger.info("Not performing integration tests, doesn't seem to work in circleci")
             return
         }
-        val kafkaStream = stream {
+        stream {
             val postgresConfig = postgresSourceConfig(
                 "mypostgres",
                 "postgres",
@@ -134,6 +141,9 @@ class FilmToMongoIntegration {
                     .use { client ->
                         repeat(1000) {
                             val collection = client.getDatabase(database).getCollection("filmwithactors")
+                            collection.find().first()?.let {
+                                logger.info("Example doc: $it")
+                            }
                             hits = collection.countDocuments()
                             logger.info("Count of Documents: $hits in database: $database")
                             if (hits == 1000L) {
