@@ -236,10 +236,10 @@ class IMessageTest {
     fun testQueryMessageListElement() {
         val msg = createComplexMessage()
         val id = msg.messageList("sublist")?.get(0)?.string("astring")
-        val id2 = msg.messageElement("sublist",0)?.string("astring")
-        val nonExistingIndex = msg.messageElement("sublist",15)?.string("astring")
-        val nonExistingList = msg.messageElement("sublist2",0)?.string("astring")
-        assertEquals(id,id2)
+        val id2 = msg.messageElement("sublist", 0)?.string("astring")
+        val nonExistingIndex = msg.messageElement("sublist", 15)?.string("astring")
+        val nonExistingList = msg.messageElement("sublist2", 0)?.string("astring")
+        assertEquals(id, id2)
         assertNull(nonExistingIndex)
         assertNull(nonExistingList)
     }

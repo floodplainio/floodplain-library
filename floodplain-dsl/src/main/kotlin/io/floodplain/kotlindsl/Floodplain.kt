@@ -89,27 +89,24 @@ interface SinkConfig : Config {
     fun sinkElements(): Map<Topic, List<FloodplainSink>>
 }
 
-abstract class AbstractSinkConfig: SinkConfig {
+abstract class AbstractSinkConfig : SinkConfig {
     // var instantiatedSinkElements: Map<Topic, List<FloodplainSink>>? = null
     var sinkTask: SinkTask? = null
     var floodplainSink: FloodplainSink? = null
     var connector: SinkConnector? = null
     override fun instantiateSinkElements(): List<Map<String, String>> {
         val configs = materializeConnectorConfig()
-        if(configs.size > 1) {
+        if (configs.size > 1) {
             throw RuntimeException("Multiple configs not supported for now")
         }
         return configs.map {
             it.settings
         }.toList()
-
     }
     override fun sinkElements(): Map<Topic, List<FloodplainSink>> {
         return instantiateSinkConfig(this)
     }
-
 }
-
 
 class MaterializedConfig(val name: String, val topics: List<Topic>, val settings: Map<String, String>)
 
@@ -223,7 +220,6 @@ fun PartialStream.joinMulti(key: (IMessage) -> String?, secondaryKey: (IMessage)
     addTransformer(Transformer(this.rootTopology, jrt, topologyContext))
 }
 
-
 @Deprecated("Don't use unqualified topics")
 fun PartialStream.joinAttributes(withTopic: String, nameAttribute: String, valueAttribute: String, vararg keys: String) {
     return joinAttributes(withTopic, nameAttribute, valueAttribute) { msg ->
@@ -242,7 +238,7 @@ fun PartialStream.joinAttributes(withTopic: String, nameAttribute: String, value
                 },
                 {
                     set {
-                            _, msg, acc ->
+                        _, msg, acc ->
                         val name = msg[nameAttribute] as String?
                         val value = msg[valueAttribute]
                         if (name == null) {
@@ -254,7 +250,7 @@ fun PartialStream.joinAttributes(withTopic: String, nameAttribute: String, value
                 },
                 {
                     set {
-                            _, msg, acc ->
+                        _, msg, acc ->
                         acc.clear(msg[nameAttribute] as String); acc
                     }
                 }
@@ -365,7 +361,7 @@ private fun createSource(
     return source
 }
 
-@Deprecated("Don't use unqualified topics",ReplaceWith("qualifiedTopic"))
+@Deprecated("Don't use unqualified topics", ReplaceWith("qualifiedTopic"))
 fun FloodplainOperator.topic(name: String): Topic {
     return Topic.from(name, topologyContext)
 }
@@ -380,10 +376,10 @@ fun FloodplainOperator.qualifiedTopic(name: String): Topic {
  * alltogether. When that is the case, we can simply use the qualified string instead of the Topic object
  */
 fun FloodplainOperator.generationalTopic(name: String): Topic {
-    if(name.startsWith("@")) {
+    if (name.startsWith("@")) {
         throw RuntimeException("Can't create generationalTopic that starts with '@', remove the '@' from $name")
     }
-    return Topic.from("@$name",topologyContext)
+    return Topic.from("@$name", topologyContext)
 }
 
 /**
@@ -477,7 +473,6 @@ fun PartialStream.externalSinkQualified(topic: String): Transformer {
     )
     return addTransformer(Transformer(this.rootTopology, sink, topologyContext))
 }
-
 
 /**
  * Creates a simple sink that takes a lambda that will choose a **qualified** topic */
@@ -647,10 +642,7 @@ interface FloodplainOperator {
 /**
  * Concrete version of a partial pipe
  */
-class Block(rootTopology: Stream, override val topologyContext: TopologyContext) : PartialStream(rootTopology) {
-
-}
-
+class Block(rootTopology: Stream, override val topologyContext: TopologyContext) : PartialStream(rootTopology)
 
 class AbstractFloodplainSink(private val task: SinkTask, private val config: SinkConfig) : FloodplainSink {
     private val offsetCounter = AtomicLong(System.currentTimeMillis())

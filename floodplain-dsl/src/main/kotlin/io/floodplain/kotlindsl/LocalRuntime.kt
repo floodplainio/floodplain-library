@@ -70,7 +70,7 @@ import java.util.Properties
 
 private val logger = mu.KotlinLogging.logger {}
 
-interface InputReceiver: FloodplainOperator {
+interface InputReceiver : FloodplainOperator {
     fun input(topic: Topic, key: String, msg: IMessage)
     fun input(topic: Topic, key: ByteArray, msg: ByteArray)
     fun inputQualified(topic: String, key: String, msg: IMessage)
@@ -164,7 +164,7 @@ class LocalDriverContext(
     override val rootTopology: Stream,
     override val topologyContext: TopologyContext,
     private val topologyConstructor: TopologyConstructor,
-    private val config: Map<String,String>,
+    private val config: Map<String, String>,
     private val sourceConfigs: List<SourceConfig>,
     private val sinkConfigs: List<SinkConfig>,
     private val sinks: List<Pair<String, String>>,
@@ -262,7 +262,7 @@ class LocalDriverContext(
             // it.instantiateSinkElements()
             // it.sinkElements().entries
         }.forEach { entry ->
-            entry.entries.forEach { (key,value)->
+            entry.entries.forEach { (key, value) ->
                 val list = result.computeIfAbsent(key) { mutableListOf() }
                 list.addAll(value)
             }

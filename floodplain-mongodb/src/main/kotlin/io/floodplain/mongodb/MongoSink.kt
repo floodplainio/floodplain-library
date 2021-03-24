@@ -18,7 +18,6 @@
  */
 package io.floodplain.mongodb
 
-import com.mongodb.kafka.connect.MongoSinkConnector
 import io.floodplain.kotlindsl.AbstractSinkConfig
 import io.floodplain.kotlindsl.MaterializedConfig
 import io.floodplain.kotlindsl.PartialStream
@@ -41,8 +40,10 @@ class MongoConfig(override val topologyContext: TopologyContext, override val to
     override fun materializeConnectorConfig(): List<MaterializedConfig> {
         val additional = mutableMapOf<String, String>()
         sinkInstancePair.forEach { (key, value) -> topologyConstructor.addDesiredTopic(value, Optional.empty()) }
-        sinkInstancePair.forEach { (key, value) -> additional["topic.override.${value.qualifiedString()}.collection"] =
-            key }
+        sinkInstancePair.forEach { (key, value) ->
+            additional["topic.override.${value.qualifiedString()}.collection"] =
+                key
+        }
         val collections: String = sinkInstancePair.joinToString(",") { e -> e.first }
         val topics: String =
             sinkInstancePair.joinToString(",") { (_, topic) -> topic.qualifiedString() }
@@ -76,8 +77,6 @@ class MongoConfig(override val topologyContext: TopologyContext, override val to
     override fun sinkTask(): Any? {
         return sinkTask
     }
-
-
 }
 
 /**
@@ -96,7 +95,6 @@ fun Stream.localMongoConfig(name: String, uri: String, database: String): MongoC
     return c
 }
 
-
 fun PartialStream.toMongo(collection: String, topicDefinition: String, config: MongoConfig) {
     val topic = Topic.fromQualified(topicDefinition, topologyContext)
     config.sinkInstancePair.add(collection to topic)
@@ -105,8 +103,6 @@ fun PartialStream.toMongo(collection: String, topicDefinition: String, config: M
     val transform = Transformer(rootTopology, sink, topologyContext)
     addTransformer(transform)
 }
-
-
 
 @Deprecated("Automatically qualifies topic, use toMongo and explicitly qualify topic")
 fun PartialStream.mongoSink(collection: String, topicDefinition: String, config: MongoConfig) {

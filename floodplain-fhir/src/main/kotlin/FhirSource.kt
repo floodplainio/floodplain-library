@@ -51,7 +51,7 @@ fun Stream.fhirGeneric(topic: Topic, init: Source.() -> Unit = {}) {
 }
 
 fun <T : IBaseResource> PartialStream.fhirSource(topic: String, transform: (T) -> IMessage, init: Source.() -> Unit = {}): Source {
-    return fhirSource<T>(Topic.fromQualified(topic,topologyContext),transform,init)
+    return fhirSource<T>(Topic.fromQualified(topic, topologyContext), transform, init)
 }
 
 fun <T : IBaseResource> PartialStream.fhirSource(topic: Topic, transform: (T) -> IMessage, init: Source.() -> Unit = {}): Source {

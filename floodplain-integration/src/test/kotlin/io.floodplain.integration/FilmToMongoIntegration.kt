@@ -45,20 +45,18 @@ private val logger = mu.KotlinLogging.logger {}
 @kotlinx.coroutines.ExperimentalCoroutinesApi
 class FilmToMongoIntegration {
 
-    private val containerNetwork = Network.newNetwork();
-    private val kafkaContainer = InstantiatedKafkaContainer { it.withNetwork(containerNetwork).withNetworkAliases("kafka")} // KafkaContainer("5.5.3").withEmbeddedZookeeper().withExposedPorts(9092)
-    private val postgresContainer = InstantiatedContainer("floodplain/floodplain-postgres-demo:1.0.0", 5432,mapOf()) {it.withNetwork(containerNetwork).withNetworkAliases("postgres")}
-    private val mongoContainer = InstantiatedContainer("mongo:latest", 27017,mapOf()) { it.withNetwork(containerNetwork).withNetworkAliases("mongo") }
+    private val containerNetwork = Network.newNetwork()
+    private val kafkaContainer = InstantiatedKafkaContainer { it.withNetwork(containerNetwork).withNetworkAliases("kafka") } // KafkaContainer("5.5.3").withEmbeddedZookeeper().withExposedPorts(9092)
+    private val postgresContainer = InstantiatedContainer("floodplain/floodplain-postgres-demo:1.0.0", 5432, mapOf()) { it.withNetwork(containerNetwork).withNetworkAliases("postgres") }
+    private val mongoContainer = InstantiatedContainer("mongo:latest", 27017, mapOf()) { it.withNetwork(containerNetwork).withNetworkAliases("mongo") }
     private var debeziumContainer: InstantiatedContainer? = null
-
-
 
     private fun createTopics(server: String, vararg topics: String) {
         val adminClient = AdminClient.create(mapOf(BOOTSTRAP_SERVERS_CONFIG to server))
         logger.info("Creating topics on server: $server")
         val newTopics = topics.map {
             val newTopic = NewTopic(it, 1, 1.toShort())
-            newTopic.configs( mapOf("cleanup.policy" to "compact"))
+            newTopic.configs(mapOf("cleanup.policy" to "compact"))
             newTopic
         }.toList()
         val res = adminClient.createTopics(newTopics)
@@ -76,17 +74,20 @@ class FilmToMongoIntegration {
         }
         val bootstrap = "${kafkaContainer.host}:${kafkaContainer.exposedPort}"
         logger.info("kafka.getBootstrapServers(): ${kafkaContainer.container.bootstrapServers} bootstrap: $bootstrap")
-        createTopics(bootstrap,"CONNECTOR_STORAGE")
+        createTopics(bootstrap, "CONNECTOR_STORAGE")
         // "debezium/connect:1.4"
 
-        debeziumContainer = InstantiatedContainer("floodplain/debezium-with-mongodb:1.0",8083, mapOf(
-            "BOOTSTRAP_SERVERS" to "kafka:9092",
-            "CONFIG_STORAGE_TOPIC" to "CONNECTOR_STORAGE",
-            "OFFSET_STORAGE_TOPIC" to "OFFSET_STORAGE")
+        debeziumContainer = InstantiatedContainer(
+            "floodplain/debezium-with-mongodb:1.0",
+            8083,
+            mapOf(
+                "BOOTSTRAP_SERVERS" to "kafka:9092",
+                "CONFIG_STORAGE_TOPIC" to "CONNECTOR_STORAGE",
+                "OFFSET_STORAGE_TOPIC" to "OFFSET_STORAGE"
+            )
         ) {
             it.withNetwork(containerNetwork)
                 .withNetworkAliases("debezium")
-
         }
         debeziumContainer?.container?.start()
         logger.info("Setup done")
@@ -132,7 +133,7 @@ class FilmToMongoIntegration {
             postgresSource("film", postgresConfig) {
                 toMongo("filmwithactors", "somtopic", mongoConfig)
             }
-        }.renderAndSchedule(URL("http://${debeziumContainer?.host}:${debeziumContainer?.exposedPort}/connectors"),"${kafkaContainer.host}:${kafkaContainer.exposedPort}",true, null) { kafkaStreams ->
+        }.renderAndSchedule(URL("http://${debeziumContainer?.host}:${debeziumContainer?.exposedPort}/connectors"), "${kafkaContainer.host}:${kafkaContainer.exposedPort}", true, null) { kafkaStreams ->
             val database = topologyContext.topicName("@mongodump")
             var hits = 0L
             val start = System.currentTimeMillis()
@@ -161,6 +162,4 @@ class FilmToMongoIntegration {
             kafkaStreams.close()
         }
     }
-
-
 }

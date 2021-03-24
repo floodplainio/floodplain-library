@@ -88,7 +88,6 @@ class GoogleSheetConfiguration(override val topologyContext: TopologyContext, ov
         return instantiatedSinkElements ?: emptyMap()
     }
 
-
     override fun sinkTask(): Any? {
         return googleTask
     }

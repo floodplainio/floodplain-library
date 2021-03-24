@@ -59,7 +59,7 @@ class TestTopology {
     }
 
     private fun testQualifiedWithTenantAndDeployment(tenant: String?, deployment: String?, generation: String?) {
-        stream(tenant,deployment,generation?:"defaultGeneration") {
+        stream(tenant, deployment, generation ?: "defaultGeneration") {
             from("sometopic") {
                 sinkQualified("outputTopic")
             }
@@ -72,7 +72,7 @@ class TestTopology {
     }
 
     private fun testNonQualifiedWithTenantAndDeployment(tenant: String?, deployment: String?, generation: String?) {
-        stream(tenant,deployment, generation?: "defaultGeneration") {
+        stream(tenant, deployment, generation ?: "defaultGeneration") {
             source("@sometopic") {
                 sink("@outputTopic")
             }
@@ -89,15 +89,15 @@ class TestTopology {
 
         // Test both qualified and non-qualified topic resolution.
         // I intend to drop non-qualified in the future
-        testNonQualifiedWithTenantAndDeployment(null,null,null)
-        testNonQualifiedWithTenantAndDeployment("ten",null,null)
-        testNonQualifiedWithTenantAndDeployment("ten","dep",null)
-        testNonQualifiedWithTenantAndDeployment("ten","dep","somegeneration")
+        testNonQualifiedWithTenantAndDeployment(null, null, null)
+        testNonQualifiedWithTenantAndDeployment("ten", null, null)
+        testNonQualifiedWithTenantAndDeployment("ten", "dep", null)
+        testNonQualifiedWithTenantAndDeployment("ten", "dep", "somegeneration")
 
-        testQualifiedWithTenantAndDeployment(null,null,null)
-        testQualifiedWithTenantAndDeployment("ten",null,null)
-        testQualifiedWithTenantAndDeployment("ten","dep",null)
-        testQualifiedWithTenantAndDeployment("ten","dep","somegeneration")
+        testQualifiedWithTenantAndDeployment(null, null, null)
+        testQualifiedWithTenantAndDeployment("ten", null, null)
+        testQualifiedWithTenantAndDeployment("ten", "dep", null)
+        testQualifiedWithTenantAndDeployment("ten", "dep", "somegeneration")
     }
     @Test
     fun testDelete() {
@@ -556,10 +556,9 @@ class TestTopology {
     fun testReplicationParserForDateTime() {
         val data = javaClass.classLoader.getResource("decimalwithscale.json")?.readBytes()
             ?: throw IllegalArgumentException("Missing json file for decimalwithscale.json")
-        val replicationMessage = JSONToReplicationMessage.processDebeziumBody(data, Optional.empty());
+        val replicationMessage = JSONToReplicationMessage.processDebeziumBody(data, Optional.empty())
         val date = replicationMessage.value("payment_date")
         assertNotNull(date)
-
     }
 
     @Test
@@ -883,9 +882,9 @@ class TestTopology {
                 sinkQualified("output")
             }
         }.renderAndExecute {
-            input( qualifiedTopic("external"), originalKey.toByteArray(), body.toByteArray())
-            val (key,value) = output(qualifiedTopic("output"))
-            assertEquals("965",key)
+            input(qualifiedTopic("external"), originalKey.toByteArray(), body.toByteArray())
+            val (key, value) = output(qualifiedTopic("output"))
+            assertEquals("965", key)
             logger.info("Result: $value")
         }
     }

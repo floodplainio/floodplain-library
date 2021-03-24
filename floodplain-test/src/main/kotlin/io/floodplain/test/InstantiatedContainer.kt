@@ -29,11 +29,10 @@ val useIntegraton: Boolean by lazy {
 
 class KGenericContainer(imageName: String) : GenericContainer<KGenericContainer>(DockerImageName.parse(imageName))
 
-
 /**
  * Kotlin wrapper, to make testcontainers easier to use
  */
-class InstantiatedContainer(image: String, port: Int, env: Map<String, String> = emptyMap(), customizer: ((KGenericContainer)->KGenericContainer)? = null ) {
+class InstantiatedContainer(image: String, port: Int, env: Map<String, String> = emptyMap(), customizer: ((KGenericContainer) -> KGenericContainer)? = null) {
 
     var container: KGenericContainer? = KGenericContainer(image)
         .apply { withExposedPorts(port) }
@@ -51,12 +50,12 @@ class InstantiatedContainer(image: String, port: Int, env: Map<String, String> =
     }
 }
 // KafkaContainer("5.5.3").withEmbeddedZookeeper().withExposedPorts(9092,9093)
-class InstantiatedKafkaContainer(customizer: ((KafkaContainer)->KafkaContainer)? = null ) {
+class InstantiatedKafkaContainer(customizer: ((KafkaContainer) -> KafkaContainer)? = null) {
     // class KGenericContainer(imageName: String) : GenericContainer<KGenericContainer>(DockerImageName.parse(imageName))
     val container = KafkaContainer(DockerImageName("confluentinc/cp-kafka:6.0.2"))
-        .apply { withExposedPorts(9092,9093) }
+        .apply { withExposedPorts(9092, 9093) }
         .apply { withStartupTimeout(Duration.ofMinutes(5)) }
-        .apply { withStartupAttempts(50)}
+        .apply { withStartupAttempts(50) }
         .apply { customizer?.invoke(this) }
     // .apply { withEnv(env) }
     var host: String
@@ -69,5 +68,4 @@ class InstantiatedKafkaContainer(customizer: ((KafkaContainer)->KafkaContainer)?
     fun close() {
         container?.close()
     }
-
 }

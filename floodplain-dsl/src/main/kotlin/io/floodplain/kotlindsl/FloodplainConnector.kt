@@ -152,7 +152,7 @@ fun instantiateSinkConfig(config: SinkConfig): MutableMap<Topic, MutableList<Flo
     val result = mutableMapOf<Topic, MutableList<FloodplainSink>>()
     val materializedSinks = config.materializeConnectorConfig()
     materializedSinks.forEach { materializedSink ->
-        val connectorInstance =  Class.forName(materializedSink.settings["connector.class"]).getDeclaredConstructor().newInstance() as SinkConnector
+        val connectorInstance = Class.forName(materializedSink.settings["connector.class"]).getDeclaredConstructor().newInstance() as SinkConnector
         connectorInstance.start(materializedSink.settings)
         val task = connectorInstance.taskClass().getDeclaredConstructor().newInstance() as SinkTask
         task.start(materializedSink.settings)

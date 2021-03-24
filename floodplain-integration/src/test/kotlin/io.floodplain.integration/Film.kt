@@ -75,7 +75,7 @@ class FilmSimple {
             )
             postgresSource("film", postgresConfig) {
                 // Clear the last_update field, it makes no sense in a denormalized situation
-                each { _,msg,_ ->
+                each { _, msg, _ ->
                     logger.info("Last update: ${msg["last_update"]?.javaClass}")
                 }
                 toMongo("filmwithactors", "$generation-filmwithcat", mongoConfig)

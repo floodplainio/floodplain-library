@@ -62,7 +62,6 @@ interface IMessage {
     fun merge(msg: IMessage): IMessage
     fun messageList(path: String): List<IMessage>?
     fun messageElement(path: String, index: Int): IMessage?
-
 }
 
 private data class IMessageImpl(private val content: MutableMap<String, Any>) : IMessage {
