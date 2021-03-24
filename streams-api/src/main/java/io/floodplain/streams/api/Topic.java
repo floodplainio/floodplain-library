@@ -41,8 +41,12 @@ public class Topic {
         // only one will be used
         this.topicDefinition = topicDefinition;
         this.qualifiedDefinition = qualifiedDefinition;
+        if(qualifiedDefinition!=null && qualifiedDefinition.contains("@")) {
+            throw new IllegalArgumentException("Qualified definitions can not have an '@'");
+        }
     }
 
+    @Deprecated
     public static Topic from(String topicDefinition, TopologyContext topologyContext) {
         return new Topic(topologyContext,topicDefinition,null);
     }

@@ -19,6 +19,7 @@
 package io.floodplain.kotlindsl.example
 
 import io.floodplain.kotlindsl.buffer
+import io.floodplain.kotlindsl.from
 import io.floodplain.kotlindsl.joinAttributes
 import io.floodplain.kotlindsl.joinRemote
 import io.floodplain.kotlindsl.set

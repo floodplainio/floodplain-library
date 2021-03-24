@@ -567,12 +567,12 @@ class TestTopology {
         val data = javaClass.classLoader.getResource("decimalwithscale.json")?.readBytes()
             ?: throw IllegalArgumentException("Missing json file for decimalwithscale.json")
         stream {
-            externalSource("@source", Topic.FloodplainKeyFormat.FLOODPLAIN_STRING, Topic.FloodplainBodyFormat.CONNECT_JSON) {
-                sink("@sinktopic")
+            externalSource("source", Topic.FloodplainKeyFormat.FLOODPLAIN_STRING, Topic.FloodplainBodyFormat.CONNECT_JSON) {
+                sinkQualified("sinktopic")
             }
         }.renderAndExecute {
-            input(generationalTopic("source"), "key1".toByteArray(), data)
-            val (_, value) = output(generationalTopic("sinktopic"))
+            input(qualifiedTopic("source"), "key1".toByteArray(), data)
+            val (_, value) = output(qualifiedTopic("sinktopic"))
             logger.info("value: $value")
             val amount = value.decimal("amount")
             assertEquals(BigDecimal.valueOf(299, 2), amount)
@@ -878,13 +878,13 @@ class TestTopology {
 
         stream("aaa") {
             val logSinkConfig = logSinkConfig("logname")
-            externalSource("@external", Topic.FloodplainKeyFormat.CONNECT_KEY_JSON, Topic.FloodplainBodyFormat.CONNECT_JSON) {
+            externalSource("external", Topic.FloodplainKeyFormat.CONNECT_KEY_JSON, Topic.FloodplainBodyFormat.CONNECT_JSON) {
                 // logSink("somesink", "@output", logSinkConfig)
-                sink("@output")
+                sinkQualified("output")
             }
         }.renderAndExecute {
-            input( generationalTopic("external"), originalKey.toByteArray(), body.toByteArray())
-            val (key,value) = output(generationalTopic("output"))
+            input( qualifiedTopic("external"), originalKey.toByteArray(), body.toByteArray())
+            val (key,value) = output(qualifiedTopic("output"))
             assertEquals("965",key)
             logger.info("Result: $value")
         }

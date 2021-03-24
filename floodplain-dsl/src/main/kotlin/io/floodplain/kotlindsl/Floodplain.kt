@@ -150,11 +150,19 @@ fun PartialStream.each(transform: (String, IMessage, IMessage) -> Unit): Transfo
     return addTransformer(Transformer(this.rootTopology, each, topologyContext))
 }
 
+/**
+ * Only propagates if a message is actually different than the previous message with the same key
+ */
 fun PartialStream.diff(): Transformer {
     val diffTransformer = DiffTransformer()
     return addTransformer(Transformer(this.rootTopology, diffTransformer, topologyContext))
 }
 
+/**
+ * Buffers messages until either: duration has past, or maxSize number of messages have been accumulated since the last
+ * flush.
+ * inMemory defines if it is a volitile buffer
+ */
 fun PartialStream.buffer(duration: Duration, maxSize: Int = 10000, inMemory: Boolean = false): Transformer {
     val bufferTransformer = BufferTransformer(duration, maxSize, inMemory)
     return addTransformer(Transformer(this.rootTopology, bufferTransformer, topologyContext))
@@ -214,15 +222,53 @@ fun PartialStream.joinMulti(key: (IMessage) -> String?, secondaryKey: (IMessage)
     val jrt = JoinRemoteTransformer(secondarySource.toReactivePipe(), keyExtractor, optional, true)
     addTransformer(Transformer(this.rootTopology, jrt, topologyContext))
 }
-// TODO move these functions to floodplain
+
+
+@Deprecated("Don't use unqualified topics")
 fun PartialStream.joinAttributes(withTopic: String, nameAttribute: String, valueAttribute: String, vararg keys: String) {
     return joinAttributes(withTopic, nameAttribute, valueAttribute) { msg ->
         keys.joinToString(ReplicationMessage.KEYSEPARATOR) { msg[it].toString() }
     }
 }
+
+@Deprecated("Don't use unqualified topics")
 fun PartialStream.joinAttributes(withTopic: String, nameAttribute: String, valueAttribute: String, keyExtract: (IMessage) -> String) {
     join(optional = true, debug = false) {
         source(withTopic) {
+            scan(
+                keyExtract,
+                {
+                    empty()
+                },
+                {
+                    set {
+                            _, msg, acc ->
+                        val name = msg[nameAttribute] as String?
+                        val value = msg[valueAttribute]
+                        if (name == null) {
+                            println("weird")
+                        }
+                        acc.set(name!!, value)
+                        acc
+                    }
+                },
+                {
+                    set {
+                            _, msg, acc ->
+                        acc.clear(msg[nameAttribute] as String); acc
+                    }
+                }
+            )
+        }
+    }
+}
+
+/**
+ * C/p from joinAttributes, but qualified
+ */
+fun PartialStream.joinAttributesQualified(withTopic: String, nameAttribute: String, valueAttribute: String, keyExtract: (IMessage) -> String) {
+    join(optional = true, debug = false) {
+        from(withTopic) {
             scan(
                 keyExtract,
                 {
@@ -277,6 +323,7 @@ fun Stream.table(topic: String, init: Source.() -> Unit) {
 /**
  * Create sub source
  */
+@Deprecated("Don't use unqualified topics")
 fun PartialStream.source(topic: String, init: Source.() -> Unit = {}): Source {
     return createSource(Topic.from(topic, rootTopology.topologyContext), rootTopology, init)
 }
@@ -284,6 +331,7 @@ fun PartialStream.source(topic: String, init: Source.() -> Unit = {}): Source {
 /**
  * Create toplevel source
  */
+@Deprecated("Don't use unqualified topics")
 fun Stream.source(topic: String, init: Source.() -> Unit = {}) {
     addSource(createSource(Topic.from(topic, rootTopology.topologyContext), this, init))
 }
@@ -317,6 +365,7 @@ private fun createSource(
     return source
 }
 
+@Deprecated("Don't use unqualified topics",ReplaceWith("qualifiedTopic"))
 fun FloodplainOperator.topic(name: String): Topic {
     return Topic.from(name, topologyContext)
 }
@@ -325,6 +374,11 @@ fun FloodplainOperator.qualifiedTopic(name: String): Topic {
     return Topic.fromQualified(name, topologyContext)
 }
 
+/**
+ * TODO in time, remove.
+ * I use generationalTopics mostly in unit tests now, I want to move away from unqualified topics
+ * alltogether. When that is the case, we can simply use the qualified string instead of the Topic object
+ */
 fun FloodplainOperator.generationalTopic(name: String): Topic {
     if(name.startsWith("@")) {
         throw RuntimeException("Can't create generationalTopic that starts with '@', remove the '@' from $name")
@@ -332,19 +386,24 @@ fun FloodplainOperator.generationalTopic(name: String): Topic {
     return Topic.from("@$name",topologyContext)
 }
 
-
+/**
+ * Source with a 'custom' format. TODO directly add key/value serde
+ */
 fun Stream.externalSource(
     topic: String,
     keyFormat: Topic.FloodplainKeyFormat,
     valueFormat: Topic.FloodplainBodyFormat,
     init: Source.() -> Unit
 ) {
-    val sourceElement = TopicSource(Topic.from(topic, this.topologyContext), keyFormat, valueFormat)
+    val sourceElement = TopicSource(Topic.fromQualified(topic, this.topologyContext), keyFormat, valueFormat)
     val source = Source(this, sourceElement, this.topologyContext)
     source.init()
     rootTopology.addSource(source)
 }
 
+/**
+ * Add qualified source in Kafka
+ */
 fun Stream.debeziumSource(topicSource: String, init: Source.() -> Unit = {}) {
     rootTopology.addSource(existingDebeziumSource(topicSource, this, init))
 }
@@ -364,6 +423,7 @@ private fun existingDebeziumSource(topicSource: String, rootTopology: Stream, in
 /**
  * Creates a simple sink that will contain the result of the current transformation.
  */
+@Deprecated("Don't use unqualified topics")
 fun PartialStream.sink(topic: String): Transformer {
     val sink = SinkTransformer(
         Optional.empty(),
@@ -392,6 +452,7 @@ fun PartialStream.sinkQualified(topic: String): Transformer {
 /**
  * Creates a simple sink that will contain the result of the current transformation. Multiple sinks may not be added.
  */
+@Deprecated("Don't use unqualified topics")
 fun PartialStream.externalSink(topic: String): Transformer {
     val sink = SinkTransformer(
         Optional.empty(),
@@ -404,7 +465,22 @@ fun PartialStream.externalSink(topic: String): Transformer {
 }
 
 /**
- * Creates a simple sink that takes a lambda that will choose a topic */
+ * Creates a simple sink that will contain the result of the current transformation. Multiple sinks may not be added.
+ */
+fun PartialStream.externalSinkQualified(topic: String): Transformer {
+    val sink = SinkTransformer(
+        Optional.empty(),
+        Topic.from(topic, topologyContext),
+        Optional.empty(),
+        Topic.FloodplainKeyFormat.CONNECT_KEY_JSON,
+        Topic.FloodplainBodyFormat.CONNECT_JSON
+    )
+    return addTransformer(Transformer(this.rootTopology, sink, topologyContext))
+}
+
+
+/**
+ * Creates a simple sink that takes a lambda that will choose a **qualified** topic */
 fun PartialStream.dynamicSink(name: String, extractor: (String, IMessage) -> String): Transformer {
     val sink =
         DynamicSinkTransformer(name, Optional.empty()) { key, value -> extractor.invoke(key, fromImmutable(value)) }
@@ -514,7 +590,7 @@ fun PartialStream.scan(
  * Fork the current stream to other downstreams
  */
 fun PartialStream.fork(vararg destinations: Block.() -> Unit): Transformer {
-    val blocks = destinations.map { dd -> val b = Block(rootTopology, topologyContext); dd.invoke(b); b }.toList()
+    val blocks = destinations.map { dd -> val b = Block(rootTopology, topologyContext); dd(b); b }.toList()
     val forkTransformer = ForkTransformer(blocks)
     return addTransformer(Transformer(rootTopology, forkTransformer, topologyContext))
 }
@@ -534,26 +610,15 @@ fun stream(tenant: String? = null, deployment: String? = null, generation: Strin
     pipe.init()
     return pipe
 }
-// fun stream(generation: String = "any", init: Stream.() -> Unit): Stream {
-//     val topologyContext = TopologyContext.context(Optional.empty(), generation)
-//     val pipe = Stream(topologyContext)
-//     pipe.init()
-//     // pipe.addSource(pipe.init())
-//     return pipe
-// }
 
 /**
  * Sources wrap a TopologyPipeComponent
  */
 // TODO topologycontext could be removed, it can be obtained from the rootTopology
-class Source(override val rootTopology: Stream, val component: TopologyPipeComponent, override val topologyContext: TopologyContext) : PartialStream(rootTopology) {
+class Source(override val rootTopology: Stream, private val component: TopologyPipeComponent, override val topologyContext: TopologyContext) : PartialStream(rootTopology) {
     fun toReactivePipe(): ReactivePipe {
         return ReactivePipe(component, transformers.map { e -> e.component })
     }
-
-    // override fun addSource(source: Source) {
-    //     throw UnsupportedOperationException("Sources shouldn't (directly) add sources")
-    // }
 }
 
 /**
@@ -583,9 +648,7 @@ interface FloodplainOperator {
  * Concrete version of a partial pipe
  */
 class Block(rootTopology: Stream, override val topologyContext: TopologyContext) : PartialStream(rootTopology) {
-    // override fun addSource(source: Source) {
-    //     throw UnsupportedOperationException("Blocks shouldn't add sources")
-    // }
+
 }
 
 
