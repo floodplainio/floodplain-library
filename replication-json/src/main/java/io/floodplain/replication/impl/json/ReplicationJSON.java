@@ -30,6 +30,7 @@ import io.floodplain.immutable.api.ImmutableMessage.TypedData;
 import io.floodplain.immutable.api.ImmutableTypeParser;
 import io.floodplain.immutable.factory.ImmutableFactory;
 import io.floodplain.replication.api.ReplicationMessage;
+import io.floodplain.replication.factory.DateSerializer;
 import io.floodplain.replication.factory.ReplicationFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +44,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.Temporal;
 import java.time.temporal.TemporalAccessor;
 import java.util.*;
 import java.util.Map.Entry;
@@ -162,28 +164,12 @@ public class ReplicationJSON {
                 m.put("Value", (Boolean) value);
                 return;
             case DATE:
-                if (value instanceof String) {
-                    m.put("Value", (String) value);
-                } else if (value instanceof LocalDateTime) {
-                    String t = dateFormatter.format((LocalDateTime) value);
-                    m.put("Value", t);
-
-                } else {
-                    String t = dateFormatter.format((LocalDate) value);
-                    m.put("Value", t);
-                }
-                return;
             case TIMESTAMP:
-//        } else if (value instanceof LocalDateTime) {
-                String t = dateTimeFormatter.format((LocalDateTime) value);
-                m.put("Value", t);
-                return;
             case CLOCKTIME:
                 if (value instanceof String) {
                     m.put("Value", (String) value);
-                } else {
-                    String c = clocktimeFormatter.format((TemporalAccessor) value);
-                    m.put("Value", c);
+                } else if (value instanceof Temporal) {
+                    m.put("Value", DateSerializer.serializeTimeObject((Temporal) value));
                 }
                 return;
             case STRINGLIST:
@@ -248,34 +234,10 @@ public class ReplicationJSON {
                 }
                 return stringResult;
             case DATE:
-                //"2011-10-03 15:01:06.00"
-                try {
-                    String formattedDate = jsonNode.asText();
-
-                    return LocalDate.parse(formattedDate, formattedDate.length() >10 ? dateTimeFormatter : dateFormatter);
-//                    return dateFormatter.parse(jsonNode.asText());
-//                    return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SS").parse(jsonNode.asText());
-                } catch (DateTimeParseException e) {
-                    logger.warn("Cannot parse date {} = returning null", jsonNode.asText());
-                    return null;
-                }
             case TIMESTAMP:
-                try {
-                    String formattedDate = jsonNode.asText();
-                    return LocalDateTime.parse(formattedDate, formattedDate.length() >10 ? dateTimeFormatter : dateFormatter);
-                } catch (DateTimeParseException e) {
-                    logger.warn("Cannot parse date time {} = returning null", jsonNode.asText(),e);
-                    return null;
-                }
             case CLOCKTIME:
-                //"15:01:06"
-                try {
-                    return LocalTime.parse(jsonNode.asText(),clocktimeFormatter);
-                } catch (DateTimeParseException e) {
-                    logger.warn("Cannot parse clocktime {} = returning null", jsonNode.asText());
+                return DateSerializer.parseTimeObject(jsonNode.asText());
 
-                    return null;
-                }
             default:
                 logger.warn("Unsupported type {}", type);
                 break;
@@ -354,7 +316,10 @@ public class ReplicationJSON {
                     node.put(key, (Boolean) o);
                     break;
                 case DATE:
-                    node.put(key, ((LocalDate) o).format(dateFormatter));
+                case TIMESTAMP:
+                case CLOCKTIME:
+                    node.put(key, DateSerializer.serializeTimeObject((Temporal) o));
+//                    node.put(key, ((LocalDate) o).format(dateFormatter));
                     break;
                 case DECIMAL:
                     node.put(key,((BigDecimal)o).toPlainString());

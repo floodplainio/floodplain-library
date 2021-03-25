@@ -59,9 +59,13 @@
       "Type": "integer",
       "Value": 9
     },
-    "formdate": {
+    "sometimestamp": {
       "Type": "timestamp",
       "Value": "2017-03-31 11:28:46.000000"
+    },
+    "formdate": {
+      "Type": "date",
+      "Value": "2017-03-31 11:28:46.00"
     },
     "hometeamid": {
       "Type": "integer",

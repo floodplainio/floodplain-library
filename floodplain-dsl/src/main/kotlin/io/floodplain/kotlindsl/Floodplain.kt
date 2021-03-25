@@ -227,6 +227,12 @@ fun PartialStream.joinAttributes(withTopic: String, nameAttribute: String, value
     }
 }
 
+fun PartialStream.joinAttributesQualified(withTopic: String, nameAttribute: String, valueAttribute: String, vararg keys: String) {
+    return joinAttributesQualified(withTopic, nameAttribute, valueAttribute) { msg ->
+        keys.joinToString(ReplicationMessage.KEYSEPARATOR) { msg[it].toString() }
+    }
+}
+
 @Deprecated("Don't use unqualified topics")
 fun PartialStream.joinAttributes(withTopic: String, nameAttribute: String, valueAttribute: String, keyExtract: (IMessage) -> String) {
     join(optional = true, debug = false) {

@@ -108,11 +108,11 @@ public class ReplicationProtobufTest {
     public void testConversion() {
         try (InputStream is = getClass().getResourceAsStream("submessage.json")) {
             ReplicationMessage rm = jsonParser.parseStream(is);
-            Assert.assertEquals(25, rm.values().size());
+            Assert.assertEquals(26, rm.values().size());
             byte[] bb = protoBufParser.serialize(rm);
             logger.info("bytes: {}", bb.length);
             ReplicationMessage rm2 = protoBufParser.parseBytes(Optional.empty(), bb);
-            Assert.assertEquals(25, rm2.values().size());
+            Assert.assertEquals(26, rm2.values().size());
             byte[] bb2 = jsonParser.serialize(rm2);
             logger.info("JSON again: {}", bb2.length);
             logger.info(">>>>\n{}", new String(bb2, StandardCharsets.UTF_8));
@@ -120,6 +120,7 @@ public class ReplicationProtobufTest {
             e.printStackTrace();
         }
     }
+
 
     @Test
     public void testClocktime() {

@@ -26,6 +26,7 @@ import io.floodplain.immutable.factory.ImmutableFactory;
 import io.floodplain.protobuf.generated.Replication;
 import io.floodplain.replication.api.ReplicationMessage;
 import io.floodplain.replication.api.ReplicationMessageParser;
+import io.floodplain.replication.factory.DateSerializer;
 import io.floodplain.replication.factory.ReplicationFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +42,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.Temporal;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -65,12 +67,6 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
             this.value = val;
         }
     }
-
-    public static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    public static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS");
-
-    public static final DateTimeFormatter clocktimeFormatter =  DateTimeFormatter.ofPattern("HH:mm:ss");
-
 
     private static String serializeValue(ImmutableMessage.ValueType type, Object val) {
         if (val == null) {
@@ -100,34 +96,11 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
                 logger.info("Binary type: {}", val.getClass());
                 return (String) val;
             case DATE:
-                if (val instanceof String) {
-                    return (String) val;
-                }
-                if(val instanceof LocalDateTime) {
-                    return dateFormatter.format((LocalDateTime) val);
-                }
-                if(val instanceof LocalDate) {
-                    return dateFormatter.format((LocalDate) val);
-                }
-                logger.info("Unexpected date type: {}",val);
             case CLOCKTIME:
-                if (val instanceof String) {
-                    return (String) val;
-                }
-                if(val instanceof LocalDateTime) {
-                    return dateTimeFormatter.format((LocalDateTime) val);
-                }
-                if(val instanceof LocalDate) {
-                    dateFormatter.format((LocalDate) val);
-                }
-                return clocktimeFormatter.format((LocalTime) val);
+            case TIMESTAMP:
+                return DateSerializer.serializeTimeObject((Temporal)val);
             case ENUM:
                 return val.toString();
-            case TIMESTAMP:
-                if(val instanceof LocalDateTime) {
-                    return dateTimeFormatter.format((LocalDateTime) val);
-                }
-                throw new UnsupportedOperationException("Unknown type: " + type);
             case DECIMAL:
                 return ((BigDecimal)val).toPlainString();
             case STRINGLIST:
@@ -145,6 +118,9 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
         String value = val.getValue();
         switch (val.getType()) {
             case STRING:
+            case BINARY_DIGEST:
+            case LIST:
+            case ENUM:
                 return value;
             case INTEGER:
                 return Integer.parseInt(value);
@@ -158,35 +134,12 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
                 return Boolean.parseBoolean(value);
             case BINARY:
                 return val.getByteData() == null ? new byte[]{} : val.getByteData().toByteArray();
-            case BINARY_DIGEST:
-                return value;
             case DATE:
-                try {
-                    return LocalDate.parse(value,dateFormatter);
-                } catch (DateTimeParseException e) {
-                    logger.warn("Error parsing date: " + value + " with type: " + val.getType().name(), e);
-                    return null;
-                }
             case CLOCKTIME:
-                try {
-                    return LocalTime.parse(value, clocktimeFormatter);
-                } catch (DateTimeParseException e) {
-                    logger.warn("Error parsing clocktime: " + value + " with type: " + val.getType().name(), e);
-                    return null;
-                }
             case TIMESTAMP:
-                try {
-                    return LocalDateTime.parse(value, dateTimeFormatter);
-                } catch (DateTimeParseException e) {
-                    logger.warn("Error parsing timestamp: " + value + " with type: " + val.getType().name(), e);
-                    return null;
-                }
+                return DateSerializer.parseTimeObject(val.getValue());
             case DECIMAL:
                 return new BigDecimal(value);
-            case LIST:
-                return value;
-            case ENUM:
-                return value;
             case STRINGLIST:
                 return Arrays.asList(value.split(","));
             default:
