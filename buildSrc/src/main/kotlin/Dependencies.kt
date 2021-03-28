@@ -16,7 +16,7 @@ fun isReleaseVersion(): Boolean {
 }
 
 object FloodplainDeps {
-    const val floodplain_version = "1.4.6-SNAPSHOT"
+    const val floodplain_version = "1.4.7"
     const val jackson_version = "2.12.2"
     const val kafka_version = "2.7.0"
     const val slf4j_version = "1.7.30"

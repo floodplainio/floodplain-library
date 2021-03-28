@@ -97,6 +97,15 @@ public class ReplicationTopologyParser {
         }
     }
 
+    public static void addKeyTransformProcessor(Topology current, TopologyContext topologyContext,
+                                        TopologyConstructor topologyConstructor, String fromProcessor,
+                                        Function<String,String> keyTransformer) {
+        // TODO I think the topologyContext should be used.
+//        current.addProcessor(diffProcessorNamePrefix, () -> new DiffProcessor(diffProcessorNamePrefix), fromProcessor);
+//        addStateStoreMapping(topologyConstructor.processorStateStoreMapper, diffProcessorNamePrefix, diffProcessorNamePrefix);
+//        logger.info("Granting access for processor: {} to store: {}", diffProcessorNamePrefix, diffProcessorNamePrefix);
+//        topologyConstructor.stateStoreSupplier.put(diffProcessorNamePrefix, createMessageStoreSupplier(diffProcessorNamePrefix, true));
+    }
 
     // I think we need to use the topologyContext
     public static void addDiffProcessor(Topology current, TopologyContext topologyContext,

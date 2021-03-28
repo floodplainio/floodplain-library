@@ -38,7 +38,6 @@ import kotlin.test.assertEquals
 
 private val logger = mu.KotlinLogging.logger {}
 
-@kotlinx.coroutines.ExperimentalCoroutinesApi
 class FilmToMongoIntegratedSink {
 
     private val containerNetwork = Network.newNetwork()

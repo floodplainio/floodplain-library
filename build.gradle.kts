@@ -17,8 +17,8 @@ buildscript {
 }
 plugins {
     id("eclipse")
-    id("org.jetbrains.kotlin.jvm") version "1.4.20"
-    id("org.jetbrains.kotlin.plugin.allopen") version "1.4.20"
+    id("org.jetbrains.kotlin.jvm") version "1.4.31"
+    id("org.jetbrains.kotlin.plugin.allopen") version "1.4.31"
     id("com.github.johnrengelman.shadow") version "5.2.0"
     id("org.jlleitschuh.gradle.ktlint") version "9.4.1"
     id("org.jetbrains.dokka") version "0.10.1"

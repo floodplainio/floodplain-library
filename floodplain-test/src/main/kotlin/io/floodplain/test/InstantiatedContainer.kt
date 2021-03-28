@@ -52,7 +52,7 @@ class InstantiatedContainer(image: String, port: Int, env: Map<String, String> =
 // KafkaContainer("5.5.3").withEmbeddedZookeeper().withExposedPorts(9092,9093)
 class InstantiatedKafkaContainer(customizer: ((KafkaContainer) -> KafkaContainer)? = null) {
     // class KGenericContainer(imageName: String) : GenericContainer<KGenericContainer>(DockerImageName.parse(imageName))
-    val container = KafkaContainer(DockerImageName("confluentinc/cp-kafka:6.0.2"))
+    val container = KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:6.0.2"))
         .apply { withExposedPorts(9092, 9093) }
         .apply { withStartupTimeout(Duration.ofMinutes(5)) }
         .apply { withStartupAttempts(50) }
@@ -61,11 +61,11 @@ class InstantiatedKafkaContainer(customizer: ((KafkaContainer) -> KafkaContainer
     var host: String
     var exposedPort: Int = -1
     init {
-        container?.start()
-        host = container?.host ?: "localhost"
-        exposedPort = container?.getMappedPort(9093) ?: -1
+        container.start()
+        host = container.host ?: "localhost"
+        exposedPort = container.getMappedPort(9093) ?: -1
     }
     fun close() {
-        container?.close()
+        container.close()
     }
 }

@@ -33,6 +33,7 @@ import io.floodplain.reactive.source.topology.FilterTransformer
 import io.floodplain.reactive.source.topology.GroupTransformer
 import io.floodplain.reactive.source.topology.JoinRemoteTransformer
 import io.floodplain.reactive.source.topology.JoinWithTransformer
+import io.floodplain.reactive.source.topology.KeyTransformer
 import io.floodplain.reactive.source.topology.ScanTransformer
 import io.floodplain.reactive.source.topology.SetTransformer
 import io.floodplain.reactive.source.topology.SinkTransformer
@@ -182,6 +183,10 @@ fun PartialStream.set(transform: (String, IMessage, IMessage) -> IMessage): Tran
         }
     val set = SetTransformer(transformer)
     return addTransformer(Transformer(this.rootTopology, set, topologyContext))
+}
+
+fun PartialStream.keyTransform(transform: (String) -> String): Transformer {
+    return addTransformer(Transformer(this.rootTopology, KeyTransformer(transform), topologyContext))
 }
 
 // fun PartialPipe.copy()

@@ -28,6 +28,7 @@ import io.floodplain.streams.debezium.JSONToReplicationMessage
 import io.floodplain.streams.remotejoin.StoreStateProcessor
 import kotlinx.coroutines.delay
 import org.apache.kafka.streams.state.KeyValueStore
+import org.junit.Assert
 import java.math.BigDecimal
 import java.time.Duration
 import java.util.Optional
@@ -579,6 +580,23 @@ class TestTopology {
     }
 
     @Test
+    fun testKeyTransformer() {
+        stream {
+            from("source") {
+                keyTransform { key->"mon${key}" }
+                sinkQualified("output")
+            }
+        }.renderAndExecute {
+            inputQualified("source", "key", empty().set("value", "value1"))
+            val (key, _) = outputQualified("output")
+            Assert.assertEquals("monkey",key)
+            deleteQualified("source","soon")
+            val deleted = deletedQualified("output")
+            Assert.assertEquals("monsoon",deleted)
+        }
+    }
+
+        @Test
     fun testDiff() {
         stream {
             source("@source") {
