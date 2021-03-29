@@ -1,4 +1,4 @@
-/*
+/**
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -386,6 +386,7 @@ fun FloodplainOperator.qualifiedTopic(name: String): Topic {
  * I use generationalTopics mostly in unit tests now, I want to move away from unqualified topics
  * alltogether. When that is the case, we can simply use the qualified string instead of the Topic object
  */
+@Deprecated("Use qualified topic")
 fun FloodplainOperator.generationalTopic(name: String): Topic {
     if (name.startsWith("@")) {
         throw RuntimeException("Can't create generationalTopic that starts with '@', remove the '@' from $name")

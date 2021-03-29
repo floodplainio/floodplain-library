@@ -88,6 +88,10 @@ subprojects {
         reports.maybeCreate("html").isEnabled = true
     }
 
+    tasks.withType<com.hierynomus.gradle.license.tasks.LicenseFormat>().configureEach() {
+        this.header = File(this.project.rootDir,"HEADER")
+    }
+
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
         kotlinOptions.jvmTarget = "11"
         kotlinOptions.javaParameters = true
