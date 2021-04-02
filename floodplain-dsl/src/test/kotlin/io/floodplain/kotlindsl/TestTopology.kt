@@ -72,28 +72,28 @@ class TestTopology {
         }
     }
 
-    private fun testNonQualifiedWithTenantAndDeployment(tenant: String?, deployment: String?, generation: String?) {
-        stream(tenant, deployment, generation ?: "defaultGeneration") {
-            source("@sometopic") {
-                sink("@outputTopic")
-            }
-        }.renderAndExecute {
-            input(generationalTopic("sometopic"), "key1", empty().set("name", "gorilla"))
-            input(generationalTopic("sometopic"), "key1", empty().set("name", "monkey"))
-            assertEquals("gorilla", output(generationalTopic("outputTopic")).second["name"])
-            assertEquals("monkey", output(generationalTopic("outputTopic")).second["name"])
-        }
-    }
+    // private fun testNonQualifiedWithTenantAndDeployment(tenant: String?, deployment: String?, generation: String?) {
+    //     stream(tenant, deployment, generation ?: "defaultGeneration") {
+    //         source("@sometopic") {
+    //             sink("@outputTopic")
+    //         }
+    //     }.renderAndExecute {
+    //         input(generationalTopic("sometopic"), "key1", empty().set("name", "gorilla"))
+    //         input(generationalTopic("sometopic"), "key1", empty().set("name", "monkey"))
+    //         assertEquals("gorilla", output(generationalTopic("outputTopic")).second["name"])
+    //         assertEquals("monkey", output(generationalTopic("outputTopic")).second["name"])
+    //     }
+    // }
 
     @Test
     fun testQualifications() {
 
         // Test both qualified and non-qualified topic resolution.
         // I intend to drop non-qualified in the future
-        testNonQualifiedWithTenantAndDeployment(null, null, null)
-        testNonQualifiedWithTenantAndDeployment("ten", null, null)
-        testNonQualifiedWithTenantAndDeployment("ten", "dep", null)
-        testNonQualifiedWithTenantAndDeployment("ten", "dep", "somegeneration")
+        // testNonQualifiedWithTenantAndDeployment(null, null, null)
+        // testNonQualifiedWithTenantAndDeployment("ten", null, null)
+        // testNonQualifiedWithTenantAndDeployment("ten", "dep", null)
+        // testNonQualifiedWithTenantAndDeployment("ten", "dep", "somegeneration")
 
         testQualifiedWithTenantAndDeployment(null, null, null)
         testQualifiedWithTenantAndDeployment("ten", null, null)
@@ -103,129 +103,128 @@ class TestTopology {
     @Test
     fun testDelete() {
         stream("somegen") {
-            source("@sometopic") {
-                sink("@outputtopic")
+            from("sometopic") {
+                sinkQualified("outputtopic")
             }
         }.renderAndExecute {
-            input(generationalTopic("sometopic"), "key1", empty().set("name", "gorilla"))
-            delete(generationalTopic("sometopic"), "key1")
-            output(generationalTopic("outputtopic"))
-            assertTrue(deleted(generationalTopic("outputtopic")) == "key1", "Key mismatch")
-            logger.info("Topic now empty: ${isEmpty(qualifiedTopic("outputtopic"))}")
+            inputQualified("sometopic", "key1", empty().set("name", "gorilla"))
+            deleteQualified("sometopic", "key1")
+            outputQualified("outputtopic")
+            assertTrue(deletedQualified("outputtopic") == "key1", "Key mismatch")
+            logger.info("Topic now empty: ${isEmptyQualified("outputtopic")}")
         }
     }
 
     @Test
     fun simpleTransformation() {
         stream {
-            source("mysource") {
+            from("mysource") {
                 set {
                     _, primary, _ ->
                     primary.set("name", "Frank")
                 }
-                sink("people")
+                sinkQualified("people")
             }
         }.renderAndExecute {
             inputQualified("mysource", "1", empty().set("species", "human"))
             logger.info("outputs: ${outputs()}")
-            val (_, value) = output(topic("people"))
+            val (_, value) = outputQualified("people")
             logger.info("Person found: $value")
         }
     }
     @Test
     fun testSimpleJoin() {
         stream("somegen") {
-            source("@left") {
+            from("left") {
                 join {
-                    source("@right") {}
+                    from("right") {}
                 }
                 set { _, left, right ->
                     left["rightsub"] = right
                     left
                 }
-                sink("@output")
+                sinkQualified("output")
             }
         }.renderAndExecute {
-            assertTrue(isEmpty(qualifiedTopic("output")))
-            input(generationalTopic("left"), "key1", empty().set("name", "left1"))
-            assertTrue(isEmpty(qualifiedTopic("output")))
-            input(generationalTopic("left"), "wrongkey", empty().set("name", "nomatter"))
-            assertTrue(isEmpty(qualifiedTopic("output")))
-            input(generationalTopic("right"), "key1", empty().set("subname", "monkey"))
-            val (_, result) = output(generationalTopic("output"))
+            assertTrue(isEmptyQualified("output"))
+            inputQualified("left", "key1", empty().set("name", "left1"))
+            assertTrue(isEmptyQualified("output"))
+            inputQualified("left", "wrongkey", empty().set("name", "nomatter"))
+            assertTrue(isEmptyQualified("output"))
+            inputQualified("right", "key1", empty().set("subname", "monkey"))
+            val (_, result) = outputQualified("output")
             logger.info("Result: $result")
             assertEquals("monkey", result["rightsub/subname"])
-            delete(generationalTopic("left"), "key1")
+            deleteQualified("left", "key1")
             // TODO add tests to check store sizes
-            assertEquals("key1", deleted(generationalTopic("output")))
+            assertEquals("key1", deletedQualified("output"))
         }
     }
 
     @Test
     fun testOptionalSingleJoin() {
         stream("somegen") {
-            source("@left") {
+            from("left") {
                 join(optional = true) {
-                    source("@right") {
-                    }
+                    from("right")
                 }
                 set { _, left, right ->
                     left["rightsub"] = right
                     left
                 }
-                sink("@output")
+                sinkQualified("output")
             }
         }.renderAndExecute {
-            assertTrue(isEmpty(generationalTopic("output")))
+            assertTrue(isEmptyQualified("output"))
             val msg = empty().set("name", "left1")
-            input(generationalTopic("left"), "key1", msg)
-            assertTrue(!isEmpty(generationalTopic("output")))
-            assertEquals(output(generationalTopic("output")).second, msg)
-            input(generationalTopic("left"), "otherkey", empty().set("name", "nomatter"))
-            assertTrue(!isEmpty(generationalTopic("output")))
-            assertEquals(output(generationalTopic("output")).second, empty().set("name", "nomatter"))
-            input(generationalTopic("right"), "key1", empty().set("subname", "monkey"))
-            val (_, result) = output(generationalTopic("output"))
+            inputQualified("left", "key1", msg)
+            assertTrue(!isEmptyQualified("output"))
+            assertEquals(outputQualified("output").second, msg)
+            inputQualified("left", "otherkey", empty().set("name", "nomatter"))
+            assertTrue(!isEmptyQualified("output"))
+            assertEquals(outputQualified("output").second, empty().set("name", "nomatter"))
+            inputQualified("right", "key1", empty().set("subname", "monkey"))
+            val (_, result) = outputQualified("output")
             logger.info("Result: $result")
             assertEquals("monkey", result["rightsub/subname"])
-            delete(generationalTopic("left"), "key1")
-            assertEquals("key1", deleted(generationalTopic("output")))
+            deleteQualified("left", "key1")
+            assertEquals("key1", deletedQualified("output"))
         }
     }
 
     @Test
     fun testMultipleSinks() {
         stream("somegen") {
-            source("src") {
+            from("src") {
                 group { message -> message["subkey"] as String }
-                externalSink("mysink")
-                externalSink("myothersink")
+                externalSinkQualified("mysink")
+                externalSinkQualified("myothersink")
             }
         }.renderAndExecute {
             val record1 = empty().set("subkey", "subkey1")
             val record2 = empty().set("subkey", "subkey2")
-            input(topic("src"), "key1", record1)
-            input(topic("src"), "key2", record2)
-            assertEquals(2, outputSize(topic("mysink")), "Expected two messages in topic")
-            assertEquals(2, outputSize(topic("myothersink")), "Expected two messages in topic")
+            inputQualified("src", "key1", record1)
+            inputQualified("src", "key2", record2)
+            assertEquals(2, outputSizeQualified("mysink"), "Expected two messages in topic")
+            assertEquals(2, outputSizeQualified("myothersink"), "Expected two messages in topic")
         }
     }
     @Test
     fun testGroup() {
         stream("somegen") {
-            source("src") {
+            from("src") {
                 group { message -> message["subkey"] as String }
-                sink("mysink")
+                sinkQualified("mysink")
             }
         }.renderAndExecute {
             val record1 = empty().set("subkey", "subkey1")
             val record2 = empty().set("subkey", "subkey2")
-            input(topic("src"), "key1", record1)
-            input(topic("src"), "key2", record2)
-            val (k1, v1) = output(topic("mysink"))
+            inputQualified("src", "key1", record1)
+            inputQualified("src", "key2", record2)
+            val (k1, v1) = outputQualified("mysink")
             assertEquals("subkey1|key1", k1)
             assertEquals(record1, v1)
-            val (k2, v2) = output(topic("mysink"))
+            val (k2, v2) = outputQualified("mysink")
             assertEquals("subkey2|key2", k2)
             assertEquals(record2, v2)
 
@@ -236,9 +235,9 @@ class TestTopology {
     @Test
     fun testSingleToManyJoinOptional() {
         stream("somegen") {
-            source("@left") {
+            from("left") {
                 joinGrouped(optional = true, debug = true) {
-                    source("@right") {
+                    from("right") {
                         group { msg -> msg["foreignkey"] as String }
                     }
                 }
@@ -249,50 +248,50 @@ class TestTopology {
                 each { key, left, right ->
                     logger.info("Message: $left RightMessage $right key: $key")
                 }
-                sink("@output")
+                sinkQualified("output")
             }
         }.renderAndExecute {
-            assertTrue(isEmpty(generationalTopic("output")))
+            assertTrue(isEmptyQualified("output"))
             val leftRecord = empty().set("name", "left1")
-            input(generationalTopic("left"), "key1", leftRecord)
-            assertTrue(!isEmpty(generationalTopic("output")))
+            inputQualified("left", "key1", leftRecord)
+            assertTrue(!isEmptyQualified("output"))
             val record1 = empty().set("foreignkey", "key1").set("recorddata", "data1")
             val record2 = empty().set("foreignkey", "key1").set("recorddata", "data2")
-            input(generationalTopic("right"), "otherkey1", record1)
-            input(generationalTopic("right"), "otherkey2", record2)
+            inputQualified("right", "otherkey1", record1)
+            inputQualified("right", "otherkey2", record2)
 
-            val (key, value) = output(generationalTopic("output"))
+            val (key, value) = outputQualified("output")
             assertEquals("key1", key)
             val sublist: List<IMessage> = (value["rightsub"] ?: emptyList<IMessage>()) as List<IMessage>
             assertTrue(sublist.isEmpty())
 
-            val outputs = outputSize(generationalTopic("output"))
+            val outputs = outputSizeQualified("output")
             assertEquals(2, outputs, "should have 2 elements")
-            output(generationalTopic("output")) // skip one
-            val (_, v3) = output(generationalTopic("output"))
+            outputQualified("output") // skip one
+            val (_, v3) = outputQualified("output")
             val subList = v3["rightsub"] as List<*>
             assertEquals(2, subList.size)
             assertEquals(record1, subList[0])
             assertEquals(record2, subList[1])
-            delete(generationalTopic("right"), "otherkey1")
-            val (_, v4) = output(generationalTopic("output"))
+            deleteQualified("right", "otherkey1")
+            val (_, v4) = outputQualified("output")
             val subList2 = v4["rightsub"] as List<*>
             assertEquals(1, subList2.size)
-            delete(generationalTopic("right"), "otherkey2")
-            val (_, v5) = output(generationalTopic("output"))
+            deleteQualified("right", "otherkey2")
+            val (_, v5) = outputQualified("output")
             val subList3 = v5["rightsub"] as List<*>?
             assertEquals(0, subList3?.size ?: 0)
-            delete(generationalTopic("left"), "key1")
-            assertEquals("key1", deleted(generationalTopic("output")))
+            deleteQualified("left", "key1")
+            assertEquals("key1", deletedQualified("output"))
         }
     }
 
     @Test
     fun testSingleToManyJoin() {
         stream("somegen") {
-            source("@left") {
+            from("left") {
                 joinGrouped(debug = true) {
-                    source("@right") {
+                    from("right") {
                         group { msg -> msg["foreignkey"] as String }
                     }
                 }
@@ -303,52 +302,50 @@ class TestTopology {
                 each { key, left, right ->
                     logger.info("Message: $left RightMessage $right key: $key")
                 }
-                sink("@output")
+                sinkQualified("output")
             }
         }.renderAndExecute {
-            assertTrue(isEmpty(qualifiedTopic("output")))
+            assertTrue(isEmptyQualified("output"))
             val leftRecord = empty().set("name", "left1")
-            input(generationalTopic("left"), "key1", leftRecord)
-//            assertTrue(!isEmpty("@output"))
-
+            inputQualified("left", "key1", leftRecord)
             val record1 = empty().set("foreignkey", "key1").set("recorddata", "data1")
             val record2 = empty().set("foreignkey", "key1").set("recorddata", "data2")
-            input(generationalTopic("right"), "otherkey1", record1)
-            input(generationalTopic("right"), "otherkey2", record2)
+            inputQualified("right", "otherkey1", record1)
+            inputQualified("right", "otherkey2", record2)
 
             // TODO skip the 'ghost delete' I'm not too fond of this, this one should be skippable
-            deleted(generationalTopic("output"))
-            val outputs = outputSize(generationalTopic("output"))
+            deletedQualified("output")
+            val outputs = outputSizeQualified("output")
             assertEquals(2, outputs, "should have 2 elements")
-            output(generationalTopic("output")) // skip one
-            val (_, v3) = output(generationalTopic("output"))
+            outputQualified("output") // skip one
+            val (_, v3) = outputQualified("output")
             val subList = v3["rightsub"] as List<*>
             assertEquals(2, subList.size)
             assertEquals(record1, subList[0])
             assertEquals(record2, subList[1])
-            delete(generationalTopic("right"), "otherkey1")
-            val (_, v4) = output(generationalTopic("output"))
+            deleteQualified("right", "otherkey1")
+            val (_, v4) = outputQualified("output")
             val subList2 = v4["rightsub"] as List<*>
             assertEquals(1, subList2.size)
-            delete(generationalTopic("right"), "otherkey2")
-            assertEquals("key1", deleted(generationalTopic("output")))
+            deleteQualified("right", "otherkey2")
+            assertEquals("key1", deletedQualified("output"))
         }
     }
 
     @Test
     fun testFilter() {
         stream("anygen") {
-            source("@source") {
+            from("source") {
                 filter { _, value ->
                     value["name"] == "myname"
                 }
-                sink("@output")
+                sinkQualified("output")
             }
         }.renderAndExecute {
-            input(generationalTopic("source"), "key1", empty().set("name", "myname"))
-            input(generationalTopic("source"), "key2", empty().set("name", "notmyname"))
-            input(generationalTopic("source"), "key3", empty().set("name", "myname"))
-            assertEquals(2, outputSize(generationalTopic("output")))
+            inputQualified("source", "key1", empty().set("name", "myname"))
+            inputQualified("source", "key2", empty().set("name", "notmyname"))
+            inputQualified("source", "key3", empty().set("name", "myname"))
+            assertEquals(2, outputSizeQualified("output"))
 //            val (key,value) = output("@source")
         }
     }
@@ -356,7 +353,7 @@ class TestTopology {
     @Test
     fun testSimpleScan() {
         stream {
-            source("@source") {
+            from("source") {
                 scan(
                     { msg -> msg["total"] = 0; msg },
                     {
@@ -368,15 +365,15 @@ class TestTopology {
                 )
                 each { key, msg, acc -> logger.info("Each: $key -> $msg -> $acc") }
 
-                sink("@output")
+                sinkQualified("output")
             }
         }.renderAndExecute {
-            input(generationalTopic("source"), "key1", empty())
-            input(generationalTopic("source"), "key1", empty())
-            output(generationalTopic("output")) // initial key, total = 1
-            output(generationalTopic("output")) // delete previous key, total = 0
-            val (key, value) = output(generationalTopic("output")) // insert key again, total = 1
-            assertTrue(outputSize(generationalTopic("output")) == 0L)
+            inputQualified("source", "key1", empty())
+            inputQualified("source", "key1", empty())
+            outputQualified("output") // initial key, total = 1
+            outputQualified("output") // delete previous key, total = 0
+            val (key, value) = outputQualified("output") // insert key again, total = 1
+            assertTrue(outputSizeQualified("output") == 0L)
             logger.info("Key: $key Value: $value")
             assertEquals(StoreStateProcessor.COMMONKEY, key)
             assertEquals(1, value["total"], "Entries with the same key should replace")
@@ -386,7 +383,7 @@ class TestTopology {
     @Test
     fun testSimpleScanWithDecimals() {
         stream {
-            source("@source") {
+            from("source") {
                 scan(
                     {
                         empty().set("total", BigDecimal.valueOf(0))
@@ -409,15 +406,15 @@ class TestTopology {
                     }
                 )
                 each { key, msg, acc -> logger.info("Each: $key -> $msg -> $acc") }
-                sink("@output")
+                sinkQualified("output")
             }
         }.renderAndExecute {
-            input(generationalTopic("source"), "key1", empty().set("message", "message1"))
-            input(generationalTopic("source"), "key1", empty().set("message", "message1"))
-            output(generationalTopic("output")) // initial key, total = 1
-            output(generationalTopic("output")) // delete previous key, total = 0
-            val (key, value) = output(generationalTopic("output")) // insert key again, total = 1
-            assertTrue(outputSize(generationalTopic("output")) == 0L)
+            inputQualified("source", "key1", empty().set("message", "message1"))
+            inputQualified("source", "key1", empty().set("message", "message1"))
+            outputQualified("output") // initial key, total = 1
+            outputQualified("output") // delete previous key, total = 0
+            val (key, value) = outputQualified("output") // insert key again, total = 1
+            assertTrue(outputSizeQualified("output") == 0L)
             logger.info("Key: $key Value: $value")
             assertEquals(StoreStateProcessor.COMMONKEY, key)
             assertEquals(BigDecimal(1), value["total"], "Entries with the same key should replace")
@@ -429,7 +426,7 @@ class TestTopology {
     @Test
     fun testScan() {
         stream {
-            source("@source") {
+            from("source") {
                 scan(
                     { msg -> msg["groupKey"] as String },
                     { msg -> msg["total"] = 0; msg },
@@ -442,38 +439,38 @@ class TestTopology {
                 )
                 each { key, msg, acc -> logger.info("Each: $key -> $msg -> $acc") }
 
-                sink("@output")
+                sinkQualified("output")
             }
         }.renderAndExecute {
-            input(generationalTopic("source"), "key1", empty().set("groupKey", "group1"))
-            input(generationalTopic("source"), "key1", empty().set("groupKey", "group1"))
-            output(generationalTopic("output")) // initial key, total = 1
-            output(generationalTopic("output")) // delete previous key, total = 0
-            val (_, value) = output(generationalTopic("output")) // insert key again, total = 1
-            assertTrue(outputSize(generationalTopic("output")) == 0L)
+            inputQualified("source", "key1", empty().set("groupKey", "group1"))
+            inputQualified("source", "key1", empty().set("groupKey", "group1"))
+            outputQualified("output") // initial key, total = 1
+            outputQualified("output") // delete previous key, total = 0
+            val (_, value) = outputQualified("output") // insert key again, total = 1
+            assertTrue(outputSizeQualified("output") == 0L)
             logger.info("Value: $value")
             assertEquals(1, value["total"], "Entries with the same key should replace")
-            delete(generationalTopic("source"), "key1")
-            val (groupkey, afterDelete) = output(generationalTopic("output")) // key1 deleted, so total should be 0 again
+            deleteQualified("source", "key1")
+            val (groupkey, afterDelete) = outputQualified("output") // key1 deleted, so total should be 0 again
             assertEquals("group1", groupkey)
             assertEquals(0, afterDelete["total"])
-            input(generationalTopic("source"), "key1", empty().set("groupKey", "group1"))
-            input(generationalTopic("source"), "key2", empty().set("groupKey", "group1"))
-            output(generationalTopic("output"))
+            inputQualified("source", "key1", empty().set("groupKey", "group1"))
+            inputQualified("source", "key2", empty().set("groupKey", "group1"))
+            outputQualified("output")
 
-            val (_, ovalue) = output(generationalTopic("output"))
+            val (_, ovalue) = outputQualified("output")
             logger.info("Value: $ovalue")
             assertEquals(2, ovalue["total"], "Entries with different keys should add")
-            input(generationalTopic("source"), "key1", empty().set("groupKey", "group1"))
-            delete(generationalTopic("source"), "key1")
-            val (_, ivalue) = output(generationalTopic("output"))
+            inputQualified("source", "key1", empty().set("groupKey", "group1"))
+            deleteQualified("source", "key1")
+            val (_, ivalue) = outputQualified("output")
             logger.info("Value:> $ivalue")
-            delete(generationalTopic("source"), "key2")
+            deleteQualified("source", "key2")
 
             assertEquals(1, ivalue["total"], "Entries with different keys should add")
-            skip(generationalTopic("output"), 2)
-            val (_, value2) = output(generationalTopic("output"))
-            logger.info("Value: $value2 outputsize: ${outputSize(generationalTopic("output"))}")
+            skipQualified("output", 2)
+            val (_, value2) = outputQualified("output")
+            logger.info("Value: $value2 outputsize: ${outputSizeQualified("output")}")
             assertEquals(0, value2["total"], "Delete should subtract")
         }
     }
@@ -481,7 +478,7 @@ class TestTopology {
     @Test
     fun testScanGroupedSimple() {
         stream {
-            source("@source") {
+            from("source") {
                 scan(
                     { msg -> msg["groupKey"] as String },
                     { msg -> msg["total"] = 0; msg },
@@ -497,13 +494,13 @@ class TestTopology {
                     logger.info("Each: $key -> $msg -> $acc")
                 }
 
-                sink("@output")
+                sinkQualified("output")
             }
         }.renderAndExecute {
-            input(generationalTopic("source"), "key1", empty().set("groupKey", "group1"))
-            delete(generationalTopic("source"), "key1")
-            skip(generationalTopic("output"), 1)
-            val (_, value) = output(generationalTopic("output")) // key1 deleted, so total should be 0 again
+            inputQualified("source", "key1", empty().set("groupKey", "group1"))
+            deleteQualified("source", "key1")
+            skipQualified("output", 1)
+            val (_, value) = outputQualified("output") // key1 deleted, so total should be 0 again
             assertEquals(0, value["total"], "Entries with the same key should replace")
         }
     }
@@ -511,45 +508,46 @@ class TestTopology {
     @Test
     fun testFork() {
         stream {
-            source("@source") {
+            from("source") {
                 fork(
                     {
                         filter { _, value -> value["category"] == "category1" }
-                        sink("@category1")
+                        sinkQualified("category1")
                     },
                     {
                         filter { _, value -> value["category"] == "category2" }
-                        sink("@category2")
+                        sinkQualified("category2")
                     },
                     {
-                        sink("@all")
+                        sinkQualified("all")
                     }
                 )
-                sink("@sink")
+                sinkQualified("sink")
             }
         }.renderAndExecute {
-            input(generationalTopic("source"), "key1", empty().set("category", "category1"))
-            assertEquals(1, outputSize(generationalTopic("category1")))
-            assertEquals(0, outputSize(generationalTopic("category2")))
-            input(generationalTopic("source"), "key2", empty().set("category", "category2"))
-            assertEquals(2, outputSize(generationalTopic("all")))
-            assertEquals(2, outputSize(generationalTopic("sink")))
+            inputQualified("source","key1",empty().set("category", "category1"))
+            outputSizeQualified("category1")
+            assertEquals(1, outputSizeQualified("category1"))
+            assertEquals(0, outputSizeQualified("category2"))
+            inputQualified("source", "key2", empty().set("category", "category2"))
+            assertEquals(2, outputSizeQualified("all"))
+            assertEquals(2, outputSizeQualified("sink"))
         }
     }
 
     @Test
     fun testDynamicSink() {
         stream {
-            source("@source") {
+            from("source") {
                 dynamicSink("somesink") { _, value ->
                     value["destination"] as String
                 }
             }
         }.renderAndExecute {
-            input(generationalTopic("source"), "key1", empty().set("destination", "mydestination"))
-            input(generationalTopic("source"), "key1", empty().set("destination", "otherdestination"))
-            assertEquals(1, outputSize(topic("mydestination")))
-            assertEquals(1, outputSize(topic("otherdestination")))
+            inputQualified("source", "key1", empty().set("destination", "mydestination"))
+            inputQualified("source", "key1", empty().set("destination", "otherdestination"))
+            assertEquals(1, outputSizeQualified("mydestination"))
+            assertEquals(1, outputSizeQualified("otherdestination"))
         }
     }
 
@@ -599,25 +597,25 @@ class TestTopology {
         @Test
     fun testDiff() {
         stream {
-            source("@source") {
+            from("source") {
                 diff()
-                sink("@output")
+                sinkQualified("output")
             }
         }.renderAndExecute {
 
             val stateStore = stateStore(topologyContext().topicName("@diff_1_1"))
-            input(generationalTopic("source"), "key1", empty().set("value", "value1"))
-            input(generationalTopic("source"), "key1", empty().set("value", "value1"))
-            assertEquals(1, outputSize(generationalTopic("output")))
-            input(generationalTopic("source"), "key2", empty().set("value", "value1"))
-            assertEquals(2, outputSize(generationalTopic("output")))
-            input(generationalTopic("source"), "key1", empty().set("value", "value2"))
-            assertEquals(3, outputSize(generationalTopic("output")))
+            inputQualified("source", "key1", empty().set("value", "value1"))
+            inputQualified("source", "key1", empty().set("value", "value1"))
+            assertEquals(1, outputSizeQualified("output"))
+            inputQualified("source", "key2", empty().set("value", "value1"))
+            assertEquals(2, outputSizeQualified("output"))
+            inputQualified("source", "key1", empty().set("value", "value2"))
+            assertEquals(3, outputSizeQualified("output"))
             assertEquals(2, countStateStoreSize(stateStore))
-            delete(generationalTopic("source"), "key1")
-            assertEquals(4, outputSize(generationalTopic("output")))
-            delete(generationalTopic("source"), "key2")
-            assertEquals(5, outputSize(generationalTopic("output")))
+            deleteQualified("source", "key1")
+            assertEquals(4, outputSizeQualified("output"))
+            deleteQualified("source", "key2")
+            assertEquals(5, outputSizeQualified("output"))
             getStateStoreNames().forEach { k ->
                 logger.info("Key: $k")
             }
@@ -636,11 +634,11 @@ class TestTopology {
     fun testLogSink() {
         stream {
             val logSinkConfig = logSinkConfig("logname")
-            source("@source") {
+            from("source") {
                 logSink("logSinkTest", "@output", logSinkConfig)
             }
         }.renderAndExecute {
-            input(generationalTopic("source"), "somekey", empty().set("myKey", "myValue"))
+            inputQualified("source", "somekey", empty().set("myKey", "myValue"))
             delay(200)
         }
     }
@@ -648,31 +646,31 @@ class TestTopology {
     @Test
     fun testBuffer() {
         stream {
-            source("@source") {
+            from("source") {
                 buffer(Duration.ofSeconds(9), 10)
-                sink("@output")
+                sinkQualified("output")
             }
         }.renderAndExecute {
             val msg = empty().set("value", "value1")
-            input(generationalTopic("source"), "key1", msg)
+            inputQualified("source", "key1", msg)
             // shouldn't have arrived yet:
-            assertTrue(isEmpty(generationalTopic("output")))
+            assertTrue(isEmptyQualified("output"))
             // advance time
             advanceWallClockTime(Duration.ofSeconds(15))
             // should have result:
-            assertTrue(!isEmpty(generationalTopic("output")))
+            assertTrue(!isEmptyQualified("output"))
             // same message:
-            assertEquals(msg, output(generationalTopic("output")).second)
+            assertEquals(msg, outputQualified("output").second)
             // now make sure only one gets through
             val otherMsg = empty().set("value", "value2")
-            input(generationalTopic("source"), "key1", msg)
-            input(generationalTopic("source"), "key1", otherMsg)
+            inputQualified("source", "key1", msg)
+            inputQualified("source", "key1", otherMsg)
             advanceWallClockTime(Duration.ofSeconds(15))
-            assertEquals(1, outputSize(generationalTopic("output")))
-            assertEquals(otherMsg, output(generationalTopic("output")).second)
+            assertEquals(1, outputSizeQualified("output"))
+            assertEquals(otherMsg, outputQualified("output").second)
             // now check size restriction. Max size is 10. Insert 20. expect 10 to come out.
             for (i in 0..19) {
-                input(generationalTopic("source"), "newkey$i", empty().set("value", "value$i"))
+                inputQualified("source", "newkey$i", empty().set("value", "value$i"))
             }
             logger.info("statestores: ${getStateStoreNames()}")
             // quick check if I'm not making unnecessary stores
@@ -894,7 +892,7 @@ class TestTopology {
             """
 
         stream("aaa") {
-            val logSinkConfig = logSinkConfig("logname")
+            // val logSinkConfig = logSinkConfig("logname")
             externalSource("external", Topic.FloodplainKeyFormat.CONNECT_KEY_JSON, Topic.FloodplainBodyFormat.CONNECT_JSON) {
                 // logSink("somesink", "@output", logSinkConfig)
                 sinkQualified("output")
@@ -910,8 +908,8 @@ class TestTopology {
     @Test
     fun testArgumentParser() {
         stream {
-            source("@sometopic") {
-                sink("@outputTopic")
+            from("sometopic") {
+                sinkQualified("outputTopic")
             }
         }.runWithArguments(arrayOf("--help")) {
         }

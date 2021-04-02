@@ -30,6 +30,7 @@ import io.floodplain.kotlindsl.set
 import io.floodplain.kotlindsl.stream
 import io.floodplain.mongodb.mongoConfig
 import io.floodplain.mongodb.mongoSink
+import io.floodplain.mongodb.toMongo
 import io.floodplain.mongodb.waitForMongoDbCondition
 import io.floodplain.test.InstantiatedContainer
 import io.floodplain.test.useIntegraton
@@ -84,10 +85,10 @@ class MySQLTest {
                 "@mongodump"
             )
             mysqlSource("inventory.customers", mysqlConfig) {
-                mongoSink("customers", "@customers", mongoConfig)
+                toMongo("customers", "customers", mongoConfig)
             }
         }.renderAndExecute {
-            val databaseInstance = topologyContext().topicName("@mongodump")
+            val databaseInstance = "mongodump"
             val hits = waitForMongoDbCondition(
                 "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
                 databaseInstance

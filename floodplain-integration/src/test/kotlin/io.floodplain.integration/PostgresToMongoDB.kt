@@ -84,28 +84,15 @@ class TestCombinedMongo {
                 "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
                 "@mongodump"
             )
-            // val addressMap = mutableMapOf<String, IMessage>()
             postgresSource("address", postgresConfig) {
-                // each { key, _, _ ->
-                //     logger.info("KEYYA {} -> {}", key, key.javaClass)
-                // }
                 joinRemote({ msg -> "${msg["city_id"]}" }, false) {
                     postgresSource("city", postgresConfig) {
                     }
                 }
                 set { _, msg, state ->
                     msg["city"] = state
-                    // addressMap.put(key, msg)
-                    // val correctAddresses = addressMap.filter { (k, v) ->
-                    //     v["city"] != null
-                    // }.map { (k, v) -> k }
-                    // .count(
-                    // logger.info("Corr addresses: " + correctAddresses.size)
-                    // logger.info("Corr: " + correctAddresses)
-                    // logger.info("KEYYJ {}\n{}", key, msg)
                     msg
                 }
-                // logSink("someSink","@sometopic",logConfig)
                 mongoSink("address", "@address", mongoConfig)
             }
         }.renderAndExecute {
@@ -346,7 +333,7 @@ class TestCombinedMongo {
                             {
                                 set { _, msg, state ->
                                     state["total"] = (state["total"] as BigDecimal).add(msg["amount"] as BigDecimal)
-                                    ; state
+                                    state
                                 }
                             }
                         )

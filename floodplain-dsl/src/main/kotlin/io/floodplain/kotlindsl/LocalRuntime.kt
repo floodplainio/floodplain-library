@@ -83,11 +83,14 @@ interface LocalContext : InputReceiver {
     fun output(topic: Topic): Pair<String, IMessage>
     fun outputQualified(topic: String): Pair<String, IMessage>
     fun skip(topic: Topic, number: Int)
+    fun skipQualified(topic: String, number: Int)
+
     /**
      * Doesn't work, outputs get created lazily, so only sinks that have been accessed before are counted
      */
     fun outputs(): Set<String>
     fun outputSize(topic: Topic): Long
+    fun outputSizeQualified(topic: String): Long
     fun deleted(topic: Topic): String
     fun deletedQualified(topic: String): String
     fun isEmpty(topic: Topic): Boolean
@@ -395,8 +398,13 @@ class LocalDriverContext(
         }
     }
 
-    override fun outputSize(topic: Topic): Long {
-        val qualifiedTopicName = topic.qualifiedString()
+    override fun skipQualified(topic: String, number: Int) {
+        repeat(number) {
+            outputQualified(topic)
+        }
+    }
+
+    override fun outputSizeQualified(qualifiedTopicName: String): Long {
         val outputTopic = outputTopics.computeIfAbsent(qualifiedTopicName) {
             driver.createOutputTopic(
                 qualifiedTopicName,
@@ -405,6 +413,10 @@ class LocalDriverContext(
             )
         }
         return outputTopic.queueSize
+    }
+
+    override fun outputSize(topic: Topic): Long {
+        return outputSizeQualified(topic.qualifiedString())
     }
 
     override fun deleted(topic: Topic): String {

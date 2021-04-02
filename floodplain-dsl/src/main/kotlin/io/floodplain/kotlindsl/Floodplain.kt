@@ -473,12 +473,12 @@ fun PartialStream.externalSink(topic: String): Transformer {
 }
 
 /**
- * Creates a simple sink that will contain the result of the current transformation. Multiple sinks may not be added.
+ * Creates a simple sink that will contain the result of the current transformation.
  */
 fun PartialStream.externalSinkQualified(topic: String): Transformer {
     val sink = SinkTransformer(
         Optional.empty(),
-        Topic.from(topic, topologyContext),
+        Topic.fromQualified(topic, topologyContext),
         Optional.empty(),
         Topic.FloodplainKeyFormat.CONNECT_KEY_JSON,
         Topic.FloodplainBodyFormat.CONNECT_JSON
