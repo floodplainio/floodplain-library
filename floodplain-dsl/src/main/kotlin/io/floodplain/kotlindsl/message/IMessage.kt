@@ -59,7 +59,7 @@ interface IMessage {
     fun copy(): IMessage
     fun toImmutable(): ImmutableMessage
     fun data(): Map<String, Any>
-    fun merge(msg: IMessage): IMessage
+    fun merge(msg: IMessage?): IMessage
     fun messageList(path: String): List<IMessage>?
     fun messageElement(path: String, index: Int): IMessage?
 }
@@ -324,18 +324,6 @@ private data class IMessageImpl(private val content: MutableMap<String, Any>) : 
         }
     }
 
-    // private fun subListToImmutable(items: List<*>): List<ImmutableMessage> {
-    //     if(items.isEmpty()) {
-    //         return emptyList()
-    //     }
-    //     val first = items.first() ?: throw java.lang.NullPointerException("Sub list contains a null")
-    //     if(first is IMessage) {
-    //         return items.stream().map {
-    //             (it as IMessage).toImmutable()
-    //         }.collect(Collectors.toList())
-    //     }
-    // }
-
     override fun toString(): String {
         return this.content.toString()
     }
@@ -350,8 +338,8 @@ private data class IMessageImpl(private val content: MutableMap<String, Any>) : 
         }.toMap()
     }
 
-    override fun merge(msg: IMessage): IMessage {
-        msg.data().forEach { (k, v) ->
+    override fun merge(msg: IMessage?): IMessage {
+        msg?.data()?.forEach { (k, v) ->
             set(k, v)
         }
         return this
