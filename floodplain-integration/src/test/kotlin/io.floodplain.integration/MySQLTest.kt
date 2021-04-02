@@ -82,7 +82,7 @@ class MySQLTest {
             val mongoConfig = mongoConfig(
                 "mongosink",
                 "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
-                "@mongodump"
+                "mongodump"
             )
             mysqlSource("inventory.customers", mysqlConfig) {
                 toMongo("customers", "customers", mongoConfig)

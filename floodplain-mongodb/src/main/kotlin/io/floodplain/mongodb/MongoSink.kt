@@ -24,10 +24,10 @@ import io.floodplain.kotlindsl.PartialStream
 import io.floodplain.kotlindsl.Stream
 import io.floodplain.kotlindsl.Transformer
 import io.floodplain.reactive.source.topology.SinkTransformer
-import io.floodplain.streams.api.ProcessorName
 import io.floodplain.streams.api.Topic
 import io.floodplain.streams.api.TopologyContext
 import io.floodplain.streams.remotejoin.TopologyConstructor
+import java.lang.IllegalArgumentException
 import java.util.Optional
 
 private val logger = mu.KotlinLogging.logger {}
@@ -98,7 +98,11 @@ fun Stream.localMongoConfig(name: String, uri: String, database: String): MongoC
 fun PartialStream.toMongo(collection: String, topicDefinition: String, config: MongoConfig) {
     val topic = Topic.fromQualified(topicDefinition, topologyContext)
     config.sinkInstancePair.add(collection to topic)
-    val sinkName = ProcessorName.from(config.name)
+    val sinkName = config.name //
+    if(sinkName.startsWith("@")) {
+        throw IllegalArgumentException("Should not start a database name with @, please use a fully qualified name")
+    }
+    // val sinkName = ProcessorName.from(config.name)
     val sink = SinkTransformer(Optional.of(sinkName), topic, Optional.empty(), Topic.FloodplainKeyFormat.CONNECT_KEY_JSON, Topic.FloodplainBodyFormat.CONNECT_JSON)
     val transform = Transformer(rootTopology, sink, topologyContext)
     addTransformer(transform)
@@ -108,7 +112,12 @@ fun PartialStream.toMongo(collection: String, topicDefinition: String, config: M
 fun PartialStream.mongoSink(collection: String, topicDefinition: String, config: MongoConfig) {
     val topic = Topic.from(topicDefinition, topologyContext)
     config.sinkInstancePair.add(collection to topic)
-    val sinkName = ProcessorName.from(config.name)
+    val sinkName = config.name //
+    if(sinkName.startsWith("@")) {
+        throw IllegalArgumentException("Should not start a database name with @, please use a fully qualified name")
+    }
+    // ProcessorName.from()
+    // ProcessorName.from(config.name)
     val sink = SinkTransformer(Optional.of(sinkName), topic, Optional.empty(), Topic.FloodplainKeyFormat.CONNECT_KEY_JSON, Topic.FloodplainBodyFormat.FLOODPLAIN_JSON)
     val transform = Transformer(rootTopology, sink, topologyContext)
     addTransformer(transform)

@@ -37,7 +37,7 @@ import java.util.Stack;
 
 public class SinkTransformer implements TopologyPipeComponent {
 
-    private final Optional<ProcessorName> name;
+    private final Optional<String> name;
     private final Optional<Integer> partitions;
     private final Topic.FloodplainKeyFormat keyFormat;
     private final Topic.FloodplainBodyFormat valueFormat;
@@ -48,7 +48,7 @@ public class SinkTransformer implements TopologyPipeComponent {
 
     private boolean materializeParent = false;
     private boolean debug = false;
-    public SinkTransformer(Optional<ProcessorName> name, Topic topic, Optional<Integer> partitions, Topic.FloodplainKeyFormat keyFormat, Topic.FloodplainBodyFormat valueFormat) {
+    public SinkTransformer(Optional<String> name, Topic topic, Optional<Integer> partitions, Topic.FloodplainKeyFormat keyFormat, Topic.FloodplainBodyFormat valueFormat) {
         this.name = name;
         this.topic = topic;
         this.partitions = partitions;
@@ -64,7 +64,7 @@ public class SinkTransformer implements TopologyPipeComponent {
         String qualifiedName;
         // TODO effective deconflicting but ugly
         //topologyContext.applicationId();
-        qualifiedName = name.map(processorName -> processorName.definition() + "_" + topologyContext.topicName(processorName + "_" + topic.qualifiedString())).orElse(qualifiedSinkTopic);
+        qualifiedName = name.map(processorName -> processorName + "_" + topologyContext.topicName(processorName + "_" + topic.qualifiedString())).orElse(qualifiedSinkTopic);
         topologyConstructor.addSink(qualifiedName);
         logger.info("Stack top for transformer: " + transformerNames.peek());
         Serializer<String> keySerializer = ReplicationTopologyParser.keySerializer(this.keyFormat);

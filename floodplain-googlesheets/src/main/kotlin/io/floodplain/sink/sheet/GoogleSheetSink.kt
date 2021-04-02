@@ -30,7 +30,6 @@ import io.floodplain.sink.sheet.SheetSinkTask.SPREADSHEETID
 import io.floodplain.sink.sheet.SheetSinkTask.STARTCOLUMN
 import io.floodplain.sink.sheet.SheetSinkTask.STARTROW
 import io.floodplain.sink.sheet.SheetSinkTask.TOPICS
-import io.floodplain.streams.api.ProcessorName
 import io.floodplain.streams.api.Topic
 import io.floodplain.streams.api.TopologyContext
 import io.floodplain.streams.remotejoin.TopologyConstructor
@@ -44,7 +43,7 @@ fun PartialStream.googleSheetsSink(topicDefinition: String, googleSheetId: Strin
     val topic = Topic.from(topicDefinition, topologyContext)
     val sheetSink = GoogleSheetSink(topic, googleSheetId, columns, startColumn, startRow)
     config.addSink(sheetSink)
-    val sink = SinkTransformer(Optional.of(ProcessorName.from(config.name)), topic, Optional.empty(), Topic.FloodplainKeyFormat.CONNECT_KEY_JSON, Topic.FloodplainBodyFormat.CONNECT_JSON)
+    val sink = SinkTransformer(Optional.of(config.name), topic, Optional.empty(), Topic.FloodplainKeyFormat.CONNECT_KEY_JSON, Topic.FloodplainBodyFormat.CONNECT_JSON)
     addTransformer(Transformer(rootTopology, sink, topologyContext))
 }
 

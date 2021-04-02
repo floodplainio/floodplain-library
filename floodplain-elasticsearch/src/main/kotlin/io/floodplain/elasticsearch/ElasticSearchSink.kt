@@ -28,7 +28,6 @@ import io.floodplain.kotlindsl.Stream
 import io.floodplain.kotlindsl.Transformer
 import io.floodplain.kotlindsl.floodplainSinkFromTask
 import io.floodplain.reactive.source.topology.SinkTransformer
-import io.floodplain.streams.api.ProcessorName
 import io.floodplain.streams.api.Topic
 import io.floodplain.streams.api.TopologyContext
 import io.floodplain.streams.remotejoin.TopologyConstructor
@@ -59,9 +58,8 @@ class ElasticSearchSinkConfig(override val topologyContext: TopologyContext, ove
 }
 
 fun PartialStream.elasticSearchSink(sinkName: String, topicName: String, config: ElasticSearchSinkConfig): FloodplainSink {
-    val sinkProcessorName = ProcessorName.from(sinkName)
     val topic = Topic.from(topicName, topologyContext)
-    val sinkTransformer = SinkTransformer(Optional.of(sinkProcessorName), topic, Optional.empty(), Topic.FloodplainKeyFormat.FLOODPLAIN_STRING, Topic.FloodplainBodyFormat.CONNECT_JSON)
+    val sinkTransformer = SinkTransformer(Optional.of(sinkName), topic, Optional.empty(), Topic.FloodplainKeyFormat.FLOODPLAIN_STRING, Topic.FloodplainBodyFormat.CONNECT_JSON)
     addTransformer(Transformer(rootTopology, sinkTransformer, topologyContext))
 
     val sinkConfig = mapOf(

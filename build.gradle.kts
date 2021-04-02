@@ -90,6 +90,8 @@ subprojects {
 
     tasks.withType<com.hierynomus.gradle.license.tasks.LicenseFormat>().configureEach() {
         this.header = File(this.project.rootDir,"HEADER")
+        // com.hierynomus.gradle.license.tasks.LicenseFormat.
+        this.mapping(mapOf("java" to "JAVADOC_STYLE", "kt" to "JAVADOC_STYLE"))
     }
 
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
