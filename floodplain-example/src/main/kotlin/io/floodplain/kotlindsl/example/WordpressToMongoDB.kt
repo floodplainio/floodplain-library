@@ -22,15 +22,16 @@ import io.floodplain.kotlindsl.each
 import io.floodplain.kotlindsl.mysqlSource
 import io.floodplain.kotlindsl.mysqlSourceConfig
 import io.floodplain.kotlindsl.stream
+import io.floodplain.mongodb.localMongoConfig
 import io.floodplain.mongodb.mongoConfig
 import io.floodplain.mongodb.mongoSink
 import java.net.URL
 
 private val logger = mu.KotlinLogging.logger {}
 fun main() {
-    stream("gen2") {
+    stream {
         val mysqlConfig = mysqlSourceConfig("mysqlsource", "mysql", 3306, "root", "mysecretpassword", "wpdb")
-        val mongoConfig = mongoConfig("mongosink", "mongodb://mongo", "@mongodumpalt")
+        val mongoConfig = localMongoConfig("mongosink", "mongodb://mongo", "$generation-mongodumpalt")
         mysqlSource("wpdb.wp_posts", mysqlConfig) {
             each { key, msg, _ ->
                 logger.info("Detected key: $key and message: $msg")

@@ -38,7 +38,6 @@ public class TestSheetSink {
 		
         SheetSink sink = new SheetSink();
         
-//		SheetSink sink = new SheetSink();
 		Map<String,Object> values = new HashMap<>();
 		values.put("zipcode", "ABCD12");
 		values.put("housenumber", "26");

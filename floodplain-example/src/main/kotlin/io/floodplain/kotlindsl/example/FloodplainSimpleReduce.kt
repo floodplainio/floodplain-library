@@ -26,14 +26,14 @@ import io.floodplain.kotlindsl.scan
 import io.floodplain.kotlindsl.set
 import io.floodplain.kotlindsl.stream
 import io.floodplain.mongodb.mongoConfig
-import io.floodplain.mongodb.mongoSink
+import io.floodplain.mongodb.toMongo
 import kotlinx.coroutines.delay
 import java.math.BigDecimal
 
 fun main() {
-    stream("bla") {
+    stream {
         val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental", "public")
-        val mongoConfig = mongoConfig("mongosink", "mongodb://mongo", "mongodump")
+        val mongoConfig = mongoConfig("mongosink", "mongodb://mongo", "$generation-mongodump")
         postgresSource("customer", postgresConfig) {
             join {
                 postgresSource("payment", postgresConfig) {
@@ -49,7 +49,7 @@ fun main() {
                         {
                             set { _, msg, state ->
                                 state["total"] = (state["total"] as BigDecimal).add(msg["amount"] as BigDecimal)
-                                ; state
+                                state
                             }
                         }
                     )
@@ -58,7 +58,7 @@ fun main() {
             set { _, customer, paymenttotal ->
                 customer["payments"] = paymenttotal["total"]; customer
             }
-            mongoSink("justtotal", "myfinaltopic", mongoConfig)
+            toMongo("justtotal", "myfinaltopic", mongoConfig)
         }
     }.renderAndExecute {
         delay(1000000)

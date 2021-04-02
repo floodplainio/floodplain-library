@@ -63,7 +63,6 @@ fun main() {
                 customer["payments"] = paymenttotal["total"]
                 customer["_row"] = customer.integer("customer_id"); customer
             }
-            // mongoSink("justtotal", "myfinaltopic", mongoConfig)
             googleSheetsSink("myfinaltopic", spreadsheetId, listOf("customer_id", "first_name", "last_name", "email", "payments"), "A", 1, sheetConfig)
         }
     }.renderAndExecute {

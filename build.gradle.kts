@@ -65,22 +65,6 @@ subprojects {
     if (useSpotBugs(this)) {
         apply(plugin = "com.github.spotbugs")
     }
-    // jacoco {
-    //     reportsDir = rootDir.resolve("jacocoReport").resolve(projectDir.name)
-    //     reportsDir.mkdirs()
-    // }
-
-    // tasks.
-    // tasks.test {
-    //     finalizedBy(tasks.jacocoTestReport)
-    // }
-    // tasks.jacocoTestReport {
-    //     dependsOn(tasks.test)
-    //     reports {
-    //         xml.isEnabled = true
-    //         this.html.isEnabled = true
-    //     }
-    // }
 
     tasks.withType<com.github.spotbugs.snom.SpotBugsTask>().configureEach {
         effort.set(com.github.spotbugs.snom.Effort.MAX)

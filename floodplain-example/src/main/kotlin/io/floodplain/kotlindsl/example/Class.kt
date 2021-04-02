@@ -19,34 +19,26 @@
 package io.floodplain.kotlindsl.example
 
 import io.floodplain.kotlindsl.buffer
-import io.floodplain.kotlindsl.joinAttributes
+import io.floodplain.kotlindsl.from
+import io.floodplain.kotlindsl.joinAttributesQualified
 import io.floodplain.kotlindsl.joinRemote
 import io.floodplain.kotlindsl.set
-import io.floodplain.kotlindsl.sink
-import io.floodplain.kotlindsl.source
+import io.floodplain.kotlindsl.sinkQualified
 import io.floodplain.kotlindsl.stream
-import io.floodplain.mongodb.mongoConfig
-import io.floodplain.mongodb.mongoSink
+import io.floodplain.mongodb.localMongoConfig
+import io.floodplain.mongodb.toMongo
 import io.floodplain.replication.api.ReplicationMessage.KEYSEPARATOR
-import java.net.URL
 import java.time.Duration
 
-private val logger = mu.KotlinLogging.logger {}
-
 fun main() {
-
-    val generation = "generation11"
-    val deployment = "develop"
-    val tenant = "KNBSB"
-
-    stream(tenant, deployment, generation) {
-        val mongoConfig = mongoConfig("@mongosink", "mongodb://mongo", "@mongodump")
-        source("sportlinkkernel-CLASS") {
+    stream("KNBSB", "develop", "generation13") {
+        val mongoConfig = localMongoConfig("$tenant-$deployment-$generation-mongosink", "mongodb://fp1", "$tenant-$deployment-$generation-mongodump")
+        from("$tenant-$deployment-sportlinkkernel-CLASS") {
             set { _, msg, _ ->
                 msg.clearAll("updateby", "lastupdate")
             }
-            joinAttributes(
-                "sportlinkkernel-CLASSATTRIBUTE",
+            joinAttributesQualified(
+                "$tenant-$deployment-sportlinkkernel-CLASSATTRIBUTE",
                 "attribname",
                 "attribvalue",
                 "classid",
@@ -57,15 +49,15 @@ fun main() {
                 msg.merge(attributes)
                 msg
             }
-            sink("@class")
+            sinkQualified("$tenant-$deployment-$generation-class")
             // mongoSink("class", "@class", mongoConfig)
         }
-        source("sportlinkkernel-COMPETITIONTYPE") {
+        from("$tenant-$deployment-sportlinkkernel-COMPETITIONTYPE") {
             set { _, msg, _ ->
                 msg.clearAll("updateby", "lastupdate")
             }
-            joinAttributes(
-                "sportlinkkernel-COMPETITIONTYPEATTRIBUTE",
+            joinAttributesQualified(
+                "$tenant-$deployment-sportlinkkernel-COMPETITIONTYPEATTRIBUTE",
                 "attribname",
                 "attribvalue",
                 "competitiontypeid"
@@ -74,55 +66,55 @@ fun main() {
                 msg.merge(attributes)
             }
             joinRemote({ msg -> msg["ageclasscode"] as String }, false) {
-                source("sportlinkkernel-AGECLASS") {}
+                from("$tenant-$deployment-sportlinkkernel-AGECLASS")
             }
             set { _, competitiontype, ageclass ->
                 competitiontype["ageclassname"] = ageclass["ageclassname"]
                 competitiontype
             }
             buffer(Duration.ofSeconds(5))
-            sink("@competitiontype")
-            mongoSink("competitiontype", "@competitiontypemongo", mongoConfig)
+            sinkQualified("$tenant-$deployment-$generation-competitiontype")
+            toMongo("competitiontype", "$tenant-$deployment-$generation-competitiontypemongo", mongoConfig)
         }
-        source("sportlinkkernel-CLASSSEASON") {
+        from("$tenant-$deployment-sportlinkkernel-CLASSSEASON") {
             joinRemote({ msg -> msg["classid"].toString() + KEYSEPARATOR + msg["competitiontypeid"].toString() + KEYSEPARATOR + msg["organizingdistrictid"].toString() }) {
-                source("@class")
+                from("$tenant-$deployment-$generation-class")
             }
             set { _, classSeason, clazz ->
                 classSeason["Class"] = clazz
                 classSeason
             }
             joinRemote("competitiontypeid") {
-                source("@competitiontype")
+                from("$tenant-$deployment-$generation-competitiontype")
             }
             set { _, classSeason, competitionType ->
                 classSeason["CompetitionType"] = competitionType
                 classSeason
             }
-            sink("@classseason")
-            mongoSink("classseasonwip", "@classseasonmongo", mongoConfig)
+            sinkQualified("$tenant-$deployment-$generation-classseason")
+            toMongo("classseasonwip", "$tenant-$deployment-$generation-classseasonmongo", mongoConfig)
         }
-        source("sportlinkkernel-POOL") {
+        from("$tenant-$deployment-sportlinkkernel-POOL") {
             joinRemote("classid", "competitiontypeid", "organizingdistrictid", "seasonid") {
-                source("@classseason")
+                from("$tenant-$deployment-$generation-classseason")
             }
             set { _, pool, classseason ->
                 pool["ClassSeason"] = classseason
                 pool
             }
             joinRemote("schemaid", "periodid", optional = true) {
-                source("sportlinkkernel-SCHEMAPERIOD")
+                from("$tenant-$deployment-sportlinkkernel-SCHEMAPERIOD")
             }
             set { _, pool, schema ->
                 pool["SchemaPeriod"] = schema
                 pool
             }
-            sink("@pool")
-            mongoSink("pool", "@poolmongo", mongoConfig)
+            sinkQualified("$tenant-$deployment-$generation-pool")
+            toMongo("pool", "$tenant-$deployment-$generation-poolmongo", mongoConfig)
         }
-        source("sportlinkkernel-TEAMCOMPETITIONTYPESEASON") {
-            joinAttributes(
-                "sportlinkkernel-TEAMCOMPTPSEASONATTRIB",
+        from("$tenant-$deployment-sportlinkkernel-TEAMCOMPETITIONTYPESEASON") {
+            joinAttributesQualified(
+                "$tenant-$deployment-sportlinkkernel-TEAMCOMPTPSEASONATTRIB",
                 "attribname",
                 "attribvalue",
                 "competitiontypeid",
@@ -134,18 +126,17 @@ fun main() {
             }
             // TODO missing bypass: bypass="notnull:poolid"
             joinRemote("poolid") {
-                source("@pool")
+                from("$tenant-$deployment-$generation-pool")
             }
             set { _, tcts, pool ->
                 tcts["Pool"] = pool
                 tcts
             }
             buffer(Duration.ofSeconds(5))
-            sink("@teamcompetitiontype")
-            mongoSink("teamcompetitiontype", "@teamcompetitiontypemongo", mongoConfig)
+            sinkQualified("$tenant-$deployment-$generation-teamcompetitiontype")
+            toMongo("teamcompetitiontype", "$tenant-$deployment-$generation-teamcompetitiontypemongo", mongoConfig)
         }
-    }.renderAndSchedule(URL("http://localhost:8083/connectors"), "10.8.0.7:9092")
-    logger.info { "done!" }
+    }.renderAndSchedule(null, "10.8.0.7:9092")
 }
 
 // <store topic="sportlinkkernel-ZIPCODEPOSITION">

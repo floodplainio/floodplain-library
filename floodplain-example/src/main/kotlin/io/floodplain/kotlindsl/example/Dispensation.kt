@@ -43,14 +43,14 @@ fun main() {
             }
             fork(
                 {
-                    filter { key, msg ->
+                    filter { _, msg ->
                         msg["targetorganizationid"] != null
                     }
                     sink("@organizationdispensation")
                     mongoSink("organizationdispensation", "@mongoorganizationdispensation", mongoConfig)
                 },
                 {
-                    filter { key, msg ->
+                    filter { _, msg ->
                         msg["targetpersonid"] != null
                     }
                     sink("@persondispensation")
