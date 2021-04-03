@@ -21,11 +21,14 @@ package io.floodplain.reactive.source.topology;
 import io.floodplain.immutable.api.ImmutableMessage;
 import io.floodplain.immutable.factory.ImmutableFactory;
 import io.floodplain.replication.api.ReplicationMessage;
-import org.apache.kafka.streams.processor.AbstractProcessor;
+import org.apache.kafka.streams.processor.api.Processor;
+import org.apache.kafka.streams.processor.api.ProcessorContext;
+import org.apache.kafka.streams.processor.api.Record;
 
-public class EachProcessor extends AbstractProcessor<String, ReplicationMessage> {
+public class EachProcessor implements Processor<String, ReplicationMessage,String, ReplicationMessage> {
 
     private final ImmutableMessage.TriConsumer lambda;
+    private ProcessorContext<String, ReplicationMessage> context;
 
     public EachProcessor(ImmutableMessage.TriConsumer lambda) {
         this.lambda = lambda;
@@ -33,13 +36,17 @@ public class EachProcessor extends AbstractProcessor<String, ReplicationMessage>
 
 
     @Override
-    public void process(String key, ReplicationMessage value) {
-        if(value==null || value.operation()== ReplicationMessage.Operation.DELETE) {
-            // do not process delete, just forward
-        } else {
-            lambda.apply(key,value.message(), value.paramMessage().orElse(ImmutableFactory.empty()));
-        }
-        super.context().forward(key, value);
+    public void init(ProcessorContext<String, ReplicationMessage> context) {
+        this.context = context;
     }
 
+    @Override
+    public void process(Record<String, ReplicationMessage> record) {
+        if(record.value()==null || record.value().operation()== ReplicationMessage.Operation.DELETE) {
+            // do not process delete, just forward
+        } else {
+            lambda.apply(record.key(), record.value().message(), record.value().paramMessage().orElse(ImmutableFactory.empty()));
+        }
+        context.forward(record);
+    }
 }

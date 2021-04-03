@@ -49,7 +49,7 @@ public class KeyTransformer implements TopologyPipeComponent {
                               TopologyContext topologyContext, TopologyConstructor topologyConstructor) {
         KeyProcessor fp = new KeyProcessor(this.keyTransformer);
         String name = topologyContext.qualifiedName("keyTransform", transformerNames.size(), currentPipeId);
-        logger.info("Adding processor: {} to parent: {} hash: {}", name, transformerNames, transformerNames.hashCode());
+        logger.info("Adding key processor: {} to parent: {} hash: {}", name, transformerNames, transformerNames.hashCode());
         if (this.materialize) {
             topology.addProcessor(name + "_prematerialize", () -> fp, transformerNames.peek());
             ReplicationTopologyParser.addMaterializeStore(topology, topologyContext, topologyConstructor, name, name + "_prematerialize");

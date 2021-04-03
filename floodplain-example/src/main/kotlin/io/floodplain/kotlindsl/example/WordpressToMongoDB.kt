@@ -23,7 +23,6 @@ import io.floodplain.kotlindsl.mysqlSource
 import io.floodplain.kotlindsl.mysqlSourceConfig
 import io.floodplain.kotlindsl.stream
 import io.floodplain.mongodb.localMongoConfig
-import io.floodplain.mongodb.mongoConfig
 import io.floodplain.mongodb.mongoSink
 import java.net.URL
 

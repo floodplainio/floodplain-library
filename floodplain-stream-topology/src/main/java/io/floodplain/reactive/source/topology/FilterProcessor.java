@@ -20,27 +20,33 @@ package io.floodplain.reactive.source.topology;
 
 import io.floodplain.immutable.api.ImmutableMessage;
 import io.floodplain.replication.api.ReplicationMessage;
-import org.apache.kafka.streams.processor.AbstractProcessor;
+import org.apache.kafka.streams.processor.api.Processor;
+import org.apache.kafka.streams.processor.api.ProcessorContext;
+import org.apache.kafka.streams.processor.api.Record;
 
 import java.util.function.BiFunction;
 
-public class FilterProcessor extends AbstractProcessor<String, ReplicationMessage> {
+public class FilterProcessor implements Processor<String, ReplicationMessage,String, ReplicationMessage> {
 
     private final BiFunction<String,ImmutableMessage, Boolean> filterExpression;
+    private ProcessorContext<String, ReplicationMessage> context;
 
     public FilterProcessor(BiFunction<String,ImmutableMessage, Boolean> func) {
         this.filterExpression = func;
     }
-
-    @Override
-    public void process(String key, ReplicationMessage value) {
-        if(value==null) {
-            super.context().forward(key, null);
-            return;
-        }
-        if (filterExpression.apply(key,value.message())) {
-            super.context().forward(key, value);
-        }
+    public void init(final ProcessorContext<String, ReplicationMessage> context) {
+        this.context = context;
     }
 
+
+    @Override
+    public void process(Record<String, ReplicationMessage> record) {
+        if(record.value()==null) {
+            context.forward(record);
+            return;
+        }
+        if (filterExpression.apply(record.key(), record.value().message())) {
+            context.forward(record);
+        }
+        }
 }

@@ -25,7 +25,7 @@ import io.floodplain.streams.api.TopologyContext;
 import io.floodplain.streams.remotejoin.ReplicationTopologyParser;
 import io.floodplain.streams.remotejoin.TopologyConstructor;
 import org.apache.kafka.streams.Topology;
-import org.apache.kafka.streams.processor.ProcessorSupplier;
+import org.apache.kafka.streams.processor.api.ProcessorSupplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +34,7 @@ import java.util.function.BiFunction;
 
 public class FilterTransformer implements TopologyPipeComponent {
 
-    private final ProcessorSupplier<String, ReplicationMessage> filterProcessor;
+    private final ProcessorSupplier<String, ReplicationMessage,String, ReplicationMessage> filterProcessor;
     private boolean materialized = false;
 
     private final static Logger logger = LoggerFactory.getLogger(FilterTransformer.class);

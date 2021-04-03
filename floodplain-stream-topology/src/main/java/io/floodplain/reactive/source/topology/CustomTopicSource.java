@@ -24,7 +24,6 @@ import io.floodplain.streams.api.Topic;
 import io.floodplain.streams.api.TopologyContext;
 import io.floodplain.streams.remotejoin.ReplicationTopologyParser;
 import io.floodplain.streams.remotejoin.TopologyConstructor;
-import io.floodplain.streams.serializer.ReplicationMessageSerde;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.streams.Topology;
 
@@ -37,7 +36,6 @@ public class CustomTopicSource implements TopologyPipeComponent {
     private final Topic topic;
     private final Deserializer<String> keyFormat;
     private final Deserializer<ReplicationMessage> bodyFormat;
-    private static final ReplicationMessageSerde replicationMessageSerde = new ReplicationMessageSerde();
 
     private boolean materialize = false;
 

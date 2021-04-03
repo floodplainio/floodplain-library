@@ -23,30 +23,38 @@ import io.floodplain.immutable.factory.ImmutableFactory;
 import io.floodplain.replication.api.ReplicationMessage;
 import io.floodplain.replication.factory.ReplicationFactory;
 import org.apache.kafka.streams.processor.AbstractProcessor;
+import org.apache.kafka.streams.processor.api.Processor;
+import org.apache.kafka.streams.processor.api.ProcessorContext;
+import org.apache.kafka.streams.processor.api.Record;
 
-public class FunctionProcessor extends AbstractProcessor<String, ReplicationMessage> {
+public class FunctionProcessor implements Processor<String, ReplicationMessage,String, ReplicationMessage> {
 
     private final SetTransformer.TriFunction function;
+    private ProcessorContext<String, ReplicationMessage> context;
 
     public FunctionProcessor(SetTransformer.TriFunction func) {
         this.function = func;
     }
 
     @Override
-    public void process(String key, ReplicationMessage value) {
-        if (value == null) {
-            // forward nulls unchanged
-            super.context().forward(key,null);
-            return;
-        }
-		if(value.operation()!= ReplicationMessage.Operation.DELETE) {
-            ImmutableMessage applied = function.apply(key,value.message(), value.paramMessage().orElse(ImmutableFactory.empty()));
-            super.context().forward(key, ReplicationFactory.standardMessage(applied)); //.withParamMessage(value.paramMessage()); //.orElse(ImmutableFactory.empty())).withOperation(operation));
-
-		} else {
-		    // Skip processing message if it is a delete
-            super.context().forward(key, value);
-        }
+    public void init(ProcessorContext<String, ReplicationMessage> context) {
+        this.context = context;
     }
 
+    @Override
+    public void process(Record<String, ReplicationMessage> record) {
+        if (record.value() == null) {
+            // forward nulls unchanged
+            context.forward(record);
+            return;
+        }
+        if(record.value().operation()!= ReplicationMessage.Operation.DELETE) {
+            ImmutableMessage applied = function.apply(record.key(), record.value().message(), record.value().paramMessage().orElse(ImmutableFactory.empty()));
+            context.forward(new Record<String, ReplicationMessage>(record.key(), ReplicationFactory.standardMessage(applied), record.timestamp())); //.withParamMessage(value.paramMessage()); //.orElse(ImmutableFactory.empty())).withOperation(operation));
+
+        } else {
+            // Skip processing, just forward message if it is a delete
+            context.forward(record);
+        }
+    }
 }

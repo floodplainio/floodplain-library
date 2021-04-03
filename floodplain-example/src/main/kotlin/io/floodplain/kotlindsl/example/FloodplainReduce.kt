@@ -53,7 +53,7 @@ fun main() {
                         {
                             set { _, msg, state ->
                                 state["total"] = (state["total"] as BigDecimal).subtract(msg["amount"] as BigDecimal)
-                                ; state
+                                state
                             }
                         }
                     )

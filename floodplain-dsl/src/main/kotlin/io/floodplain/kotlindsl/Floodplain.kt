@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-@file:Suppress("ImplicitThis")
 
 package io.floodplain.kotlindsl
 
@@ -252,10 +251,7 @@ fun PartialStream.joinAttributes(withTopic: String, nameAttribute: String, value
                         _, msg, acc ->
                         val name = msg[nameAttribute] as String?
                         val value = msg[valueAttribute]
-                        if (name == null) {
-                            println("weird")
-                        }
-                        acc.set(name!!, value)
+                        acc[name!!] = value
                         acc
                     }
                 },
@@ -282,21 +278,16 @@ fun PartialStream.joinAttributesQualified(withTopic: String, nameAttribute: Stri
                     empty()
                 },
                 {
-                    set {
-                        _, msg, acc ->
+                    set { _, msg, acc ->
                         val name = msg[nameAttribute] as String?
-                        val value = msg[valueAttribute]
-                        if (name == null) {
-                            println("weird")
-                        }
-                        acc.set(name!!, value)
+                        acc[name!!] = msg[valueAttribute]
                         acc
                     }
                 },
                 {
-                    set {
-                        _, msg, acc ->
-                        acc.clear(msg[nameAttribute] as String); acc
+                    set { _, msg, acc ->
+                        acc.clear(msg[nameAttribute] as String)
+                        acc
                     }
                 }
             )
@@ -513,7 +504,6 @@ fun PartialStream.join(optional: Boolean = false, debug: Boolean = false, source
 fun PartialStream.joinGrouped(
     optional: Boolean = false,
     debug: Boolean = false,
-    multiple: Boolean = true,
     source: () -> Source
 ) {
     val jrt = JoinWithTransformer(optional, true, source.invoke().toReactivePipe(), debug)
@@ -656,36 +646,3 @@ interface FloodplainOperator {
  */
 class Block(rootTopology: Stream, override val topologyContext: TopologyContext) : PartialStream(rootTopology)
 
-class AbstractFloodplainSink(private val task: SinkTask, private val config: SinkConfig) : FloodplainSink {
-    private val offsetCounter = AtomicLong(System.currentTimeMillis())
-
-    override fun send(topic: Topic, elements: List<Pair<String, Map<String, Any>?>>) {
-        val list = elements.map { (key, value) ->
-            SinkRecord(topic.qualifiedString(), 0, null, key, null, value, offsetCounter.incrementAndGet())
-        }.toList()
-        val insertTime = measureTimeMillis {
-            try {
-                task.put(list)
-            } catch (e: Throwable) {
-                e.printStackTrace()
-            }
-        }
-        logger.info("Inserting into mongodb size: ${list.size} duration: $insertTime")
-    }
-
-    override fun config(): SinkConfig {
-        return config
-    }
-
-    override fun flush() {
-        task.flush(emptyMap())
-    }
-
-    override fun close() {
-        task.close(emptyList())
-    }
-
-    override fun taskObject(): Any? {
-        TODO("Not yet implemented")
-    }
-}
