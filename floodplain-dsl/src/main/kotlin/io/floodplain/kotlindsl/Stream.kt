@@ -189,7 +189,9 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
      * Will create an executable definition of the str
      * eam (@see render), then will start the topology by starting a streams
      * instance pointing at the kafka cluster at kafkaHosts, using the supplied clientId.
-     * Finally, it will POST the supplied
+     * Finally, it will POST source and sink connector configurations to the supplied URL
+     * If 'force' is true, existing connector configurations will be deleted and recreated, otherwise
+     * the new configuration will be ignored and the old configuration will remain.
      */
     fun renderAndSchedule(connectorURL: URL?, kafkaHosts: String, force: Boolean = false, initialSettings: Map<String, String>? = null, monitor: (suspend Stream.(KafkaStreams) -> Unit)? = null): KafkaStreams {
         val (topology, sources, sinks) = render()
@@ -336,17 +338,6 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
         //     logger.error("Stopping after connector error", t)
         //     connect.stop()
         // }
-    }
-
-    private fun renderLocal(): Pair<Topology, List<MaterializedConfig>> {
-        val topology = renderTopology()
-        val sources = sourceConfigurations().flatMap { element ->
-            element.materializeConnectorConfig()
-        }
-        val sinks = sinkConfigurations().flatMap { element ->
-            element.materializeConnectorConfig()
-        }
-        return topology to sources + sinks
     }
 
     /**

@@ -569,8 +569,9 @@ class TestTopology {
                 sinkQualified("sinktopic")
             }
         }.renderAndExecute {
-            input(qualifiedTopic("source"), "key1".toByteArray(), data)
-            val (_, value) = output(qualifiedTopic("sinktopic"))
+            inputQualified("source", "key1".toByteArray(), data)
+            // input(qualifiedTopic("source"), "key1".toByteArray(), data)
+            val (_, value) = outputQualified("sinktopic")
             logger.info("value: $value")
             val amount = value.decimal("amount")
             assertEquals(BigDecimal.valueOf(299, 2), amount)

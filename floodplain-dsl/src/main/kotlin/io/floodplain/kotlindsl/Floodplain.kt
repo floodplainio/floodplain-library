@@ -342,7 +342,7 @@ fun PartialStream.from(topic: String, init: Source.() -> Unit = {}): Source {
 }
 
 /**
- * Create toplevel source (without qualifying with tenant / deployment / gen)
+ * Create toplevel source (fully qualified)
  */
 fun Stream.from(topic: String, init: Source.() -> Unit = {}) {
     addSource(createSource(Topic.fromQualified(topic, rootTopology.topologyContext), this, init))
@@ -386,7 +386,7 @@ fun FloodplainOperator.generationalTopic(name: String): Topic {
 }
 
 /**
- * Source with a 'custom' format. TODO directly add key/value serde
+ * Source with a 'custom' format, the topic should be fully qualified TODO directly add key/value serde
  */
 fun Stream.externalSource(
     topic: String,
@@ -401,7 +401,7 @@ fun Stream.externalSource(
 }
 
 /**
- * Add qualified source in Kafka
+ * Add qualified source in Kafka, used.
  */
 fun Stream.debeziumSource(topicSource: String, init: Source.() -> Unit = {}) {
     rootTopology.addSource(existingDebeziumSource(topicSource, this, init))
@@ -448,20 +448,6 @@ fun PartialStream.sinkQualified(topic: String): Transformer {
     return addTransformer(Transformer(this.rootTopology, sink, topologyContext))
 }
 
-/**
- * Creates a simple sink that will contain the result of the current transformation. Multiple sinks may not be added.
- */
-@Deprecated("Don't use unqualified topics")
-fun PartialStream.externalSink(topic: String): Transformer {
-    val sink = SinkTransformer(
-        Optional.empty(),
-        Topic.from(topic, topologyContext),
-        Optional.empty(),
-        Topic.FloodplainKeyFormat.CONNECT_KEY_JSON,
-        Topic.FloodplainBodyFormat.CONNECT_JSON
-    )
-    return addTransformer(Transformer(this.rootTopology, sink, topologyContext))
-}
 
 /**
  * Creates a simple sink that will contain the result of the current transformation.

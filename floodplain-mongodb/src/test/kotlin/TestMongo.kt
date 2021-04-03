@@ -19,12 +19,10 @@
 import com.mongodb.client.MongoClients
 import io.floodplain.kotlindsl.each
 import io.floodplain.kotlindsl.filter
+import io.floodplain.kotlindsl.from
 import io.floodplain.kotlindsl.message.empty
-import io.floodplain.kotlindsl.source
 import io.floodplain.kotlindsl.stream
-import io.floodplain.kotlindsl.topic
 import io.floodplain.mongodb.mongoConfig
-import io.floodplain.mongodb.mongoSink
 import io.floodplain.mongodb.toMongo
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeout
@@ -49,8 +47,8 @@ class TestMongo {
         container = KGenericContainer("mongo:latest")
             .apply { withExposedPorts(27017) }
         container?.start()
-        address = container?.getHost()
-        port = container?.getFirstMappedPort()
+        address = container?.host
+        port = container?.firstMappedPort
     }
 
     @Test
@@ -59,7 +57,7 @@ class TestMongo {
         stream {
             val config = mongoConfig("mongoClient", "mongodb://$address:$port", "mongo-connect-test")
 
-            source("sometopic") {
+            from("sometopic") {
                 each { _, msg, _ -> logger.info("message: $msg") }
                 filter { _, msg -> msg.long("counter") % 2 == 0L }
                 toMongo("test-collection", "myindex", config)
@@ -77,7 +75,7 @@ class TestMongo {
                         .set("line2", "I am lightning in the night $it")
                         .set("time", LocalDateTime.now().toEpochSecond(ZoneOffset.UTC))
                         .set("counter", it.toLong())
-                    input(topic("sometopic"), "somekey_$it", trip)
+                    inputQualified("sometopic", "somekey_$it", trip)
                 }
                 // val elements = outputSize("myindex")
                 flushSinks()
@@ -106,15 +104,15 @@ class TestMongo {
     fun testMultipleSink() {
         stream {
             val config = mongoConfig("mongoClient", "mongodb://$address:$port", "mongo-connect-test")
-            source("sometopic") {
+            from("sometopic") {
                 each { _, msg, _ -> logger.info("message: $msg") }
                 filter { _, msg -> msg.long("counter") % 2 == 0L }
-                mongoSink("collection1", "myindex1", config)
+                toMongo("collection1", "myindex1", config)
             }
-            source("sometopic") {
+            from("sometopic") {
                 each { _, msg, _ -> logger.info("message: $msg") }
                 filter { _, msg -> msg.long("counter") % 2 == 1L }
-                mongoSink("collection2", "myindex2", config)
+                toMongo("collection2", "myindex2", config)
             }
         }.renderAndExecute {
             // delay(5000)
@@ -129,7 +127,7 @@ class TestMongo {
                     val trip = empty().set("body", "I am a fluffy rabbit number $it and I have fluffy feet")
                         .set("time", LocalDateTime.now().toEpochSecond(ZoneOffset.UTC))
                         .set("counter", it.toLong())
-                    input(topic("sometopic"), "somekey_$it", trip)
+                    inputQualified("sometopic", "somekey_$it", trip)
                 }
                 // val elements1 = outputSize("myindex1")
                 // val elements2 = outputSize("myindex2")
