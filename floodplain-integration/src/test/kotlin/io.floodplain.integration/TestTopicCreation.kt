@@ -20,7 +20,6 @@ package io.floodplain.integration
 
 import io.floodplain.test.RedPandaContainer
 import org.apache.kafka.clients.admin.AdminClient
-import org.apache.kafka.clients.admin.CreateTopicsOptions
 import org.apache.kafka.clients.admin.ListTopicsOptions
 import org.apache.kafka.clients.admin.NewTopic
 import org.apache.kafka.common.config.ConfigResource
@@ -57,21 +56,17 @@ class TestTopicCreation {
         adminClient.listTopics().names().get().forEach {
             println("topic found: $it")
         }
-        val options = CreateTopicsOptions()
-        var createResult = adminClient.createTopics(listOf(NewTopic("mytopic", 1, 1))).all().get()
-        val topicDescription = adminClient.describeTopics(listOf("mytopic")).all().get()["mytopic"]
-        //    topicDescription?
+        // val options = CreateTopicsOptions()
+        adminClient.createTopics(listOf(NewTopic("mytopic", 1, 1))).all().get()
+        logger.info("${adminClient.describeTopics(listOf("mytopic")).all().get()["mytopic"]}")
         val cr = Collections.singleton(ConfigResource(TOPIC, "mytopic"))
         val configsResult = adminClient.describeConfigs(cr)
-        val cnf = configsResult.all().get()["mytopic"]
-
-//        adminClient.createTopics()
+        // val cnf = configsResult.all().get().
+        // logger.info("Config: ${cnf.toString()}")
         val configMap: MutableMap<String, String> = HashMap()
         configMap["cleanup.policy"] = "compact"
 
         Assert.assertEquals(1, adminClient.listTopics(ListTopicsOptions()).names().get().size)
     }
 
-    // KafkaContainer kafka = new KafkaContainer(KAFKA_TEST_IMAGE)
-    // .withNetwork(network)
 }

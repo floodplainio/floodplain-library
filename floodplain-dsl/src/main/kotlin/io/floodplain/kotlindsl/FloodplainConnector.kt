@@ -26,6 +26,7 @@ import io.floodplain.streams.api.TopologyContext
 import org.apache.kafka.connect.sink.SinkConnector
 import org.apache.kafka.connect.sink.SinkRecord
 import org.apache.kafka.connect.sink.SinkTask
+import org.apache.kafka.connect.storage.Converter
 import java.io.IOException
 import java.net.URL
 import java.net.http.HttpClient
@@ -144,8 +145,8 @@ private fun postToHttpJava11(url: URL, jsonString: String) {
     }
 }
 
-fun floodplainSinkFromTask(task: SinkTask, config: SinkConfig): FloodplainSink {
-    return LocalConnectorSink(task, config)
+fun floodplainSinkFromTask(task: SinkTask, config: SinkConfig, keyConverter: Converter, valueConverter: Converter): FloodplainSink {
+    return LocalConnectorSink(task, config,keyConverter,valueConverter)
 }
 
 fun instantiateSinkConfig(config: SinkConfig): MutableMap<Topic, MutableList<FloodplainSink>> {
@@ -156,8 +157,11 @@ fun instantiateSinkConfig(config: SinkConfig): MutableMap<Topic, MutableList<Flo
         connectorInstance.start(materializedSink.settings)
         val task = connectorInstance.taskClass().getDeclaredConstructor().newInstance() as SinkTask
         task.start(materializedSink.settings)
-
-        val localSink = floodplainSinkFromTask(task, config)
+        val keyConverter = Class.forName(materializedSink.settings["key.converter"]).getDeclaredConstructor().newInstance() as Converter
+        val valueConverter = Class.forName(materializedSink.settings["value.converter"]).getDeclaredConstructor().newInstance() as Converter
+        keyConverter.configure(settingsWithPrefix(materializedSink.settings,"key.converter."),true)
+        valueConverter.configure(settingsWithPrefix(materializedSink.settings,"value.converter."),false)
+        val localSink = floodplainSinkFromTask(task, config,keyConverter,valueConverter)
         materializedSink.topics.forEach { topic ->
             val list = result.computeIfAbsent(topic) { mutableListOf() }
             list.add(localSink)
@@ -168,12 +172,24 @@ fun instantiateSinkConfig(config: SinkConfig): MutableMap<Topic, MutableList<Flo
     // return connectorInstance to instance
 }
 
-class LocalConnectorSink(private val task: SinkTask, val config: SinkConfig) : FloodplainSink {
+private fun settingsWithPrefix(settings: Map<String,Any>, prefix: String): Map<String,Any> {
+    return settings.filter { (k,v) ->
+        k.startsWith(prefix)
+    }.map { (k,v) ->
+        k.substring(prefix.length) to v
+    }.toMap()
+}
+
+class LocalConnectorSink(private val task: SinkTask, val config: SinkConfig, val keyConverter: Converter,val valueConverter: Converter) : FloodplainSink {
     private val offsetCounter = AtomicLong(System.currentTimeMillis())
-    override fun send(topic: Topic, elements: List<Pair<String, Map<String, Any>?>>) {
+    override fun send(topic: Topic, elements: List<Pair<ByteArray?,ByteArray?>>) {
         logger.info("Inserting # of documents ${elements.size} for topic: $topic")
         val list = elements.map { (key, value) ->
-            SinkRecord(topic.qualifiedString(), 0, null, key, null, value, offsetCounter.incrementAndGet())
+            // logger.info("Key: ${String(key?: byteArrayOf())} \nValue: ${String(value?: byteArrayOf())}")
+            SinkRecord(topic.qualifiedString(), 0, null,
+                keyConverter.toConnectData(topic.qualifiedString(),key)?.value(), null,
+                valueConverter.toConnectData(topic.qualifiedString(),value)?.value(),
+                offsetCounter.incrementAndGet())
         }.toList()
         task.put(list)
     }

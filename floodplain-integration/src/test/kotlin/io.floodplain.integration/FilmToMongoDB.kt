@@ -29,6 +29,7 @@ import io.floodplain.kotlindsl.set
 import io.floodplain.kotlindsl.stream
 import io.floodplain.mongodb.mongoConfig
 import io.floodplain.mongodb.mongoSink
+import io.floodplain.mongodb.toMongo
 import io.floodplain.test.InstantiatedContainer
 import io.floodplain.test.useIntegraton
 import kotlinx.coroutines.cancel
@@ -73,7 +74,7 @@ class FilmToMongoDB {
             val mongoConfig = mongoConfig(
                 "mongosink",
                 "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
-                "@mongodump"
+                "$generation-mongodump"
             )
             postgresSource("film", postgresConfig) {
                 // Clear the last_update field, it makes no sense in a denormalized situation
@@ -111,14 +112,12 @@ class FilmToMongoDB {
                     film
                 }
                 // pass this message to the mongo sink
-                mongoSink("filmwithactors", "@filmwithcat", mongoConfig)
+                toMongo("filmwithactors", "$generation-filmwithcat", mongoConfig)
             }
         }.renderAndExecute {
             logger.info("Outputs: ${outputs()}")
-            // delay(5000)
-            val database = topologyContext().topicName("@mongodump")
+            val database = "${topologyContext.generation}-mongodump"
             var hits = 0L
-            // flushSinks()
             val start = System.currentTimeMillis()
             withTimeout(200000) {
                 repeat(1000) {

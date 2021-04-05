@@ -19,14 +19,13 @@
 package io.floodplain.integration
 
 import io.floodplain.kotlindsl.each
+import io.floodplain.kotlindsl.from
 import io.floodplain.kotlindsl.postgresSource
 import io.floodplain.kotlindsl.postgresSourceConfig
 import io.floodplain.kotlindsl.set
-import io.floodplain.kotlindsl.sink
-import io.floodplain.kotlindsl.source
+import io.floodplain.kotlindsl.sinkQualified
 import io.floodplain.kotlindsl.stream
 import io.floodplain.mongodb.mongoConfig
-import io.floodplain.mongodb.mongoSink
 import io.floodplain.mongodb.toMongo
 import io.floodplain.mongodb.waitForMongoDbCondition
 import io.floodplain.test.InstantiatedContainer
@@ -127,21 +126,21 @@ class FilmSimple {
             val mongoConfig = mongoConfig(
                 "mongosink",
                 "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
-                "@mongodump"
+                "$generation-mongodump"
             )
             postgresSource("film", postgresConfig) {
                 // Clear the last_update field, it makes no sense in a denormalized situation
                 set { _, film, _ ->
                     film["last_update"] = null; film
                 }
-                mongoSink("filmwithactors", "@filmwithcat", mongoConfig)
+                toMongo("filmwithactors", "$generation-filmwithcat", mongoConfig)
             }
         }.runWithArguments { topologyContext ->
-            val database = topologyContext.topicName("@mongodump")
+            // val database = topologyContext.topicName("@mongodump")
             // flushSinks()
             val hits = waitForMongoDbCondition(
                 "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
-                database
+                "${topologyContext.generation}-mongodump"
             ) { currentDatabase ->
                 val collection = currentDatabase.getCollection("filmwithactors")
                 val countDocuments = collection.countDocuments()
@@ -175,24 +174,23 @@ class FilmSimple {
             val mongoConfig = mongoConfig(
                 "mongosink",
                 "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
-                "@mongodump"
+                "$generation-mongodump"
             )
             postgresSource("film", postgresConfig) {
                 // Clear the last_update field, it makes no sense in a denormalized situation
                 set { _, film, _ ->
                     film["last_update"] = null; film
                 }
-                sink("@intermediatesink")
+                sinkQualified("$generation-intermediatesink")
             }
-            source("@intermediatesink") {
-                mongoSink("filmwithactors", "@filmwithcat", mongoConfig)
+            from("$generation-intermediatesink") {
+                toMongo("filmwithactors", "$generation-filmwithcat", mongoConfig)
             }
         }.renderAndExecute {
-            val database = topologyContext().topicName("@mongodump")
             flushSinks()
             val hits = waitForMongoDbCondition(
                 "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
-                database
+                "${topologyContext.generation}-mongodump"
             ) { mongoDatabase ->
                 val collection = mongoDatabase.getCollection("filmwithactors")
                 val countDocuments = collection.countDocuments()

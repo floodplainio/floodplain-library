@@ -20,6 +20,7 @@ package io.floodplain.integration
 
 import com.mongodb.client.MongoClients
 import io.floodplain.kotlindsl.each
+import io.floodplain.kotlindsl.from
 import io.floodplain.kotlindsl.join
 import io.floodplain.kotlindsl.joinRemote
 import io.floodplain.kotlindsl.message.empty
@@ -27,11 +28,10 @@ import io.floodplain.kotlindsl.postgresSource
 import io.floodplain.kotlindsl.postgresSourceConfig
 import io.floodplain.kotlindsl.scan
 import io.floodplain.kotlindsl.set
-import io.floodplain.kotlindsl.sink
-import io.floodplain.kotlindsl.source
+import io.floodplain.kotlindsl.sinkQualified
 import io.floodplain.kotlindsl.stream
 import io.floodplain.mongodb.mongoConfig
-import io.floodplain.mongodb.mongoSink
+import io.floodplain.mongodb.toMongo
 import io.floodplain.mongodb.waitForMongoDbCondition
 import io.floodplain.test.InstantiatedContainer
 import io.floodplain.test.useIntegraton
@@ -39,7 +39,6 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeout
 import org.junit.After
-import org.junit.Ignore
 import org.junit.Test
 import java.math.BigDecimal
 import kotlin.test.assertNotNull
@@ -93,7 +92,7 @@ class TestCombinedMongo {
                     msg["city"] = state
                     msg
                 }
-                mongoSink("address", "@address", mongoConfig)
+                toMongo("address", "$generation-sinktopicaddress", mongoConfig)
             }
         }.renderAndExecute {
             val database = topologyContext().topicName("@mongodump")
@@ -147,7 +146,7 @@ class TestCombinedMongo {
             logger.info("Not performing integration tests; doesn't seem to work in circleci")
             return
         }
-        stream("any") {
+        stream {
             val postgresConfig = postgresSourceConfig(
                 "mypostgres",
                 postgresContainer.host,
@@ -160,7 +159,7 @@ class TestCombinedMongo {
             val mongoConfig = mongoConfig(
                 "mongosink",
                 "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
-                "@mongodump"
+                "$generation-mongodump"
             )
             postgresSource("address", postgresConfig) {
                 joinRemote({ msg -> "${msg["city_id"]}" }, false) {
@@ -176,40 +175,39 @@ class TestCombinedMongo {
                 set { _, msg, state ->
                     msg.set("city", state)
                 }
-                sink("@address")
-                // mongoSink("address", "@address",  mongoConfig)
+                sinkQualified("$generation-address")
             }
             postgresSource("customer", postgresConfig) {
                 joinRemote({ m -> "${m["address_id"]}" }, false) {
-                    source("@address") {}
+                    from("$generation-address")
                 }
                 set { _, msg, state ->
                     msg.set("address", state)
                 }
-                mongoSink("customer", "@customer", mongoConfig)
+                toMongo("customer", "$generation-customer", mongoConfig)
             }
             postgresSource("store", postgresConfig) {
                 joinRemote({ m -> "${m["address_id"]}" }, false) {
-                    source("@address") {}
+                    from("$generation-address")
                 }
                 set { _, msg, state ->
                     msg.set("address", state)
                 }
-                mongoSink("store", "@store", mongoConfig)
+                toMongo("store", "$generation-store", mongoConfig)
             }
             postgresSource("staff", postgresConfig) {
                 joinRemote({ m -> "${m["address_id"]}" }, false) {
-                    source("@address") {}
+                    from("$generation-address") {}
                 }
                 set { _, msg, state ->
                     msg["address"] = state
                     msg["address_id"] = null
                     msg
                 }
-                mongoSink("staff", "@staff", mongoConfig)
+                toMongo("staff", "$generation-staff", mongoConfig)
             }
         }.renderAndExecute {
-            val database = topologyContext().topicName("@mongodump")
+            val database = "${this.topologyContext.generation}-mongodump"
             flushSinks()
             val hits = waitForMongoDbCondition(
                 "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
@@ -232,7 +230,7 @@ class TestCombinedMongo {
             connectJobs().forEach { it.cancel("ciao!") }
         }
     }
-    @Test @Ignore
+    @Test
     fun testSimpleReduce() {
         if (!useIntegraton) {
             logger.info("Not performing integration tests; doesn't seem to work in circleci")
@@ -251,7 +249,7 @@ class TestCombinedMongo {
             val mongoConfig = mongoConfig(
                 "mongosink",
                 "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
-                "@mongodump"
+                "$generation-mongodump"
             )
             postgresSource("payment", postgresConfig) {
                 scan(
@@ -269,7 +267,7 @@ class TestCombinedMongo {
                         }
                     }
                 )
-                mongoSink("justtotal", "@myfinaltopic", mongoConfig)
+                toMongo("justtotal", "$generation-myfinaltopic", mongoConfig)
             }
         }.renderAndExecute {
             val database = topologyContext().topicName("@mongodump")
@@ -289,11 +287,9 @@ class TestCombinedMongo {
                 }
             }
             logger.info("Test done, total computed")
-            // TODO implement testing code
         }
     }
 
-    // TODO Fix
     @Test
     fun testPaymentPerCustomer() {
         if (!useIntegraton) {
@@ -313,7 +309,7 @@ class TestCombinedMongo {
             val mongoConfig = mongoConfig(
                 "mongosink",
                 "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
-                "@mongodump"
+                "$generation-mongodump"
             )
             postgresSource("customer", postgresConfig) {
                 each { _, mms, _ ->
@@ -342,17 +338,15 @@ class TestCombinedMongo {
                 set { _, customer, paymenttotal ->
                     customer["payments"] = paymenttotal["total"]; customer
                 }
-                mongoSink("paymentpercustomer", "myfinaltopic", mongoConfig)
+                toMongo("paymentpercustomer", "$generation-myfinaltopic", mongoConfig)
             }
         }.renderAndExecute {
-            val database = topologyContext().topicName("@mongodump")
             val items = waitForMongoDbCondition(
                 "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
-                database
+                "${topologyContext.generation}-mongodump"
             ) { currentDatabase ->
                 val collection = currentDatabase.getCollection("paymentpercustomer")
                 val items = collection.countDocuments()
-                // TODO improve
                 items> 100
             }
             assertNotNull(items)

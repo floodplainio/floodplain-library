@@ -22,13 +22,12 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.floodplain.elasticsearch.elasticSearchConfig
 import io.floodplain.elasticsearch.elasticSearchSink
-import io.floodplain.kotlindsl.each
+import io.floodplain.kotlindsl.from
 import io.floodplain.kotlindsl.joinRemote
 import io.floodplain.kotlindsl.postgresSource
 import io.floodplain.kotlindsl.postgresSourceConfig
 import io.floodplain.kotlindsl.set
-import io.floodplain.kotlindsl.sink
-import io.floodplain.kotlindsl.source
+import io.floodplain.kotlindsl.sinkQualified
 import io.floodplain.kotlindsl.stream
 import io.floodplain.test.InstantiatedContainer
 import io.floodplain.test.useIntegraton
@@ -65,8 +64,7 @@ class PostgresToElasticSearch {
         elasticSearchContainer.close()
     }
 
-    // Ignored for now. There is an issue with key serialization I suspect
-    @Test @Ignore
+    @Test
     fun testPostgresToElastic() {
         if (!useIntegraton) {
             logger.info("Not performing integration tests; doesn't seem to work in circleci")
@@ -93,33 +91,30 @@ class PostgresToElasticSearch {
                 set { _, msg, state ->
                     msg.set("city", state)
                 }
-                each { key, msg, _ ->
-                    logger.info("Found: $key.... msg: $msg")
-                }
-                sink("@address")
+                sinkQualified("$generation-address")
                 // elasticSearchSink("@address", "@address", "@address", elasticConfig)
             }
             postgresSource("customer", postgresConfig) {
                 joinRemote({ m -> "${m["address_id"]}" }, false) {
-                    source("@address") {}
+                    from("$generation-address") {}
                 }
                 set { _, msg, state ->
                     msg.set("address", state)
                 }
-                elasticSearchSink("@customer", "@customer", elasticConfig)
+                elasticSearchSink("$generation-customer", "$generation-customer", elasticConfig)
             }
             postgresSource("store", postgresConfig) {
                 joinRemote({ m -> "${m["address_id"]}" }, false) {
-                    source("@address") {}
+                    from("$generation-address") {}
                 }
                 set { _, msg, state ->
                     msg.set("address", state)
                 }
-                elasticSearchSink("@store", "@store", elasticConfig)
+                elasticSearchSink("$generation-store", "$generation-store", elasticConfig)
             }
             postgresSource("staff", postgresConfig) {
                 joinRemote({ m -> "${m["address_id"]}" }, false) {
-                    source("@address") {}
+                    from("$generation-address") {}
                 }
                 set { _, msg, state ->
                     msg.set("address", state)

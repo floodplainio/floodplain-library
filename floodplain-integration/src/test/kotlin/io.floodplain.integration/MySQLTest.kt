@@ -29,7 +29,6 @@ import io.floodplain.kotlindsl.mysqlSourceConfig
 import io.floodplain.kotlindsl.set
 import io.floodplain.kotlindsl.stream
 import io.floodplain.mongodb.mongoConfig
-import io.floodplain.mongodb.mongoSink
 import io.floodplain.mongodb.toMongo
 import io.floodplain.mongodb.waitForMongoDbCondition
 import io.floodplain.test.InstantiatedContainer
@@ -127,13 +126,12 @@ class MySQLTest {
                 "@mongodump"
             )
             mysqlSource("inventory.customers", mysqlConfig) {
-                mongoSink("customers", "@customers", mongoConfig)
+                toMongo("customers", "$generation-customers", mongoConfig)
             }
         }.runWithArguments { topologyContext ->
-            val databaseInstance = topologyContext.topicName("@mongodump")
             val hits = waitForMongoDbCondition(
                 "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
-                databaseInstance
+                "${topologyContext.generation}-mongodump"
             ) { database ->
                 val customerCount = database.getCollection("customers").countDocuments()
                 val orderCount = database.getCollection("orders").countDocuments()
@@ -163,7 +161,7 @@ class MySQLTest {
             val mongoConfig = mongoConfig(
                 "mongosink",
                 "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
-                "@mongodump"
+                "$generation-mongodump"
             )
             mysqlSource("inventory.customers", mysqlConfig) {
                 each { key, customer, _ ->
@@ -182,7 +180,7 @@ class MySQLTest {
                 each { key, customer, _ ->
                     logger.info("Result Key: $key message: $customer")
                 }
-                mongoSink("customers", "@customers", mongoConfig)
+                toMongo("customers", "$generation-customers", mongoConfig)
             }
             mysqlSource("inventory.products", mysqlConfig) {
                 join {
@@ -192,14 +190,14 @@ class MySQLTest {
                     product["quantity"] = product_on_hand.integer("quantity")
                     product
                 }
-                mongoSink("products", "@products", mongoConfig)
+                toMongo("products", "$generation-products", mongoConfig)
             }
             mysqlSource("inventory.orders", mysqlConfig) {
-                mongoSink("orders", "@orders", mongoConfig)
+                toMongo("orders", "$generation-orders", mongoConfig)
             }
         }.renderAndExecute {
             // delay(1000000)
-            val databaseInstance = topologyContext().topicName("@mongodump")
+            val databaseInstance = "${topologyContext.generation}-mongodump"
             val hits = waitForMongoDbCondition(
                 "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
                 databaseInstance,
@@ -238,7 +236,7 @@ class MySQLTest {
                 filter { _, msg ->
                     msg["post_status"] == "publish"
                 }
-                mongoSink("posts", "@topicdef", mongoConfig)
+                toMongo("posts", "$generation-topicdef", mongoConfig)
             }
         }.renderAndExecute {
             delay(1000000)

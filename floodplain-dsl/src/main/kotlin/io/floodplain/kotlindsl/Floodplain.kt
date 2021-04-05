@@ -114,7 +114,7 @@ interface SourceTopic {
 }
 
 interface FloodplainSink {
-    fun send(topic: Topic, elements: List<Pair<String, Map<String, Any>?>>)
+    fun send(topic: Topic, elements: List<Pair<ByteArray?, ByteArray?>>)
     fun config(): SinkConfig
     fun flush()
     fun close()

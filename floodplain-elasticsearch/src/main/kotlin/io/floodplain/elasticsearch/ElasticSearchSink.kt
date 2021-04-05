@@ -19,14 +19,12 @@
 package io.floodplain.elasticsearch
 
 import io.confluent.connect.elasticsearch.ElasticsearchSinkConnector
-import io.confluent.connect.elasticsearch.ElasticsearchSinkTask
 import io.floodplain.kotlindsl.AbstractSinkConfig
 import io.floodplain.kotlindsl.FloodplainSink
 import io.floodplain.kotlindsl.MaterializedConfig
 import io.floodplain.kotlindsl.PartialStream
 import io.floodplain.kotlindsl.Stream
 import io.floodplain.kotlindsl.Transformer
-import io.floodplain.kotlindsl.floodplainSinkFromTask
 import io.floodplain.reactive.source.topology.SinkTransformer
 import io.floodplain.streams.api.Topic
 import io.floodplain.streams.api.TopologyContext
@@ -57,7 +55,7 @@ class ElasticSearchSinkConfig(override val topologyContext: TopologyContext, ove
     }
 }
 
-fun PartialStream.elasticSearchSink(sinkName: String, topicName: String, config: ElasticSearchSinkConfig): FloodplainSink {
+fun PartialStream.elasticSearchSink(sinkName: String, topicName: String, config: ElasticSearchSinkConfig) {
     val topic = Topic.from(topicName, topologyContext)
     val sinkTransformer = SinkTransformer(Optional.of(sinkName), topic, Optional.empty(), Topic.FloodplainKeyFormat.FLOODPLAIN_STRING, Topic.FloodplainBodyFormat.CONNECT_JSON)
     addTransformer(Transformer(rootTopology, sinkTransformer, topologyContext))
@@ -68,17 +66,20 @@ fun PartialStream.elasticSearchSink(sinkName: String, topicName: String, config:
         "tasks.max" to "1",
         "type.name" to "_doc",
         "value.converter" to "org.apache.kafka.connect.json.JsonConverter",
+        // "key.converter" to "org.apache.kafka.connect.json.JsonConverter", // maps not supported by elasticsearch
         "key.converter" to "org.apache.kafka.connect.storage.StringConverter", // maps not supported by elasticsearch
         "topics" to topic.qualifiedString(),
         "schema.ignore" to "true",
+        "value.converter.schemas.enable" to "false",
+        "key.converter.schemas.enable" to "false",
         "behavior.on.null.values" to "delete",
         "type.name" to "_doc"
     )
     config.materializedConfigs.add(MaterializedConfig(config.name, listOf(topic), sinkConfig))
-    val conn = ElasticsearchSinkConnector()
-    conn.start(sinkConfig)
-    val task = conn.taskClass().getDeclaredConstructor().newInstance() as ElasticsearchSinkTask
-    task.start(sinkConfig)
-    config.sinkTask = task
-    return floodplainSinkFromTask(task, config)
+    // val conn = ElasticsearchSinkConnector()
+    // conn.start(sinkConfig)
+    // val task = conn.taskClass().getDeclaredConstructor().newInstance() as ElasticsearchSinkTask
+    // task.start(sinkConfig)
+    // config.sinkTask = task
+    // return floodplainSinkFromTask(task, config)
 }

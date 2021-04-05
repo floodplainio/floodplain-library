@@ -24,10 +24,7 @@ import io.floodplain.kotlindsl.MaterializedConfig
 import io.floodplain.kotlindsl.PartialStream
 import io.floodplain.kotlindsl.Stream
 import io.floodplain.kotlindsl.Transformer
-import io.floodplain.kotlindsl.floodplainSinkFromTask
 import io.floodplain.reactive.source.topology.SinkTransformer
-import io.floodplain.sink.LogSinkConnector
-import io.floodplain.sink.LogSinkTask
 import io.floodplain.streams.api.Topic
 import io.floodplain.streams.api.TopologyContext
 import io.floodplain.streams.remotejoin.TopologyConstructor
@@ -56,7 +53,7 @@ class LogSinkConfiguration(override val topologyContext: TopologyContext, overri
     }
 }
 
-fun PartialStream.logSink(sinkName: String, topicName: String, config: LogSinkConfiguration): FloodplainSink {
+fun PartialStream.logSink(sinkName: String, topicName: String, config: LogSinkConfiguration) {
     // val sinkProcessorName = ProcessorName.from(sinkName)
     val topic = Topic.from(topicName, topologyContext)
     rootTopology.topologyConstructor.addDesiredTopic(topic, Optional.empty())
@@ -73,9 +70,9 @@ fun PartialStream.logSink(sinkName: String, topicName: String, config: LogSinkCo
         "type.name" to "_doc"
     )
     config.materializedConfigs.add(MaterializedConfig(config.name, listOf(topic), sinkConfig))
-    val conn = LogSinkConnector()
-    conn.start(sinkConfig)
-    val task = conn.taskClass().getDeclaredConstructor().newInstance() as LogSinkTask
-    task.start(sinkConfig)
-    return floodplainSinkFromTask(task, config)
+    // val conn = LogSinkConnector()
+    // conn.start(sinkConfig)
+    // val task = conn.taskClass().getDeclaredConstructor().newInstance() as LogSinkTask
+    // task.start(sinkConfig)
+    // return floodplainSinkFromTask(task, config)
 }

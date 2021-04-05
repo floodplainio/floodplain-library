@@ -51,7 +51,7 @@ class TestElasticSearch {
         mapOf("discovery.type" to "single-node")
     )
 
-    @Test @Ignore
+    @Test
     fun testElasticInsert() {
         val uri = "http://${container.host}:${container.exposedPort}"
         stream {

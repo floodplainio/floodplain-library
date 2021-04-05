@@ -105,10 +105,6 @@ interface LocalContext : InputReceiver {
     fun connectJobs(): List<Job>
     fun flushSinks()
     suspend fun connectSource()
-
-    // fun outputFlow(): Map<Topic, Flow<Pair<String, IMessage?>>>
-    // override fun outputFlow(): Flow<List<Triple<Topic, String, IMessage?>>> {
-    // fun sinkConsumer(sinks: Map<Topic, List<FloodplainSink>>): (Pair<Topic, List<Pair<String, IMessage?>>>) -> Unit
     fun sinksByTopic(): Map<Topic, List<FloodplainSink>>
     fun connectSourceAndSink(): List<Job>
 }
@@ -272,25 +268,12 @@ class LocalDriverContext(
     }
 
     // TODO Why not imessage?
-    private fun outputFlows(context: CoroutineScope): Map<Topic, Flow<Pair<String, Map<String, Any>?>>> {
+    private fun outputFlows(context: CoroutineScope): Map<Topic, Flow<Pair<ByteArray?, ByteArray?>>> {
         val topics = topics()
-        val deserializer = JsonDeserializer() // TODO protobuf issue, topic is not in json connect
-        val mapper = ObjectMapper()
-        mapper.findAndRegisterModules() // use shared mapping object
-        val fallback = FallbackReplicationMessageParser() // use shared parser
         val sourceFlow = outputFlowSingle()
-            .map { (topic, key, value) ->
-                val parsed = if (value == null) null else fallback.parseBytes(Optional.ofNullable(topic.qualifiedString()), value).valueMap(
-                    false,
-                    Collections.emptySet()
-                )
-
-                val result = if (value == null) null else mapper.convertValue(parsed, object : TypeReference<Map<String, Any>>() {})
-                Triple(topic, key, result)
-            }
             .shareIn(context, SharingStarted.Lazily)
-            // .asFlow()
             .handleErrors()
+
         return topics.map { topic ->
             val flow = sourceFlow.filter { (incomingTopic, _, _) ->
                 incomingTopic == topic
@@ -300,15 +283,15 @@ class LocalDriverContext(
         }.toMap()
     }
 
-    private fun outputFlowSingle(): Flow<Triple<Topic, String, ByteArray?>> {
+    private fun outputFlowSingle(): Flow<Triple<Topic, ByteArray?, ByteArray?>> {
         return callbackFlow {
             driver.setOutputListener { record ->
                 // Ignore changelog topics
                 if (!record.topic().endsWith("changelog")) {
-                    val key = Serdes.String().deserializer().deserialize(record.topic(), record.key())
+                    // val key = Serdes.String().deserializer().deserialize(record.topic(), record.key())
                     val topic = Topic.fromQualified(record.topic(), topologyContext)
                     if (this.isActive) {
-                        sendBlocking(Triple(topic, key, record.value()))
+                        sendBlocking(Triple(topic, record.key(), record.value()))
                     }
                 }
             }

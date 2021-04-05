@@ -28,7 +28,7 @@ import io.floodplain.kotlindsl.postgresSourceConfig
 import io.floodplain.kotlindsl.set
 import io.floodplain.kotlindsl.stream
 import io.floodplain.mongodb.mongoConfig
-import io.floodplain.mongodb.mongoSink
+import io.floodplain.mongodb.toMongo
 import io.floodplain.mongodb.waitForMongoDbCondition
 import io.floodplain.test.useIntegraton
 import org.junit.Ignore
@@ -58,7 +58,7 @@ class FilmWithArgumentsRemote {
         }
         stream {
             val postgresConfig = postgresSourceConfig("mypostgres", "localhost", 5432, "postgres", "mysecretpassword", "dvdrental", "public")
-            val mongoConfig = mongoConfig("mongosink", "mongodb://localhost", "@mongodump")
+            val mongoConfig = mongoConfig("mongosink", "mongodb://localhost", "$generation-mongodump")
             postgresSource("film", postgresConfig) {
                 joinGrouped {
                     postgresSource("film_category", postgresConfig) {
@@ -100,10 +100,10 @@ class FilmWithArgumentsRemote {
                     film["actors"] = actorlist["list"] ?: emptyList<IMessage>()
                     film
                 }
-                mongoSink("filmwithcategories", "@filmwithcat", mongoConfig)
+                toMongo("filmwithcategories", "$generation-filmwithcat", mongoConfig)
             }
         }.runWithArguments(args) { topologyContext ->
-            val database = topologyContext.topicName("@mongodump")
+            val database = "${topologyContext.generation}-mongodump"
             // flushSinks()
             val hits = waitForMongoDbCondition("mongodb://localhost:27017", database) { currentDatabase ->
                 val collection = currentDatabase.getCollection("filmwithcategories")
