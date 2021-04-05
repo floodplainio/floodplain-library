@@ -71,8 +71,6 @@ public interface ImmutableMessage {
 
     ImmutableMessage merge(ImmutableMessage other, Optional<List<String>> only);
 
-    String toFlatString(ImmutableMessageParser parser);
-
     Optional<List<ImmutableMessage>> subMessages(String field);
 
     Optional<ImmutableMessage> subMessage(String field);

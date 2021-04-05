@@ -68,7 +68,7 @@ fun PartialStream.elasticSearchSink(sinkName: String, topicName: String, config:
         "tasks.max" to "1",
         "type.name" to "_doc",
         "value.converter" to "org.apache.kafka.connect.json.JsonConverter",
-        "key.converter" to "org.apache.kafka.connect.json.JsonConverter", // maps not supported by elasticsearch
+        "key.converter" to "org.apache.kafka.connect.storage.StringConverter", // maps not supported by elasticsearch
         "topics" to topic.qualifiedString(),
         "schema.ignore" to "true",
         "behavior.on.null.values" to "delete",

@@ -57,7 +57,6 @@ class InstantiatedKafkaContainer(customizer: ((KafkaContainer) -> KafkaContainer
         .apply { withStartupTimeout(Duration.ofMinutes(5)) }
         .apply { withStartupAttempts(50) }
         .apply { customizer?.invoke(this) }
-    // .apply { withEnv(env) }
     var host: String
     var exposedPort: Int = -1
     init {

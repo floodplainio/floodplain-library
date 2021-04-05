@@ -44,12 +44,9 @@ import io.floodplain.streams.api.Topic
 import io.floodplain.streams.api.TopologyContext
 import io.floodplain.streams.remotejoin.TopologyConstructor
 import org.apache.kafka.connect.sink.SinkConnector
-import org.apache.kafka.connect.sink.SinkRecord
 import org.apache.kafka.connect.sink.SinkTask
 import java.time.Duration
 import java.util.Optional
-import java.util.concurrent.atomic.AtomicLong
-import kotlin.system.measureTimeMillis
 
 private val logger = mu.KotlinLogging.logger {}
 

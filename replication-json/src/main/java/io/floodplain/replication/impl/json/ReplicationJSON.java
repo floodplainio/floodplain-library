@@ -319,7 +319,6 @@ public class ReplicationJSON {
                 case TIMESTAMP:
                 case CLOCKTIME:
                     node.put(key, DateSerializer.serializeTimeObject((Temporal) o));
-//                    node.put(key, ((LocalDate) o).format(dateFormatter));
                     break;
                 case DECIMAL:
                     node.put(key,((BigDecimal)o).toPlainString());

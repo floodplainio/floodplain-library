@@ -22,7 +22,6 @@ import io.floodplain.immutable.api.ImmutableMessage;
 import io.floodplain.immutable.factory.ImmutableFactory;
 import io.floodplain.replication.api.ReplicationMessage;
 import io.floodplain.replication.factory.ReplicationFactory;
-import org.apache.kafka.streams.processor.AbstractProcessor;
 import org.apache.kafka.streams.processor.api.Processor;
 import org.apache.kafka.streams.processor.api.ProcessorContext;
 import org.apache.kafka.streams.processor.api.Record;
@@ -50,7 +49,7 @@ public class FunctionProcessor implements Processor<String, ReplicationMessage,S
         }
         if(record.value().operation()!= ReplicationMessage.Operation.DELETE) {
             ImmutableMessage applied = function.apply(record.key(), record.value().message(), record.value().paramMessage().orElse(ImmutableFactory.empty()));
-            context.forward(new Record<String, ReplicationMessage>(record.key(), ReplicationFactory.standardMessage(applied), record.timestamp())); //.withParamMessage(value.paramMessage()); //.orElse(ImmutableFactory.empty())).withOperation(operation));
+            context.forward(new Record<>(record.key(), ReplicationFactory.standardMessage(applied), record.timestamp())); //.withParamMessage(value.paramMessage()); //.orElse(ImmutableFactory.empty())).withOperation(operation));
 
         } else {
             // Skip processing, just forward message if it is a delete

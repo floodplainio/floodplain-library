@@ -304,40 +304,17 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
             connectorClientConfigOverridePolicy
         )
 
-        val statusBackingStore: StatusBackingStore = KafkaStatusBackingStore(time, worker.getInternalValueConverter())
+        val statusBackingStore: StatusBackingStore = KafkaStatusBackingStore(time, worker.internalValueConverter)
         statusBackingStore.configure(config)
 
-        val configBackingStore = KafkaConfigBackingStore(worker.getInternalValueConverter(), config, worker.configTransformer())
+        val configBackingStore = KafkaConfigBackingStore(worker.internalValueConverter, config, worker.configTransformer())
         val herder = DistributedHerder(config, time, worker, kafkaClusterId, statusBackingStore, configBackingStore, advertisedUrl.toString(), connectorClientConfigOverridePolicy)
 
-        // val herder: Herder = StandaloneHerder(worker, kafkaClusterId, connectorClientConfigOverridePolicy)
         val connect = Connect(herder, rest)
 
         connect.start()
         logger.info("Connect started!!")
         return herder
-        // try {
-        //     // for (connectorPropsFile in Arrays.copyOfRange(args, 1, args.length)) {
-        //     //     val connectorProps: Map<String, String> = Utils.propsToStringMap(Utils.loadProps(connectorPropsFile))
-        //     //     val cb: FutureCallback<Herder.Created<ConnectorInfo>> =
-        //     //         FutureCallback(object : Callback<Herder.Created<ConnectorInfo?>?>() {
-        //     //             fun onCompletion(error: Throwable?, info: Herder.Created<ConnectorInfo>) {
-        //     //                 if (error != null) log.error(
-        //     //                     "Failed to create job for {}",
-        //     //                     connectorPropsFile
-        //     //                 ) else log.info("Created connector {}", info.result().name())
-        //     //             }
-        //     //         })
-        //     //     herder.putConnectorConfig(
-        //     //         connectorProps[ConnectorConfig.NAME_CONFIG],
-        //     //         connectorProps, false, cb
-        //     //     )
-        //     //     cb.get()
-        //     // }
-        // } catch (t: Throwable) {
-        //     logger.error("Stopping after connector error", t)
-        //     connect.stop()
-        // }
     }
 
     /**

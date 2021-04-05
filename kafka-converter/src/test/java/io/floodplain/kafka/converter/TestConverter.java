@@ -36,8 +36,6 @@ public class TestConverter {
 
     @Before
     public void setup() {
-//		ReplicationFactory.setInstance(new FallbackReplicationMessageParser());
-
     }
 
     @Test

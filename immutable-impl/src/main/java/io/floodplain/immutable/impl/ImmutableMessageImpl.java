@@ -19,15 +19,10 @@
 package io.floodplain.immutable.impl;
 
 import io.floodplain.immutable.api.ImmutableMessage;
-import io.floodplain.immutable.api.ImmutableMessageParser;
 import io.floodplain.immutable.factory.ImmutableFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneOffset;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.Function;
@@ -108,19 +103,6 @@ public class ImmutableMessageImpl implements ImmutableMessage {
         }
         return Collections.unmodifiableMap(result);
     }
-
-//    private Object postProcessValue(Object value) {
-//        if(value instanceof LocalDate) {
-//            return ((LocalDate)value).toEpochDay();
-//        }
-//        if(value instanceof LocalDateTime) {
-//            return ((LocalDateTime)value).toInstant(ZoneOffset.UTC).toEpochMilli();
-//        }
-//        if (value instanceof LocalTime) {
-//            return ((LocalTime)value).toSecondOfDay();
-//        }
-//        return value;
-//    }
 
     @Override
     public Set<String> columnNames() {
@@ -247,17 +229,6 @@ public class ImmutableMessageImpl implements ImmutableMessage {
                 localTypes.put(key, type);
                 return new ImmutableMessageImpl(localValues, localTypes, this.subMessageMap, this.subMessagesMap);
 
-        }
-    }
-
-
-    @Override
-    public String toFlatString(ImmutableMessageParser parser) {
-        if (parser == null) {
-            logger.info("Can not flatten parser, no parser present");
-            return "";
-        } else {
-            return parser.describe(this);
         }
     }
 

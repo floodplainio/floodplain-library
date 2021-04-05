@@ -175,7 +175,6 @@ class LocalDriverContext(
 
     val connectJobs = mutableListOf<Job>()
     private val inputTopics = mutableMapOf<String, TestInputTopic<String, ReplicationMessage>>()
-    // private val rawInputTopics = mutableMapOf<String, TestInputTopic<String, ByteArray>>()
 
     private val outputTopics = mutableMapOf<String, TestOutputTopic<String, ReplicationMessage>>()
 
@@ -277,8 +276,8 @@ class LocalDriverContext(
         val topics = topics()
         val deserializer = JsonDeserializer() // TODO protobuf issue, topic is not in json connect
         val mapper = ObjectMapper()
-        mapper.findAndRegisterModules()
-        val fallback = FallbackReplicationMessageParser()
+        mapper.findAndRegisterModules() // use shared mapping object
+        val fallback = FallbackReplicationMessageParser() // use shared parser
         val sourceFlow = outputFlowSingle()
             .map { (topic, key, value) ->
                 val parsed = if (value == null) null else fallback.parseBytes(Optional.ofNullable(topic.qualifiedString()), value).valueMap(
