@@ -367,8 +367,8 @@ class LocalDriverContext(
         return if (op == ReplicationMessage.Operation.DELETE) {
             logger.info("delete detected! isnull? ${keyVal.value}")
             logger.info("retrying...")
-            // Don't really understand this FIXME
-            output(qualifiedTopic(topic))
+            // output(qualifiedTopic(topic))
+            outputQualified(topic)
         } else {
             Pair(keyVal.key, fromImmutable(keyVal.value!!.message()))
         }

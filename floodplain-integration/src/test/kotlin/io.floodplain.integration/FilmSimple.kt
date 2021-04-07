@@ -23,7 +23,7 @@ import io.floodplain.kotlindsl.from
 import io.floodplain.kotlindsl.postgresSource
 import io.floodplain.kotlindsl.postgresSourceConfig
 import io.floodplain.kotlindsl.set
-import io.floodplain.kotlindsl.sinkQualified
+import io.floodplain.kotlindsl.to
 import io.floodplain.kotlindsl.stream
 import io.floodplain.mongodb.mongoConfig
 import io.floodplain.mongodb.toMongo
@@ -181,7 +181,7 @@ class FilmSimple {
                 set { _, film, _ ->
                     film["last_update"] = null; film
                 }
-                sinkQualified("$generation-intermediatesink")
+                to("$generation-intermediatesink")
             }
             from("$generation-intermediatesink") {
                 toMongo("filmwithactors", "$generation-filmwithcat", mongoConfig)

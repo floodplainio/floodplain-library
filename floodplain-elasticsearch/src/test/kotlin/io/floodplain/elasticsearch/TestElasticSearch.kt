@@ -22,13 +22,12 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.NullNode
 import io.floodplain.kotlindsl.each
+import io.floodplain.kotlindsl.from
 import io.floodplain.kotlindsl.message.empty
-import io.floodplain.kotlindsl.source
 import io.floodplain.kotlindsl.stream
 import io.floodplain.test.InstantiatedContainer
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeout
-import org.junit.Ignore
 import org.junit.Test
 import java.net.URI
 import java.net.http.HttpClient
@@ -55,7 +54,7 @@ class TestElasticSearch {
     fun testElasticInsert() {
         val uri = "http://${container.host}:${container.exposedPort}"
         stream {
-            source("sometopic") {
+            from("sometopic") {
                 each { _, iMessage, _ -> logger.info("Message: $iMessage") }
                 val config = elasticSearchConfig("elasticName", uri)
                 elasticSearchSink("mysinkname", "myindex", config)

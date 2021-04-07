@@ -173,7 +173,7 @@ fun instantiateSinkConfig(config: SinkConfig): MutableMap<Topic, MutableList<Flo
 }
 
 private fun settingsWithPrefix(settings: Map<String,Any>, prefix: String): Map<String,Any> {
-    return settings.filter { (k,v) ->
+    return settings.filter { (k,_) ->
         k.startsWith(prefix)
     }.map { (k,v) ->
         k.substring(prefix.length) to v

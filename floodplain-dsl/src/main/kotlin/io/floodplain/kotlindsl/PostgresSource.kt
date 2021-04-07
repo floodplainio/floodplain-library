@@ -145,7 +145,7 @@ fun Stream.postgresSource(name: String, table: String, schema: String, init: Sou
     addSource(databaseSource)
 }
 
-class DebeziumSourceElement(val prefix: Topic, val schema: String? = null, val table: String) : SourceTopic {
+class DebeziumSourceElement(private val prefix: Topic, private val schema: String? = null, val table: String) : SourceTopic {
     override fun topic(): Topic {
         return prefix
     }

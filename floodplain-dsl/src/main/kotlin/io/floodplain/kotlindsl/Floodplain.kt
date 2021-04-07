@@ -48,8 +48,6 @@ import org.apache.kafka.connect.sink.SinkTask
 import java.time.Duration
 import java.util.Optional
 
-private val logger = mu.KotlinLogging.logger {}
-
 /**
  * Super (wrapper) class for all components (source, transformer or sink)
  */
@@ -221,52 +219,17 @@ fun PartialStream.joinMulti(key: (IMessage) -> String?, secondaryKey: (IMessage)
     addTransformer(Transformer(this.rootTopology, jrt, topologyContext))
 }
 
-@Deprecated("Don't use unqualified topics")
+
 fun PartialStream.joinAttributes(withTopic: String, nameAttribute: String, valueAttribute: String, vararg keys: String) {
     return joinAttributes(withTopic, nameAttribute, valueAttribute) { msg ->
         keys.joinToString(ReplicationMessage.KEYSEPARATOR) { msg[it].toString() }
     }
 }
 
-fun PartialStream.joinAttributesQualified(withTopic: String, nameAttribute: String, valueAttribute: String, vararg keys: String) {
-    return joinAttributesQualified(withTopic, nameAttribute, valueAttribute) { msg ->
-        keys.joinToString(ReplicationMessage.KEYSEPARATOR) { msg[it].toString() }
-    }
-}
-
-@Deprecated("Don't use unqualified topics")
-fun PartialStream.joinAttributes(withTopic: String, nameAttribute: String, valueAttribute: String, keyExtract: (IMessage) -> String) {
-    join(optional = true, debug = false) {
-        source(withTopic) {
-            scan(
-                keyExtract,
-                {
-                    empty()
-                },
-                {
-                    set {
-                        _, msg, acc ->
-                        val name = msg[nameAttribute] as String?
-                        val value = msg[valueAttribute]
-                        acc[name!!] = value
-                        acc
-                    }
-                },
-                {
-                    set {
-                        _, msg, acc ->
-                        acc.clear(msg[nameAttribute] as String); acc
-                    }
-                }
-            )
-        }
-    }
-}
-
 /**
  * C/p from joinAttributes, but qualified
  */
-fun PartialStream.joinAttributesQualified(withTopic: String, nameAttribute: String, valueAttribute: String, keyExtract: (IMessage) -> String) {
+fun PartialStream.joinAttributes(withTopic: String, nameAttribute: String, valueAttribute: String, keyExtract: (IMessage) -> String) {
     join(optional = true, debug = false) {
         from(withTopic) {
             scan(
@@ -302,36 +265,6 @@ fun PartialStream.group(key: (IMessage) -> String) {
 }
 
 /**
- * Use a debezium table
- */
-fun Stream.table(topic: String, init: Source.() -> Unit) {
-    val sourceElement = TopicSource(
-        Topic.fromQualified(topic, topologyContext),
-        Topic.FloodplainKeyFormat.CONNECT_KEY_JSON,
-        Topic.FloodplainBodyFormat.FLOODPLAIN_JSON
-    )
-    val source = Source(this, sourceElement, topologyContext)
-    source.init()
-    rootTopology.addSource(source)
-}
-
-/**
- * Create sub source
- */
-@Deprecated("Don't use unqualified topics")
-fun PartialStream.source(topic: String, init: Source.() -> Unit = {}): Source {
-    return createSource(Topic.from(topic, rootTopology.topologyContext), rootTopology, init)
-}
-
-/**
- * Create toplevel source
- */
-@Deprecated("Don't use unqualified topics")
-fun Stream.source(topic: String, init: Source.() -> Unit = {}) {
-    addSource(createSource(Topic.from(topic, rootTopology.topologyContext), this, init))
-}
-
-/**
 * Create sub source (without qualifying with tenant / deployment / gen)
 */
 fun PartialStream.from(topic: String, init: Source.() -> Unit = {}): Source {
@@ -358,28 +291,6 @@ private fun createSource(
     val source = Source(rootTopology, sourceElement, rootTopology.topologyContext)
     source.init()
     return source
-}
-
-@Deprecated("Don't use unqualified topics", ReplaceWith("qualifiedTopic"))
-fun FloodplainOperator.topic(name: String): Topic {
-    return Topic.from(name, topologyContext)
-}
-
-fun FloodplainOperator.qualifiedTopic(name: String): Topic {
-    return Topic.fromQualified(name, topologyContext)
-}
-
-/**
- * TODO in time, remove.
- * I use generationalTopics mostly in unit tests now, I want to move away from unqualified topics
- * alltogether. When that is the case, we can simply use the qualified string instead of the Topic object
- */
-@Deprecated("Use qualified topic")
-fun FloodplainOperator.generationalTopic(name: String): Topic {
-    if (name.startsWith("@")) {
-        throw RuntimeException("Can't create generationalTopic that starts with '@', remove the '@' from $name")
-    }
-    return Topic.from("@$name", topologyContext)
 }
 
 /**
@@ -417,24 +328,9 @@ private fun existingDebeziumSource(topicSource: String, rootTopology: Stream, in
 }
 
 /**
- * Creates a simple sink that will contain the result of the current transformation.
- */
-@Deprecated("Don't use unqualified topics")
-fun PartialStream.sink(topic: String): Transformer {
-    val sink = SinkTransformer(
-        Optional.empty(),
-        Topic.from(topic, topologyContext),
-        Optional.empty(),
-        Topic.FloodplainKeyFormat.FLOODPLAIN_STRING,
-        Topic.FloodplainBodyFormat.FLOODPLAIN_JSON
-    )
-    return addTransformer(Transformer(this.rootTopology, sink, topologyContext))
-}
-
-/**
  * Creates a simple sink that will contain the result of the current transformation. Will not qualify with tenant / deployment
  */
-fun PartialStream.sinkQualified(topic: String): Transformer {
+fun PartialStream.to(topic: String): Transformer {
     val sink = SinkTransformer(
         Optional.empty(),
         Topic.fromQualified(topic, topologyContext),
@@ -449,7 +345,7 @@ fun PartialStream.sinkQualified(topic: String): Transformer {
 /**
  * Creates a simple sink that will contain the result of the current transformation.
  */
-fun PartialStream.externalSinkQualified(topic: String): Transformer {
+fun PartialStream.toExternal(topic: String): Transformer {
     val sink = SinkTransformer(
         Optional.empty(),
         Topic.fromQualified(topic, topologyContext),

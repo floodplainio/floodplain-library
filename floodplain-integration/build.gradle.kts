@@ -1,6 +1,7 @@
 import io.floodplain.build.FloodplainDeps
 
 dependencies {
+    api(FloodplainDeps.slf4j)
     compile(FloodplainDeps.kotlinLogging)
     testCompile(FloodplainDeps.jUnit)
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")

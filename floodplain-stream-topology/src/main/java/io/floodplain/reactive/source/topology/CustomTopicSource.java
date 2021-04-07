@@ -33,13 +33,13 @@ import java.util.function.Function;
 
 public class CustomTopicSource implements TopologyPipeComponent {
 
-    private final Topic topic;
+    private final String topic;
     private final Deserializer<String> keyFormat;
     private final Deserializer<ReplicationMessage> bodyFormat;
 
     private boolean materialize = false;
 
-    public CustomTopicSource(Topic topic, Function<byte[],String> keyExtractor, Function<byte[], ReplicationMessage> bodyExtractor) {
+    public CustomTopicSource(String topic, Function<byte[],String> keyExtractor, Function<byte[], ReplicationMessage> bodyExtractor) {
         this.topic = topic;
         this.keyFormat = (tp, data) -> keyExtractor.apply(data);
         this.bodyFormat = (tp,data) -> bodyExtractor.apply(data);
@@ -47,8 +47,9 @@ public class CustomTopicSource implements TopologyPipeComponent {
 
     @Override
     public void addToTopology(Stack<String> transformerNames, int pipeId, Topology topology, TopologyContext topologyContext, TopologyConstructor topologyConstructor) {
-        String source = ReplicationTopologyParser.addSourceStore(topology, topologyConstructor, topic,keyFormat,bodyFormat, this.materialize);
-        topologyConstructor.addDesiredTopic(topic, Optional.empty());
+        Topic sourceTopic = Topic.fromQualified(topic,topologyContext);
+        String source = ReplicationTopologyParser.addSourceStore(topology, topologyConstructor, sourceTopic ,keyFormat,bodyFormat, this.materialize);
+        topologyConstructor.addDesiredTopic(sourceTopic, Optional.empty());
         transformerNames.push(source);
     }
 

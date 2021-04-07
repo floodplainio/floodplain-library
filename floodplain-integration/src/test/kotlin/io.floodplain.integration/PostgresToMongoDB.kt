@@ -28,7 +28,7 @@ import io.floodplain.kotlindsl.postgresSource
 import io.floodplain.kotlindsl.postgresSourceConfig
 import io.floodplain.kotlindsl.scan
 import io.floodplain.kotlindsl.set
-import io.floodplain.kotlindsl.sinkQualified
+import io.floodplain.kotlindsl.to
 import io.floodplain.kotlindsl.stream
 import io.floodplain.mongodb.mongoConfig
 import io.floodplain.mongodb.toMongo
@@ -175,7 +175,7 @@ class TestCombinedMongo {
                 set { _, msg, state ->
                     msg.set("city", state)
                 }
-                sinkQualified("$generation-address")
+                to("$generation-address")
             }
             postgresSource("customer", postgresConfig) {
                 joinRemote({ m -> "${m["address_id"]}" }, false) {

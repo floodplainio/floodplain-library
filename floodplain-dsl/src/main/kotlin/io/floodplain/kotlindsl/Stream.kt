@@ -49,6 +49,7 @@ import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.StreamsConfig
 import org.apache.kafka.streams.Topology
 import org.apache.kafka.streams.processor.WallclockTimestampExtractor
+import java.io.File
 import java.io.InputStream
 import java.net.URI
 import java.net.URL
@@ -167,6 +168,9 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
         )
     }
 
+    /**
+     * Schedule using an inputstream that contains
+     */
     fun renderAndSchedule(connectorURL: URL?, settings: InputStream, force: Boolean = false): KafkaStreams {
         val prop = Properties()
         prop.load(settings)
@@ -345,7 +349,9 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
 
         val props = createProperties(extra)
         val stream = KafkaStreams(topology, props)
-        logger.info("CurrentTopology:\n ${topology.describe()}")
+        val topologyDescription = topology.describe()
+        logger.info("CurrentTopology:\n $topologyDescription")
+        File("topology.txt").writeText(topologyDescription.toString())
         stream.setUncaughtExceptionHandler { thread: Thread, exception: Throwable? ->
             logger.error("Error in streams. thread: ${thread.name} exception: ", exception)
             stream.close()

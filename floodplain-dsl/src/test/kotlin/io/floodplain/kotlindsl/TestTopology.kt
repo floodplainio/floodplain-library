@@ -49,7 +49,7 @@ class TestTopology {
     fun testSimple() {
         stream("thing") {
             from("sometopic") {
-                sinkQualified("outputTopic")
+                to("outputTopic")
             }
         }.renderAndExecute {
             inputQualified("sometopic", "key1", empty().set("name", "gorilla"))
@@ -62,7 +62,7 @@ class TestTopology {
     private fun testQualifiedWithTenantAndDeployment(tenant: String?, deployment: String?, generation: String?) {
         stream(tenant, deployment, generation ?: "defaultGeneration") {
             from("sometopic") {
-                sinkQualified("outputTopic")
+                to("outputTopic")
             }
         }.renderAndExecute {
             inputQualified("sometopic", "key1", empty().set("name", "gorilla"))
@@ -104,7 +104,7 @@ class TestTopology {
     fun testDelete() {
         stream("somegen") {
             from("sometopic") {
-                sinkQualified("outputtopic")
+                to("outputtopic")
             }
         }.renderAndExecute {
             inputQualified("sometopic", "key1", empty().set("name", "gorilla"))
@@ -123,7 +123,7 @@ class TestTopology {
                     _, primary, _ ->
                     primary.set("name", "Frank")
                 }
-                sinkQualified("people")
+                to("people")
             }
         }.renderAndExecute {
             inputQualified("mysource", "1", empty().set("species", "human"))
@@ -143,7 +143,7 @@ class TestTopology {
                     left["rightsub"] = right
                     left
                 }
-                sinkQualified("output")
+                to("output")
             }
         }.renderAndExecute {
             assertTrue(isEmptyQualified("output"))
@@ -172,7 +172,7 @@ class TestTopology {
                     left["rightsub"] = right
                     left
                 }
-                sinkQualified("output")
+                to("output")
             }
         }.renderAndExecute {
             assertTrue(isEmptyQualified("output"))
@@ -197,8 +197,8 @@ class TestTopology {
         stream("somegen") {
             from("src") {
                 group { message -> message["subkey"] as String }
-                externalSinkQualified("mysink")
-                externalSinkQualified("myothersink")
+                toExternal("mysink")
+                toExternal("myothersink")
             }
         }.renderAndExecute {
             val record1 = empty().set("subkey", "subkey1")
@@ -214,7 +214,7 @@ class TestTopology {
         stream("somegen") {
             from("src") {
                 group { message -> message["subkey"] as String }
-                sinkQualified("mysink")
+                to("mysink")
             }
         }.renderAndExecute {
             val record1 = empty().set("subkey", "subkey1")
@@ -248,7 +248,7 @@ class TestTopology {
                 each { key, left, right ->
                     logger.info("Message: $left RightMessage $right key: $key")
                 }
-                sinkQualified("output")
+                to("output")
             }
         }.renderAndExecute {
             assertTrue(isEmptyQualified("output"))
@@ -302,7 +302,7 @@ class TestTopology {
                 each { key, left, right ->
                     logger.info("Message: $left RightMessage $right key: $key")
                 }
-                sinkQualified("output")
+                to("output")
             }
         }.renderAndExecute {
             assertTrue(isEmptyQualified("output"))
@@ -339,7 +339,7 @@ class TestTopology {
                 filter { _, value ->
                     value["name"] == "myname"
                 }
-                sinkQualified("output")
+                to("output")
             }
         }.renderAndExecute {
             inputQualified("source", "key1", empty().set("name", "myname"))
@@ -365,7 +365,7 @@ class TestTopology {
                 )
                 each { key, msg, acc -> logger.info("Each: $key -> $msg -> $acc") }
 
-                sinkQualified("output")
+                to("output")
             }
         }.renderAndExecute {
             inputQualified("source", "key1", empty())
@@ -406,7 +406,7 @@ class TestTopology {
                     }
                 )
                 each { key, msg, acc -> logger.info("Each: $key -> $msg -> $acc") }
-                sinkQualified("output")
+                to("output")
             }
         }.renderAndExecute {
             inputQualified("source", "key1", empty().set("message", "message1"))
@@ -439,7 +439,7 @@ class TestTopology {
                 )
                 each { key, msg, acc -> logger.info("Each: $key -> $msg -> $acc") }
 
-                sinkQualified("output")
+                to("output")
             }
         }.renderAndExecute {
             inputQualified("source", "key1", empty().set("groupKey", "group1"))
@@ -494,7 +494,7 @@ class TestTopology {
                     logger.info("Each: $key -> $msg -> $acc")
                 }
 
-                sinkQualified("output")
+                to("output")
             }
         }.renderAndExecute {
             inputQualified("source", "key1", empty().set("groupKey", "group1"))
@@ -512,17 +512,17 @@ class TestTopology {
                 fork(
                     {
                         filter { _, value -> value["category"] == "category1" }
-                        sinkQualified("category1")
+                        to("category1")
                     },
                     {
                         filter { _, value -> value["category"] == "category2" }
-                        sinkQualified("category2")
+                        to("category2")
                     },
                     {
-                        sinkQualified("all")
+                        to("all")
                     }
                 )
-                sinkQualified("sink")
+                to("sink")
             }
         }.renderAndExecute {
             inputQualified("source","key1",empty().set("category", "category1"))
@@ -566,7 +566,7 @@ class TestTopology {
             ?: throw IllegalArgumentException("Missing json file for decimalwithscale.json")
         stream {
             externalSource("source", Topic.FloodplainKeyFormat.FLOODPLAIN_STRING, Topic.FloodplainBodyFormat.CONNECT_JSON) {
-                sinkQualified("sinktopic")
+                to("sinktopic")
             }
         }.renderAndExecute {
             inputQualified("source", "key1".toByteArray(), data)
@@ -583,7 +583,7 @@ class TestTopology {
         stream {
             from("source") {
                 keyTransform { key->"mon${key}" }
-                sinkQualified("output")
+                to("output")
             }
         }.renderAndExecute {
             inputQualified("source", "key", empty().set("value", "value1"))
@@ -600,7 +600,7 @@ class TestTopology {
         stream {
             from("source") {
                 diff()
-                sinkQualified("output")
+                to("output")
             }
         }.renderAndExecute {
 
@@ -649,7 +649,7 @@ class TestTopology {
         stream {
             from("source") {
                 buffer(Duration.ofSeconds(9), 10)
-                sinkQualified("output")
+                to("output")
             }
         }.renderAndExecute {
             val msg = empty().set("value", "value1")
@@ -896,11 +896,11 @@ class TestTopology {
             // val logSinkConfig = logSinkConfig("logname")
             externalSource("external", Topic.FloodplainKeyFormat.CONNECT_KEY_JSON, Topic.FloodplainBodyFormat.CONNECT_JSON) {
                 // logSink("somesink", "@output", logSinkConfig)
-                sinkQualified("output")
+                to("output")
             }
         }.renderAndExecute {
-            input(qualifiedTopic("external"), originalKey.toByteArray(), body.toByteArray())
-            val (key, value) = output(qualifiedTopic("output"))
+            inputQualified("external", originalKey.toByteArray(), body.toByteArray())
+            val (key, value) = outputQualified("output")
             assertEquals("965", key)
             logger.info("Result: $value")
         }
@@ -910,7 +910,7 @@ class TestTopology {
     fun testArgumentParser() {
         stream {
             from("sometopic") {
-                sinkQualified("outputTopic")
+                to("outputTopic")
             }
         }.runWithArguments(arrayOf("--help")) {
         }
