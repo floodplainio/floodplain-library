@@ -18,14 +18,11 @@
  */
 package io.floodplain.kotlindsl
 
-import com.fasterxml.jackson.core.type.TypeReference
-import com.fasterxml.jackson.databind.ObjectMapper
 import io.floodplain.bufferTimeout
 import io.floodplain.kotlindsl.message.IMessage
 import io.floodplain.kotlindsl.message.fromImmutable
 import io.floodplain.replication.api.ReplicationMessage
 import io.floodplain.replication.factory.ReplicationFactory
-import io.floodplain.replication.impl.protobuf.FallbackReplicationMessageParser
 import io.floodplain.streams.api.Topic
 import io.floodplain.streams.api.TopologyContext
 import io.floodplain.streams.remotejoin.TopologyConstructor
@@ -50,7 +47,6 @@ import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.runBlocking
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.common.utils.Utils
-import org.apache.kafka.connect.json.JsonDeserializer
 import org.apache.kafka.streams.KeyValue
 import org.apache.kafka.streams.StreamsConfig
 import org.apache.kafka.streams.TestInputTopic
@@ -63,8 +59,6 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.time.Duration
 import java.time.Instant
-import java.util.Collections
-import java.util.Optional
 import java.util.Properties
 
 private val logger = mu.KotlinLogging.logger {}
@@ -74,7 +68,6 @@ interface InputReceiver : FloodplainOperator {
     fun input(topic: Topic, key: ByteArray, msg: ByteArray)
     fun inputQualified(topic: String, key: String, msg: IMessage)
     fun inputQualified(topic: String, key: ByteArray, msg: ByteArray)
-    fun delete(topic: Topic, key: String)
     fun deleteQualified(topic: String, key: String)
     fun inputs(): Set<String>
 }
@@ -190,6 +183,13 @@ class LocalDriverContext(
     override fun inputs(): Set<String> {
         return inputTopics.keys // + rawInputTopics.keys
     }
+
+    override val tenant: String?
+        get() = topologyContext.tenant.orElse(null)
+    override val deployment: String?
+        get() = topologyContext.deployment.orElse(null)
+    override val generation: String
+        get() = topologyContext.generation
 
     override fun outputs(): Set<String> {
         return outputTopics.keys
@@ -334,10 +334,6 @@ class LocalDriverContext(
         } catch (e: Throwable) {
             logger.error("Error sending input data", e)
         }
-    }
-
-    override fun delete(topic: Topic, key: String) {
-        deleteQualified(topic.qualifiedString(), key)
     }
 
     override fun deleteQualified(topic: String, key: String) {

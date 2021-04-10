@@ -380,6 +380,64 @@ class TestTopology {
         }
     }
 
+
+    @Test
+    fun testTroubleShootScan() {
+        val filter: ((IMessage)->Boolean)? = {
+            it.boolean("include")
+        }
+
+        stream {
+            from("source") {
+                scan({ msg -> msg.string("chat_id") },
+                    { _ -> empty() },
+                    {
+                        set { key, added, state ->
+                            val current = state.optionalInteger("count") ?: 0
+//                        logger.info("Adding message with key: $key message: $added")
+                            if(filter==null || filter.invoke(added)) {
+                                state["count"] = current + 1
+                            }
+                            state
+                        }
+                    },
+                    {
+                        set { key, removed, state ->
+                            val current = state.optionalInteger("count") ?: 0
+//                        logger.info("Removing message with key: $key message: $removed")
+                            if(filter==null || filter.invoke(removed)) {
+                                state["count"] = current - 1
+                            }
+                            state
+                        }
+                    }
+                )
+                to("output")
+            }
+        }.renderAndExecute {
+            inputQualified("source", "key1", empty().set("chat_id","1").set("include",true))
+            inputQualified("source", "key2", empty().set("chat_id","1").set("include",true))
+            // inputQualified("source", "key1", empty())
+            val (k1, v1) = outputQualified("output")
+            assertEquals("1",k1)
+            assertEquals(1,v1.integer("count"))
+
+            val (k2, v2) = outputQualified("output")
+            assertEquals("1",k2)
+            assertEquals(2,v2.integer("count"))
+
+            inputQualified("source", "key2", empty().set("chat_id","1").set("include",false))
+            val (k3, v3) = outputQualified("output")
+            assertEquals("1",k3)
+            assertEquals(1,v3.integer("count"))
+            // assertTrue(outputSizeQualified("output") == 0L)
+            // logger.info("Key: $key Value: $value")
+            // assertEquals(StoreStateProcessor.COMMONKEY, key)
+            // assertEquals(1, value["total"], "Entries with the same key should replace")
+        }
+    }
+
+
     @Test
     fun testSimpleScanWithDecimals() {
         stream {
@@ -422,7 +480,6 @@ class TestTopology {
     }
     // TODO Can we remove the extra 'block' braces?
     // TODO Can we implement += and ++ like operators?
-    // TODO Introduce 'eachDelete(key)
     @Test
     fun testScan() {
         stream {
@@ -474,6 +531,7 @@ class TestTopology {
             assertEquals(0, value2["total"], "Delete should subtract")
         }
     }
+
 
     @Test
     fun testScanGroupedSimple() {
@@ -631,16 +689,18 @@ class TestTopology {
         return i
     }
 
+    // TODO improve test
     @Test
     fun testLogSink() {
         stream {
             val logSinkConfig = logSinkConfig("logname")
             from("source") {
-                logSink("logSinkTest", "@output", logSinkConfig)
+                logSink("logSinkTest", "output", logSinkConfig)
             }
         }.renderAndExecute {
             inputQualified("source", "somekey", empty().set("myKey", "myValue"))
             delay(200)
+
         }
     }
 

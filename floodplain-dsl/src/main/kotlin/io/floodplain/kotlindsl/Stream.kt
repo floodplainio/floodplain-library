@@ -67,9 +67,9 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
 
     private val localSinkConfigurations: MutableList<AbstractSinkConfig> = mutableListOf()
 
-    val tenant: String? = topologyContext.tenant.orElse(null)
-    val deployment: String? = topologyContext.deployment.orElse(null)
-    val generation: String = topologyContext.generation
+    override val tenant: String? = topologyContext.tenant.orElse(null)
+    override val deployment: String? = topologyContext.deployment.orElse(null)
+    override val generation: String = topologyContext.generation
 
     fun topic(name: String): String {
         val buffer = StringBuilder()

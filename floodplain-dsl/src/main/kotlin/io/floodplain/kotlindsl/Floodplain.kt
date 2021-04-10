@@ -502,6 +502,8 @@ class Source(override val rootTopology: Stream, private val component: TopologyP
  */
 open class PartialStream(override val rootTopology: Stream) : FloodplainOperator {
     val transformers: MutableList<Transformer> = mutableListOf()
+
+    // override val tenant = topologyContext.tenant
     fun addTransformer(transformer: Transformer): Transformer {
         transformers.add(transformer)
         return transformer
@@ -509,6 +511,12 @@ open class PartialStream(override val rootTopology: Stream) : FloodplainOperator
 
     override val topologyContext: TopologyContext
         get() = rootTopology.topologyContext
+    override val tenant: String?
+        get() = rootTopology.topologyContext.tenant.orElse(null)
+    override val deployment: String
+        get() = rootTopology.topologyContext.deployment.orElse(null)
+    override val generation: String
+        get() = rootTopology.topologyContext.generation
 }
 
 interface FloodplainSourceContainer : FloodplainOperator {
@@ -518,6 +526,10 @@ interface FloodplainSourceContainer : FloodplainOperator {
 interface FloodplainOperator {
     val topologyContext: TopologyContext
     val rootTopology: Stream
+
+    val tenant: String?
+    val deployment: String?
+    val generation: String
 }
 
 /**
