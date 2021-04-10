@@ -54,29 +54,13 @@ fun PartialStream.fhirGeneric(topic: String, init: Source.() -> Unit = {}): Sour
     return fhirExistingSource(topic, ::genericResource, this.rootTopology, init)
 }
 
-// fun PartialStream.fhirGeneric(topic: Topic, init: Source.() -> Unit = {}): Source {
-//     return fhirExistingSource(topic, ::genericResource, this.rootTopology, init)
-// }
-
 fun Stream.fhirGeneric(topic: String, init: Source.() -> Unit = {}) {
     addSource(fhirExistingSource(topic, ::genericResource, this, init))
 }
 
-// fun Stream.fhirGeneric(topic: Topic, init: Source.() -> Unit = {}) {
-//     addSource(fhirExistingSource(topic, ::genericResource, this, init))
-// }
-
 fun <T : IBaseResource> PartialStream.fhirSource(topic: String, transform: (T) -> IMessage, init: Source.() -> Unit = {}): Source {
     return fhirSource<T>(topic, transform, init)
 }
-
-// fun <T : IBaseResource> PartialStream.fhirSource(topic: Topic, transform: (T) -> IMessage, init: Source.() -> Unit = {}): Source {
-//     return fhirExistingSource(topic, transform, this.rootTopology, init)
-// }
-
-// fun <T : IBaseResource> Stream.fhirSource(topic: String, transform: (T) -> IMessage, init: Source.() -> Unit = {}) {
-//     addSource(fhirExistingSource(qualifiedTopic(topic), transform, this.rootTopology, init))
-// }
 
 fun <T : IBaseResource> Stream.fhirSource(topic: String, transform: (T) -> IMessage, init: Source.() -> Unit = {}) {
     addSource(fhirExistingSource(topic, transform, this.rootTopology, init))
@@ -92,7 +76,6 @@ private fun <T : IBaseResource> fhirExistingSource(topic: String, transform: (T)
     }
 
     val sourceElement = CustomTopicSource(
-        // Topic.from(topic, topologyContext),
         topic,
         { data -> Serdes.String().deserializer().deserialize(topic, data) },
         { data -> parseInput(data) }
