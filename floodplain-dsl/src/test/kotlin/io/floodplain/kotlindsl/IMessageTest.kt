@@ -40,6 +40,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 private val logger = mu.KotlinLogging.logger {}
 
@@ -170,6 +171,12 @@ class IMessageTest {
         val baseMessage = empty().set("foo", "bar").set("subm", submessage)
         val copy = baseMessage.copy()
         assertEquals(baseMessage, copy)
+    }
+
+    @Test
+    fun testExists() {
+        val msg = empty().set("string", "boom")
+        assertTrue(msg.exists("string"))
     }
 
     @Test

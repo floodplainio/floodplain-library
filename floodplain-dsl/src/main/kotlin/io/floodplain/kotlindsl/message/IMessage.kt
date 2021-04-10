@@ -31,6 +31,7 @@ import kotlin.streams.toList
 
 interface IMessage {
     operator fun get(path: String): Any?
+    fun exists(path: String): Boolean
     fun message(path: String): IMessage?
     fun string(path: String): String
     fun integer(path: String): Int
@@ -73,6 +74,10 @@ private data class IMessageImpl(private val content: MutableMap<String, Any>) : 
     override operator fun get(path: String): Any? {
         val (msg, name) = parsePath(path.split("/"))
         return msg.content.get(name)
+    }
+
+    override fun exists(path: String): Boolean {
+       return get(path)!=null
     }
 
     override fun message(path: String): IMessage? {
