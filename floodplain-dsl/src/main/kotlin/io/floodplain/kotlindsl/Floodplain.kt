@@ -179,6 +179,19 @@ fun PartialStream.set(transform: (String, IMessage, IMessage) -> IMessage): Tran
     return addTransformer(Transformer(this.rootTopology, set, topologyContext))
 }
 
+/**
+ * Modifies the incoming message before passing it on.
+ * It is a simpler sibling to set, as there is no access to the key or the secondary message
+ */
+fun PartialStream.transform(transform: (IMessage) -> IMessage): Transformer {
+    val transformer: (String, ImmutableMessage, ImmutableMessage) -> ImmutableMessage =
+        { _, msg, _ ->
+            transform.invoke(fromImmutable(msg)).toImmutable()
+        }
+    val set = SetTransformer(transformer)
+    return addTransformer(Transformer(this.rootTopology, set, topologyContext))
+}
+
 fun PartialStream.keyTransform(transform: (String) -> String): Transformer {
     return addTransformer(Transformer(this.rootTopology, KeyTransformer(transform), topologyContext))
 }

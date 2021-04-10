@@ -119,9 +119,8 @@ class TestTopology {
     fun simpleTransformation() {
         stream {
             from("mysource") {
-                set {
-                    _, primary, _ ->
-                    primary.set("name", "Frank")
+                transform {
+                    it.set("name", "Frank")
                 }
                 to("people")
             }
