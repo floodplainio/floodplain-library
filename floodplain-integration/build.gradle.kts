@@ -6,6 +6,7 @@ dependencies {
     testCompile(FloodplainDeps.jUnit)
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation(project(":floodplain-stream-topology"))
+    implementation(project(":immutable-api"))
     implementation(project(":streams-api"))
     implementation(project(":streams"))
     implementation(project(":floodplain-stream-topology"))

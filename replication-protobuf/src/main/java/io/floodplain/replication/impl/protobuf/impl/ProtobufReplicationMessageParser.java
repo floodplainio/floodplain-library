@@ -74,6 +74,7 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
         }
         switch (type) {
             case STRING:
+            case BINARY_DIGEST:
                 return (String) val;
             case INTEGER:
                 return Integer.toString((Integer) val);
@@ -90,8 +91,8 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
                 }
             case BOOLEAN:
                 return Boolean.toString((Boolean) val);
-            case BINARY_DIGEST:
-                return (String) val;
+            case LEGACYDATE:
+                return Long.toString(((Date)val).toInstant().toEpochMilli());
             case BINARY:
                 logger.info("Binary type: {}", val.getClass());
                 return (String) val;
@@ -138,6 +139,8 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
             case CLOCKTIME:
             case TIMESTAMP:
                 return DateSerializer.parseTimeObject(val.getValue());
+            case LEGACYDATE:
+                return new Date(Long.parseLong(value));
             case DECIMAL:
                 return new BigDecimal(value);
             case STRINGLIST:
@@ -178,6 +181,8 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
                 return Replication.ValueProtobuf.ValueType.ENUM;
             case DECIMAL:
                 return Replication.ValueProtobuf.ValueType.DECIMAL;
+            case LEGACYDATE:
+                return Replication.ValueProtobuf.ValueType.LEGACYDATE;
             case STOPWATCHTIME:
             case IMMUTABLE:
             case UNKNOWN:
@@ -208,6 +213,8 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
                 return ImmutableMessage.ValueType.DATE;
             case TIMESTAMP:
                 return ImmutableMessage.ValueType.TIMESTAMP;
+            case LEGACYDATE:
+                return ImmutableMessage.ValueType.LEGACYDATE;
             case CLOCKTIME:
                 return ImmutableMessage.ValueType.CLOCKTIME;
             case BINARY:
@@ -340,7 +347,7 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
                                 final String serializeValue = serializeValue(type, value.orElse(null));
                                 if (serializeValue == null) {
                                     return new ValueTuple(e.getKey(), Replication.ValueProtobuf.newBuilder()
-                                            .setType(Replication.ValueProtobuf.ValueType.CLOCKTIME)
+                                            .setType(Replication.ValueProtobuf.ValueType.CLOCKTIME) // WTF?
                                             .setIsNull(value.isEmpty())
                                             .build()
                                     );

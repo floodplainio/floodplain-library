@@ -45,7 +45,8 @@ public interface ImmutableMessage {
         UNKNOWN,
         IMMUTABLELIST,
         ENUM,
-        STRINGLIST
+        STRINGLIST,
+        LEGACYDATE
     }
 
     Set<String> columnNames();

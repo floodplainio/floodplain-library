@@ -347,6 +347,9 @@ public class ReplicationJSON {
                 case ENUM:
                     node.put(key, o.toString());
                     break;
+                case LEGACYDATE:
+                    node.put(key, ((Date)o).toInstant().toEpochMilli());
+                    break;
                 case IMMUTABLE:
                     break;
                 case BINARY:

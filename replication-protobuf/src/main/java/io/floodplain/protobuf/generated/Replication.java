@@ -242,6 +242,10 @@ public final class Replication {
        * <code>TIMESTAMP = 15;</code>
        */
       TIMESTAMP(15),
+      /**
+       * <code>LEGACYDATE = 16;</code>
+       */
+      LEGACYDATE(16),
       UNRECOGNIZED(-1),
       ;
 
@@ -309,6 +313,10 @@ public final class Replication {
        * <code>TIMESTAMP = 15;</code>
        */
       public static final int TIMESTAMP_VALUE = 15;
+      /**
+       * <code>LEGACYDATE = 16;</code>
+       */
+      public static final int LEGACYDATE_VALUE = 16;
 
 
       public final int getNumber() {
@@ -351,6 +359,7 @@ public final class Replication {
           case 13: return STRINGLIST;
           case 14: return DECIMAL;
           case 15: return TIMESTAMP;
+          case 16: return LEGACYDATE;
           default: return null;
         }
       }
@@ -4276,44 +4285,45 @@ public final class Replication {
   static {
     java.lang.String[] descriptorData = {
       "\n\021replication.proto\022 io.floodplain.proto" +
-      "buf.generated\"\346\002\n\rValueProtobuf\022\r\n\005value" +
+      "buf.generated\"\366\002\n\rValueProtobuf\022\r\n\005value" +
       "\030\001 \001(\t\022G\n\004type\030\002 \001(\01629.io.floodplain.pro" +
       "tobuf.generated.ValueProtobuf.ValueType\022" +
-      "\016\n\006isNull\030\003 \001(\010\022\020\n\010byteData\030\004 \001(\014\"\332\001\n\tVa" +
+      "\016\n\006isNull\030\003 \001(\010\022\020\n\010byteData\030\004 \001(\014\"\352\001\n\tVa" +
       "lueType\022\n\n\006STRING\020\000\022\013\n\007INTEGER\020\001\022\010\n\004LONG" +
       "\020\002\022\n\n\006DOUBLE\020\003\022\t\n\005FLOAT\020\004\022\013\n\007BOOLEAN\020\005\022\021" +
       "\n\rBINARY_DIGEST\020\006\022\010\n\004DATE\020\007\022\r\n\tCLOCKTIME" +
       "\020\010\022\010\n\004LIST\020\t\022\n\n\006BINARY\020\n\022\016\n\nCOORDINATE\020\013" +
       "\022\010\n\004ENUM\020\014\022\016\n\nSTRINGLIST\020\r\022\013\n\007DECIMAL\020\016\022" +
-      "\r\n\tTIMESTAMP\020\017\"\352\007\n\032ReplicationMessagePro" +
-      "tobuf\022\r\n\005magic\030\001 \001(\005\022Y\n\toperation\030\002 \001(\0162" +
-      "F.io.floodplain.protobuf.generated.Repli" +
-      "cationMessageProtobuf.Operation\022\021\n\ttimes" +
-      "tamp\030\003 \001(\003\022\026\n\016transaction_id\030\004 \001(\t\022\023\n\013pr" +
-      "imarykeys\030\005 \003(\t\022X\n\006values\030\006 \003(\0132H.io.flo" +
-      "odplain.protobuf.generated.ReplicationMe" +
-      "ssageProtobuf.ValuesEntry\022i\n\017submessage_" +
-      "list\030\007 \003(\0132P.io.floodplain.protobuf.gene" +
-      "rated.ReplicationMessageProtobuf.Submess" +
-      "ageListEntry\022`\n\nsubmessage\030\010 \003(\0132L.io.fl" +
-      "oodplain.protobuf.generated.ReplicationM" +
-      "essageProtobuf.SubmessageEntry\022R\n\014paramM" +
-      "essage\030\t \001(\0132<.io.floodplain.protobuf.ge" +
-      "nerated.ReplicationMessageProtobuf\032^\n\013Va" +
-      "luesEntry\022\013\n\003key\030\001 \001(\t\022>\n\005value\030\002 \001(\0132/." +
-      "io.floodplain.protobuf.generated.ValuePr" +
-      "otobuf:\0028\001\032w\n\023SubmessageListEntry\022\013\n\003key" +
-      "\030\001 \001(\t\022O\n\005value\030\002 \001(\0132@.io.floodplain.pr" +
-      "otobuf.generated.ReplicationMessageListP" +
-      "rotobuf:\0028\001\032o\n\017SubmessageEntry\022\013\n\003key\030\001 " +
-      "\001(\t\022K\n\005value\030\002 \001(\0132<.io.floodplain.proto" +
-      "buf.generated.ReplicationMessageProtobuf" +
-      ":\0028\001\"]\n\tOperation\022\010\n\004NONE\020\000\022\n\n\006INSERT\020\001\022" +
-      "\n\n\006UPDATE\020\002\022\n\n\006DELETE\020\003\022\n\n\006COMMIT\020\004\022\t\n\005M" +
-      "ERGE\020\005\022\013\n\007INITIAL\020\006\"\177\n\036ReplicationMessag" +
-      "eListProtobuf\022\r\n\005magic\030\001 \001(\005\022N\n\010elements" +
-      "\030\002 \003(\0132<.io.floodplain.protobuf.generate" +
-      "d.ReplicationMessageProtobufb\006proto3"
+      "\r\n\tTIMESTAMP\020\017\022\016\n\nLEGACYDATE\020\020\"\352\007\n\032Repli" +
+      "cationMessageProtobuf\022\r\n\005magic\030\001 \001(\005\022Y\n\t" +
+      "operation\030\002 \001(\0162F.io.floodplain.protobuf" +
+      ".generated.ReplicationMessageProtobuf.Op" +
+      "eration\022\021\n\ttimestamp\030\003 \001(\003\022\026\n\016transactio" +
+      "n_id\030\004 \001(\t\022\023\n\013primarykeys\030\005 \003(\t\022X\n\006value" +
+      "s\030\006 \003(\0132H.io.floodplain.protobuf.generat" +
+      "ed.ReplicationMessageProtobuf.ValuesEntr" +
+      "y\022i\n\017submessage_list\030\007 \003(\0132P.io.floodpla" +
+      "in.protobuf.generated.ReplicationMessage" +
+      "Protobuf.SubmessageListEntry\022`\n\nsubmessa" +
+      "ge\030\010 \003(\0132L.io.floodplain.protobuf.genera" +
+      "ted.ReplicationMessageProtobuf.Submessag" +
+      "eEntry\022R\n\014paramMessage\030\t \001(\0132<.io.floodp" +
+      "lain.protobuf.generated.ReplicationMessa" +
+      "geProtobuf\032^\n\013ValuesEntry\022\013\n\003key\030\001 \001(\t\022>" +
+      "\n\005value\030\002 \001(\0132/.io.floodplain.protobuf.g" +
+      "enerated.ValueProtobuf:\0028\001\032w\n\023Submessage" +
+      "ListEntry\022\013\n\003key\030\001 \001(\t\022O\n\005value\030\002 \001(\0132@." +
+      "io.floodplain.protobuf.generated.Replica" +
+      "tionMessageListProtobuf:\0028\001\032o\n\017Submessag" +
+      "eEntry\022\013\n\003key\030\001 \001(\t\022K\n\005value\030\002 \001(\0132<.io." +
+      "floodplain.protobuf.generated.Replicatio" +
+      "nMessageProtobuf:\0028\001\"]\n\tOperation\022\010\n\004NON" +
+      "E\020\000\022\n\n\006INSERT\020\001\022\n\n\006UPDATE\020\002\022\n\n\006DELETE\020\003\022" +
+      "\n\n\006COMMIT\020\004\022\t\n\005MERGE\020\005\022\013\n\007INITIAL\020\006\"\177\n\036R" +
+      "eplicationMessageListProtobuf\022\r\n\005magic\030\001" +
+      " \001(\005\022N\n\010elements\030\002 \003(\0132<.io.floodplain.p" +
+      "rotobuf.generated.ReplicationMessageProt" +
+      "obufb\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,

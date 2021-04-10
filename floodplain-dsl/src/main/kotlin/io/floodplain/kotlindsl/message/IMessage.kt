@@ -26,6 +26,7 @@ import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
+import java.util.Date
 import kotlin.streams.toList
 
 interface IMessage {
@@ -36,6 +37,8 @@ interface IMessage {
     fun optionalInteger(path: String): Int?
     fun dateTime(path: String): LocalDateTime
     fun optionalDateTime(path: String): LocalDateTime?
+    fun legacyDate(path: String): Date
+    fun optionalLegacyDate(path: String): Date?
 
     fun time(path: String): LocalTime
     fun optionalTime(path: String): LocalTime?
@@ -112,6 +115,19 @@ private data class IMessageImpl(private val content: MutableMap<String, Any>) : 
         }
         return raw
     }
+
+    override fun legacyDate(path: String): Date {
+        return optionalLegacyDate(path) ?: throw NullPointerException("Can't obtain legacy date from path: $path as it is absent")
+    }
+
+    override fun optionalLegacyDate(path: String): Date? {
+        val raw = get(path) ?: return null
+        if (raw !is Date) {
+            throw ClassCastException("Path element $path should be an datetime but it is a ${raw::class}")
+        }
+        return raw
+    }
+
 
     override fun time(path: String): LocalTime {
         return optionalTime(path) ?: throw NullPointerException("Can't obtain datetime from path: $path as it is absent")

@@ -41,6 +41,8 @@ import kotlinx.coroutines.withTimeout
 import org.junit.After
 import org.junit.Test
 import java.math.BigDecimal
+import java.util.Date
+import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 private val logger = mu.KotlinLogging.logger {}
@@ -112,30 +114,58 @@ class TestCombinedMongo {
             } as Long?
             assertNotNull(hits)
             connectJobs().forEach { it.cancel("ciao!") }
-            // logger.info("Outputs: ${outputs()}")
-            // delay(5000)
-            // val database = topologyContext().topicName("@mongodump")
-
-            // connectJobs().forEach { it.cancel("ciao!") }
-            // var hits = 0L
-            // withTimeout(100000) {
-            //     repeat(1000) {
-            //         MongoClients.create("mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}")
-            //             .use { client ->
-            //                 val collection = client.getDatabase(database).getCollection("address")
-            //                 hits = collection.countDocuments()
-            //                 logger.info("Count of Documents: $hits in database: $database")
-            //                 if (hits >= 598) {
-            //                     return@withTimeout
-            //                 }
-            //             }
-            //         delay(1000)
-            //     }
-            // }
-            // assertEquals(599, hits)
             logger.info("done, test succeeded")
         }
     }
+
+    @Test
+    fun testMongoDBDataType() {
+        if (!useIntegraton) {
+            logger.info("Not performing integration tests; doesn't seem to work in circleci")
+            return
+        }
+        stream("sometenant") {
+            // val logConfig = logSinkConfig("any")
+            val mongoConfig = mongoConfig(
+                "mongosink",
+                "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
+                "@mongodump"
+            )
+            from("input") {
+                toMongo("testdatastructure", "output", mongoConfig)
+            }
+        }.renderAndExecute {
+            val dateInput = Date()
+            val inputMessage =  empty().set("date", dateInput)
+            val aa = inputMessage.toImmutable()
+            println(">> $aa")
+            inputQualified("input","key1", empty().set("date", dateInput))
+            val database = topologyContext().topicName("@mongodump")
+            flushSinks()
+            val hits = waitForMongoDbCondition(
+                "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
+                database
+            ) { databaseInstance ->
+                val collection = databaseInstance.getCollection("testdatastructure")
+                val countDocuments = collection.countDocuments()
+                logger.info("# of documents: $countDocuments")
+                if (countDocuments == 1L) {
+                    val dateObject = collection.find().first()?.get("date")
+                    logger.info("Date: $dateObject")
+                    //
+                    assertEquals(dateInput.toInstant().toEpochMilli(),dateObject as Long)
+                    1L
+                } else {
+                    null
+                }
+            } as Long?
+            assertNotNull(hits)
+            connectJobs().forEach { it.cancel("ciao!") }
+
+            logger.info("done, test succeeded")
+        }
+    }
+
 
     /**
      * Test the simplest imaginable pipe: One source and one sink.

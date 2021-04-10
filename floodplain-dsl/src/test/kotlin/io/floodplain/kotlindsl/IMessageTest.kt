@@ -78,7 +78,6 @@ class IMessageTest {
         val repl = ReplicationFactory.standardMessage(immutable)
         val serialized = currentParser.serialize(repl)
         val deserialized = currentParser.parseBytes(Optional.empty(), serialized)
-        println("S: ${String(serialized)}")
         return fromImmutable(deserialized.message())
     }
 

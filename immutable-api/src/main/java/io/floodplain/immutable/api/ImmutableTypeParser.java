@@ -56,6 +56,8 @@ public class ImmutableTypeParser {
                 return "clocktime";
             case TIMESTAMP:
                 return "timestamp";
+            case LEGACYDATE:
+                return "legacydate";
         }
         throw new UnsupportedOperationException("Unknown type: " + type);
 
@@ -91,6 +93,8 @@ public class ImmutableTypeParser {
                 return ValueType.BINARY;
             case "clocktime":
                 return ValueType.CLOCKTIME;
+            case "legacydate":
+                return ValueType.LEGACYDATE;
             case "object":
             case "any":
             case "empty":
