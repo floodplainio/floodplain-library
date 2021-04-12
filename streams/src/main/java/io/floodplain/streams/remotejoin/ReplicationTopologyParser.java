@@ -315,7 +315,7 @@ public class ReplicationTopologyParser {
         String reduceName = topologyContext.qualifiedName("reduce", transformerNames.size(), currentPipeId);
 
         String reduceStoreName = STORE_PREFIX + "accumulator_" + reduceName;
-        String inputStoreName = STORE_PREFIX + parentName + "_reduce_inputstore";
+        String inputStoreName = STORE_PREFIX + "reduce_inputstore_"+ reduceName;
 
         topology.addProcessor(reduceReader, () -> new ReduceReadProcessor(inputStoreName, reduceStoreName, initialMessage, keyExtractor), parentName);
         topology.addProcessor(ifElseName, () -> new IfElseProcessor(msg -> msg.operation() != Operation.DELETE, trueBranchName, Optional.of(falseBranchName)), reduceReader);
