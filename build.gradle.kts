@@ -8,11 +8,13 @@ buildscript {
         mavenCentral()
         gradlePluginPortal()
         jcenter()
+        maven("https://plugins.gradle.org/m2/")
     }
     dependencies {
         classpath("gradle.plugin.com.hierynomus.gradle.plugins:license-gradle-plugin:0.15.0")
         classpath("com.github.johnrengelman.shadow:com.github.johnrengelman.shadow.gradle.plugin:6.1.0")
         classpath("gradle.plugin.com.github.spotbugs.snom:spotbugs-gradle-plugin:4.5.1")
+        classpath("com.google.protobuf:protobuf-gradle-plugin:0.8.15")
     }
 }
 plugins {

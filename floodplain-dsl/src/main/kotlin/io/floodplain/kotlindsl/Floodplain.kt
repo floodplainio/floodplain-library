@@ -259,7 +259,7 @@ fun PartialStream.joinAttributes(withTopic: String, nameAttribute: String, value
                 },
                 {
                     set { _, msg, acc ->
-                        acc.clear(msg[nameAttribute] as String)
+                        acc.clearAll(msg[nameAttribute] as String)
                         acc
                     }
                 }

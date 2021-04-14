@@ -56,7 +56,6 @@ interface IMessage {
     fun boolean(path: String): Boolean
     fun optionalBoolean(path: String): Boolean?
     fun optionalString(path: String): String?
-    fun clear(path: String): IMessage
     fun clearAll(vararg fields: String): IMessage // TODO use varargs?
     fun isEmpty(): Boolean
     operator fun set(path: String, value: Any?): IMessage
@@ -250,7 +249,7 @@ private data class IMessageImpl(private val content: MutableMap<String, Any>) : 
         return Pair(this, path[0])
     }
 
-    override fun clear(path: String): IMessage {
+    private fun clear(path: String): IMessage {
         val (msg, name) = parsePath(path.split("/"))
         msg.content.remove(name)
         return msg
