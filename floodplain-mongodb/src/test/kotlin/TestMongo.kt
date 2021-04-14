@@ -75,7 +75,7 @@ class TestMongo {
                         .set("line2", "I am lightning in the night $it")
                         .set("time", LocalDateTime.now().toEpochSecond(ZoneOffset.UTC))
                         .set("counter", it.toLong())
-                    inputQualified("sometopic", "somekey_$it", trip)
+                    input("sometopic", "somekey_$it", trip)
                 }
                 // val elements = outputSize("myindex")
                 flushSinks()
@@ -127,7 +127,7 @@ class TestMongo {
                     val trip = empty().set("body", "I am a fluffy rabbit number $it and I have fluffy feet")
                         .set("time", LocalDateTime.now().toEpochSecond(ZoneOffset.UTC))
                         .set("counter", it.toLong())
-                    inputQualified("sometopic", "somekey_$it", trip)
+                    input("sometopic", "somekey_$it", trip)
                 }
                 // val elements1 = outputSize("myindex1")
                 // val elements2 = outputSize("myindex2")

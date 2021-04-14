@@ -76,7 +76,7 @@ class TestElasticSearch {
                     .set("body", poem)
                     .set("time", LocalDateTime.now().toEpochSecond(ZoneOffset.UTC))
                     .set("uuid", uuid)
-                inputQualified("sometopic", uuid, msg)
+                input("sometopic", uuid, msg)
                 logger.info("inserting number: $it and uuid: $uuid")
             }
             withTimeout(600000) {

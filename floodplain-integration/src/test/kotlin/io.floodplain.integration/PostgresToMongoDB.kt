@@ -139,7 +139,7 @@ class TestCombinedMongo {
             val inputMessage =  empty().set("date", dateInput)
             val aa = inputMessage.toImmutable()
             println(">> $aa")
-            inputQualified("input","key1", empty().set("date", dateInput))
+            input("input","key1", empty().set("date", dateInput))
             val database = topologyContext().topicName("@mongodump")
             flushSinks()
             val hits = waitForMongoDbCondition(

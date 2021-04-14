@@ -52,10 +52,10 @@ class TestTopology {
                 to("outputTopic")
             }
         }.renderAndExecute {
-            inputQualified("sometopic", "key1", empty().set("name", "gorilla"))
-            inputQualified("sometopic", "key1", empty().set("name", "monkey"))
-            assertEquals("gorilla", outputQualified("outputTopic").second["name"])
-            assertEquals("monkey", outputQualified("outputTopic").second["name"])
+            input("sometopic", "key1", empty().set("name", "gorilla"))
+            input("sometopic", "key1", empty().set("name", "monkey"))
+            assertEquals("gorilla", output("outputTopic").second["name"])
+            assertEquals("monkey", output("outputTopic").second["name"])
         }
     }
 
@@ -65,10 +65,10 @@ class TestTopology {
                 to("outputTopic")
             }
         }.renderAndExecute {
-            inputQualified("sometopic", "key1", empty().set("name", "gorilla"))
-            inputQualified("sometopic", "key1", empty().set("name", "monkey"))
-            assertEquals("gorilla", outputQualified("outputTopic").second["name"])
-            assertEquals("monkey", outputQualified("outputTopic").second["name"])
+            input("sometopic", "key1", empty().set("name", "gorilla"))
+            input("sometopic", "key1", empty().set("name", "monkey"))
+            assertEquals("gorilla", output("outputTopic").second["name"])
+            assertEquals("monkey", output("outputTopic").second["name"])
         }
     }
 
@@ -107,11 +107,11 @@ class TestTopology {
                 to("outputtopic")
             }
         }.renderAndExecute {
-            inputQualified("sometopic", "key1", empty().set("name", "gorilla"))
-            deleteQualified("sometopic", "key1")
-            outputQualified("outputtopic")
-            assertTrue(deletedQualified("outputtopic") == "key1", "Key mismatch")
-            logger.info("Topic now empty: ${isEmptyQualified("outputtopic")}")
+            input("sometopic", "key1", empty().set("name", "gorilla"))
+            delete("sometopic", "key1")
+            output("outputtopic")
+            assertTrue(deleted("outputtopic") == "key1", "Key mismatch")
+            logger.info("Topic now empty: ${isEmpty("outputtopic")}")
         }
     }
 
@@ -125,8 +125,8 @@ class TestTopology {
                 to("people")
             }
         }.renderAndExecute {
-            inputQualified("mysource", "1", empty().set("species", "human"))
-            val (_, value) = outputQualified("people")
+            input("mysource", "1", empty().set("species", "human"))
+            val (_, value) = output("people")
             logger.info("Person found: $value")
         }
     }
@@ -144,18 +144,18 @@ class TestTopology {
                 to("output")
             }
         }.renderAndExecute {
-            assertTrue(isEmptyQualified("output"))
-            inputQualified("left", "key1", empty().set("name", "left1"))
-            assertTrue(isEmptyQualified("output"))
-            inputQualified("left", "wrongkey", empty().set("name", "nomatter"))
-            assertTrue(isEmptyQualified("output"))
-            inputQualified("right", "key1", empty().set("subname", "monkey"))
-            val (_, result) = outputQualified("output")
+            assertTrue(isEmpty("output"))
+            input("left", "key1", empty().set("name", "left1"))
+            assertTrue(isEmpty("output"))
+            input("left", "wrongkey", empty().set("name", "nomatter"))
+            assertTrue(isEmpty("output"))
+            input("right", "key1", empty().set("subname", "monkey"))
+            val (_, result) = output("output")
             logger.info("Result: $result")
             assertEquals("monkey", result["rightsub/subname"])
-            deleteQualified("left", "key1")
+            delete("left", "key1")
             // TODO add tests to check store sizes
-            assertEquals("key1", deletedQualified("output"))
+            assertEquals("key1", deleted("output"))
         }
     }
 
@@ -173,20 +173,20 @@ class TestTopology {
                 to("output")
             }
         }.renderAndExecute {
-            assertTrue(isEmptyQualified("output"))
+            assertTrue(isEmpty("output"))
             val msg = empty().set("name", "left1")
-            inputQualified("left", "key1", msg)
-            assertTrue(!isEmptyQualified("output"))
-            assertEquals(outputQualified("output").second, msg)
-            inputQualified("left", "otherkey", empty().set("name", "nomatter"))
-            assertTrue(!isEmptyQualified("output"))
-            assertEquals(outputQualified("output").second, empty().set("name", "nomatter"))
-            inputQualified("right", "key1", empty().set("subname", "monkey"))
-            val (_, result) = outputQualified("output")
+            input("left", "key1", msg)
+            assertTrue(!isEmpty("output"))
+            assertEquals(output("output").second, msg)
+            input("left", "otherkey", empty().set("name", "nomatter"))
+            assertTrue(!isEmpty("output"))
+            assertEquals(output("output").second, empty().set("name", "nomatter"))
+            input("right", "key1", empty().set("subname", "monkey"))
+            val (_, result) = output("output")
             logger.info("Result: $result")
             assertEquals("monkey", result["rightsub/subname"])
-            deleteQualified("left", "key1")
-            assertEquals("key1", deletedQualified("output"))
+            delete("left", "key1")
+            assertEquals("key1", deleted("output"))
         }
     }
 
@@ -201,10 +201,10 @@ class TestTopology {
         }.renderAndExecute {
             val record1 = empty().set("subkey", "subkey1")
             val record2 = empty().set("subkey", "subkey2")
-            inputQualified("src", "key1", record1)
-            inputQualified("src", "key2", record2)
-            assertEquals(2, outputSizeQualified("mysink"), "Expected two messages in topic")
-            assertEquals(2, outputSizeQualified("myothersink"), "Expected two messages in topic")
+            input("src", "key1", record1)
+            input("src", "key2", record2)
+            assertEquals(2, outputSize("mysink"), "Expected two messages in topic")
+            assertEquals(2, outputSize("myothersink"), "Expected two messages in topic")
         }
     }
     @Test
@@ -217,12 +217,12 @@ class TestTopology {
         }.renderAndExecute {
             val record1 = empty().set("subkey", "subkey1")
             val record2 = empty().set("subkey", "subkey2")
-            inputQualified("src", "key1", record1)
-            inputQualified("src", "key2", record2)
-            val (k1, v1) = outputQualified("mysink")
+            input("src", "key1", record1)
+            input("src", "key2", record2)
+            val (k1, v1) = output("mysink")
             assertEquals("subkey1|key1", k1)
             assertEquals(record1, v1)
-            val (k2, v2) = outputQualified("mysink")
+            val (k2, v2) = output("mysink")
             assertEquals("subkey2|key2", k2)
             assertEquals(record2, v2)
 
@@ -249,38 +249,38 @@ class TestTopology {
                 to("output")
             }
         }.renderAndExecute {
-            assertTrue(isEmptyQualified("output"))
+            assertTrue(isEmpty("output"))
             val leftRecord = empty().set("name", "left1")
-            inputQualified("left", "key1", leftRecord)
-            assertTrue(!isEmptyQualified("output"))
+            input("left", "key1", leftRecord)
+            assertTrue(!isEmpty("output"))
             val record1 = empty().set("foreignkey", "key1").set("recorddata", "data1")
             val record2 = empty().set("foreignkey", "key1").set("recorddata", "data2")
-            inputQualified("right", "otherkey1", record1)
-            inputQualified("right", "otherkey2", record2)
+            input("right", "otherkey1", record1)
+            input("right", "otherkey2", record2)
 
-            val (key, value) = outputQualified("output")
+            val (key, value) = output("output")
             assertEquals("key1", key)
             val sublist: List<IMessage> = (value["rightsub"] ?: emptyList<IMessage>()) as List<IMessage>
             assertTrue(sublist.isEmpty())
 
-            val outputs = outputSizeQualified("output")
+            val outputs = outputSize("output")
             assertEquals(2, outputs, "should have 2 elements")
-            outputQualified("output") // skip one
-            val (_, v3) = outputQualified("output")
+            output("output") // skip one
+            val (_, v3) = output("output")
             val subList = v3["rightsub"] as List<*>
             assertEquals(2, subList.size)
             assertEquals(record1, subList[0])
             assertEquals(record2, subList[1])
-            deleteQualified("right", "otherkey1")
-            val (_, v4) = outputQualified("output")
+            delete("right", "otherkey1")
+            val (_, v4) = output("output")
             val subList2 = v4["rightsub"] as List<*>
             assertEquals(1, subList2.size)
-            deleteQualified("right", "otherkey2")
-            val (_, v5) = outputQualified("output")
+            delete("right", "otherkey2")
+            val (_, v5) = output("output")
             val subList3 = v5["rightsub"] as List<*>?
             assertEquals(0, subList3?.size ?: 0)
-            deleteQualified("left", "key1")
-            assertEquals("key1", deletedQualified("output"))
+            delete("left", "key1")
+            assertEquals("key1", deleted("output"))
         }
     }
 
@@ -303,30 +303,30 @@ class TestTopology {
                 to("output")
             }
         }.renderAndExecute {
-            assertTrue(isEmptyQualified("output"))
+            assertTrue(isEmpty("output"))
             val leftRecord = empty().set("name", "left1")
-            inputQualified("left", "key1", leftRecord)
+            input("left", "key1", leftRecord)
             val record1 = empty().set("foreignkey", "key1").set("recorddata", "data1")
             val record2 = empty().set("foreignkey", "key1").set("recorddata", "data2")
-            inputQualified("right", "otherkey1", record1)
-            inputQualified("right", "otherkey2", record2)
+            input("right", "otherkey1", record1)
+            input("right", "otherkey2", record2)
 
             // TODO skip the 'ghost delete' I'm not too fond of this, this one should be skippable
-            deletedQualified("output")
-            val outputs = outputSizeQualified("output")
+            deleted("output")
+            val outputs = outputSize("output")
             assertEquals(2, outputs, "should have 2 elements")
-            outputQualified("output") // skip one
-            val (_, v3) = outputQualified("output")
+            output("output") // skip one
+            val (_, v3) = output("output")
             val subList = v3["rightsub"] as List<*>
             assertEquals(2, subList.size)
             assertEquals(record1, subList[0])
             assertEquals(record2, subList[1])
-            deleteQualified("right", "otherkey1")
-            val (_, v4) = outputQualified("output")
+            delete("right", "otherkey1")
+            val (_, v4) = output("output")
             val subList2 = v4["rightsub"] as List<*>
             assertEquals(1, subList2.size)
-            deleteQualified("right", "otherkey2")
-            assertEquals("key1", deletedQualified("output"))
+            delete("right", "otherkey2")
+            assertEquals("key1", deleted("output"))
         }
     }
 
@@ -340,8 +340,8 @@ class TestTopology {
                 to("output")
             }
         }.renderAndExecute {
-            inputQualified("source", "key1",empty().set("aap","noot").set("mies","wim"))
-            assertEquals(empty().set("mies","wim"), outputQualified("output").second)
+            input("source", "key1",empty().set("aap","noot").set("mies","wim"))
+            assertEquals(empty().set("mies","wim"), output("output").second)
         }
     }
 
@@ -355,10 +355,10 @@ class TestTopology {
                 to("output")
             }
         }.renderAndExecute {
-            inputQualified("source", "key1", empty().set("name", "myname"))
-            inputQualified("source", "key2", empty().set("name", "notmyname"))
-            inputQualified("source", "key3", empty().set("name", "myname"))
-            assertEquals(2, outputSizeQualified("output"))
+            input("source", "key1", empty().set("name", "myname"))
+            input("source", "key2", empty().set("name", "notmyname"))
+            input("source", "key3", empty().set("name", "myname"))
+            assertEquals(2, outputSize("output"))
 //            val (key,value) = output("@source")
         }
     }
@@ -381,12 +381,12 @@ class TestTopology {
                 to("output")
             }
         }.renderAndExecute {
-            inputQualified("source", "key1", empty())
-            inputQualified("source", "key1", empty())
-            outputQualified("output") // initial key, total = 1
-            outputQualified("output") // delete previous key, total = 0
-            val (key, value) = outputQualified("output") // insert key again, total = 1
-            assertTrue(outputSizeQualified("output") == 0L)
+            input("source", "key1", empty())
+            input("source", "key1", empty())
+            output("output") // initial key, total = 1
+            output("output") // delete previous key, total = 0
+            val (key, value) = output("output") // insert key again, total = 1
+            assertTrue(outputSize("output") == 0L)
             logger.info("Key: $key Value: $value")
             assertEquals(StoreStateProcessor.COMMONKEY, key)
             assertEquals(1, value["total"], "Entries with the same key should replace")
@@ -422,15 +422,15 @@ class TestTopology {
                 to("output")
             }
         }.renderAndExecute {
-            inputQualified("source", "key1", empty().set("chat_id","1").set("include",true))
-            val (k1, v1) = outputQualified("output")
+            input("source", "key1", empty().set("chat_id","1").set("include",true))
+            val (k1, v1) = output("output")
             assertEquals("1",k1)
             assertEquals(1,v1.integer("count"))
-            inputQualified("source", "key1", empty().set("chat_id","1").set("include",false))
-            val (_, v2) = outputQualified("output")
+            input("source", "key1", empty().set("chat_id","1").set("include",false))
+            val (_, v2) = output("output")
             assertEquals(0,v2.integer("count"))
-            deleteQualified("source","key1")
-            val (k5, v5) = outputQualified("output")
+            delete("source","key1")
+            val (k5, v5) = output("output")
             assertEquals(0,v5.integer("count"))
 
         }
@@ -464,35 +464,35 @@ class TestTopology {
                 to("output")
             }
         }.renderAndExecute {
-            inputQualified("source", "key1", empty().set("chat_id","1").set("include",true))
-            inputQualified("source", "key2", empty().set("chat_id","1").set("include",true))
+            input("source", "key1", empty().set("chat_id","1").set("include",true))
+            input("source", "key2", empty().set("chat_id","1").set("include",true))
             // inputQualified("source", "key1", empty())
-            val (k1, v1) = outputQualified("output")
+            val (k1, v1) = output("output")
             assertEquals("1",k1)
             assertEquals(1,v1.integer("count"))
 
-            val (k2, v2) = outputQualified("output")
+            val (k2, v2) = output("output")
             assertEquals("1",k2)
             assertEquals(2,v2.integer("count"))
 
-            inputQualified("source", "key2", empty().set("chat_id","1").set("include",false))
-            val (k3, v3) = outputQualified("output")
+            input("source", "key2", empty().set("chat_id","1").set("include",false))
+            val (k3, v3) = output("output")
             assertEquals("1",k3)
             assertEquals(1,v3.integer("count"))
-            val (_, v3a) = outputQualified("output")
+            val (_, v3a) = output("output")
             assertEquals(1,v3a.integer("count"))
-            assertTrue(outputSizeQualified("output") == 0L)
+            assertTrue(outputSize("output") == 0L)
 
 
-            deleteQualified("source","key2")
-            val (k4, v4) = outputQualified("output")
+            delete("source","key2")
+            val (k4, v4) = output("output")
             assertEquals(1,v4.integer("count"))
 
-            deleteQualified("source","key1")
-            val (k5, v5) = outputQualified("output")
+            delete("source","key1")
+            val (k5, v5) = output("output")
             assertEquals(0,v5.integer("count"))
 
-            assertTrue(outputSizeQualified("output") == 0L)
+            assertTrue(outputSize("output") == 0L)
             // logger.info("Key: $key Value: $value")
             // assertEquals(StoreStateProcessor.COMMONKEY, key)
             // assertEquals(1, value["total"], "Entries with the same key should replace")
@@ -528,12 +528,12 @@ class TestTopology {
                 to("output")
             }
         }.renderAndExecute {
-            inputQualified("source", "key1", empty().set("message", "message1"))
-            inputQualified("source", "key1", empty().set("message", "message1"))
-            outputQualified("output") // initial key, total = 1
-            outputQualified("output") // delete previous key, total = 0
-            val (key, value) = outputQualified("output") // insert key again, total = 1
-            assertTrue(outputSizeQualified("output") == 0L)
+            input("source", "key1", empty().set("message", "message1"))
+            input("source", "key1", empty().set("message", "message1"))
+            output("output") // initial key, total = 1
+            output("output") // delete previous key, total = 0
+            val (key, value) = output("output") // insert key again, total = 1
+            assertTrue(outputSize("output") == 0L)
             logger.info("Key: $key Value: $value")
             assertEquals(StoreStateProcessor.COMMONKEY, key)
             assertEquals(BigDecimal(1), value["total"], "Entries with the same key should replace")
@@ -560,35 +560,35 @@ class TestTopology {
                 to("output")
             }
         }.renderAndExecute {
-            inputQualified("source", "key1", empty().set("groupKey", "group1"))
-            inputQualified("source", "key1", empty().set("groupKey", "group1"))
-            outputQualified("output") // initial key, total = 1
-            outputQualified("output") // delete previous key, total = 0
-            val (_, value) = outputQualified("output") // insert key again, total = 1
-            assertTrue(outputSizeQualified("output") == 0L)
+            input("source", "key1", empty().set("groupKey", "group1"))
+            input("source", "key1", empty().set("groupKey", "group1"))
+            output("output") // initial key, total = 1
+            output("output") // delete previous key, total = 0
+            val (_, value) = output("output") // insert key again, total = 1
+            assertTrue(outputSize("output") == 0L)
             logger.info("Value: $value")
             assertEquals(1, value["total"], "Entries with the same key should replace")
-            deleteQualified("source", "key1")
-            val (groupkey, afterDelete) = outputQualified("output") // key1 deleted, so total should be 0 again
+            delete("source", "key1")
+            val (groupkey, afterDelete) = output("output") // key1 deleted, so total should be 0 again
             assertEquals("group1", groupkey)
             assertEquals(0, afterDelete["total"])
-            inputQualified("source", "key1", empty().set("groupKey", "group1"))
-            inputQualified("source", "key2", empty().set("groupKey", "group1"))
-            outputQualified("output")
+            input("source", "key1", empty().set("groupKey", "group1"))
+            input("source", "key2", empty().set("groupKey", "group1"))
+            output("output")
 
-            val (_, ovalue) = outputQualified("output")
+            val (_, ovalue) = output("output")
             logger.info("Value: $ovalue")
             assertEquals(2, ovalue["total"], "Entries with different keys should add")
-            inputQualified("source", "key1", empty().set("groupKey", "group1"))
-            deleteQualified("source", "key1")
-            val (_, ivalue) = outputQualified("output")
+            input("source", "key1", empty().set("groupKey", "group1"))
+            delete("source", "key1")
+            val (_, ivalue) = output("output")
             logger.info("Value:> $ivalue")
-            deleteQualified("source", "key2")
+            delete("source", "key2")
 
             assertEquals(1, ivalue["total"], "Entries with different keys should add")
-            skipQualified("output", 2)
-            val (_, value2) = outputQualified("output")
-            logger.info("Value: $value2 outputsize: ${outputSizeQualified("output")}")
+            skip("output", 2)
+            val (_, value2) = output("output")
+            logger.info("Value: $value2 outputsize: ${outputSize("output")}")
             assertEquals(0, value2["total"], "Delete should subtract")
         }
     }
@@ -616,10 +616,10 @@ class TestTopology {
                 to("output")
             }
         }.renderAndExecute {
-            inputQualified("source", "key1", empty().set("groupKey", "group1"))
-            deleteQualified("source", "key1")
-            skipQualified("output", 1)
-            val (_, value) = outputQualified("output") // key1 deleted, so total should be 0 again
+            input("source", "key1", empty().set("groupKey", "group1"))
+            delete("source", "key1")
+            skip("output", 1)
+            val (_, value) = output("output") // key1 deleted, so total should be 0 again
             assertEquals(0, value["total"], "Entries with the same key should replace")
         }
     }
@@ -644,13 +644,13 @@ class TestTopology {
                 to("sink")
             }
         }.renderAndExecute {
-            inputQualified("source","key1",empty().set("category", "category1"))
-            outputSizeQualified("category1")
-            assertEquals(1, outputSizeQualified("category1"))
-            assertEquals(0, outputSizeQualified("category2"))
-            inputQualified("source", "key2", empty().set("category", "category2"))
-            assertEquals(2, outputSizeQualified("all"))
-            assertEquals(2, outputSizeQualified("sink"))
+            input("source","key1",empty().set("category", "category1"))
+            outputSize("category1")
+            assertEquals(1, outputSize("category1"))
+            assertEquals(0, outputSize("category2"))
+            input("source", "key2", empty().set("category", "category2"))
+            assertEquals(2, outputSize("all"))
+            assertEquals(2, outputSize("sink"))
         }
     }
 
@@ -663,10 +663,10 @@ class TestTopology {
                 }
             }
         }.renderAndExecute {
-            inputQualified("source", "key1", empty().set("destination", "mydestination"))
-            inputQualified("source", "key1", empty().set("destination", "otherdestination"))
-            assertEquals(1, outputSizeQualified("mydestination"))
-            assertEquals(1, outputSizeQualified("otherdestination"))
+            input("source", "key1", empty().set("destination", "mydestination"))
+            input("source", "key1", empty().set("destination", "otherdestination"))
+            assertEquals(1, outputSize("mydestination"))
+            assertEquals(1, outputSize("otherdestination"))
         }
     }
 
@@ -688,9 +688,9 @@ class TestTopology {
                 to("sinktopic")
             }
         }.renderAndExecute {
-            inputQualified("source", "key1".toByteArray(), data)
+            input("source", "key1".toByteArray(), data)
             // input(qualifiedTopic("source"), "key1".toByteArray(), data)
-            val (_, value) = outputQualified("sinktopic")
+            val (_, value) = output("sinktopic")
             logger.info("value: $value")
             val amount = value.decimal("amount")
             assertEquals(BigDecimal.valueOf(299, 2), amount)
@@ -705,11 +705,11 @@ class TestTopology {
                 to("output")
             }
         }.renderAndExecute {
-            inputQualified("source", "key", empty().set("value", "value1"))
-            val (key, _) = outputQualified("output")
+            input("source", "key", empty().set("value", "value1"))
+            val (key, _) = output("output")
             Assert.assertEquals("monkey",key)
-            deleteQualified("source","soon")
-            val deleted = deletedQualified("output")
+            delete("source","soon")
+            val deleted = deleted("output")
             Assert.assertEquals("monsoon",deleted)
         }
     }
@@ -724,18 +724,18 @@ class TestTopology {
         }.renderAndExecute {
 
             val stateStore = stateStore(topologyContext().topicName("@diff_1_1"))
-            inputQualified("source", "key1", empty().set("value", "value1"))
-            inputQualified("source", "key1", empty().set("value", "value1"))
-            assertEquals(1, outputSizeQualified("output"))
-            inputQualified("source", "key2", empty().set("value", "value1"))
-            assertEquals(2, outputSizeQualified("output"))
-            inputQualified("source", "key1", empty().set("value", "value2"))
-            assertEquals(3, outputSizeQualified("output"))
+            input("source", "key1", empty().set("value", "value1"))
+            input("source", "key1", empty().set("value", "value1"))
+            assertEquals(1, outputSize("output"))
+            input("source", "key2", empty().set("value", "value1"))
+            assertEquals(2, outputSize("output"))
+            input("source", "key1", empty().set("value", "value2"))
+            assertEquals(3, outputSize("output"))
             assertEquals(2, countStateStoreSize(stateStore))
-            deleteQualified("source", "key1")
-            assertEquals(4, outputSizeQualified("output"))
-            deleteQualified("source", "key2")
-            assertEquals(5, outputSizeQualified("output"))
+            delete("source", "key1")
+            assertEquals(4, outputSize("output"))
+            delete("source", "key2")
+            assertEquals(5, outputSize("output"))
             getStateStoreNames().forEach { k ->
                 logger.info("Key: $k")
             }
@@ -759,7 +759,7 @@ class TestTopology {
                 logSink("logSinkTest", "output", logSinkConfig)
             }
         }.renderAndExecute {
-            inputQualified("source", "somekey", empty().set("myKey", "myValue"))
+            input("source", "somekey", empty().set("myKey", "myValue"))
             delay(200)
 
         }
@@ -774,25 +774,25 @@ class TestTopology {
             }
         }.renderAndExecute {
             val msg = empty().set("value", "value1")
-            inputQualified("source", "key1", msg)
+            input("source", "key1", msg)
             // shouldn't have arrived yet:
-            assertTrue(isEmptyQualified("output"))
+            assertTrue(isEmpty("output"))
             // advance time
             advanceWallClockTime(Duration.ofSeconds(15))
             // should have result:
-            assertTrue(!isEmptyQualified("output"))
+            assertTrue(!isEmpty("output"))
             // same message:
-            assertEquals(msg, outputQualified("output").second)
+            assertEquals(msg, output("output").second)
             // now make sure only one gets through
             val otherMsg = empty().set("value", "value2")
-            inputQualified("source", "key1", msg)
-            inputQualified("source", "key1", otherMsg)
+            input("source", "key1", msg)
+            input("source", "key1", otherMsg)
             advanceWallClockTime(Duration.ofSeconds(15))
-            assertEquals(1, outputSizeQualified("output"))
-            assertEquals(otherMsg, outputQualified("output").second)
+            assertEquals(1, outputSize("output"))
+            assertEquals(otherMsg, output("output").second)
             // now check size restriction. Max size is 10. Insert 20. expect 10 to come out.
             for (i in 0..19) {
-                inputQualified("source", "newkey$i", empty().set("value", "value$i"))
+                input("source", "newkey$i", empty().set("value", "value$i"))
             }
             logger.info("statestores: ${getStateStoreNames()}")
             // quick check if I'm not making unnecessary stores
@@ -1020,8 +1020,8 @@ class TestTopology {
                 to("output")
             }
         }.renderAndExecute {
-            inputQualified("external", originalKey.toByteArray(), body.toByteArray())
-            val (key, value) = outputQualified("output")
+            input("external", originalKey.toByteArray(), body.toByteArray())
+            val (key, value) = output("output")
             assertEquals("965", key)
             logger.info("Result: $value")
         }

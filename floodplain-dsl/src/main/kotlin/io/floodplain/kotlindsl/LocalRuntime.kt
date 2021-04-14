@@ -64,18 +64,18 @@ import java.util.Properties
 private val logger = mu.KotlinLogging.logger {}
 
 interface InputReceiver : FloodplainOperator {
-    fun inputQualified(topic: String, key: String, msg: IMessage)
-    fun inputQualified(topic: String, key: ByteArray, msg: ByteArray)
-    fun deleteQualified(topic: String, key: String)
+    fun input(topic: String, key: String, msg: IMessage)
+    fun input(topic: String, key: ByteArray, msg: ByteArray)
+    fun delete(topic: String, key: String)
     fun inputs(): Set<String>
 }
 
 interface LocalContext : InputReceiver {
-    fun outputQualified(topic: String): Pair<String, IMessage>
-    fun skipQualified(topic: String, number: Int)
-    fun outputSizeQualified(topic: String): Long
-    fun deletedQualified(topic: String): String
-    fun isEmptyQualified(topic: String): Boolean
+    fun output(topic: String): Pair<String, IMessage>
+    fun skip(topic: String, number: Int)
+    fun outputSize(topic: String): Long
+    fun deleted(topic: String): String
+    fun isEmpty(topic: String): Boolean
     fun advanceWallClockTime(duration: Duration)
     fun stateStore(name: String): KeyValueStore<String, ReplicationMessage>
     fun getStateStoreNames(): Set<String>
@@ -283,14 +283,13 @@ class LocalDriverContext(
         }
     }
 
-    override fun inputQualified(topic: String, key: String, msg: IMessage) {
-        val qualifiedTopicName = topic // topologyContext.topicName(topic)
-        if (!inputs().contains(qualifiedTopicName)) {
+    override fun input(topic: String, key: String, msg: IMessage) {
+        if (!inputs().contains(topic)) {
             logger.debug("Missing topic: $topic available topics: ${inputs()}")
         }
-        val inputTopic = inputTopics.computeIfAbsent(qualifiedTopicName) {
+        val inputTopic = inputTopics.computeIfAbsent(topic) {
             driver.createInputTopic(
-                qualifiedTopicName,
+                topic,
                 Serdes.String().serializer(),
                 ReplicationMessageSerde().serializer()
             )
@@ -299,7 +298,7 @@ class LocalDriverContext(
         inputTopic.pipeInput(key, replicationMsg)
     }
 
-    override fun inputQualified(topic: String, key: ByteArray, msg: ByteArray) {
+    override fun input(topic: String, key: ByteArray, msg: ByteArray) {
         if (!inputs().contains(topic)) {
             logger.debug("Missing topic: $topic available topics: ${inputs()}")
         }
@@ -310,7 +309,7 @@ class LocalDriverContext(
         }
     }
 
-    override fun deleteQualified(topic: String, key: String) {
+    override fun delete(topic: String, key: String) {
         val inputTopic = inputTopics.computeIfAbsent(topic) {
             driver.createInputTopic(
                 topic,
@@ -321,7 +320,7 @@ class LocalDriverContext(
         inputTopic.pipeInput(key, null)
     }
 
-    override fun outputQualified(topic: String): Pair<String, IMessage> {
+    override fun output(topic: String): Pair<String, IMessage> {
         val outputTopic = outputTopics.computeIfAbsent(topic) {
             driver.createOutputTopic(
                 topic,
@@ -334,20 +333,19 @@ class LocalDriverContext(
         return if (op == ReplicationMessage.Operation.DELETE) {
             logger.info("delete detected! isnull? ${keyVal.value}")
             logger.info("retrying...")
-            // output(qualifiedTopic(topic))
-            outputQualified(topic)
+            output(topic)
         } else {
             Pair(keyVal.key, fromImmutable(keyVal.value!!.message()))
         }
     }
 
-    override fun skipQualified(topic: String, number: Int) {
+    override fun skip(topic: String, number: Int) {
         repeat(number) {
-            outputQualified(topic)
+            output(topic)
         }
     }
 
-    override fun outputSizeQualified(qualifiedTopicName: String): Long {
+    override fun outputSize(qualifiedTopicName: String): Long {
         val outputTopic = outputTopics.computeIfAbsent(qualifiedTopicName) {
             driver.createOutputTopic(
                 qualifiedTopicName,
@@ -358,7 +356,7 @@ class LocalDriverContext(
         return outputTopic.queueSize
     }
 
-    override fun deletedQualified(topic: String): String {
+    override fun deleted(topic: String): String {
         val outputTopic = outputTopics.computeIfAbsent(topic) {
             driver.createOutputTopic(
                 topic,
@@ -371,7 +369,7 @@ class LocalDriverContext(
         logger.info { "Found key ${keyVal.key} operation: ${keyVal.value?.operation()}" }
         if (keyVal.value != null) {
             if (keyVal.value.operation() == ReplicationMessage.Operation.DELETE) {
-                return deletedQualified(topic)
+                return deleted(topic)
             }
             logger.error { "Unexpected content: ${replicationMessageParser.describe(keyVal.value)} remaining queue: ${outputTopic.queueSize}" }
             throw RuntimeException("Expected delete message for key: ${keyVal.key}, but got a value: ${keyVal.value}")
@@ -379,7 +377,7 @@ class LocalDriverContext(
         return keyVal.key
     }
 
-    override fun isEmptyQualified(topic: String): Boolean {
+    override fun isEmpty(topic: String): Boolean {
         val outputTopic = outputTopics.computeIfAbsent(topic) {
             driver.createOutputTopic(
                 topic,

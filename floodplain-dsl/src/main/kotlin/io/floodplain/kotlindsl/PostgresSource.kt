@@ -58,9 +58,9 @@ class PostgresConfig(
         val availableSourceTopics = sourceElements.map { sourceElement -> sourceElement.topic().qualifiedString() }.toSet()
         if (availableSourceTopics.contains(record.topic)) {
             if (record.value != null) {
-                inputReceiver.inputQualified(record.topic, record.key.toByteArray(), record.value!!)
+                inputReceiver.input(record.topic, record.key.toByteArray(), record.value!!)
             } else {
-                inputReceiver.deleteQualified(record.topic, record.key)
+                inputReceiver.delete(record.topic, record.key)
             }
         }
     }

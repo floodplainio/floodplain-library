@@ -46,9 +46,9 @@ class MySQLConfig(override val topologyContext: TopologyContext, override val to
                 val availableSourceTopics = sourceElements.map { sourceElement -> sourceElement.topic().qualifiedString() }.toSet()
                 if (availableSourceTopics.contains(it.topic)) {
                     if (it.value != null) {
-                        inputReceiver.inputQualified(it.topic, it.key.toByteArray(), it.value!!)
+                        inputReceiver.input(it.topic, it.key.toByteArray(), it.value!!)
                     } else {
-                        inputReceiver.deleteQualified(it.topic, it.key)
+                        inputReceiver.delete(it.topic, it.key)
                     }
                 }
             }
