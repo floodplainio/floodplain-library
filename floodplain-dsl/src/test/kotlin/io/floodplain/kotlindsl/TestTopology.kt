@@ -331,6 +331,21 @@ class TestTopology {
         }
     }
 
+
+    @Test
+    fun testOnlyOperator() {
+        val m = empty().set("aap","noot").set("mies","wim")
+        stream {
+            from("source") {
+                only("mies")
+                to("output")
+            }
+        }.renderAndExecute {
+            inputQualified("source", "key1",empty().set("aap","noot").set("mies","wim"))
+            assertEquals(empty().set("mies","wim"), outputQualified("output").second)
+        }
+    }
+
     @Test
     fun testFilter() {
         stream("anygen") {
