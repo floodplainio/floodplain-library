@@ -64,8 +64,6 @@ import java.util.Properties
 private val logger = mu.KotlinLogging.logger {}
 
 interface InputReceiver : FloodplainOperator {
-    fun input(topic: Topic, key: String, msg: IMessage)
-    fun input(topic: Topic, key: ByteArray, msg: ByteArray)
     fun inputQualified(topic: String, key: String, msg: IMessage)
     fun inputQualified(topic: String, key: ByteArray, msg: ByteArray)
     fun deleteQualified(topic: String, key: String)
@@ -73,20 +71,10 @@ interface InputReceiver : FloodplainOperator {
 }
 
 interface LocalContext : InputReceiver {
-    fun output(topic: Topic): Pair<String, IMessage>
     fun outputQualified(topic: String): Pair<String, IMessage>
-    fun skip(topic: Topic, number: Int)
     fun skipQualified(topic: String, number: Int)
-
-    /**
-     * Doesn't work, outputs get created lazily, so only sinks that have been accessed before are counted
-     */
-    fun outputs(): Set<String>
-    fun outputSize(topic: Topic): Long
     fun outputSizeQualified(topic: String): Long
-    fun deleted(topic: Topic): String
     fun deletedQualified(topic: String): String
-    fun isEmpty(topic: Topic): Boolean
     fun isEmptyQualified(topic: String): Boolean
     fun advanceWallClockTime(duration: Duration)
     fun stateStore(name: String): KeyValueStore<String, ReplicationMessage>
@@ -191,10 +179,6 @@ class LocalDriverContext(
     override val generation: String
         get() = topologyContext.generation
 
-    override fun outputs(): Set<String> {
-        return outputTopics.keys
-    }
-
     override suspend fun connectSource() {
         sourceConfigs.forEach { config ->
             config.connectSource(this@LocalDriverContext)
@@ -255,9 +239,6 @@ class LocalDriverContext(
         val result = mutableMapOf<Topic, MutableList<FloodplainSink>>()
         this.sinkConfigurations().map {
             instantiateSinkConfig(it)
-
-            // it.instantiateSinkElements()
-            // it.sinkElements().entries
         }.forEach { entry ->
             entry.entries.forEach { (key, value) ->
                 val list = result.computeIfAbsent(key) { mutableListOf() }
@@ -302,10 +283,6 @@ class LocalDriverContext(
         }
     }
 
-    override fun input(topic: Topic, key: String, msg: IMessage) {
-        inputQualified(topic.qualifiedString(), key, msg)
-    }
-
     override fun inputQualified(topic: String, key: String, msg: IMessage) {
         val qualifiedTopicName = topic // topologyContext.topicName(topic)
         if (!inputs().contains(qualifiedTopicName)) {
@@ -322,9 +299,6 @@ class LocalDriverContext(
         inputTopic.pipeInput(key, replicationMsg)
     }
 
-    override fun input(topic: Topic, key: ByteArray, msg: ByteArray) {
-        inputQualified(topic.qualifiedString(), key, msg)
-    }
     override fun inputQualified(topic: String, key: ByteArray, msg: ByteArray) {
         if (!inputs().contains(topic)) {
             logger.debug("Missing topic: $topic available topics: ${inputs()}")
@@ -347,9 +321,6 @@ class LocalDriverContext(
         inputTopic.pipeInput(key, null)
     }
 
-    override fun output(topic: Topic): Pair<String, IMessage> {
-        return outputQualified(topic.qualifiedString())
-    }
     override fun outputQualified(topic: String): Pair<String, IMessage> {
         val outputTopic = outputTopics.computeIfAbsent(topic) {
             driver.createOutputTopic(
@@ -370,12 +341,6 @@ class LocalDriverContext(
         }
     }
 
-    override fun skip(topic: Topic, number: Int) {
-        repeat(number) {
-            output(topic)
-        }
-    }
-
     override fun skipQualified(topic: String, number: Int) {
         repeat(number) {
             outputQualified(topic)
@@ -393,13 +358,6 @@ class LocalDriverContext(
         return outputTopic.queueSize
     }
 
-    override fun outputSize(topic: Topic): Long {
-        return outputSizeQualified(topic.qualifiedString())
-    }
-
-    override fun deleted(topic: Topic): String {
-        return deletedQualified(topic.qualifiedString())
-    }
     override fun deletedQualified(topic: String): String {
         val outputTopic = outputTopics.computeIfAbsent(topic) {
             driver.createOutputTopic(
@@ -421,9 +379,6 @@ class LocalDriverContext(
         return keyVal.key
     }
 
-    override fun isEmpty(topic: Topic): Boolean {
-        return isEmptyQualified(topic.qualifiedString())
-    }
     override fun isEmptyQualified(topic: String): Boolean {
         val outputTopic = outputTopics.computeIfAbsent(topic) {
             driver.createOutputTopic(

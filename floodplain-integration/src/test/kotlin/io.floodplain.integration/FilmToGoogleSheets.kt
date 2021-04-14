@@ -97,7 +97,6 @@ class FilmToGoogleSheets {
             val task = ll!!.taskObject() as SheetSinkTask // ?.config()?.sinkTask()!! as SheetSinkTask
             val coreSink = task.sheetSink
             // coreSink.
-            logger.info("Outputs: ${outputs()}")
             delay(5000)
             flushSinks()
             val elapsed = measureTimeMillis {
@@ -165,12 +164,9 @@ class FilmToGoogleSheets {
                 googleSheetsSink("outputtopic", spreadsheetId, listOf("total"), "B", 2, sheetConfig)
             }
         }.renderAndExecute {
-            // delay(5000)
             val ll = this.sinksByTopic()[Topic.from("outputtopic", topologyContext())]?.first()
             val task = ll!!.taskObject() as SheetSinkTask // ?.config()?.sinkTask()!! as SheetSinkTask
             val coreSink = task.getSheetSink()
-            // coreSink.
-            logger.info("Outputs: ${outputs()}")
             delay(5000)
             flushSinks()
             val elapsed = measureTimeMillis {

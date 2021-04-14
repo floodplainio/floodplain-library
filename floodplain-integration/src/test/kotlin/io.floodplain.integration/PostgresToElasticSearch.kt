@@ -122,7 +122,6 @@ class PostgresToElasticSearch {
                 elasticSearchSink("@staff", "@staff", elasticConfig)
             }
         }.renderAndExecute {
-            logger.info("Outputs: ${outputs()}")
             val index = topologyContext().topicName("@customer")
             logger.warn(
                 "Will query: \"http://${elasticSearchContainer.host}:${elasticSearchContainer.exposedPort}/${index}\""
@@ -191,7 +190,6 @@ class PostgresToElasticSearch {
                 elasticSearchSink("@staff", "@staff", elasticConfig)
             }
         }.renderAndExecute {
-            logger.info("Outputs: ${outputs()}")
             val index = topologyContext().topicName("@customer")
             logger.warn("Will query: \"http://${elasticSearchContainer.host}:${elasticSearchContainer.exposedPort}/${index}\"")
             delay(10000)

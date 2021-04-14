@@ -126,7 +126,6 @@ class TestTopology {
             }
         }.renderAndExecute {
             inputQualified("mysource", "1", empty().set("species", "human"))
-            logger.info("outputs: ${outputs()}")
             val (_, value) = outputQualified("people")
             logger.info("Person found: $value")
         }

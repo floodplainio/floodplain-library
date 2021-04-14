@@ -115,7 +115,6 @@ class FilmToMongoDB {
                 toMongo("filmwithactors", "$generation-filmwithcat", mongoConfig)
             }
         }.renderAndExecute {
-            logger.info("Outputs: ${outputs()}")
             val database = "${topologyContext.generation}-mongodump"
             var hits = 0L
             val start = System.currentTimeMillis()
