@@ -1,4 +1,7 @@
 import io.floodplain.build.FloodplainDeps
+import com.google.protobuf.gradle.*
+
+val protobufVersion = "3.11.4"
 
 dependencies {
     implementation(project(":immutable-api"))
@@ -10,17 +13,39 @@ dependencies {
     implementation("com.github.spotbugs:spotbugs-annotations:4.0.1")
     compile(FloodplainDeps.protobuf)
     testCompile(FloodplainDeps.jUnit)
+    // compile("com.google.protobuf:protobuf-java:$protobufVersion")
+
+     implementation("javax.annotation:javax.annotation-api:+")
 }
-// protobuf {
-//    protoc {
-//        artifact = "com.google.protobuf:protoc:3.11.4"
-//    }
-//    generateProtoTasks {
-//        ofSourceSet("main")*.plugins {
-//            // Apply the "grpc" plugin whose spec is defined above, without
-//            // options.  Note the braces cannot be omitted, otherwise the
-//            // plugin will not be added. This is because of the implicit way
-//            // NamedDomainObjectContainer binds the methods.
-//        }
-//    }
+plugins {
+    id("com.google.protobuf")
+}
+
+
+//
+sourceSets{
+    create("proto"){
+        proto {
+            srcDir("src/main/proto")
+        }
+    }
+}
+//
+// tasks.withType<com.google.protobuf.gradle.GenerateProtoTask>().configureEach {
+//
 // }
+//
+protobuf {
+   protoc {
+       artifact = "com.google.protobuf:protoc:$protobufVersion"
+   }
+   generateProtoTasks {
+       // this.
+       // ofSourceSet("main").plugins {
+       //     // Apply the "grpc" plugin whose spec is defined above, without
+       //     // options.  Note the braces cannot be omitted, otherwise the
+       //     // plugin will not be added. This is because of the implicit way
+       //     // NamedDomainObjectContainer binds the methods.
+       // }
+   }
+}

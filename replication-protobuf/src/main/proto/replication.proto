@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package com.dexels.replication.impl.protobuf.generated;
+package io.floodplain.protobuf.generated;
 
 message ValueProtobuf {
   string value = 1;
@@ -19,6 +19,9 @@ message ValueProtobuf {
     COORDINATE = 11;
     ENUM = 12;
     STRINGLIST = 13;
+    DECIMAL = 14;
+    TIMESTAMP = 15;
+    LEGACYDATE = 16;
   }
   ValueType type = 2;
   bool isNull = 3;
