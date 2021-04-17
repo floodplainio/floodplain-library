@@ -25,7 +25,7 @@ import io.floodplain.kotlindsl.postgresSourceConfig
 import io.floodplain.kotlindsl.scan
 import io.floodplain.kotlindsl.set
 import io.floodplain.kotlindsl.stream
-import io.floodplain.mongodb.mongoConfig
+import io.floodplain.mongodb.remoteMongoConfig
 import io.floodplain.mongodb.toMongo
 import kotlinx.coroutines.delay
 import java.math.BigDecimal
@@ -33,7 +33,7 @@ import java.math.BigDecimal
 fun main() {
     stream {
         val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental", "public")
-        val mongoConfig = mongoConfig("mongosink", "mongodb://mongo", "$generation-mongodump")
+        val mongoConfig = remoteMongoConfig("mongosink", "mongodb://mongo", "$generation-mongodump")
         postgresSource("customer", postgresConfig) {
             join {
                 postgresSource("payment", postgresConfig) {

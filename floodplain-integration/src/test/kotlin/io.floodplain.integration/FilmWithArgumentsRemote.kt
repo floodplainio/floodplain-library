@@ -27,7 +27,7 @@ import io.floodplain.kotlindsl.postgresSource
 import io.floodplain.kotlindsl.postgresSourceConfig
 import io.floodplain.kotlindsl.set
 import io.floodplain.kotlindsl.stream
-import io.floodplain.mongodb.mongoConfig
+import io.floodplain.mongodb.remoteMongoConfig
 import io.floodplain.mongodb.toMongo
 import io.floodplain.mongodb.waitForMongoDbCondition
 import io.floodplain.test.useIntegraton
@@ -58,7 +58,7 @@ class FilmWithArgumentsRemote {
         }
         stream {
             val postgresConfig = postgresSourceConfig("mypostgres", "localhost", 5432, "postgres", "mysecretpassword", "dvdrental", "public")
-            val mongoConfig = mongoConfig("mongosink", "mongodb://localhost", "$generation-mongodump")
+            val mongoConfig = remoteMongoConfig("mongosink", "mongodb://localhost", "$generation-mongodump")
             postgresSource("film", postgresConfig) {
                 joinGrouped {
                     postgresSource("film_category", postgresConfig) {

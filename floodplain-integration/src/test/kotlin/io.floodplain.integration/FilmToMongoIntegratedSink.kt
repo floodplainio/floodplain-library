@@ -19,10 +19,11 @@
 package io.floodplain.integration
 
 import com.mongodb.client.MongoClients
+import io.floodplain.kotlindsl.each
 import io.floodplain.kotlindsl.postgresSource
 import io.floodplain.kotlindsl.postgresSourceConfig
 import io.floodplain.kotlindsl.stream
-import io.floodplain.mongodb.localMongoConfig
+import io.floodplain.mongodb.mongoConfig
 import io.floodplain.mongodb.toMongo
 import io.floodplain.test.InstantiatedContainer
 import io.floodplain.test.InstantiatedKafkaContainer
@@ -93,16 +94,19 @@ class FilmToMongoIntegratedSink {
                 "dvdrental",
                 "public"
             )
-            val mongoConfig = localMongoConfig(
+            val mongoConfig = mongoConfig(
                 "mongosink",
                 "mongodb://localhost:${mongoContainer.exposedPort}",
-                "@mongodump"
+                "mongodump"
             )
             postgresSource("film", postgresConfig) {
+                each { _,m,_ ->
+                    logger.info("Film: $m")
+                }
                 toMongo("filmwithactors", "somtopic", mongoConfig)
             }
         }.renderAndSchedule(URL("http://${debeziumContainer?.host}:${debeziumContainer?.exposedPort}/connectors"), "${kafkaContainer.host}:${kafkaContainer.exposedPort}", true, mapOf()) { kafkaStreams ->
-            val database = topologyContext.topicName("@mongodump")
+            val database = "mongodump"  //topologyContext.topicName("@mongodump")
             var hits = 0L
             val start = System.currentTimeMillis()
             withTimeout(200000) {

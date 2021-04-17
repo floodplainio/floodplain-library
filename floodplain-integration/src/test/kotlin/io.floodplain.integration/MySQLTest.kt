@@ -28,7 +28,7 @@ import io.floodplain.kotlindsl.mysqlSource
 import io.floodplain.kotlindsl.mysqlSourceConfig
 import io.floodplain.kotlindsl.set
 import io.floodplain.kotlindsl.stream
-import io.floodplain.mongodb.mongoConfig
+import io.floodplain.mongodb.remoteMongoConfig
 import io.floodplain.mongodb.toMongo
 import io.floodplain.mongodb.waitForMongoDbCondition
 import io.floodplain.test.InstantiatedContainer
@@ -78,7 +78,7 @@ class MySQLTest {
                 "mysecretpassword",
                 "inventory"
             )
-            val mongoConfig = mongoConfig(
+            val mongoConfig = remoteMongoConfig(
                 "mongosink",
                 "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
                 "mongodump"
@@ -120,7 +120,7 @@ class MySQLTest {
                 "mysecretpassword",
                 "inventory"
             )
-            val mongoConfig = mongoConfig(
+            val mongoConfig = remoteMongoConfig(
                 "mongosink",
                 "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
                 "@mongodump"
@@ -158,7 +158,7 @@ class MySQLTest {
                 "mysecretpassword",
                 "inventory"
             )
-            val mongoConfig = mongoConfig(
+            val mongoConfig = remoteMongoConfig(
                 "mongosink",
                 "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
                 "$generation-mongodump"
@@ -228,7 +228,7 @@ class MySQLTest {
                 "mysecretpassword",
                 "wpdb"
             )
-            val mongoConfig = mongoConfig("mongosink", "mongodb://localhost", "@mongodump2")
+            val mongoConfig = remoteMongoConfig("mongosink", "mongodb://localhost", "@mongodump2")
             mysqlSource("wpdb.wp_posts", mysqlConfig) {
                 each { key, msg, _ ->
                     logger.info("Detected key: $key and message: $msg")

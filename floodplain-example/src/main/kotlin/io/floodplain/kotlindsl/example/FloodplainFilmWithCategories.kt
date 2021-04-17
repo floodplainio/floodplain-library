@@ -28,8 +28,8 @@ import io.floodplain.kotlindsl.postgresSource
 import io.floodplain.kotlindsl.postgresSourceConfig
 import io.floodplain.kotlindsl.set
 import io.floodplain.kotlindsl.stream
-import io.floodplain.mongodb.mongoConfig
-import io.floodplain.mongodb.mongoSink
+import io.floodplain.mongodb.remoteMongoConfig
+import io.floodplain.mongodb.toMongo
 import java.net.URL
 
 private val logger = mu.KotlinLogging.logger {}
@@ -41,7 +41,7 @@ fun main() {
 fun joinFilms() {
     stream {
         val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental", "public")
-        val mongoConfig = mongoConfig("mongosink", "mongodb://mongo", "@mongodump")
+        val mongoConfig = remoteMongoConfig("mongosink", "mongodb://mongo", "@mongodump")
         postgresSource("film", postgresConfig) {
             joinGrouped {
                 postgresSource("film_category", postgresConfig) {
@@ -86,7 +86,7 @@ fun joinFilms() {
             each { _, msg, _ ->
                 logger.info("Message: $msg")
             }
-            mongoSink("filmwithcategories", "@filmwithcat", mongoConfig)
+            toMongo("filmwithcategories", "$tenant-$deployment-$generation-filmwithcat", mongoConfig)
         }
     }.renderAndSchedule(URL("http://localhost:8083/connectors"), "localhost:9092", true)
     logger.info { "done!" }

@@ -50,6 +50,7 @@ import org.apache.kafka.streams.StreamsConfig
 import org.apache.kafka.streams.Topology
 import org.apache.kafka.streams.processor.WallclockTimestampExtractor
 import java.io.File
+import java.io.IOException
 import java.io.InputStream
 import java.net.URI
 import java.net.URL
@@ -282,6 +283,7 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
         workerProps.putAll(initialWorkerProps)
         extendWorkerProperties(workerProps)
         val plugins = Plugins(workerProps)
+        logger.info("Plugin initialization complete")
         val config = DistributedConfig(workerProps)
         val time: Time = Time.SYSTEM
         val connectorClientConfigOverridePolicy: ConnectorClientConfigOverridePolicy = plugins.newPlugin(
@@ -350,8 +352,7 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
         val props = createProperties(extra)
         val stream = KafkaStreams(topology, props)
         val topologyDescription = topology.describe()
-        logger.info("CurrentTopology:\n $topologyDescription")
-        File("topology.txt").writeText(topologyDescription.toString())
+        writeTopology(storagePath,topologyDescription.toString())
         stream.setUncaughtExceptionHandler { thread: Thread, exception: Throwable? ->
             logger.error("Error in streams. thread: ${thread.name} exception: ", exception)
             stream.close()
@@ -361,6 +362,14 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
         }
         stream.start()
         return stream
+    }
+
+    private fun writeTopology(storagePath: String, topologyDescription: String) {
+        try {
+            File("$storagePath/topology.txt").writeText(topologyDescription)
+        } catch (e: IOException) {
+            logger.warn("Could not write topology file. Not a problem.",e)
+        }
     }
 
     private fun createProperties(extra: Map<String, Any>): Properties {

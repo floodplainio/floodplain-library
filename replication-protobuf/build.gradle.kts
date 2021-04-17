@@ -13,9 +13,6 @@ dependencies {
     implementation("com.github.spotbugs:spotbugs-annotations:4.0.1")
     compile(FloodplainDeps.protobuf)
     testCompile(FloodplainDeps.jUnit)
-    // compile("com.google.protobuf:protobuf-java:$protobufVersion")
-
-     implementation("javax.annotation:javax.annotation-api:+")
 }
 plugins {
     id("com.google.protobuf")

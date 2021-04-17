@@ -39,7 +39,7 @@ class MongoConfig(override val topologyContext: TopologyContext, override val to
 
     override fun materializeConnectorConfig(): List<MaterializedConfig> {
         val additional = mutableMapOf<String, String>()
-        sinkInstancePair.forEach { (key, value) -> topologyConstructor.addDesiredTopic(value, Optional.empty()) }
+        sinkInstancePair.forEach { (_, value) -> topologyConstructor.addDesiredTopic(value, Optional.empty()) }
         sinkInstancePair.forEach { (key, value) ->
             additional["topic.override.${value.qualifiedString()}.collection"] =
                 key
@@ -83,13 +83,13 @@ class MongoConfig(override val topologyContext: TopologyContext, override val to
  * Creates a config for this specific connector type, add the required params as needed. This config object will be passed
  * to all sink objects
  */
-fun Stream.mongoConfig(name: String, uri: String, database: String): MongoConfig {
+fun Stream.remoteMongoConfig(name: String, uri: String, database: String): MongoConfig {
     val c = MongoConfig(topologyContext, topologyConstructor, name, uri, database)
     this.addSinkConfiguration(c)
     return c
 }
 
-fun Stream.localMongoConfig(name: String, uri: String, database: String): MongoConfig {
+fun Stream.mongoConfig(name: String, uri: String, database: String): MongoConfig {
     val c = MongoConfig(topologyContext, topologyConstructor, name, uri, database)
     this.addLocalSinkConfiguration(c)
     return c
@@ -103,21 +103,6 @@ fun PartialStream.toMongo(collection: String, topicDefinition: String, config: M
         throw IllegalArgumentException("Should not start a database name with @, please use a fully qualified name")
     }
     // val sinkName = ProcessorName.from(config.name)
-    val sink = SinkTransformer(Optional.of(sinkName), topic, Optional.empty(), Topic.FloodplainKeyFormat.CONNECT_KEY_JSON, Topic.FloodplainBodyFormat.CONNECT_JSON)
-    val transform = Transformer(rootTopology, sink, topologyContext)
-    addTransformer(transform)
-}
-
-@Deprecated("Automatically qualifies topic, use toMongo and explicitly qualify topic")
-fun PartialStream.mongoSink(collection: String, topicDefinition: String, config: MongoConfig) {
-    val topic = Topic.from(topicDefinition, topologyContext)
-    config.sinkInstancePair.add(collection to topic)
-    val sinkName = config.name //
-    if(sinkName.startsWith("@")) {
-        throw IllegalArgumentException("Should not start a database name with @, please use a fully qualified name")
-    }
-    // ProcessorName.from()
-    // ProcessorName.from(config.name)
     val sink = SinkTransformer(Optional.of(sinkName), topic, Optional.empty(), Topic.FloodplainKeyFormat.CONNECT_KEY_JSON, Topic.FloodplainBodyFormat.CONNECT_JSON)
     val transform = Transformer(rootTopology, sink, topologyContext)
     addTransformer(transform)

@@ -25,7 +25,7 @@ import io.floodplain.kotlindsl.postgresSourceConfig
 import io.floodplain.kotlindsl.set
 import io.floodplain.kotlindsl.to
 import io.floodplain.kotlindsl.stream
-import io.floodplain.mongodb.mongoConfig
+import io.floodplain.mongodb.remoteMongoConfig
 import io.floodplain.mongodb.toMongo
 import io.floodplain.mongodb.waitForMongoDbCondition
 import io.floodplain.test.InstantiatedContainer
@@ -67,7 +67,7 @@ class FilmSimple {
                 "dvdrental",
                 "public"
             )
-            val mongoConfig = mongoConfig(
+            val mongoConfig = remoteMongoConfig(
                 "mongosink",
                 "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
                 "@mongodump"
@@ -123,7 +123,7 @@ class FilmSimple {
                 "dvdrental",
                 "public"
             )
-            val mongoConfig = mongoConfig(
+            val mongoConfig = remoteMongoConfig(
                 "mongosink",
                 "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
                 "$generation-mongodump"
@@ -171,7 +171,7 @@ class FilmSimple {
                 "dvdrental",
                 "public"
             )
-            val mongoConfig = mongoConfig(
+            val mongoConfig = remoteMongoConfig(
                 "mongosink",
                 "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
                 "$generation-mongodump"

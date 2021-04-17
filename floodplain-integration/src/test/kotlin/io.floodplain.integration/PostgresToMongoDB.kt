@@ -30,7 +30,7 @@ import io.floodplain.kotlindsl.scan
 import io.floodplain.kotlindsl.set
 import io.floodplain.kotlindsl.to
 import io.floodplain.kotlindsl.stream
-import io.floodplain.mongodb.mongoConfig
+import io.floodplain.mongodb.remoteMongoConfig
 import io.floodplain.mongodb.toMongo
 import io.floodplain.mongodb.waitForMongoDbCondition
 import io.floodplain.test.InstantiatedContainer
@@ -80,7 +80,7 @@ class TestCombinedMongo {
             )
 
             // val logConfig = logSinkConfig("any")
-            val mongoConfig = mongoConfig(
+            val mongoConfig = remoteMongoConfig(
                 "mongosink",
                 "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
                 "@mongodump"
@@ -126,7 +126,7 @@ class TestCombinedMongo {
         }
         stream("sometenant") {
             // val logConfig = logSinkConfig("any")
-            val mongoConfig = mongoConfig(
+            val mongoConfig = remoteMongoConfig(
                 "mongosink",
                 "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
                 "@mongodump"
@@ -186,7 +186,7 @@ class TestCombinedMongo {
                 "dvdrental",
                 "public"
             )
-            val mongoConfig = mongoConfig(
+            val mongoConfig = remoteMongoConfig(
                 "mongosink",
                 "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
                 "$generation-mongodump"
@@ -276,7 +276,7 @@ class TestCombinedMongo {
                 "dvdrental",
                 "public"
             )
-            val mongoConfig = mongoConfig(
+            val mongoConfig = remoteMongoConfig(
                 "mongosink",
                 "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
                 "$generation-mongodump"
@@ -336,7 +336,7 @@ class TestCombinedMongo {
                 "dvdrental",
                 "public"
             )
-            val mongoConfig = mongoConfig(
+            val mongoConfig = remoteMongoConfig(
                 "mongosink",
                 "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
                 "$generation-mongodump"

@@ -22,7 +22,7 @@ import io.floodplain.kotlindsl.filter
 import io.floodplain.kotlindsl.from
 import io.floodplain.kotlindsl.message.empty
 import io.floodplain.kotlindsl.stream
-import io.floodplain.mongodb.mongoConfig
+import io.floodplain.mongodb.remoteMongoConfig
 import io.floodplain.mongodb.toMongo
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeout
@@ -55,7 +55,7 @@ class TestMongo {
     fun testSink() {
         logger.info("Starting sink")
         stream {
-            val config = mongoConfig("mongoClient", "mongodb://$address:$port", "mongo-connect-test")
+            val config = remoteMongoConfig("mongoClient", "mongodb://$address:$port", "mongo-connect-test")
 
             from("sometopic") {
                 each { _, msg, _ -> logger.info("message: $msg") }
@@ -103,7 +103,7 @@ class TestMongo {
     @Test
     fun testMultipleSink() {
         stream {
-            val config = mongoConfig("mongoClient", "mongodb://$address:$port", "mongo-connect-test")
+            val config = remoteMongoConfig("mongoClient", "mongodb://$address:$port", "mongo-connect-test")
             from("sometopic") {
                 each { _, msg, _ -> logger.info("message: $msg") }
                 filter { _, msg -> msg.long("counter") % 2 == 0L }

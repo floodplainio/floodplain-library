@@ -22,7 +22,7 @@ import com.mongodb.client.MongoClients
 import io.floodplain.kotlindsl.postgresSource
 import io.floodplain.kotlindsl.postgresSourceConfig
 import io.floodplain.kotlindsl.stream
-import io.floodplain.mongodb.mongoConfig
+import io.floodplain.mongodb.remoteMongoConfig
 import io.floodplain.mongodb.toMongo
 import io.floodplain.test.InstantiatedContainer
 import io.floodplain.test.InstantiatedKafkaContainer
@@ -125,7 +125,7 @@ class FilmToMongoIntegration {
                 "dvdrental",
                 "public"
             )
-            val mongoConfig = mongoConfig(
+            val mongoConfig = remoteMongoConfig(
                 "mongosink",
                 "mongodb://mongo:27017",
                 "@mongodump"

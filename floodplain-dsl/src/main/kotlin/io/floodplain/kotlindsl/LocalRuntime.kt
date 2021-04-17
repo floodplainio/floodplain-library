@@ -345,10 +345,10 @@ class LocalDriverContext(
         }
     }
 
-    override fun outputSize(qualifiedTopicName: String): Long {
-        val outputTopic = outputTopics.computeIfAbsent(qualifiedTopicName) {
+    override fun outputSize(topic: String): Long {
+        val outputTopic = outputTopics.computeIfAbsent(topic) {
             driver.createOutputTopic(
-                qualifiedTopicName,
+                topic,
                 Serdes.String().deserializer(),
                 ReplicationMessageSerde().deserializer()
             )
