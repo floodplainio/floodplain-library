@@ -31,6 +31,7 @@ import org.apache.kafka.common.PartitionInfo;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.ProducerFencedException;
 import org.apache.kafka.common.header.Headers;
+import org.apache.kafka.common.header.internals.RecordHeaders;
 import org.apache.kafka.common.metrics.MetricConfig;
 import org.apache.kafka.common.metrics.Metrics;
 import org.apache.kafka.common.metrics.Sensor;
@@ -570,6 +571,13 @@ public class TopologyTestDriver implements Closeable {
         );
     }
 
+    public void pipeRawRecord(final String topicName,
+                              final long timestamp,
+                              final byte[] key,
+                              final byte[] value) {
+        pipeRecord(topicName,timestamp,key,value,new RecordHeaders());
+    }
+
     private void pipeRecord(final String topicName,
                             final long timestamp,
                             final byte[] key,
@@ -696,15 +704,28 @@ public class TopologyTestDriver implements Closeable {
         }
         return topicPartition;
     }
+    private java.util.function.Consumer<ProducerRecord<byte[],byte[]>> outputCallback;
+    public void setOutputListener(java.util.function.Consumer<ProducerRecord<byte[],byte[]>> callback) {
+        this.outputCallback = callback;
+    }
 
+    public void publishOutputMessage(ProducerRecord<byte[],byte[]> record) {
+        if(outputCallback!=null) {
+            outputCallback.accept(record);
+        }
+    }
     private void captureOutputsAndReEnqueueInternalResults() {
         // Capture all the records sent to the producer ...
         final List<ProducerRecord<byte[], byte[]>> output = producer.history();
         producer.clear();
 
         for (final ProducerRecord<byte[], byte[]> record : output) {
-            outputRecordsByTopic.computeIfAbsent(record.topic(), k -> new LinkedList<>()).add(record);
-
+             if(outputCallback==null) {
+                // no outputcallback set, so use classic enqueue
+                outputRecordsByTopic.computeIfAbsent(record.topic(), k -> new LinkedList<>()).add(record);
+            } else {
+                publishOutputMessage(record);
+            }
             // Forward back into the topology if the produced record is to an internal or a source topic ...
             final String outputTopicName = record.topic();
 
