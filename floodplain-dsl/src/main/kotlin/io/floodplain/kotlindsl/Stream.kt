@@ -402,7 +402,7 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
 // 	    StreamsConfig.
         streamsConfiguration[StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG] = 10 * 1024 * 1024L
 
-        streamsConfiguration[StreamsConfig.COMMIT_INTERVAL_MS_CONFIG] = 1000
+        streamsConfiguration[StreamsConfig.COMMIT_INTERVAL_MS_CONFIG] = 20000
         streamsConfiguration[ProducerConfig.MAX_REQUEST_SIZE_CONFIG] = 7900000
         streamsConfiguration[ConsumerConfig.MAX_PARTITION_FETCH_BYTES_CONFIG] = 7900000
         streamsConfiguration[StreamsConfig.ROCKSDB_CONFIG_SETTER_CLASS_CONFIG] = RocksDBConfigurationSetter::class.java
