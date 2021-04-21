@@ -51,11 +51,9 @@ class FilmToMongoIntegratedSink {
     fun setup() {
         val bootstrap = "${kafkaContainer.host}:${kafkaContainer.exposedPort}"
         logger.info("kafka.getBootstrapServers(): ${kafkaContainer.container.bootstrapServers} bootstrap: $bootstrap")
-        // createTopics(bootstrap,"CONNECTOR_STORAGE")
-        // "debezium/connect:1.4"
 
         debeziumContainer = InstantiatedContainer(
-            "debezium/connect:1.4",
+            "debezium/connect:1.5",
             8083,
             mapOf(
                 "BOOTSTRAP_SERVERS" to "kafka:9092",

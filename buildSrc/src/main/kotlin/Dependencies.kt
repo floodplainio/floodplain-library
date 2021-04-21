@@ -22,7 +22,7 @@ object FloodplainDeps {
     const val slf4j_version = "1.7.30"
     const val mysql_version = "8.0.23"
     const val mongodb_version = "4.2.2"
-    const val debezium_version = "1.4.2.Final"
+    const val debezium_version = "1.5.0.Final"
     const val testContainer_version = "1.15.2"
     const val kotlin_coroutines_version = "1.4.3"
     const val debeziumCore        = "io.debezium:debezium-core:$debezium_version"
