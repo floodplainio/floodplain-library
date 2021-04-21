@@ -43,7 +43,7 @@ allprojects {
         jcenter()
         google()
         maven {
-            url = uri("http://packages.confluent.io/maven")
+            url = uri("https://packages.confluent.io/maven")
         }
     }
 }
