@@ -22,19 +22,35 @@ import io.debezium.engine.ChangeEvent
 import io.debezium.engine.DebeziumEngine
 import io.debezium.engine.format.Json
 import io.floodplain.ChangeRecord
-import org.junit.Ignore
+import io.floodplain.test.InstantiatedContainer
 import org.junit.Test
+import java.nio.file.Files
 import java.nio.file.Path
+import java.nio.file.Paths
 import java.util.Properties
 import java.util.UUID
+import java.util.concurrent.atomic.AtomicInteger
+import kotlin.io.path.createTempDirectory
+import kotlin.io.path.deleteExisting
 import kotlin.system.measureTimeMillis
+// import kotlin.io.path.createTempDirectory
 
 private val logger = mu.KotlinLogging.logger {}
 
 class TestMySQL {
     // TODO, connect to testcontainers (now hard coded to localhost)
-    @Test @Ignore
+    private val postgresContainer = InstantiatedContainer("debezium/example-mysql:1.5", 3306, mapOf(
+        "MYSQL_ROOT_PASSWORD" to "debezium",
+        "MYSQL_USER" to "mysqluser",
+        "MYSQL_PASSWORD" to "mysqlpw"
+    ))
+
+    var engine: DebeziumEngine<ChangeEvent<String,String>>? = null
+    private val itemCounter = AtomicInteger(0)
+    @Test
     fun testMySql() {
+        // Find better way to configure this?
+        System.setProperty("debezium.embedded.shutdown.pause.before.interrupt.ms","1000")
         val offsetFilePath = createOffsetFilePath()
         logger.info("Creating offset files at: $offsetFilePath")
         val props = Properties()
@@ -43,20 +59,20 @@ class TestMySQL {
         props.setProperty("offset.storage", "org.apache.kafka.connect.storage.FileOffsetBackingStore")
         props.setProperty("offset.storage.file.filename", offsetFilePath.toString())
         props.setProperty("offset.flush.interval.ms", "1000")
-        props.setProperty("database.hostname", "localhost")
-        props.setProperty("database.port", "3306")
+        props.setProperty("database.hostname", "${postgresContainer.host}")
+        props.setProperty("database.port", "${postgresContainer.exposedPort}" )
         props.setProperty("database.server.name", "instance-mysqlsource")
-        props.setProperty("database.dbname", "my-wpdb")
+        props.setProperty("database.dbname", "inventory")
         props.setProperty("database.user", "root")
-        props.setProperty("database.password", "mysecretpassword")
+        props.setProperty("database.password", "debezium")
         props.setProperty("database.server.id", "${System.currentTimeMillis()}")
-
+        // props.setProperty("debezium.embedded.shutdown.pause.before.interrupt.ms","1000")
         props.setProperty("database.history", "io.debezium.relational.history.FileDatabaseHistory")
         props.setProperty("database.history.file.filename", "currenthistory")
-        val engine = DebeziumEngine.create(Json::class.java)
+        engine = DebeziumEngine.create(Json::class.java)
             .using(props)
-            .notifying { record: ChangeEvent<String, String> ->
-                val perf = measureTimeMillis {
+            .notifying {
+                record ->
                     send(
                         ChangeRecord(
                             record.destination(),
@@ -65,20 +81,23 @@ class TestMySQL {
                         )
                     )
                 }
-                if (perf > 1000) {
-                    logger.debug("Send ran for: $perf")
-                }
-            }
             .build()
-        engine.run()
+        engine?.run()
     }
 
     private fun send(changeRecord: ChangeRecord) {
-        logger.info("Record detected: {} {} {}", changeRecord.topic, changeRecord.key, changeRecord.value)
-        TODO("Not yet implemented")
+        if(itemCounter.get()>33) {
+            logger.info("Closing engine")
+            // delete history file:
+            Files.delete(Path.of("currenthistory"))
+            engine?.close()
+        }
+
+        logger.info("Record detected:${changeRecord.topic} ${changeRecord.key} ${changeRecord.value} count: ${itemCounter.incrementAndGet()}")
     }
 
     private fun createOffsetFilePath(offsetId: String? = null): Path {
+        // val tempDir = createTempDirectory()
         val tempFile = createTempFile(offsetId ?: UUID.randomUUID().toString().substring(0, 7))
         if (offsetId == null) {
             tempFile.deleteOnExit()
