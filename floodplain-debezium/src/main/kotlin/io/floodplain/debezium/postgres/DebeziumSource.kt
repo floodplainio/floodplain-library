@@ -23,12 +23,15 @@ import io.debezium.engine.DebeziumEngine
 import io.debezium.engine.format.Json
 import io.floodplain.ChangeRecord
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.sendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import java.nio.file.Path
 import java.util.Properties
@@ -70,15 +73,33 @@ private fun createLocalDebeziumSettings(name: String, taskClass: String, hostnam
     props.setProperty("database.port", "$port")
     props.setProperty("database.server.name", name) // don't think this matters?
     props.setProperty("database.dbname", database)
-    props.setProperty("database.whitelist", database)
+    // props.setProperty("database.include.list", database)
     props.setProperty("database.user", username)
     props.setProperty("database.password", password)
     props.setProperty("offset.storage", "org.apache.kafka.connect.storage.FileOffsetBackingStore")
     props.setProperty("offset.storage.file.filename", offsetFilePath.toString())
     props.setProperty("offset.flush.interval.ms", "1000")
+    // Override any setting:
     settings.forEach { (k, v) -> props[k] = v }
     return props
 }
+
+
+
+// // , postgresContainer.exposedPort
+// props.setProperty("name", "engine")
+// props.setProperty("connector.class","io.debezium.connector.postgresql.PostgresConnector")
+// props.setProperty("offset.storage", "org.apache.kafka.connect.storage.FileOffsetBackingStore")
+// props.setProperty("offset.storage.file.filename", "/tmp/offsets.dat")
+// props.setProperty("offset.flush.interval.ms", "60000")
+// props.setProperty("database.dbname","dvdrental")
+// /* begin connector properties */
+// /* begin connector properties */props.setProperty("database.hostname", "${postgresContainer.host}")
+// props.setProperty("database.port", "${postgresContainer.exposedPort}")
+// props.setProperty("database.user", "postgres")
+// props.setProperty("database.password", "mysecretpassword")
+// props.setProperty("database.server.id", "85744")
+// props.setProperty("database.server.name", "my-app-connector")
 /**
  * @return A hot flow of ChangeRecord. Perhaps one day there might be a colder one.
  * @param name: The prefix of the outgoing 'topic', basically the destination field of the changerecord is <topicprefix>.<schema>.<table>
@@ -97,53 +118,56 @@ fun createDebeziumChangeFlow(name: String, taskClass: String, hostname: String, 
     return runDebeziumServer(props)
 }
 
-private fun runDebeziumServer(props: Properties): Flow<ChangeRecord> {
-    val engineKillSwitch = EngineKillSwitch()
-    val totalTimeInSend = AtomicLong(0L)
-    return callbackFlow {
-        val engine = DebeziumEngine.create(Json::class.java)
-            .using(props)
-            .notifying { record: ChangeEvent<String, String> ->
-                if (isClosedForSend) {
-                    // logger.info("Closed for send")
-                } else {
-                    val perf = measureTimeMillis {
-                        try {
-                            sendBlocking(
-                                ChangeRecord(
-                                    record.destination(),
-                                    record.key(),
-                                    record.value()?.toByteArray()
-                                )
+private fun ProducerScope<ChangeRecord>.createEngine(props: Properties, engineKillSwitch: EngineKillSwitch): DebeziumEngine<ChangeEvent<String,String>> {
+    return DebeziumEngine.create(Json::class.java)
+        .using(props)
+        .notifying { record: ChangeEvent<String, String> ->
+            if (isClosedForSend) {
+                // logger.info("Closed for send")
+            } else {
+                val perf = measureTimeMillis {
+                    try {
+                        sendBlocking(
+                            ChangeRecord(
+                                record.destination(),
+                                record.key(),
+                                record.value()?.toByteArray()
                             )
-                        } catch (e: CancellationException) {
-                            logger.info("engine cancelled")
-                            engineKillSwitch.kill()
-                            Thread.currentThread().interrupt()
-                        }
+                        )
+                    } catch (e: CancellationException) {
+                        logger.info("engine cancelled")
+                        engineKillSwitch.kill()
+                        Thread.currentThread().interrupt()
                     }
-                    if (perf > 1000) {
-                        logger.debug("Send blocking ran for: $perf")
-                    }
-                    totalTimeInSend.addAndGet(perf)
+                }
+                if (perf > 1000) {
+                    logger.debug("Send blocking ran for: $perf")
                 }
             }
-            .build()
-        engineKillSwitch.engine = engine
-        GlobalScope.launch {
-            logger.info(
-                "Engine ran for: " + measureTimeMillis {
-                    engine.run()
-                }
-            )
-            logger.info("Debezium source engine terminated. Total time in send: ${totalTimeInSend.get()}")
         }
+        .build()
+}
+
+private fun runDebeziumServer(props: Properties): Flow<ChangeRecord> {
+    val engineKillSwitch = EngineKillSwitch()
+    return callbackFlow {
+        val engine: DebeziumEngine<ChangeEvent<String,String>> = createEngine(props,engineKillSwitch)
+        GlobalScope.launch {
+           engine.run()
+            // logger.info("Debezium source engine terminated. Total time in send: ${totalTimeInSend.get()}")
+        }
+
+        engineKillSwitch.engine = engine
+        //
         awaitClose {
             engine.close()
         }
-    }
-        .onCompletion {
+        logger.info("engine started")
+    }.onStart {
+
+    }.onCompletion {
             engineKillSwitch.kill()
             logger.info("Debezium flow shutdown completed")
-        }
+    }
+
 }
