@@ -74,13 +74,13 @@ subprojects {
         reports.maybeCreate("html").isEnabled = true
     }
 
-    tasks.withType<com.hierynomus.gradle.license.tasks.LicenseFormat>().configureEach() {
+    tasks.withType<com.hierynomus.gradle.license.tasks.LicenseFormat>().configureEach {
         this.header = File(this.project.rootDir,"HEADER")
         this.exclude("*.xml","*.json")
         this.mapping(mapOf("java" to "SLASHSTAR_STYLE", "kt" to "SLASHSTAR_STYLE"))
     }
 
-    tasks.withType<com.hierynomus.gradle.license.tasks.LicenseCheck>().configureEach() {
+    tasks.withType<com.hierynomus.gradle.license.tasks.LicenseCheck>().configureEach {
         this.header = File(this.project.rootDir,"HEADER")
         this.exclude("*.xml","*.json")
         this.mapping(mapOf("java" to "SLASHSTAR_STYLE", "kt" to "SLASHSTAR_STYLE"))
@@ -194,7 +194,7 @@ fun customizePom(publication: MavenPublication) {
         licenses {
             license {
                 name.set("Apache License 2.0")
-                url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
                 distribution.set("repo")
             }
         }
