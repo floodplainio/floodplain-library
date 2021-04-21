@@ -46,7 +46,6 @@ public class Topic {
         }
     }
 
-    @Deprecated
     public static Topic from(String topicDefinition, TopologyContext topologyContext) {
         return new Topic(topologyContext,topicDefinition,null);
     }
