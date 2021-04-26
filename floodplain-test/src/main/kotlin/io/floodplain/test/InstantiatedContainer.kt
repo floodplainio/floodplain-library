@@ -113,7 +113,7 @@ class RedpandaContainer : GenericContainer<RedpandaContainer?>("vectorized/redpa
         command += "/usr/bin/rpk redpanda start --check=false --node-id 0 "
         command += "--kafka-addr PLAINTEXT://0.0.0.0:29092,OUTSIDE://0.0.0.0:9092 "
         command += "--advertise-kafka-addr PLAINTEXT://broker:29092,OUTSIDE://$host:" + getMappedPort(
-            29092
+            9092
         )
         logger.info("command: $command")
         logger.info("mapped port: $host:${getMappedPort(9092)}")

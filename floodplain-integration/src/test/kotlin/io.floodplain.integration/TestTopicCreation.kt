@@ -18,6 +18,7 @@
  */
 package io.floodplain.integration
 
+import io.floodplain.test.InstantiatedRedPandaContainer
 import org.apache.kafka.clients.admin.AdminClient
 import org.apache.kafka.clients.admin.ListTopicsOptions
 import org.apache.kafka.clients.admin.NewTopic
@@ -35,7 +36,7 @@ class TestTopicCreation {
     // .withEnv(env)
 
     // Infra for testing Kafka interaction
-    // private val panda = InstantiatedRedPandaContainer()
+    private val panda = InstantiatedRedPandaContainer()
     // val kafkaContainer = KafkaContainer("5.5.3").withEmbeddedZookeeper().withExposedPorts(9092,9093)
 
     // Not functional yet
@@ -45,8 +46,8 @@ class TestTopicCreation {
         // kafkaContainer.start()
         // logger.info("Bootsx§trap: ${kafkaContainer.bootstrapServers}")
         val config: MutableMap<String, Any> = HashMap()
-        // val exposedPort = panda.exposedPort
-        val host = "localhost:9093"
+        val exposedPort = panda.exposedPort
+        val host = "localhost:${exposedPort}"
         logger.info("Exposed host: $host")
         config["bootstrap.servers"] = host // "localhost:51347"
         config["client.id"] = UUID.randomUUID().toString()
