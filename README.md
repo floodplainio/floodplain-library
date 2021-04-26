@@ -1,15 +1,10 @@
 # Welcome to Floodplain!
 
-Floodplain 1.3.1 is out. Notable features:
-
-- More consistent handling of date types. Floodplain does no longer uses the old java.util.Date class. It now uses: DATE / TIMESTAMP / CLOCKTIME types that map to LocalDate, LocalDateTime and LocalTime.
-- Support for FHIR based sources (i.e. Kafka Topics in FHIR / JSON format)
-
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.floodplain/floodplain-dsl/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.floodplain/floodplain-dsl)
+[![CircleCI](https://circleci.com/gh/floodplainio/floodplain-library.svg?style=svg)](https://circleci.com/gh/floodplainio/floodplain-library)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Ffloodplainio%2Ffloodplain-library.svg?type=small)](https://app.fossa.io/projects/git%2Bgithub.com%2Ffloodplainio%2Ffloodplain-library?ref=badge_large)
 Floodplain is a Kotlin based stream processing framework, check [https://www.floodplain.io/](https://www.floodplain.io/) for in-depth documentation.
 
-Circle CI Build Status:
-
-[![CircleCI](https://circleci.com/gh/floodplainio/floodplain-library.svg?style=svg)](https://circleci.com/gh/floodplainio/floodplain-library)
 
 Available on Maven Central:
 
