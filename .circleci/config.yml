@@ -18,6 +18,8 @@ jobs: # a collection of steps
             java -version
             sudo update-java-alternatives --set java-1.11.0-openjdk-amd64
             java -version
+      - run: |
+          curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/fossas/fossa-cli/master/install.sh | bash
       - checkout # check out source code to working directory
       # Read about caching dependencies: https://circleci.com/docs/2.0/caching/
       - restore_cache:
@@ -65,6 +67,9 @@ jobs: # a collection of steps
       # As the JAR was only assembled in the first build container, build/libs will be empty in all the other build containers.
       - store_artifacts:
           path: build/libs
+      - run:
+          command: fossa
+          working_directory: ~
       # See https://circleci.com/docs/2.0/deployment-integrations/ for deploy examples
       - run:
           name: Upload to central
