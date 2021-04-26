@@ -39,13 +39,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.time.temporal.Temporal;
-import java.time.temporal.TemporalAccessor;
 import java.util.*;
 import java.util.Map.Entry;
 
@@ -56,10 +50,10 @@ public class ReplicationJSON {
     private final static Logger logger = LoggerFactory.getLogger(ReplicationJSON.class);
     public static final ObjectMapper objectMapper = new ObjectMapper();
 
-    public static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    public static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS");
-
-    public static final DateTimeFormatter clocktimeFormatter =  DateTimeFormatter.ofPattern("HH:mm:ss");
+//    public static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+//    public static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS");
+//
+//    public static final DateTimeFormatter clocktimeFormatter =  DateTimeFormatter.ofPattern("HH:mm:ss");
 
     public static ReplicationMessage parseReplicationMessage(byte[] data, Optional<String> source) throws IOException {
         return ReplicationJSON.parseJSON(source, (ObjectNode) parseJSON(data));

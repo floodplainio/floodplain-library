@@ -76,7 +76,7 @@ private data class IMessageImpl(private val content: MutableMap<String, Any>) : 
     }
 
     override fun exists(path: String): Boolean {
-       return get(path)!=null
+        return get(path) != null
     }
 
     override fun message(path: String): IMessage? {
@@ -131,7 +131,6 @@ private data class IMessageImpl(private val content: MutableMap<String, Any>) : 
         }
         return raw
     }
-
 
     override fun time(path: String): LocalTime {
         return optionalTime(path) ?: throw NullPointerException("Can't obtain datetime from path: $path as it is absent")

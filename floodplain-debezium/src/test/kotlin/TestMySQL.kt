@@ -26,31 +26,31 @@ import io.floodplain.test.InstantiatedContainer
 import org.junit.Test
 import java.nio.file.Files
 import java.nio.file.Path
-import java.nio.file.Paths
 import java.util.Properties
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicInteger
-import kotlin.io.path.createTempDirectory
-import kotlin.io.path.deleteExisting
-import kotlin.system.measureTimeMillis
 // import kotlin.io.path.createTempDirectory
 
 private val logger = mu.KotlinLogging.logger {}
 
 class TestMySQL {
     // TODO, connect to testcontainers (now hard coded to localhost)
-    private val postgresContainer = InstantiatedContainer("debezium/example-mysql:1.5", 3306, mapOf(
-        "MYSQL_ROOT_PASSWORD" to "debezium",
-        "MYSQL_USER" to "mysqluser",
-        "MYSQL_PASSWORD" to "mysqlpw"
-    ))
+    private val postgresContainer = InstantiatedContainer(
+        "debezium/example-mysql:1.5",
+        3306,
+        mapOf(
+            "MYSQL_ROOT_PASSWORD" to "debezium",
+            "MYSQL_USER" to "mysqluser",
+            "MYSQL_PASSWORD" to "mysqlpw"
+        )
+    )
 
-    var engine: DebeziumEngine<ChangeEvent<String,String>>? = null
+    var engine: DebeziumEngine<ChangeEvent<String, String>>? = null
     private val itemCounter = AtomicInteger(0)
     @Test
     fun testMySql() {
         // Find better way to configure this?
-        System.setProperty("debezium.embedded.shutdown.pause.before.interrupt.ms","1000")
+        System.setProperty("debezium.embedded.shutdown.pause.before.interrupt.ms", "1000")
         val offsetFilePath = createOffsetFilePath()
         logger.info("Creating offset files at: $offsetFilePath")
         val props = Properties()
@@ -60,7 +60,7 @@ class TestMySQL {
         props.setProperty("offset.storage.file.filename", offsetFilePath.toString())
         props.setProperty("offset.flush.interval.ms", "1000")
         props.setProperty("database.hostname", "${postgresContainer.host}")
-        props.setProperty("database.port", "${postgresContainer.exposedPort}" )
+        props.setProperty("database.port", "${postgresContainer.exposedPort}")
         props.setProperty("database.server.name", "instance-mysqlsource")
         props.setProperty("database.dbname", "inventory")
         props.setProperty("database.user", "root")
@@ -73,20 +73,20 @@ class TestMySQL {
             .using(props)
             .notifying {
                 record ->
-                    send(
-                        ChangeRecord(
-                            record.destination(),
-                            record.key(),
-                            record.value()?.toByteArray()
-                        )
+                send(
+                    ChangeRecord(
+                        record.destination(),
+                        record.key(),
+                        record.value()?.toByteArray()
                     )
-                }
+                )
+            }
             .build()
         engine?.run()
     }
 
     private fun send(changeRecord: ChangeRecord) {
-        if(itemCounter.get()>33) {
+        if (itemCounter.get()> 33) {
             logger.info("Closing engine")
             // delete history file:
             Files.delete(Path.of("currenthistory"))

@@ -76,8 +76,6 @@ public class JSONReplicationMessageParserImpl implements ReplicationMessageParse
         try {
             node = ReplicationJSON.objectMapper.readTree(data);
             return ReplicationJSON.parseJSON(source, (ObjectNode) node);
-        } catch (JsonProcessingException e) {
-            return ReplicationFactory.createErrorReplicationMessage(e);
         } catch (IOException e) {
             return ReplicationFactory.createErrorReplicationMessage(e);
         }

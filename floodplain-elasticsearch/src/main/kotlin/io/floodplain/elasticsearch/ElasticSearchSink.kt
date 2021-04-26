@@ -18,7 +18,6 @@
  */
 package io.floodplain.elasticsearch
 
-import io.confluent.connect.elasticsearch.ElasticsearchSinkConnector
 import io.floodplain.kotlindsl.AbstractSinkConfig
 import io.floodplain.kotlindsl.FloodplainSink
 import io.floodplain.kotlindsl.MaterializedConfig

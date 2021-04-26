@@ -24,18 +24,19 @@ import io.floodplain.replication.factory.ReplicationFactory
 import org.apache.kafka.common.serialization.Serdes
 
 fun PartialStream.genericSource(topic: String, parseMessage: (ByteArray) -> IMessage?, init: Source.() -> Unit = {}): Source {
-    return genericSource(topic, {Serdes.String().deserializer().deserialize(topic, it)}, parseMessage, this.rootTopology, init)
+    return genericSource(topic, { Serdes.String().deserializer().deserialize(topic, it) }, parseMessage, this.rootTopology, init)
 }
 
 fun Stream.genericSource(topic: String, parseMessage: (ByteArray) -> IMessage?, init: Source.() -> Unit = {}) {
-    addSource(genericSource(topic, {Serdes.String().deserializer().deserialize(topic, it)},  parseMessage, this, init))
+    addSource(genericSource(topic, { Serdes.String().deserializer().deserialize(topic, it) }, parseMessage, this, init))
 }
 
-private fun genericSource(topic: String, keyParse: (ByteArray)->String, messageParse: (ByteArray) -> IMessage?, rootTopology: Stream, init: Source.() -> Unit = {}): Source {
+private fun genericSource(topic: String, keyParse: (ByteArray) -> String, messageParse: (ByteArray) -> IMessage?, rootTopology: Stream, init: Source.() -> Unit = {}): Source {
     val sourceElement = CustomTopicSource(
         topic,
         { data -> keyParse(data) },
-        { data -> messageParse(data)?.toImmutable()?.let { ReplicationFactory.standardMessage(it) }
+        { data ->
+            messageParse(data)?.toImmutable()?.let { ReplicationFactory.standardMessage(it) }
         }
     )
     val source = Source(rootTopology, sourceElement, rootTopology.topologyContext)

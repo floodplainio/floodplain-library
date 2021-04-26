@@ -75,14 +75,14 @@ subprojects {
     }
 
     tasks.withType<com.hierynomus.gradle.license.tasks.LicenseFormat>().configureEach {
-        this.header = File(this.project.rootDir,"HEADER")
-        this.exclude("*.xml","*.json")
+        this.header = File(this.project.rootDir, "HEADER")
+        this.exclude("*.xml", "*.json")
         this.mapping(mapOf("java" to "SLASHSTAR_STYLE", "kt" to "SLASHSTAR_STYLE"))
     }
 
     tasks.withType<com.hierynomus.gradle.license.tasks.LicenseCheck>().configureEach {
-        this.header = File(this.project.rootDir,"HEADER")
-        this.exclude("*.xml","*.json")
+        this.header = File(this.project.rootDir, "HEADER")
+        this.exclude("*.xml", "*.json")
         this.mapping(mapOf("java" to "SLASHSTAR_STYLE", "kt" to "SLASHSTAR_STYLE"))
     }
 

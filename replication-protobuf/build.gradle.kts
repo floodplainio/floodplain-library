@@ -1,5 +1,5 @@
-import io.floodplain.build.FloodplainDeps
 import com.google.protobuf.gradle.*
+import io.floodplain.build.FloodplainDeps
 
 val protobufVersion = "3.11.4"
 
@@ -18,10 +18,9 @@ plugins {
     id("com.google.protobuf")
 }
 
-
 //
-sourceSets{
-    create("proto"){
+sourceSets {
+    create("proto") {
         proto {
             srcDir("src/main/proto")
         }
@@ -33,16 +32,16 @@ sourceSets{
 // }
 //
 protobuf {
-   protoc {
-       artifact = "com.google.protobuf:protoc:$protobufVersion"
-   }
-   generateProtoTasks {
-       // this.
-       // ofSourceSet("main").plugins {
-       //     // Apply the "grpc" plugin whose spec is defined above, without
-       //     // options.  Note the braces cannot be omitted, otherwise the
-       //     // plugin will not be added. This is because of the implicit way
-       //     // NamedDomainObjectContainer binds the methods.
-       // }
-   }
+    protoc {
+        artifact = "com.google.protobuf:protoc:$protobufVersion"
+    }
+    generateProtoTasks {
+        // this.
+        // ofSourceSet("main").plugins {
+        //     // Apply the "grpc" plugin whose spec is defined above, without
+        //     // options.  Note the braces cannot be omitted, otherwise the
+        //     // plugin will not be added. This is because of the implicit way
+        //     // NamedDomainObjectContainer binds the methods.
+        // }
+    }
 }

@@ -41,7 +41,7 @@ public class FilterProcessor implements Processor<String, ReplicationMessage,Str
 
     @Override
     public void process(Record<String, ReplicationMessage> record) {
-        if(record.value()==null) {
+        if(record.value()==null || ReplicationMessage.Operation.DELETE == record.value().operation()) {
             context.forward(record);
             return;
         }

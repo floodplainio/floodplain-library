@@ -181,7 +181,7 @@ fun PartialStream.set(transform: (String, IMessage, IMessage) -> IMessage): Tran
 
 fun PartialStream.only(vararg fields: String): Transformer {
     val transformer: (String, ImmutableMessage, ImmutableMessage) -> ImmutableMessage =
-        { _, msg, _  ->
+        { _, msg, _ ->
             val result = empty()
             val input = fromImmutable(msg)
             fields.forEach {
@@ -192,7 +192,6 @@ fun PartialStream.only(vararg fields: String): Transformer {
     val set = SetTransformer(transformer)
     return addTransformer(Transformer(this.rootTopology, set, topologyContext))
 }
-
 
 /**
  * Modifies the incoming message before passing it on.
@@ -246,7 +245,6 @@ fun PartialStream.joinMulti(key: (IMessage) -> String?, secondaryKey: (IMessage)
     val jrt = JoinRemoteTransformer(secondarySource.toReactivePipe(), keyExtractor, optional, true)
     addTransformer(Transformer(this.rootTopology, jrt, topologyContext))
 }
-
 
 fun PartialStream.joinAttributes(withTopic: String, nameAttribute: String, valueAttribute: String, vararg keys: String) {
     return joinAttributes(withTopic, nameAttribute, valueAttribute) { msg ->
@@ -368,7 +366,6 @@ fun PartialStream.to(topic: String): Transformer {
     )
     return addTransformer(Transformer(this.rootTopology, sink, topologyContext))
 }
-
 
 /**
  * Creates a simple sink that will contain the result of the current transformation.
@@ -564,4 +561,3 @@ interface FloodplainOperator {
  * Concrete version of a partial pipe
  */
 class Block(rootTopology: Stream, override val topologyContext: TopologyContext) : PartialStream(rootTopology)
-

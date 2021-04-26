@@ -23,7 +23,6 @@ import io.debezium.engine.DebeziumEngine
 import io.debezium.engine.format.Json
 import io.floodplain.ChangeRecord
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.channels.awaitClose
@@ -37,7 +36,6 @@ import java.nio.file.Path
 import java.util.Properties
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicBoolean
-import java.util.concurrent.atomic.AtomicLong
 import kotlin.system.measureTimeMillis
 
 private val logger = mu.KotlinLogging.logger {}
@@ -84,8 +82,6 @@ private fun createLocalDebeziumSettings(name: String, taskClass: String, hostnam
     return props
 }
 
-
-
 // // , postgresContainer.exposedPort
 // props.setProperty("name", "engine")
 // props.setProperty("connector.class","io.debezium.connector.postgresql.PostgresConnector")
@@ -118,7 +114,7 @@ fun createDebeziumChangeFlow(name: String, taskClass: String, hostname: String, 
     return runDebeziumServer(props)
 }
 
-private fun ProducerScope<ChangeRecord>.createEngine(props: Properties, engineKillSwitch: EngineKillSwitch): DebeziumEngine<ChangeEvent<String,String>> {
+private fun ProducerScope<ChangeRecord>.createEngine(props: Properties, engineKillSwitch: EngineKillSwitch): DebeziumEngine<ChangeEvent<String, String>> {
     return DebeziumEngine.create(Json::class.java)
         .using(props)
         .notifying { record: ChangeEvent<String, String> ->
@@ -151,9 +147,9 @@ private fun ProducerScope<ChangeRecord>.createEngine(props: Properties, engineKi
 private fun runDebeziumServer(props: Properties): Flow<ChangeRecord> {
     val engineKillSwitch = EngineKillSwitch()
     return callbackFlow {
-        val engine: DebeziumEngine<ChangeEvent<String,String>> = createEngine(props,engineKillSwitch)
+        val engine: DebeziumEngine<ChangeEvent<String, String>> = createEngine(props, engineKillSwitch)
         GlobalScope.launch {
-           engine.run()
+            engine.run()
             // logger.info("Debezium source engine terminated. Total time in send: ${totalTimeInSend.get()}")
         }
 
@@ -164,10 +160,8 @@ private fun runDebeziumServer(props: Properties): Flow<ChangeRecord> {
         }
         logger.info("engine started")
     }.onStart {
-
     }.onCompletion {
-            engineKillSwitch.kill()
-            logger.info("Debezium flow shutdown completed")
+        engineKillSwitch.kill()
+        logger.info("Debezium flow shutdown completed")
     }
-
 }

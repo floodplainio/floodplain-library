@@ -99,7 +99,7 @@ fun PartialStream.toMongo(collection: String, topicDefinition: String, config: M
     val topic = Topic.fromQualified(topicDefinition, topologyContext)
     config.sinkInstancePair.add(collection to topic)
     val sinkName = config.name //
-    if(sinkName.startsWith("@")) {
+    if (sinkName.startsWith("@")) {
         throw IllegalArgumentException("Should not start a database name with @, please use a fully qualified name")
     }
     // val sinkName = ProcessorName.from(config.name)

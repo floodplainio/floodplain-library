@@ -330,18 +330,17 @@ class TestTopology {
         }
     }
 
-
     @Test
     fun testOnlyOperator() {
-        val m = empty().set("aap","noot").set("mies","wim")
+        // val m = empty().set("aap","noot").set("mies","wim")
         stream {
             from("source") {
                 only("mies")
                 to("output")
             }
         }.renderAndExecute {
-            input("source", "key1",empty().set("aap","noot").set("mies","wim"))
-            assertEquals(empty().set("mies","wim"), output("output").second)
+            input("source", "key1", empty().set("aap", "noot").set("mies", "wim"))
+            assertEquals(empty().set("mies", "wim"), output("output").second)
         }
     }
 
@@ -393,15 +392,15 @@ class TestTopology {
         }
     }
 
-
     @Test
     fun testTroubleShootScan() {
         stream {
             from("source") {
-                scan({ msg -> msg.string("chat_id") },
-                    { _ -> empty() },
+                scan(
+                    { msg -> msg.string("chat_id") },
+                    { empty() },
                     {
-                        set { key, added, state ->
+                        set { _, added, state ->
                             val current = state.optionalInteger("count") ?: 0
 //                        logger.info("Adding message with key: $key message: $added")
                             val diff = if (added.boolean("include")) 1 else 0
@@ -410,7 +409,7 @@ class TestTopology {
                         }
                     },
                     {
-                        set { key, removed, state ->
+                        set { _, removed, state ->
                             val current = state.optionalInteger("count") ?: 0
 //                        logger.info("Removing message with key: $key message: $removed")
                             val diff = if (removed.boolean("include")) 1 else 0
@@ -422,17 +421,16 @@ class TestTopology {
                 to("output")
             }
         }.renderAndExecute {
-            input("source", "key1", empty().set("chat_id","1").set("include",true))
+            input("source", "key1", empty().set("chat_id", "1").set("include", true))
             val (k1, v1) = output("output")
-            assertEquals("1",k1)
-            assertEquals(1,v1.integer("count"))
-            input("source", "key1", empty().set("chat_id","1").set("include",false))
+            assertEquals("1", k1)
+            assertEquals(1, v1.integer("count"))
+            input("source", "key1", empty().set("chat_id", "1").set("include", false))
             val (_, v2) = output("output")
-            assertEquals(0,v2.integer("count"))
-            delete("source","key1")
-            val (k5, v5) = output("output")
-            assertEquals(0,v5.integer("count"))
-
+            assertEquals(0, v2.integer("count"))
+            delete("source", "key1")
+            val (_, v5) = output("output")
+            assertEquals(0, v5.integer("count"))
         }
     }
 
@@ -440,19 +438,20 @@ class TestTopology {
     fun testTroubleShootScan2() {
         stream {
             from("source") {
-                scan({ msg -> msg.string("chat_id") },
-                    { _ -> empty() },
+                scan(
+                    { msg -> msg.string("chat_id") },
+                    { empty() },
                     {
-                        set { key, added, state ->
+                        set { _, added, state ->
                             val current = state.optionalInteger("count") ?: 0
 //                        logger.info("Adding message with key: $key message: $added")
                             val diff = if (added.boolean("include")) 1 else 0
-                                state["count"] = current + diff
+                            state["count"] = current + diff
                             state
                         }
                     },
                     {
-                        set { key, removed, state ->
+                        set { _, removed, state ->
                             val current = state.optionalInteger("count") ?: 0
 //                        logger.info("Removing message with key: $key message: $removed")
                             val diff = if (removed.boolean("include")) 1 else 0
@@ -464,33 +463,32 @@ class TestTopology {
                 to("output")
             }
         }.renderAndExecute {
-            input("source", "key1", empty().set("chat_id","1").set("include",true))
-            input("source", "key2", empty().set("chat_id","1").set("include",true))
+            input("source", "key1", empty().set("chat_id", "1").set("include", true))
+            input("source", "key2", empty().set("chat_id", "1").set("include", true))
             // inputQualified("source", "key1", empty())
             val (k1, v1) = output("output")
-            assertEquals("1",k1)
-            assertEquals(1,v1.integer("count"))
+            assertEquals("1", k1)
+            assertEquals(1, v1.integer("count"))
 
             val (k2, v2) = output("output")
-            assertEquals("1",k2)
-            assertEquals(2,v2.integer("count"))
+            assertEquals("1", k2)
+            assertEquals(2, v2.integer("count"))
 
-            input("source", "key2", empty().set("chat_id","1").set("include",false))
+            input("source", "key2", empty().set("chat_id", "1").set("include", false))
             val (k3, v3) = output("output")
-            assertEquals("1",k3)
-            assertEquals(1,v3.integer("count"))
+            assertEquals("1", k3)
+            assertEquals(1, v3.integer("count"))
             val (_, v3a) = output("output")
-            assertEquals(1,v3a.integer("count"))
+            assertEquals(1, v3a.integer("count"))
             assertTrue(outputSize("output") == 0L)
 
+            delete("source", "key2")
+            val (_, v4) = output("output")
+            assertEquals(1, v4.integer("count"))
 
-            delete("source","key2")
-            val (k4, v4) = output("output")
-            assertEquals(1,v4.integer("count"))
-
-            delete("source","key1")
-            val (k5, v5) = output("output")
-            assertEquals(0,v5.integer("count"))
+            delete("source", "key1")
+            val (_, v5) = output("output")
+            assertEquals(0, v5.integer("count"))
 
             assertTrue(outputSize("output") == 0L)
             // logger.info("Key: $key Value: $value")
@@ -593,7 +591,6 @@ class TestTopology {
         }
     }
 
-
     @Test
     fun testScanGroupedSimple() {
         stream {
@@ -644,7 +641,7 @@ class TestTopology {
                 to("sink")
             }
         }.renderAndExecute {
-            input("source","key1",empty().set("category", "category1"))
+            input("source", "key1", empty().set("category", "category1"))
             outputSize("category1")
             assertEquals(1, outputSize("category1"))
             assertEquals(0, outputSize("category2"))
@@ -701,20 +698,20 @@ class TestTopology {
     fun testKeyTransformer() {
         stream {
             from("source") {
-                keyTransform { key->"mon${key}" }
+                keyTransform { key -> "mon$key" }
                 to("output")
             }
         }.renderAndExecute {
             input("source", "key", empty().set("value", "value1"))
             val (key, _) = output("output")
-            Assert.assertEquals("monkey",key)
-            delete("source","soon")
+            Assert.assertEquals("monkey", key)
+            delete("source", "soon")
             val deleted = deleted("output")
-            Assert.assertEquals("monsoon",deleted)
+            Assert.assertEquals("monsoon", deleted)
         }
     }
 
-        @Test
+    @Test
     fun testDiff() {
         stream {
             from("source") {
@@ -761,7 +758,6 @@ class TestTopology {
         }.renderAndExecute {
             input("source", "somekey", empty().set("myKey", "myValue"))
             delay(200)
-
         }
     }
 

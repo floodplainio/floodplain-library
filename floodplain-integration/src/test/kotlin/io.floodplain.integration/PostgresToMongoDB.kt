@@ -28,8 +28,8 @@ import io.floodplain.kotlindsl.postgresSource
 import io.floodplain.kotlindsl.postgresSourceConfig
 import io.floodplain.kotlindsl.scan
 import io.floodplain.kotlindsl.set
-import io.floodplain.kotlindsl.to
 import io.floodplain.kotlindsl.stream
+import io.floodplain.kotlindsl.to
 import io.floodplain.mongodb.remoteMongoConfig
 import io.floodplain.mongodb.toMongo
 import io.floodplain.mongodb.waitForMongoDbCondition
@@ -136,10 +136,10 @@ class TestCombinedMongo {
             }
         }.renderAndExecute {
             val dateInput = Date()
-            val inputMessage =  empty().set("date", dateInput)
+            val inputMessage = empty().set("date", dateInput)
             val aa = inputMessage.toImmutable()
             println(">> $aa")
-            input("input","key1", empty().set("date", dateInput))
+            input("input", "key1", empty().set("date", dateInput))
             val database = topologyContext().topicName("@mongodump")
             flushSinks()
             val hits = waitForMongoDbCondition(
@@ -153,7 +153,7 @@ class TestCombinedMongo {
                     val dateObject = collection.find().first()?.get("date")
                     logger.info("Date: $dateObject")
                     //
-                    assertEquals(dateInput.toInstant().toEpochMilli(),dateObject as Long)
+                    assertEquals(dateInput.toInstant().toEpochMilli(), dateObject as Long)
                     1L
                 } else {
                     null
@@ -165,7 +165,6 @@ class TestCombinedMongo {
             logger.info("done, test succeeded")
         }
     }
-
 
     /**
      * Test the simplest imaginable pipe: One source and one sink.

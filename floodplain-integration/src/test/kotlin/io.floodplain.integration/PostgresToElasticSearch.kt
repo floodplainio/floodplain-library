@@ -27,8 +27,8 @@ import io.floodplain.kotlindsl.joinRemote
 import io.floodplain.kotlindsl.postgresSource
 import io.floodplain.kotlindsl.postgresSourceConfig
 import io.floodplain.kotlindsl.set
-import io.floodplain.kotlindsl.to
 import io.floodplain.kotlindsl.stream
+import io.floodplain.kotlindsl.to
 import io.floodplain.test.InstantiatedContainer
 import io.floodplain.test.useIntegraton
 import kotlinx.coroutines.cancel

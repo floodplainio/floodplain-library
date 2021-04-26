@@ -22,16 +22,12 @@ package io.floodplain.immutable.impl;
 import io.floodplain.immutable.api.ImmutableMessage;
 import io.floodplain.immutable.api.ImmutableMessageParser;
 import io.floodplain.immutable.json.ImmutableJSON;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
 
 public class JSONImmutableMessageParserImpl implements ImmutableMessageParser {
 
     private static final boolean INCLUDENULLVALUES = true;
-
-    private final static Logger logger = LoggerFactory.getLogger(JSONImmutableMessageParserImpl.class);
 
     @Override
     public byte[] serialize(ImmutableMessage msg) {

@@ -23,8 +23,8 @@ import io.floodplain.kotlindsl.from
 import io.floodplain.kotlindsl.postgresSource
 import io.floodplain.kotlindsl.postgresSourceConfig
 import io.floodplain.kotlindsl.set
-import io.floodplain.kotlindsl.to
 import io.floodplain.kotlindsl.stream
+import io.floodplain.kotlindsl.to
 import io.floodplain.mongodb.remoteMongoConfig
 import io.floodplain.mongodb.toMongo
 import io.floodplain.mongodb.waitForMongoDbCondition

@@ -31,7 +31,6 @@ import org.junit.Ignore
 import org.junit.Test
 import java.util.Properties
 import java.util.UUID
-import java.util.concurrent.Executors
 import kotlin.test.assertEquals
 
 class TestDebeziumSource {
@@ -46,7 +45,7 @@ class TestDebeziumSource {
                 "mypostgres", "io.debezium.connector.postgresql.PostgresConnector", postgresContainer.host, postgresContainer.exposedPort, "dvdrental", "postgres", "mysecretpassword", UUID.randomUUID().toString(),
                 emptyMap()
             )
-                .onEach { println("message: ${it.key} topic: ${it.topic}")}
+                .onEach { println("message: ${it.key} topic: ${it.topic}") }
                 .take(500)
                 .toList(resultList)
             assertEquals(500, resultList.size)
@@ -63,11 +62,11 @@ class TestDebeziumSource {
 
         // , postgresContainer.exposedPort
         props.setProperty("name", "engine")
-        props.setProperty("connector.class","io.debezium.connector.postgresql.PostgresConnector")
+        props.setProperty("connector.class", "io.debezium.connector.postgresql.PostgresConnector")
         props.setProperty("offset.storage", "org.apache.kafka.connect.storage.FileOffsetBackingStore")
         props.setProperty("offset.storage.file.filename", "/tmp/offsets.dat")
         props.setProperty("offset.flush.interval.ms", "60000")
-        props.setProperty("database.dbname","dvdrental")
+        props.setProperty("database.dbname", "dvdrental")
 /* begin connector properties */
 /* begin connector properties */props.setProperty("database.hostname", "${postgresContainer.host}")
         props.setProperty("database.port", "${postgresContainer.exposedPort}")
