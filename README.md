@@ -10,6 +10,7 @@ Floodplain is a Kotlin based stream processing framework, check [https://www.flo
 Circle CI Build Status:
 
 [![CircleCI](https://circleci.com/gh/floodplainio/floodplain-library.svg?style=svg)](https://circleci.com/gh/floodplainio/floodplain-library)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Ffloodplainio%2Ffloodplain-library.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Ffloodplainio%2Ffloodplain-library?ref=badge_shield)
 
 Available on Maven Central:
 
@@ -47,3 +48,7 @@ Right-click and run, this should create some log messages and then keep running.
 Open a MongoDB client, point it to localhost:27017, and it will have created a new database. When you keep the FloodplainAddresses running, you can make changes to Postgres, and see the changes reflected in MongoDB.
 
 - TODO Separate examples into another project
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Ffloodplainio%2Ffloodplain-library.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Ffloodplainio%2Ffloodplain-library?ref=badge_large)
