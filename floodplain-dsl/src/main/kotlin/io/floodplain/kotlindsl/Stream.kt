@@ -48,6 +48,7 @@ import org.apache.kafka.connect.util.ConnectUtils
 import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.StreamsConfig
 import org.apache.kafka.streams.Topology
+import org.apache.kafka.streams.errors.StreamsUncaughtExceptionHandler
 import org.apache.kafka.streams.processor.WallclockTimestampExtractor
 import java.io.File
 import java.io.IOException
@@ -170,7 +171,7 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
     }
 
     /**
-     * Schedule using an inputstream that contains
+     * Schedule using an inputstream that contains kafka cluster settings
      */
     fun renderAndSchedule(connectorURL: URL?, settings: InputStream, force: Boolean = false): KafkaStreams {
         val prop = Properties()
@@ -352,10 +353,12 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
         val props = createProperties(extra)
         val stream = KafkaStreams(topology, props)
         val topologyDescription = topology.describe()
-        writeTopology(storagePath,topologyDescription.toString())
-        stream.setUncaughtExceptionHandler { thread: Thread, exception: Throwable? ->
-            logger.error("Error in streams. thread: ${thread.name} exception: ", exception)
+        writeTopology(storagePath, topologyDescription.toString())
+
+        stream.setUncaughtExceptionHandler { exception: Throwable? ->
+            logger.error("Error in streams. thread:exception: ", exception)
             stream.close()
+            StreamsUncaughtExceptionHandler.StreamThreadExceptionResponse.SHUTDOWN_APPLICATION
         }
         stream.setStateListener { newState: KafkaStreams.State?, oldState: KafkaStreams.State? ->
             logger.info("State moving from {} to {}", oldState, newState, stream.state())
@@ -368,7 +371,7 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
         try {
             File("$storagePath/topology.txt").writeText(topologyDescription)
         } catch (e: IOException) {
-            logger.warn("Could not write topology file. Not a problem.",e)
+            logger.warn("Could not write topology file. Not a problem.", e)
         }
     }
 
