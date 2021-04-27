@@ -20,7 +20,6 @@ package io.floodplain.streams.remotejoin.ranged;
 
 import io.floodplain.replication.api.ReplicationMessage;
 import io.floodplain.replication.api.ReplicationMessage.Operation;
-import org.apache.kafka.streams.processor.AbstractProcessor;
 import org.apache.kafka.streams.processor.api.Processor;
 import org.apache.kafka.streams.processor.api.ProcessorContext;
 import org.apache.kafka.streams.processor.api.Record;
@@ -52,10 +51,10 @@ public class GroupedUpdateProcessor implements Processor<String, ReplicationMess
     }
 
     @Override
-    public void init(ProcessorContext context) {
+    public void init(ProcessorContext<String, ReplicationMessage> context) {
         this.context = context;
-        this.lookupStore = (KeyValueStore<String, ReplicationMessage>) context.getStateStore(lookupStoreName);
-        this.mappingStore = (KeyValueStore<String, ReplicationMessage>) context.getStateStore(mappingStoreName);
+        this.lookupStore = context.getStateStore(lookupStoreName);
+        this.mappingStore = context.getStateStore(mappingStoreName);
     }
 
     @Override

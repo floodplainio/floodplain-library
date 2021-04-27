@@ -27,7 +27,6 @@ import org.apache.kafka.common.config.ConfigResource.Type.TOPIC
 import org.junit.Assert
 import org.junit.Test
 import java.util.Collections
-import java.util.HashMap
 import java.util.UUID
 
 private val logger = mu.KotlinLogging.logger {}

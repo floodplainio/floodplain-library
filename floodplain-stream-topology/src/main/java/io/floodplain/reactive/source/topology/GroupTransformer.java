@@ -27,7 +27,6 @@ import io.floodplain.streams.remotejoin.ReplicationTopologyParser;
 import io.floodplain.streams.remotejoin.TopologyConstructor;
 import org.apache.kafka.streams.Topology;
 
-import java.util.Optional;
 import java.util.Stack;
 import java.util.function.BiFunction;
 import java.util.function.Function;

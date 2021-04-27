@@ -1,4 +1,7 @@
-import com.google.protobuf.gradle.*
+import com.google.protobuf.gradle.generateProtoTasks
+import com.google.protobuf.gradle.proto
+import com.google.protobuf.gradle.protobuf
+import com.google.protobuf.gradle.protoc
 import io.floodplain.build.FloodplainDeps
 
 val protobufVersion = "3.11.4"

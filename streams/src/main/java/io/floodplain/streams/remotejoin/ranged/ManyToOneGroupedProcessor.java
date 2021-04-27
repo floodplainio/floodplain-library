@@ -51,7 +51,7 @@ public class ManyToOneGroupedProcessor implements Processor<String, ReplicationM
     private KeyValueStore<String, ReplicationMessage> reverseLookupStore;
 
     private final Predicate<String, ReplicationMessage> associationBypass;
-    private ProcessorContext context;
+    private ProcessorContext<String, ReplicationMessage> context;
 
     public ManyToOneGroupedProcessor(String fromProcessor, String withProcessor,
                                      Optional<Predicate<String, ReplicationMessage>> associationBypass,
@@ -98,7 +98,7 @@ public class ManyToOneGroupedProcessor implements Processor<String, ReplicationM
 
         if (message == null) {
             logger.debug("reverseJoin joinGrouped emitting null message with key: {} ", key);
-            context.forward(new Record(key,null,timestamp));
+            context.forward(new Record<>(key,null,timestamp));
             return;
         }
         if (message.operation() == Operation.DELETE) {
@@ -152,7 +152,7 @@ public class ManyToOneGroupedProcessor implements Processor<String, ReplicationM
         String actualKey = CoreOperators.ungroupKey(key);
         String reverseLookupKey = CoreOperators.ungroupKeyReverse(key);
         if (message == null) {
-            context.forward(new Record(actualKey, null,timestamp));
+            context.forward(new Record<>(actualKey, null,timestamp));
             return;
         }
         try {
@@ -165,14 +165,14 @@ public class ManyToOneGroupedProcessor implements Processor<String, ReplicationM
             logger.error("Error on checking filter predicate", t);
         }
 
-        if (message.operation() == Operation.DELETE) {
+//        if (message.operation() == Operation.DELETE) {
             // We don't need to take special action on a delete. The message has been
             // removed from the forwardStore already (in the storeProcessor),
             // and no action is needed on the joined part.
             // We do still perform the join itself before forwarding this delete. It's
             // possible a join down the line
             // requires fields from this join, so better safe than sorry.
-        }
+//        }
 
         final ReplicationMessage withOperation = message.withOperation(message.operation());
         ReplicationMessage outerMessage = reverseLookupStore.get(reverseLookupKey);
@@ -191,10 +191,10 @@ public class ManyToOneGroupedProcessor implements Processor<String, ReplicationM
     }
 
     private void forwardMessage(String key, ReplicationMessage innerMessage, long timestamp) {
-        context.forward(new Record(key, innerMessage,timestamp));
+        context.forward(new Record<>(key, innerMessage,timestamp));
         if (innerMessage.operation() == Operation.DELETE) {
             logger.debug("Delete forwarded, appending null forward with key: {}", key);
-            context.forward(new Record(key, null,timestamp));
+            context.forward(new Record<>(key, null,timestamp));
         }
     }
 

@@ -22,7 +22,6 @@ import io.floodplain.immutable.api.ImmutableMessage.ValueType;
 import io.floodplain.replication.api.ReplicationMessage;
 import io.floodplain.replication.api.ReplicationMessage.Operation;
 import io.floodplain.replication.factory.ReplicationFactory;
-import org.apache.kafka.streams.processor.AbstractProcessor;
 import org.apache.kafka.streams.processor.api.Processor;
 import org.apache.kafka.streams.processor.api.ProcessorContext;
 import org.apache.kafka.streams.processor.api.Record;
@@ -30,7 +29,6 @@ import org.apache.kafka.streams.state.KeyValueStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.Instant;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -42,7 +40,7 @@ public class DiffProcessor implements Processor<String, ReplicationMessage,Strin
     private KeyValueStore<String, ReplicationMessage> lookupStore;
 
     private final static Logger logger = LoggerFactory.getLogger(DiffProcessor.class);
-    private ProcessorContext context;
+    private ProcessorContext<String,ReplicationMessage> context;
 
 
     public DiffProcessor(String lookupStoreName) {

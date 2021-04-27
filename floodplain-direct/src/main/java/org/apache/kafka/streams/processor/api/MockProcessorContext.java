@@ -27,13 +27,7 @@ import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.TopologyTestDriver;
 import org.apache.kafka.streams.kstream.Transformer;
 import org.apache.kafka.streams.kstream.ValueTransformer;
-import org.apache.kafka.streams.processor.Cancellable;
-import org.apache.kafka.streams.processor.PunctuationType;
-import org.apache.kafka.streams.processor.Punctuator;
-import org.apache.kafka.streams.processor.StateRestoreCallback;
-import org.apache.kafka.streams.processor.StateStore;
-import org.apache.kafka.streams.processor.StateStoreContext;
-import org.apache.kafka.streams.processor.TaskId;
+import org.apache.kafka.streams.processor.*;
 import org.apache.kafka.streams.processor.internals.ClientUtils;
 import org.apache.kafka.streams.processor.internals.RecordCollector;
 import org.apache.kafka.streams.processor.internals.metrics.StreamsMetricsImpl;
@@ -42,17 +36,9 @@ import org.apache.kafka.streams.state.internals.InMemoryKeyValueStore;
 
 import java.io.File;
 import java.time.Duration;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Properties;
+import java.util.*;
 
-import static org.apache.kafka.common.utils.Utils.mkEntry;
-import static org.apache.kafka.common.utils.Utils.mkMap;
-import static org.apache.kafka.common.utils.Utils.mkProperties;
+import static org.apache.kafka.common.utils.Utils.*;
 
 /**
  * {@link MockProcessorContext} is a mock of {@link ProcessorContext} for users to test their {@link Processor},
@@ -394,7 +380,7 @@ public class MockProcessorContext<KForward, VForward> implements ProcessorContex
     public List<CapturedForward<? extends KForward, ? extends VForward>> forwarded(final String childName) {
         final LinkedList<CapturedForward<? extends KForward, ? extends VForward>> result = new LinkedList<>();
         for (final CapturedForward<? extends KForward, ? extends VForward> capture : capturedForwards) {
-            if (!capture.childName().isPresent() || capture.childName().equals(Optional.of(childName))) {
+            if (capture.childName().isEmpty() || capture.childName().equals(Optional.of(childName))) {
                 result.add(capture);
             }
         }

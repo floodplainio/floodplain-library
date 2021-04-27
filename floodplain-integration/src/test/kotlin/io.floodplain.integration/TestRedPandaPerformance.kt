@@ -25,7 +25,6 @@ import org.apache.kafka.clients.admin.AdminClient
 import org.junit.FixMethodOrder
 import org.junit.Test
 import org.junit.runners.MethodSorters
-import java.util.HashMap
 import java.util.UUID
 
 private val logger = mu.KotlinLogging.logger {}

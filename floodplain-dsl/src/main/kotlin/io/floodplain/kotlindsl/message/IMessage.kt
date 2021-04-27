@@ -32,6 +32,10 @@ import kotlin.streams.toList
 interface IMessage {
     operator fun get(path: String): Any?
     fun exists(path: String): Boolean
+
+    /**
+     * Will create an empty message if the path is absent
+     */
     fun message(path: String): IMessage?
     fun string(path: String): String
     fun integer(path: String): Int

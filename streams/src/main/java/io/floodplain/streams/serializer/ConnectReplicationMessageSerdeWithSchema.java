@@ -287,8 +287,6 @@ public class ConnectReplicationMessageSerdeWithSchema implements Serde<Replicati
                         })
                         .filter(e->e.getKey()!=null && e.getValue()!=null)
                     .collect(Collectors.toMap(e->e.getKey(),e->e.getValue()));
-//                    Map<String, Object> valueWithPayload = new HashMap<String, Object>();
-                    //                    valueWithPayload.put("payload", valueMap);
                     valueMap = Map.of("schema",buildSchema(null,message),"payload",processed);
                 }
                 try {

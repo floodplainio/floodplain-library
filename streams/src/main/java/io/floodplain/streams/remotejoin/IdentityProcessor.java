@@ -19,7 +19,6 @@
 package io.floodplain.streams.remotejoin;
 
 import io.floodplain.replication.api.ReplicationMessage;
-import org.apache.kafka.streams.processor.AbstractProcessor;
 import org.apache.kafka.streams.processor.api.Processor;
 import org.apache.kafka.streams.processor.api.ProcessorContext;
 import org.apache.kafka.streams.processor.api.Record;
@@ -29,15 +28,15 @@ import org.apache.kafka.streams.processor.api.Record;
  */
 public class IdentityProcessor implements Processor<String, ReplicationMessage,String, ReplicationMessage> {
 
-    private ProcessorContext context;
+    private ProcessorContext<String, ReplicationMessage> context;
 
     @Override
-    public void process(Record record) {
+    public void process(Record<String, ReplicationMessage> record) {
         context.forward(record);
     }
 
     @Override
-    public void init(ProcessorContext context) {
+    public void init(ProcessorContext<String, ReplicationMessage> context) {
         this.context = context;
     }
 

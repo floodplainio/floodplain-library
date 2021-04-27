@@ -58,7 +58,7 @@ class TestDebeziumSource {
 // Define the configuration for the Debezium Engine with MySQL connector...
 
 // Define the configuration for the Debezium Engine with MySQL connector...
-        val props: Properties = Properties()
+        val props = Properties()
 
         // , postgresContainer.exposedPort
         props.setProperty("name", "engine")
@@ -68,7 +68,7 @@ class TestDebeziumSource {
         props.setProperty("offset.flush.interval.ms", "60000")
         props.setProperty("database.dbname", "dvdrental")
 /* begin connector properties */
-/* begin connector properties */props.setProperty("database.hostname", "${postgresContainer.host}")
+/* begin connector properties */props.setProperty("database.hostname", postgresContainer.host)
         props.setProperty("database.port", "${postgresContainer.exposedPort}")
         props.setProperty("database.user", "postgres")
         props.setProperty("database.password", "mysecretpassword")

@@ -51,7 +51,7 @@ public class ManyToManyGroupedProcessor implements Processor<String, Replication
     private KeyValueStore<String, ReplicationMessage> reverseLookupStore;
 
     private final Predicate<String, ReplicationMessage> associationBypass;
-    private ProcessorContext context;
+    private ProcessorContext<String, ReplicationMessage> context;
 
     public ManyToManyGroupedProcessor(String fromProcessor, String withProcessor,
                                       Optional<Predicate<String, ReplicationMessage>> associationBypass,
@@ -82,12 +82,11 @@ public class ManyToManyGroupedProcessor implements Processor<String, Replication
         }
 
     }
-    @SuppressWarnings("unchecked")
     @Override
-    public void init(ProcessorContext context) {
+    public void init(ProcessorContext<String, ReplicationMessage> context) {
         this.context = context;
-        this.forwardLookupStore = (KeyValueStore<String, ReplicationMessage>) context.getStateStore(STORE_PREFIX + fromProcessorName);
-        this.reverseLookupStore = (KeyValueStore<String, ReplicationMessage>) context.getStateStore(STORE_PREFIX + withProcessorName);
+        this.forwardLookupStore = context.getStateStore(STORE_PREFIX + fromProcessorName);
+        this.reverseLookupStore = context.getStateStore(STORE_PREFIX + withProcessorName);
     }
 
     private void reverseJoin(String key, ReplicationMessage message, long timestamp) {
@@ -95,7 +94,7 @@ public class ManyToManyGroupedProcessor implements Processor<String, Replication
         String actualKey = CoreOperators.ungroupKeyReverse(key);
         if (message == null) {
             logger.info("reverseJoin joinGrouped emitting null message with key: {} ", actualKey);
-            context.forward(new Record(actualKey, null,timestamp));
+            context.forward(new Record<>(actualKey, null,timestamp));
             return;
         }
 
@@ -116,7 +115,7 @@ public class ManyToManyGroupedProcessor implements Processor<String, Replication
 
         if (message == null) {
             logger.info("forwardJoin joinGrouped emitting null message with key: {} ", actualKey);
-            context.forward(new Record(actualKey, null,timestamp));
+            context.forward(new Record<>(actualKey, null,timestamp));
             return;
         }
         try {
@@ -126,7 +125,7 @@ public class ManyToManyGroupedProcessor implements Processor<String, Replication
                 return;
             }
         } catch (Throwable t) {
-            logger.error("Error on checking filter predicate: {}", t);
+            logger.error("Error on checking filter predicate.", t);
         }
 
         if (message.operation() == ReplicationMessage.Operation.DELETE) {
@@ -162,11 +161,11 @@ public class ManyToManyGroupedProcessor implements Processor<String, Replication
     }
 
     private void forwardMessage(String key, ReplicationMessage innerMessage, long timestamp) {
-        context.forward(new Record(key, innerMessage,timestamp));
+        context.forward(new Record<>(key, innerMessage,timestamp));
         // flush downstream stores with null:
         if (innerMessage.operation() == ReplicationMessage.Operation.DELETE) {
             logger.debug("Delete forwarded, appending null forward with key: {}", key);
-            context.forward(new Record(key, null,timestamp));
+            context.forward(new Record<>(key, null,timestamp));
         }
     }
 

@@ -37,11 +37,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.time.temporal.Temporal;
 import java.util.*;
 import java.util.Map.Entry;
@@ -106,7 +101,7 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
                 return ((BigDecimal)val).toPlainString();
             case STRINGLIST:
                 List<String> v = (List<String>)val;
-                return v.stream().collect(Collectors.joining(","));
+                return String.join(",", v);
             default:
                 throw new UnsupportedOperationException("Unknown type: " + type);
         }
@@ -312,27 +307,27 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
     }
 
     private static Replication.ReplicationMessageProtobuf toProto(ImmutableMessage msg, String transactionId, ReplicationMessage.Operation operation, long timestamp, List<String> primaryKeys, Optional<ImmutableMessage> paramMessage) {
-        Map<String, Replication.ValueProtobuf> val = msg.values().entrySet()
+        Map<String, Replication.ValueProtobuf> val = msg.values().keySet()
                 .stream()
-                .map(e -> {
-                            final Optional<Object> value = msg.value(e.getKey());
-                            final ImmutableMessage.ValueType type = msg.types().getOrDefault(e.getKey(), ImmutableMessage.ValueType.STRING);
+                .map(o -> {
+                            final Optional<Object> value = msg.value(o);
+                            final ImmutableMessage.ValueType type = msg.types().getOrDefault(o, ImmutableMessage.ValueType.STRING);
                             Replication.ValueProtobuf.ValueType parseType = parseType(type);
 
                             if (parseType == Replication.ValueProtobuf.ValueType.UNRECOGNIZED) {
-                                logger.warn("Unknown type for key {}, value {}, type {}", e.getKey(), value, type);
+                                logger.warn("Unknown type for key {}, value {}, type {}", o, value, type);
                             }
                             if (parseType.equals(Replication.ValueProtobuf.ValueType.BINARY)) {
                                 if (value.isPresent()) {
                                     ByteString bs = ByteString.copyFrom((byte[]) value.get());
-                                    return new ValueTuple(e.getKey(), Replication.ValueProtobuf
+                                    return new ValueTuple(o, Replication.ValueProtobuf
                                             .newBuilder()
                                             .setType(parseType)
                                             .setByteData(bs)
                                             .build()
                                     );
                                 } else {
-                                    return new ValueTuple(e.getKey(), Replication.ValueProtobuf
+                                    return new ValueTuple(o, Replication.ValueProtobuf
                                             .newBuilder()
                                             .setType(parseType)
                                             .setIsNull(true)
@@ -343,13 +338,13 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
                             } else {
                                 final String serializeValue = serializeValue(type, value.orElse(null));
                                 if (serializeValue == null) {
-                                    return new ValueTuple(e.getKey(), Replication.ValueProtobuf.newBuilder()
+                                    return new ValueTuple(o, Replication.ValueProtobuf.newBuilder()
                                             .setType(Replication.ValueProtobuf.ValueType.CLOCKTIME) // WTF?
                                             .setIsNull(value.isEmpty())
                                             .build()
                                     );
                                 } else {
-                                    return new ValueTuple(e.getKey(), Replication.ValueProtobuf.newBuilder()
+                                    return new ValueTuple(o, Replication.ValueProtobuf.newBuilder()
                                             .setValue(serializeValue)
                                             .setType(parseType)
                                             .setIsNull(value.isEmpty())

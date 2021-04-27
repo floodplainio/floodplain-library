@@ -19,7 +19,6 @@
 package io.floodplain.streams.remotejoin;
 
 import io.floodplain.replication.api.ReplicationMessage;
-import org.apache.kafka.streams.processor.AbstractProcessor;
 import org.apache.kafka.streams.processor.api.Processor;
 import org.apache.kafka.streams.processor.api.ProcessorContext;
 import org.apache.kafka.streams.processor.api.Record;

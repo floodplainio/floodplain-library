@@ -26,7 +26,6 @@ import io.floodplain.replication.impl.json.JSONReplicationMessageParserImpl;
 import io.floodplain.replication.impl.protobuf.FallbackReplicationMessageParser;
 import io.floodplain.streams.serializer.ConnectReplicationMessageSerde;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.nio.charset.StandardCharsets;
