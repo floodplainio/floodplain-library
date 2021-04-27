@@ -23,8 +23,9 @@ import io.floodplain.replication.api.ReplicationMessage.Operation;
 import io.floodplain.streams.api.CoreOperators;
 import io.floodplain.streams.remotejoin.PreJoinProcessor;
 import org.apache.kafka.streams.KeyValue;
-import org.apache.kafka.streams.processor.AbstractProcessor;
-import org.apache.kafka.streams.processor.ProcessorContext;
+import org.apache.kafka.streams.processor.api.Processor;
+import org.apache.kafka.streams.processor.api.ProcessorContext;
+import org.apache.kafka.streams.processor.api.Record;
 import org.apache.kafka.streams.state.KeyValueIterator;
 import org.apache.kafka.streams.state.KeyValueStore;
 import org.slf4j.Logger;
@@ -34,7 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
 
-public class OneToManyGroupedProcessor extends AbstractProcessor<String, ReplicationMessage> {
+public class OneToManyGroupedProcessor implements Processor<String, ReplicationMessage,String, ReplicationMessage> {
     private static final Logger logger = LoggerFactory.getLogger(OneToManyGroupedProcessor.class);
     private final boolean debug;
 
@@ -46,6 +47,7 @@ public class OneToManyGroupedProcessor extends AbstractProcessor<String, Replica
     private KeyValueStore<String, ReplicationMessage> groupedLookupStore;
     private KeyValueStore<String, ReplicationMessage> lookupStore;
     private final BiFunction<ReplicationMessage, List<ReplicationMessage>, ReplicationMessage> joinFunction;
+    private ProcessorContext<String, ReplicationMessage> context;
 
     public OneToManyGroupedProcessor(String storeName, String groupedStoreName, boolean optional, boolean debug) {
         this.storeName = storeName;
@@ -55,16 +57,18 @@ public class OneToManyGroupedProcessor extends AbstractProcessor<String, Replica
         this.debug = debug;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public void init(ProcessorContext context) {
-        this.lookupStore = (KeyValueStore<String, ReplicationMessage>) context.getStateStore(storeName);
-        this.groupedLookupStore = (KeyValueStore<String, ReplicationMessage>) context.getStateStore(groupedStoreName);
-        super.init(context);
+    public void init(ProcessorContext<String, ReplicationMessage> context) {
+        this.context = context;
+        this.lookupStore = context.getStateStore(storeName);
+        this.groupedLookupStore = context.getStateStore(groupedStoreName);
     }
 
+
     @Override
-    public void process(String key, ReplicationMessage msg) {
+    public void process(Record<String, ReplicationMessage> record) {
+        String key = record.key();
+        ReplicationMessage msg = record.value();
         boolean reverse = false;
         if (key.endsWith(PreJoinProcessor.REVERSE_IDENTIFIER)) {
             reverse = true;
@@ -72,19 +76,19 @@ public class OneToManyGroupedProcessor extends AbstractProcessor<String, Replica
         }
 
         if (reverse) {
-            reverseJoin(key, msg);
+            reverseJoin(key, msg,record.timestamp());
         } else {
             if (msg == null) {
                 logger.debug("O2M Emitting null message with key: {}", key);
-                context().forward(key, null);
+                context.forward(new Record<>(key,null,record.timestamp()));
                 return;
             }
-            forwardJoin(key, msg);
+            forwardJoin(key, msg,record.timestamp());
         }
 
     }
 
-    private void forwardJoin(String key, ReplicationMessage msg) {
+    private void forwardJoin(String key, ReplicationMessage msg, long timestamp) {
         List<ReplicationMessage> msgs = new ArrayList<>();
         KeyValueIterator<String, ReplicationMessage> it = groupedLookupStore.range(key + "|", key + "}");
         while (it.hasNext()) {
@@ -96,16 +100,16 @@ public class OneToManyGroupedProcessor extends AbstractProcessor<String, Replica
             joined = joinFunction.apply(msg, msgs);
         }
         if (optional || msgs.size() > 0) {
-            forwardMessage(key, joined);
+            forwardMessage(key, joined,timestamp);
         } else {
             // We are not optional, and have not joined with any messages. Forward a delete
             // -> TODO Improve this. It does not necesarily need a delete. If it is a new key, it can simply be ignored
-            forwardMessage(key, joined.withOperation(Operation.DELETE));
+            forwardMessage(key, joined.withOperation(Operation.DELETE),timestamp);
         }
 
     }
 
-    private void reverseJoin(String key, ReplicationMessage msg) {
+    private void reverseJoin(String key, ReplicationMessage msg, long timestamp) {
 
         String actualKey = CoreOperators.ungroupKeyReverse(key);
         ReplicationMessage one = lookupStore.get(actualKey);
@@ -121,15 +125,15 @@ public class OneToManyGroupedProcessor extends AbstractProcessor<String, Replica
         // OneToMany, thus we need to find all the other messages that
         // we also have to join with us. Effectively the same as a
         // forward join.
-        forwardJoin(actualKey, one);
+        forwardJoin(actualKey, one,timestamp);
     }
 
-    private void forwardMessage(String key, ReplicationMessage innerMessage) {
-        context().forward(key, innerMessage);
+    private void forwardMessage(String key, ReplicationMessage innerMessage, long timestamp) {
+        context.forward(new Record<>(key, innerMessage,timestamp));
         // flush downstream stores with null:
         if (innerMessage.operation() == Operation.DELETE) {
             logger.debug("Delete forwarded, appending null forward with key: {}", key);
-            context().forward(key, null);
+            context.forward(new Record<>(key, null,timestamp));
         }
     }
 

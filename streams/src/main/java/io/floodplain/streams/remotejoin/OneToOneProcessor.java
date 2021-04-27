@@ -21,8 +21,9 @@ package io.floodplain.streams.remotejoin;
 import io.floodplain.replication.api.ReplicationMessage;
 import io.floodplain.replication.api.ReplicationMessage.Operation;
 import io.floodplain.replication.factory.ReplicationFactory;
-import org.apache.kafka.streams.processor.AbstractProcessor;
-import org.apache.kafka.streams.processor.ProcessorContext;
+import org.apache.kafka.streams.processor.api.Processor;
+import org.apache.kafka.streams.processor.api.ProcessorContext;
+import org.apache.kafka.streams.processor.api.Record;
 import org.apache.kafka.streams.state.KeyValueStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
 
-public class OneToOneProcessor extends AbstractProcessor<String, ReplicationMessage> {
+public class OneToOneProcessor implements Processor<String, ReplicationMessage,String, ReplicationMessage> {
 
     private final String forwardLookupStoreName;
     private final String reverseLookupStoreName;
@@ -43,6 +44,7 @@ public class OneToOneProcessor extends AbstractProcessor<String, ReplicationMess
     private final boolean debug;
 
     private static final Logger logger = LoggerFactory.getLogger(OneToOneProcessor.class);
+    private ProcessorContext<String, ReplicationMessage> context;
 
     public OneToOneProcessor(String forwardLookupStoreName, String reverseLookupStoreName, boolean optional,
                              BiFunction<ReplicationMessage, ReplicationMessage, ReplicationMessage> joinFunction, boolean debug) {
@@ -54,22 +56,24 @@ public class OneToOneProcessor extends AbstractProcessor<String, ReplicationMess
     }
 
 
-    @SuppressWarnings("unchecked")
+
     @Override
-    public void init(ProcessorContext context) {
+    public void init(ProcessorContext<String, ReplicationMessage> context) {
+        this.context = context;
         logger.info("inner lookup Looking up: " + forwardLookupStoreName);
         this.forwardLookupStore = context.getStateStore(forwardLookupStoreName);
         logger.info("inner lookup Looking up: " + reverseLookupStoreName);
         this.reverseLookupStore = context.getStateStore(reverseLookupStoreName);
-        super.init(context);
         logger.info("One-to-one successfully started");
     }
 
     @Override
-    public void process(String key, ReplicationMessage innerMessage) {
+    public void process(Record<String, ReplicationMessage> record) {
         boolean reverse = false;
+        String key = record.key();
+        ReplicationMessage innerMessage = record.value();
         if (innerMessage == null) {
-            context().forward(key, null);
+            context.forward(record.withValue(null));
             return;
         }
         KeyValueStore<String, ReplicationMessage> lookupStore = reverseLookupStore;
@@ -99,7 +103,7 @@ public class OneToOneProcessor extends AbstractProcessor<String, ReplicationMess
                 // We are doing a reverse join, but the original message isn't there.
                 // Nothing to do for us here
             } else if (optional) {
-                context().forward(key, innerMessage);
+                context.forward(new Record<>(key, innerMessage,record.timestamp()));
             }
             return;
         }
@@ -108,22 +112,22 @@ public class OneToOneProcessor extends AbstractProcessor<String, ReplicationMess
             if (innerMessage.operation() == Operation.DELETE && !optional) {
                 // Reverse join  - the message we join with is deleted, and we are not optional
                 // This means we should forward a delete too for the forward-join message
-                context().forward(key, counterpart.withOperation(Operation.DELETE));
-                context().forward(key, null);
+                context.forward(new Record<>(key, counterpart.withOperation(Operation.DELETE),record.timestamp()));
+                context.forward(new Record<>(key, null,record.timestamp()));
             } else if (innerMessage.operation() == Operation.DELETE) {
                 // The message we join with is gone, but we are optional. Forward the forward-join message as-is
-                context().forward(key, counterpart);
+                context.forward(new Record<>(key, counterpart,record.timestamp()));
             } else {
                 // Regular reverse join
                 msg = joinFunction.apply(counterpart, innerMessage);
-                context().forward(key, msg);
+                context.forward(new Record<>(key, msg,record.timestamp()));
             }
         } else {
             // Operation DELETE doesn't really matter for forward join - we can join as usual
             // The DELETE operation will be preserved and forwarded
             // TODO Shouldn't we delete from the store? I think now
             msg = joinFunction.apply(innerMessage, counterpart);
-            context().forward(key, msg);
+            context.forward(new Record<>(key, msg,record.timestamp()));
         }
     }
 

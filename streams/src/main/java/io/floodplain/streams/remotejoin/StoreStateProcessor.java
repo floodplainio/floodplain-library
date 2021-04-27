@@ -21,18 +21,20 @@ package io.floodplain.streams.remotejoin;
 import io.floodplain.immutable.api.ImmutableMessage;
 import io.floodplain.replication.api.ReplicationMessage;
 import io.floodplain.replication.factory.ReplicationFactory;
-import org.apache.kafka.streams.processor.AbstractProcessor;
-import org.apache.kafka.streams.processor.ProcessorContext;
+import org.apache.kafka.streams.processor.api.Processor;
+import org.apache.kafka.streams.processor.api.ProcessorContext;
+import org.apache.kafka.streams.processor.api.Record;
 import org.apache.kafka.streams.state.KeyValueStore;
 
 import java.util.Optional;
 
-public class StoreStateProcessor extends AbstractProcessor<String, ReplicationMessage> {
+public class StoreStateProcessor implements Processor<String, ReplicationMessage,String, ReplicationMessage> {
 
 
     private final String lookupStoreName;
     private KeyValueStore<String, ImmutableMessage> lookupStore;
     public static final String COMMONKEY = "singlerestore";
+    private ProcessorContext<String, ReplicationMessage> context;
 
     public StoreStateProcessor(String lookupStoreName) {
         this.lookupStoreName = lookupStoreName;
@@ -40,14 +42,15 @@ public class StoreStateProcessor extends AbstractProcessor<String, ReplicationMe
 
     @SuppressWarnings("unchecked")
     @Override
-    public void init(ProcessorContext context) {
+    public void init(ProcessorContext<String, ReplicationMessage> context) {
+        this.context = context;
         this.lookupStore = (KeyValueStore<String, ImmutableMessage>) context.getStateStore(lookupStoreName);
-        super.init(context);
     }
 
     @Override
-    public void process(String key, ReplicationMessage inputValue) {
-//        String extracted = keyExtractor.orElse((msg, state) -> COMMONKEY).apply(inputValue.message(), inputValue.paramMessage().orElse(ImmutableFactory.empty())); //  keyExtractor.map(e->e.apply(Optional.of(inputValue.message()),inputValue.paramMessage())).map(e->(String)e.value);
+    public void process(Record<String, ReplicationMessage> record) {
+        String key = record.key();
+        ReplicationMessage inputValue = record.value();
         Optional<ImmutableMessage> paramMessage = inputValue.paramMessage();
 
         // Use .get() here, I prefer to fail when that is missing//.get();
@@ -56,7 +59,6 @@ public class StoreStateProcessor extends AbstractProcessor<String, ReplicationMe
         }
         ImmutableMessage storeMessage = paramMessage.get();
         lookupStore.put(key, storeMessage);
-        super.context().forward(key, ReplicationFactory.standardMessage(storeMessage));
+        context.forward(new Record<>(key, ReplicationFactory.standardMessage(storeMessage),record.timestamp()));
     }
-
 }

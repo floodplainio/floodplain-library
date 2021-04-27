@@ -37,7 +37,7 @@ import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.serialization.Serializer;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.Predicate;
-import org.apache.kafka.streams.processor.Processor;
+import org.apache.kafka.streams.processor.api.Processor;
 import org.apache.kafka.streams.processor.api.ProcessorSupplier;
 import org.apache.kafka.streams.state.KeyValueBytesStoreSupplier;
 import org.apache.kafka.streams.state.KeyValueStore;
@@ -101,7 +101,6 @@ public class ReplicationTopologyParser {
     public static void addDiffProcessor(Topology current, TopologyContext topologyContext,
                                         TopologyConstructor topologyConstructor, String fromProcessor,
                                         String diffProcessorNamePrefix) {
-        // TODO I think the topologyContext should be used.
         current.addProcessor(diffProcessorNamePrefix, () -> new DiffProcessor(diffProcessorNamePrefix), fromProcessor);
         addStateStoreMapping(topologyConstructor.processorStateStoreMapper, diffProcessorNamePrefix, diffProcessorNamePrefix);
         logger.info("Granting access for processor: {} to store: {}", diffProcessorNamePrefix, diffProcessorNamePrefix);
@@ -189,7 +188,7 @@ public class ReplicationTopologyParser {
         return sourceProcessorName;
     }
 
-    public static String addSingleJoinGrouped(final Topology current, TopologyContext topologyContext,
+    public static void addSingleJoinGrouped(final Topology current, TopologyContext topologyContext,
                                               TopologyConstructor topologyConstructor, String fromProcessor, String name,
                                               Optional<Predicate<String, ReplicationMessage>> associationBypass,
                                               String withProcessor, boolean optional, boolean materialize, boolean isList) {
@@ -236,7 +235,6 @@ public class ReplicationTopologyParser {
         topologyConstructor.stores.add(STORE_PREFIX + name);
         topologyConstructor.stateStoreSupplier.put(STORE_PREFIX + name, createMessageStoreSupplier(STORE_PREFIX + name, true));
         current.addProcessor(name, () -> new StoreProcessor(STORE_PREFIX + name), finalJoin);
-        return finalJoin;
     }
 
 // TODO unused topologyContext is suspect
@@ -344,7 +342,7 @@ public class ReplicationTopologyParser {
         return reduceName;
     }
 
-    public static Topology addJoin(final Topology current, TopologyContext topologyContext,
+    public static void addJoin(final Topology current, TopologyContext topologyContext,
                                    TopologyConstructor topologyConstructor, String fromProcessorName, String withProcessorName, String name,
                                    boolean optional,
                                    boolean multiple,
@@ -364,16 +362,16 @@ public class ReplicationTopologyParser {
                 , withProcessorName
         );
 
-        @SuppressWarnings("rawtypes") final Processor proc;
+        final ProcessorSupplier<String,ReplicationMessage,String,ReplicationMessage> proc;
         if (multiple) {
-            proc = new OneToManyGroupedProcessor(
+            proc = () -> new OneToManyGroupedProcessor(
                     STORE_PREFIX + fromProcessorName,
                     STORE_PREFIX + withProcessorName,
                     optional,
                     debug
             );
         } else {
-            proc = new OneToOneProcessor(
+            proc = () -> new OneToOneProcessor(
                     STORE_PREFIX + fromProcessorName,
                     STORE_PREFIX + withProcessorName,
                     optional,
@@ -382,7 +380,7 @@ public class ReplicationTopologyParser {
         String procName = materialize ? "proc_" + name : name;
         current.addProcessor(
                 procName
-                , () -> proc
+                , proc
                 , firstNamePre, secondNamePre
         );
         addStateStoreMapping(topologyConstructor.processorStateStoreMapper, procName, STORE_PREFIX + withProcessorName);
@@ -394,7 +392,6 @@ public class ReplicationTopologyParser {
             current.addProcessor(name, () -> new StoreProcessor(STORE_PREFIX + name), procName);
 
         }
-        return current;
     }
 
     public static StoreBuilder<KeyValueStore<String, ReplicationMessage>> createMessageStoreSupplier(String name, boolean persistent) {
@@ -408,24 +405,4 @@ public class ReplicationTopologyParser {
         KeyValueBytesStoreSupplier storeSupplier = persistent ? Stores.persistentKeyValueStore(name) : Stores.inMemoryKeyValueStore(name);
         return Stores.keyValueStoreBuilder(storeSupplier, Serdes.String(), immutableMessageSerde);
     }
-
-    public static StoreBuilder<KeyValueStore<String, Long>> createKeyRowStoreSupplier(String name) {
-        logger.info("Creating key/long supplier: {}", name);
-        KeyValueBytesStoreSupplier storeSupplier = Stores.inMemoryKeyValueStore(name);
-        return Stores.keyValueStoreBuilder(storeSupplier, Serdes.String(), Serdes.Long());
-    }
-
-    public static String addKeyRowProcessor(Topology current, TopologyContext context,
-                                            TopologyConstructor topologyConstructor, String fromProcessor,
-                                            String name, boolean materialize) {
-        current.addProcessor(name, () -> new RowNumberProcessor(STORE_PREFIX + name), fromProcessor);
-        addStateStoreMapping(topologyConstructor.processorStateStoreMapper, name, STORE_PREFIX + name);
-        logger.info("Granting access for processor: {} to store: {}", name, STORE_PREFIX + name);
-        topologyConstructor.stateStoreSupplier.put(STORE_PREFIX + name, createMessageStoreSupplier(STORE_PREFIX + name, false));
-        if (materialize) {
-            throw new UnsupportedOperationException("Sorry, didn't implement materialization yet");
-        }
-        return name;
-    }
-
 }

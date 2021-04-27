@@ -20,18 +20,26 @@ package io.floodplain.streams.remotejoin;
 
 import io.floodplain.replication.api.ReplicationMessage;
 import io.floodplain.replication.factory.ReplicationFactory;
-import org.apache.kafka.streams.processor.AbstractProcessor;
+import org.apache.kafka.streams.processor.api.Processor;
+import org.apache.kafka.streams.processor.api.ProcessorContext;
+import org.apache.kafka.streams.processor.api.Record;
 
 /**
  *
  */
-public class PrimaryToSecondaryProcessor extends AbstractProcessor<String, ReplicationMessage> {
+public class PrimaryToSecondaryProcessor implements Processor<String, ReplicationMessage,String, ReplicationMessage> {
+
+    private ProcessorContext<String, ReplicationMessage> context;
 
     @Override
-    public void process(String key, ReplicationMessage value) {
+    public void process(Record<String, ReplicationMessage> record) {
         // force operation NONE, as scans only update
-        ReplicationMessage applied = ReplicationFactory.empty().withOperation(ReplicationMessage.Operation.UPDATE).withParamMessage(value.message());
-        super.context().forward(key, applied);
+        ReplicationMessage applied = ReplicationFactory.empty().withOperation(ReplicationMessage.Operation.UPDATE).withParamMessage(record.value().message());
+        context.forward(record.withValue(applied));
     }
 
+    @Override
+    public void init(ProcessorContext<String, ReplicationMessage> context) {
+        this.context = context;
+    }
 }

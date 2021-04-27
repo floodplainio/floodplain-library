@@ -22,8 +22,9 @@ import io.floodplain.immutable.api.ImmutableMessage;
 import io.floodplain.immutable.factory.ImmutableFactory;
 import io.floodplain.replication.api.ReplicationMessage;
 import io.floodplain.replication.api.ReplicationMessage.Operation;
-import org.apache.kafka.streams.processor.AbstractProcessor;
-import org.apache.kafka.streams.processor.ProcessorContext;
+import org.apache.kafka.streams.processor.api.Processor;
+import org.apache.kafka.streams.processor.api.ProcessorContext;
+import org.apache.kafka.streams.processor.api.Record;
 import org.apache.kafka.streams.state.KeyValueStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +33,7 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-public class ReduceReadProcessor extends AbstractProcessor<String, ReplicationMessage> {
+public class ReduceReadProcessor implements Processor<String, ReplicationMessage,String, ReplicationMessage> {
 
     private static final Logger logger = LoggerFactory.getLogger(ReduceReadProcessor.class);
 
@@ -42,6 +43,7 @@ public class ReduceReadProcessor extends AbstractProcessor<String, ReplicationMe
     private final Optional<BiFunction<ImmutableMessage, ImmutableMessage, String>> keyExtractor;
     private KeyValueStore<String, ImmutableMessage> accumulatorStore;
     private KeyValueStore<String, ReplicationMessage> inputStore;
+    private ProcessorContext<String, ReplicationMessage> context;
 
     public ReduceReadProcessor(String inputStoreName, String accumulatorStoreName, Function<ImmutableMessage, ImmutableMessage> initial, Optional<BiFunction<ImmutableMessage, ImmutableMessage, String>> keyExtractor) {
         this.accumulatorStoreName = accumulatorStoreName;
@@ -50,17 +52,20 @@ public class ReduceReadProcessor extends AbstractProcessor<String, ReplicationMe
         this.keyExtractor = keyExtractor;
     }
 
+
     @SuppressWarnings("unchecked")
     @Override
     public void init(ProcessorContext context) {
+        this.context = context;
         accumulatorStore = (KeyValueStore<String, ImmutableMessage>) context.getStateStore(accumulatorStoreName);
         inputStore = (KeyValueStore<String, ReplicationMessage>) context.getStateStore(inputStoreName);
-        super.init(context);
     }
 
 
     @Override
-    public void process(String key, final ReplicationMessage inputValue) {
+    public void process(Record<String, ReplicationMessage> record) {
+        ReplicationMessage inputValue = record.value();
+        String key = record.key();
         ReplicationMessage stored = inputStore.get(key);
         String extracted;
         if (stored == null) {
@@ -93,17 +98,12 @@ public class ReduceReadProcessor extends AbstractProcessor<String, ReplicationMe
             value = value.withParamMessage(storedAccumulator);
             if (stored != null) {
                 // already present, propagate old value first as delete
-//                context().forward(key, stored.withOperation(Operation.DELETE).withParamMessage(storedAccumulator != null ? storedAccumulator : initial.apply(inputValue.message())));
-                forwardMessage(extracted, stored.withOperation(Operation.DELETE).withParamMessage(storedAccumulator != null ? storedAccumulator : initial.apply(inputValue.message())));
+                context.forward(new Record<>(extracted,stored.withOperation(Operation.DELETE).withParamMessage(storedAccumulator != null ? storedAccumulator : initial.apply(inputValue.message())),record.timestamp()));
                 storedAccumulator = this.accumulatorStore.get(extracted);
             }
             value = value.withParamMessage(storedAccumulator);
         }
-        forwardMessage(extracted, value);
+        context.forward(new Record<>(extracted,value,record.timestamp()));
 
-    }
-
-    private void forwardMessage(String key, ReplicationMessage msg) {
-        context().forward(key, msg);
     }
 }

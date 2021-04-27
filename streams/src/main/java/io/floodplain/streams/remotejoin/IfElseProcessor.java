@@ -19,19 +19,21 @@
 package io.floodplain.streams.remotejoin;
 
 import io.floodplain.replication.api.ReplicationMessage;
-import org.apache.kafka.streams.processor.AbstractProcessor;
-import org.apache.kafka.streams.processor.To;
+import org.apache.kafka.streams.processor.api.Processor;
+import org.apache.kafka.streams.processor.api.ProcessorContext;
+import org.apache.kafka.streams.processor.api.Record;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 import java.util.function.Predicate;
 
-public class IfElseProcessor extends AbstractProcessor<String, ReplicationMessage> {
+public class IfElseProcessor implements Processor<String, ReplicationMessage,String, ReplicationMessage> {
     private final static Logger logger = LoggerFactory.getLogger(IfElseProcessor.class);
     private final Predicate<ReplicationMessage> condition;
     private final String ifTrueProcessorName;
     private final Optional<String> ifFalseProcessorName;
+    private ProcessorContext<String,ReplicationMessage> context;
 
     public IfElseProcessor(Predicate<ReplicationMessage> condition, String ifTrueProcessorName, Optional<String> ifFalseProcessorName) {
         this.condition = condition;
@@ -39,22 +41,28 @@ public class IfElseProcessor extends AbstractProcessor<String, ReplicationMessag
         this.ifFalseProcessorName = ifFalseProcessorName;
     }
 
+    private void forwardToFalse(String key, ReplicationMessage value, long timestamp, String e) {
+        context.forward(new Record<> (key, value.withOperation(ReplicationMessage.Operation.NONE),timestamp), e);
+    }
+
     @Override
-    public void process(String key, ReplicationMessage value) {
+    public void process(Record<String,ReplicationMessage> record) {
+        ReplicationMessage value = record.value();
+        String key = record.key();
         if (value == null) {
             logger.warn("Ignoring null-message in ifelseprocessor with key: {}", key);
             return;
         }
         boolean res = condition.test(value);
         if (res) {
-            context().forward(key, value, To.child(ifTrueProcessorName));
+            context.forward(new Record<>(key,value,record.timestamp()), ifTrueProcessorName);
         } else {
-            ifFalseProcessorName.ifPresent(e -> forwardToFalse(key, value, e));
+            ifFalseProcessorName.ifPresent(e -> forwardToFalse(key, value,record.timestamp(), e));
         }
     }
 
-    private void forwardToFalse(String key, ReplicationMessage value, String e) {
-        context().forward(key, value.withOperation(ReplicationMessage.Operation.NONE), To.child(e));
+    @Override
+    public void init(ProcessorContext<String,ReplicationMessage> context) {
+        this.context = context;
     }
-
 }
