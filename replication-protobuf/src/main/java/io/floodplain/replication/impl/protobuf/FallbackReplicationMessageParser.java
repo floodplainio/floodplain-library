@@ -53,7 +53,6 @@ public class FallbackReplicationMessageParser implements ReplicationMessageParse
     public FallbackReplicationMessageParser() {
         this(true);
 //        this("PROTOBUF".equals(System.getenv("REPLICATION_MESSAGE_FORMAT")) || "PROTOBUF".equals(System.getProperty("REPLICATION_MESSAGE_FORMAT")));
-//		InvalidProtocolBufferException e;
     }
 
     public FallbackReplicationMessageParser(boolean useProtobuf) {

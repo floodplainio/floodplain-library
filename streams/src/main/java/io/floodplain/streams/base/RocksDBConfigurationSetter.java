@@ -41,8 +41,6 @@ public class RocksDBConfigurationSetter implements RocksDBConfigSetter {
     public void setConfig(final String storeName, Options options, Map<String, Object> configs) {
         options.setWriteBufferSize(getWriteBufferSize());
         // Not used in Universal compaction
-        // options.setMaxBytesForLevelBase(90000000);
-        // options.setMaxBytesForLevelMultiplier(10);
 
         BlockBasedTableConfig tableConfig = (BlockBasedTableConfig) options.tableFormatConfig(); // new BlockBasedTableConfig();
         tableConfig.setBlockCacheSize(getBlockCacheSize());

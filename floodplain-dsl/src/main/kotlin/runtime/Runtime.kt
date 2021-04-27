@@ -78,7 +78,6 @@ suspend fun run(stream: Stream, arguments: Array<out String?>, localContext: (su
     } catch (e: SystemExitException) {
         val writer = OutputStreamWriter(if (e.returnCode == 0) System.out else System.err, StandardCharsets.UTF_8)
         e.printUserMessage(writer, System.getProperty("com.xenomachina.argparser.programName"), 80)
-        writer.flush()
         return
     }
     parseInto.run {

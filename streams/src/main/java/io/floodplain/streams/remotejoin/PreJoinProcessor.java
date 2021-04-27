@@ -20,27 +20,37 @@ package io.floodplain.streams.remotejoin;
 
 import io.floodplain.replication.api.ReplicationMessage;
 import org.apache.kafka.streams.processor.AbstractProcessor;
+import org.apache.kafka.streams.processor.api.Processor;
+import org.apache.kafka.streams.processor.api.ProcessorContext;
+import org.apache.kafka.streams.processor.api.Record;
 
-public class PreJoinProcessor extends AbstractProcessor<String, ReplicationMessage> {
+public class PreJoinProcessor implements Processor<String, ReplicationMessage,String, ReplicationMessage> {
     public static final String REVERSE_IDENTIFIER = "_REV_";
 
 
     private final boolean isReverseJoin;
+    private ProcessorContext<String, ReplicationMessage> context;
 
     public PreJoinProcessor(boolean isReverseJoin) {
         this.isReverseJoin = isReverseJoin;
     }
 
     @Override
-    public void process(String key, ReplicationMessage msg) {
+    public void process(Record<String, ReplicationMessage> record) {
+        ReplicationMessage msg = record.value();
         if (isReverseJoin) {
-            String newKey = key;
+            String newKey = record.key();
             newKey += REVERSE_IDENTIFIER;
-            context().forward(newKey, msg == null ? null : msg.withoutParamMessage());
+            context.forward(record.withKey(newKey).withValue( msg == null ? null : msg.withoutParamMessage()));
         } else {
-            context().forward(key, msg == null ? null : msg.withoutParamMessage());
+            context.forward(record.withValue(msg == null ? null : msg.withoutParamMessage()));
         }
 
+    }
+
+    @Override
+    public void init(ProcessorContext<String, ReplicationMessage> context) {
+        this.context = context;
     }
 
 }

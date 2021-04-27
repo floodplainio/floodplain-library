@@ -36,7 +36,7 @@ public class EachTransformer implements TopologyPipeComponent {
 
     private final static Logger logger = LoggerFactory.getLogger(EachTransformer.class);
 
-    ImmutableMessage.TriConsumer lambda;
+    final ImmutableMessage.TriConsumer lambda;
     public EachTransformer(ImmutableMessage.TriConsumer lambda) {
         this.lambda = lambda;
     }

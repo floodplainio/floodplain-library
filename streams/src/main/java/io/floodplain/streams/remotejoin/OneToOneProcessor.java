@@ -58,9 +58,9 @@ public class OneToOneProcessor extends AbstractProcessor<String, ReplicationMess
     @Override
     public void init(ProcessorContext context) {
         logger.info("inner lookup Looking up: " + forwardLookupStoreName);
-        this.forwardLookupStore = (KeyValueStore<String, ReplicationMessage>) context.getStateStore(forwardLookupStoreName);
+        this.forwardLookupStore = context.getStateStore(forwardLookupStoreName);
         logger.info("inner lookup Looking up: " + reverseLookupStoreName);
-        this.reverseLookupStore = (KeyValueStore<String, ReplicationMessage>) context.getStateStore(reverseLookupStoreName);
+        this.reverseLookupStore = context.getStateStore(reverseLookupStoreName);
         super.init(context);
         logger.info("One-to-one successfully started");
     }
@@ -127,8 +127,4 @@ public class OneToOneProcessor extends AbstractProcessor<String, ReplicationMess
         }
     }
 
-    @Override
-    public void close() {
-        super.close();
-    }
 }

@@ -49,7 +49,7 @@ public class ImmutableJSON {
         // -- no instances
     }
 
-    public static ObjectNode json(ImmutableMessage msg) throws IOException {
+    public static ObjectNode json(ImmutableMessage msg) {
         ObjectNode node = objectMapper.createObjectNode();
         msg.toTypedDataMap().forEach((key1, value) -> resolveValue(node, key1, value.type, Optional.ofNullable(value.value), false));
         for (Entry<String, List<ImmutableMessage>> e : msg.subMessageListMap().entrySet()) {

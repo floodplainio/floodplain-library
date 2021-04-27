@@ -50,11 +50,6 @@ public class ReplicationJSON {
     private final static Logger logger = LoggerFactory.getLogger(ReplicationJSON.class);
     public static final ObjectMapper objectMapper = new ObjectMapper();
 
-//    public static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-//    public static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS");
-//
-//    public static final DateTimeFormatter clocktimeFormatter =  DateTimeFormatter.ofPattern("HH:mm:ss");
-
     public static ReplicationMessage parseReplicationMessage(byte[] data, Optional<String> source) throws IOException {
         return ReplicationJSON.parseJSON(source, (ObjectNode) parseJSON(data));
     }

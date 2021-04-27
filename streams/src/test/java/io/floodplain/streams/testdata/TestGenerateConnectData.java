@@ -51,7 +51,7 @@ public class TestGenerateConnectData {
                 Assert.assertEquals(columnValue.getHour(),14 );
                 Assert.assertEquals(10, rm.values().size());
                 ConnectReplicationMessageSerde serde = new ConnectReplicationMessageSerde();
-                Serializer serializer = serde.serializer();
+                Serializer<ReplicationMessage> serializer = serde.serializer();
                 serializer.configure(Map.of("schemaEnable", Boolean.TRUE),false);
                 byte[] data = serializer.serialize("mytopic",rm);
 

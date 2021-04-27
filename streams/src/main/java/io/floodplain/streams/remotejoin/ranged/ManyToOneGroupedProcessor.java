@@ -25,8 +25,9 @@ import io.floodplain.streams.remotejoin.PreJoinProcessor;
 import io.floodplain.streams.remotejoin.ReplicationTopologyParser;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.kstream.Predicate;
-import org.apache.kafka.streams.processor.AbstractProcessor;
-import org.apache.kafka.streams.processor.ProcessorContext;
+import org.apache.kafka.streams.processor.api.Processor;
+import org.apache.kafka.streams.processor.api.ProcessorContext;
+import org.apache.kafka.streams.processor.api.Record;
 import org.apache.kafka.streams.state.KeyValueIterator;
 import org.apache.kafka.streams.state.KeyValueStore;
 import org.slf4j.Logger;
@@ -37,7 +38,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
 
-public class ManyToOneGroupedProcessor extends AbstractProcessor<String, ReplicationMessage> {
+public class ManyToOneGroupedProcessor implements Processor<String, ReplicationMessage,String, ReplicationMessage> {
 
     private static final Logger logger = LoggerFactory.getLogger(ManyToOneGroupedProcessor.class);
 
@@ -50,6 +51,7 @@ public class ManyToOneGroupedProcessor extends AbstractProcessor<String, Replica
     private KeyValueStore<String, ReplicationMessage> reverseLookupStore;
 
     private final Predicate<String, ReplicationMessage> associationBypass;
+    private ProcessorContext context;
 
     public ManyToOneGroupedProcessor(String fromProcessor, String withProcessor,
                                      Optional<Predicate<String, ReplicationMessage>> associationBypass,
@@ -66,13 +68,15 @@ public class ManyToOneGroupedProcessor extends AbstractProcessor<String, Replica
     @SuppressWarnings("unchecked")
     @Override
     public void init(ProcessorContext context) {
-        super.init(context);
+        this.context = context;
         this.forwardLookupStore = (KeyValueStore<String, ReplicationMessage>) context.getStateStore(ReplicationTopologyParser.STORE_PREFIX + fromProcessorName);
         this.reverseLookupStore = (KeyValueStore<String, ReplicationMessage>) context.getStateStore(ReplicationTopologyParser.STORE_PREFIX + withProcessorName);
     }
 
     @Override
-    public void process(String key, ReplicationMessage message) {
+    public void process(Record<String, ReplicationMessage> record) {
+        String key = record.key();
+        ReplicationMessage message = record.value();
         if (key.contains("{")) {
             // TODO remove, it is a bit barbaric
             throw new RuntimeException("Failed. bad key: " + key);
@@ -83,18 +87,18 @@ public class ManyToOneGroupedProcessor extends AbstractProcessor<String, Replica
             key = key.substring(0, key.length() - PreJoinProcessor.REVERSE_IDENTIFIER.length());
         }
         if (reverse) {
-            reverseJoin(key, message);
+            reverseJoin(key, message,record.timestamp());
         } else {
-            forwardJoin(key, message);
+            forwardJoin(key, message,record.timestamp());
         }
 
     }
 
-    private void reverseJoin(String key, ReplicationMessage message) {
+    private void reverseJoin(String key, ReplicationMessage message, long timestamp) {
 
         if (message == null) {
             logger.debug("reverseJoin joinGrouped emitting null message with key: {} ", key);
-            context().forward(key, null);
+            context.forward(new Record(key,null,timestamp));
             return;
         }
         if (message.operation() == Operation.DELETE) {
@@ -108,12 +112,12 @@ public class ManyToOneGroupedProcessor extends AbstractProcessor<String, Replica
             String parentKey = CoreOperators.ungroupKey(keyValue.key);
             if (!associationBypass.test(parentKey, keyValue.value)) {
                 // filter says no, so don't join this, forward as-is
-                forwardMessage(parentKey, keyValue.value);
+                forwardMessage(parentKey, keyValue.value,timestamp);
                 continue;
             }
 
             ReplicationMessage joined = joinFunction.apply(keyValue.value, withOperation);
-            forwardMessage(parentKey, joined);
+            forwardMessage(parentKey, joined,timestamp);
         }
     }
 
@@ -126,13 +130,13 @@ public class ManyToOneGroupedProcessor extends AbstractProcessor<String, Replica
             if (optional) {
                 // Forward without joining
                 String parentKey = CoreOperators.ungroupKey(keyValue.key);
-                forwardMessage(parentKey, keyValue.value);
+                forwardMessage(parentKey, keyValue.value,message.timestamp());
             } else {
                 // Non optional join. Forward a delete
                 ReplicationMessage joined = joinFunction.apply(message, keyValue.value);
                 String parentKey = CoreOperators
                         .ungroupKey(keyValue.key);
-                forwardMessage(parentKey, joined.withOperation(Operation.DELETE));
+                forwardMessage(parentKey, joined.withOperation(Operation.DELETE),message.timestamp());
                 deleted.add(keyValue.key);
             }
 
@@ -142,19 +146,19 @@ public class ManyToOneGroupedProcessor extends AbstractProcessor<String, Replica
         }
     }
 
-    private void forwardJoin(String key, ReplicationMessage message) {
+    private void forwardJoin(String key, ReplicationMessage message, long timestamp) {
         // The forward join key is a ranged key - both the reverse and the forward key
         // are in it.
         String actualKey = CoreOperators.ungroupKey(key);
         String reverseLookupKey = CoreOperators.ungroupKeyReverse(key);
         if (message == null) {
-            context().forward(actualKey, null);
+            context.forward(new Record(actualKey, null,timestamp));
             return;
         }
         try {
             if (!associationBypass.test(actualKey, message)) {
                 // filter says no, so don't join this, forward as-is
-                forwardMessage(actualKey, message);
+                forwardMessage(actualKey, message,timestamp);
                 return;
             }
         } catch (Throwable t) {
@@ -175,23 +179,23 @@ public class ManyToOneGroupedProcessor extends AbstractProcessor<String, Replica
         if (outerMessage == null) {
             // nothing found to join with, forward only if optional
             if (optional) {
-                forwardMessage(actualKey, message);
+                forwardMessage(actualKey, message,timestamp);
             } else {
                 // I don't think this is always correct
-                forwardMessage(actualKey, message.withOperation(Operation.DELETE));
+                forwardMessage(actualKey, message.withOperation(Operation.DELETE),timestamp);
             }
         } else {
             final ReplicationMessage joined = joinFunction.apply(withOperation, outerMessage);
-            forwardMessage(actualKey, joined);
+            forwardMessage(actualKey, joined,timestamp);
         }
     }
 
-    private void forwardMessage(String key, ReplicationMessage innerMessage) {
-        context().forward(key, innerMessage);
-        // flush downstream stores with null:
+    private void forwardMessage(String key, ReplicationMessage innerMessage, long timestamp) {
+        context.forward(new Record(key, innerMessage,timestamp));
         if (innerMessage.operation() == Operation.DELETE) {
             logger.debug("Delete forwarded, appending null forward with key: {}", key);
-            context().forward(key, null);
+            context.forward(new Record(key, null,timestamp));
         }
     }
+
 }

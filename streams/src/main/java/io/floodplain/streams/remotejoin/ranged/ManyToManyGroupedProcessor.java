@@ -23,8 +23,9 @@ import io.floodplain.streams.api.CoreOperators;
 import io.floodplain.streams.remotejoin.PreJoinProcessor;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.kstream.Predicate;
-import org.apache.kafka.streams.processor.AbstractProcessor;
-import org.apache.kafka.streams.processor.ProcessorContext;
+import org.apache.kafka.streams.processor.api.Processor;
+import org.apache.kafka.streams.processor.api.ProcessorContext;
+import org.apache.kafka.streams.processor.api.Record;
 import org.apache.kafka.streams.state.KeyValueIterator;
 import org.apache.kafka.streams.state.KeyValueStore;
 import org.slf4j.Logger;
@@ -37,19 +38,20 @@ import java.util.function.BiFunction;
 
 import static io.floodplain.streams.remotejoin.ReplicationTopologyParser.STORE_PREFIX;
 
-public class ManyToManyGroupedProcessor extends AbstractProcessor<String, ReplicationMessage> {
+public class ManyToManyGroupedProcessor implements Processor<String, ReplicationMessage,String, ReplicationMessage> {
 
     private static final Logger logger = LoggerFactory.getLogger(ManyToManyGroupedProcessor.class);
 
-    private String fromProcessorName;
-    private String withProcessorName;
-    private boolean optional;
+    private final String fromProcessorName;
+    private final String withProcessorName;
+    private final boolean optional;
 
-    private BiFunction<ReplicationMessage, List<ReplicationMessage>, ReplicationMessage> manyToManyJoinFunction;
+    private final BiFunction<ReplicationMessage, List<ReplicationMessage>, ReplicationMessage> manyToManyJoinFunction;
     private KeyValueStore<String, ReplicationMessage> forwardLookupStore;
     private KeyValueStore<String, ReplicationMessage> reverseLookupStore;
 
     private final Predicate<String, ReplicationMessage> associationBypass;
+    private ProcessorContext context;
 
     public ManyToManyGroupedProcessor(String fromProcessor, String withProcessor,
                                       Optional<Predicate<String, ReplicationMessage>> associationBypass,
@@ -63,36 +65,37 @@ public class ManyToManyGroupedProcessor extends AbstractProcessor<String, Replic
 
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public void init(ProcessorContext context) {
-        super.init(context);
-        this.forwardLookupStore = (KeyValueStore<String, ReplicationMessage>) context.getStateStore(STORE_PREFIX + fromProcessorName);
-        this.reverseLookupStore = (KeyValueStore<String, ReplicationMessage>) context.getStateStore(STORE_PREFIX + withProcessorName);
-    }
-
-    @Override
-    public void process(String key, ReplicationMessage message) {
+    public void process(Record<String, ReplicationMessage> record) {
         boolean reverse = false;
+        String key = record.key();
+        ReplicationMessage message = record.value();
         if (key.endsWith(PreJoinProcessor.REVERSE_IDENTIFIER)) {
             reverse = true;
             key = key.substring(0, key.length() - PreJoinProcessor.REVERSE_IDENTIFIER.length());
         }
 
         if (reverse) {
-            reverseJoin(key, message);
+            reverseJoin(key, message,record.timestamp());
         } else {
-            forwardJoin(key, message);
+            forwardJoin(key, message,record.timestamp());
         }
 
     }
+    @SuppressWarnings("unchecked")
+    @Override
+    public void init(ProcessorContext context) {
+        this.context = context;
+        this.forwardLookupStore = (KeyValueStore<String, ReplicationMessage>) context.getStateStore(STORE_PREFIX + fromProcessorName);
+        this.reverseLookupStore = (KeyValueStore<String, ReplicationMessage>) context.getStateStore(STORE_PREFIX + withProcessorName);
+    }
 
-    private void reverseJoin(String key, ReplicationMessage message) {
+    private void reverseJoin(String key, ReplicationMessage message, long timestamp) {
         // Many to many - reverse key is grouped too
         String actualKey = CoreOperators.ungroupKeyReverse(key);
         if (message == null) {
             logger.info("reverseJoin joinGrouped emitting null message with key: {} ", actualKey);
-            context().forward(actualKey, null);
+            context.forward(new Record(actualKey, null,timestamp));
             return;
         }
 
@@ -100,12 +103,12 @@ public class ManyToManyGroupedProcessor extends AbstractProcessor<String, Replic
                 actualKey + "}")) {
             while (it.hasNext()) {
                 KeyValue<String, ReplicationMessage> keyValue = it.next();
-                forwardJoin(keyValue.key, keyValue.value);
+                forwardJoin(keyValue.key, keyValue.value,timestamp);
             }
         }
     }
 
-    private void forwardJoin(String key, ReplicationMessage message) {
+    private void forwardJoin(String key, ReplicationMessage message, long timestamp) {
         // The forward join key is a ranged key - both the reverse and the forward key
         // are in it.
         String actualKey = CoreOperators.ungroupKey(key);
@@ -113,13 +116,13 @@ public class ManyToManyGroupedProcessor extends AbstractProcessor<String, Replic
 
         if (message == null) {
             logger.info("forwardJoin joinGrouped emitting null message with key: {} ", actualKey);
-            context().forward(actualKey, null);
+            context.forward(new Record(actualKey, null,timestamp));
             return;
         }
         try {
             if (!associationBypass.test(actualKey, message)) {
                 // filter says no, so don't join this, forward as-is
-                forwardMessage(actualKey, message);
+                forwardMessage(actualKey, message,timestamp);
                 return;
             }
         } catch (Throwable t) {
@@ -151,19 +154,20 @@ public class ManyToManyGroupedProcessor extends AbstractProcessor<String, Replic
         joined = manyToManyJoinFunction.apply(withOperation, messageList);
 
         if (optional || !messageList.isEmpty()) {
-            forwardMessage(actualKey, joined);
+            forwardMessage(actualKey, joined,timestamp);
         } else {
-            forwardMessage(actualKey, joined.withOperation(ReplicationMessage.Operation.DELETE));
+            forwardMessage(actualKey, joined.withOperation(ReplicationMessage.Operation.DELETE),timestamp);
         }
 
     }
 
-    private void forwardMessage(String key, ReplicationMessage innerMessage) {
-        context().forward(key, innerMessage);
+    private void forwardMessage(String key, ReplicationMessage innerMessage, long timestamp) {
+        context.forward(new Record(key, innerMessage,timestamp));
         // flush downstream stores with null:
         if (innerMessage.operation() == ReplicationMessage.Operation.DELETE) {
             logger.debug("Delete forwarded, appending null forward with key: {}", key);
-            context().forward(key, null);
+            context.forward(new Record(key, null,timestamp));
         }
     }
+
 }

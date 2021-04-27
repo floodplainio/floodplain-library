@@ -38,11 +38,6 @@ import java.util.Optional;
 public class TestSer {
 // /TODO protobuf binaries
 
-    @Before
-    public void setup() {
-
-    }
-
     @Test
     public void testBinaryJSON() {
         final ReplicationMessageParser parser = new JSONReplicationMessageParserImpl();

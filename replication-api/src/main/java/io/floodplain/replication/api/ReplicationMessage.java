@@ -107,10 +107,8 @@ public interface ReplicationMessage {
 
     String toFlatString(ReplicationMessageParser parser);
 
-    boolean usePretty =  System.getenv(PRETTY_JSON) != null || System.getProperty(PRETTY_JSON) != null;
-
     static boolean usePrettyPrint() {
-        return usePretty;
+        return System.getenv(PRETTY_JSON) != null || System.getProperty(PRETTY_JSON) != null;
     }
 
     ReplicationMessage withOperation(Operation operation);

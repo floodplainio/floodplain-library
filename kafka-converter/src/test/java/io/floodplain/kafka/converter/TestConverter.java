@@ -34,10 +34,6 @@ public class TestConverter {
 
     private final static Logger logger = LoggerFactory.getLogger(TestConverter.class);
 
-    @Before
-    public void setup() {
-    }
-
     @Test
     public void testConverter() throws IOException {
         ReplicationMessageConverter converter = new ReplicationMessageConverter();

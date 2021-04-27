@@ -55,7 +55,7 @@ public class DynamicSinkTransformer implements TopologyPipeComponent {
     @Override
     public void addToTopology(Stack<String> transformerNames, int pipeId, Topology topology, TopologyContext topologyContext, TopologyConstructor topologyConstructor) {
         TopicNameExtractor<String, ReplicationMessage> topicNameExtractor = (key, msg, recordContext)->topologyContext.topicName( extractor.apply(key, msg.message()));
-        logger.info("Stack top for transformer: " + transformerNames.peek());
+        logger.info("Stack top for transformer: " + transformerNames.peek()+ " partitions: "+partitions);
         topology.addSink(SINK_PREFIX + sinkName, topicNameExtractor, transformerNames.peek());
     }
 

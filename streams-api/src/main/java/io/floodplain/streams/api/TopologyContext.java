@@ -97,9 +97,6 @@ public class TopologyContext {
         return new TopologyContext(Optional.empty(),Optional.empty(),generation, qualifier);
     }
     public static TopologyContext context(Optional<String> tenant, Optional<String> deployment, String generation) {
-//        if(deployment.isPresent() && tenant.isEmpty()) {
-//            throw new IllegalArgumentException("Can not have a deployment without a deployment: "+tenant+" generation: "+generation);
-//        }
         return new TopologyContext(tenant,deployment,generation,new NameQualifier(tenant,deployment,generation));
     }
 

@@ -38,7 +38,7 @@ import org.apache.kafka.common.serialization.Serializer;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.Predicate;
 import org.apache.kafka.streams.processor.Processor;
-import org.apache.kafka.streams.processor.ProcessorSupplier;
+import org.apache.kafka.streams.processor.api.ProcessorSupplier;
 import org.apache.kafka.streams.state.KeyValueBytesStoreSupplier;
 import org.apache.kafka.streams.state.KeyValueStore;
 import org.apache.kafka.streams.state.StoreBuilder;
@@ -97,16 +97,6 @@ public class ReplicationTopologyParser {
         }
     }
 
-    public static void addKeyTransformProcessor(Topology current, TopologyContext topologyContext,
-                                        TopologyConstructor topologyConstructor, String fromProcessor,
-                                        Function<String,String> keyTransformer) {
-        // TODO I think the topologyContext should be used.
-//        current.addProcessor(diffProcessorNamePrefix, () -> new DiffProcessor(diffProcessorNamePrefix), fromProcessor);
-//        addStateStoreMapping(topologyConstructor.processorStateStoreMapper, diffProcessorNamePrefix, diffProcessorNamePrefix);
-//        logger.info("Granting access for processor: {} to store: {}", diffProcessorNamePrefix, diffProcessorNamePrefix);
-//        topologyConstructor.stateStoreSupplier.put(diffProcessorNamePrefix, createMessageStoreSupplier(diffProcessorNamePrefix, true));
-    }
-
     // I think we need to use the topologyContext
     public static void addDiffProcessor(Topology current, TopologyContext topologyContext,
                                         TopologyConstructor topologyConstructor, String fromProcessor,
@@ -118,16 +108,6 @@ public class ReplicationTopologyParser {
         topologyConstructor.stateStoreSupplier.put(diffProcessorNamePrefix, createMessageStoreSupplier(diffProcessorNamePrefix, true));
     }
 
-    public static void addLazySourceStore(final Topology currentBuilder, TopologyContext context,
-                                          TopologyConstructor topologyConstructor, Topic topic, Deserializer<?> keyDeserializer, Deserializer<?> valueDeserializer) {
-        topologyConstructor.addDesiredTopic(topic, Optional.empty());
-        if (!topologyConstructor.sources.containsKey(topic)) {
-            currentBuilder.addSource(topic.qualifiedString(), keyDeserializer, valueDeserializer, topic.qualifiedString());
-            topologyConstructor.sources.put(topic, topic.qualifiedString());
-        }
-    }
-
-    //    ss
     public static String addMaterializeStore(final Topology currentBuilder, TopologyContext context,
                                              TopologyConstructor topologyConstructor, String name, String parentProcessor) {
         final String sourceProcessorName = name;
@@ -197,8 +177,6 @@ public class ReplicationTopologyParser {
             } else {
                 currentBuilder.addProcessor(sourceProcessorName, IdentityProcessor::new, sourceName);
             }
-//        } else {
-//            sourceName = topologyConstructor.sources.get(sourceTopicName);
         }
         if (materializeStore) {
             addStateStoreMapping(topologyConstructor.processorStateStoreMapper, sourceProcessorName, STORE_PREFIX + sourceProcessorName);
@@ -220,6 +198,20 @@ public class ReplicationTopologyParser {
         String secondNamePre = name + "-reversepre";
         String finalJoin = name + "-joined";
 
+        ProcessorSupplier<String,ReplicationMessage,String,ReplicationMessage> groupProcessors = !isList ? () -> new ManyToOneGroupedProcessor(
+                fromProcessor,
+                withProcessor,
+                associationBypass,
+                optional
+        )
+                :
+                ()-> new ManyToManyGroupedProcessor(
+                        fromProcessor,
+                        withProcessor,
+                        associationBypass,
+                        optional
+                );
+
         //Preprocessor - add info whether the resulting message is a reverse-join or not
         current.addProcessor(
                 firstNamePre
@@ -231,20 +223,7 @@ public class ReplicationTopologyParser {
                 , withProcessor
         ).addProcessor(
                 finalJoin
-                , ()->(!isList) ?
-                        new ManyToOneGroupedProcessor(
-                                fromProcessor,
-                                withProcessor,
-                                associationBypass,
-                                optional
-                        )
-                        :
-                        new ManyToManyGroupedProcessor(
-                                fromProcessor,
-                                withProcessor,
-                                associationBypass,
-                                optional
-                        )
+                , groupProcessors
                 , firstNamePre, secondNamePre
         );
         addStateStoreMapping(topologyConstructor.processorStateStoreMapper, finalJoin, STORE_PREFIX + withProcessor);
@@ -260,18 +239,15 @@ public class ReplicationTopologyParser {
         return finalJoin;
     }
 
-
+// TODO unused topologyContext is suspect
     public static String addGroupedProcessor(final Topology current, TopologyContext topologyContext, TopologyConstructor topologyConstructor, String name, String from,
-                                             Function<ReplicationMessage, String> keyExtractor, Optional<ProcessorSupplier<String, ReplicationMessage>> transformerSupplier) {
+                                             Function<ReplicationMessage, String> keyExtractor) {
 
         String mappingStoreName;
         if (!topologyConstructor.stores.contains(STORE_PREFIX + from)) {
             logger.error("Adding grouped with from, no source processor present for: " + from + " created: " + topologyConstructor.stateStoreSupplier.keySet() + " and from: " + from);
         }
         mappingStoreName = from + "_mapping";
-
-        String transformProcessor = name + "_transform";
-        current.addProcessor(transformProcessor, transformerSupplier.orElse(IdentityProcessor::new), from);
         // allow override to avoid clashes
         addStateStoreMapping(topologyConstructor.processorStateStoreMapper, name, STORE_PREFIX + name);
         topologyConstructor.stores.add(STORE_PREFIX + name);
@@ -279,7 +255,7 @@ public class ReplicationTopologyParser {
         topologyConstructor.stores.add(STORE_PREFIX + mappingStoreName);
         topologyConstructor.stateStoreSupplier.put(STORE_PREFIX + name, createMessageStoreSupplier(STORE_PREFIX + name, true));
         topologyConstructor.stateStoreSupplier.put(STORE_PREFIX + mappingStoreName, createMessageStoreSupplier(STORE_PREFIX + mappingStoreName, true));
-        current.addProcessor(name, () -> new GroupedUpdateProcessor(STORE_PREFIX + name, keyExtractor, STORE_PREFIX + mappingStoreName), transformProcessor);
+        current.addProcessor(name, () -> new GroupedUpdateProcessor(STORE_PREFIX + name, keyExtractor, STORE_PREFIX + mappingStoreName), from);
         return name;
     }
 

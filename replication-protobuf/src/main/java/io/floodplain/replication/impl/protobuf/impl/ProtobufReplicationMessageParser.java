@@ -312,9 +312,6 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
     }
 
     private static Replication.ReplicationMessageProtobuf toProto(ImmutableMessage msg, String transactionId, ReplicationMessage.Operation operation, long timestamp, List<String> primaryKeys, Optional<ImmutableMessage> paramMessage) {
-//        DateTimeFormatter dateFormat = dateFormat();
-//        DateTimeFormatter clockTimeFormat = clocktimeFormat();
-
         Map<String, Replication.ValueProtobuf> val = msg.values().entrySet()
                 .stream()
                 .map(e -> {

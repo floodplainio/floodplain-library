@@ -31,7 +31,7 @@ import java.util.Map;
 
 public class TestSheetSink {
 
-		String spreadsheetId = "1COkG3-Y0phnHKvwNiFpYewKhT3weEC5CmzmKkXUpPA4";
+		final String spreadsheetId = "1COkG3-Y0phnHKvwNiFpYewKhT3weEC5CmzmKkXUpPA4";
 
 	@Test
 	public void testBatchUpdate() throws IOException, GeneralSecurityException {

@@ -68,12 +68,6 @@ public class ConnectReplicationMessageSerdeWithSchema implements Serde<Replicati
 
     public static Serializer<String> keySerialize() {
         return keySerde.serializer();
-//        return new Serializer<String>() {
-//            @Override
-//            public byte[] serialize(String topic, String data) {
-//                return data.getBytes();
-//            }
-//        };
     }
 
     public static Deserializer<String> keyDeserialize() {
@@ -227,9 +221,8 @@ public class ConnectReplicationMessageSerdeWithSchema implements Serde<Replicati
             return l.toEpochSecond(ZoneOffset.UTC);
         }
         if(value instanceof LocalDate) {
-            long epDay = ((LocalDate)value).toEpochDay();
             // Is it ok to return an int64 here?
-            return epDay;
+            return ((LocalDate)value).toEpochDay();
         }
         if(value instanceof LocalTime) {
             LocalTime l = ((LocalTime)value);
@@ -238,9 +231,6 @@ public class ConnectReplicationMessageSerdeWithSchema implements Serde<Replicati
         throw new IllegalArgumentException("Unsupported type: "+value.getClass().getName()+" for processDateType");
     }
 
-//    private Map<String,?> buildSchema(ImmutableMessage message) {
-//        return Map.of("fields",buildSchema(null,message),"optional",true);
-//    }
     private Map<String,?> buildSchema(String name, ImmutableMessage message) {
         List<?> types = message.types()
                 .entrySet()
@@ -253,8 +243,7 @@ public class ConnectReplicationMessageSerdeWithSchema implements Serde<Replicati
                 .stream()
                 .map(e->buildSchema(e.getKey(),e.getValue()))
                 .collect(Collectors.toList());
-        Map<String,?> subm = Map.of("type","struct","optional",true,"fields",types);
-        return subm;
+        return Map.of("type","struct","optional",true,"fields",types);
 //        Map<String,?> subm = Map.of("optional",true,)
     }
 
@@ -299,9 +288,8 @@ public class ConnectReplicationMessageSerdeWithSchema implements Serde<Replicati
                         .filter(e->e.getKey()!=null && e.getValue()!=null)
                     .collect(Collectors.toMap(e->e.getKey(),e->e.getValue()));
 //                    Map<String, Object> valueWithPayload = new HashMap<String, Object>();
-                    Map<String,?> valueWithPayload = Map.of("schema",buildSchema(null,message),"payload",processed);
-//                    valueWithPayload.put("payload", valueMap);
-                    valueMap = valueWithPayload;
+                    //                    valueWithPayload.put("payload", valueMap);
+                    valueMap = Map.of("schema",buildSchema(null,message),"payload",processed);
                 }
                 try {
                     // TODO make pretty printer configurable

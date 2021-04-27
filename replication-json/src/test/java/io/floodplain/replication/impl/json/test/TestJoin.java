@@ -70,10 +70,9 @@ public class TestJoin {
     @Test
     public void testMessageList() {
         logger.info("Output: " + organizationaddress.primaryKeys());
-        List<String> primaryValues = organizationaddress.primaryKeys().stream()
-                .map(k -> organizationaddress.value(k).get().toString()).collect(Collectors.toList());
 
-        String[] parts = primaryValues.toArray(new String[0]);
+        String[] parts = organizationaddress.primaryKeys().stream()
+                .map(k -> organizationaddress.value(k).get().toString()).toArray(String[]::new);
         String joined = String.join("-", parts);
         Assert.assertEquals(organizationaddress.value(organizationaddress.primaryKeys().get(0)).get() + "-"
                 + organizationaddress.value(organizationaddress.primaryKeys().get(1)).get(), joined);
@@ -138,14 +137,15 @@ public class TestJoin {
     private void testZip(int size, String type, int count) throws IOException {
         byte[] data = randomByteArray(size);
         long now = System.currentTimeMillis();
+        byte[] zipped = null;
         for (int i = 0; i < count; i++) {
-            zipBytes("something", data);
+            zipped = zipBytes("something", data);
         }
         long elapsed = System.currentTimeMillis() - now;
         double rate = (double) size * ((double) count / elapsed);
         rate = rate / 1024;
         logger.info(
-                "Hashing: " + count + " items with: " + type + " data size: " + data.length + " Took: " + elapsed);
+                "Hashing: " + count + " items with: " + type + " data size: " + data.length +" zipped: "+zipped.length+ " Took: " + elapsed);
         logger.info("Rate: " + rate + " MB/s");
     }
 

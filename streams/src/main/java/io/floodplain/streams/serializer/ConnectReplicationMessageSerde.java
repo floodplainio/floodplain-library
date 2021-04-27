@@ -64,12 +64,6 @@ public class ConnectReplicationMessageSerde implements Serde<ReplicationMessage>
 
     public static Serializer<String> keySerialize() {
         return keySerde.serializer();
-//        return new Serializer<String>() {
-//            @Override
-//            public byte[] serialize(String topic, String data) {
-//                return data.getBytes();
-//            }
-//        };
     }
 
     public static Deserializer<String> keyDeserialize() {
@@ -114,13 +108,10 @@ public class ConnectReplicationMessageSerde implements Serde<ReplicationMessage>
             @Override
             public ReplicationMessage deserialize(String topic, byte[] data) {
                 try {
-
-//                    JSONToReplicationMessage.convertToReplication(false,objectMapper.readTree(data))
                     return JSONToReplicationMessage.processDebeziumBody(data, Optional.of(topic));
                 } catch (DebeziumParseException e) {
                     throw new RuntimeException("Error parsing replmessage", e);
                 }
-//                return parser.parseBytes(Optional.of(topic), data);
             }
         };
     }

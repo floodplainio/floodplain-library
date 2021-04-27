@@ -23,22 +23,26 @@ import io.floodplain.replication.api.ReplicationMessage;
 import io.floodplain.replication.api.ReplicationMessage.Operation;
 import io.floodplain.replication.factory.ReplicationFactory;
 import org.apache.kafka.streams.processor.AbstractProcessor;
-import org.apache.kafka.streams.processor.ProcessorContext;
+import org.apache.kafka.streams.processor.api.Processor;
+import org.apache.kafka.streams.processor.api.ProcessorContext;
+import org.apache.kafka.streams.processor.api.Record;
 import org.apache.kafka.streams.state.KeyValueStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Instant;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 
-public class DiffProcessor extends AbstractProcessor<String, ReplicationMessage> {
+public class DiffProcessor implements Processor<String, ReplicationMessage,String, ReplicationMessage> {
 
     private final String lookupStoreName;
     private KeyValueStore<String, ReplicationMessage> lookupStore;
 
     private final static Logger logger = LoggerFactory.getLogger(DiffProcessor.class);
+    private ProcessorContext context;
 
 
     public DiffProcessor(String lookupStoreName) {
@@ -48,8 +52,50 @@ public class DiffProcessor extends AbstractProcessor<String, ReplicationMessage>
     @SuppressWarnings("unchecked")
     @Override
     public void init(ProcessorContext context) {
+        this.context = context;
         this.lookupStore = (KeyValueStore<String, ReplicationMessage>) context.getStateStore(lookupStoreName);
-        super.init(context);
+    }
+
+    @Override
+    public void process(Record<String, ReplicationMessage> record) {
+        ReplicationMessage incoming = record.value();
+        String key = record.key();
+        if (incoming == null || incoming.operation() == Operation.DELETE) {
+            logger.debug("Delete detected in store: {} with key: {}", lookupStoreName, key);
+            ReplicationMessage previous = lookupStore.get(key);
+            if (previous != null) {
+                lookupStore.delete(key);
+                ReplicationMessage forwarding = createMessage(key)
+                        .withSubMessage("old", previous.message())
+                        .withOperation(Operation.DELETE);
+
+                context.forward(record.withValue(forwarding));
+            }
+        } else {
+            ReplicationMessage previous = lookupStore.get(key);
+            if (previous != null) {
+                boolean isDifferent = diff(previous, incoming);
+                if (isDifferent) {
+                    lookupStore.put(key, incoming);
+                    ReplicationMessage forwarding = createMessage(key)
+                            .withSubMessage("old", previous.message())
+                            .withSubMessage("new", incoming.message())
+                            .withOperation(Operation.UPDATE);
+                    context.forward(record.withValue(forwarding));
+                } else {
+                    logger.debug("Ignoring identical message for key: {} for store: {}", key, lookupStoreName);
+                }
+            } else {
+                // 'new message'
+                lookupStore.put(key, incoming);
+                ReplicationMessage forwarding = createMessage(key)
+                        .withSubMessage("new", incoming.message())
+                        .withOperation(Operation.UPDATE);
+                context.forward(record.withValue(forwarding));
+            }
+
+            lookupStore.put(key, incoming);
+        }
     }
 
     @Override
@@ -63,42 +109,6 @@ public class DiffProcessor extends AbstractProcessor<String, ReplicationMessage>
         Map<String, ValueType> types = new HashMap<>();
         types.put("key", ValueType.STRING);
         return ReplicationFactory.fromMap(key, value, types).withPrimaryKeys(Collections.singletonList("key"));
-    }
-
-    @Override
-    public void process(String key, ReplicationMessage incoming) {
-        if (incoming == null || incoming.operation() == Operation.DELETE) {
-            logger.debug("Delete detected in store: {} with key: {}", lookupStoreName, key);
-            ReplicationMessage previous = lookupStore.get(key);
-            if (previous != null) {
-                lookupStore.delete(key);
-                context().forward(key, createMessage(key)
-                        .withSubMessage("old", previous.message())
-                        .withOperation(Operation.DELETE));
-            }
-        } else {
-            ReplicationMessage previous = lookupStore.get(key);
-            if (previous != null) {
-                boolean isDifferent = diff(previous, incoming);
-                if (isDifferent) {
-                    lookupStore.put(key, incoming);
-                    context().forward(key, createMessage(key)
-                            .withSubMessage("old", previous.message())
-                            .withSubMessage("new", incoming.message())
-                            .withOperation(Operation.UPDATE));
-                } else {
-                    logger.debug("Ignoring identical message for key: {} for store: {}", key, lookupStoreName);
-                }
-            } else {
-                // 'new message'
-                lookupStore.put(key, incoming);
-                context().forward(key, createMessage(key)
-                        .withSubMessage("new", incoming.message())
-                        .withOperation(Operation.UPDATE));
-            }
-
-            lookupStore.put(key, incoming);
-        }
     }
 
     private boolean diff(ReplicationMessage previous, ReplicationMessage incoming) {

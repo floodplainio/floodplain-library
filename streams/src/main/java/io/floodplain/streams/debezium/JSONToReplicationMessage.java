@@ -206,10 +206,6 @@ public class JSONToReplicationMessage {
             case "io.debezium.time.Date":
                 int valueInt = value.asInt();
                 return LocalDate.ofEpochDay(valueInt);
-//                Calendar c = Calendar.getInstance();
-//                c.add(Calendar.DAY_OF_YEAR, valueInt);
-//                LocalDateTime ldt = LocalDateTime.ofEpochSecond(valueInt, 0, ZoneOffset.UTC);
-//                return format.format(ldt);
             case "io.debezium.time.ZonedTimestamp":
                 // TODO Unsure about this one
                 return ZonedDateTime.ofInstant(Instant.ofEpochMilli(value.asLong()),ZoneId.systemDefault());

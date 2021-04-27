@@ -21,14 +21,16 @@ package io.floodplain.streams.remotejoin.ranged;
 import io.floodplain.replication.api.ReplicationMessage;
 import io.floodplain.replication.api.ReplicationMessage.Operation;
 import org.apache.kafka.streams.processor.AbstractProcessor;
-import org.apache.kafka.streams.processor.ProcessorContext;
+import org.apache.kafka.streams.processor.api.Processor;
+import org.apache.kafka.streams.processor.api.ProcessorContext;
+import org.apache.kafka.streams.processor.api.Record;
 import org.apache.kafka.streams.state.KeyValueStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.function.Function;
 
-public class GroupedUpdateProcessor extends AbstractProcessor<String, ReplicationMessage> {
+public class GroupedUpdateProcessor implements Processor<String, ReplicationMessage,String, ReplicationMessage> {
     private final String mappingStoreName;
     private final String lookupStoreName;
 
@@ -39,6 +41,7 @@ public class GroupedUpdateProcessor extends AbstractProcessor<String, Replicatio
 
 
     private final static Logger logger = LoggerFactory.getLogger(GroupedUpdateProcessor.class);
+    private ProcessorContext<String, ReplicationMessage> context;
 
 
     public GroupedUpdateProcessor(String lookupStoreName, Function<ReplicationMessage, String> keyExtract, String mappingStoreName) {
@@ -48,21 +51,17 @@ public class GroupedUpdateProcessor extends AbstractProcessor<String, Replicatio
         this.log = false;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void init(ProcessorContext context) {
-        this.lookupStore = context.getStateStore(lookupStoreName);
-        this.mappingStore = context.getStateStore(mappingStoreName);
-        super.init(context);
+        this.context = context;
+        this.lookupStore = (KeyValueStore<String, ReplicationMessage>) context.getStateStore(lookupStoreName);
+        this.mappingStore = (KeyValueStore<String, ReplicationMessage>) context.getStateStore(mappingStoreName);
     }
 
     @Override
-    public void close() {
-        // noop
-    }
-
-    @Override
-    public void process(String key, ReplicationMessage msg) {
+    public void process(Record<String, ReplicationMessage> record) {
+        String key = record.key();
+        ReplicationMessage msg = record.value();
         if (msg != null) {
             String assembled = assembleGroupedKey(key, msg);
             if (log) {
@@ -86,8 +85,13 @@ public class GroupedUpdateProcessor extends AbstractProcessor<String, Replicatio
                 mappingStore.put(key, msg);
             }
 
-            context().forward(assembled, msg.now());
+            context.forward(new Record(assembled, msg.now(), record.timestamp()));
         }
+    }
+
+    @Override
+    public void close() {
+        // noop
     }
 
     private String assembleGroupedKey(String key, ReplicationMessage msg) {
