@@ -157,7 +157,6 @@ private fun runDebeziumServer(props: Properties): Flow<ChangeRecord> {
             engine.close()
         }
         logger.info("engine started")
-    }.onStart {
     }.onCompletion {
         engineKillSwitch.kill()
         logger.info("Debezium flow shutdown completed")
