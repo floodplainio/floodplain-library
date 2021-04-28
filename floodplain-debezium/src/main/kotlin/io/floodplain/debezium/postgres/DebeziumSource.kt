@@ -29,12 +29,15 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.sendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.launch
 import java.nio.file.Path
 import java.util.Properties
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.io.path.ExperimentalPathApi
 import kotlin.system.measureTimeMillis
+import kotlin.io.path.createTempFile
 
 private val logger = mu.KotlinLogging.logger {}
 
@@ -51,12 +54,13 @@ internal class EngineKillSwitch(var engine: DebeziumEngine<ChangeEvent<String, S
     }
 }
 
+@OptIn(ExperimentalPathApi::class)
 private fun createOffsetFilePath(offsetId: String?): Path {
     val tempFile = createTempFile(offsetId ?: UUID.randomUUID().toString().substring(0, 7))
     if (offsetId == null) {
-        tempFile.deleteOnExit()
+        tempFile.toFile().deleteOnExit()
     }
-    return tempFile.toPath()
+    return tempFile
 }
 
 private fun createLocalDebeziumSettings(name: String, taskClass: String, hostname: String, port: Int, database: String, username: String, password: String, offsetId: String? = null, settings: Map<String, String> = emptyMap()): Properties {
