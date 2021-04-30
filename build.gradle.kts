@@ -1,6 +1,7 @@
 import io.floodplain.build.FloodplainDeps
 import io.floodplain.build.isReleaseVersion
 import io.gitlab.arturbosch.detekt.Detekt
+import org.gradle.kotlin.dsl.detekt as detekt
 
 buildscript {
     repositories {
@@ -26,7 +27,7 @@ plugins {
     id("org.jetbrains.dokka") version "0.10.1"
     id("com.github.hierynomus.license-base").version("0.15.0")
     id("com.github.spotbugs") version "4.6.0"
-    id("io.gitlab.arturbosch.detekt") version "1.15.0"
+    id("io.gitlab.arturbosch.detekt") version "1.16.0"
     signing
     `maven-publish`
     `java-library`
@@ -48,10 +49,12 @@ allprojects {
     }
 }
 
-fun useSpotBugs(project: Project): Boolean {
+fun isKotlinModule(project: Project): Boolean {
     val kotlinSource = project.projectDir.resolve("src/main/kotlin")
-    return !kotlinSource.exists()
+    return kotlinSource.exists()
 }
+
+// apply(plugin = "io.gitlab.arturbosch.detekt")
 
 subprojects {
     version = FloodplainDeps.floodplain_version
@@ -64,10 +67,15 @@ subprojects {
     apply(plugin = "org.jetbrains.dokka")
     apply(plugin = "com.github.hierynomus.license-base")
     apply(plugin = "checkstyle")
-    if (useSpotBugs(this)) {
+    if (!isKotlinModule(this)) {
         apply(plugin = "com.github.spotbugs")
     }
-
+    if (!isKotlinModule(this)) {
+        apply(plugin = "com.github.spotbugs")
+    }
+    if (isKotlinModule(this)) {
+        // apply(plugin = "io.gitlab.arturbosch.detekt")
+    }
     tasks.withType<com.github.spotbugs.snom.SpotBugsTask>().configureEach {
         effort.set(com.github.spotbugs.snom.Effort.MAX)
         reports.maybeCreate("xml").isEnabled = false
@@ -175,6 +183,18 @@ subprojects {
     }
 }
 
+detekt {
+    // Version of Detekt that will be used. When unspecified the latest detekt
+    // version found will be used. Override to stay on the same version.
+    toolVersion = "1.16.0"
+
+    // The directories where detekt looks for source files. 
+    // Defaults to `files("src/main/java", "src/main/kotlin")`.
+    input = files("src/main/java", "src/main/kotlin")
+    logger.warn("PROJECTPATH: ${projectDir.path}/detektConfig.yml")
+    config = files("${projectDir.path}/detektConfig.yml")
+}
+
 fun customizePom(publication: MavenPublication) {
     with(publication.pom) {
         withXml {
@@ -214,6 +234,9 @@ fun customizePom(publication: MavenPublication) {
 }
 
 val detektAll by tasks.registering(Detekt::class) {
+    logger.warn("PROJECTPATH: ${projectDir.path}/detektConfig.yml")
+    this.config.setFrom("${projectDir.path}/detektConfig.yml")
+    // config = files("${projectDir.path}/detektConfig.yml")
     description = "Runs over whole code base without the starting overhead for each module."
     parallel = true
     buildUponDefaultConfig = true

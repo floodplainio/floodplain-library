@@ -46,7 +46,7 @@ class TestTopicCreation {
         // logger.info("Bootsx§trap: ${kafkaContainer.bootstrapServers}")
         val config: MutableMap<String, Any> = HashMap()
         val exposedPort = panda.exposedPort
-        val host = "localhost:${exposedPort}"
+        val host = "localhost:$exposedPort"
         logger.info("Exposed host: $host")
         config["bootstrap.servers"] = host // "localhost:51347"
         config["client.id"] = UUID.randomUUID().toString()

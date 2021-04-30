@@ -101,7 +101,8 @@ class TestCombinedMongo {
             flushSinks()
             val hits = waitForMongoDbCondition(
                 "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
-                database,100000L
+                database,
+                100000L
             ) { databaseInstance ->
                 val collection = databaseInstance.getCollection("address")
                 val countDocuments = collection.countDocuments()

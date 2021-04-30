@@ -98,13 +98,13 @@ class FilmToMongoIntegratedSink {
                 "mongodump"
             )
             postgresSource("film", postgresConfig) {
-                each { _,m,_ ->
+                each { _, m, _ ->
                     logger.info("Film: $m")
                 }
                 toMongo("filmwithactors", "somtopic", mongoConfig)
             }
         }.renderAndSchedule(URL("http://${debeziumContainer?.host}:${debeziumContainer?.exposedPort}/connectors"), "${kafkaContainer.host}:${kafkaContainer.exposedPort}", true, mapOf()) { kafkaStreams ->
-            val database = "mongodump"  //topologyContext.topicName("@mongodump")
+            val database = "mongodump" // topologyContext.topicName("@mongodump")
             var hits = 0L
             val start = System.currentTimeMillis()
             withTimeout(200000) {
