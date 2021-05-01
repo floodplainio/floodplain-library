@@ -30,7 +30,13 @@ import java.util.Stack
 class ForkTransformer(val blocks: List<Block>) : TopologyPipeComponent {
     var materialize = false
 
-    override fun addToTopology(transformerNames: Stack<String>, currentPipeId: Int, topology: Topology, topologyContext: TopologyContext, topologyConstructor: TopologyConstructor) {
+    override fun addToTopology(
+        transformerNames: Stack<String>,
+        currentPipeId: Int,
+        topology: Topology,
+        topologyContext: TopologyContext,
+        topologyConstructor: TopologyConstructor
+    ) {
         if (materialize) {
             throw TopologyException("Materialization hasn't been implemented TODO")
         }
@@ -40,7 +46,13 @@ class ForkTransformer(val blocks: List<Block>) : TopologyPipeComponent {
             val stackCopy: Stack<String> = Stack()
             stackCopy.addAll(transformerNames)
             for (tpc in transformerList) {
-                tpc.addToTopology(stackCopy, topologyConstructor.generateNewStreamId(), topology, topologyContext, topologyConstructor)
+                tpc.addToTopology(
+                    stackCopy,
+                    topologyConstructor.generateNewStreamId(),
+                    topology,
+                    topologyContext,
+                    topologyConstructor
+                )
             }
         }
     }

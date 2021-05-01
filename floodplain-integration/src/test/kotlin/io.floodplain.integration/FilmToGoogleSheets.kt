@@ -89,7 +89,14 @@ class FilmToGoogleSheets {
                     film["special_features"] = film.list("special_features").joinToString(",")
                     film
                 }
-                googleSheetsSink("outputtopic", spreadsheetId, listOf("title", "rating", "release_year", "rental_duration", "special_features", "description"), "B", 2, sheetConfig)
+                googleSheetsSink(
+                    "outputtopic",
+                    spreadsheetId,
+                    listOf("title", "rating", "release_year", "rental_duration", "special_features", "description"),
+                    "B",
+                    2,
+                    sheetConfig
+                )
             }
         }.renderAndExecute {
             // delay(5000)

@@ -31,7 +31,13 @@ import java.util.Optional
 
 private val logger = mu.KotlinLogging.logger {}
 
-class MongoConfig(override val topologyContext: TopologyContext, override val topologyConstructor: TopologyConstructor, val name: String, private val uri: String, private val database: String) :
+class MongoConfig(
+    override val topologyContext: TopologyContext,
+    override val topologyConstructor: TopologyConstructor,
+    val name: String,
+    private val uri: String,
+    private val database: String
+) :
     AbstractSinkConfig() {
 
     val sinkInstancePair: MutableList<Pair<String, Topic>> = mutableListOf()
@@ -102,7 +108,13 @@ fun PartialStream.toMongo(collection: String, topicDefinition: String, config: M
         throw IllegalArgumentException("Should not start a database name with @, please use a fully qualified name")
     }
     // val sinkName = ProcessorName.from(config.name)
-    val sink = SinkTransformer(Optional.of(sinkName), topic, Optional.empty(), Topic.FloodplainKeyFormat.CONNECT_KEY_JSON, Topic.FloodplainBodyFormat.CONNECT_JSON)
+    val sink = SinkTransformer(
+        Optional.of(sinkName),
+        topic,
+        Optional.empty(),
+        Topic.FloodplainKeyFormat.CONNECT_KEY_JSON,
+        Topic.FloodplainBodyFormat.CONNECT_JSON
+    )
     val transform = Transformer(rootTopology, sink, topologyContext)
     addTransformer(transform)
 }

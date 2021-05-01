@@ -31,9 +31,10 @@ private val logger = mu.KotlinLogging.logger {}
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class TestRedPandaPerformance {
-    // private val kafkaContainer = InstantiatedKafkaContainer()// KafkaContainer("5.5.3").withEmbeddedZookeeper().withExposedPorts(9092)
+    // private val kafkaContainer = InstantiatedKafkaContainer()
     // private val containerNetwork = Network.newNetwork()
-    // private val kafkaContainer = KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka").withTag ("5.5.3")).withEmbeddedZookeeper().withExposedPorts(9092)
+    // private val kafkaContainer = KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka")
+    //   .withTag ("5.5.3")).withEmbeddedZookeeper().withExposedPorts(9092)
 
     //
     @Test

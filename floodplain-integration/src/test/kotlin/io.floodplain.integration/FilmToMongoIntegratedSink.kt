@@ -42,9 +42,21 @@ private val logger = mu.KotlinLogging.logger {}
 class FilmToMongoIntegratedSink {
 
     private val containerNetwork = Network.newNetwork()
-    private val kafkaContainer = InstantiatedKafkaContainer { it.withNetwork(containerNetwork).withNetworkAliases("kafka") } // KafkaContainer("5.5.3").withEmbeddedZookeeper().withExposedPorts(9092)
-    private val postgresContainer = InstantiatedContainer("floodplain/floodplain-postgres-demo:1.0.0", 5432, mapOf()) { it.withNetwork(containerNetwork).withNetworkAliases("postgres") }
-    private val mongoContainer = InstantiatedContainer("mongo:latest", 27017, mapOf()) { it.withNetwork(containerNetwork).withNetworkAliases("mongo") }
+    private val kafkaContainer = InstantiatedKafkaContainer {
+        it.withNetwork(containerNetwork).withNetworkAliases(
+            "kafka"
+        )
+    } // KafkaContainer("5.5.3").withEmbeddedZookeeper().withExposedPorts(9092)
+    private val postgresContainer = InstantiatedContainer("floodplain/floodplain-postgres-demo:1.0.0", 5432, mapOf()) {
+        it.withNetwork(
+            containerNetwork
+        ).withNetworkAliases("postgres")
+    }
+    private val mongoContainer = InstantiatedContainer("mongo:latest", 27017, mapOf()) {
+        it.withNetwork(
+            containerNetwork
+        ).withNetworkAliases("mongo")
+    }
     private var debeziumContainer: InstantiatedContainer? = null
 
     @Before
@@ -103,7 +115,12 @@ class FilmToMongoIntegratedSink {
                 }
                 toMongo("filmwithactors", "somtopic", mongoConfig)
             }
-        }.renderAndSchedule(URL("http://${debeziumContainer?.host}:${debeziumContainer?.exposedPort}/connectors"), "${kafkaContainer.host}:${kafkaContainer.exposedPort}", true, mapOf()) { kafkaStreams ->
+        }.renderAndSchedule(
+            URL("http://${debeziumContainer?.host}:${debeziumContainer?.exposedPort}/connectors"),
+            "${kafkaContainer.host}:${kafkaContainer.exposedPort}",
+            true,
+            mapOf()
+        ) { kafkaStreams ->
             val database = "mongodump" // topologyContext.topicName("@mongodump")
             var hits = 0L
             val start = System.currentTimeMillis()

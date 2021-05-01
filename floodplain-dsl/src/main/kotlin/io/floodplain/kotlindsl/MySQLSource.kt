@@ -17,6 +17,7 @@
  * under the License.
  */
 package io.floodplain.kotlindsl
+
 import io.floodplain.ChangeRecord
 import io.floodplain.debezium.postgres.createDebeziumChangeFlow
 import io.floodplain.reactive.source.topology.TopicSource
@@ -30,7 +31,17 @@ import kotlinx.coroutines.flow.onEach
 
 private val logger = mu.KotlinLogging.logger {}
 
-class MySQLConfig(override val topologyContext: TopologyContext, override val topologyConstructor: TopologyConstructor, val name: String, private val offsetId: String, private val hostname: String, private val port: Int, private val username: String, private val password: String, private val database: String) : SourceConfig {
+class MySQLConfig(
+    override val topologyContext: TopologyContext,
+    override val topologyConstructor: TopologyConstructor,
+    val name: String,
+    private val offsetId: String,
+    private val hostname: String,
+    private val port: Int,
+    private val username: String,
+    private val password: String,
+    private val database: String
+) : SourceConfig {
 
     private val sourceElements: MutableList<SourceTopic> = mutableListOf()
 
@@ -43,7 +54,8 @@ class MySQLConfig(override val topologyContext: TopologyContext, override val to
         broadcastFlow
             .onEach { logger.info("Record found: ${it.topic} ${it.key}") }
             .collect {
-                val availableSourceTopics = sourceElements.map { sourceElement -> sourceElement.topic().qualifiedString() }.toSet()
+                val availableSourceTopics = sourceElements
+                    .map { sourceElement -> sourceElement.topic().qualifiedString() }.toSet()
                 if (availableSourceTopics.contains(it.topic)) {
                     if (it.value != null) {
                         inputReceiver.input(it.topic, it.key.toByteArray(), it.value!!)
@@ -91,7 +103,17 @@ class MySQLConfig(override val topologyContext: TopologyContext, override val to
             "database.history" to "io.debezium.relational.history.FileDatabaseHistory",
             "database.history.file.filename" to tempFile.absolutePath
         )
-        return createDebeziumChangeFlow(topologyContext.topicName(name), "io.debezium.connector.mysql.MySqlConnector", hostname, port, database, username, password, offsetId, extraSettings)
+        return createDebeziumChangeFlow(
+            topologyContext.topicName(name),
+            "io.debezium.connector.mysql.MySqlConnector",
+            hostname,
+            port,
+            database,
+            username,
+            password,
+            offsetId,
+            extraSettings
+        )
             .onCompletion { e ->
                 if (e != null) {
                     logger.info("Error in debezium source", e)
@@ -101,15 +123,36 @@ class MySQLConfig(override val topologyContext: TopologyContext, override val to
     }
 }
 
-fun Stream.mysqlSourceConfig(name: String, hostname: String, port: Int, username: String, password: String, database: String): MySQLConfig {
-    val mySQLConfig = MySQLConfig(this.topologyContext, this.topologyConstructor, name, topologyContext.applicationId(), hostname, port, username, password, database)
+fun Stream.mysqlSourceConfig(
+    name: String,
+    hostname: String,
+    port: Int,
+    username: String,
+    password: String,
+    database: String
+): MySQLConfig {
+    val mySQLConfig = MySQLConfig(
+        this.topologyContext,
+        this.topologyConstructor,
+        name,
+        topologyContext.applicationId(),
+        hostname,
+        port,
+        username,
+        password,
+        database
+    )
     addSourceConfiguration(mySQLConfig)
     return mySQLConfig
 }
 
 fun PartialStream.mysqlSource(table: String, config: MySQLConfig, init: Source.() -> Unit): Source {
     val topic = Topic.fromQualified("${config.name}.$table", topologyContext)
-    val topicSource = TopicSource(topic, Topic.FloodplainKeyFormat.CONNECT_KEY_JSON, Topic.FloodplainBodyFormat.CONNECT_JSON)
+    val topicSource = TopicSource(
+        topic,
+        Topic.FloodplainKeyFormat.CONNECT_KEY_JSON,
+        Topic.FloodplainBodyFormat.CONNECT_JSON
+    )
     config.addSourceElement(DebeziumSourceElement(topic, null, table))
     val databaseSource = Source(rootTopology, topicSource, topologyContext)
     databaseSource.init()

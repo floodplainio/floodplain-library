@@ -63,7 +63,17 @@ private fun createOffsetFilePath(offsetId: String?): Path {
     return tempFile
 }
 
-private fun createLocalDebeziumSettings(name: String, taskClass: String, hostname: String, port: Int, database: String, username: String, password: String, offsetId: String? = null, settings: Map<String, String> = emptyMap()): Properties {
+private fun createLocalDebeziumSettings(
+    name: String,
+    taskClass: String,
+    hostname: String,
+    port: Int,
+    database: String,
+    username: String,
+    password: String,
+    offsetId: String? = null,
+    settings: Map<String, String> = emptyMap()
+): Properties {
     val offsetFilePath = createOffsetFilePath(offsetId)
     logger.info("Creating offset files at: $offsetFilePath")
     val props = Properties()
@@ -84,20 +94,6 @@ private fun createLocalDebeziumSettings(name: String, taskClass: String, hostnam
     return props
 }
 
-// // , postgresContainer.exposedPort
-// props.setProperty("name", "engine")
-// props.setProperty("connector.class","io.debezium.connector.postgresql.PostgresConnector")
-// props.setProperty("offset.storage", "org.apache.kafka.connect.storage.FileOffsetBackingStore")
-// props.setProperty("offset.storage.file.filename", "/tmp/offsets.dat")
-// props.setProperty("offset.flush.interval.ms", "60000")
-// props.setProperty("database.dbname","dvdrental")
-// /* begin connector properties */
-// /* begin connector properties */props.setProperty("database.hostname", "${postgresContainer.host}")
-// props.setProperty("database.port", "${postgresContainer.exposedPort}")
-// props.setProperty("database.user", "postgres")
-// props.setProperty("database.password", "mysecretpassword")
-// props.setProperty("database.server.id", "85744")
-// props.setProperty("database.server.name", "my-app-connector")
 /**
  * @return A hot flow of ChangeRecord. Perhaps one day there might be a colder one.
  * @param name: The prefix of the outgoing 'topic', basically the destination field of the changerecord is <topicprefix>.<schema>.<table>
@@ -110,13 +106,26 @@ private fun createLocalDebeziumSettings(name: String, taskClass: String, hostnam
  * Defaults to empty map.
  *
  */
-fun createDebeziumChangeFlow(name: String, taskClass: String, hostname: String, port: Int, database: String, username: String, password: String, offsetId: String? = null, settings: Map<String, String> = emptyMap()): Flow<ChangeRecord> {
+fun createDebeziumChangeFlow(
+    name: String,
+    taskClass: String,
+    hostname: String,
+    port: Int,
+    database: String,
+    username: String,
+    password: String,
+    offsetId: String? = null,
+    settings: Map<String, String> = emptyMap()
+): Flow<ChangeRecord> {
     val props = createLocalDebeziumSettings(name, taskClass, hostname, port, database, username, password, offsetId, settings)
     props.list(System.out)
     return runDebeziumServer(props)
 }
 
-private fun ProducerScope<ChangeRecord>.createEngine(props: Properties, engineKillSwitch: EngineKillSwitch): DebeziumEngine<ChangeEvent<String, String>> {
+private fun ProducerScope<ChangeRecord>.createEngine(
+    props: Properties,
+    engineKillSwitch: EngineKillSwitch
+): DebeziumEngine<ChangeEvent<String, String>> {
     return DebeziumEngine.create(Json::class.java)
         .using(props)
         .notifying { record: ChangeEvent<String, String> ->

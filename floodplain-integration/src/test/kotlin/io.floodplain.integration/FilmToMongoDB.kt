@@ -103,8 +103,9 @@ class FilmToMongoDB {
                         group { msg -> "${msg["film_id"]}" }
                     }
                 }
-                // ugly hack: As lists of messages can't be toplevel, a grouped message always consist of a single, otherwise empty message, that only
-                // contains one field, which is a list of the grouped messages, and that field is always named 'list'
+                // ugly hack: As lists of messages can't be toplevel, a grouped message always consist of a single,
+                // otherwise empty message, that only contains one field, which is a list of the grouped messages,
+                // and that field is always named 'list'
                 // Ideas welcome
                 set { _, film, actorlist ->
                     film["actors"] = actorlist["list"] ?: emptyList<IMessage>()

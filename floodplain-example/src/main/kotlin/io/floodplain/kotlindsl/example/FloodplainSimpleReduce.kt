@@ -32,7 +32,15 @@ import java.math.BigDecimal
 
 fun main() {
     stream {
-        val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental", "public")
+        val postgresConfig = postgresSourceConfig(
+            "mypostgres",
+            "postgres",
+            5432,
+            "postgres",
+            "mysecretpassword",
+            "dvdrental",
+            "public"
+        )
         val mongoConfig = remoteMongoConfig("mongosink", "mongodb://mongo", "$generation-mongodump")
         postgresSource("customer", postgresConfig) {
             join {

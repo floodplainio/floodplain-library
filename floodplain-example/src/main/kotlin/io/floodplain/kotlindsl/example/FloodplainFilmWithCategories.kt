@@ -40,7 +40,15 @@ fun main() {
 
 fun joinFilms() {
     stream {
-        val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental", "public")
+        val postgresConfig = postgresSourceConfig(
+            "mypostgres",
+            "postgres",
+            5432,
+            "postgres",
+            "mysecretpassword",
+            "dvdrental",
+            "public"
+        )
         val mongoConfig = remoteMongoConfig("mongosink", "mongodb://mongo", "@mongodump")
         postgresSource("film", postgresConfig) {
             joinGrouped {

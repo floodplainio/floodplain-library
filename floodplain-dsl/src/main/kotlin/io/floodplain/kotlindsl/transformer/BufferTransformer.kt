@@ -27,7 +27,8 @@ import org.apache.kafka.streams.Topology
 import java.time.Duration
 import java.util.Stack
 
-class BufferTransformer(private val duration: Duration, private val maxSize: Int, private val inMemory: Boolean) : TopologyPipeComponent {
+class BufferTransformer(private val duration: Duration, private val maxSize: Int, private val inMemory: Boolean) :
+    TopologyPipeComponent {
     var materialize = false
 
     override fun addToTopology(
@@ -41,7 +42,16 @@ class BufferTransformer(private val duration: Duration, private val maxSize: Int
         val name = topologyContext.qualifiedName("buffer", transformerNames.size, currentPipeId)
         if (materialize) {
             // val prematerialize = topologyContext.qualifiedName("buffer-prematerialize", transformerNames.size, currentPipeId)
-            addPersistentCache(topology, topologyContext, topologyConstructor, name + "_prematerialize", top, duration, maxSize, inMemory)
+            addPersistentCache(
+                topology,
+                topologyContext,
+                topologyConstructor,
+                name + "_prematerialize",
+                top,
+                duration,
+                maxSize,
+                inMemory
+            )
             addMaterializeStore(topology, topologyContext, topologyConstructor, name, name + "_prematerialize")
         } else {
             addPersistentCache(topology, topologyContext, topologyConstructor, name, top, duration, maxSize, inMemory)

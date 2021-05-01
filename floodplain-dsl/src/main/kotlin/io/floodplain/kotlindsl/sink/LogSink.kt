@@ -36,7 +36,11 @@ fun Stream.logSinkConfig(name: String): LogSinkConfiguration {
     return logSinkConfig
 }
 
-class LogSinkConfiguration(override val topologyContext: TopologyContext, override val topologyConstructor: TopologyConstructor, val name: String) : AbstractSinkConfig() {
+class LogSinkConfiguration(
+    override val topologyContext: TopologyContext,
+    override val topologyConstructor: TopologyConstructor,
+    val name: String
+) : AbstractSinkConfig() {
     val materializedConfigs: MutableList<MaterializedConfig> = mutableListOf()
     private var instantiatedSinkElements: Map<Topic, MutableList<FloodplainSink>>? = null
 
@@ -57,7 +61,13 @@ fun PartialStream.logSink(sinkName: String, topicName: String, config: LogSinkCo
     // val sinkProcessorName = ProcessorName.from(sinkName)
     val topic = Topic.fromQualified(topicName, topologyContext)
     rootTopology.topologyConstructor.addDesiredTopic(topic, Optional.empty())
-    val sinkTransformer = SinkTransformer(Optional.of(sinkName), topic, Optional.empty(), Topic.FloodplainKeyFormat.FLOODPLAIN_STRING, Topic.FloodplainBodyFormat.CONNECT_JSON)
+    val sinkTransformer = SinkTransformer(
+        Optional.of(sinkName),
+        topic,
+        Optional.empty(),
+        Topic.FloodplainKeyFormat.FLOODPLAIN_STRING,
+        Topic.FloodplainBodyFormat.CONNECT_JSON
+    )
     addTransformer(Transformer(rootTopology, sinkTransformer, topologyContext))
 
     val sinkConfig = mapOf(

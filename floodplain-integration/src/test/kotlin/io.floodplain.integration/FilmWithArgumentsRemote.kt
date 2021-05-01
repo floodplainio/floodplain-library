@@ -43,7 +43,12 @@ class FilmWithArgumentsRemote {
      */
     @Test @Ignore
     fun testPostgresRemoteSource() {
-        testPostgresRemoteSourceFromArguments("--kafka", "localhost:9092", "--connect", "http://localhost:8083/connectors")
+        testPostgresRemoteSourceFromArguments(
+            "--kafka",
+            "localhost:9092",
+            "--connect",
+            "http://localhost:8083/connectors"
+        )
     }
 
     @Test @Ignore
@@ -57,7 +62,15 @@ class FilmWithArgumentsRemote {
             return
         }
         stream {
-            val postgresConfig = postgresSourceConfig("mypostgres", "localhost", 5432, "postgres", "mysecretpassword", "dvdrental", "public")
+            val postgresConfig = postgresSourceConfig(
+                "mypostgres",
+                "localhost",
+                5432,
+                "postgres",
+                "mysecretpassword",
+                "dvdrental",
+                "public"
+            )
             val mongoConfig = remoteMongoConfig("mongosink", "mongodb://localhost", "$generation-mongodump")
             postgresSource("film", postgresConfig) {
                 joinGrouped {

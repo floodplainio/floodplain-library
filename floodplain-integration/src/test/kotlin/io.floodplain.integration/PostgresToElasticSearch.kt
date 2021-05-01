@@ -72,7 +72,15 @@ class PostgresToElasticSearch {
         }
         logger.debug("startdebug")
         stream {
-            val postgresConfig = postgresSourceConfig("mypostgres", postgresContainer.host, postgresContainer.exposedPort, "postgres", "mysecretpassword", "dvdrental", "public")
+            val postgresConfig = postgresSourceConfig(
+                "mypostgres",
+                postgresContainer.host,
+                postgresContainer.exposedPort,
+                "postgres",
+                "mysecretpassword",
+                "dvdrental",
+                "public"
+            )
             val elasticConfig = elasticSearchConfig(
                 "elastic",
                 "http://${elasticSearchContainer.host}:${elasticSearchContainer.exposedPort}"
@@ -191,7 +199,9 @@ class PostgresToElasticSearch {
             }
         }.renderAndExecute {
             val index = topologyContext().topicName("@customer")
-            logger.warn("Will query: \"http://${elasticSearchContainer.host}:${elasticSearchContainer.exposedPort}/${index}\"")
+            logger.warn(
+                "Will query: \"http://${elasticSearchContainer.host}:${elasticSearchContainer.exposedPort}/${index}\""
+            )
             delay(10000)
 
             // find a customer from Chungo. There should be one.

@@ -151,7 +151,12 @@ private fun postToHttpJava11(url: URL, jsonString: String) {
     }
 }
 
-fun floodplainSinkFromTask(task: SinkTask, config: SinkConfig, keyConverter: Converter, valueConverter: Converter): FloodplainSink {
+fun floodplainSinkFromTask(
+    task: SinkTask,
+    config: SinkConfig,
+    keyConverter: Converter,
+    valueConverter: Converter
+): FloodplainSink {
     return LocalConnectorSink(task, config, keyConverter, valueConverter)
 }
 
@@ -159,12 +164,15 @@ fun instantiateSinkConfig(config: SinkConfig): MutableMap<Topic, MutableList<Flo
     val result = mutableMapOf<Topic, MutableList<FloodplainSink>>()
     val materializedSinks = config.materializeConnectorConfig()
     materializedSinks.forEach { materializedSink ->
-        val connectorInstance = Class.forName(materializedSink.settings["connector.class"]).getDeclaredConstructor().newInstance() as SinkConnector
+        val connectorInstance =
+            Class.forName(materializedSink.settings["connector.class"]).getDeclaredConstructor().newInstance() as SinkConnector
         connectorInstance.start(materializedSink.settings)
         val task = connectorInstance.taskClass().getDeclaredConstructor().newInstance() as SinkTask
         task.start(materializedSink.settings)
-        val keyConverter = Class.forName(materializedSink.settings["key.converter"]).getDeclaredConstructor().newInstance() as Converter
-        val valueConverter = Class.forName(materializedSink.settings["value.converter"]).getDeclaredConstructor().newInstance() as Converter
+        val keyConverter =
+            Class.forName(materializedSink.settings["key.converter"]).getDeclaredConstructor().newInstance() as Converter
+        val valueConverter =
+            Class.forName(materializedSink.settings["value.converter"]).getDeclaredConstructor().newInstance() as Converter
         keyConverter.configure(settingsWithPrefix(materializedSink.settings, "key.converter."), true)
         valueConverter.configure(settingsWithPrefix(materializedSink.settings, "value.converter."), false)
         val localSink = floodplainSinkFromTask(task, config, keyConverter, valueConverter)
@@ -186,7 +194,12 @@ private fun settingsWithPrefix(settings: Map<String, Any>, prefix: String): Map<
     }.toMap()
 }
 
-class LocalConnectorSink(private val task: SinkTask, val config: SinkConfig, val keyConverter: Converter, val valueConverter: Converter) : FloodplainSink {
+class LocalConnectorSink(
+    private val task: SinkTask,
+    val config: SinkConfig,
+    val keyConverter: Converter,
+    val valueConverter: Converter
+) : FloodplainSink {
     private val offsetCounter = AtomicLong(System.currentTimeMillis())
     override fun send(topic: Topic, elements: List<Pair<ByteArray?, ByteArray?>>) {
         logger.info("Inserting # of documents ${elements.size} for topic: $topic")

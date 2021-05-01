@@ -71,7 +71,12 @@ class LocalArgs(parser: ArgParser) {
         .default<String?>(null)
 }
 
-suspend fun run(stream: Stream, arguments: Array<out String?>, localContext: (suspend LocalContext.(TopologyContext) -> Unit)?, remoteContext: (suspend (AutoCloseable, TopologyContext) -> Unit)?) {
+suspend fun run(
+    stream: Stream,
+    arguments: Array<out String?>,
+    localContext: (suspend LocalContext.(TopologyContext) -> Unit)?,
+    remoteContext: (suspend (AutoCloseable, TopologyContext) -> Unit)?
+) {
 
     val parseInto = try {
         ArgParser(arguments.filterNotNull().toTypedArray()).parseInto(::LocalArgs)

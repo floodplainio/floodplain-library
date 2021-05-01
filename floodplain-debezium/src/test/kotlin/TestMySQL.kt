@@ -29,7 +29,6 @@ import java.nio.file.Path
 import java.util.Properties
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicInteger
-// import kotlin.io.path.createTempDirectory
 
 private val logger = mu.KotlinLogging.logger {}
 
@@ -47,6 +46,7 @@ class TestMySQL {
 
     var engine: DebeziumEngine<ChangeEvent<String, String>>? = null
     private val itemCounter = AtomicInteger(0)
+
     @Test
     fun testSimpleMySqlRun() {
         // Find better way to configure this?
@@ -59,7 +59,7 @@ class TestMySQL {
         props.setProperty("offset.storage", "org.apache.kafka.connect.storage.FileOffsetBackingStore")
         props.setProperty("offset.storage.file.filename", offsetFilePath.toString())
         props.setProperty("offset.flush.interval.ms", "1000")
-        props.setProperty("database.hostname", "${postgresContainer.host}")
+        props.setProperty("database.hostname", postgresContainer.host)
         props.setProperty("database.port", "${postgresContainer.exposedPort}")
         props.setProperty("database.server.name", "instance-mysqlsource")
         props.setProperty("database.dbname", "inventory")
@@ -71,8 +71,7 @@ class TestMySQL {
         props.setProperty("database.history.file.filename", "currenthistory")
         engine = DebeziumEngine.create(Json::class.java)
             .using(props)
-            .notifying {
-                record ->
+            .notifying { record ->
                 send(
                     ChangeRecord(
                         record.destination(),
@@ -86,18 +85,20 @@ class TestMySQL {
     }
 
     private fun send(changeRecord: ChangeRecord) {
-        if (itemCounter.get()> 33) {
+        if (itemCounter.get() > 33) {
             logger.info("Closing engine")
             // delete history file:
             Files.delete(Path.of("currenthistory"))
             engine?.close()
         }
 
-        logger.info("Record detected:${changeRecord.topic} ${changeRecord.key} ${changeRecord.value} count: ${itemCounter.incrementAndGet()}")
+        logger.info(
+            "Record detected:${changeRecord.topic} ${changeRecord.key}" +
+                " ${changeRecord.value} count: ${itemCounter.incrementAndGet()}"
+        )
     }
 
     private fun createOffsetFilePath(offsetId: String? = null): Path {
-        // val tempDir = createTempDirectory()
         val tempFile = createTempFile(offsetId ?: UUID.randomUUID().toString().substring(0, 7))
         if (offsetId == null) {
             tempFile.deleteOnExit()

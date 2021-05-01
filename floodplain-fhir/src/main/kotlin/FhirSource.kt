@@ -58,7 +58,11 @@ fun Stream.fhirGeneric(topic: String, init: Source.() -> Unit = {}) {
     addSource(fhirExistingSource(topic, ::genericResource, this, init))
 }
 
-fun <T : IBaseResource> PartialStream.fhirSource(topic: String, transform: (T) -> IMessage, init: Source.() -> Unit = {}): Source {
+fun <T : IBaseResource> PartialStream.fhirSource(
+    topic: String,
+    transform: (T) -> IMessage,
+    init: Source.() -> Unit = {}
+): Source {
     return fhirSource<T>(topic, transform, init)
 }
 
@@ -66,7 +70,12 @@ fun <T : IBaseResource> Stream.fhirSource(topic: String, transform: (T) -> IMess
     addSource(fhirExistingSource(topic, transform, this.rootTopology, init))
 }
 
-private fun <T : IBaseResource> fhirExistingSource(topic: String, transform: (T) -> IMessage, rootTopology: Stream, init: Source.() -> Unit = {}): Source {
+private fun <T : IBaseResource> fhirExistingSource(
+    topic: String,
+    transform: (T) -> IMessage,
+    rootTopology: Stream,
+    init: Source.() -> Unit = {}
+): Source {
     val context = FhirContext.forR4()
     val parser: IParser = context.newJsonParser()
     // TODO re-use these?

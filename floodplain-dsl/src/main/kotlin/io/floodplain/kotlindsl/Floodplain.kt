@@ -52,7 +52,11 @@ import java.util.Optional
 /**
  * Super (wrapper) class for all components (source, transformer or sink)
  */
-open class Transformer(rootTopology: Stream, val component: TopologyPipeComponent, override val topologyContext: TopologyContext) : PartialStream(rootTopology) {
+open class Transformer(
+    rootTopology: Stream,
+    val component: TopologyPipeComponent,
+    override val topologyContext: TopologyContext
+) : PartialStream(rootTopology) {
     // override fun addSource(source: Source) {
     //     rootTopology.addSource(source)
     // }
@@ -238,7 +242,12 @@ fun PartialStream.joinRemote(vararg keys: String, optional: Boolean = false, sou
     )
 }
 
-fun PartialStream.joinMulti(key: (IMessage) -> String?, secondaryKey: (IMessage) -> String, optional: Boolean = false, source: () -> Source) {
+fun PartialStream.joinMulti(
+    key: (IMessage) -> String?,
+    secondaryKey: (IMessage) -> String,
+    optional: Boolean = false,
+    source: () -> Source
+) {
     val keyExtractor: (ImmutableMessage, ImmutableMessage) -> String? = { msg, _ -> key.invoke(fromImmutable(msg)) }
     val secondarySource = source()
     secondarySource.group(secondaryKey)
@@ -256,7 +265,12 @@ fun PartialStream.joinAttributes(withTopic: String, nameAttribute: String, value
 /**
  * C/p from joinAttributes, but qualified
  */
-fun PartialStream.joinAttributes(withTopic: String, nameAttribute: String, valueAttribute: String, keyExtract: (IMessage) -> String) {
+fun PartialStream.joinAttributes(
+    withTopic: String,
+    nameAttribute: String,
+    valueAttribute: String,
+    keyExtract: (IMessage) -> String
+) {
     join(optional = true, debug = false) {
         from(withTopic) {
             scan(
@@ -348,7 +362,11 @@ fun FloodplainOperator.debeziumSource(topicSource: String, init: Source.() -> Un
 
 private fun existingDebeziumSource(topicSource: String, rootTopology: Stream, init: Source.() -> Unit = {}): Source {
     val topic = Topic.fromQualified(topicSource, rootTopology.topologyContext)
-    val sourceElement = TopicSource(topic, Topic.FloodplainKeyFormat.CONNECT_KEY_JSON, Topic.FloodplainBodyFormat.CONNECT_JSON)
+    val sourceElement = TopicSource(
+        topic,
+        Topic.FloodplainKeyFormat.CONNECT_KEY_JSON,
+        Topic.FloodplainBodyFormat.CONNECT_JSON
+    )
     val source = Source(rootTopology, sourceElement, rootTopology.topologyContext)
     source.init()
     return source
@@ -507,7 +525,11 @@ fun PartialStream.fork(vararg destinations: Block.() -> Unit): Transformer {
  * number, use a sort of time stamp, or even a git commit.
  */
 fun stream(tenant: String? = null, deployment: String? = null, generation: String = "any", init: Stream.() -> Unit): Stream {
-    val topologyContext = TopologyContext.context(Optional.ofNullable(tenant), Optional.ofNullable(deployment), generation)
+    val topologyContext = TopologyContext.context(
+        Optional.ofNullable(tenant),
+        Optional.ofNullable(deployment),
+        generation
+    )
     val pipe = Stream(topologyContext, TopologyConstructor())
     pipe.init()
     return pipe
@@ -517,7 +539,11 @@ fun stream(tenant: String? = null, deployment: String? = null, generation: Strin
  * Sources wrap a TopologyPipeComponent
  */
 // TODO topologycontext could be removed, it can be obtained from the rootTopology
-class Source(override val rootTopology: Stream, private val component: TopologyPipeComponent, override val topologyContext: TopologyContext) : PartialStream(rootTopology) {
+class Source(
+    override val rootTopology: Stream,
+    private val component: TopologyPipeComponent,
+    override val topologyContext: TopologyContext
+) : PartialStream(rootTopology) {
     fun toReactivePipe(): ReactivePipe {
         return ReactivePipe(component, transformers.map { e -> e.component })
     }

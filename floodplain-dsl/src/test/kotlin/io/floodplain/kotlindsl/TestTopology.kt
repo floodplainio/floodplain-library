@@ -681,7 +681,11 @@ class TestTopology {
         val data = javaClass.classLoader.getResource("decimalwithscale.json")?.readBytes()
             ?: throw IllegalArgumentException("Missing json file for decimalwithscale.json")
         stream {
-            externalSource("source", Topic.FloodplainKeyFormat.FLOODPLAIN_STRING, Topic.FloodplainBodyFormat.CONNECT_JSON) {
+            externalSource(
+                "source",
+                Topic.FloodplainKeyFormat.FLOODPLAIN_STRING,
+                Topic.FloodplainBodyFormat.CONNECT_JSON
+            ) {
                 to("sinktopic")
             }
         }.renderAndExecute {
@@ -794,7 +798,8 @@ class TestTopology {
             // quick check if I'm not making unnecessary stores
 //            assertEquals(2,getStateStoreNames().size)
 //            stateStore(getStateStoreNames().first()).flush()
-            val storeSize = countStateStoreSize(stateStore(getStateStoreNames().first())) // stateStore(getStateStoreNames().first()).approximateNumEntries()
+            val storeSize = countStateStoreSize(stateStore(getStateStoreNames().first()))
+            // stateStore(getStateStoreNames().first()).approximateNumEntries()
             // TODO test size limit, works slightly different than I expected, isn't using the statestore,
             // TODO investigate if there is some 'native' cache store
 
@@ -987,7 +992,7 @@ class TestTopology {
                         "after": {
                             "film_id": 778,
                             "title": "Secrets Paradise",
-                            "description": "A Fateful Saga of a Cat And a Frisbee who must Kill a Girl in A Manhattan Penthouse"
+                            "description": "A Fateful Saga of a Cat And a Frisbee who must Kill Penthouse"
                         },
                         "source": {
                             "version": "1.2.0.Final",
@@ -1011,7 +1016,11 @@ class TestTopology {
 
         stream("aaa") {
             // val logSinkConfig = logSinkConfig("logname")
-            externalSource("external", Topic.FloodplainKeyFormat.CONNECT_KEY_JSON, Topic.FloodplainBodyFormat.CONNECT_JSON) {
+            externalSource(
+                "external",
+                Topic.FloodplainKeyFormat.CONNECT_KEY_JSON,
+                Topic.FloodplainBodyFormat.CONNECT_JSON
+            ) {
                 // logSink("somesink", "@output", logSinkConfig)
                 to("output")
             }

@@ -40,7 +40,12 @@ import com.mongodb.client.MongoDatabase
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeout
 
-suspend fun waitForMongoDbCondition(connectionString: String, database: String, timeout: Long = 200000L, check: (MongoDatabase) -> Any?): Any? {
+suspend fun waitForMongoDbCondition(
+    connectionString: String,
+    database: String,
+    timeout: Long = 200000L,
+    check: (MongoDatabase) -> Any?
+): Any? {
     var returnValue: Any? = null
     MongoClients.create(connectionString)
         .use { client ->

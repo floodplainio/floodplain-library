@@ -17,6 +17,7 @@
  * under the License.
  */
 package io.floodplain.kotlindsl
+
 import io.floodplain.ChangeRecord
 import io.floodplain.debezium.postgres.createDebeziumChangeFlow
 import io.floodplain.reactive.source.topology.TopicSource
@@ -54,6 +55,7 @@ class PostgresConfig(
         }
         logger.info("connectSource completed")
     }
+
     private fun acceptRecord(inputReceiver: InputReceiver, record: ChangeRecord) {
         val availableSourceTopics = sourceElements.map { sourceElement -> sourceElement.topic().qualifiedString() }.toSet()
         if (availableSourceTopics.contains(record.topic)) {
@@ -116,7 +118,16 @@ fun Stream.postgresSourceConfig(
     defaultSchema: String?
 ): PostgresConfig {
     val postgresConfig = PostgresConfig(
-        this.topologyContext, this.topologyConstructor, name, topologyContext.applicationId(), hostname, port, username, password, database, defaultSchema
+        this.topologyContext,
+        this.topologyConstructor,
+        name,
+        topologyContext.applicationId(),
+        hostname,
+        port,
+        username,
+        password,
+        database,
+        defaultSchema
     )
     addSourceConfiguration(postgresConfig)
     return postgresConfig
@@ -126,12 +137,17 @@ fun PartialStream.postgresSource(table: String, config: PostgresConfig, schema: 
     val effectiveSchema = schema ?: config.defaultSchema
         ?: throw IllegalArgumentException("No schema defined, and also no default schema")
     val topic = Topic.from("${config.name}.$effectiveSchema.$table", topologyContext)
-    val topicSource = TopicSource(topic, Topic.FloodplainKeyFormat.CONNECT_KEY_JSON, Topic.FloodplainBodyFormat.CONNECT_JSON)
+    val topicSource = TopicSource(
+        topic,
+        Topic.FloodplainKeyFormat.CONNECT_KEY_JSON,
+        Topic.FloodplainBodyFormat.CONNECT_JSON
+    )
     config.addSourceElement(DebeziumSourceElement(topic, effectiveSchema, table))
     val databaseSource = Source(rootTopology, topicSource, topologyContext)
     databaseSource.init()
     return databaseSource
 }
+
 fun Stream.postgresSource(table: String, config: PostgresConfig, schema: String? = null, init: Source.() -> Unit) {
     val databaseSource = PartialStream(this).postgresSource(table, config, schema, init)
     addSource(databaseSource)
@@ -139,7 +155,11 @@ fun Stream.postgresSource(table: String, config: PostgresConfig, schema: String?
 
 fun Stream.postgresSource(name: String, table: String, schema: String, init: Source.() -> Unit) {
     val topic = Topic.from("$name.$schema.$table", topologyContext)
-    val topicSource = TopicSource(topic, Topic.FloodplainKeyFormat.CONNECT_KEY_JSON, Topic.FloodplainBodyFormat.CONNECT_JSON)
+    val topicSource = TopicSource(
+        topic,
+        Topic.FloodplainKeyFormat.CONNECT_KEY_JSON,
+        Topic.FloodplainBodyFormat.CONNECT_JSON
+    )
     val databaseSource = Source(this, topicSource, topologyContext)
     databaseSource.init()
     addSource(databaseSource)

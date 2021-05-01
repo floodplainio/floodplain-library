@@ -35,7 +35,13 @@ fun Stream.elasticSearchConfig(name: String, uri: String): ElasticSearchSinkConf
     return this.addSinkConfiguration(c) as ElasticSearchSinkConfig
 }
 
-class ElasticSearchSinkConfig(override val topologyContext: TopologyContext, override val topologyConstructor: TopologyConstructor, val name: String, val uri: String, val context: TopologyContext) :
+class ElasticSearchSinkConfig(
+    override val topologyContext: TopologyContext,
+    override val topologyConstructor: TopologyConstructor,
+    val name: String,
+    val uri: String,
+    val context: TopologyContext
+) :
     AbstractSinkConfig() {
     // var sinkTask: ElasticsearchSinkTask? = null
     val materializedConfigs: MutableList<MaterializedConfig> = mutableListOf()
@@ -56,7 +62,13 @@ class ElasticSearchSinkConfig(override val topologyContext: TopologyContext, ove
 
 fun PartialStream.elasticSearchSink(sinkName: String, topicName: String, config: ElasticSearchSinkConfig) {
     val topic = Topic.from(topicName, topologyContext)
-    val sinkTransformer = SinkTransformer(Optional.of(sinkName), topic, Optional.empty(), Topic.FloodplainKeyFormat.FLOODPLAIN_STRING, Topic.FloodplainBodyFormat.CONNECT_JSON)
+    val sinkTransformer = SinkTransformer(
+        Optional.of(sinkName),
+        topic,
+        Optional.empty(),
+        Topic.FloodplainKeyFormat.FLOODPLAIN_STRING,
+        Topic.FloodplainBodyFormat.CONNECT_JSON
+    )
     addTransformer(Transformer(rootTopology, sinkTransformer, topologyContext))
 
     val sinkConfig = mapOf(

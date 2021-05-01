@@ -42,7 +42,14 @@ class TestDebeziumSource {
         runBlocking {
             val resultList = mutableListOf<ChangeRecord>()
             createDebeziumChangeFlow(
-                "mypostgres", "io.debezium.connector.postgresql.PostgresConnector", postgresContainer.host, postgresContainer.exposedPort, "dvdrental", "postgres", "mysecretpassword", UUID.randomUUID().toString(),
+                "mypostgres",
+                "io.debezium.connector.postgresql.PostgresConnector",
+                postgresContainer.host,
+                postgresContainer.exposedPort,
+                "dvdrental",
+                "postgres",
+                "mysecretpassword",
+                UUID.randomUUID().toString(),
                 emptyMap()
             )
                 .onEach { println("message: ${it.key} topic: ${it.topic}") }
@@ -52,7 +59,8 @@ class TestDebeziumSource {
         }
     }
 
-    @Test @Ignore // just a doodle, could remove
+    @Test
+    @Ignore // just a doodle, could remove
     fun testEmbedded() {
 
 // Define the configuration for the Debezium Engine with MySQL connector...

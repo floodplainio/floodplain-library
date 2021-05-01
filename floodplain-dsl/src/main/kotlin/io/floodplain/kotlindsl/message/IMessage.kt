@@ -113,7 +113,9 @@ private data class IMessageImpl(private val content: MutableMap<String, Any>) : 
     }
 
     override fun dateTime(path: String): LocalDateTime {
-        return optionalDateTime(path) ?: throw NullPointerException("Can't obtain datetime from path: $path as it is absent")
+        return optionalDateTime(path) ?: throw NullPointerException(
+            "Can't obtain datetime from path: $path as it is absent"
+        )
     }
 
     override fun optionalDateTime(path: String): LocalDateTime? {
@@ -125,7 +127,9 @@ private data class IMessageImpl(private val content: MutableMap<String, Any>) : 
     }
 
     override fun legacyDate(path: String): Date {
-        return optionalLegacyDate(path) ?: throw NullPointerException("Can't obtain legacy date from path: $path as it is absent")
+        return optionalLegacyDate(path) ?: throw NullPointerException(
+            "Can't obtain legacy date from path: $path as it is absent"
+        )
     }
 
     override fun optionalLegacyDate(path: String): Date? {
@@ -137,7 +141,9 @@ private data class IMessageImpl(private val content: MutableMap<String, Any>) : 
     }
 
     override fun time(path: String): LocalTime {
-        return optionalTime(path) ?: throw NullPointerException("Can't obtain datetime from path: $path as it is absent")
+        return optionalTime(path) ?: throw NullPointerException(
+            "Can't obtain datetime from path: $path as it is absent"
+        )
     }
 
     override fun optionalTime(path: String): LocalTime? {
@@ -185,7 +191,9 @@ private data class IMessageImpl(private val content: MutableMap<String, Any>) : 
     }
 
     override fun decimal(path: String): BigDecimal {
-        return optionalDecimal(path) ?: throw NullPointerException("Can't obtain decimal from path: $path as it is absent")
+        return optionalDecimal(path) ?: throw NullPointerException(
+            "Can't obtain decimal from path: $path as it is absent"
+        )
     }
 
     override fun optionalDecimal(path: String): BigDecimal? {
@@ -197,7 +205,9 @@ private data class IMessageImpl(private val content: MutableMap<String, Any>) : 
     }
 
     override fun double(path: String): Double {
-        return optionalDouble(path) ?: throw NullPointerException("Can't obtain double from path: $path as it is absent")
+        return optionalDouble(path) ?: throw NullPointerException(
+            "Can't obtain double from path: $path as it is absent"
+        )
     }
 
     override fun optionalDouble(path: String): Double? {
@@ -221,7 +231,9 @@ private data class IMessageImpl(private val content: MutableMap<String, Any>) : 
     }
 
     override fun boolean(path: String): Boolean {
-        return optionalBoolean(path) ?: throw NullPointerException("Can't obtain boolean from path: $path as it is absent")
+        return optionalBoolean(path) ?: throw NullPointerException(
+            "Can't obtain boolean from path: $path as it is absent"
+        )
     }
 
     override fun optionalBoolean(path: String): Boolean? {
@@ -332,7 +344,13 @@ private data class IMessageImpl(private val content: MutableMap<String, Any>) : 
         }
         return ImmutableFactory.create(values, types, subMessage, subMessageList)
     }
-    private fun maybeSetList(name: String, value: List<*>, subMessagesList: MutableMap<String, List<ImmutableMessage>>, values: MutableMap<String, Any>, types: MutableMap<String, ImmutableMessage.ValueType>) {
+    private fun maybeSetList(
+        name: String,
+        value: List<*>,
+        subMessagesList: MutableMap<String, List<ImmutableMessage>>,
+        values: MutableMap<String, Any>,
+        types: MutableMap<String, ImmutableMessage.ValueType>
+    ) {
         if (value.isEmpty()) {
             return
         }

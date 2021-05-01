@@ -37,24 +37,47 @@ import java.util.Optional
 
 private val logger = mu.KotlinLogging.logger {}
 
-fun PartialStream.googleSheetsSink(topicDefinition: String, googleSheetId: String, columns: List<String>, startColumn: String = "A", startRow: Int = 1, config: GoogleSheetConfiguration) {
+fun PartialStream.googleSheetsSink(
+    topicDefinition: String,
+    googleSheetId: String,
+    columns: List<String>,
+    startColumn: String = "A",
+    startRow: Int = 1,
+    config: GoogleSheetConfiguration
+) {
     val sheetConnectorClass = SheetSinkConnector::class.java.name
     logger.info("Sheet connector: $sheetConnectorClass")
     val topic = Topic.from(topicDefinition, topologyContext)
     val sheetSink = GoogleSheetSink(topic, googleSheetId, columns, startColumn, startRow)
     config.addSink(sheetSink)
-    val sink = SinkTransformer(Optional.of(config.name), topic, Optional.empty(), Topic.FloodplainKeyFormat.CONNECT_KEY_JSON, Topic.FloodplainBodyFormat.CONNECT_JSON)
+    val sink = SinkTransformer(
+        Optional.of(config.name),
+        topic,
+        Optional.empty(),
+        Topic.FloodplainKeyFormat.CONNECT_KEY_JSON,
+        Topic.FloodplainBodyFormat.CONNECT_JSON
+    )
     addTransformer(Transformer(rootTopology, sink, topologyContext))
 }
 
-class GoogleSheetSink(val topic: Topic, val spreadsheetId: String, val columns: List<String>, val startColumn: String = "A", val startRow: Int = 1)
+class GoogleSheetSink(
+    val topic: Topic,
+    val spreadsheetId: String,
+    val columns: List<String>,
+    val startColumn: String = "A",
+    val startRow: Int = 1
+)
 fun Stream.googleSheetConfig(name: String): GoogleSheetConfiguration {
     val googleSheetConfiguration = GoogleSheetConfiguration(topologyContext, topologyConstructor, name)
     this.addSinkConfiguration(googleSheetConfiguration)
     return googleSheetConfiguration
 }
 
-class GoogleSheetConfiguration(override val topologyContext: TopologyContext, override val topologyConstructor: TopologyConstructor, val name: String) :
+class GoogleSheetConfiguration(
+    override val topologyContext: TopologyContext,
+    override val topologyConstructor: TopologyConstructor,
+    val name: String
+) :
     AbstractSinkConfig() {
     private var googleTask: SheetSinkTask? = null
     private val sheetSinks = mutableListOf<GoogleSheetSink>()

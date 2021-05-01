@@ -23,6 +23,7 @@ import io.floodplain.kotlindsl.message.IMessage
 import io.floodplain.kotlindsl.message.fromImmutable
 import io.floodplain.replication.api.ReplicationMessage
 import io.floodplain.replication.factory.ReplicationFactory
+import io.floodplain.runtime.FloodplainException
 import io.floodplain.streams.api.Topic
 import io.floodplain.streams.api.TopologyContext
 import io.floodplain.streams.remotejoin.TopologyConstructor
@@ -116,7 +117,13 @@ fun runLocalTopology(
     props.setProperty(StreamsConfig.BUILT_IN_METRICS_VERSION_CONFIG, StreamsConfig.METRICS_LATEST)
     val driver = TopologyTestDriver(topology, props)
 
-    val contextInstance = LocalDriverContext(driver, rootTopology, context, topologyConstructor, Utils.propsToStringMap(props), sourceConfigs, sinkConfigs, sinks, bufferTime)
+    val contextInstance = LocalDriverContext(
+        driver, rootTopology, context, topologyConstructor,
+        Utils.propsToStringMap(
+            props
+        ),
+        sourceConfigs, sinkConfigs, sinks, bufferTime
+    )
     val jobs = contextInstance.connectSourceAndSink()
     contextInstance.connectJobs.addAll(jobs)
     try {
@@ -303,7 +310,7 @@ class LocalDriverContext(
             logger.debug("Missing topic: $topic available topics: ${inputs()}")
         }
         // try {
-            driver.pipeRawRecord(topic, Instant.now().toEpochMilli(), key, msg)
+        driver.pipeRawRecord(topic, Instant.now().toEpochMilli(), key, msg)
         // } catch (e: Throwable) {
         //     logger.error("Error sending input data", e)
         // }
@@ -371,8 +378,14 @@ class LocalDriverContext(
             if (keyVal.value.operation() == ReplicationMessage.Operation.DELETE) {
                 return deleted(topic)
             }
-            logger.error { "Unexpected content: ${replicationMessageParser.describe(keyVal.value)} remaining queue: ${outputTopic.queueSize}" }
-            // throw RuntimeException("Expected delete message for key: ${keyVal.key}, but got a value: ${keyVal.value}")
+            logger.error {
+                "Unexpected content: ${replicationMessageParser.describe(keyVal.value)} " +
+                    "remaining queue: ${outputTopic.queueSize}"
+            }
+            throw FloodplainException(
+                "Expected delete message for key:" +
+                    " ${keyVal.key}, but got a value: ${keyVal.value}"
+            )
         }
         return keyVal.key
     }

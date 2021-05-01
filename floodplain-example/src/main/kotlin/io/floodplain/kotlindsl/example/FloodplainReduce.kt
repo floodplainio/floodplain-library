@@ -30,12 +30,19 @@ import io.floodplain.sink.sheet.googleSheetsSink
 import kotlinx.coroutines.delay
 import java.math.BigDecimal
 
-
 fun main() {
     val spreadsheetId = "1MTAn1d13M8ptb2MkBHOSNK1gbJOOW1sFQoSfqa1JbXU"
 
     val instance = stream("genxx") {
-        val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental", "public")
+        val postgresConfig = postgresSourceConfig(
+            "mypostgres",
+            "postgres",
+            5432,
+            "postgres",
+            "mysecretpassword",
+            "dvdrental",
+            "public"
+        )
         // val mongoConfig = mongoConfig("mongosink", "mongodb://mongo", "mongodump")
         val sheetConfig = googleSheetConfig("sheets")
         postgresSource("customer", postgresConfig) {
@@ -63,7 +70,14 @@ fun main() {
                 customer["payments"] = paymenttotal["total"]
                 customer["_row"] = customer.integer("customer_id"); customer
             }
-            googleSheetsSink("myfinaltopic", spreadsheetId, listOf("customer_id", "first_name", "last_name", "email", "payments"), "A", 1, sheetConfig)
+            googleSheetsSink(
+                "myfinaltopic",
+                spreadsheetId,
+                listOf("customer_id", "first_name", "last_name", "email", "payments"),
+                "A",
+                1,
+                sheetConfig
+            )
         }
     }.renderAndExecute {
         delay(1000000)

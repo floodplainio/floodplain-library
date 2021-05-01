@@ -61,7 +61,8 @@ import java.util.UUID
 
 private val logger = mu.KotlinLogging.logger {}
 
-class Stream(override val topologyContext: TopologyContext, val topologyConstructor: TopologyConstructor) : FloodplainSourceContainer {
+class Stream(override val topologyContext: TopologyContext, val topologyConstructor: TopologyConstructor) :
+    FloodplainSourceContainer {
 
     private val sources: MutableList<Source> = ArrayList()
     private val sinkConfigurations: MutableList<SinkConfig> = mutableListOf()
@@ -140,12 +141,25 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
         val reactivePipes = sources.map { e -> e.toReactivePipe() }
         val stack = Stack<String>()
         for (reactivePipe in reactivePipes) {
-            ReactivePipeParser.processPipe(topologyContext, topologyConstructor, topology, topologyConstructor.generateNewStreamId(), stack, reactivePipe, false)
+            ReactivePipeParser.processPipe(
+                topologyContext,
+                topologyConstructor,
+                topology,
+                topologyConstructor.generateNewStreamId(),
+                stack,
+                reactivePipe,
+                false
+            )
         }
         ReplicationTopologyParser.materializeStateStores(topologyConstructor, topology)
         return topology
     }
-    fun renderAndExecute(applicationId: String? = null, bufferTime: Int? = null, localCmds: suspend LocalContext.() -> Unit) {
+
+    fun renderAndExecute(
+        applicationId: String? = null,
+        bufferTime: Int? = null,
+        localCmds: suspend LocalContext.() -> Unit
+    ) {
         val (topology, sources, sinks) = render()
         // val offsetPath = Paths.get("offset_" + UUID.randomUUID())
         val sourceConfigs = this@Stream.sourceConfigurations
@@ -176,14 +190,27 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
     fun renderAndSchedule(connectorURL: URL?, settings: InputStream, force: Boolean = false): KafkaStreams {
         val prop = Properties()
         prop.load(settings)
-        return renderAndSchedule(connectorURL, prop[StreamsConfig.BOOTSTRAP_SERVERS_CONFIG] as String, force, Utils.propsToStringMap(prop))
+        return renderAndSchedule(
+            connectorURL,
+            prop[StreamsConfig.BOOTSTRAP_SERVERS_CONFIG] as String,
+            force,
+            Utils.propsToStringMap(prop)
+        )
     }
 
-    fun renderAndSchedule(connectorURL: URL?, kafkaHosts: String, kafkaUsername: String, kafkaPassword: String, replicationFactor: Int, force: Boolean = false): KafkaStreams {
+    fun renderAndSchedule(
+        connectorURL: URL?,
+        kafkaHosts: String,
+        kafkaUsername: String,
+        kafkaPassword: String,
+        replicationFactor: Int,
+        force: Boolean = false
+    ): KafkaStreams {
         val properties = mapOf(
             StreamsConfig.BOOTSTRAP_SERVERS_CONFIG to kafkaHosts,
             "security.protocol" to "SASL_SSL",
-            "sasl.jaas.config" to "org.apache.kafka.common.security.plain.PlainLoginModule   required username='$kafkaUsername'   password='$kafkaPassword';",
+            "sasl.jaas.config" to "org.apache.kafka.common.security.plain.PlainLoginModule   " +
+                "required username='$kafkaUsername'   password='$kafkaPassword';",
             "sasl.mechanism" to "PLAIN",
             "acks" to "all",
             StreamsConfig.REPLICATION_FACTOR_CONFIG to replicationFactor.toString()
@@ -199,7 +226,13 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
      * If 'force' is true, existing connector configurations will be deleted and recreated, otherwise
      * the new configuration will be ignored and the old configuration will remain.
      */
-    fun renderAndSchedule(connectorURL: URL?, kafkaHosts: String, force: Boolean = false, initialSettings: Map<String, String>? = null, monitor: (suspend Stream.(KafkaStreams) -> Unit)? = null): KafkaStreams {
+    fun renderAndSchedule(
+        connectorURL: URL?,
+        kafkaHosts: String,
+        force: Boolean = false,
+        initialSettings: Map<String, String>? = null,
+        monitor: (suspend Stream.(KafkaStreams) -> Unit)? = null
+    ): KafkaStreams {
         val (topology, sources, sinks) = render()
         val settings = initialSettings?.toMutableMap() ?: mutableMapOf()
         val replicationFactor = initialSettings?.get(StreamsConfig.REPLICATION_FACTOR_CONFIG) ?: "1"
@@ -265,7 +298,11 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
         // Using port 8084 now, that might clash. Random? Don't know.
         workerProps[WorkerConfig.LISTENERS_CONFIG] = "http://127.0.0.1:8084"
         val keys = workerProps.keys.toSet()
-        keys.filter { it.startsWith("security") || it.startsWith("sasl") || it.startsWith("ssl") || it.startsWith("bootstrap") }
+        keys.filter {
+            it.startsWith("security") || it.startsWith("sasl") || it.startsWith("ssl") || it.startsWith(
+                "bootstrap"
+            )
+        }
             .forEach { key ->
                 workerProps["consumer.$key"] = workerProps[key]!!
                 workerProps["producer.$key"] = workerProps[key]!!
@@ -314,8 +351,21 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
         val statusBackingStore: StatusBackingStore = KafkaStatusBackingStore(time, worker.internalValueConverter)
         statusBackingStore.configure(config)
 
-        val configBackingStore = KafkaConfigBackingStore(worker.internalValueConverter, config, worker.configTransformer())
-        val herder = DistributedHerder(config, time, worker, kafkaClusterId, statusBackingStore, configBackingStore, advertisedUrl.toString(), connectorClientConfigOverridePolicy)
+        val configBackingStore = KafkaConfigBackingStore(
+            worker.internalValueConverter,
+            config,
+            worker.configTransformer()
+        )
+        val herder = DistributedHerder(
+            config,
+            time,
+            worker,
+            kafkaClusterId,
+            statusBackingStore,
+            configBackingStore,
+            advertisedUrl.toString(),
+            connectorClientConfigOverridePolicy
+        )
 
         val connect = Connect(herder, rest)
 
@@ -345,7 +395,13 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
         return Triple(topology, sources, sinks)
     }
 
-    private fun runTopology(topology: Topology, applicationId: String, kafkaHosts: String, storagePath: String, extra: MutableMap<String, Any>): KafkaStreams {
+    private fun runTopology(
+        topology: Topology,
+        applicationId: String,
+        kafkaHosts: String,
+        storagePath: String,
+        extra: MutableMap<String, Any>
+    ): KafkaStreams {
         extra[StreamsConfig.BOOTSTRAP_SERVERS_CONFIG] = kafkaHosts
         extra[StreamsConfig.APPLICATION_ID_CONFIG] = applicationId
         extra[StreamsConfig.STATE_DIR_CONFIG] = storagePath
@@ -382,7 +438,10 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
         streamsConfiguration.putAll(extra)
         streamsConfiguration.putIfAbsent(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().javaClass)
         streamsConfiguration.putIfAbsent(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().javaClass)
-        streamsConfiguration.putIfAbsent(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, StreamOperators.replicationSerde.javaClass)
+        streamsConfiguration.putIfAbsent(
+            StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG,
+            StreamOperators.replicationSerde.javaClass
+        )
         streamsConfiguration.putIfAbsent(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest")
         streamsConfiguration.putIfAbsent(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, 30000)
         streamsConfiguration.putIfAbsent(ConsumerConfig.REQUEST_TIMEOUT_MS_CONFIG, 40000)
@@ -393,7 +452,10 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
         streamsConfiguration.putIfAbsent(StreamsConfig.NUM_STREAM_THREADS_CONFIG, 1)
         streamsConfiguration.putIfAbsent(StreamsConfig.NUM_STANDBY_REPLICAS_CONFIG, 0)
         streamsConfiguration.putIfAbsent(StreamsConfig.REPLICATION_FACTOR_CONFIG, CoreOperators.topicReplicationCount())
-        streamsConfiguration.putIfAbsent(StreamsConfig.DEFAULT_TIMESTAMP_EXTRACTOR_CLASS_CONFIG, WallclockTimestampExtractor::class.java)
+        streamsConfiguration.putIfAbsent(
+            StreamsConfig.DEFAULT_TIMESTAMP_EXTRACTOR_CLASS_CONFIG,
+            WallclockTimestampExtractor::class.java
+        )
 
         // 24h for now
         streamsConfiguration["retention.ms"] = 3600 * 24 * 1000
@@ -412,9 +474,17 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
         return streamsConfiguration
     }
 
-    fun runWithArguments(args: Array<out String?> = emptyArray(), after: suspend ((topologyContext: TopologyContext) -> Unit)) {
+    fun runWithArguments(
+        args: Array<out String?> = emptyArray(),
+        after: suspend ((topologyContext: TopologyContext) -> Unit)
+    ) {
         runBlocking {
-            io.floodplain.runtime.run(this@Stream, args, { after(it) }, { _, topologyContext -> after(topologyContext) })
+            io.floodplain.runtime.run(
+                this@Stream,
+                args,
+                { after(it) },
+                { _, topologyContext -> after(topologyContext) }
+            )
         }
     }
 
