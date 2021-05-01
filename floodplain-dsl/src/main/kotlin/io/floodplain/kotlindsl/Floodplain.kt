@@ -45,6 +45,7 @@ import io.floodplain.streams.api.TopologyContext
 import io.floodplain.streams.remotejoin.TopologyConstructor
 import org.apache.kafka.connect.sink.SinkConnector
 import org.apache.kafka.connect.sink.SinkTask
+import org.apache.kafka.streams.errors.TopologyException
 import java.time.Duration
 import java.util.Optional
 
@@ -92,7 +93,7 @@ abstract class AbstractSinkConfig : SinkConfig {
     override fun instantiateSinkElements(): List<Map<String, String>> {
         val configs = materializeConnectorConfig()
         if (configs.size > 1) {
-            throw RuntimeException("Multiple configs not supported for now")
+            throw TopologyException("Multiple configs not supported for now")
         }
         return configs.map {
             it.settings

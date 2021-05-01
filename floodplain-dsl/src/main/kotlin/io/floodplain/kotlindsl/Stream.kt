@@ -262,7 +262,7 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
         workerProps["key.converter"] = "org.apache.kafka.connect.json.JsonConverter"
         workerProps["value.converter"] = "org.apache.kafka.connect.json.JsonConverter"
         // workerProps["offset.storage.file.filename"] = "offset"
-        // TODO: Using port 8084 now, that might clash. Random? Don't know.
+        // Using port 8084 now, that might clash. Random? Don't know.
         workerProps[WorkerConfig.LISTENERS_CONFIG] = "http://127.0.0.1:8084"
         val keys = workerProps.keys.toSet()
         keys.filter { it.startsWith("security") || it.startsWith("sasl") || it.startsWith("ssl") || it.startsWith("bootstrap") }
@@ -405,7 +405,7 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
 // 	    StreamsConfig.
         streamsConfiguration[StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG] = 10 * 1024 * 1024L
 
-        streamsConfiguration[StreamsConfig.COMMIT_INTERVAL_MS_CONFIG] = 20000
+        streamsConfiguration[StreamsConfig.COMMIT_INTERVAL_MS_CONFIG] = 60000
         streamsConfiguration[ProducerConfig.MAX_REQUEST_SIZE_CONFIG] = 7900000
         streamsConfiguration[ConsumerConfig.MAX_PARTITION_FETCH_BYTES_CONFIG] = 7900000
         streamsConfiguration[StreamsConfig.ROCKSDB_CONFIG_SETTER_CLASS_CONFIG] = RocksDBConfigurationSetter::class.java

@@ -83,7 +83,7 @@ suspend fun run(stream: Stream, arguments: Array<out String?>, localContext: (su
     parseInto.run {
         if (kafka != null) {
             if (connect == null) {
-                throw RuntimeException("When supplying kafka, supply connect too")
+                throw FloodplainException("When supplying kafka, supply connect too")
             }
             val streamsInstance = stream.renderAndSchedule(URL(connect), kafka!!, force)
             remoteContext?.invoke(streamsInstance, stream.topologyContext)

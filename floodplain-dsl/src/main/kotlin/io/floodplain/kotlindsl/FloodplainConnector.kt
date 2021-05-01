@@ -115,6 +115,12 @@ private fun existingConnectors(url: URL): List<String> {
     return Collections.unmodifiableList(result)
 }
 
+private const val ERRORCODES = 400
+
+private fun Int.isErrorCode(): Boolean {
+    return this > ERRORCODES
+}
+
 @Throws(IOException::class)
 private fun deleteConnector(name: String, connectURL: URL) {
     val url = URL("$connectURL/$name")
@@ -123,7 +129,7 @@ private fun deleteConnector(name: String, connectURL: URL) {
         .DELETE()
         .build()
     val response = httpClient.send(request, BodyHandlers.ofString())
-    if (response.statusCode() >= 400) {
+    if (response.statusCode().isErrorCode()) {
         throw IOException("Error deleting connector: ${response.uri()}")
     }
 }
@@ -136,7 +142,7 @@ private fun postToHttpJava11(url: URL, jsonString: String) {
         .POST(HttpRequest.BodyPublishers.ofString(jsonString))
         .build()
     val response: HttpResponse<String> = httpClient.send(request, BodyHandlers.ofString())
-    if (response.statusCode() >= 400) {
+    if (response.statusCode().isErrorCode()) {
         logger.error("Scheduling connector failed. Request: $jsonString")
         throw IOException(
             "Error calling connector: ${response.uri()} " +

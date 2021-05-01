@@ -302,11 +302,11 @@ class LocalDriverContext(
         if (!inputs().contains(topic)) {
             logger.debug("Missing topic: $topic available topics: ${inputs()}")
         }
-        try {
+        // try {
             driver.pipeRawRecord(topic, Instant.now().toEpochMilli(), key, msg)
-        } catch (e: Throwable) {
-            logger.error("Error sending input data", e)
-        }
+        // } catch (e: Throwable) {
+        //     logger.error("Error sending input data", e)
+        // }
     }
 
     override fun delete(topic: String, key: String) {
@@ -372,7 +372,7 @@ class LocalDriverContext(
                 return deleted(topic)
             }
             logger.error { "Unexpected content: ${replicationMessageParser.describe(keyVal.value)} remaining queue: ${outputTopic.queueSize}" }
-            throw RuntimeException("Expected delete message for key: ${keyVal.key}, but got a value: ${keyVal.value}")
+            // throw RuntimeException("Expected delete message for key: ${keyVal.key}, but got a value: ${keyVal.value}")
         }
         return keyVal.key
     }

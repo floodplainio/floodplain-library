@@ -5,11 +5,20 @@ exceptions:
 #    excludes: ['**/Chunk.kt']
 formatting:
   MaximumLineLength:
-    MaxLineLength: 120
+    maxLineLength: 140
 
 complexity:
   TooManyFunctions:
-    includes: ['**/internal/util/NeedsToBeChecked.kt']
+    excludes: [ '**/IMessage.kt','**/test/**' ]
+  LongMethod:
+    excludes: ['**/test/**']
+  LargeClass:
+    excludes: ['**/test/**']
+
+style:
+  ReturnCount:
+    active: true
+    max: 2
 
 build:
   maxIssues: 200 # break the build if more than ten weighted issues are found

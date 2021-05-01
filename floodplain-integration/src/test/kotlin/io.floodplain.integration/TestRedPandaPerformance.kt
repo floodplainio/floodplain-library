@@ -38,7 +38,7 @@ class TestRedPandaPerformance {
     //
     @Test
     fun `Environment Warmup`() {
-        val postgresContainer = InstantiatedContainer("floodplain/floodplain-postgres-demo:1.0.0", 5432, mapOf())
+        InstantiatedContainer("floodplain/floodplain-postgres-demo:1.0.0", 5432, mapOf())
     }
 
     @Test

@@ -23,6 +23,7 @@ import io.floodplain.streams.api.TopologyContext
 import io.floodplain.streams.remotejoin.ReplicationTopologyParser.addDiffProcessor
 import io.floodplain.streams.remotejoin.TopologyConstructor
 import org.apache.kafka.streams.Topology
+import org.apache.kafka.streams.errors.TopologyException
 import java.util.Stack
 
 class DiffTransformer : TopologyPipeComponent {
@@ -30,7 +31,7 @@ class DiffTransformer : TopologyPipeComponent {
 
     override fun addToTopology(transformerNames: Stack<String>, currentPipeId: Int, topology: Topology, topologyContext: TopologyContext, topologyConstructor: TopologyConstructor) {
         if (materialize) {
-            throw RuntimeException("Materialization hasn't been implemented TODO")
+            throw TopologyException("Materialization hasn't been implemented TODO")
         }
         val top = transformerNames.peek()
         val name = topologyContext.qualifiedName("diff", transformerNames.size, currentPipeId)

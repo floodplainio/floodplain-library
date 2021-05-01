@@ -30,9 +30,9 @@ import io.floodplain.sink.sheet.googleSheetsSink
 import kotlinx.coroutines.delay
 import java.math.BigDecimal
 
-private const val spreadsheetId = "1MTAn1d13M8ptb2MkBHOSNK1gbJOOW1sFQoSfqa1JbXU"
 
 fun main() {
+    val spreadsheetId = "1MTAn1d13M8ptb2MkBHOSNK1gbJOOW1sFQoSfqa1JbXU"
 
     val instance = stream("genxx") {
         val postgresConfig = postgresSourceConfig("mypostgres", "postgres", 5432, "postgres", "mysecretpassword", "dvdrental", "public")

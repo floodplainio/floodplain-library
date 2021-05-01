@@ -48,7 +48,7 @@ class TestMySQL {
     var engine: DebeziumEngine<ChangeEvent<String, String>>? = null
     private val itemCounter = AtomicInteger(0)
     @Test
-    fun testMySql() {
+    fun testSimpleMySqlRun() {
         // Find better way to configure this?
         System.setProperty("debezium.embedded.shutdown.pause.before.interrupt.ms", "1000")
         val offsetFilePath = createOffsetFilePath()
