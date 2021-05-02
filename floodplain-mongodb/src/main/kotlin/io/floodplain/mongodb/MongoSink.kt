@@ -85,8 +85,8 @@ class MongoConfig(
 }
 
 /**
- * Creates a config for this specific connector type, add the required params as needed. This config object will be passed
- * to all sink objects
+ * Creates a config for this specific connector type, add the required params as needed.
+ * This config object will be passed to all sink objects
  */
 fun Stream.remoteMongoConfig(name: String, uri: String, database: String): MongoConfig {
     val c = MongoConfig(topologyContext, topologyConstructor, name, uri, database)

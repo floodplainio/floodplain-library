@@ -65,7 +65,6 @@ class InstantiatedContainer(
 
 // KafkaContainer("5.5.3").withEmbeddedZookeeper().withExposedPorts(9092,9093)
 class InstantiatedKafkaContainer(customizer: ((KafkaContainer) -> KafkaContainer)? = null) {
-    // class KGenericContainer(imageName: String) : GenericContainer<KGenericContainer>(DockerImageName.parse(imageName))
     val container = KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:6.0.2"))
         .apply { withExposedPorts(9092, 9093) }
         .apply { withStartupTimeout(Duration.ofMinutes(5)) }

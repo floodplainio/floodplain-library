@@ -57,7 +57,8 @@ class PostgresConfig(
     }
 
     private fun acceptRecord(inputReceiver: InputReceiver, record: ChangeRecord) {
-        val availableSourceTopics = sourceElements.map { sourceElement -> sourceElement.topic().qualifiedString() }.toSet()
+        val availableSourceTopics =
+            sourceElements.map { sourceElement -> sourceElement.topic().qualifiedString() }.toSet()
         if (availableSourceTopics.contains(record.topic)) {
             if (record.value != null) {
                 inputReceiver.input(record.topic, record.key.toByteArray(), record.value!!)
@@ -111,7 +112,7 @@ class PostgresConfig(
 fun Stream.postgresSourceConfig(
     name: String,
     hostname: String,
-    port: Int,
+    port: Int = 5432,
     username: String,
     password: String,
     database: String,
@@ -133,7 +134,12 @@ fun Stream.postgresSourceConfig(
     return postgresConfig
 }
 
-fun PartialStream.postgresSource(table: String, config: PostgresConfig, schema: String? = null, init: Source.() -> Unit): Source {
+fun PartialStream.postgresSource(
+    table: String,
+    config: PostgresConfig,
+    schema: String? = null,
+    init: Source.() -> Unit
+): Source {
     val effectiveSchema = schema ?: config.defaultSchema
         ?: throw IllegalArgumentException("No schema defined, and also no default schema")
     val topic = Topic.from("${config.name}.$effectiveSchema.$table", topologyContext)
@@ -165,7 +171,8 @@ fun Stream.postgresSource(name: String, table: String, schema: String, init: Sou
     addSource(databaseSource)
 }
 
-class DebeziumSourceElement(private val prefix: Topic, private val schema: String? = null, val table: String) : SourceTopic {
+class DebeziumSourceElement(private val prefix: Topic, private val schema: String? = null, val table: String) :
+    SourceTopic {
     override fun topic(): Topic {
         return prefix
     }

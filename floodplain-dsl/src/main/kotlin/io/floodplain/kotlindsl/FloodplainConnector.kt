@@ -165,14 +165,17 @@ fun instantiateSinkConfig(config: SinkConfig): MutableMap<Topic, MutableList<Flo
     val materializedSinks = config.materializeConnectorConfig()
     materializedSinks.forEach { materializedSink ->
         val connectorInstance =
-            Class.forName(materializedSink.settings["connector.class"]).getDeclaredConstructor().newInstance() as SinkConnector
+            Class.forName(materializedSink.settings["connector.class"])
+                .getDeclaredConstructor().newInstance() as SinkConnector
         connectorInstance.start(materializedSink.settings)
         val task = connectorInstance.taskClass().getDeclaredConstructor().newInstance() as SinkTask
         task.start(materializedSink.settings)
         val keyConverter =
-            Class.forName(materializedSink.settings["key.converter"]).getDeclaredConstructor().newInstance() as Converter
+            Class.forName(materializedSink.settings["key.converter"])
+                .getDeclaredConstructor().newInstance() as Converter
         val valueConverter =
-            Class.forName(materializedSink.settings["value.converter"]).getDeclaredConstructor().newInstance() as Converter
+            Class.forName(materializedSink.settings["value.converter"])
+                .getDeclaredConstructor().newInstance() as Converter
         keyConverter.configure(settingsWithPrefix(materializedSink.settings, "key.converter."), true)
         valueConverter.configure(settingsWithPrefix(materializedSink.settings, "value.converter."), false)
         val localSink = floodplainSinkFromTask(task, config, keyConverter, valueConverter)
@@ -204,7 +207,6 @@ class LocalConnectorSink(
     override fun send(topic: Topic, elements: List<Pair<ByteArray?, ByteArray?>>) {
         logger.info("Inserting # of documents ${elements.size} for topic: $topic")
         val list = elements.map { (key, value) ->
-            // logger.info("Key: ${String(key?: byteArrayOf())} \nValue: ${String(value?: byteArrayOf())}")
             SinkRecord(
                 topic.qualifiedString(),
                 0,

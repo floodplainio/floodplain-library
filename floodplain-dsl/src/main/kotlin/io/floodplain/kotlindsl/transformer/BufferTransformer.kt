@@ -41,7 +41,6 @@ class BufferTransformer(private val duration: Duration, private val maxSize: Int
         val top = transformerNames.peek()
         val name = topologyContext.qualifiedName("buffer", transformerNames.size, currentPipeId)
         if (materialize) {
-            // val prematerialize = topologyContext.qualifiedName("buffer-prematerialize", transformerNames.size, currentPipeId)
             addPersistentCache(
                 topology,
                 topologyContext,

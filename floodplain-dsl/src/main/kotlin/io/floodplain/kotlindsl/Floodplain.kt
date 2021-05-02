@@ -103,6 +103,7 @@ abstract class AbstractSinkConfig : SinkConfig {
             it.settings
         }.toList()
     }
+
     override fun sinkElements(): Map<Topic, List<FloodplainSink>> {
         return instantiateSinkConfig(this)
     }
@@ -168,8 +169,8 @@ fun PartialStream.buffer(duration: Duration, maxSize: Int = 10000, inMemory: Boo
 /**
  * Modifies the incoming message before passing it on.
  * You can use it as a simple stateless transformation: Add constant values, remove fields or transform fields.
- * A 'set' is also required for more complicated combinations. Typically after a join you use a 'set' to merge the messages
- * from both sources.
+ * A 'set' is also required for more complicated combinations. Typically after a join you use a 'set' to merge
+ * the messages from both sources.
  * The first message is the original message from the join, the second message the result from the 'secondary' source.
  * The second message will be lost after this operation, so you need to append anything you want to keep from the inner
  * source to the outer source here.
@@ -256,7 +257,12 @@ fun PartialStream.joinMulti(
     addTransformer(Transformer(this.rootTopology, jrt, topologyContext))
 }
 
-fun PartialStream.joinAttributes(withTopic: String, nameAttribute: String, valueAttribute: String, vararg keys: String) {
+fun PartialStream.joinAttributes(
+    withTopic: String,
+    nameAttribute: String,
+    valueAttribute: String,
+    vararg keys: String
+) {
     return joinAttributes(withTopic, nameAttribute, valueAttribute) { msg ->
         keys.joinToString(ReplicationMessage.KEYSEPARATOR) { msg[it].toString() }
     }
@@ -295,6 +301,7 @@ fun PartialStream.joinAttributes(
         }
     }
 }
+
 /**
  * Group a source, using the key from the lambda. The messages will be unchanged,
  * only the key will have the supplied key pre-pended.
@@ -306,8 +313,8 @@ fun PartialStream.group(key: (IMessage) -> String) {
 }
 
 /**
-* Create sub source (without qualifying with tenant / deployment / gen)
-*/
+ * Create sub source (without qualifying with tenant / deployment / gen)
+ */
 fun PartialStream.from(topic: String, init: Source.() -> Unit = {}): Source {
     return createSource(Topic.fromQualified(topic, rootTopology.topologyContext), rootTopology, init)
 }
@@ -373,7 +380,8 @@ private fun existingDebeziumSource(topicSource: String, rootTopology: Stream, in
 }
 
 /**
- * Creates a simple sink that will contain the result of the current transformation. Will not qualify with tenant / deployment
+ * Creates a simple sink that will contain the result of the current transformation.
+ * Will not qualify with tenant / deployment
  */
 fun PartialStream.to(topic: String): Transformer {
     val sink = SinkTransformer(
@@ -472,6 +480,7 @@ fun PartialStream.scan(
 fun PartialStream.createBlock(): Block {
     return Block(rootTopology, topologyContext)
 }
+
 /**
  * Scan is effectively a 'reduce' operator (The 'scan' name is used in Rx, which means a reduce operator that emits a
  * 'running aggregate' every time it consumes a message). A real reduce makes no sense in infinite streams
@@ -524,7 +533,12 @@ fun PartialStream.fork(vararg destinations: Block.() -> Unit): Transformer {
  * with no further meaning within the framework, you can choose what meaning you want to attach. You can increment a
  * number, use a sort of time stamp, or even a git commit.
  */
-fun stream(tenant: String? = null, deployment: String? = null, generation: String = "any", init: Stream.() -> Unit): Stream {
+fun stream(
+    tenant: String? = null,
+    deployment: String? = null,
+    generation: String = "any",
+    init: Stream.() -> Unit
+): Stream {
     val topologyContext = TopologyContext.context(
         Optional.ofNullable(tenant),
         Optional.ofNullable(deployment),

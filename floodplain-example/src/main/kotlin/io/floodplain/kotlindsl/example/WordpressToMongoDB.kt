@@ -27,9 +27,12 @@ import io.floodplain.mongodb.toMongo
 import java.net.URL
 
 private val logger = mu.KotlinLogging.logger {}
+
+const val DEFAULT_MYSQL_PORT = 3306
 fun main() {
     stream {
-        val mysqlConfig = mysqlSourceConfig("mysqlsource", "mysql", 3306, "root", "mysecretpassword", "wpdb")
+        val mysqlConfig =
+            mysqlSourceConfig("mysqlsource", "mysql", DEFAULT_MYSQL_PORT, "root", "mysecretpassword", "wpdb")
         val mongoConfig = mongoConfig("mongosink", "mongodb://mongo", "$generation-mongodumpalt")
         mysqlSource("wpdb.wp_posts", mysqlConfig) {
             each { key, msg, _ ->

@@ -23,7 +23,11 @@ import io.floodplain.reactive.source.topology.CustomTopicSource
 import io.floodplain.replication.factory.ReplicationFactory
 import org.apache.kafka.common.serialization.Serdes
 
-fun PartialStream.genericSource(topic: String, parseMessage: (ByteArray) -> IMessage?, init: Source.() -> Unit = {}): Source {
+fun PartialStream.genericSource(
+    topic: String,
+    parseMessage: (ByteArray) -> IMessage?,
+    init: Source.() -> Unit = {}
+): Source {
     return genericSource(
         topic,
         { Serdes.String().deserializer().deserialize(topic, it) },

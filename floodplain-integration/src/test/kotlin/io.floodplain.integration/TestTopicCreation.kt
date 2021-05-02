@@ -59,8 +59,8 @@ class TestTopicCreation {
         logger.info("${adminClient.describeTopics(listOf("mytopic")).all().get()["mytopic"]}")
         val cr = Collections.singleton(ConfigResource(TOPIC, "mytopic"))
         val configsResult = adminClient.describeConfigs(cr)
-        // val cnf = configsResult.all().get().
-        // logger.info("Config: ${cnf.toString()}")
+        val cnf = configsResult.all().get()
+        logger.info("Config: $cnf")
         val configMap: MutableMap<String, String> = HashMap()
         configMap["cleanup.policy"] = "compact"
 

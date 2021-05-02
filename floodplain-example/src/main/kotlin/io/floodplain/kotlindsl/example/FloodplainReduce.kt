@@ -30,14 +30,17 @@ import io.floodplain.sink.sheet.googleSheetsSink
 import kotlinx.coroutines.delay
 import java.math.BigDecimal
 
+const val DEFAULT_POSTGRES_PORT = 5432
+const val DEFAULT_TIMEOUT = 200000L
+
 fun main() {
     val spreadsheetId = "1MTAn1d13M8ptb2MkBHOSNK1gbJOOW1sFQoSfqa1JbXU"
 
-    val instance = stream("genxx") {
+    stream("genxx") {
         val postgresConfig = postgresSourceConfig(
             "mypostgres",
             "postgres",
-            5432,
+            DEFAULT_POSTGRES_PORT,
             "postgres",
             "mysecretpassword",
             "dvdrental",
@@ -80,6 +83,6 @@ fun main() {
             )
         }
     }.renderAndExecute {
-        delay(1000000)
+        delay(DEFAULT_TIMEOUT)
     }
 }

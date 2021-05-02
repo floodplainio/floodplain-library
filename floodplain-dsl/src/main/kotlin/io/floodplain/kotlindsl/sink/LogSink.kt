@@ -74,7 +74,7 @@ fun PartialStream.logSink(sinkName: String, topicName: String, config: LogSinkCo
         "connector.class" to "io.floodplain.sink.LogSinkConnector",
         "tasks.max" to "1",
         "value.converter" to "org.apache.kafka.connect.json.JsonConverter",
-        "key.converter" to "org.apache.kafka.connect.storage.StringConverter", // "org.apache.kafka.connect.json.JsonConverter",
+        "key.converter" to "org.apache.kafka.connect.storage.StringConverter",
         "topics" to topicName,
         "schema.ignore" to "true",
         "type.name" to "_doc"

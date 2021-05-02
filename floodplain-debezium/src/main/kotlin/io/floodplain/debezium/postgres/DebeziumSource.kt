@@ -56,7 +56,7 @@ internal class EngineKillSwitch(var engine: DebeziumEngine<ChangeEvent<String, S
 
 @OptIn(ExperimentalPathApi::class)
 private fun createOffsetFilePath(offsetId: String?): Path {
-    val tempFile = createTempFile(offsetId ?: UUID.randomUUID().toString().substring(0, 7))
+    val tempFile = createTempFile(offsetId ?: UUID.randomUUID().toString().substring(0..7))
     if (offsetId == null) {
         tempFile.toFile().deleteOnExit()
     }
@@ -96,13 +96,15 @@ private fun createLocalDebeziumSettings(
 
 /**
  * @return A hot flow of ChangeRecord. Perhaps one day there might be a colder one.
- * @param name: The prefix of the outgoing 'topic', basically the destination field of the changerecord is <topicprefix>.<schema>.<table>
+ * @param name: The prefix of the outgoing 'topic', basically the destination
+ * field of the changerecord is <topicprefix>.<schema>.<table>
  * @param hostname: The host of the postgres database
  * @param port: The port of the postgres database
  * @param username: The username of the postgres database
  * @param password: The password of the postgres database
  * @param offsetId: By default, we will save the offsets in a file path
- * @param settings An optional string-string map, that represents any extra parameters you want to pass to Debezium
+ * @param settings An optional string-string map, that represents any extra
+ * parameters you want to pass to Debezium
  * Defaults to empty map.
  *
  */
@@ -117,7 +119,10 @@ fun createDebeziumChangeFlow(
     offsetId: String? = null,
     settings: Map<String, String> = emptyMap()
 ): Flow<ChangeRecord> {
-    val props = createLocalDebeziumSettings(name, taskClass, hostname, port, database, username, password, offsetId, settings)
+    val props = createLocalDebeziumSettings(
+        name, taskClass, hostname, port, database,
+        username, password, offsetId, settings
+    )
     props.list(System.out)
     return runDebeziumServer(props)
 }

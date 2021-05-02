@@ -1,7 +1,6 @@
 import io.floodplain.build.FloodplainDeps
 import io.floodplain.build.isReleaseVersion
 import io.gitlab.arturbosch.detekt.Detekt
-import org.gradle.kotlin.dsl.detekt as detekt
 
 buildscript {
     repositories {
@@ -31,6 +30,7 @@ plugins {
     signing
     `maven-publish`
     `java-library`
+    jacoco
 }
 
 dependencies {
@@ -67,6 +67,7 @@ subprojects {
     apply(plugin = "org.jetbrains.dokka")
     apply(plugin = "com.github.hierynomus.license-base")
     apply(plugin = "checkstyle")
+    apply(plugin = "jacoco")
     if (!isKotlinModule(this)) {
         apply(plugin = "com.github.spotbugs")
     }
@@ -249,7 +250,46 @@ val detektAll by tasks.registering(Detekt::class) {
     exclude("**/build/**")
     // baseline.set(project.rootDir.resolve("reports/baseline.xml"))
     reports {
-        xml.enabled = false
+        xml.enabled = true
         html.enabled = true
     }
+}
+
+jacoco {
+    toolVersion = "0.8.6"
+}
+
+tasks.test {
+    finalizedBy(tasks.jacocoTestReport) // report is always generated after tests run
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test) // tests are required to run before generating the report
+}
+
+// tasks.jacocoTestReport {
+//     reports {
+//         xml.isEnabled = true
+//         csv.isEnabled = false
+//         html.isEnabled = true
+//         html.destination = layout.buildDirectory.dir("jacocoHtml").get().asFile
+//     }
+// }
+val codeCoverageReport by tasks.creating(JacocoReport::class) {
+    executionData(fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec"))
+
+    subprojects.onEach {
+        sourceSets(it.sourceSets["main"])
+    }
+
+    reports {
+        // sourceDirectories =  files(sourceSets["main"].allSource.srcDirs)
+        // classDirectories =  files(sourceSets["main"].output)
+        xml.isEnabled = true
+        xml.destination = File("$buildDir/reports/jacoco/report.xml")
+        html.isEnabled = true
+        csv.isEnabled = false
+    }
+
+    dependsOn("test")
 }

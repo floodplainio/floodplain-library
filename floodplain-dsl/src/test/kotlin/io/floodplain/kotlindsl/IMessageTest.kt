@@ -73,7 +73,8 @@ class IMessageTest {
         return convertThereAndBack(afterJSON, protoParser)
     }
 
-    // Utility function to check if a message remains unchanged after serialization and deserialization for a specific parser
+    // Utility function to check if a message remains unchanged after serialization
+    // and deserialization for a specific parser
     private fun convertThereAndBack(input: IMessage, currentParser: ReplicationMessageParser): IMessage {
         val immutable = input.toImmutable()
         val repl = ReplicationFactory.standardMessage(immutable)
