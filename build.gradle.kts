@@ -55,6 +55,25 @@ fun isKotlinModule(project: Project): Boolean {
 }
 
 // apply(plugin = "io.gitlab.arturbosch.detekt")
+// allprojects {
+//
+//     tasks.jacocoTestCoverageVerification {
+//         violationRules {
+//             rule {
+//                 limit {
+//                     minimum = "0.0".toBigDecimal()
+//                 }
+//             }
+//         }
+//         logger.warn("OUT: ${this.project.name}")
+//         classDirectories.setFrom(
+//             sourceSets.main.get().output.asFileTree.matching {
+//                 // exclude main()
+//                 exclude("**/org/apache/kafka/streams/")
+//             }
+//         )
+//     }
+// }
 
 subprojects {
     version = FloodplainDeps.floodplain_version
@@ -259,37 +278,110 @@ jacoco {
     toolVersion = "0.8.6"
 }
 
-tasks.test {
-    finalizedBy(tasks.jacocoTestReport) // report is always generated after tests run
+plugins.withType<JacocoPlugin> {
+    val testTasks = tasks.withType<Test>()
+    testTasks.configureEach {
+        extensions.configure<JacocoTaskExtension> {
+            // We don't want to collect coverage for third-party classes
+            includes?.add("**/io.floodplain.*.class")
+            // excludes?.add("**/io.floodplain.protobuf.generated")
+        }
+    }
 }
-
-tasks.jacocoTestReport {
-    dependsOn(tasks.test) // tests are required to run before generating the report
-}
-
-// tasks.jacocoTestReport {
-//     reports {
-//         xml.isEnabled = true
-//         csv.isEnabled = false
-//         html.isEnabled = true
-//         html.destination = layout.buildDirectory.dir("jacocoHtml").get().asFile
+tasks.withType<JacocoReport> {
+    //     afterEvaluate {
+//         classDirectories = files(sourceSets.getByName("main").output.files.collect {
+//             fileTree(dir: it, exclude: ['**/*body*', '**/*inlined*'])
+//         })
 //     }
+
+    // afterEvaluate {
+    //     logger.warn("PRoject: ${this.name}")
+    //     classDirectories.setFrom(fileTree("build/classes").apply {
+    //         logger.warn("Tree: ${this.asPath}")
+    //         exclude("**/generated/**")
+    //     })
+    // }
+    // afterEvaluate {
+    //     logger.warn("PRoject: ${this.name}")
+    //     classDirectories.setFrom(fileTree("build/classes").apply {
+    //         logger.warn("Tree: ${this.asPath}")
+    //         exclude("**/generated/**")
+    //     })
+    // }
+}
+
+// tasks.jacocoTestCoverageVerification {
+//     violationRules {
+//         rule {
+//             limit {
+//                 minimum = "0.9".toBigDecimal()
+//             }
+//         }
+//     }
+//     classDirectories.setFrom(
+//         sourceSets.main.get().output.asFileTree.matching {
+//             // exclude main()
+//             exclude("org/apache/kafka/streams/TopologyTestDriver.class")
+//         }
+//     )
 // }
-val codeCoverageReport by tasks.creating(JacocoReport::class) {
-    executionData(fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec"))
 
-    subprojects.onEach {
-        sourceSets(it.sourceSets["main"])
+
+tasks.register<JacocoReport>("codeCoverageReport") {
+
+    // If a subproject applies the 'jacoco' plugin, add the result it to the report
+    subprojects {
+        val subproject = this
+        subproject.plugins.withType<JacocoPlugin>().configureEach {
+            subproject.tasks.matching { it.extensions.findByType<JacocoTaskExtension>() != null }.configureEach {
+                val testTask = this
+                logger.warn("Current task type: ${testTask::class.simpleName}")
+                sourceSets(subproject.sourceSets.main.get())
+                // executionData(fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec"))
+                val execFiles = files(testTask).filter { it.exists() && it.name.endsWith(".exec") }
+                executionData(execFiles)
+            }
+
+            // To automatically run `test` every time `./gradlew codeCoverageReport` is called,
+            // you may want to set up a task dependency between them as shown below.
+            // Note that this requires the `test` tasks to be resolved eagerly (see `forEach`) which
+            // may have a negative effect on the configuration time of your build.
+            subproject.tasks.matching { it.extensions.findByType<JacocoTaskExtension>() != null }.forEach {
+
+                rootProject.tasks["codeCoverageReport"].dependsOn(it)
+            }
+        }
     }
 
+    // enable the different report types (html, xml, csv)
     reports {
-        // sourceDirectories =  files(sourceSets["main"].allSource.srcDirs)
-        // classDirectories =  files(sourceSets["main"].output)
+        // xml is usually used to integrate code coverage with
+        // other tools like SonarQube, Coveralls or Codecov
         xml.isEnabled = true
-        xml.destination = File("$buildDir/reports/jacoco/report.xml")
-        html.isEnabled = true
-        csv.isEnabled = false
-    }
 
-    dependsOn("test")
+        // HTML reports can be used to see code coverage
+        // without any external tools
+        html.isEnabled = true
+    }
+}
+
+tasks.test {
+    configure<JacocoTaskExtension> {
+        isEnabled = true
+        // destinationFile = layout.buildDirectory.file("jacoco/${name}.exec").get().asFile
+        // includes = emptyList()
+        includes = listOf("**/io.floodplain.*.class")
+
+        // excludes = emptyList()
+        // excludeClassLoaders = emptyList()
+        // isIncludeNoLocationClasses = false
+        // sessionId = "<auto-generated value>"
+        // isDumpOnExit = true
+        // classDumpDir = null
+        // output = JacocoTaskExtension.Output.FILE
+        // address = "localhost"
+        // port = 6300
+        // isJmx = false
+    }
 }
