@@ -104,8 +104,7 @@ class InstantiatedRedPandaContainer(customizer: ((RedpandaContainer) -> Redpanda
 // withEnv("KAFKA_LISTENERS", "PLAINTEXT://0.0.0.0:" + KAFKA_PORT + ",BROKER://0.0.0.0:9092");
 
 private const val STARTER_SCRIPT = "/testcontainers_start.sh"
-
-class RedpandaContainer : GenericContainer<RedpandaContainer?>("vectorized/redpanda:v21.5.1") {
+class RedpandaContainer : GenericContainer<RedpandaContainer?>("vectorized/redpanda:dev") {
     override fun containerIsStarting(containerInfo: InspectContainerResponse?) {
         super.containerIsStarting(containerInfo)
         var command = "#!/bin/bash\n"

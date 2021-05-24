@@ -49,20 +49,14 @@ public class ManyToOneGroupedProcessor implements Processor<String, ReplicationM
     private final BiFunction<ReplicationMessage, ReplicationMessage, ReplicationMessage> joinFunction = (a, b) -> a.withParamMessage(b.message());
     private KeyValueStore<String, ReplicationMessage> forwardLookupStore;
     private KeyValueStore<String, ReplicationMessage> reverseLookupStore;
-
-    private final Predicate<String, ReplicationMessage> associationBypass;
     private ProcessorContext<String, ReplicationMessage> context;
 
     public ManyToOneGroupedProcessor(String fromProcessor, String withProcessor,
-                                     Optional<Predicate<String, ReplicationMessage>> associationBypass,
                                      boolean optional) {
 
         this.fromProcessorName = fromProcessor;
         this.withProcessorName = withProcessor;
         this.optional = optional;
-        this.associationBypass = associationBypass.orElse((k, v) -> true);
-
-
     }
 
     @SuppressWarnings("unchecked")
@@ -110,12 +104,6 @@ public class ManyToOneGroupedProcessor implements Processor<String, ReplicationM
         while (it.hasNext()) {
             KeyValue<String, ReplicationMessage> keyValue = it.next();
             String parentKey = CoreOperators.ungroupKey(keyValue.key);
-            if (!associationBypass.test(parentKey, keyValue.value)) {
-                // filter says no, so don't join this, forward as-is
-                forwardMessage(parentKey, keyValue.value,timestamp);
-                continue;
-            }
-
             ReplicationMessage joined = joinFunction.apply(keyValue.value, withOperation);
             forwardMessage(parentKey, joined,timestamp);
         }
@@ -155,16 +143,6 @@ public class ManyToOneGroupedProcessor implements Processor<String, ReplicationM
             context.forward(new Record<>(actualKey, null,timestamp));
             return;
         }
-        try {
-            if (!associationBypass.test(actualKey, message)) {
-                // filter says no, so don't join this, forward as-is
-                forwardMessage(actualKey, message,timestamp);
-                return;
-            }
-        } catch (Throwable t) {
-            logger.error("Error on checking filter predicate", t);
-        }
-
 //        if (message.operation() == Operation.DELETE) {
             // We don't need to take special action on a delete. The message has been
             // removed from the forwardStore already (in the storeProcessor),
