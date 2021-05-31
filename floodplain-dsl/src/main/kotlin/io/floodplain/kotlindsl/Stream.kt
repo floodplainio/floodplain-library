@@ -280,7 +280,7 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
         }.forEach {
             val localSettings = mutableMapOf<String, String>()
             localSettings.putAll(it)
-            val name = topologyContext.topicName("connector-local")
+            val name = topologyContext.topicName("@localconnector")
             // val name = "conn-${count++}"
             localSettings["name"] = name
             herder?.putConnectorConfig(name, localSettings, true) { err, created ->

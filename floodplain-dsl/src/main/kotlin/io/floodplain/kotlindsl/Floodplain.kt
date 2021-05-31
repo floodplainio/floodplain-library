@@ -49,6 +49,8 @@ import org.apache.kafka.streams.errors.TopologyException
 import java.time.Duration
 import java.util.Optional
 
+private val logger = mu.KotlinLogging.logger {}
+
 /**
  * Super (wrapper) class for all components (source, transformer or sink)
  */

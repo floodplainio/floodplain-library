@@ -88,7 +88,7 @@ class TestMySQL {
         if (itemCounter.get() > 33) {
             logger.info("Closing engine")
             // delete history file:
-            Files.delete(Path.of("currenthistory"))
+            Files.deleteIfExists(Path.of("currenthistory"))
             engine?.close()
         }
 
