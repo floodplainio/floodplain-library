@@ -65,9 +65,6 @@ public class TopologyContext {
                 return name;
             }
             long dashCount = name.chars().filter(ch -> ch == '-').count();
-            if(dashCount > 1) {
-                logger.warn("Multidash -> This is problematic: {}",name);
-            }
             if(!name.startsWith("@") && name.contains("@")) {
                 logger.warn("This is problematic: {}",name);
                 Thread.dumpStack();
