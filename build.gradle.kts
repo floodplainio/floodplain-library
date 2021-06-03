@@ -85,7 +85,7 @@ subprojects {
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
     apply(plugin = "org.jetbrains.dokka")
     apply(plugin = "com.github.hierynomus.license-base")
-    apply(plugin = "checkstyle")
+    //  apply(plugin = "checkstyle")
     apply(plugin = "jacoco")
     if (!isKotlinModule(this)) {
         apply(plugin = "com.github.spotbugs")
@@ -327,9 +327,7 @@ tasks.withType<JacocoReport> {
 //     )
 // }
 
-
 tasks.register<JacocoReport>("codeCoverageReport") {
-
     // If a subproject applies the 'jacoco' plugin, add the result it to the report
     subprojects {
         val subproject = this

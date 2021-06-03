@@ -43,7 +43,7 @@ private val logger = mu.KotlinLogging.logger {}
 class FilmToMongoIntegratedSinkRedPanda {
 
     private val containerNetwork = Network.newNetwork()
-    private val kafkaContainer = InstantiatedRedPandaContainer() // KafkaContainer("5.5.3").withEmbeddedZookeeper().withExposedPorts(9092)
+    private val kafkaContainer = InstantiatedRedPandaContainer()
     private val postgresContainer = InstantiatedContainer("floodplain/floodplain-postgres-demo:1.0.0", 5432, mapOf()) {
         it.withNetwork(
             containerNetwork

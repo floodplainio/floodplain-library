@@ -30,6 +30,7 @@ import io.floodplain.kotlindsl.scan
 import io.floodplain.kotlindsl.set
 import io.floodplain.kotlindsl.stream
 import io.floodplain.kotlindsl.to
+import io.floodplain.mongodb.mongoConfig
 import io.floodplain.mongodb.remoteMongoConfig
 import io.floodplain.mongodb.toMongo
 import io.floodplain.mongodb.waitForMongoDbCondition
@@ -80,10 +81,10 @@ class TestCombinedMongo {
             )
 
             // val logConfig = logSinkConfig("any")
-            val mongoConfig = remoteMongoConfig(
+            val mongoConfig = mongoConfig(
                 "mongosink",
                 "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
-                "@mongodump"
+                "mongodump"
             )
             postgresSource("address", postgresConfig) {
                 joinRemote({ msg -> "${msg["city_id"]}" }, false) {
@@ -97,12 +98,12 @@ class TestCombinedMongo {
                 toMongo("address", "$generation-sinktopicaddress", mongoConfig)
             }
         }.renderAndExecute {
-            val database = topologyContext().topicName("@mongodump")
+            val database = topologyContext().topicName("mongodump")
             flushSinks()
             val hits = waitForMongoDbCondition(
                 "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
                 database,
-                100000L
+                130000L
             ) { databaseInstance ->
                 val collection = databaseInstance.getCollection("address")
                 val countDocuments = collection.countDocuments()

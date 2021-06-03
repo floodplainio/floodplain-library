@@ -1,7 +1,7 @@
 package io.floodplain.build
 
 object Versions {
-    const val kotlin = "1.4.31"
+    const val kotlin = "1.4.32"
 
     /* test */
     const val junit = "4.13.2"
@@ -17,13 +17,13 @@ fun isReleaseVersion(): Boolean {
 
 object FloodplainDeps {
     const val floodplain_version = "1.5.15-SNAPSHOT"
-    const val jackson_version = "2.12.2"
+    const val jackson_version = "2.12.3"
     const val kafka_version = "2.8.0"
     const val slf4j_version = "1.7.30"
     const val mysql_version = "8.0.23"
-    const val mongodb_version = "4.2.2"
-    const val debezium_version = "1.5.0.Final"
-    const val testContainer_version = "1.15.2"
+    const val mongodb_version = "4.2.3"
+    const val debezium_version = "1.6.0.Beta1"
+    const val testContainer_version = "1.15.3"
     const val kotlin_coroutines_version = "1.4.3"
     const val debeziumCore        = "io.debezium:debezium-core:$debezium_version"
     const val debeziumPostgres    = "io.debezium:debezium-connector-postgres:$debezium_version"
@@ -38,7 +38,7 @@ object FloodplainDeps {
     const val slf4j               = "org.slf4j:slf4j-api:$slf4j_version"
     const val slf4jLog4j          = "org.slf4j:slf4j-log4j12:$slf4j_version"
     const val protobuf            = "com.google.protobuf:protobuf-java:3.11.4"
-    const val kotlinLogging       = "io.github.microutils:kotlin-logging:2.0.6"
+    const val kotlinLogging       = "io.github.microutils:kotlin-logging:2.0.8"
     const val jacksonCore         = "com.fasterxml.jackson.core:jackson-core:$jackson_version"
     const val jacksonDatabind     = "com.fasterxml.jackson.core:jackson-databind:$jackson_version"
     const val jacksonDatabind310  = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jackson_version"
