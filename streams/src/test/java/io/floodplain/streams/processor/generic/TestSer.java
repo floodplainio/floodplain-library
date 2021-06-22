@@ -27,6 +27,8 @@ import io.floodplain.replication.impl.protobuf.FallbackReplicationMessageParser;
 import io.floodplain.streams.serializer.ConnectReplicationMessageSerde;
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -36,6 +38,7 @@ import java.util.Optional;
 
 public class TestSer {
 // /TODO protobuf binaries
+    private final static Logger logger = LoggerFactory.getLogger(TestSer.class);
 
     @Test
     public void testBinaryJSON() {
@@ -50,17 +53,15 @@ public class TestSer {
         final ReplicationMessageParser parser = new JSONReplicationMessageParserImpl();
         ReplicationMessage rm = ReplicationFactory.empty();
         ReplicationMessage ft = rm.with("somedate", LocalDateTime.now(), ImmutableMessage.ValueType.TIMESTAMP);
-        byte[] payload = "123".getBytes(StandardCharsets.UTF_8);
-        String result = new String(parser.serialize(ft));
+//        byte[] payload = "123".getBytes(StandardCharsets.UTF_8);
+        String result = new String(parser.serialize(ft),StandardCharsets.UTF_8);
         System.err.println("RES: "+result);
         Map<String,Object> things = ft.valueMap(false, Collections.emptySet());
         System.err.println("RES2: "+things);
 
         ConnectReplicationMessageSerde crm = new ConnectReplicationMessageSerde();
         byte[] serialized = crm.serializer().serialize("tralala",ft);
-        String res = new String(serialized);
-        System.err.println("RES3: "+things);
-
+        logger.info("Total serialized size: "+serialized.length);
     }
 
     @Test

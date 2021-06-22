@@ -123,15 +123,16 @@ public class TestJoin {
         byte[] data = randomByteArray(size);
         MessageDigest dd = MessageDigest.getInstance(type);
         long now = System.currentTimeMillis();
+        long totalSize = 0;
         for (int i = 0; i < count; i++) {
-            dd.digest(data);
+            totalSize+= dd.digest(data).length;
         }
         long elapsed = System.currentTimeMillis() - now;
         double rate = (double) size * ((double) count / elapsed);
         rate = rate / 1024;
         logger.info(
                 "Hashing: " + count + " items with: " + type + " data size: " + data.length + " Took: " + elapsed);
-        logger.info("Rate: " + rate + " MB/s");
+        logger.info("Rate: " + rate + " MB/s Total digested size: "+totalSize);
     }
 
     private void testZip(int size, String type, int count) throws IOException {

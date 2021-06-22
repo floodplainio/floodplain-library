@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Map;
@@ -55,7 +56,7 @@ public class TestGenerateConnectData {
                 serializer.configure(Map.of("schemaEnable", Boolean.TRUE),false);
                 byte[] data = serializer.serialize("mytopic",rm);
 
-                logger.info("connectjson: \n" + new String(data));
+                logger.info("connectjson: \n" + new String(data,StandardCharsets.UTF_8));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -71,7 +72,7 @@ public class TestGenerateConnectData {
             serializer.configure(Map.of("schemaEnable", Boolean.TRUE),false);
             byte[] data = serializer.serialize("mytopic", ReplicationFactory.standardMessage(rm));
 
-            logger.info("connectjson: \n" + new String(data));
+            logger.info("connectjson: \n" + new String(data, StandardCharsets.UTF_8));
         } catch (IOException e) {
             e.printStackTrace();
         }

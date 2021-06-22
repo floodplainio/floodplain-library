@@ -86,12 +86,15 @@ public class ReplicationProtobufTest {
         types.put("anint", ValueType.INTEGER);
         ReplicationMessage m = ReplicationFactory.fromMap("key", values, types);
         Object value = m.value("anint").get();
-        Assert.assertTrue(value instanceof Integer);
+        boolean isInt = (value instanceof Integer);
+        Assert.assertTrue(isInt);
+
         byte[] bb = m.toBytes(protoBufParser);
         logger.info("Length: {}", bb.length);
         ReplicationMessage rm = protoBufParser.parseBytes(Optional.empty(), bb);
         Object value2 = rm.value("anint").get();
-        Assert.assertTrue(value2 instanceof Integer);
+        boolean isAlsoInt = (value2 instanceof Integer);
+        Assert.assertTrue(isAlsoInt);
     }
 
     @Test
@@ -159,21 +162,22 @@ public class ReplicationProtobufTest {
     }
 
     @Test
-    public void testMessageStreamListParser() {
+    public void testMessageStreamListParser() throws IOException {
         ReplicationMessageParser jsonparser = new JSONReplicationMessageParserImpl();
         ReplicationMessageParser parser = new ProtobufReplicationMessageParser();
-        InputStream stream = getClass().getResourceAsStream("addresslist.json");
-        List<ReplicationMessage> list = jsonparser.parseMessageList(Optional.of("addresstopic"), stream);
-        Assert.assertEquals(1, list.size());
-        byte[] data = parser.serializeMessageList(list);
-        logger.info("Datasize: " + data.length);
-        Assert.assertEquals(68, data.length);
-        ByteArrayInputStream bais = new ByteArrayInputStream(data);
-        List<ReplicationMessage> list2 = parser.parseMessageList(Optional.of("addresstopic"), bais);
-        for (ReplicationMessage replicationMessage : list2) {
-            Assert.assertFalse(replicationMessage.isErrorMessage());
+        try(InputStream stream = getClass().getResourceAsStream("addresslist.json")) {
+            List<ReplicationMessage> list = jsonparser.parseMessageList(Optional.of("addresstopic"), stream);
+            Assert.assertEquals(1, list.size());
+            byte[] data = parser.serializeMessageList(list);
+            logger.info("Datasize: " + data.length);
+            Assert.assertEquals(68, data.length);
+            ByteArrayInputStream bais = new ByteArrayInputStream(data);
+            List<ReplicationMessage> list2 = parser.parseMessageList(Optional.of("addresstopic"), bais);
+            for (ReplicationMessage replicationMessage : list2) {
+                Assert.assertFalse(replicationMessage.isErrorMessage());
+            }
+            logger.info("LEN: " + list.size());
         }
-        logger.info("LEN: " + list.size());
     }
 
     @Test

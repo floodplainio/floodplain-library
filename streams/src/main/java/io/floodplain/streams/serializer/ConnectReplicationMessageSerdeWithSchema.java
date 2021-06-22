@@ -238,11 +238,11 @@ public class ConnectReplicationMessageSerdeWithSchema implements Serde<Replicati
                 .map(e->describeType(e.getKey(),e.getValue(),message.value(e.getKey()).orElse(null)))
                 .collect(Collectors.toList());
 
-        List<?> submessage = message.subMessageMap()
-                .entrySet()
-                .stream()
-                .map(e->buildSchema(e.getKey(),e.getValue()))
-                .collect(Collectors.toList());
+//        List<?> submessage = message.subMessageMap()
+//                .entrySet()
+//                .stream()
+//                .map(e->buildSchema(e.getKey(),e.getValue()))
+//                .collect(Collectors.toList());
         return Map.of("type","struct","optional",true,"fields",types);
 //        Map<String,?> subm = Map.of("optional",true,)
     }
@@ -286,7 +286,7 @@ public class ConnectReplicationMessageSerdeWithSchema implements Serde<Replicati
                         return Map.entry(e.getKey(),processedValue);
                         })
                         .filter(e->e.getKey()!=null && e.getValue()!=null)
-                    .collect(Collectors.toMap(e->e.getKey(),e->e.getValue()));
+                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
                     valueMap = Map.of("schema",buildSchema(null,message),"payload",processed);
                 }
                 try {

@@ -23,6 +23,7 @@ import ca.uhn.fhir.parser.IParser
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ArrayNode
+import com.fasterxml.jackson.databind.node.BinaryNode
 import com.fasterxml.jackson.databind.node.BooleanNode
 import com.fasterxml.jackson.databind.node.JsonNodeType
 import com.fasterxml.jackson.databind.node.NumericNode
@@ -40,6 +41,7 @@ import org.apache.kafka.common.serialization.Serdes
 import org.hl7.fhir.instance.model.api.IBaseResource
 import org.hl7.fhir.r4.model.Patient
 import java.io.ByteArrayInputStream
+import java.util.Base64
 
 private val objectMapper = ObjectMapper()
 val fhirParser: IParser = FhirContext.forR4().newJsonParser()
@@ -110,7 +112,18 @@ private fun parseMessage(objectMessage: ObjectNode): IMessage {
 private fun parseJSONObject(current: IMessage, json: JsonNode, field: String) {
     // TODO unsure if I've got all cases covered
     when (json.nodeType) {
+        JsonNodeType.BINARY -> {
+            // Use base64, TODO create native type
+            val binary = (json as BinaryNode).binaryValue()
+            current[field] = Base64.getEncoder().encode(binary)
+        }
         JsonNodeType.NULL -> {
+            // no-op
+        }
+        JsonNodeType.MISSING -> {
+            // no-op
+        }
+        JsonNodeType.POJO -> {
             // no-op
         }
         JsonNodeType.NUMBER -> {

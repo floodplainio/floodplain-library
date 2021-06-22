@@ -64,7 +64,6 @@ public class TopologyContext {
             if( name.contains(":")) {
                 return name;
             }
-            long dashCount = name.chars().filter(ch -> ch == '-').count();
             if(!name.startsWith("@") && name.contains("@")) {
                 logger.warn("This is problematic: {}",name);
                 Thread.dumpStack();
