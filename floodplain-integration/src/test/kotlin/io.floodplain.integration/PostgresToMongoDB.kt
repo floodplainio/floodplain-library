@@ -81,7 +81,7 @@ class TestCombinedMongo {
             )
 
             // val logConfig = logSinkConfig("any")
-            val mongoConfig = mongoConfig(
+            val mongoConfig = remoteMongoConfig(
                 "mongosink",
                 "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
                 "mongodump"
@@ -107,6 +107,7 @@ class TestCombinedMongo {
             ) { databaseInstance ->
                 val collection = databaseInstance.getCollection("address")
                 val countDocuments = collection.countDocuments()
+                logger.info("Output topic size: ${this.outputSize("$generation-sinktopicaddress")}")
                 logger.info("# of documents: $countDocuments")
                 if (countDocuments == 603L) {
                     603L
