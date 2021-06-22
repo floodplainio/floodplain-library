@@ -25,7 +25,7 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint") version "9.4.1"
     id("org.jetbrains.dokka") version "0.10.1"
     id("com.github.hierynomus.license-base").version("0.15.0")
-    id("com.github.spotbugs") version "4.6.0"
+    id("com.github.spotbugs") version "4.7.1"
     id("io.gitlab.arturbosch.detekt") version "1.16.0"
     signing
     `maven-publish`
@@ -50,30 +50,10 @@ allprojects {
 }
 
 fun isKotlinModule(project: Project): Boolean {
-    val kotlinSource = project.projectDir.resolve("src/main/kotlin")
-    return kotlinSource.exists()
+    val kotlinMainSource = project.projectDir.resolve("src/main/kotlin")
+    val kotlinTestSource = project.projectDir.resolve("src/test/kotlin")
+    return kotlinMainSource.exists() || kotlinTestSource.exists()
 }
-
-// apply(plugin = "io.gitlab.arturbosch.detekt")
-// allprojects {
-//
-//     tasks.jacocoTestCoverageVerification {
-//         violationRules {
-//             rule {
-//                 limit {
-//                     minimum = "0.0".toBigDecimal()
-//                 }
-//             }
-//         }
-//         logger.warn("OUT: ${this.project.name}")
-//         classDirectories.setFrom(
-//             sourceSets.main.get().output.asFileTree.matching {
-//                 // exclude main()
-//                 exclude("**/org/apache/kafka/streams/")
-//             }
-//         )
-//     }
-// }
 
 subprojects {
     version = FloodplainDeps.floodplain_version
@@ -88,20 +68,18 @@ subprojects {
     //  apply(plugin = "checkstyle")
     apply(plugin = "jacoco")
     if (!isKotlinModule(this)) {
+        // logger.warn("This project is not kotlin: ${this.name}")
         apply(plugin = "com.github.spotbugs")
-    }
-    if (!isKotlinModule(this)) {
-        apply(plugin = "com.github.spotbugs")
+        tasks.withType<com.github.spotbugs.snom.SpotBugsTask>().configureEach {
+            excludeFilter.set(rootProject.file("spotbugs-exclude.xml"))
+            effort.set(com.github.spotbugs.snom.Effort.MAX)
+            reports.maybeCreate("xml").isEnabled = false
+            reports.maybeCreate("html").isEnabled = true
+        }
     }
     if (isKotlinModule(this)) {
-        // apply(plugin = "io.gitlab.arturbosch.detekt")
+      apply(plugin = "io.gitlab.arturbosch.detekt")
     }
-    tasks.withType<com.github.spotbugs.snom.SpotBugsTask>().configureEach {
-        effort.set(com.github.spotbugs.snom.Effort.MAX)
-        reports.maybeCreate("xml").isEnabled = false
-        reports.maybeCreate("html").isEnabled = true
-    }
-
     tasks.withType<com.hierynomus.gradle.license.tasks.LicenseFormat>().configureEach {
         this.header = File(this.project.rootDir, "HEADER")
         this.exclude("*.xml", "*.json")
@@ -125,7 +103,6 @@ subprojects {
                 "-Xopt-in=kotlin.RequiresOptIn",
                 "-Xopt-in=kotlin.ExperimentalUnsignedTypes",
                 "-Xopt-in=kotlin.ExperimentalStdlibApi",
-                "-Xopt-in=kotlinx.coroutines.FlowPreview",
                 "-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
                 "-Xopt-in=kotlin.time.ExperimentalTime"
             )
@@ -254,7 +231,7 @@ fun customizePom(publication: MavenPublication) {
 }
 
 val detektAll by tasks.registering(Detekt::class) {
-    logger.warn("PROJECTPATH: ${projectDir.path}/detektConfig.yml")
+    //logger.warn("PROJECTPATH: ${projectDir.path}/detektConfig.yml")
     this.config.setFrom("${projectDir.path}/detektConfig.yml")
     // config = files("${projectDir.path}/detektConfig.yml")
     description = "Runs over whole code base without the starting overhead for each module."
@@ -334,7 +311,6 @@ tasks.register<JacocoReport>("codeCoverageReport") {
         subproject.plugins.withType<JacocoPlugin>().configureEach {
             subproject.tasks.matching { it.extensions.findByType<JacocoTaskExtension>() != null }.configureEach {
                 val testTask = this
-                logger.warn("Current task type: ${testTask::class.simpleName}")
                 sourceSets(subproject.sourceSets.main.get())
                 // executionData(fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec"))
                 val execFiles = files(testTask).filter { it.exists() && it.name.endsWith(".exec") }
