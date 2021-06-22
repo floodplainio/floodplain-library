@@ -21,6 +21,7 @@ package io.floodplain.kotlindsl
 import io.floodplain.reactive.topology.ReactivePipeParser
 import io.floodplain.streams.api.CoreOperators
 import io.floodplain.streams.api.TopologyContext
+import io.floodplain.streams.base.BoundedMemoryRocksDBConfig
 import io.floodplain.streams.base.RocksDBConfigurationSetter
 import io.floodplain.streams.base.StreamOperators
 import io.floodplain.streams.remotejoin.ReplicationTopologyParser
@@ -471,7 +472,7 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
         streamsConfiguration[StreamsConfig.COMMIT_INTERVAL_MS_CONFIG] = 60000
         streamsConfiguration[ProducerConfig.MAX_REQUEST_SIZE_CONFIG] = 7900000
         streamsConfiguration[ConsumerConfig.MAX_PARTITION_FETCH_BYTES_CONFIG] = 7900000
-        streamsConfiguration[StreamsConfig.ROCKSDB_CONFIG_SETTER_CLASS_CONFIG] = RocksDBConfigurationSetter::class.java
+        streamsConfiguration[StreamsConfig.ROCKSDB_CONFIG_SETTER_CLASS_CONFIG] = BoundedMemoryRocksDBConfig::class.java
         return streamsConfiguration
     }
 
