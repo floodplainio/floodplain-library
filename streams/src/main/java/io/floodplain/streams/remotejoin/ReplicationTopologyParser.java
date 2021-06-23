@@ -327,10 +327,10 @@ public class ReplicationTopologyParser {
         addStateStoreMapping(topologyConstructor.processorStateStoreMapper, reduceReader, inputStoreName);
 
         if (!topologyConstructor.immutableStoreSupplier.containsKey(reduceStoreName)) {
-            topologyConstructor.immutableStoreSupplier.put(reduceStoreName, createImmutableMessageSupplier(reduceStoreName, false));
+            topologyConstructor.immutableStoreSupplier.put(reduceStoreName, createImmutableMessageSupplier(reduceStoreName, true));
         }
         if (!topologyConstructor.stateStoreSupplier.containsKey(inputStoreName)) {
-            topologyConstructor.stateStoreSupplier.put(inputStoreName, createMessageStoreSupplier(inputStoreName, false));
+            topologyConstructor.stateStoreSupplier.put(inputStoreName, createMessageStoreSupplier(inputStoreName, true));
         }
         if (materialize) {
             addMaterializeStore(topology, topologyContext, topologyConstructor, reduceName, "_proc" + reduceName);
@@ -391,13 +391,17 @@ public class ReplicationTopologyParser {
     }
 
     public static StoreBuilder<KeyValueStore<String, ReplicationMessage>> createMessageStoreSupplier(String name, boolean persistent) {
-        logger.info("Creating messagestore supplier: {}", name);
+        if(!persistent) {
+            logger.info("Creating non-persistent messagestore supplier: {}", name);
+        }
         KeyValueBytesStoreSupplier storeSupplier = persistent ? Stores.persistentKeyValueStore(name) : Stores.inMemoryKeyValueStore(name);
         return Stores.keyValueStoreBuilder(storeSupplier, Serdes.String(), messageSerde);
     }
 
     public static StoreBuilder<KeyValueStore<String, ImmutableMessage>> createImmutableMessageSupplier(String name, boolean persistent) {
-        logger.info("Creating messagestore supplier: {}", name);
+        if(!persistent) {
+            logger.info("Creating non-persistent messagestore supplier: {}", name);
+        }
         KeyValueBytesStoreSupplier storeSupplier = persistent ? Stores.persistentKeyValueStore(name) : Stores.inMemoryKeyValueStore(name);
         return Stores.keyValueStoreBuilder(storeSupplier, Serdes.String(), immutableMessageSerde);
     }

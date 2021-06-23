@@ -136,13 +136,14 @@ public class CacheProcessor implements Processor<String, ReplicationMessage,Stri
             }
         } else {
             Set<String> possibleExpired = new HashSet<>();
-            KeyValueIterator<String,ReplicationMessage> it = lookupStore.all();
-            while (it.hasNext()) {
-                KeyValue<String, ReplicationMessage> keyValue = it.next();
-                entries++;
-                long cachedAt = (Long) keyValue.value.value(CACHED_AT_KEY).orElse(0L);
-                if ((ms - cachedAt) >= cacheTime.toMillis()) {
-                    possibleExpired.add(keyValue.key);
+            try(KeyValueIterator<String,ReplicationMessage> it = lookupStore.all()) {
+                while (it.hasNext()) {
+                    KeyValue<String, ReplicationMessage> keyValue = it.next();
+                    entries++;
+                    long cachedAt = (Long) keyValue.value.value(CACHED_AT_KEY).orElse(0L);
+                    if ((ms - cachedAt) >= cacheTime.toMillis()) {
+                        possibleExpired.add(keyValue.key);
+                    }
                 }
             }
 
@@ -169,11 +170,12 @@ public class CacheProcessor implements Processor<String, ReplicationMessage,Stri
     private void clearPersistentCache() {
         // Make sure all entries from the state store will be evicted
         Set<String> toClear = new HashSet<>();
-        KeyValueIterator<String, ReplicationMessage> it = lookupStore.all();
-        while (it.hasNext()) {
-            KeyValue<String, ReplicationMessage> next = it.next();
-            context.forward(new Record<>(next.key, next.value.without(CACHED_AT_KEY), next.value.timestamp()));
-            toClear.add(next.key);
+        try(KeyValueIterator<String, ReplicationMessage> it = lookupStore.all()) {
+            while (it.hasNext()) {
+                KeyValue<String, ReplicationMessage> next = it.next();
+                context.forward(new Record<>(next.key, next.value.without(CACHED_AT_KEY), next.value.timestamp()));
+                toClear.add(next.key);
+            }
         }
         for (String key : toClear) {
             lookupStore.delete(key);

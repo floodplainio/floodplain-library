@@ -90,10 +90,11 @@ public class OneToManyGroupedProcessor implements Processor<String, ReplicationM
 
     private void forwardJoin(String key, ReplicationMessage msg, long timestamp) {
         List<ReplicationMessage> msgs = new ArrayList<>();
-        KeyValueIterator<String, ReplicationMessage> it = groupedLookupStore.range(key + "|", key + "}");
-        while (it.hasNext()) {
-            KeyValue<String, ReplicationMessage> keyValue = it.next();
-            msgs.add(keyValue.value);
+        try(KeyValueIterator<String, ReplicationMessage> it = groupedLookupStore.range(key + "|", key + "}")) {
+            while (it.hasNext()) {
+                KeyValue<String, ReplicationMessage> keyValue = it.next();
+                msgs.add(keyValue.value);
+            }
         }
         ReplicationMessage joined = msg;
         if (msgs.size() > 0 || optional) {
