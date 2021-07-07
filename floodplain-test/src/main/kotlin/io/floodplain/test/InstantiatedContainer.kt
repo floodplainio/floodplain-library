@@ -84,8 +84,8 @@ class InstantiatedKafkaContainer(customizer: ((KafkaContainer) -> KafkaContainer
     }
 }
 
-class InstantiatedRedPandaContainer(customizer: ((RedpandaContainer) -> RedpandaContainer)? = null) {
-    private val container = RedpandaContainer()
+class InstantiatedRedPandaContainer(image: String, customizer: ((RedpandaContainer) -> RedpandaContainer)? = null) {
+    private val container = RedpandaContainer(image)
         .apply { customizer?.invoke(this) }
     var host: String
     var exposedPort: Int = -1
@@ -104,15 +104,16 @@ class InstantiatedRedPandaContainer(customizer: ((RedpandaContainer) -> Redpanda
 // withEnv("KAFKA_LISTENERS", "PLAINTEXT://0.0.0.0:" + KAFKA_PORT + ",BROKER://0.0.0.0:9092");
 
 private const val STARTER_SCRIPT = "/testcontainers_start.sh"
-class RedpandaContainer : GenericContainer<RedpandaContainer?>("vectorized/redpanda:dev") {
+
+const val REDPANDA_IMAGE = "vectorized/redpanda:dev"
+// v21.4.12
+class RedpandaContainer(val image: String) : GenericContainer<RedpandaContainer?>(image) {
     override fun containerIsStarting(containerInfo: InspectContainerResponse?) {
         super.containerIsStarting(containerInfo)
         var command = "#!/bin/bash\n"
         command += "/usr/bin/rpk redpanda start --check=false --node-id 0 "
         command += "--kafka-addr PLAINTEXT://0.0.0.0:29092,OUTSIDE://0.0.0.0:9092 "
-        command += "--advertise-kafka-addr PLAINTEXT://broker:29092,OUTSIDE://$host:" + getMappedPort(
-            9092
-        )
+        command += "--advertise-kafka-addr PLAINTEXT://broker:29092,OUTSIDE://$host:${getMappedPort(9092)}\n"
         logger.info("command: $command")
         logger.info("mapped port: $host:${getMappedPort(9092)}")
         copyFileToContainer(
@@ -124,6 +125,7 @@ class RedpandaContainer : GenericContainer<RedpandaContainer?>("vectorized/redpa
 
     init {
         withExposedPorts(9092)
+        withStartupTimeout(Duration.ofMinutes(5))
         withCreateContainerCmdModifier { cmd -> cmd.withEntrypoint("sh") }
         withCommand("-c", "while [ ! -f $STARTER_SCRIPT ]; do sleep 0.1; done; $STARTER_SCRIPT")
         waitingFor(Wait.forLogMessage(".*Started Kafka API server.*", 1))

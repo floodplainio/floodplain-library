@@ -120,7 +120,7 @@ class FilmToMongoIntegratedSink {
             "${kafkaContainer.host}:${kafkaContainer.exposedPort}",
             true,
             mapOf()
-        ) { kafkaStreams ->
+        ) { kafkaStreams, herder ->
             val database = "mongodump" // topologyContext.topicName("@mongodump")
             var hits = 0L
             val start = System.currentTimeMillis()
@@ -143,6 +143,7 @@ class FilmToMongoIntegratedSink {
             val diff = System.currentTimeMillis() - start
             logger.info("Elapsed: $diff millis")
             assertEquals(1000L, hits)
+            herder?.stop()
             kafkaStreams.close()
         }
     }

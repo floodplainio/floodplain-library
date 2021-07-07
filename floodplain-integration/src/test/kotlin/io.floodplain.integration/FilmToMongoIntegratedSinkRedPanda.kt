@@ -27,11 +27,11 @@ import io.floodplain.mongodb.mongoConfig
 import io.floodplain.mongodb.toMongo
 import io.floodplain.test.InstantiatedContainer
 import io.floodplain.test.InstantiatedRedPandaContainer
+import io.floodplain.test.REDPANDA_IMAGE
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeout
 import org.junit.After
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 import org.testcontainers.containers.Network
 import java.net.URL
@@ -41,9 +41,11 @@ import kotlin.test.assertEquals
 private val logger = mu.KotlinLogging.logger {}
 
 class FilmToMongoIntegratedSinkRedPanda {
-
-    private val containerNetwork = Network.newNetwork()
-    private val kafkaContainer = InstantiatedRedPandaContainer()
+    private val containerNetwork = Network.builder().build() //newNetwork()
+    private val kafkaContainer = InstantiatedRedPandaContainer(REDPANDA_IMAGE) {
+        it.withNetwork(containerNetwork)!!
+            .withNetworkAliases("broker")!!
+    }
     private val postgresContainer = InstantiatedContainer("floodplain/floodplain-postgres-demo:1.0.0", 5432, mapOf()) {
         it.withNetwork(
             containerNetwork
@@ -56,7 +58,7 @@ class FilmToMongoIntegratedSinkRedPanda {
     }
     private var debeziumContainer: InstantiatedContainer? = null
 
-    @Before @Ignore
+    @Before
     fun setup() {
         val bootstrap = "${kafkaContainer.host}:${kafkaContainer.exposedPort}"
         logger.info("kafka.getBootstrapServers(): bootstrap: $bootstrap")
@@ -65,7 +67,7 @@ class FilmToMongoIntegratedSinkRedPanda {
             "debezium/connect:1.5",
             8083,
             mapOf(
-                "BOOTSTRAP_SERVERS" to "kafka:9092",
+                "BOOTSTRAP_SERVERS" to "broker:29092",
                 "CONFIG_STORAGE_TOPIC" to "CONNECTOR_STORAGE",
                 "OFFSET_STORAGE_TOPIC" to "OFFSET_STORAGE"
             )
@@ -80,16 +82,17 @@ class FilmToMongoIntegratedSinkRedPanda {
 
     @After
     fun shutdown() {
+        debeziumContainer?.close()
         postgresContainer.close()
         mongoContainer.close()
+        Thread.sleep(2000)
         kafkaContainer.close()
-        debeziumContainer?.close()
     }
 
     /**
      * Test the simplest imaginable pipe: One source and one sink.
      */
-    @Test @Ignore
+    @Test
     fun testPostgresRunLocal() {
         stream {
             val postgresConfig = postgresSourceConfig(
@@ -114,10 +117,10 @@ class FilmToMongoIntegratedSinkRedPanda {
             }
         }.renderAndSchedule(
             URL("http://${debeziumContainer?.host}:${debeziumContainer?.exposedPort}/connectors"),
-            "${kafkaContainer.host}:${kafkaContainer.exposedPort}",
+            "localhost:${kafkaContainer.exposedPort}",
             true,
             mapOf()
-        ) { kafkaStreams ->
+        ) { kafkaStreams,herder ->
             val database = "mongodump" // topologyContext.topicName("@mongodump")
             var hits = 0L
             val start = System.currentTimeMillis()
@@ -140,6 +143,7 @@ class FilmToMongoIntegratedSinkRedPanda {
             val diff = System.currentTimeMillis() - start
             logger.info("Elapsed: $diff millis")
             assertEquals(1000L, hits)
+            herder?.stop()
             kafkaStreams.close()
         }
     }

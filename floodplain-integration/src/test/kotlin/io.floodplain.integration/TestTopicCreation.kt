@@ -19,6 +19,7 @@
 package io.floodplain.integration
 
 import io.floodplain.test.InstantiatedRedPandaContainer
+import io.floodplain.test.REDPANDA_IMAGE
 import org.apache.kafka.clients.admin.AdminClient
 import org.apache.kafka.clients.admin.ListTopicsOptions
 import org.apache.kafka.clients.admin.NewTopic
@@ -35,7 +36,7 @@ class TestTopicCreation {
     // .withEnv(env)
 
     // Infra for testing Kafka interaction
-    private val panda = InstantiatedRedPandaContainer()
+    private val panda = InstantiatedRedPandaContainer(REDPANDA_IMAGE)
     // val kafkaContainer = KafkaContainer("5.5.3").withEmbeddedZookeeper().withExposedPorts(9092,9093)
 
     // Not functional yet

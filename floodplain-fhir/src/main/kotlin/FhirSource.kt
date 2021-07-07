@@ -46,6 +46,7 @@ import java.util.Base64
 private val objectMapper = ObjectMapper()
 val fhirParser: IParser = FhirContext.forR4().newJsonParser()
 
+@Suppress("UNCHECKED_CAST")
 fun <T : IBaseResource> parseFhirToMsg(parser: IParser, data: ByteArray, transform: (T) -> IMessage): IMessage {
     val resource = parser.parseResource(ByteArrayInputStream(data))
     // TODO make sure to create a clear error message if classcast issues arise
@@ -117,13 +118,8 @@ private fun parseJSONObject(current: IMessage, json: JsonNode, field: String) {
             val binary = (json as BinaryNode).binaryValue()
             current[field] = Base64.getEncoder().encode(binary)
         }
-        JsonNodeType.NULL -> {
-            // no-op
-        }
-        JsonNodeType.MISSING -> {
-            // no-op
-        }
-        JsonNodeType.POJO -> {
+
+        null,JsonNodeType.NULL,JsonNodeType.MISSING,JsonNodeType.POJO -> {
             // no-op
         }
         JsonNodeType.NUMBER -> {

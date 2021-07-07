@@ -150,7 +150,7 @@ class FilmToMongoIntegration {
             "${kafkaContainer.host}:${kafkaContainer.exposedPort}",
             true,
             null
-        ) { kafkaStreams ->
+        ) { kafkaStreams,_ ->
             val database = topologyContext.topicName("@mongodump")
             var hits = 0L
             val start = System.currentTimeMillis()

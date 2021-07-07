@@ -54,11 +54,14 @@ import org.apache.kafka.streams.processor.WallclockTimestampExtractor
 import java.io.File
 import java.io.IOException
 import java.io.InputStream
+import java.lang.Math.random
 import java.net.URI
 import java.net.URL
 import java.util.Properties
+import java.util.Random
 import java.util.Stack
 import java.util.UUID
+import kotlin.random.Random.Default.nextInt
 
 private val logger = mu.KotlinLogging.logger {}
 
@@ -232,7 +235,7 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
         kafkaHosts: String,
         force: Boolean = false,
         initialSettings: Map<String, String>? = null,
-        monitor: (suspend Stream.(KafkaStreams) -> Unit)? = null
+        monitor: (suspend Stream.(KafkaStreams,Herder?) -> Unit)? = null
     ): KafkaStreams {
         val (topology, sources, sinks) = render()
         val settings = initialSettings?.toMutableMap() ?: mutableMapOf()
@@ -258,19 +261,19 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
                 startConstructor(name, topologyContext, it, json, force)
             }
         }
-        instantiateLocalSinks(settings)
+        val herder = instantiateLocalSinks(settings)
         val appId = topologyContext.topicName("@applicationId")
         val extra: MutableMap<String, Any> = mutableMapOf()
         extra.putAll(settings)
         val streams = runTopology(topology, appId, kafkaHosts, "storagePath", extra)
         logger.info { "Topology running!" }
         runBlocking {
-            monitor?.invoke(this@Stream, streams)
+            monitor?.invoke(this@Stream, streams,herder)
         }
         return streams
     }
 
-    private fun instantiateLocalSinks(settings: Map<String, String>) {
+    private fun instantiateLocalSinks(settings: Map<String, String>): Herder? {
         var herder: Herder? = null
         if (localSinkConfigurations.isNotEmpty()) {
             herder = startLocalConnect(settings)
@@ -291,6 +294,7 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
                 logger.info("Instantiated: ${created?.created()} result: ${created?.result()}")
             }
         }
+        return herder
     }
 
     private fun extendWorkerProperties(workerProps: MutableMap<String, String>) {
@@ -322,6 +326,9 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
         val workerProps = mutableMapOf<String, String>()
         workerProps.putAll(initialWorkerProps)
         extendWorkerProperties(workerProps)
+        val randomPort = nextInt(2000, 30000)
+        workerProps["listeners"]="http://localhost:$randomPort"
+
         val plugins = Plugins(workerProps)
         logger.info("Plugin initialization complete")
         val config = DistributedConfig(workerProps)
@@ -331,7 +338,7 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
             config,
             ConnectorClientConfigOverridePolicy::class.java
         )
-        val kafkaClusterId: String = ConnectUtils.lookupKafkaClusterId(config)
+        val kafkaClusterId: String = ConnectUtils.lookupKafkaClusterId(config) ?: "kafkaId"
         logger.debug("Kafka cluster ID: $kafkaClusterId")
 
         val offsetBackingStore = createKafkaOffsetBackingStore(config)

@@ -21,6 +21,7 @@ package io.floodplain.integration
 import io.floodplain.test.InstantiatedContainer
 import io.floodplain.test.InstantiatedKafkaContainer
 import io.floodplain.test.InstantiatedRedPandaContainer
+import io.floodplain.test.REDPANDA_IMAGE
 import org.apache.kafka.clients.admin.AdminClient
 import org.junit.FixMethodOrder
 import org.junit.Test
@@ -44,7 +45,7 @@ class TestRedPandaPerformance {
 
     @Test
     fun `Test Red Panda until topic list`() {
-        val container = InstantiatedRedPandaContainer()
+        val container = InstantiatedRedPandaContainer(REDPANDA_IMAGE)
         val port = container.exposedPort
         val config: MutableMap<String, Any> = HashMap()
         config["bootstrap.servers"] = "localhost:$port" // "localhost:${redPandaContainer.exposedPort}"
