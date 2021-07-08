@@ -34,11 +34,38 @@ sourceSets {
 //
 // }
 //
+
+// tasks.compileJava {
+//     dependsOn(tasks.withType<com.google.protobuf.gradle.ProtobufConfigurator.GenerateProtoTaskCollection>())
+// }
+
+tasks.check { dependsOn("generateProto") }
+
+tasks.withType<JavaCompile>() {
+    if(name.contains("compileProtoJava")) {
+        enabled = false
+    }
+}
+
 protobuf {
     protoc {
         artifact = "com.google.protobuf:protoc:$protobufVersion"
     }
     generateProtoTasks {
+        // val a: JavaCompile
+        // all().withType<JavaCompile>() { r ->
+        //     // if(task.name.contains("compileProtoJava")) {
+        //     //     task.enabled = false
+        //     // }
+        // }
+        // all().each { task ->
+        //     task.builtins {
+        //         java { option 'lite' }
+        //     }
+        //     task.plugins {
+        //         grpc { option 'lite' }
+        //     }
+        // }
         // this.
         // ofSourceSet("main").plugins {
         //     // Apply the "grpc" plugin whose spec is defined above, without

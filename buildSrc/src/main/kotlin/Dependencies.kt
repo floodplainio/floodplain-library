@@ -37,7 +37,7 @@ object FloodplainDeps {
     const val mongoClientSync     = "org.mongodb:mongodb-driver-sync:$mongodb_version"
     const val slf4j               = "org.slf4j:slf4j-api:$slf4j_version"
     const val slf4jLog4j          = "org.slf4j:slf4j-log4j12:$slf4j_version"
-    const val protobuf            = "com.google.protobuf:protobuf-java:3.11.4"
+    const val protobuf            = "com.google.protobuf:protobuf-java:3.17.3"
     const val kotlinLogging       = "io.github.microutils:kotlin-logging:2.0.8"
     const val jacksonCore         = "com.fasterxml.jackson.core:jackson-core:$jackson_version"
     const val jacksonDatabind     = "com.fasterxml.jackson.core:jackson-databind:$jackson_version"
