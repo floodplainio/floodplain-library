@@ -84,7 +84,7 @@ public class GroupedUpdateProcessor implements Processor<String, ReplicationMess
                 mappingStore.put(key, msg);
             }
 
-            context.forward(new Record(assembled, msg.now(), record.timestamp()));
+            context.forward(new Record<>(assembled, msg.now(), record.timestamp()));
         }
     }
 

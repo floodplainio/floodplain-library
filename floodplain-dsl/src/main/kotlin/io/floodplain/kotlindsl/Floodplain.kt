@@ -30,6 +30,7 @@ import io.floodplain.reactive.source.topology.DynamicSinkTransformer
 import io.floodplain.reactive.source.topology.EachTransformer
 import io.floodplain.reactive.source.topology.FilterTransformer
 import io.floodplain.reactive.source.topology.GroupTransformer
+import io.floodplain.reactive.source.topology.HistoryTransformer
 import io.floodplain.reactive.source.topology.JoinRemoteTransformer
 import io.floodplain.reactive.source.topology.JoinWithTransformer
 import io.floodplain.reactive.source.topology.KeyTransformer
@@ -312,6 +313,10 @@ fun PartialStream.group(key: (IMessage) -> String) {
     val keyExtractor: (ImmutableMessage, ImmutableMessage) -> String = { msg, _ -> key.invoke(fromImmutable(msg)) }
     val group = GroupTransformer(keyExtractor)
     addTransformer(Transformer(this.rootTopology, group, topologyContext))
+}
+
+fun PartialStream.history() {
+    addTransformer(Transformer(rootTopology,HistoryTransformer(),topologyContext))
 }
 
 /**

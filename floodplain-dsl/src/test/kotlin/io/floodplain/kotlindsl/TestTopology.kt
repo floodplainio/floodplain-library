@@ -716,6 +716,27 @@ class TestTopology {
     }
 
     @Test
+    fun testHistory() {
+        stream {
+            from("source") {
+                history()
+                to("output")
+            }
+        }.renderAndExecute {
+            input("source", "key1", empty().set("value", "value1"))
+            input("source", "key1", empty().set("value", "value1"))
+            assertEquals(2, outputSize("output"))
+            skip("output",1)
+            assertEquals(1, outputSize("output"))
+            val (reskey,msg) = output("output")
+            assertEquals("key1",reskey);
+            val history = msg.list("list")
+
+            assertEquals(2,history.size)
+        }
+    }
+
+    @Test
     fun testDiff() {
         stream {
             from("source") {
