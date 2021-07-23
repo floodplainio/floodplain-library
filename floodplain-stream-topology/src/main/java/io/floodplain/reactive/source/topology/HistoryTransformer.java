@@ -51,7 +51,7 @@ public class HistoryTransformer implements TopologyPipeComponent {
 
         logger.info("Granting access for processor: {} to store: {}", historyName, historyStoreName);
         topologyConstructor.stateStoreSupplier.put(historyStoreName, ReplicationTopologyParser.createMessageStoreSupplier(historyStoreName, true));
-        topologyConstructor.stateStoreSupplier.put(historyKeyCountStoreName, ReplicationTopologyParser.createMessageStoreSupplier(historyKeyCountStoreName, true));
+        topologyConstructor.longStoreSupplier.put(historyKeyCountStoreName, ReplicationTopologyParser.createLongStoreSupplier(historyKeyCountStoreName, true));
 
         logger.info("Stack top for transformer: {}", transformerNames.peek());
         if (this.materialized) {

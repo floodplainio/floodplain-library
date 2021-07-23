@@ -85,9 +85,15 @@ public class ReplicationTopologyParser {
                     current = current.addStateStore(immutableSupplier, element.getValue().toArray(new String[]{}));
                     logger.info("Added processor: {} with sttstatestores: {} mappings: {}", element.getKey(), element.getValue(), topologyConstructor.processorStateStoreMapper.get(element.getKey()));
                 } else {
-                    logger.error("Missing supplier for: {}\nStore mappings: {} available suppliers: {}", element.getKey(), topologyConstructor.processorStateStoreMapper, topologyConstructor.immutableStoreSupplier);
-                    logger.error("Available state stores: {}\nimm: {}", topologyConstructor.stateStoreSupplier.keySet(), topologyConstructor.immutableStoreSupplier.keySet());
-                    throw new RuntimeException("Missing supplier for: " + element.getKey());
+                    final StoreBuilder<KeyValueStore<String, Long>> longSupplier = topologyConstructor.longStoreSupplier.get(key);
+                    if(longSupplier!=null) {
+                        current = current.addStateStore(longSupplier, element.getValue().toArray(new String[]{}));
+                        logger.info("Added processor: {} with sttstatestores: {} mappings: {}", element.getKey(), element.getValue(), topologyConstructor.processorStateStoreMapper.get(element.getKey()));
+                    } else {
+                        logger.error("Missing supplier for: {}\nStore mappings: {} available suppliers: {}", element.getKey(), topologyConstructor.processorStateStoreMapper, topologyConstructor.immutableStoreSupplier);
+                        logger.error("Available state stores: {}\nimm: {}", topologyConstructor.stateStoreSupplier.keySet(), topologyConstructor.immutableStoreSupplier.keySet());
+                        throw new RuntimeException("Missing supplier for: " + element.getKey());
+                    }
                 }
             } else {
                 current = current.addStateStore(supplier, element.getValue().toArray(new String[]{}));
@@ -404,5 +410,13 @@ public class ReplicationTopologyParser {
         }
         KeyValueBytesStoreSupplier storeSupplier = persistent ? Stores.persistentKeyValueStore(name) : Stores.inMemoryKeyValueStore(name);
         return Stores.keyValueStoreBuilder(storeSupplier, Serdes.String(), immutableMessageSerde);
+    }
+
+    public static StoreBuilder<KeyValueStore<String, Long>> createLongStoreSupplier(String name, boolean persistent) {
+        if(!persistent) {
+            logger.info("Creating non-persistent messagestore supplier: {}", name);
+        }
+        KeyValueBytesStoreSupplier storeSupplier = persistent ? Stores.persistentKeyValueStore(name) : Stores.inMemoryKeyValueStore(name);
+        return Stores.keyValueStoreBuilder(storeSupplier, Serdes.String(), Serdes.Long());
     }
 }

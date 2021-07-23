@@ -733,6 +733,11 @@ class TestTopology {
             val history = msg.list("list")
 
             assertEquals(2,history.size)
+            delete("source","key1");
+            val (deletedkey,deletedlisLevel) = output("output")
+            val deletedHistorList = deletedlisLevel.list("list")
+            assertEquals(reskey,deletedkey);
+            assertTrue(deletedHistorList.isEmpty())
         }
     }
 

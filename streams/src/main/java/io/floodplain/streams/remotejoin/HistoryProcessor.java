@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class HistoryProcessor implements Processor<String, ReplicationMessage,String, ReplicationMessage> {
@@ -58,23 +59,49 @@ public class HistoryProcessor implements Processor<String, ReplicationMessage,St
     // TODO Also maybe max age? Otherwise data might linger forever
     @Override
     public void process(Record<String, ReplicationMessage> record) {
+        String key = record.key();
         if (record.value() == null) {
-            processDelete(  record.key());
+            processDelete(  key);
             return;
         }
         if(record.value().operation()== ReplicationMessage.Operation.DELETE) {
-            processDelete(record.key());
+            processDelete(key);
             return;
         }
-        long recordTimestamp = record.value().timestamp();
+        Long keyCount = keyCountStore.get(key);
+        if(keyCount==null) {
+            keyCount = 0L;
+            keyCountStore.put(key,keyCount);
+        } else {
+            keyCount = keyCount.longValue() + 1;
+        }
 
-        String groupedKey = record.key()+"|"+(recordTimestamp==-1?System.currentTimeMillis():recordTimestamp)   ;
+//        long recordTimestamp = record.value().timestamp();
+        String formatedKey = String.format("%08d", keyCount);
+
+        String groupedKey =key + "|" + formatedKey;
         lookupStore.put(groupedKey,record.value());
-        forwardHistory(record.key());
+        forwardHistory(key);
     }
 
+    // I suppose we should delete everything from this key
+    // Or should deleting be part of the history?
     private void processDelete(String key) {
         // iterate over lookupStore
+        List<String> toBeDeleted = new ArrayList<>();
+        try(KeyValueIterator<String, ReplicationMessage> it = lookupStore.range(key + "|", key + "}")) {
+            while (it.hasNext()) {
+                KeyValue<String, ReplicationMessage> keyValue = it.next();
+                toBeDeleted.add(keyValue.key);
+            }
+        }
+        for (String k : toBeDeleted) {
+            lookupStore.delete(k);
+        }
+        // Publish an empty list
+        ReplicationMessage result = ReplicationFactory.empty().withSubMessages("list", Collections.emptyList());
+        context.forward(new Record<>(key, result, result.timestamp()));
+
     }
 
     private void forwardHistory(String key) {

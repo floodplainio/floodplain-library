@@ -39,6 +39,7 @@ public class TopologyConstructor {
     public final Map<String, List<String>> processorStateStoreMapper = new HashMap<>();
     public final Map<String, StoreBuilder<KeyValueStore<String, ReplicationMessage>>> stateStoreSupplier = new HashMap<>();
     public final Map<String, StoreBuilder<KeyValueStore<String, ImmutableMessage>>> immutableStoreSupplier = new HashMap<>();
+    public final Map<String, StoreBuilder<KeyValueStore<String, Long>>> longStoreSupplier = new HashMap<>();
     // TODO: Could be optional, only needed in xml based stream code
     public final Set<String> stores = new HashSet<>();
     public final Set<String> sinks = new HashSet<>();
