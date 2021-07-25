@@ -16,16 +16,16 @@ fun isReleaseVersion(): Boolean {
 
 object FloodplainDeps {
     const val floodplain_version = "1.5.21-SNAPSHOT"
-    const val jackson_version = "2.12.3"
+    const val jackson_version = "2.12.4"
     const val kafka_version = "2.8.0"
-    const val slf4j_version = "1.7.30"
+    const val slf4j_version = "1.7.32"
     const val mysql_version = "8.0.23"
-    const val mongodb_version = "4.2.3"
+    const val mongodb_version = "4.3.0"
     const val debezium_version = "1.6.0.Final"
-    const val testContainer_version = "1.15.3"
+    const val testContainer_version = "1.16.0"
     const val kotlin_coroutines_version = "1.4.3"
     const val junit_5_version     = "5.6.2"
-    const val hapiFhir = "5.2.0" //5.4.2
+    const val hapiFhir = "5.4.2" //5.4.2
     const val debeziumCore        = "io.debezium:debezium-core:$debezium_version"
     const val debeziumPostgres    = "io.debezium:debezium-connector-postgres:$debezium_version"
     const val debeziumMySQL       = "io.debezium:debezium-connector-mysql:$debezium_version"

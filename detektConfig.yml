@@ -1,8 +1,8 @@
 exceptions:
   SwallowedException:
     active: false
+    excludes: ['**/Chunk.kt']
 
-#    excludes: ['**/Chunk.kt']
 formatting:
   MaximumLineLength:
     maxLineLength: 120

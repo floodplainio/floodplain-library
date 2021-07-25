@@ -12,7 +12,6 @@ buildscript {
     }
     dependencies {
         classpath("gradle.plugin.com.hierynomus.gradle.plugins:license-gradle-plugin:0.15.0")
-        classpath("com.github.johnrengelman.shadow:com.github.johnrengelman.shadow.gradle.plugin:6.1.0")
         classpath("gradle.plugin.com.github.spotbugs.snom:spotbugs-gradle-plugin:4.5.1")
         classpath("com.google.protobuf:protobuf-gradle-plugin:0.8.15")
     }
@@ -21,8 +20,7 @@ plugins {
     id("eclipse")
     id("org.jetbrains.kotlin.jvm") version "1.4.31"
     id("org.jetbrains.kotlin.plugin.allopen") version "1.4.31"
-    id("com.github.johnrengelman.shadow") version "5.2.0"
-    id("org.jlleitschuh.gradle.ktlint") version "9.4.1"
+    id("org.jlleitschuh.gradle.ktlint") version "10.1.0"
     id("org.jetbrains.dokka") version "0.10.1"
     id("com.github.hierynomus.license-base").version("0.15.0")
     id("com.github.spotbugs") version "4.7.1"
@@ -32,7 +30,11 @@ plugins {
     `java-library`
     jacoco
 }
-
+//region WORKAROUND FOR: https://github.com/aalmiray/kordamp-gradle-plugins/issues/139
+// configurations {
+//     create("dokkaRuntime")
+// }
+//endregion
 dependencies {
     implementation(io.floodplain.build.Libs.kotlin)
 }
@@ -62,7 +64,7 @@ subprojects {
     apply(plugin = "maven-publish")
     apply(plugin = "distribution")
     apply(plugin = "org.jetbrains.kotlin.jvm")
-    apply(plugin = "org.jlleitschuh.gradle.ktlint")
+    // apply(plugin = "org.jlleitschuh.gradle.ktlint")
     apply(plugin = "org.jetbrains.dokka")
     apply(plugin = "com.github.hierynomus.license-base")
     //  apply(plugin = "checkstyle")
@@ -78,7 +80,7 @@ subprojects {
         }
     }
     if (isKotlinModule(this)) {
-      apply(plugin = "io.gitlab.arturbosch.detekt")
+        apply(plugin = "io.gitlab.arturbosch.detekt")
     }
     tasks.withType<com.hierynomus.gradle.license.tasks.LicenseFormat>().configureEach {
         this.header = File(this.project.rootDir, "HEADER")
@@ -183,7 +185,7 @@ subprojects {
 detekt {
     // Version of Detekt that will be used. When unspecified the latest detekt
     // version found will be used. Override to stay on the same version.
-    toolVersion = "1.16.0"
+    toolVersion = "1.18.0-RC2"
 
     // The directories where detekt looks for source files. 
     // Defaults to `files("src/main/java", "src/main/kotlin")`.
@@ -231,7 +233,7 @@ fun customizePom(publication: MavenPublication) {
 }
 
 val detektAll by tasks.registering(Detekt::class) {
-    //logger.warn("PROJECTPATH: ${projectDir.path}/detektConfig.yml")
+    // logger.warn("PROJECTPATH: ${projectDir.path}/detektConfig.yml")
     this.config.setFrom("${projectDir.path}/detektConfig.yml")
     // config = files("${projectDir.path}/detektConfig.yml")
     description = "Runs over whole code base without the starting overhead for each module."
