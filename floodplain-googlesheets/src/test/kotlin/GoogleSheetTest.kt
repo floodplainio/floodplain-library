@@ -27,7 +27,7 @@ import io.floodplain.sink.sheet.googleSheetsSink
 import io.floodplain.streams.api.TopologyContext
 import io.floodplain.streams.remotejoin.TopologyConstructor
 import kotlinx.coroutines.delay
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import java.util.Optional
 
 private val logger = mu.KotlinLogging.logger {}

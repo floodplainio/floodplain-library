@@ -19,8 +19,8 @@
 package io.floodplain.streams.testdata;
 
 import io.floodplain.streams.api.CoreOperators;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +34,7 @@ public class TestUngroupKey {
     public void test() {
         String key = "aap|noot";
         final String ungrouped = CoreOperators.ungroupKey(key);
-        Assert.assertEquals("noot", ungrouped);
+        Assertions.assertEquals("noot", ungrouped);
         logger.info(ungrouped);
     }
 
@@ -42,7 +42,7 @@ public class TestUngroupKey {
     public void testTriple() {
         String key = "aap|noot|mies";
         final String ungrouped = CoreOperators.ungroupKey(key);
-        Assert.assertEquals("mies", ungrouped);
+        Assertions.assertEquals("mies", ungrouped);
         logger.info(ungrouped);
     }
 

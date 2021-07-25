@@ -8,5 +8,4 @@ dependencies {
     implementation(project(":immutable-impl"))
     implementation(project(":replication-api"))
     implementation(project(":replication-impl"))
-    testCompile(FloodplainDeps.jUnit)
 }

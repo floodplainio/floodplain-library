@@ -3,9 +3,8 @@ package io.floodplain.integration
 import io.floodplain.test.InstantiatedContainer
 import io.floodplain.test.InstantiatedRedPandaContainer
 import io.floodplain.test.REDPANDA_IMAGE
-import org.junit.Before
-import org.junit.Ignore
-import org.junit.Test
+import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.Test
 import org.testcontainers.containers.Network
 
 private val logger = mu.KotlinLogging.logger {}
@@ -25,7 +24,7 @@ class TestRedPandaDebezium {
     }
     private var debeziumContainer: InstantiatedContainer? = null
 
-    @Before
+    @BeforeAll
     fun setup() {
         logger.info("Created network: ${containerNetwork.id}")
         val bootstrap = "${kafkaContainer.host}:${kafkaContainer.exposedPort}"
@@ -50,7 +49,7 @@ class TestRedPandaDebezium {
 
     // This test should be removed, it is totally occluded by other tests, it is just an easier target to troubleshoot
     // container<->container + host<->container network connectivity issues
-    @Test @Ignore
+    @Test
     fun test() {
         // Thread.sleep(2000000)
 

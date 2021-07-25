@@ -26,8 +26,8 @@ import io.floodplain.replication.factory.ReplicationFactory;
 import io.floodplain.replication.impl.json.JSONReplicationMessageParserImpl;
 import io.floodplain.streams.serializer.ConnectReplicationMessageSerde;
 import org.apache.kafka.common.serialization.Serializer;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,9 +48,9 @@ public class TestGenerateConnectData {
             try (InputStream is = TestGenerateConnectData.class.getClassLoader().getResourceAsStream("calendarday.json")) {
                 ReplicationMessage rm = jsonParser.parseStream(is);
                 final LocalTime columnValue = (LocalTime) rm.value("starttime").get();
-                Assert.assertEquals(48,columnValue.getMinute() );
-                Assert.assertEquals(columnValue.getHour(),14 );
-                Assert.assertEquals(10, rm.values().size());
+                Assertions.assertEquals(48,columnValue.getMinute() );
+                Assertions.assertEquals(columnValue.getHour(),14 );
+                Assertions.assertEquals(10, rm.values().size());
                 ConnectReplicationMessageSerde serde = new ConnectReplicationMessageSerde();
                 Serializer<ReplicationMessage> serializer = serde.serializer();
                 serializer.configure(Map.of("schemaEnable", Boolean.TRUE),false);

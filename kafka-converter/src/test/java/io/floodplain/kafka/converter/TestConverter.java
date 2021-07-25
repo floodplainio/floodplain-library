@@ -19,7 +19,7 @@
 package io.floodplain.kafka.converter;
 
 import org.apache.kafka.connect.data.SchemaAndValue;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

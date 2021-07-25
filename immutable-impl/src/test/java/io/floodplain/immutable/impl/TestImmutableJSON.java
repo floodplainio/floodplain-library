@@ -21,9 +21,9 @@ package io.floodplain.immutable.impl;
 import io.floodplain.immutable.api.ImmutableMessage;
 import io.floodplain.immutable.api.ImmutableMessageParser;
 import io.floodplain.immutable.factory.ImmutableFactory;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +33,8 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import static io.floodplain.immutable.api.ImmutableMessage.ValueType.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TestImmutableJSON {
 
@@ -40,7 +42,7 @@ public class TestImmutableJSON {
 
     private final static Logger logger = LoggerFactory.getLogger(TestImmutableJSON.class);
 
-    @Before
+    @BeforeAll
     public void setup() {
         parser = new JSONImmutableMessageParserImpl();
     }
@@ -66,15 +68,15 @@ public class TestImmutableJSON {
         ImmutableMessage empty = ImmutableFactory.empty();
         ImmutableMessage created = empty.with("Aap/Noot", 3, INTEGER);
         Optional<ImmutableMessage> sub = created.subMessage("Aap");
-        Assert.assertTrue(sub.isPresent());
-        Assert.assertEquals(3, sub.get().value("Noot").orElse(-1));
+        assertTrue(sub.isPresent());
+        assertEquals(3, sub.get().value("Noot").orElse(-1));
     }
 
     @Test
     public void testGetSubValue() {
         ImmutableMessage empty = ImmutableFactory.empty();
         ImmutableMessage created = empty.with("Aap/Noot", 3, INTEGER);
-        Assert.assertEquals(3, created.value("Aap/Noot").orElse(-1));
+        assertEquals(3, created.value("Aap/Noot").orElse(-1));
     }
 
     @Test
@@ -82,7 +84,7 @@ public class TestImmutableJSON {
         ImmutableMessage created = ImmutableFactory.empty().with("Aap", 3, INTEGER);
         ImmutableMessage someOther = ImmutableFactory.empty().with("Noot", 4, INTEGER);
         ImmutableMessage combined = created.with("submessage", someOther, IMMUTABLE);
-        Assert.assertEquals(4, combined.value("submessage/Noot").orElse(-1));
+        assertEquals(4, combined.value("submessage/Noot").orElse(-1));
     }
 
     @Test
@@ -90,8 +92,8 @@ public class TestImmutableJSON {
         LocalDate d = LocalDate.now();
         ImmutableMessage created = ImmutableFactory.empty().with("Date", d, DATE);
         Object result = created.value("Date").get();
-        Assert.assertEquals(d,result);
-        Assert.assertEquals(DATE,created.columnType("Date"));
+        assertEquals(d,result);
+        assertEquals(DATE,created.columnType("Date"));
     }
 
 

@@ -29,9 +29,9 @@ import io.floodplain.test.InstantiatedContainer
 import io.floodplain.test.InstantiatedKafkaContainer
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeout
-import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.junit.jupiter.api.AfterAll
 import org.testcontainers.containers.Network
 import java.net.URL
 import java.util.concurrent.TimeoutException
@@ -81,7 +81,7 @@ class FilmToMongoIntegratedSink {
         Thread.sleep(20000)
     }
 
-    @After
+    @AfterAll
     fun shutdown() {
         postgresContainer.close()
         mongoContainer.close()

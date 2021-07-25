@@ -1,18 +1,6 @@
 
 import io.floodplain.build.FloodplainDeps
 
-// plugins {
-//     id("com.github.johnrengelman.shadow")
-// }
-
-// tasks {
-//     "shadowJar"(ShadowJar::class) {
-//         mergeServiceFiles {
-//             exclude("META-INF/services/javax.xml.stream.*")
-//         }
-//     }
-// }
-
 dependencies {
     implementation(project(":immutable-api"))
     implementation(project(":immutable-impl"))
@@ -20,7 +8,10 @@ dependencies {
     implementation(project(":replication-impl"))
     implementation(project(":replication-json"))
     implementation(project(":replication-protobuf"))
-    testCompile(FloodplainDeps.jUnit)
+    testImplementation(FloodplainDeps.junitJupiterApi)
+    testImplementation(FloodplainDeps.junitJupiterParams)
+    testRuntimeOnly(FloodplainDeps.junitJupiterEngine)
+    testRuntimeOnly(FloodplainDeps.junitJupiterVintage)
     compile(FloodplainDeps.kafkaStreams)
     compile(FloodplainDeps.kafkaConnectApi)
 }

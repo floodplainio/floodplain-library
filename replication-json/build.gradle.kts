@@ -6,5 +6,8 @@ dependencies {
     implementation(project(":replication-api"))
     implementation(project(":replication-impl"))
     implementation(project("::streams-api"))
-    testCompile(FloodplainDeps.jUnit)
+    testImplementation(FloodplainDeps.junitJupiterApi)
+    testImplementation(FloodplainDeps.junitJupiterParams)
+    testRuntimeOnly(FloodplainDeps.junitJupiterEngine)
+    testRuntimeOnly(FloodplainDeps.junitJupiterVintage)
 }

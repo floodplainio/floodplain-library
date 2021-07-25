@@ -34,10 +34,10 @@ import io.floodplain.test.useIntegraton
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeout
-import org.junit.After
-import org.junit.Assert
-import org.junit.Ignore
-import org.junit.Test
+import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Disabled
+import org.junit.jupiter.api.Test
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
@@ -58,7 +58,7 @@ class PostgresToElasticSearch {
         mapOf("discovery.type" to "single-node")
     )
 
-    @After
+    @AfterAll
     fun shutdown() {
         postgresContainer.close()
         elasticSearchContainer.close()
@@ -157,14 +157,14 @@ class PostgresToElasticSearch {
                     delay(1000)
                 }
             }
-            Assert.assertEquals(1, hits)
+            Assertions.assertEquals(1, hits)
             // We've found our hit. Close down connections.
             // delay(1000000)
             connectJobs().forEach { it.cancel("ciao!") }
         }
     }
 
-    @Test @Ignore
+    @Test @Disabled("Un")
     fun testPostgresToElasticSimple() {
         if (!useIntegraton) {
             logger.info("Not performing integration tests, doesn't seem to work in circleci")
@@ -225,7 +225,7 @@ class PostgresToElasticSearch {
                     delay(1000)
                 }
             }
-            Assert.assertEquals(1, hits)
+            Assertions.assertEquals(1, hits)
             logger.info("COMPLETED, waiting")
             delay(1000000)
             connectJobs().forEach { it.cancel("ciao!") }

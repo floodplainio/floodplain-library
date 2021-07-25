@@ -341,6 +341,9 @@ tasks.register<JacocoReport>("codeCoverageReport") {
 }
 
 tasks.test {
+    useJUnitPlatform {
+        includeEngines = setOf("junit-jupiter", "junit-vintage")
+    }
     configure<JacocoTaskExtension> {
         isEnabled = true
         // destinationFile = layout.buildDirectory.file("jacoco/${name}.exec").get().asFile

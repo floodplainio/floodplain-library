@@ -23,9 +23,9 @@ import io.floodplain.fhir.parseFhirToMsg
 import io.floodplain.kotlindsl.message.IMessage
 import io.floodplain.kotlindsl.message.empty
 import org.hl7.fhir.r4.model.Patient
-import org.junit.Assert
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import java.io.ByteArrayInputStream
+import org.junit.jupiter.api.Assertions
 
 class TestFhirSource {
 
@@ -40,7 +40,7 @@ class TestFhirSource {
         val parser: IParser = FhirContext.forR4().newJsonParser()
         val data = this::class.java.classLoader.getResource("patient-example.json").readBytes()
         val msg = parseFhirToMsg(parser, data, ::patientToMessage)
-        Assert.assertEquals("Chalmers", msg["name"])
+        Assertions.assertEquals("Chalmers", msg["name"])
     }
 
     @Test

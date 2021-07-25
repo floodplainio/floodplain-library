@@ -30,9 +30,9 @@ import io.floodplain.test.InstantiatedRedPandaContainer
 import io.floodplain.test.REDPANDA_IMAGE
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeout
-import org.junit.After
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.Test
 import org.testcontainers.containers.Network
 import java.net.URL
 import java.util.concurrent.TimeoutException
@@ -58,7 +58,7 @@ class FilmToMongoIntegratedSinkRedPanda {
     }
     private var debeziumContainer: InstantiatedContainer? = null
 
-    @Before
+    @BeforeAll
     fun setup() {
         val bootstrap = "${kafkaContainer.host}:${kafkaContainer.exposedPort}"
         logger.info("kafka.getBootstrapServers(): bootstrap: $bootstrap")
@@ -80,7 +80,7 @@ class FilmToMongoIntegratedSinkRedPanda {
         Thread.sleep(20000)
     }
 
-    @After
+    @AfterAll
     fun shutdown() {
         debeziumContainer?.close()
         postgresContainer.close()

@@ -33,9 +33,9 @@ import io.floodplain.test.InstantiatedContainer
 import io.floodplain.test.useIntegraton
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeout
-import org.junit.After
-import org.junit.Ignore
-import org.junit.Test
+import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.Disabled
+import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 import kotlin.system.measureTimeMillis
 import kotlin.test.assertEquals
@@ -50,12 +50,13 @@ class FilmToGoogleSheets {
 
     private val postgresContainer = InstantiatedContainer("floodplain/floodplain-postgres-demo:1.0.0", 5432)
 
-    @After
+    @AfterAll
     fun shutdown() {
         postgresContainer.close()
     }
 
-    @Test @Ignore // disable google sheet integration tests. Resource restrictions are too tight nowadays
+    @Test
+    @Disabled("disable google sheet integration tests. Resource restrictions are too tight nowadays")
     fun testPostgresGoogleSheets() {
         if (!useIntegraton) {
             logger.info("Not performing integration tests, doesn't seem to work in circleci")
@@ -128,7 +129,8 @@ class FilmToGoogleSheets {
         }
     }
 
-    @Test @Ignore // disable google sheet integration tests. Resource restrictions are too tight nowadays
+    @Test
+    @Disabled("disable google sheet integration tests. Resource restrictions are too tight nowadays")
     fun testReduceGoogleSheets() {
         if (!useIntegraton) {
             logger.info("Not performing integration tests, doesn't seem to work in circleci")

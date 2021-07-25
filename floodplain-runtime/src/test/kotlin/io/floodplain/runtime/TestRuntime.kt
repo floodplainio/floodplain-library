@@ -19,8 +19,8 @@
 package io.floodplain.runtime
 
 import com.xenomachina.argparser.ArgParser
-import org.junit.Assert
-import org.junit.Test
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
 
 class TestRuntime {
 
@@ -28,15 +28,15 @@ class TestRuntime {
     fun testArgs() {
         val args = arrayOf("--kafka", "localhost:9092")
         ArgParser(args).parseInto(::LocalArgs).run {
-            Assert.assertEquals("localhost:9092", kafka)
-            Assert.assertNull(connect)
-            Assert.assertFalse(force)
+            Assertions.assertEquals("localhost:9092", kafka)
+            Assertions.assertNull(connect)
+            Assertions.assertFalse(force)
         }
         val argsWithConnect = arrayOf("--kafka", "localhost:9092", "--connect", "http://localhost:8083", "--force")
         ArgParser(argsWithConnect).parseInto(::LocalArgs).run {
-            Assert.assertEquals("localhost:9092", kafka)
-            Assert.assertEquals("http://localhost:8083", connect)
-            Assert.assertTrue(force)
+            Assertions.assertEquals("localhost:9092", kafka)
+            Assertions.assertEquals("http://localhost:8083", connect)
+            Assertions.assertTrue(force)
         }
     }
 }

@@ -26,9 +26,9 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
-import org.junit.After
-import org.junit.Ignore
-import org.junit.Test
+import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.Disabled
+import org.junit.jupiter.api.Test
 import java.util.Properties
 import java.util.UUID
 import kotlin.test.assertEquals
@@ -60,7 +60,7 @@ class TestDebeziumSource {
     }
 
     @Test
-    @Ignore // just a doodle, could remove
+    @Disabled // just a doodle, could remove
     fun testEmbedded() {
 
 // Define the configuration for the Debezium Engine with MySQL connector...
@@ -99,7 +99,7 @@ class TestDebeziumSource {
 // Engine is stopped when the main code is finished
     }
 
-    @After
+    @AfterAll
     fun shutdown() {
         postgresContainer.close()
     }

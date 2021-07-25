@@ -24,8 +24,8 @@ import io.floodplain.replication.api.ReplicationMessageParser;
 import io.floodplain.replication.factory.ReplicationFactory;
 import io.floodplain.replication.impl.json.JSONReplicationMessageParserImpl;
 import io.floodplain.replication.impl.protobuf.FallbackReplicationMessageParser;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
@@ -37,7 +37,7 @@ public class TestSer {
         final ReplicationMessageParser parser = new JSONReplicationMessageParserImpl();
         byte[] payload = "123".getBytes(StandardCharsets.UTF_8);
         final byte[] deserialized = testSerialization(parser, payload);
-        Assert.assertArrayEquals(payload, deserialized);
+        Assertions.assertArrayEquals(payload, deserialized);
     }
 
     @Test
@@ -45,7 +45,7 @@ public class TestSer {
         final ReplicationMessageParser parser = new FallbackReplicationMessageParser(true);
         byte[] payload = "123".getBytes(StandardCharsets.UTF_8);
         final byte[] deserialized = testSerialization(parser, payload);
-        Assert.assertArrayEquals(payload, deserialized);
+        Assertions.assertArrayEquals(payload, deserialized);
     }
 
     private byte[] testSerialization(final ReplicationMessageParser parser, byte[] payload) {
@@ -54,6 +54,4 @@ public class TestSer {
         ReplicationMessage s = parser.parseBytes(Optional.of("binary"), encoded);
         return (byte[]) s.value("binary").get();
     }
-
-
 }

@@ -31,17 +31,15 @@ import io.floodplain.mongodb.remoteMongoConfig
 import io.floodplain.mongodb.toMongo
 import io.floodplain.mongodb.waitForMongoDbCondition
 import io.floodplain.test.useIntegraton
-import org.junit.Ignore
-import org.junit.Test
+import org.junit.jupiter.api.Disabled
+import org.junit.jupiter.api.Test
 import kotlin.test.assertNotNull
 
 private val logger = mu.KotlinLogging.logger {}
 
 class FilmWithArgumentsRemote {
-    /**
-     * Re-enable when I've got a testcontainer based kafka cluster
-     */
-    @Test @Ignore
+    @Test
+    @Disabled("Re-enable when I've got a testcontainer based kafka cluster: TODO")
     fun testPostgresRemoteSource() {
         testPostgresRemoteSourceFromArguments(
             "--kafka",
@@ -51,7 +49,8 @@ class FilmWithArgumentsRemote {
         )
     }
 
-    @Test @Ignore
+    @Test
+    @Disabled("")
     fun testPostgresLocal() {
         testPostgresRemoteSourceFromArguments()
     }

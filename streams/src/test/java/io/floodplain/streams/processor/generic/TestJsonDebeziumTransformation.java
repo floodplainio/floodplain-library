@@ -25,8 +25,8 @@ import io.floodplain.replication.api.ReplicationMessage;
 import io.floodplain.replication.factory.ReplicationFactory;
 import io.floodplain.replication.impl.json.JSONReplicationMessageParserImpl;
 import io.floodplain.streams.debezium.JSONToReplicationMessage;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,8 +47,8 @@ public class TestJsonDebeziumTransformation {
         ReplicationFactory.setInstance(new JSONReplicationMessageParserImpl());
         ReplicationMessage msg = JSONToReplicationMessage.convertToReplication(false, (ObjectNode) node, Optional.of("photo"));
         final String serialized = new String(msg.toBytes(ReplicationFactory.getInstance()), StandardCharsets.UTF_8);
-        Assert.assertEquals(11, msg.columnNames().size());
-        Assert.assertTrue(serialized.length() > 20000);
+        Assertions.assertEquals(11, msg.columnNames().size());
+        Assertions.assertTrue(serialized.length() > 20000);
 
     }
 

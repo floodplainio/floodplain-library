@@ -25,8 +25,8 @@ import io.floodplain.replication.factory.ReplicationFactory;
 import io.floodplain.replication.impl.json.JSONReplicationMessageParserImpl;
 import io.floodplain.replication.impl.protobuf.FallbackReplicationMessageParser;
 import io.floodplain.streams.serializer.ConnectReplicationMessageSerde;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +45,7 @@ public class TestSer {
         final ReplicationMessageParser parser = new JSONReplicationMessageParserImpl();
         byte[] payload = "123".getBytes(StandardCharsets.UTF_8);
         final byte[] deserialized = testSerialization(parser, payload);
-        Assert.assertArrayEquals(payload, deserialized);
+        Assertions.assertArrayEquals(payload, deserialized);
     }
 
     @Test
@@ -69,7 +69,7 @@ public class TestSer {
         final ReplicationMessageParser parser = new FallbackReplicationMessageParser(true);
         byte[] payload = "123".getBytes(StandardCharsets.UTF_8);
         final byte[] deserialized = testSerialization(parser, payload);
-        Assert.assertArrayEquals(payload, deserialized);
+        Assertions.assertArrayEquals(payload, deserialized);
     }
 
     private byte[] testSerialization(final ReplicationMessageParser parser, byte[] payload) {

@@ -10,7 +10,6 @@ dependencies {
     implementation(project(":replication-protobuf"))
     implementation(project(":kafka-converter"))
     implementation(FloodplainDeps.jacksonDatabind310)
-    testCompile(FloodplainDeps.jUnit)
     compile(FloodplainDeps.kafkaClient)
     compile(FloodplainDeps.kafkaStreams)
     compile(FloodplainDeps.kafkaConnectApi)
@@ -18,4 +17,9 @@ dependencies {
     compile(FloodplainDeps.kafkaConnectRuntime)
     compile(FloodplainDeps.cdiApi)
     compile(FloodplainDeps.microProfileConfig)
+    testImplementation(FloodplainDeps.junitJupiterApi)
+    testImplementation(FloodplainDeps.junitJupiterParams)
+    testRuntimeOnly(FloodplainDeps.junitJupiterEngine)
+    testRuntimeOnly(FloodplainDeps.junitJupiterVintage)
+
 }

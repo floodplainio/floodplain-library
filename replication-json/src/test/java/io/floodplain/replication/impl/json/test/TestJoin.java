@@ -25,9 +25,9 @@ import io.floodplain.replication.api.ReplicationMessageParser;
 import io.floodplain.replication.factory.ReplicationFactory;
 import io.floodplain.replication.impl.json.JSONReplicationMessageParserImpl;
 import io.floodplain.replication.impl.json.ReplicationJSON;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +48,7 @@ public class TestJoin {
     private ReplicationMessage organizationaddress;
     private ReplicationMessage organization;
 
-    @Before
+    @BeforeAll
     public void setup() {
         System.setProperty(ReplicationMessage.PRETTY_JSON, "true");
         ReplicationMessageParser parser = new JSONReplicationMessageParserImpl();
@@ -60,11 +60,11 @@ public class TestJoin {
     @Test
     public void testIgnore() {
         logger.info("{}",organization.columnNames());
-        Assert.assertEquals(8, organization.columnNames().size());
+        Assertions.assertEquals(8, organization.columnNames().size());
         logger.info(">>>>>>> {}",organization.values());
 
         int count = organization.without(Arrays.asList("updateby", "lastupdate")).columnNames().size();
-        Assert.assertEquals(6, count);
+        Assertions.assertEquals(6, count);
     }
 
     @Test
@@ -74,7 +74,7 @@ public class TestJoin {
         String[] parts = organizationaddress.primaryKeys().stream()
                 .map(k -> organizationaddress.value(k).get().toString()).toArray(String[]::new);
         String joined = String.join("-", parts);
-        Assert.assertEquals(organizationaddress.value(organizationaddress.primaryKeys().get(0)).get() + "-"
+        Assertions.assertEquals(organizationaddress.value(organizationaddress.primaryKeys().get(0)).get() + "-"
                 + organizationaddress.value(organizationaddress.primaryKeys().get(1)).get(), joined);
         logger.info("Joined: {}", joined);
         List<ReplicationMessage> list = new ArrayList<>();
@@ -99,7 +99,7 @@ public class TestJoin {
         int length = organization.toBytes(parser).length;
         logger.info("org:\n" + new String(organization.toBytes(parser),StandardCharsets.UTF_8));
         logger.info("Length: " + length);
-        Assert.assertTrue(length > 10000);
+        Assertions.assertTrue(length > 10000);
 
     }
 
@@ -176,7 +176,7 @@ public class TestJoin {
         ReplicationMessageParser parser = new JSONReplicationMessageParserImpl();
         InputStream stream = TestJoin.class.getClassLoader().getResourceAsStream("addresslist.json");
         List<ReplicationMessage> list = parser.parseMessageList(Optional.empty(), stream);
-        Assert.assertEquals(2, list.size());
+        Assertions.assertEquals(2, list.size());
     }
 
     @Test
@@ -185,7 +185,7 @@ public class TestJoin {
         ReplicationMessage repl = ReplicationFactory.getInstance().parseStream(stream);
         Map<String, Object> ss = repl.flatValueMap(true, Collections.emptySet(), "");
         logger.info("Entry: " + ss.keySet());
-        Assert.assertEquals(44, ss.size());
+        Assertions.assertEquals(44, ss.size());
     }
 
     @Test
@@ -195,7 +195,7 @@ public class TestJoin {
         ReplicationMessage replWithParam = repl.withParamMessage(ImmutableFactory.empty().with("key", "value", ImmutableMessage.ValueType.STRING));
         Map<String, Object> ss = replWithParam.flatValueMap(true, Collections.emptySet(), "");
         logger.info("Entry: " + ss.keySet());
-        Assert.assertEquals(45, ss.size());
+        Assertions.assertEquals(45, ss.size());
     }
 
     @Test
@@ -203,19 +203,19 @@ public class TestJoin {
         InputStream stream = TestJoin.class.getClassLoader().getResourceAsStream("composed.json");
         ReplicationMessage repl = ReplicationFactory.getInstance().parseStream(stream);
         Map<String, Object> ss = repl.flatValueMap(true, Collections.emptySet(), "");
-        Assert.assertEquals(388, ss.size());
+        Assertions.assertEquals(388, ss.size());
     }
 
     @Test
     public void testSubmessageListAddition() {
         InputStream stream = TestJoin.class.getClassLoader().getResourceAsStream("composed.json");
         ReplicationMessage repl = ReplicationFactory.getInstance().parseStream(stream);
-        Assert.assertEquals(14, repl.subMessages("standings").get().size());
+        Assertions.assertEquals(14, repl.subMessages("standings").get().size());
 
         stream = TestJoin.class.getClassLoader().getResourceAsStream("submessage.json");
         ImmutableMessage subm = ReplicationFactory.getInstance().parseStream(stream).message();
         ReplicationMessage combined = repl.withAddedSubMessage("standings", subm);
-        Assert.assertEquals(15, combined.subMessages("standings").get().size());
+        Assertions.assertEquals(15, combined.subMessages("standings").get().size());
     }
 
     @Test
@@ -223,11 +223,11 @@ public class TestJoin {
         logger.info(System.getProperty("os.arch"));
         InputStream stream = TestJoin.class.getClassLoader().getResourceAsStream("composed.json");
         ReplicationMessage repl = ReplicationFactory.getInstance().parseStream(stream);
-        Assert.assertEquals(14, repl.subMessages("standings").get().size());
+        Assertions.assertEquals(14, repl.subMessages("standings").get().size());
 
         ReplicationMessage combined = repl.withoutSubMessageInList("standings",
                 m -> ((Integer) m.value("homegoals").get()) == 4);
-        Assert.assertEquals(11, combined.subMessages("standings").get().size());
+        Assertions.assertEquals(11, combined.subMessages("standings").get().size());
     }
 
     @Test
@@ -258,8 +258,8 @@ public class TestJoin {
         ReplicationMessageParser parser = new JSONReplicationMessageParserImpl();
         InputStream stream = TestJoin.class.getClassLoader().getResourceAsStream("organizationwithparam.json");
         ReplicationMessage repl = parser.parseStream(stream);
-        Assert.assertTrue(repl.paramMessage().isPresent());
-        Assert.assertEquals(12, repl.paramMessage().get().value("col2").get());
+        Assertions.assertTrue(repl.paramMessage().isPresent());
+        Assertions.assertEquals(12, repl.paramMessage().get().value("col2").get());
         logger.info("Names: " + repl.queueKey() + " names: " + repl.columnNames() + "\n sub: "
                 + repl.message().subMessageNames() + " subli: " + repl.subMessageListNames());
     }

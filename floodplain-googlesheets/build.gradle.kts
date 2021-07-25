@@ -6,7 +6,6 @@ import io.floodplain.build.FloodplainDeps
 
 dependencies {
     compile(FloodplainDeps.kotlinLogging)
-    testCompile(FloodplainDeps.jUnit)
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation(project(":floodplain-stream-topology"))
     // This dependency is exported to consumers, that is to say found on their compile classpath.
@@ -24,6 +23,10 @@ dependencies {
     implementation(project(":streams-api"))
     implementation(project(":streams"))
     implementation(FloodplainDeps.kotlinCoroutines)
+    testImplementation(FloodplainDeps.junitJupiterApi)
+    testImplementation(FloodplainDeps.junitJupiterParams)
+    testRuntimeOnly(FloodplainDeps.junitJupiterEngine)
+    testRuntimeOnly(FloodplainDeps.junitJupiterVintage)
 }
 
 // tasks {

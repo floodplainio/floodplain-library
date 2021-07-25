@@ -25,8 +25,8 @@ import org.apache.kafka.clients.admin.ListTopicsOptions
 import org.apache.kafka.clients.admin.NewTopic
 import org.apache.kafka.common.config.ConfigResource
 import org.apache.kafka.common.config.ConfigResource.Type.TOPIC
-import org.junit.Assert
-import org.junit.Test
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
 import java.util.Collections
 import java.util.UUID
 
@@ -64,6 +64,6 @@ class TestTopicCreation {
         val configMap: MutableMap<String, String> = HashMap()
         configMap["cleanup.policy"] = "compact"
 
-        Assert.assertEquals(1, adminClient.listTopics(ListTopicsOptions()).names().get().size)
+        Assertions.assertEquals(1, adminClient.listTopics(ListTopicsOptions()).names().get().size)
     }
 }

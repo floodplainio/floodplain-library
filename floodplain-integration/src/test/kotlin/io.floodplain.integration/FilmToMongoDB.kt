@@ -35,8 +35,8 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeout
 import org.bson.Document
-import org.junit.After
-import org.junit.Test
+import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 private val logger = mu.KotlinLogging.logger {}
@@ -47,7 +47,7 @@ class FilmToMongoDB {
     private val postgresContainer = InstantiatedContainer("floodplain/floodplain-postgres-demo:1.0.0", 5432)
     private val mongoContainer = InstantiatedContainer("mongo:latest", 27017)
 
-    @After
+    @AfterAll
     fun shutdown() {
         postgresContainer.close()
         mongoContainer.close()

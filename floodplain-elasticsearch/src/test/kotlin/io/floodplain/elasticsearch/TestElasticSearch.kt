@@ -28,7 +28,7 @@ import io.floodplain.kotlindsl.stream
 import io.floodplain.test.InstantiatedContainer
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeout
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest

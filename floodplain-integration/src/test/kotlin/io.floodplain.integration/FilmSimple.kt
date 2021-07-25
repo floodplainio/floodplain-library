@@ -31,8 +31,8 @@ import io.floodplain.mongodb.waitForMongoDbCondition
 import io.floodplain.test.InstantiatedContainer
 import io.floodplain.test.useIntegraton
 import kotlinx.coroutines.cancel
-import org.junit.After
-import org.junit.Test
+import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.Test
 import kotlin.test.assertNotNull
 
 private val logger = mu.KotlinLogging.logger {}
@@ -42,7 +42,7 @@ class FilmSimple {
     private val postgresContainer = InstantiatedContainer("floodplain/floodplain-postgres-demo:1.0.0", 5432)
     private val mongoContainer = InstantiatedContainer("mongo:latest", 27017)
 
-    @After
+    @AfterAll
     fun shutdown() {
         postgresContainer.close()
         mongoContainer.close()

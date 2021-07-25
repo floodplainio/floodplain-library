@@ -23,14 +23,15 @@ import io.floodplain.test.InstantiatedKafkaContainer
 import io.floodplain.test.InstantiatedRedPandaContainer
 import io.floodplain.test.REDPANDA_IMAGE
 import org.apache.kafka.clients.admin.AdminClient
-import org.junit.FixMethodOrder
-import org.junit.Test
-import org.junit.runners.MethodSorters
+import org.junit.jupiter.api.MethodOrderer
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestMethodOrder
 import java.util.UUID
 
 private val logger = mu.KotlinLogging.logger {}
 
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+@TestMethodOrder(
+    MethodOrderer.MethodName::class)
 class TestRedPandaPerformance {
     // private val kafkaContainer = InstantiatedKafkaContainer()
     // private val containerNetwork = Network.newNetwork()

@@ -23,7 +23,7 @@ import io.debezium.engine.DebeziumEngine
 import io.debezium.engine.format.Json
 import io.floodplain.ChangeRecord
 import io.floodplain.test.InstantiatedContainer
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.Properties

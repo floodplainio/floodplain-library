@@ -18,8 +18,8 @@
  */
 package io.floodplain.kotlindsl
 
-import org.junit.Assert
-import org.junit.Test
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
 
 class TestTopicContext {
 
@@ -27,9 +27,9 @@ class TestTopicContext {
     fun testQualifiedTopic() {
         stream(null, "mydeployment", "mygeneration") {
             val qualified = topic("sometopic")
-            Assert.assertEquals("mydeployment-sometopic", qualified)
+            Assertions.assertEquals("mydeployment-sometopic", qualified)
             val generational = generationalTopic("sometopic")
-            Assert.assertEquals("mydeployment-mygeneration-sometopic", generational)
+            Assertions.assertEquals("mydeployment-mygeneration-sometopic", generational)
         }
     }
 }

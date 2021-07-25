@@ -2,7 +2,6 @@ import io.floodplain.build.FloodplainDeps
 
 dependencies {
     compile(FloodplainDeps.kotlinLogging)
-    testCompile(FloodplainDeps.jUnit)
     implementation(FloodplainDeps.jacksonCore)
     implementation(FloodplainDeps.jacksonDatabind)
     implementation(FloodplainDeps.jacksonDatabind310)
@@ -17,9 +16,14 @@ dependencies {
     implementation(project(":immutable-impl"))
     implementation(project(":streams-api"))
     implementation(project(":streams"))
-    implementation("ca.uhn.hapi.fhir:hapi-fhir-base:5.2.0")
-    implementation("ca.uhn.hapi.fhir:hapi-fhir-structures-r4:5.2.0")
-    implementation("ca.uhn.hapi.fhir:org.hl7.fhir.r4:5.2.0")
+    implementation("ca.uhn.hapi.fhir:hapi-fhir-base:${FloodplainDeps.hapiFhir}")
+    implementation("ca.uhn.hapi.fhir:hapi-fhir-structures-r4:${FloodplainDeps.hapiFhir}")
+    implementation("ca.uhn.hapi.fhir:org.hl7.fhir.r4:${FloodplainDeps.hapiFhir}")
 
     implementation(FloodplainDeps.kotlinCoroutines)
+    testImplementation(FloodplainDeps.junitJupiterApi)
+    testImplementation(FloodplainDeps.junitJupiterParams)
+    testRuntimeOnly(FloodplainDeps.junitJupiterEngine)
+    testRuntimeOnly(FloodplainDeps.junitJupiterVintage)
+
 }

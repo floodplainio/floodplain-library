@@ -32,9 +32,9 @@ import kotlinx.coroutines.withTimeout
 import org.apache.kafka.clients.CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG
 import org.apache.kafka.clients.admin.AdminClient
 import org.apache.kafka.clients.admin.NewTopic
-import org.junit.After
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.Test
 import org.testcontainers.containers.Network
 import java.net.URL
 import java.util.concurrent.TimeoutException
@@ -78,7 +78,7 @@ class FilmToMongoIntegration {
         adminClient.close()
     }
 
-    @Before
+    @BeforeAll
     fun setup() {
         if (!useIntegraton) {
             logger.info("Not performing integration tests, doesn't seem to work in circleci")
@@ -106,7 +106,7 @@ class FilmToMongoIntegration {
         Thread.sleep(20000)
     }
 
-    @After
+    @AfterAll
     fun shutdown() {
         if (!useIntegraton) {
             logger.info("Not performing integration tests, doesn't seem to work in circleci")

@@ -27,7 +27,7 @@ import io.floodplain.mongodb.toMongo
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeout
 import org.bson.Document
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.testcontainers.containers.GenericContainer
 import java.time.LocalDateTime
 import java.time.ZoneOffset

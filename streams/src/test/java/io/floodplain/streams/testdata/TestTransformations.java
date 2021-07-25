@@ -24,9 +24,9 @@ import io.floodplain.replication.api.ReplicationMessageParser;
 import io.floodplain.replication.factory.ReplicationFactory;
 import io.floodplain.replication.impl.protobuf.FallbackReplicationMessageParser;
 import io.floodplain.streams.api.TopologyContext;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +46,7 @@ public class TestTransformations {
 
     private final static Logger logger = LoggerFactory.getLogger(TestTransformations.class);
 
-    @Before
+    @BeforeAll
     public void setUp() throws Exception {
         System.setProperty("PRETTY_JSON", "true");
         ReplicationMessageParser tp = new FallbackReplicationMessageParser();
@@ -78,18 +78,18 @@ public class TestTransformations {
     public void testTopicNameConstruction() {
         final TopologyContext topologyContext = TopologyContext.context(Optional.of("MYTENANT"), "111");
         String result = topologyContext.topicName("TOPICNAME");
-        Assert.assertEquals("MYTENANT-TOPICNAME", result);
+        Assertions.assertEquals("MYTENANT-TOPICNAME", result);
 
         result = topologyContext.topicName("@TOPICNAME");
-        Assert.assertEquals("MYTENANT-111-TOPICNAME", result);
+        Assertions.assertEquals("MYTENANT-111-TOPICNAME", result);
 
         TopologyContext topologyContextWithoutTenant = TopologyContext.context(Optional.empty(), "111");
         result = topologyContextWithoutTenant.topicName("TOPICNAME");
-        Assert.assertEquals("TOPICNAME", result);
+        Assertions.assertEquals("TOPICNAME", result);
 
         result = topologyContextWithoutTenant.topicName("@TOPICNAME");
 
-        Assert.assertEquals("111-TOPICNAME", result);
+        Assertions.assertEquals("111-TOPICNAME", result);
 
 
         logger.info("Result: {}", result);
@@ -97,71 +97,71 @@ public class TestTransformations {
 
     @Test
     public void test() {
-        Assert.assertEquals("4565AB", addressMessage.value("zipcode").get());
+        Assertions.assertEquals("4565AB", addressMessage.value("zipcode").get());
     }
 
     @Test
     public void testRename() {
-        Assert.assertEquals("4565AB", addressMessage.rename("zipcode", "zippy").value("zippy").get());
+        Assertions.assertEquals("4565AB", addressMessage.rename("zipcode", "zippy").value("zippy").get());
     }
 
     @Test
     public void testRenameKey() {
         ReplicationMessage id = addressMessage.rename("addressid", "id");
-        Assert.assertEquals(1, id.primaryKeys().size());
-        Assert.assertEquals("id", id.primaryKeys().stream().findFirst().get());
+        Assertions.assertEquals(1, id.primaryKeys().size());
+        Assertions.assertEquals("id", id.primaryKeys().stream().findFirst().get());
     }
 
     @Test
     public void testRemoveKey() {
         ReplicationMessage id = addressMessage.without("addressid");
-        Assert.assertEquals(0, id.primaryKeys().size());
+        Assertions.assertEquals(0, id.primaryKeys().size());
     }
 
     @Test
     public void testSpecificKey() {
         ReplicationMessage id = addressMessage.withPrimaryKeys(Collections.singletonList("zipcode"));
-        Assert.assertEquals(1, id.primaryKeys().size());
-        Assert.assertEquals("zipcode", id.primaryKeys().stream().findFirst().get());
-        Assert.assertEquals(id.value("zipcode").get(), id.queueKey());
+        Assertions.assertEquals(1, id.primaryKeys().size());
+        Assertions.assertEquals("zipcode", id.primaryKeys().stream().findFirst().get());
+        Assertions.assertEquals(id.value("zipcode").get(), id.queueKey());
     }
 
 
     @Test
     public void testRemove() {
-        Assert.assertTrue(addressMessage.without("zipcode").value("zipcode").isEmpty());
+        Assertions.assertTrue(addressMessage.without("zipcode").value("zipcode").isEmpty());
     }
 
     @Test
     public void testAdd() {
-        Assert.assertEquals("monkey", addressMessage.with("animal", "monkey", ImmutableMessage.ValueType.STRING).value("animal").get());
-        Assert.assertEquals(ImmutableMessage.ValueType.STRING, addressMessage.with("animal", "monkey", ImmutableMessage.ValueType.STRING).columnType("animal"));
+        Assertions.assertEquals("monkey", addressMessage.with("animal", "monkey", ImmutableMessage.ValueType.STRING).value("animal").get());
+        Assertions.assertEquals(ImmutableMessage.ValueType.STRING, addressMessage.with("animal", "monkey", ImmutableMessage.ValueType.STRING).columnType("animal"));
     }
 
 
     @Test
     public void testClearTransformerRenameSubMessages() {
         ReplicationMessage result = playerMessage2.withoutSubMessages("communication");
-        Assert.assertFalse(result.subMessages("communication").isPresent());
+        Assertions.assertFalse(result.subMessages("communication").isPresent());
     }
 
     @Test
     public void testClearTransformerRenameSubMessage() {
-        Assert.assertTrue(personMessage.subMessage("fakesubmessage").isPresent());
+        Assertions.assertTrue(personMessage.subMessage("fakesubmessage").isPresent());
         ReplicationMessage result = personMessage.withoutSubMessage("fakesubmessage");
-        Assert.assertFalse(result.subMessage("fakesubmessage").isPresent());
+        Assertions.assertFalse(result.subMessage("fakesubmessage").isPresent());
     }
 
     @Test
     public void testEqual() {
-        Assert.assertEquals(addressMessage, addressIdenticalMessage);
-        Assert.assertEquals(addressIdenticalMessage, addressMessage);
+        Assertions.assertEquals(addressMessage, addressIdenticalMessage);
+        Assertions.assertEquals(addressIdenticalMessage, addressMessage);
     }
 
     @Test
     public void testMultikeys() {
         logger.info(">>> " + this.multikeys.queueKey());
-        Assert.assertEquals("123456<$>234567<$>345678", this.multikeys.queueKey());
+        Assertions.assertEquals("123456<$>234567<$>345678", this.multikeys.queueKey());
     }
 
     @Test
@@ -170,7 +170,7 @@ public class TestTransformations {
 //		sset.p
         sset.add(addressMessage);
         sset.add(addressIdenticalMessage);
-        Assert.assertEquals(1, sset.size());
+        Assertions.assertEquals(1, sset.size());
     }
 
     @Test
@@ -179,14 +179,14 @@ public class TestTransformations {
 //		sset.p
         list.add(addressMessage);
         list.add(addressIdenticalMessage);
-        Assert.assertEquals(2, list.size());
+        Assertions.assertEquals(2, list.size());
     }
 
     // need to think about this one
     @Test
     public void testDeepEquality() {
-        Assert.assertTrue(addressMessage.equalsToMessage(addressIdenticalMessage));
-        Assert.assertFalse(addressMessage.equalsToMessage(differentAddressMessage));
+        Assertions.assertTrue(addressMessage.equalsToMessage(addressIdenticalMessage));
+        Assertions.assertFalse(addressMessage.equalsToMessage(differentAddressMessage));
     }
 
 

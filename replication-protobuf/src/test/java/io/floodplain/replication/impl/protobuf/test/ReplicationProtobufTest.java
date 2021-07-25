@@ -27,9 +27,9 @@ import io.floodplain.replication.api.ReplicationMessageParser;
 import io.floodplain.replication.factory.ReplicationFactory;
 import io.floodplain.replication.impl.json.JSONReplicationMessageParserImpl;
 import io.floodplain.replication.impl.protobuf.impl.ProtobufReplicationMessageParser;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,7 +51,7 @@ public class ReplicationProtobufTest {
     private final ReplicationMessageParser jsonParser = new JSONReplicationMessageParserImpl();
     private final static Logger logger = LoggerFactory.getLogger(ReplicationProtobufTest.class);
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() {
         System.setProperty(ReplicationMessage.PRETTY_JSON, "true");
     }
@@ -87,14 +87,14 @@ public class ReplicationProtobufTest {
         ReplicationMessage m = ReplicationFactory.fromMap("key", values, types);
         Object value = m.value("anint").get();
         boolean isInt = (value instanceof Integer);
-        Assert.assertTrue(isInt);
+        Assertions.assertTrue(isInt);
 
         byte[] bb = m.toBytes(protoBufParser);
         logger.info("Length: {}", bb.length);
         ReplicationMessage rm = protoBufParser.parseBytes(Optional.empty(), bb);
         Object value2 = rm.value("anint").get();
         boolean isAlsoInt = (value2 instanceof Integer);
-        Assert.assertTrue(isAlsoInt);
+        Assertions.assertTrue(isAlsoInt);
     }
 
     @Test
@@ -110,11 +110,11 @@ public class ReplicationProtobufTest {
     public void testConversion() {
         try (InputStream is = getClass().getResourceAsStream("submessage.json")) {
             ReplicationMessage rm = jsonParser.parseStream(is);
-            Assert.assertEquals(26, rm.values().size());
+            Assertions.assertEquals(26, rm.values().size());
             byte[] bb = protoBufParser.serialize(rm);
             logger.info("bytes: {}", bb.length);
             ReplicationMessage rm2 = protoBufParser.parseBytes(Optional.empty(), bb);
-            Assert.assertEquals(26, rm2.values().size());
+            Assertions.assertEquals(26, rm2.values().size());
             byte[] bb2 = jsonParser.serialize(rm2);
             logger.info("JSON again: {}", bb2.length);
             logger.info(">>>>\n{}", new String(bb2, StandardCharsets.UTF_8));
@@ -129,13 +129,13 @@ public class ReplicationProtobufTest {
         try (InputStream is = ReplicationProtobufTest.class.getResourceAsStream("calendarday.json")) {
             ReplicationMessage rm = jsonParser.parseStream(is);
             final LocalTime columnValue = (LocalTime) rm.value("starttime").get();
-            Assert.assertEquals(columnValue.getMinute(),0 );
-            Assert.assertEquals(columnValue.getHour(),17 );
-            Assert.assertEquals(7, rm.values().size());
+            Assertions.assertEquals(columnValue.getMinute(),0 );
+            Assertions.assertEquals(columnValue.getHour(),17 );
+            Assertions.assertEquals(7, rm.values().size());
             byte[] bb = protoBufParser.serialize(rm);
             logger.info("bytes: " + bb.length);
             ReplicationMessage rm2 = protoBufParser.parseBytes(Optional.empty(), bb);
-            Assert.assertEquals(7, rm2.values().size());
+            Assertions.assertEquals(7, rm2.values().size());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -147,10 +147,10 @@ public class ReplicationProtobufTest {
         ReplicationMessageParser parser = new ProtobufReplicationMessageParser();
         try(InputStream stream = ReplicationProtobufTest.class.getResourceAsStream("addresslist.json")) {
             List<ReplicationMessage> list = jsonparser.parseMessageList(Optional.of("addresstopic"), stream);
-            Assert.assertEquals(1, list.size());
+            Assertions.assertEquals(1, list.size());
             byte[] data = parser.serializeMessageList(list);
             logger.info("Datasize: " + data.length);
-            Assert.assertEquals(68, data.length);
+            Assertions.assertEquals(68, data.length);
             logger.info("First: " + data[0]);
             logger.info("Secon: " + data[1]);
             List<ReplicationMessage> list2 = parser.parseMessageList(data);
@@ -167,14 +167,14 @@ public class ReplicationProtobufTest {
         ReplicationMessageParser parser = new ProtobufReplicationMessageParser();
         try(InputStream stream = getClass().getResourceAsStream("addresslist.json")) {
             List<ReplicationMessage> list = jsonparser.parseMessageList(Optional.of("addresstopic"), stream);
-            Assert.assertEquals(1, list.size());
+            Assertions.assertEquals(1, list.size());
             byte[] data = parser.serializeMessageList(list);
             logger.info("Datasize: " + data.length);
-            Assert.assertEquals(68, data.length);
+            Assertions.assertEquals(68, data.length);
             ByteArrayInputStream bais = new ByteArrayInputStream(data);
             List<ReplicationMessage> list2 = parser.parseMessageList(Optional.of("addresstopic"), bais);
             for (ReplicationMessage replicationMessage : list2) {
-                Assert.assertFalse(replicationMessage.isErrorMessage());
+                Assertions.assertFalse(replicationMessage.isErrorMessage());
             }
             logger.info("LEN: " + list.size());
         }
@@ -191,10 +191,10 @@ public class ReplicationProtobufTest {
         values.put("empty", null);
         types.put("empty", ValueType.STRING);
         ReplicationMessage msg = ReplicationFactory.fromMap("key", values, types);
-        Assert.assertTrue(msg.value("empty").isEmpty());
+        Assertions.assertTrue(msg.value("empty").isEmpty());
         byte[] protobytes = msg.toBytes(parser);
         ReplicationMessage reserialized = parser.parseBytes(Optional.empty(), protobytes);
-        Assert.assertTrue(reserialized.value("empty").isEmpty());
+        Assertions.assertTrue(reserialized.value("empty").isEmpty());
         String json2 = new String(reserialized.toBytes(jsonparser), StandardCharsets.UTF_8);
         logger.info("json: " + json2);
     }
@@ -223,8 +223,8 @@ public class ReplicationProtobufTest {
             ReplicationMessage rm = jsonParser.parseStream(is);
             byte[] bb = protoBufParser.serialize(rm);
             ReplicationMessage repl = protoBufParser.parseBytes(Optional.empty(), bb);
-            Assert.assertTrue(repl.paramMessage().isPresent());
-            Assert.assertEquals(12, repl.paramMessage().get().value("col2").get());
+            Assertions.assertTrue(repl.paramMessage().isPresent());
+            Assertions.assertEquals(12, repl.paramMessage().get().value("col2").get());
             logger.info("Names: " + repl.queueKey() + " names: " + repl.columnNames() + "\n sub: " + repl.message().subMessageNames() + " subli: " + repl.subMessageListNames());
         } catch (IOException e) {
             e.printStackTrace();

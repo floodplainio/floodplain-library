@@ -15,7 +15,10 @@ dependencies {
     implementation(project("::streams-api"))
     implementation("com.github.spotbugs:spotbugs-annotations:4.0.1")
     compile(FloodplainDeps.protobuf)
-    testCompile(FloodplainDeps.jUnit)
+    testImplementation(FloodplainDeps.junitJupiterApi)
+    testImplementation(FloodplainDeps.junitJupiterParams)
+    testRuntimeOnly(FloodplainDeps.junitJupiterEngine)
+    testRuntimeOnly(FloodplainDeps.junitJupiterVintage)
 }
 plugins {
     id("com.google.protobuf")

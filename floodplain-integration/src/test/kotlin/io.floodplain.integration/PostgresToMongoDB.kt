@@ -30,7 +30,6 @@ import io.floodplain.kotlindsl.scan
 import io.floodplain.kotlindsl.set
 import io.floodplain.kotlindsl.stream
 import io.floodplain.kotlindsl.to
-import io.floodplain.mongodb.mongoConfig
 import io.floodplain.mongodb.remoteMongoConfig
 import io.floodplain.mongodb.toMongo
 import io.floodplain.mongodb.waitForMongoDbCondition
@@ -39,8 +38,8 @@ import io.floodplain.test.useIntegraton
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeout
-import org.junit.After
-import org.junit.Test
+import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 import java.util.Date
 import kotlin.test.assertEquals
@@ -54,7 +53,7 @@ class TestCombinedMongo {
     private val postgresContainer = InstantiatedContainer("floodplain/floodplain-postgres-demo:1.0.0", 5432)
     private val mongoContainer = InstantiatedContainer("mongo:latest", 27017)
 
-    @After
+    @AfterAll
     fun shutdown() {
         postgresContainer.close()
         mongoContainer.close()

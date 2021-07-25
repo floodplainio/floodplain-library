@@ -3,7 +3,6 @@ import io.floodplain.build.FloodplainDeps
 dependencies {
     api(FloodplainDeps.slf4j)
     compile(FloodplainDeps.kotlinLogging)
-    testCompile(FloodplainDeps.jUnit)
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation(project(":floodplain-stream-topology"))
     implementation(project(":immutable-api"))
@@ -26,4 +25,8 @@ dependencies {
     testImplementation(FloodplainDeps.testContainerKafka)
     testImplementation(FloodplainDeps.debeziumTestContainers)
     testImplementation(FloodplainDeps.mongoClientSync)
+    testImplementation(FloodplainDeps.junitJupiterApi)
+    testImplementation(FloodplainDeps.junitJupiterParams)
+    testRuntimeOnly(FloodplainDeps.junitJupiterEngine)
+    testRuntimeOnly(FloodplainDeps.junitJupiterVintage)
 }

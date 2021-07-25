@@ -34,9 +34,9 @@ import io.floodplain.mongodb.waitForMongoDbCondition
 import io.floodplain.test.InstantiatedContainer
 import io.floodplain.test.useIntegraton
 import kotlinx.coroutines.delay
-import org.junit.After
-import org.junit.Ignore
-import org.junit.Test
+import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.Disabled
+import org.junit.jupiter.api.Test
 import kotlin.test.assertNotNull
 
 private val logger = mu.KotlinLogging.logger {}
@@ -57,7 +57,7 @@ class MySQLTest {
     )
     private val mongoContainer = InstantiatedContainer("mongo:latest", 27017)
 
-    @After
+    @AfterAll
     fun shutdown() {
         mysqlContainer.close()
         mongoContainer.close()
@@ -217,7 +217,7 @@ class MySQLTest {
         }
     }
     // can make this a proper unit test when I have a persisted wordpress installation image
-    @Test @Ignore
+    @Test @Disabled
     fun testWordpress() {
         stream {
             val mysqlConfig = mysqlSourceConfig(

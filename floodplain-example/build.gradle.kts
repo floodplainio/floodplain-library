@@ -23,10 +23,14 @@ dependencies {
     implementation("io.confluent:kafka-connect-elasticsearch:5.5.0")
     implementation(FloodplainDeps.kotlinCoroutines)
     compile(FloodplainDeps.slf4j)
-    testCompile(FloodplainDeps.jUnit)
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     testImplementation("org.jetbrains.kotlin:kotlin-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
+    testImplementation(FloodplainDeps.junitJupiterApi)
+    testImplementation(FloodplainDeps.junitJupiterParams)
+    testRuntimeOnly(FloodplainDeps.junitJupiterEngine)
+    testRuntimeOnly(FloodplainDeps.junitJupiterVintage)
+
 }
 // shadowJar {
 //     mergeServiceFiles {

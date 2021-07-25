@@ -4,7 +4,6 @@ dependencies {
     implementation(FloodplainDeps.debeziumPostgres)
     implementation(FloodplainDeps.debeziumMySQL)
     compile(FloodplainDeps.kotlinLogging)
-    testCompile(FloodplainDeps.jUnit)
     implementation(project(":floodplain-api"))
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation(FloodplainDeps.kotlinCoroutines)
@@ -13,4 +12,8 @@ dependencies {
     testImplementation(project(":floodplain-test"))
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
     testImplementation(FloodplainDeps.testContainer)
+    testImplementation(FloodplainDeps.junitJupiterApi)
+    testImplementation(FloodplainDeps.junitJupiterParams)
+    testRuntimeOnly(FloodplainDeps.junitJupiterEngine)
+    testRuntimeOnly(FloodplainDeps.junitJupiterVintage)
 }
