@@ -114,9 +114,11 @@ subprojects {
         }
     }
 
-    val dokkaHtml = tasks.named<org.jetbrains.dokka.gradle.DokkaTask>("dokkaHtml").configure {
-        // outputDirectory = buildDir.resolve("dokka").absolutePath
-    }
+    val dokkaHtml by tasks.getting(org.jetbrains.dokka.gradle.DokkaTask::class)
+
+    // val dokkaHtml = tasks.named<org.jetbrains.dokka.gradle.DokkaTask>("dokkaHtml").configure {
+    //     // outputDirectory = buildDir.resolve("dokka").absolutePath
+    // }
 
     tasks {
         val sourcesJar by creating(Jar::class) {
@@ -132,7 +134,7 @@ subprojects {
         val dokkaJar by creating(Jar::class) {
             dependsOn.add(dokkaHtml)
             archiveClassifier.set("dokka")
-            from(dokkaHtml)
+            from(dokkaHtml.outputDirectory)
         }
 
         artifacts {
