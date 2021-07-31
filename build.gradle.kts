@@ -16,11 +16,10 @@ buildscript {
     }
 }
 plugins {
-    id("eclipse")
-    id("org.jetbrains.kotlin.jvm") version "1.4.31"
-    id("org.jetbrains.kotlin.plugin.allopen") version "1.4.31"
+    id("org.jetbrains.kotlin.jvm") version "1.4.32"
+    id("org.jetbrains.kotlin.plugin.allopen") version "1.4.32"
     id("org.jlleitschuh.gradle.ktlint") version "10.1.0"
-    id("org.jetbrains.dokka") version "0.10.1"
+    id("org.jetbrains.dokka") version "1.4.32"
     id("com.github.hierynomus.license-base").version("0.15.0")
     id("com.github.spotbugs") version "4.7.1"
     id("io.gitlab.arturbosch.detekt") version "1.16.0"
@@ -115,6 +114,10 @@ subprojects {
         }
     }
 
+    val dokkaHtml = tasks.named<org.jetbrains.dokka.gradle.DokkaTask>("dokkaHtml").configure {
+        // outputDirectory = buildDir.resolve("dokka").absolutePath
+    }
+
     tasks {
         val sourcesJar by creating(Jar::class) {
             archiveClassifier.set("sources")
@@ -127,9 +130,9 @@ subprojects {
             from(javadoc)
         }
         val dokkaJar by creating(Jar::class) {
-            dependsOn.add(dokka)
+            dependsOn.add(dokkaHtml)
             archiveClassifier.set("dokka")
-            from(dokka)
+            from(dokkaHtml)
         }
 
         artifacts {
