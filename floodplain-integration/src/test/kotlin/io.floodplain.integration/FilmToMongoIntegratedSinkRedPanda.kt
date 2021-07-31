@@ -36,10 +36,12 @@ import org.junit.jupiter.api.Test
 import org.testcontainers.containers.Network
 import java.net.URL
 import java.util.concurrent.TimeoutException
-import kotlin.test.assertEquals
+import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.TestInstance
 
 private val logger = mu.KotlinLogging.logger {}
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class FilmToMongoIntegratedSinkRedPanda {
     private val containerNetwork = Network.builder().build() //newNetwork()
     private val kafkaContainer = InstantiatedRedPandaContainer(REDPANDA_IMAGE) {

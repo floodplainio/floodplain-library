@@ -11,7 +11,6 @@ dependencies {
     testImplementation(FloodplainDeps.junitJupiterApi)
     testImplementation(FloodplainDeps.junitJupiterParams)
     testRuntimeOnly(FloodplainDeps.junitJupiterEngine)
-    testRuntimeOnly(FloodplainDeps.junitJupiterVintage)
     compile(FloodplainDeps.kafkaStreams)
     compile(FloodplainDeps.kafkaConnectApi)
 }

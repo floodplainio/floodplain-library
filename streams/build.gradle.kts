@@ -9,6 +9,7 @@ dependencies {
     implementation(project(":replication-json"))
     implementation(project(":replication-protobuf"))
     implementation(project(":kafka-converter"))
+    testImplementation("org.junit.jupiter:junit-jupiter:${FloodplainDeps.junit_5_version}")  // "org.junit.jupiter:junit-jupiter:5.5.2"
     implementation(FloodplainDeps.jacksonDatabind310)
     compile(FloodplainDeps.kafkaClient)
     compile(FloodplainDeps.kafkaStreams)
@@ -20,6 +21,4 @@ dependencies {
     testImplementation(FloodplainDeps.junitJupiterApi)
     testImplementation(FloodplainDeps.junitJupiterParams)
     testRuntimeOnly(FloodplainDeps.junitJupiterEngine)
-    testRuntimeOnly(FloodplainDeps.junitJupiterVintage)
-
 }

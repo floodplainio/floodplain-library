@@ -13,7 +13,6 @@ fun isReleaseVersion(): Boolean {
     return !FloodplainDeps.floodplain_version.endsWith("SNAPSHOT")
 }
 
-
 object FloodplainDeps {
     const val floodplain_version = "1.5.21-SNAPSHOT"
     const val jackson_version = "2.12.4"
@@ -24,7 +23,7 @@ object FloodplainDeps {
     const val debezium_version = "1.6.0.Final"
     const val testContainer_version = "1.16.0"
     const val kotlin_coroutines_version = "1.4.3"
-    const val junit_5_version     = "5.6.2"
+    const val junit_5_version     = "5.7.2"
     const val hapiFhir = "5.4.2" //5.4.2
     const val debeziumCore        = "io.debezium:debezium-core:$debezium_version"
     const val debeziumPostgres    = "io.debezium:debezium-connector-postgres:$debezium_version"
@@ -37,8 +36,7 @@ object FloodplainDeps {
     const val junitJupiterParams  = "org.junit.jupiter:junit-jupiter-params:$junit_5_version"
     const val junitJupiterApi     = "org.junit.jupiter:junit-jupiter-api:$junit_5_version"
     const val junitJupiterEngine  = "org.junit.vintage:junit-vintage-engine:$junit_5_version"
-    const val junitJupiterVintage = "org.junit.jupiter:junit-jupiter-engine:$junit_5_version"
-
+    // const val junitJupiterVintage = "org.junit.jupiter:junit-jupiter-engine:$junit_5_version"
     const val mongoClientSync     = "org.mongodb:mongodb-driver-sync:$mongodb_version"
     const val slf4j               = "org.slf4j:slf4j-api:$slf4j_version"
     const val slf4jLog4j          = "org.slf4j:slf4j-log4j12:$slf4j_version"

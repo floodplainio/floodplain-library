@@ -38,6 +38,7 @@ import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
@@ -47,6 +48,7 @@ import java.time.Duration
 private val logger = mu.KotlinLogging.logger {}
 
 @kotlinx.coroutines.ExperimentalCoroutinesApi
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class PostgresToElasticSearch {
 
     private val objectMapper = ObjectMapper()

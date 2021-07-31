@@ -37,13 +37,14 @@ import kotlinx.coroutines.delay
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
-import kotlin.test.assertNotNull
+import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.TestInstance
 
 private val logger = mu.KotlinLogging.logger {}
 
 @Suppress("UNCHECKED_CAST")
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class MySQLTest {
-
     private val mysqlContainer = InstantiatedContainer(
         "debezium/example-mysql:1.6",
         3306,

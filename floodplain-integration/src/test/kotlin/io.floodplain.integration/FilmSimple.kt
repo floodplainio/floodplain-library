@@ -33,10 +33,12 @@ import io.floodplain.test.useIntegraton
 import kotlinx.coroutines.cancel
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Test
-import kotlin.test.assertNotNull
+import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.TestInstance
 
 private val logger = mu.KotlinLogging.logger {}
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class FilmSimple {
 
     private val postgresContainer = InstantiatedContainer("floodplain/floodplain-postgres-demo:1.0.0", 5432)

@@ -5,10 +5,12 @@ import io.floodplain.test.InstantiatedRedPandaContainer
 import io.floodplain.test.REDPANDA_IMAGE
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
 import org.testcontainers.containers.Network
 
 private val logger = mu.KotlinLogging.logger {}
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TestRedPandaDebezium {
     // Test just Red Panda + Debezium (and no floodplain / streams)
     // Just to troubleshoot some inital issues. If RedPanda works well over time this test can be removed

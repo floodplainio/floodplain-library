@@ -24,17 +24,7 @@ dependencies {
     implementation(FloodplainDeps.kotlinCoroutines)
     compile(FloodplainDeps.slf4j)
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    testImplementation("org.jetbrains.kotlin:kotlin-test")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
     testImplementation(FloodplainDeps.junitJupiterApi)
     testImplementation(FloodplainDeps.junitJupiterParams)
     testRuntimeOnly(FloodplainDeps.junitJupiterEngine)
-    testRuntimeOnly(FloodplainDeps.junitJupiterVintage)
-
 }
-// shadowJar {
-//     mergeServiceFiles {
-//         path = "META-INF/custom"
-//         exclude "META-INF/services/javax.xml.stream.*"
-//     }
-// }

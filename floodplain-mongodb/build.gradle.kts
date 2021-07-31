@@ -12,12 +12,8 @@ dependencies {
     implementation(project(":floodplain-stream-topology"))
     implementation(project(":floodplain-dsl"))
     implementation(FloodplainDeps.kotlinCoroutines)
-    testImplementation("org.jetbrains.kotlin:kotlin-test")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
     testCompile(FloodplainDeps.testContainer)
     testImplementation(FloodplainDeps.junitJupiterApi)
     testImplementation(FloodplainDeps.junitJupiterParams)
     testRuntimeOnly(FloodplainDeps.junitJupiterEngine)
-    testRuntimeOnly(FloodplainDeps.junitJupiterVintage)
-
 }

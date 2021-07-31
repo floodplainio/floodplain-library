@@ -28,14 +28,12 @@ import io.floodplain.streams.debezium.JSONToReplicationMessage
 import io.floodplain.streams.remotejoin.StoreStateProcessor
 import kotlinx.coroutines.delay
 import org.apache.kafka.streams.state.KeyValueStore
-import org.junit.Assert
+import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 import java.time.Duration
 import java.util.Optional
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
+import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Tag
 
 private val logger = mu.KotlinLogging.logger {}
 
@@ -115,6 +113,7 @@ class TestTopology {
         }
     }
 
+    @Tag("development")
     @Test
     fun simpleTransformation() {
         stream {
@@ -130,6 +129,7 @@ class TestTopology {
             logger.info("Person found: $value")
         }
     }
+
     @Test
     fun testSimpleJoin() {
         stream("somegen") {
@@ -708,10 +708,10 @@ class TestTopology {
         }.renderAndExecute {
             input("source", "key", empty().set("value", "value1"))
             val (key, _) = output("output")
-            Assert.assertEquals("monkey", key)
+            assertEquals("monkey", key)
             delete("source", "soon")
             val deleted = deleted("output")
-            Assert.assertEquals("monsoon", deleted)
+            assertEquals("monsoon", deleted)
         }
     }
 
@@ -729,14 +729,14 @@ class TestTopology {
             skip("output",1)
             assertEquals(1, outputSize("output"))
             val (reskey,msg) = output("output")
-            assertEquals("key1",reskey);
+            assertEquals("key1",reskey)
             val history = msg.list("list")
 
             assertEquals(2,history.size)
-            delete("source","key1");
+            delete("source","key1")
             val (deletedkey,deletedlisLevel) = output("output")
             val deletedHistorList = deletedlisLevel.list("list")
-            assertEquals(reskey,deletedkey);
+            assertEquals(reskey,deletedkey)
             assertTrue(deletedHistorList.isEmpty())
         }
     }

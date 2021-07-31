@@ -27,6 +27,7 @@ import io.floodplain.streams.api.TopologyContext;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,6 +35,7 @@ import java.io.InputStream;
 import java.util.*;
 
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class TestTransformations {
 
     private ReplicationMessage addressMessage;

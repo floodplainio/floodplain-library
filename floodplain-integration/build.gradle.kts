@@ -16,9 +16,7 @@ dependencies {
     implementation("io.confluent:kafka-connect-elasticsearch:5.5.0")
     implementation(FloodplainDeps.kotlinCoroutines)
     implementation(FloodplainDeps.jacksonDatabind310)
-    testImplementation("org.jetbrains.kotlin:kotlin-test")
     testImplementation(project(":floodplain-test"))
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
     testImplementation(FloodplainDeps.jacksonCore)
     testImplementation(FloodplainDeps.jacksonDatabind)
     testImplementation(FloodplainDeps.testContainer)
@@ -28,5 +26,4 @@ dependencies {
     testImplementation(FloodplainDeps.junitJupiterApi)
     testImplementation(FloodplainDeps.junitJupiterParams)
     testRuntimeOnly(FloodplainDeps.junitJupiterEngine)
-    testRuntimeOnly(FloodplainDeps.junitJupiterVintage)
 }

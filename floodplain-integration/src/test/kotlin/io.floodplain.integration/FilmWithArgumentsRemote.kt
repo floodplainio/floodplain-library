@@ -33,7 +33,7 @@ import io.floodplain.mongodb.waitForMongoDbCondition
 import io.floodplain.test.useIntegraton
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
-import kotlin.test.assertNotNull
+import org.junit.jupiter.api.Assertions.*
 
 private val logger = mu.KotlinLogging.logger {}
 

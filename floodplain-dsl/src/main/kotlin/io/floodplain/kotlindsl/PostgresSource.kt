@@ -80,6 +80,8 @@ class PostgresConfig(
                     "database.dbname" to database,
                     "database.user" to username,
                     "database.password" to password,
+                    "topic.creation.default.replication.factor" to "1",
+                    "topic.creation.default.partitions" to "5",
                     "key.converter" to "org.apache.kafka.connect.json.JsonConverter",
                     "value.converter" to "org.apache.kafka.connect.json.JsonConverter",
                     // TODO"table.whitelist": "public.inventory"

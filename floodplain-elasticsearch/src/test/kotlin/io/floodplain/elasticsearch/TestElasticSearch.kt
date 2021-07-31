@@ -36,7 +36,8 @@ import java.net.http.HttpResponse
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.util.UUID
-import kotlin.test.assertEquals
+import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Disabled
 
 private val logger = mu.KotlinLogging.logger {}
 

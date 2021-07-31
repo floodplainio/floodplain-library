@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test
 import org.testcontainers.containers.GenericContainer
 import java.time.LocalDateTime
 import java.time.ZoneOffset
-import kotlin.test.assertEquals
+import org.junit.jupiter.api.Assertions.*
 
 private val logger = mu.KotlinLogging.logger {}
 

@@ -23,6 +23,7 @@ import io.debezium.engine.DebeziumEngine
 import io.debezium.engine.format.Json
 import io.floodplain.ChangeRecord
 import io.floodplain.test.InstantiatedContainer
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import java.nio.file.Files
 import java.nio.file.Path
@@ -48,6 +49,7 @@ class TestMySQL {
     private val itemCounter = AtomicInteger(0)
 
     @Test
+    @Tag("integration")
     fun testSimpleMySqlRun() {
         // Find better way to configure this?
         System.setProperty("debezium.embedded.shutdown.pause.before.interrupt.ms", "1000")

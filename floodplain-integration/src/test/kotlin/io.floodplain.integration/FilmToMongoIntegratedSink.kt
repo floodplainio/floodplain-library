@@ -29,16 +29,18 @@ import io.floodplain.test.InstantiatedContainer
 import io.floodplain.test.InstantiatedKafkaContainer
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeout
-import org.junit.Before
-import org.junit.Test
 import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.Test
 import org.testcontainers.containers.Network
 import java.net.URL
 import java.util.concurrent.TimeoutException
-import kotlin.test.assertEquals
+import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.TestInstance
 
 private val logger = mu.KotlinLogging.logger {}
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class FilmToMongoIntegratedSink {
 
     private val containerNetwork = Network.newNetwork()
@@ -59,7 +61,7 @@ class FilmToMongoIntegratedSink {
     }
     private var debeziumContainer: InstantiatedContainer? = null
 
-    @Before
+    @BeforeAll
     fun setup() {
         val bootstrap = "${kafkaContainer.host}:${kafkaContainer.exposedPort}"
         logger.info("kafka.getBootstrapServers(): ${kafkaContainer.container.bootstrapServers} bootstrap: $bootstrap")
