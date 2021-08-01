@@ -790,10 +790,19 @@ class TestTopology {
     }
 
     @Test
-    fun testBuffer() {
+    fun testPersistentBuffer() {
+        testBuffer(false)
+    }
+
+    @Test
+    fun testInMemoryBuffer() {
+        testBuffer(true)
+    }
+
+    fun testBuffer(inMemory: Boolean) {
         stream {
             from("source") {
-                buffer(Duration.ofSeconds(9), 10)
+                buffer(Duration.ofSeconds(9), 10, inMemory)
                 to("output")
             }
         }.renderAndExecute {

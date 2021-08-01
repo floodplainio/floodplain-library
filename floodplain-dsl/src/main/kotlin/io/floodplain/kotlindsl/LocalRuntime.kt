@@ -26,6 +26,7 @@ import io.floodplain.replication.factory.ReplicationFactory
 import io.floodplain.runtime.FloodplainException
 import io.floodplain.streams.api.Topic
 import io.floodplain.streams.api.TopologyContext
+import io.floodplain.streams.base.BoundedMemoryRocksDBConfig
 import io.floodplain.streams.remotejoin.TopologyConstructor
 import io.floodplain.streams.serializer.ReplicationMessageSerde
 import kotlinx.coroutines.CoroutineScope
@@ -115,6 +116,10 @@ fun runLocalTopology(
     props.setProperty(StreamsConfig.APPLICATION_ID_CONFIG, applicationId)
     props.setProperty(StreamsConfig.STATE_DIR_CONFIG, storageFolder)
     props.setProperty(StreamsConfig.BUILT_IN_METRICS_VERSION_CONFIG, StreamsConfig.METRICS_LATEST)
+    props.setProperty(StreamsConfig.ROCKSDB_CONFIG_SETTER_CLASS_CONFIG,
+        BoundedMemoryRocksDBConfig::class.java.toString()
+    )
+
     val driver = TopologyTestDriver(topology, props)
 
     val contextInstance = LocalDriverContext(
@@ -135,6 +140,7 @@ fun runLocalTopology(
 
         driver.allStateStores.forEach { store -> store.value.close() }
         driver.close()
+        logger.info("Local runtime closed")
         // TODO Add switch to be able to resume (so don't delete state files)?
         val path = Path.of(storageFolder).toAbsolutePath()
         if (Files.exists(path)) {
