@@ -22,5 +22,4 @@ class TestMultipartition {
             logger.info("Person found: $value")
         }
     }
-
 }

@@ -278,7 +278,6 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
         if (localSinkConfigurations.isNotEmpty()) {
             herder = startLocalConnect(settings)
         }
-        var count = 0
         localSinkConfigurations.flatMap {
             it.instantiateSinkElements()
         }.forEach {

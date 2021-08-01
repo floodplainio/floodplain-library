@@ -16,5 +16,5 @@ dependencies {
     implementation("ca.uhn.hapi.fhir:hapi-fhir-base:${FloodplainDeps.hapiFhir}")
     implementation("ca.uhn.hapi.fhir:hapi-fhir-structures-r4:${FloodplainDeps.hapiFhir}")
     implementation("ca.uhn.hapi.fhir:org.hl7.fhir.r4:${FloodplainDeps.hapiFhir}")
-    testImplementation("org.junit.jupiter:junit-jupiter:${FloodplainDeps.junit_5_version}")  // "org.junit.jupiter:junit-jupiter:5.5.2"
+    testImplementation("org.junit.jupiter:junit-jupiter:${FloodplainDeps.junit_5_version}")
 }

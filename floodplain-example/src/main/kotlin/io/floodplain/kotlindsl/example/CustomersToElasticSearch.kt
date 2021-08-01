@@ -51,8 +51,9 @@ fun main() {
                         }
                     }
                     set { _, msg, state ->
-                        msg.set("city", state["city"])
-                        msg.set("country", state["country"])
+                        msg["city"] = state["city"]
+                        msg["country"] = state["country"]
+                        msg
                     }
                 }
             }

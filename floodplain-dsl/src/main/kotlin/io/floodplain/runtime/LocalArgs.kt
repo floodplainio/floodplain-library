@@ -27,6 +27,9 @@ import java.io.OutputStreamWriter
 import java.net.URL
 import java.nio.charset.StandardCharsets
 
+private const val DEFAULT_BUFFER_TIME = 1000
+private const val DEFAULT_COLUMNS = 80
+
 class LocalArgs(parser: ArgParser) {
     val force by parser.flagging(
         "-f",
@@ -49,7 +52,7 @@ class LocalArgs(parser: ArgParser) {
         help = "Hints max buffering time. Longer increases latency, but might improve thoughput, esp. for " +
             "high-latency sinks. Only for local runs."
     ) { toInt() }
-        .default(1000)
+        .default(DEFAULT_BUFFER_TIME)
 
     val kafka by parser.storing(
         "-k",
@@ -82,7 +85,7 @@ suspend fun run(
         ArgParser(arguments.filterNotNull().toTypedArray()).parseInto(::LocalArgs)
     } catch (e: SystemExitException) {
         val writer = OutputStreamWriter(if (e.returnCode == 0) System.out else System.err, StandardCharsets.UTF_8)
-        e.printUserMessage(writer, System.getProperty("com.xenomachina.argparser.programName"), 80)
+        e.printUserMessage(writer, System.getProperty("com.xenomachina.argparser.programName"), DEFAULT_COLUMNS)
         return
     }
     parseInto.run {

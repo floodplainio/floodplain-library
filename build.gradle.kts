@@ -95,6 +95,18 @@ subprojects {
     tasks.test {
         useJUnitPlatform()
         jvmArgs("--enable-preview")
+        finalizedBy(tasks.jacocoTestReport)
+    }
+
+    tasks.jacocoTestReport {
+        dependsOn(tasks.test)
+        classDirectories.setFrom(
+            files(classDirectories.files.map {
+                fileTree(it) {
+                    exclude("**/generated/**", "**/org/apache/**")
+                }
+            })
+        )
     }
 
     tasks.withType<com.hierynomus.gradle.license.tasks.LicenseCheck>().configureEach {
@@ -251,7 +263,7 @@ val detektAll by tasks.registering(Detekt::class) {
 }
 
 jacoco {
-    toolVersion = "0.8.6"
+    toolVersion = "0.8.7"
 }
 
 plugins.withType<JacocoPlugin> {
@@ -259,8 +271,9 @@ plugins.withType<JacocoPlugin> {
     testTasks.configureEach {
         extensions.configure<JacocoTaskExtension> {
             // We don't want to collect coverage for third-party classes
-            includes?.add("**/io.floodplain.*.class")
-            // excludes?.add("**/io.floodplain.protobuf.generated")
+            // includes?.add("**/io.floodplain.*.class")
+            excludes?.add("**/generated/**")
+            excludes?.add("**/org/apache/**")
         }
     }
 }
@@ -304,8 +317,10 @@ tasks.withType<JacocoReport> {
 //     )
 // }
 
+
 tasks.register<JacocoReport>("codeCoverageReport") {
     // If a subproject applies the 'jacoco' plugin, add the result it to the report
+    val report = this
     subprojects {
         val subproject = this
         subproject.plugins.withType<JacocoPlugin>().configureEach {
@@ -316,7 +331,13 @@ tasks.register<JacocoReport>("codeCoverageReport") {
                 val execFiles = files(testTask).filter { it.exists() && it.name.endsWith(".exec") }
                 executionData(execFiles)
             }
-
+            report.classDirectories.setFrom(
+                files(classDirectories.files.map {
+                    fileTree(it) {
+                        exclude("**/generated/**", "**/org/apache/**")
+                    }
+                })
+            )
             // To automatically run `test` every time `./gradlew codeCoverageReport` is called,
             // you may want to set up a task dependency between them as shown below.
             // Note that this requires the `test` tasks to be resolved eagerly (see `forEach`) which
