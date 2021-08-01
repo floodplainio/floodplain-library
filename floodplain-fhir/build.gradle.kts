@@ -9,7 +9,6 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation(project(":floodplain-stream-topology"))
     implementation(project(":floodplain-dsl"))
-    implementation(project(":floodplain-stream-topology"))
     implementation(project(":replication-api"))
     implementation(project(":replication-impl"))
     implementation(project(":immutable-api"))
@@ -19,10 +18,5 @@ dependencies {
     implementation("ca.uhn.hapi.fhir:hapi-fhir-base:${FloodplainDeps.hapiFhir}")
     implementation("ca.uhn.hapi.fhir:hapi-fhir-structures-r4:${FloodplainDeps.hapiFhir}")
     implementation("ca.uhn.hapi.fhir:org.hl7.fhir.r4:${FloodplainDeps.hapiFhir}")
-
-    implementation(FloodplainDeps.kotlinCoroutines)
-    testImplementation(FloodplainDeps.junitJupiterApi)
-    testImplementation(FloodplainDeps.junitJupiterParams)
-    testRuntimeOnly(FloodplainDeps.junitJupiterEngine)
-
+    testImplementation("org.junit.jupiter:junit-jupiter:${FloodplainDeps.junit_5_version}")  // "org.junit.jupiter:junit-jupiter:5.5.2"
 }

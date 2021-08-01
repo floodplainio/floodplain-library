@@ -27,6 +27,7 @@ import io.floodplain.replication.impl.json.JSONReplicationMessageParserImpl;
 import io.floodplain.replication.impl.json.ReplicationJSON;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +49,7 @@ public class TestJoin {
     private ReplicationMessage organizationaddress;
     private ReplicationMessage organization;
 
-    @BeforeAll
+    @BeforeEach
     public void setup() {
         System.setProperty(ReplicationMessage.PRETTY_JSON, "true");
         ReplicationMessageParser parser = new JSONReplicationMessageParserImpl();

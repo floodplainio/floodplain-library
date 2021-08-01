@@ -23,6 +23,7 @@ import io.floodplain.immutable.api.ImmutableMessageParser;
 import io.floodplain.immutable.factory.ImmutableFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +43,7 @@ public class TestImmutableJSON {
 
     private final static Logger logger = LoggerFactory.getLogger(TestImmutableJSON.class);
 
-    @BeforeAll
+    @BeforeEach
     public void setup() {
         parser = new JSONImmutableMessageParserImpl();
     }

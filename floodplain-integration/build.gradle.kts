@@ -23,7 +23,5 @@ dependencies {
     testImplementation(FloodplainDeps.testContainerKafka)
     testImplementation(FloodplainDeps.debeziumTestContainers)
     testImplementation(FloodplainDeps.mongoClientSync)
-    testImplementation(FloodplainDeps.junitJupiterApi)
-    testImplementation(FloodplainDeps.junitJupiterParams)
-    testRuntimeOnly(FloodplainDeps.junitJupiterEngine)
+    testImplementation("org.junit.jupiter:junit-jupiter:${FloodplainDeps.junit_5_version}")
 }

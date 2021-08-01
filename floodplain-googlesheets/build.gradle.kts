@@ -23,9 +23,7 @@ dependencies {
     implementation(project(":streams-api"))
     implementation(project(":streams"))
     implementation(FloodplainDeps.kotlinCoroutines)
-    testImplementation(FloodplainDeps.junitJupiterApi)
-    testImplementation(FloodplainDeps.junitJupiterParams)
-    testRuntimeOnly(FloodplainDeps.junitJupiterEngine)
+    testImplementation("org.junit.jupiter:junit-jupiter:${FloodplainDeps.junit_5_version}")
 }
 
 // tasks {

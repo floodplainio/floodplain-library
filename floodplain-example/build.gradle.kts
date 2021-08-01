@@ -24,7 +24,5 @@ dependencies {
     implementation(FloodplainDeps.kotlinCoroutines)
     compile(FloodplainDeps.slf4j)
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    testImplementation(FloodplainDeps.junitJupiterApi)
-    testImplementation(FloodplainDeps.junitJupiterParams)
-    testRuntimeOnly(FloodplainDeps.junitJupiterEngine)
+    testImplementation("org.junit.jupiter:junit-jupiter:${FloodplainDeps.junit_5_version}")
 }

@@ -8,9 +8,7 @@ dependencies {
     implementation(project(":replication-impl"))
     implementation(project(":replication-json"))
     implementation(project(":replication-protobuf"))
-    testImplementation(FloodplainDeps.junitJupiterApi)
-    testImplementation(FloodplainDeps.junitJupiterParams)
-    testRuntimeOnly(FloodplainDeps.junitJupiterEngine)
+    testImplementation("org.junit.jupiter:junit-jupiter:${FloodplainDeps.junit_5_version}")
     compile(FloodplainDeps.kafkaStreams)
     compile(FloodplainDeps.kafkaConnectApi)
 }

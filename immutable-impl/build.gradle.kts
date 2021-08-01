@@ -6,7 +6,5 @@ dependencies {
     compile(FloodplainDeps.jacksonCore)
     compile(FloodplainDeps.jacksonDatabind)
     compile(FloodplainDeps.cdiApi)
-    testImplementation(FloodplainDeps.junitJupiterApi)
-    testImplementation(FloodplainDeps.junitJupiterParams)
-    testRuntimeOnly(FloodplainDeps.junitJupiterEngine)
+    testImplementation("org.junit.jupiter:junit-jupiter:${FloodplainDeps.junit_5_version}")
 }

@@ -28,11 +28,7 @@ plugins {
     `java-library`
     jacoco
 }
-//region WORKAROUND FOR: https://github.com/aalmiray/kordamp-gradle-plugins/issues/139
-// configurations {
-//     create("dokkaRuntime")
-// }
-//endregion
+
 dependencies {
     implementation(io.floodplain.build.Libs.kotlin)
 }
@@ -362,13 +358,3 @@ tasks.withType<Test> {
         includes = listOf("**/io.floodplain.*.class")
     }
 }
-
-// tasks.test {
-//     useJUnitPlatform {
-//         includeEngines = setOf("junit-jupiter")
-//     }
-//     configure<JacocoTaskExtension> {
-//         isEnabled = true
-//         includes = listOf("**/io.floodplain.*.class")
-//     }
-// }

@@ -10,8 +10,5 @@ dependencies {
     testImplementation(project(":floodplain-dsl"))
     testImplementation(project(":floodplain-test"))
     testImplementation(FloodplainDeps.testContainer)
-    testImplementation(FloodplainDeps.junitJupiterApi)
-    testImplementation(FloodplainDeps.junitJupiterParams)
-    testImplementation("org.junit.platform:junit-platform-runner:1.7.2")
-    testRuntimeOnly(FloodplainDeps.junitJupiterEngine)
+    testImplementation("org.junit.jupiter:junit-jupiter:${FloodplainDeps.junit_5_version}")
 }

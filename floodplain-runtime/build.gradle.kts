@@ -3,7 +3,5 @@ import io.floodplain.build.FloodplainDeps
 dependencies {
     implementation(project(":floodplain-dsl"))
     implementation(FloodplainDeps.argParser)
-    testImplementation(FloodplainDeps.junitJupiterApi)
-    testImplementation(FloodplainDeps.junitJupiterParams)
-    testRuntimeOnly(FloodplainDeps.junitJupiterEngine)
+    testImplementation("org.junit.jupiter:junit-jupiter:${FloodplainDeps.junit_5_version}")
 }

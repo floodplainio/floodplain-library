@@ -18,7 +18,5 @@ dependencies {
     compile(FloodplainDeps.kafkaConnectRuntime)
     compile(FloodplainDeps.cdiApi)
     compile(FloodplainDeps.microProfileConfig)
-    testImplementation(FloodplainDeps.junitJupiterApi)
-    testImplementation(FloodplainDeps.junitJupiterParams)
-    testRuntimeOnly(FloodplainDeps.junitJupiterEngine)
+
 }

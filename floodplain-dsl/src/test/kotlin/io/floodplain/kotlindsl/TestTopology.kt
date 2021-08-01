@@ -33,7 +33,6 @@ import java.math.BigDecimal
 import java.time.Duration
 import java.util.Optional
 import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.Tag
 
 private val logger = mu.KotlinLogging.logger {}
 
@@ -113,7 +112,6 @@ class TestTopology {
         }
     }
 
-    @Tag("development")
     @Test
     fun simpleTransformation() {
         stream {
