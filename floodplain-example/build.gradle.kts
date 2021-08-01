@@ -23,6 +23,5 @@ dependencies {
     implementation("io.confluent:kafka-connect-elasticsearch:5.5.0")
     implementation(FloodplainDeps.kotlinCoroutines)
     compile(FloodplainDeps.slf4j)
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     testImplementation("org.junit.jupiter:junit-jupiter:${FloodplainDeps.junit_5_version}")
 }

@@ -41,6 +41,8 @@ import kotlin.system.measureTimeMillis
 
 private val logger = mu.KotlinLogging.logger {}
 
+private const val OFFSETFILELENGTH = 7
+private const val SENDBLOCKING_WARN_THRESHOLD = 1000
 internal class EngineKillSwitch(var engine: DebeziumEngine<ChangeEvent<String, String>>? = null) {
 
     private val killed = AtomicBoolean(false)
@@ -56,7 +58,7 @@ internal class EngineKillSwitch(var engine: DebeziumEngine<ChangeEvent<String, S
 
 @OptIn(ExperimentalPathApi::class)
 private fun createOffsetFilePath(offsetId: String?): Path {
-    val tempFile = createTempFile(offsetId ?: UUID.randomUUID().toString().substring(0..7))
+    val tempFile = createTempFile(offsetId ?: UUID.randomUUID().toString().substring(0..OFFSETFILELENGTH))
     if (offsetId == null) {
         tempFile.toFile().deleteOnExit()
     }
@@ -127,6 +129,7 @@ fun createDebeziumChangeFlow(
     return runDebeziumServer(props)
 }
 
+@Suppress("SwallowedException")
 private fun ProducerScope<ChangeRecord>.createEngine(
     props: Properties,
     engineKillSwitch: EngineKillSwitch
@@ -152,7 +155,7 @@ private fun ProducerScope<ChangeRecord>.createEngine(
                         Thread.currentThread().interrupt()
                     }
                 }
-                if (perf > 1000) {
+                if (perf > SENDBLOCKING_WARN_THRESHOLD) {
                     logger.debug("Send blocking ran for: $perf")
                 }
             }

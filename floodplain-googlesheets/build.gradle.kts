@@ -6,7 +6,6 @@ import io.floodplain.build.FloodplainDeps
 
 dependencies {
     compile(FloodplainDeps.kotlinLogging)
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation(project(":floodplain-stream-topology"))
     // This dependency is exported to consumers, that is to say found on their compile classpath.
     implementation("org.apache.commons:commons-math3:3.6.1")

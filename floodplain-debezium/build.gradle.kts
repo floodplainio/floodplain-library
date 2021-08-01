@@ -5,7 +5,6 @@ dependencies {
     implementation(FloodplainDeps.debeziumMySQL)
     compile(FloodplainDeps.kotlinLogging)
     implementation(project(":floodplain-api"))
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation(FloodplainDeps.kotlinCoroutines)
     testImplementation(project(":floodplain-dsl"))
     testImplementation(project(":floodplain-test"))

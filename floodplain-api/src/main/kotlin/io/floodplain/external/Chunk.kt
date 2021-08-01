@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package io.floodplain
+package io.floodplain.external
 
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import kotlinx.coroutines.channels.produce
@@ -37,6 +37,7 @@ import kotlinx.coroutines.selects.select
  * @param duration: The operation will not wait longer for entries than this number (in millis)
  */
 @OptIn(kotlinx.coroutines.ObsoleteCoroutinesApi::class)
+@Suppress("SwallowedException")
 fun <T> Flow<T>.bufferTimeout(size: Int, duration: Long): Flow<List<T>> {
     require(size > 0) { "Window size should be greater than 0" }
     require(duration > 0) { "Duration should be greater than 0" }

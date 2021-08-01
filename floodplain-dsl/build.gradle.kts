@@ -22,7 +22,6 @@ dependencies {
     implementation(FloodplainDeps.argParser)
     implementation(FloodplainDeps.jacksonDatabind310)
     implementation(FloodplainDeps.kafkaConnectRuntime)
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation(FloodplainDeps.kotlinCoroutines)
     testImplementation("org.junit.jupiter:junit-jupiter:${FloodplainDeps.junit_5_version}")
 }

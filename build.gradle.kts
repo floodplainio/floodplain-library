@@ -15,14 +15,17 @@ buildscript {
         classpath("com.google.protobuf:protobuf-gradle-plugin:0.8.15")
     }
 }
+
+val buildKotlinVersion: String by extra
+
 plugins {
     id("org.jetbrains.kotlin.jvm") version "1.4.32"
     id("org.jetbrains.kotlin.plugin.allopen") version "1.4.32"
     id("org.jlleitschuh.gradle.ktlint") version "10.1.0"
     id("org.jetbrains.dokka") version "1.4.32"
-    id("com.github.hierynomus.license-base").version("0.15.0")
-    id("com.github.spotbugs") version "4.7.1"
-    id("io.gitlab.arturbosch.detekt") version "1.16.0"
+    id("com.github.hierynomus.license-base").version("0.16.1")
+    id("com.github.spotbugs") version "4.7.2"
+    id("io.gitlab.arturbosch.detekt") version "1.18.0-RC2"
     signing
     `maven-publish`
     `java-library`
@@ -57,10 +60,8 @@ subprojects {
     apply(plugin = "maven-publish")
     apply(plugin = "distribution")
     apply(plugin = "org.jetbrains.kotlin.jvm")
-    // apply(plugin = "org.jlleitschuh.gradle.ktlint")
     apply(plugin = "org.jetbrains.dokka")
     apply(plugin = "com.github.hierynomus.license-base")
-    //  apply(plugin = "checkstyle")
     apply(plugin = "jacoco")
     if (!isKotlinModule(this)) {
         // logger.warn("This project is not kotlin: ${this.name}")
@@ -74,6 +75,16 @@ subprojects {
     }
     if (isKotlinModule(this)) {
         apply(plugin = "io.gitlab.arturbosch.detekt")
+        detekt {
+            // Version of Detekt that will be used. When unspecified the latest detekt
+            // version found will be used. Override to stay on the same version.
+            toolVersion = "1.18.0-RC2"
+
+            // The directories where detekt looks for source files.
+            // Defaults to `files("src/main/java", "src/main/kotlin")`.
+            input = files("src/main/java", "src/main/kotlin")
+            config = files("${rootDir.path}/detektConfig.yml")
+        }
     }
     tasks.withType<com.hierynomus.gradle.license.tasks.LicenseFormat>().configureEach {
         this.header = File(this.project.rootDir, "HEADER")
@@ -81,12 +92,11 @@ subprojects {
         this.mapping(mapOf("java" to "SLASHSTAR_STYLE", "kt" to "SLASHSTAR_STYLE"))
     }
 
-    // if("floodplain-elasticsearch" != name) {
     tasks.test {
         useJUnitPlatform()
         jvmArgs("--enable-preview")
     }
-    // }
+
     tasks.withType<com.hierynomus.gradle.license.tasks.LicenseCheck>().configureEach {
         this.header = File(this.project.rootDir, "HEADER")
         this.exclude("*.xml", "*.json")
@@ -111,10 +121,6 @@ subprojects {
     }
 
     val dokkaHtml by tasks.getting(org.jetbrains.dokka.gradle.DokkaTask::class)
-
-    // val dokkaHtml = tasks.named<org.jetbrains.dokka.gradle.DokkaTask>("dokkaHtml").configure {
-    //     // outputDirectory = buildDir.resolve("dokka").absolutePath
-    // }
 
     tasks {
         val sourcesJar by creating(Jar::class) {
@@ -187,17 +193,6 @@ subprojects {
     }
 }
 
-detekt {
-    // Version of Detekt that will be used. When unspecified the latest detekt
-    // version found will be used. Override to stay on the same version.
-    toolVersion = "1.18.0-RC2"
-
-    // The directories where detekt looks for source files. 
-    // Defaults to `files("src/main/java", "src/main/kotlin")`.
-    input = files("src/main/java", "src/main/kotlin")
-    config = files("${projectDir.path}/detektConfig.yml")
-}
-
 fun customizePom(publication: MavenPublication) {
     with(publication.pom) {
         withXml {
@@ -237,7 +232,7 @@ fun customizePom(publication: MavenPublication) {
 }
 
 val detektAll by tasks.registering(Detekt::class) {
-    this.config.setFrom("${projectDir.path}/detektConfig.yml")
+    this.config.setFrom("${rootDir.path}/detektConfig.yml")
     description = "Runs over whole code base without the starting overhead for each module."
     parallel = true
     buildUponDefaultConfig = true
@@ -348,7 +343,7 @@ tasks.register<JacocoReport>("codeCoverageReport") {
 tasks.withType<Test> {
     useJUnitPlatform {
         includeEngines = setOf("junit-jupiter")
-        //this.includeTags = setOf("*")
+        // this.includeTags = setOf("*")
     }
     testLogging {
         events("passed", "skipped", "failed")

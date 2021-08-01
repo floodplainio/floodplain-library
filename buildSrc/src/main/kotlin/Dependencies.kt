@@ -1,12 +1,11 @@
 package io.floodplain.build
 
-object Versions {
+object FloodplainPlugins {
     const val kotlin = "1.4.32"
-
 }
 
 object Libs {
-    const val kotlin = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${Versions.kotlin}"
+    const val kotlin = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${FloodplainPlugins.kotlin}"
 }
 
 fun isReleaseVersion(): Boolean {
@@ -14,6 +13,7 @@ fun isReleaseVersion(): Boolean {
 }
 
 object FloodplainDeps {
+    const val kotlin = FloodplainPlugins.kotlin
     const val floodplain_version = "1.5.21-SNAPSHOT"
     const val jackson_version = "2.12.4"
     const val kafka_version = "2.8.0"

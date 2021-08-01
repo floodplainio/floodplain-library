@@ -3,7 +3,6 @@ import io.floodplain.build.FloodplainDeps
 dependencies {
     api(FloodplainDeps.slf4j)
     compile(FloodplainDeps.kotlinLogging)
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation(project(":floodplain-stream-topology"))
     implementation(project(":immutable-api"))
     implementation(project(":streams-api"))

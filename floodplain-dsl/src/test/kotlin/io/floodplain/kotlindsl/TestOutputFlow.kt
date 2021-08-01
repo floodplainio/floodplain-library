@@ -18,7 +18,7 @@
  */
 package io.floodplain.kotlindsl
 
-import io.floodplain.bufferTimeout
+import io.floodplain.external.bufferTimeout
 import io.floodplain.kotlindsl.message.IMessage
 import io.floodplain.kotlindsl.message.empty
 import io.floodplain.streams.api.Topic

@@ -2,7 +2,6 @@ import io.floodplain.build.FloodplainDeps
 
 dependencies {
     compile(FloodplainDeps.kotlinLogging)
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation(project(":floodplain-stream-topology"))
     implementation(project(":streams-api"))
     implementation(project(":streams"))

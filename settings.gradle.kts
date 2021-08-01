@@ -7,6 +7,13 @@
  * in the user manual at https://docs.gradle.org/5.6.2/userguide/multi_project_builds.html
  */
 
+pluginManagement {
+    val buildKotlinVersion: String by settings
+    plugins {
+        id("org.jetbrains.kotlin.jvm").version(buildKotlinVersion)
+        id("org.jetbrains.dokka").version(buildKotlinVersion)
+    }
+}
 rootProject.name = "floodplain-library"
 include(
     "immutable-api",
