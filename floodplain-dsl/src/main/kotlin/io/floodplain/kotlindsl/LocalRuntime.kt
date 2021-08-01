@@ -106,18 +106,18 @@ fun runLocalTopology(
 ) {
     val storageFolder = "teststorage/store"
     val props = Properties()
-    props.setProperty(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "doesntmatter:9092")
-    props.setProperty(
+    props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "doesntmatter:9092")
+    props.put(
         StreamsConfig.DEFAULT_TIMESTAMP_EXTRACTOR_CLASS_CONFIG,
-        WallclockTimestampExtractor::class.java.name
+        WallclockTimestampExtractor::class.java
     )
-    props.setProperty(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().javaClass.name)
-    props.setProperty(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, ReplicationMessageSerde::class.java.name)
-    props.setProperty(StreamsConfig.APPLICATION_ID_CONFIG, applicationId)
-    props.setProperty(StreamsConfig.STATE_DIR_CONFIG, storageFolder)
-    props.setProperty(StreamsConfig.BUILT_IN_METRICS_VERSION_CONFIG, StreamsConfig.METRICS_LATEST)
-    props.setProperty(StreamsConfig.ROCKSDB_CONFIG_SETTER_CLASS_CONFIG,
-        BoundedMemoryRocksDBConfig::class.java.toString()
+    props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().javaClass)
+    props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, ReplicationMessageSerde::class.java)
+    props.put(StreamsConfig.APPLICATION_ID_CONFIG, applicationId)
+    props.put(StreamsConfig.STATE_DIR_CONFIG, storageFolder)
+    props.put(StreamsConfig.BUILT_IN_METRICS_VERSION_CONFIG, StreamsConfig.METRICS_LATEST)
+    props.put(StreamsConfig.ROCKSDB_CONFIG_SETTER_CLASS_CONFIG,
+        BoundedMemoryRocksDBConfig::class.java
     )
 
     val driver = TopologyTestDriver(topology, props)

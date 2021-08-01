@@ -377,7 +377,7 @@ public class ReplicationTopologyParser {
                     STORE_PREFIX + fromProcessorName,
                     STORE_PREFIX + withProcessorName,
                     optional,
-                    (msg, comsg) -> msg.withParamMessage(comsg.message()), debug);
+                    (msg, comsg) -> msg.withParamMessage(comsg.message()));
         }
         String procName = materialize ? "proc_" + name : name;
         current.addProcessor(

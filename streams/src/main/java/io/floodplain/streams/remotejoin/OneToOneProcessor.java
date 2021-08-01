@@ -41,18 +41,16 @@ public class OneToOneProcessor implements Processor<String, ReplicationMessage,S
 
     private final BiFunction<ReplicationMessage, ReplicationMessage, ReplicationMessage> joinFunction;
     private final boolean optional;
-    private final boolean debug;
 
     private static final Logger logger = LoggerFactory.getLogger(OneToOneProcessor.class);
     private ProcessorContext<String, ReplicationMessage> context;
 
     public OneToOneProcessor(String forwardLookupStoreName, String reverseLookupStoreName, boolean optional,
-                             BiFunction<ReplicationMessage, ReplicationMessage, ReplicationMessage> joinFunction, boolean debug) {
+                             BiFunction<ReplicationMessage, ReplicationMessage, ReplicationMessage> joinFunction) {
         this.forwardLookupStoreName = forwardLookupStoreName;
         this.reverseLookupStoreName = reverseLookupStoreName;
         this.optional = optional;
         this.joinFunction = joinFunction;
-        this.debug = debug;
     }
 
 
@@ -82,22 +80,7 @@ public class OneToOneProcessor implements Processor<String, ReplicationMessage,S
             key = key.substring(0, key.length() - PreJoinProcessor.REVERSE_IDENTIFIER.length());
             lookupStore = forwardLookupStore;
         }
-        if (debug) {
-            logger.info("Joining key: {} reverse: {}", key, reverse);
-        }
-
         ReplicationMessage counterpart = lookupStore.get(key);
-        if (debug) {
-            if (counterpart == null) {
-                logger.info("Null Join (reverse? {}) key: {} lookupsize: {}", reverse, key, lookupStore.approximateNumEntries());
-                List<String> keys = new ArrayList<>();
-                lookupStore.all().forEachRemaining(k -> keys.add(k.key));
-                logger.info("Keys: {}", String.join(",", keys));
-            } else {
-                logger.info("Join Result: {} {}", key, counterpart.toFlatString(ReplicationFactory.getInstance()));
-            }
-        }
-
         if (counterpart == null) {
             if (reverse) {
                 // We are doing a reverse join, but the original message isn't there.
