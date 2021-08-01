@@ -42,9 +42,8 @@ import java.util.Optional;
 public class ConnectReplicationMessageSerde implements Serde<ReplicationMessage> {
 
     private static final Logger logger = LoggerFactory.getLogger(ConnectReplicationMessageSerde.class);
-    private static final ConnectKeySerde keySerde = new ConnectKeySerde();
     private static final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
-
+    private static final ConnectKeySerializer keySerializer = new ConnectKeySerializer();
     @Override
     public void close() {
 
@@ -63,7 +62,7 @@ public class ConnectReplicationMessageSerde implements Serde<ReplicationMessage>
     }
 
     public static Serializer<String> keySerialize() {
-        return keySerde.serializer();
+        return keySerializer;
     }
 
     public static Deserializer<String> keyDeserialize() {

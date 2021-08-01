@@ -334,7 +334,7 @@ tasks.register<JacocoReport>("codeCoverageReport") {
             report.classDirectories.setFrom(
                 files(classDirectories.files.map {
                     fileTree(it) {
-                        exclude("**/generated/**", "**/org/apache/**")
+                        exclude("**/generated/**", "**/org/apache/**","**/io/floodplain/kotlindsl/example/**")
                     }
                 })
             )
