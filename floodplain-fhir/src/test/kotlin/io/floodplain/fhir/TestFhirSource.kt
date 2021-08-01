@@ -16,6 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
+package io.floodplain.fhir
+
 import ca.uhn.fhir.context.FhirContext
 import ca.uhn.fhir.parser.IParser
 import io.floodplain.fhir.genericResource
