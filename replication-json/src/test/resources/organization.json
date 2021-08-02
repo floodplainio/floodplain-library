@@ -52,6 +52,11 @@
       "Name": "remarks",
       "Type": "string",
       "Value": null
+    },
+    "isValid": {
+      "Name": "isValue",
+      "Type": "boolean",
+      "Value": "true"
     }
   }
 }

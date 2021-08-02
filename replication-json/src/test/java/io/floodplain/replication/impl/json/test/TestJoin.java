@@ -61,11 +61,11 @@ public class TestJoin {
     @Test
     public void testIgnore() {
         logger.info("{}",organization.columnNames());
-        Assertions.assertEquals(8, organization.columnNames().size());
+        Assertions.assertEquals(9, organization.columnNames().size());
         logger.info(">>>>>>> {}",organization.values());
 
         int count = organization.without(Arrays.asList("updateby", "lastupdate")).columnNames().size();
-        Assertions.assertEquals(6, count);
+        Assertions.assertEquals(7, count);
     }
 
     @Test
