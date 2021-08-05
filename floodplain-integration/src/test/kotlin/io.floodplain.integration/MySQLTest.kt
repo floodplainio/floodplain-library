@@ -24,8 +24,8 @@ import io.floodplain.kotlindsl.group
 import io.floodplain.kotlindsl.join
 import io.floodplain.kotlindsl.joinGrouped
 import io.floodplain.kotlindsl.message.IMessage
-import io.floodplain.kotlindsl.mysqlSource
-import io.floodplain.kotlindsl.mysqlSourceConfig
+import io.floodplain.jdbc.mysqlSource
+import io.floodplain.jdbc.mysqlSourceConfig
 import io.floodplain.kotlindsl.set
 import io.floodplain.kotlindsl.stream
 import io.floodplain.mongodb.remoteMongoConfig
@@ -35,9 +35,9 @@ import io.floodplain.test.InstantiatedContainer
 import io.floodplain.test.useIntegraton
 import kotlinx.coroutines.delay
 import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.TestInstance
 
 private val logger = mu.KotlinLogging.logger {}

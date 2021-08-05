@@ -16,10 +16,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package io.floodplain.kotlindsl
+package io.floodplain.jdbc
 
 import io.floodplain.ChangeRecord
 import io.floodplain.debezium.postgres.createDebeziumChangeFlow
+import io.floodplain.kotlindsl.InputReceiver
+import io.floodplain.kotlindsl.MaterializedConfig
+import io.floodplain.kotlindsl.PartialStream
+import io.floodplain.kotlindsl.Source
+import io.floodplain.kotlindsl.SourceConfig
+import io.floodplain.kotlindsl.SourceTopic
+import io.floodplain.kotlindsl.Stream
 import io.floodplain.reactive.source.topology.TopicSource
 import io.floodplain.streams.api.Topic
 import io.floodplain.streams.api.TopologyContext
@@ -31,7 +38,7 @@ import kotlinx.coroutines.flow.onEach
 
 private val logger = mu.KotlinLogging.logger {}
 
-class MySQLConfig(
+private class MySQLConfig(
     override val topologyContext: TopologyContext,
     override val topologyConstructor: TopologyConstructor,
     val name: String,
@@ -130,7 +137,7 @@ fun Stream.mysqlSourceConfig(
     username: String,
     password: String,
     database: String
-): MySQLConfig {
+): SourceConfig {
     val mySQLConfig = MySQLConfig(
         this.topologyContext,
         this.topologyConstructor,
@@ -146,7 +153,8 @@ fun Stream.mysqlSourceConfig(
     return mySQLConfig
 }
 
-fun PartialStream.mysqlSource(table: String, config: MySQLConfig, init: Source.() -> Unit): Source {
+fun PartialStream.mysqlSource(table: String, abstractConfig: SourceConfig, init: Source.() -> Unit): Source {
+    val config = abstractConfig as MySQLConfig
     val topic = Topic.fromQualified("${config.name}.$table", topologyContext)
     val topicSource = TopicSource(
         topic,
@@ -159,6 +167,6 @@ fun PartialStream.mysqlSource(table: String, config: MySQLConfig, init: Source.(
     return databaseSource
 }
 
-fun Stream.mysqlSource(table: String, config: MySQLConfig, init: Source.() -> Unit) {
+fun Stream.mysqlSource(table: String, config: SourceConfig, init: Source.() -> Unit) {
     addSource(PartialStream(this).mysqlSource(table, config, init))
 }

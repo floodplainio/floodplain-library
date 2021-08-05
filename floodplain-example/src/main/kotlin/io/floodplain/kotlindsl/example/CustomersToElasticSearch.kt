@@ -21,8 +21,8 @@ package io.floodplain.kotlindsl.example
 import io.floodplain.elasticsearch.elasticSearchConfig
 import io.floodplain.elasticsearch.elasticSearchSink
 import io.floodplain.kotlindsl.joinRemote
-import io.floodplain.kotlindsl.postgresSource
-import io.floodplain.kotlindsl.postgresSourceConfig
+import io.floodplain.jdbc.postgresSource
+import io.floodplain.jdbc.postgresSourceConfig
 import io.floodplain.kotlindsl.set
 import io.floodplain.kotlindsl.stream
 import kotlinx.coroutines.delay

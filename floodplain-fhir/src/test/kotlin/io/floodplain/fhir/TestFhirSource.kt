@@ -21,8 +21,6 @@ package io.floodplain.fhir
 
 import ca.uhn.fhir.context.FhirContext
 import ca.uhn.fhir.parser.IParser
-import io.floodplain.fhir.genericResource
-import io.floodplain.fhir.parseFhirToMsg
 import io.floodplain.kotlindsl.message.IMessage
 import io.floodplain.kotlindsl.message.empty
 import org.hl7.fhir.r4.model.Patient

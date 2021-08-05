@@ -20,8 +20,8 @@ package io.floodplain.kotlindsl.example
 
 import io.floodplain.kotlindsl.join
 import io.floodplain.kotlindsl.message.empty
-import io.floodplain.kotlindsl.postgresSource
-import io.floodplain.kotlindsl.postgresSourceConfig
+import io.floodplain.jdbc.postgresSource
+import io.floodplain.jdbc.postgresSourceConfig
 import io.floodplain.kotlindsl.scan
 import io.floodplain.kotlindsl.set
 import io.floodplain.kotlindsl.stream

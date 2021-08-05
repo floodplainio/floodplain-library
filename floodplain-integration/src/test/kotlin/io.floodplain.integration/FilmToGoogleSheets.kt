@@ -19,8 +19,8 @@
 package io.floodplain.integration
 
 import io.floodplain.kotlindsl.message.empty
-import io.floodplain.kotlindsl.postgresSource
-import io.floodplain.kotlindsl.postgresSourceConfig
+import io.floodplain.jdbc.postgresSource
+import io.floodplain.jdbc.postgresSourceConfig
 import io.floodplain.kotlindsl.scan
 import io.floodplain.kotlindsl.set
 import io.floodplain.kotlindsl.stream
@@ -34,12 +34,13 @@ import io.floodplain.test.useIntegraton
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeout
 import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
 import java.math.BigDecimal
 import kotlin.system.measureTimeMillis
-import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.TestInstance
 
 private val logger = mu.KotlinLogging.logger {}
 
