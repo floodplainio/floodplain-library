@@ -10,6 +10,7 @@ dependencies {
     implementation(project(":floodplain-stream-topology"))
     implementation(project(":floodplain-dsl"))
     implementation(project(":floodplain-mongodb"))
+    implementation(project(":floodplain-jdbc"))
     implementation(project(":floodplain-elasticsearch"))
     implementation(project(":floodplain-googlesheets"))
     implementation("io.confluent:kafka-connect-elasticsearch:5.5.0")

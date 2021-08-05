@@ -19,8 +19,8 @@
 package io.floodplain.kotlindsl.example
 
 import io.floodplain.kotlindsl.each
-import io.floodplain.kotlindsl.mysqlSource
-import io.floodplain.kotlindsl.mysqlSourceConfig
+import io.floodplain.jdbc.mysqlSource
+import io.floodplain.jdbc.mysqlSourceConfig
 import io.floodplain.kotlindsl.stream
 import io.floodplain.mongodb.mongoConfig
 import io.floodplain.mongodb.toMongo

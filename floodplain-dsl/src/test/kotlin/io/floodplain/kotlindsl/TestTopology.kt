@@ -46,7 +46,7 @@ class TestTopology {
     fun testSimple() {
         stream("thing") {
             from("sometopic") {
-                to("outputTopic")
+                toTopic("outputTopic")
             }
         }.renderAndExecute {
             input("sometopic", "key1", empty().set("name", "gorilla"))
@@ -59,7 +59,7 @@ class TestTopology {
     private fun testQualifiedWithTenantAndDeployment(tenant: String?, deployment: String?, generation: String?) {
         stream(tenant, deployment, generation ?: "defaultGeneration") {
             from("sometopic") {
-                to("outputTopic")
+                toTopic("outputTopic")
             }
         }.renderAndExecute {
             input("sometopic", "key1", empty().set("name", "gorilla"))
@@ -101,7 +101,7 @@ class TestTopology {
     fun testDelete() {
         stream("somegen") {
             from("sometopic") {
-                to("outputtopic")
+                toTopic("outputtopic")
             }
         }.renderAndExecute {
             input("sometopic", "key1", empty().set("name", "gorilla"))
@@ -119,7 +119,7 @@ class TestTopology {
                 transform {
                     it.set("name", "Frank")
                 }
-                to("people")
+                toTopic("people")
             }
         }.renderAndExecute {
             input("mysource", "1", empty().set("species", "human"))
@@ -139,7 +139,7 @@ class TestTopology {
                     left["rightsub"] = right
                     left
                 }
-                to("output")
+                toTopic("output")
             }
         }.renderAndExecute {
             assertTrue(isEmpty("output"))
@@ -168,7 +168,7 @@ class TestTopology {
                     left["rightsub"] = right
                     left
                 }
-                to("output")
+                toTopic("output")
             }
         }.renderAndExecute {
             assertTrue(isEmpty("output"))
@@ -210,7 +210,7 @@ class TestTopology {
         stream("somegen") {
             from("src") {
                 group { message -> message["subkey"] as String }
-                to("mysink")
+                toTopic("mysink")
             }
         }.renderAndExecute {
             val record1 = empty().set("subkey", "subkey1")
@@ -244,7 +244,7 @@ class TestTopology {
                 each { key, left, right ->
                     logger.info("Message: $left RightMessage $right key: $key")
                 }
-                to("output")
+                toTopic("output")
             }
         }.renderAndExecute {
             assertTrue(isEmpty("output"))
@@ -298,7 +298,7 @@ class TestTopology {
                 each { key, left, right ->
                     logger.info("Message: $left RightMessage $right key: $key")
                 }
-                to("output")
+                toTopic("output")
             }
         }.renderAndExecute {
             assertTrue(isEmpty("output"))
@@ -334,7 +334,7 @@ class TestTopology {
         stream {
             from("source") {
                 only("mies")
-                to("output")
+                toTopic("output")
             }
         }.renderAndExecute {
             input("source", "key1", empty().set("aap", "noot").set("mies", "wim"))
@@ -349,7 +349,7 @@ class TestTopology {
                 filter { _, value ->
                     value["name"] == "myname"
                 }
-                to("output")
+                toTopic("output")
             }
         }.renderAndExecute {
             input("source", "key1", empty().set("name", "myname"))
@@ -375,7 +375,7 @@ class TestTopology {
                 )
                 each { key, msg, acc -> logger.info("Each: $key -> $msg -> $acc") }
 
-                to("output")
+                toTopic("output")
             }
         }.renderAndExecute {
             input("source", "key1", empty())
@@ -416,7 +416,7 @@ class TestTopology {
                         }
                     }
                 )
-                to("output")
+                toTopic("output")
             }
         }.renderAndExecute {
             input("source", "key1", empty().set("chat_id", "1").set("include", true))
@@ -458,7 +458,7 @@ class TestTopology {
                         }
                     }
                 )
-                to("output")
+                toTopic("output")
             }
         }.renderAndExecute {
             input("source", "key1", empty().set("chat_id", "1").set("include", true))
@@ -521,7 +521,7 @@ class TestTopology {
                     }
                 )
                 each { key, msg, acc -> logger.info("Each: $key -> $msg -> $acc") }
-                to("output")
+                toTopic("output")
             }
         }.renderAndExecute {
             input("source", "key1", empty().set("message", "message1"))
@@ -553,7 +553,7 @@ class TestTopology {
                 )
                 each { key, msg, acc -> logger.info("Each: $key -> $msg -> $acc") }
 
-                to("output")
+                toTopic("output")
             }
         }.renderAndExecute {
             input("source", "key1", empty().set("groupKey", "group1"))
@@ -608,7 +608,7 @@ class TestTopology {
                     logger.info("Each: $key -> $msg -> $acc")
                 }
 
-                to("output")
+                toTopic("output")
             }
         }.renderAndExecute {
             input("source", "key1", empty().set("groupKey", "group1"))
@@ -626,17 +626,17 @@ class TestTopology {
                 fork(
                     {
                         filter { _, value -> value["category"] == "category1" }
-                        to("category1")
+                        toTopic("category1")
                     },
                     {
                         filter { _, value -> value["category"] == "category2" }
-                        to("category2")
+                        toTopic("category2")
                     },
                     {
-                        to("all")
+                        toTopic("all")
                     }
                 )
-                to("sink")
+                toTopic("sink")
             }
         }.renderAndExecute {
             input("source", "key1", empty().set("category", "category1"))
@@ -684,7 +684,7 @@ class TestTopology {
                 Topic.FloodplainKeyFormat.FLOODPLAIN_STRING,
                 Topic.FloodplainBodyFormat.CONNECT_JSON
             ) {
-                to("sinktopic")
+                toTopic("sinktopic")
             }
         }.renderAndExecute {
             input("source", "key1".toByteArray(), data)
@@ -701,7 +701,7 @@ class TestTopology {
         stream {
             from("source") {
                 keyTransform { key -> "mon$key" }
-                to("output")
+                toTopic("output")
             }
         }.renderAndExecute {
             input("source", "key", empty().set("value", "value1"))
@@ -718,7 +718,7 @@ class TestTopology {
         stream {
             from("source") {
                 history()
-                to("output")
+                toTopic("output")
             }
         }.renderAndExecute {
             input("source", "key1", empty().set("value", "value1"))
@@ -744,7 +744,7 @@ class TestTopology {
         stream {
             from("source") {
                 diff()
-                to("output")
+                toTopic("output")
             }
         }.renderAndExecute {
 
@@ -803,7 +803,7 @@ class TestTopology {
         stream {
             from("source") {
                 buffer(Duration.ofSeconds(9), 10, inMemory)
-                to("output")
+                toTopic("output")
             }
         }.renderAndExecute {
             val msg = empty().set("value", "value1")
@@ -1055,7 +1055,7 @@ class TestTopology {
                 Topic.FloodplainBodyFormat.CONNECT_JSON
             ) {
                 // logSink("somesink", "@output", logSinkConfig)
-                to("output")
+                toTopic("output")
             }
         }.renderAndExecute {
             input("external", originalKey.toByteArray(), body.toByteArray())
@@ -1069,7 +1069,7 @@ class TestTopology {
     fun testArgumentParser() {
         stream {
             from("sometopic") {
-                to("outputTopic")
+                toTopic("outputTopic")
             }
         }.runWithArguments(arrayOf("--help")) {
         }

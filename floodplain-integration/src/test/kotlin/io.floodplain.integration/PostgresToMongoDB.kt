@@ -24,12 +24,12 @@ import io.floodplain.kotlindsl.from
 import io.floodplain.kotlindsl.join
 import io.floodplain.kotlindsl.joinRemote
 import io.floodplain.kotlindsl.message.empty
-import io.floodplain.kotlindsl.postgresSource
-import io.floodplain.kotlindsl.postgresSourceConfig
+import io.floodplain.jdbc.postgresSource
+import io.floodplain.jdbc.postgresSourceConfig
 import io.floodplain.kotlindsl.scan
 import io.floodplain.kotlindsl.set
 import io.floodplain.kotlindsl.stream
-import io.floodplain.kotlindsl.to
+import io.floodplain.kotlindsl.toTopic
 import io.floodplain.mongodb.remoteMongoConfig
 import io.floodplain.mongodb.toMongo
 import io.floodplain.mongodb.waitForMongoDbCondition
@@ -39,17 +39,17 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeout
 import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
 import java.math.BigDecimal
 import java.util.Date
-import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.TestInstance
 
 private val logger = mu.KotlinLogging.logger {}
 
 @kotlinx.coroutines.ExperimentalCoroutinesApi
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class TestCombinedMongo {
+class PostgresToMongoDB {
 
     private val postgresContainer = InstantiatedContainer("floodplain/floodplain-postgres-demo:1.0.0", 5432)
     private val mongoContainer = InstantiatedContainer("mongo:latest", 27017)
@@ -207,7 +207,7 @@ class TestCombinedMongo {
                 set { _, msg, state ->
                     msg.set("city", state)
                 }
-                to("$generation-address")
+                toTopic("$generation-address")
             }
             postgresSource("customer", postgresConfig) {
                 joinRemote({ m -> "${m["address_id"]}" }, false) {

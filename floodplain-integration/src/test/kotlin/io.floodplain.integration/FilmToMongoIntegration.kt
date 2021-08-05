@@ -19,8 +19,8 @@
 package io.floodplain.integration
 
 import com.mongodb.client.MongoClients
-import io.floodplain.kotlindsl.postgresSource
-import io.floodplain.kotlindsl.postgresSourceConfig
+import io.floodplain.jdbc.postgresSource
+import io.floodplain.jdbc.postgresSourceConfig
 import io.floodplain.kotlindsl.stream
 import io.floodplain.mongodb.remoteMongoConfig
 import io.floodplain.mongodb.toMongo
@@ -33,13 +33,13 @@ import org.apache.kafka.clients.CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG
 import org.apache.kafka.clients.admin.AdminClient
 import org.apache.kafka.clients.admin.NewTopic
 import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
 import org.testcontainers.containers.Network
 import java.net.URL
 import java.util.concurrent.TimeoutException
-import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.TestInstance
 
 private val logger = mu.KotlinLogging.logger {}
 

@@ -14,7 +14,7 @@ class TestMultipartition {
                 transform {
                     it.set("name", "Frank")
                 }
-                to("people")
+                toTopic("people")
             }
         }.renderAndExecute {
             input("mysource", "1", empty().set("species", "human"))

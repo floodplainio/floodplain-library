@@ -24,8 +24,8 @@ import io.floodplain.kotlindsl.joinGrouped
 import io.floodplain.kotlindsl.joinRemote
 import io.floodplain.kotlindsl.message.IMessage
 import io.floodplain.kotlindsl.message.empty
-import io.floodplain.kotlindsl.postgresSource
-import io.floodplain.kotlindsl.postgresSourceConfig
+import io.floodplain.jdbc.postgresSource
+import io.floodplain.jdbc.postgresSourceConfig
 import io.floodplain.kotlindsl.set
 import io.floodplain.kotlindsl.stream
 import io.floodplain.mongodb.remoteMongoConfig

@@ -390,7 +390,7 @@ private fun existingDebeziumSource(topicSource: String, rootTopology: Stream, in
  * Creates a simple sink that will contain the result of the current transformation.
  * Will not qualify with tenant / deployment
  */
-fun PartialStream.to(topic: String): Transformer {
+fun PartialStream.toTopic(topic: String): Transformer {
     val sink = SinkTransformer(
         Optional.empty(),
         Topic.fromQualified(topic, topologyContext),

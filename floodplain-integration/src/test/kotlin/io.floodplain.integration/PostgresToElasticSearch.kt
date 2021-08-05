@@ -24,11 +24,12 @@ import io.floodplain.elasticsearch.elasticSearchConfig
 import io.floodplain.elasticsearch.elasticSearchSink
 import io.floodplain.kotlindsl.from
 import io.floodplain.kotlindsl.joinRemote
-import io.floodplain.kotlindsl.postgresSource
-import io.floodplain.kotlindsl.postgresSourceConfig
+import io.floodplain.jdbc.postgresSource
+import io.floodplain.jdbc.postgresSourceConfig
+import io.floodplain.kotlindsl.each
 import io.floodplain.kotlindsl.set
 import io.floodplain.kotlindsl.stream
-import io.floodplain.kotlindsl.to
+import io.floodplain.kotlindsl.toTopic
 import io.floodplain.test.InstantiatedContainer
 import io.floodplain.test.useIntegraton
 import kotlinx.coroutines.cancel
@@ -101,7 +102,7 @@ class PostgresToElasticSearch {
                 set { _, msg, state ->
                     msg.set("city", state)
                 }
-                to("$generation-address")
+                toTopic("$generation-address")
                 // elasticSearchSink("@address", "@address", "@address", elasticConfig)
             }
             postgresSource("customer", postgresConfig) {

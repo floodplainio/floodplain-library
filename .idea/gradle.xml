@@ -23,6 +23,7 @@
             <option value="$PROJECT_DIR$/floodplain-fhir" />
             <option value="$PROJECT_DIR$/floodplain-googlesheets" />
             <option value="$PROJECT_DIR$/floodplain-integration" />
+            <option value="$PROJECT_DIR$/floodplain-jdbc" />
             <option value="$PROJECT_DIR$/floodplain-mongodb" />
             <option value="$PROJECT_DIR$/floodplain-runtime" />
             <option value="$PROJECT_DIR$/floodplain-stream-topology" />

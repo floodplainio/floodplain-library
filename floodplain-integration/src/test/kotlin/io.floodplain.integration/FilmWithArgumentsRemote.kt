@@ -23,17 +23,17 @@ import io.floodplain.kotlindsl.joinGrouped
 import io.floodplain.kotlindsl.joinRemote
 import io.floodplain.kotlindsl.message.IMessage
 import io.floodplain.kotlindsl.message.empty
-import io.floodplain.kotlindsl.postgresSource
-import io.floodplain.kotlindsl.postgresSourceConfig
+import io.floodplain.jdbc.postgresSource
+import io.floodplain.jdbc.postgresSourceConfig
 import io.floodplain.kotlindsl.set
 import io.floodplain.kotlindsl.stream
 import io.floodplain.mongodb.remoteMongoConfig
 import io.floodplain.mongodb.toMongo
 import io.floodplain.mongodb.waitForMongoDbCondition
 import io.floodplain.test.useIntegraton
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.Assertions.*
 
 private val logger = mu.KotlinLogging.logger {}
 

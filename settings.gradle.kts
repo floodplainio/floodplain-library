@@ -33,6 +33,7 @@ include(
     "floodplain-googlesheets",
     "floodplain-debezium",
     "floodplain-example",
+    "floodplain-jdbc",
     "floodplain-mongodb",
     "floodplain-elasticsearch",
     "kafka-converter",

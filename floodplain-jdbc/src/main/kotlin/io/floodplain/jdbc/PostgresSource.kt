@@ -16,10 +16,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package io.floodplain.kotlindsl
+package io.floodplain.jdbc
 
 import io.floodplain.ChangeRecord
 import io.floodplain.debezium.postgres.createDebeziumChangeFlow
+import io.floodplain.kotlindsl.InputReceiver
+import io.floodplain.kotlindsl.MaterializedConfig
+import io.floodplain.kotlindsl.PartialStream
+import io.floodplain.kotlindsl.Source
+import io.floodplain.kotlindsl.SourceConfig
+import io.floodplain.kotlindsl.SourceTopic
+import io.floodplain.kotlindsl.Stream
 import io.floodplain.reactive.source.topology.TopicSource
 import io.floodplain.streams.api.Topic
 import io.floodplain.streams.api.TopologyContext
@@ -29,7 +36,7 @@ import kotlinx.coroutines.flow.collect
 
 private val logger = mu.KotlinLogging.logger {}
 
-class PostgresConfig(
+private class PostgresConfig(
     override val topologyContext: TopologyContext,
     override val topologyConstructor: TopologyConstructor,
     val name: String,
@@ -119,7 +126,7 @@ fun Stream.postgresSourceConfig(
     password: String,
     database: String,
     defaultSchema: String?
-): PostgresConfig {
+): SourceConfig {
     val postgresConfig = PostgresConfig(
         this.topologyContext,
         this.topologyConstructor,
@@ -138,10 +145,11 @@ fun Stream.postgresSourceConfig(
 
 fun PartialStream.postgresSource(
     table: String,
-    config: PostgresConfig,
+    abstractConfig: SourceConfig,
     schema: String? = null,
     init: Source.() -> Unit
 ): Source {
+    val config = abstractConfig as PostgresConfig
     val effectiveSchema = schema ?: config.defaultSchema
         ?: throw IllegalArgumentException("No schema defined, and also no default schema")
     val topic = Topic.from("${config.name}.$effectiveSchema.$table", topologyContext)
@@ -156,7 +164,7 @@ fun PartialStream.postgresSource(
     return databaseSource
 }
 
-fun Stream.postgresSource(table: String, config: PostgresConfig, schema: String? = null, init: Source.() -> Unit) {
+fun Stream.postgresSource(table: String, config: SourceConfig, schema: String? = null, init: Source.() -> Unit) {
     val databaseSource = PartialStream(this).postgresSource(table, config, schema, init)
     addSource(databaseSource)
 }
