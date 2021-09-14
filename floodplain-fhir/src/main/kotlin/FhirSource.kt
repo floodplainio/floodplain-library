@@ -36,6 +36,7 @@ import io.floodplain.kotlindsl.message.IMessage
 import io.floodplain.kotlindsl.message.empty
 import io.floodplain.kotlindsl.stream
 import io.floodplain.reactive.source.topology.CustomTopicSource
+import io.floodplain.replication.api.ReplicationMessage
 import io.floodplain.replication.factory.ReplicationFactory
 import org.apache.kafka.common.serialization.Serdes
 import org.hl7.fhir.instance.model.api.IBaseResource
@@ -82,9 +83,13 @@ private fun <T : IBaseResource> fhirExistingSource(
     val context = FhirContext.forR4()
     val parser: IParser = context.newJsonParser()
     // TODO re-use these?
-    val parseInput = { data: ByteArray ->
-        val transformedMessage = parseFhirToMsg<T>(parser, data, transform)
-        ReplicationFactory.standardMessage(transformedMessage.toImmutable())
+    val parseInput = { data: ByteArray? ->
+        if(data!=null) {
+            val transformedMessage = parseFhirToMsg<T>(parser, data, transform)
+            ReplicationFactory.standardMessage(transformedMessage.toImmutable())
+        } else {
+            ReplicationFactory.empty().withOperation(ReplicationMessage.Operation.DELETE)
+        }
     }
 
     val sourceElement = CustomTopicSource(
