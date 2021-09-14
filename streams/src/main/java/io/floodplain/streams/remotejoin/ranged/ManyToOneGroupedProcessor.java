@@ -96,7 +96,7 @@ public class ManyToOneGroupedProcessor implements Processor<String, ReplicationM
             return;
         }
         if (message.operation() == Operation.DELETE) {
-            reverseJoinDelete(key, message);
+            reverseJoinDelete(key, message, timestamp);
             return;
         }
         final ReplicationMessage withOperation = message.withOperation(message.operation());
@@ -110,7 +110,7 @@ public class ManyToOneGroupedProcessor implements Processor<String, ReplicationM
         }
     }
 
-    private void reverseJoinDelete(String key, ReplicationMessage message) {
+    private void reverseJoinDelete(String key, ReplicationMessage message, long timestamp) {
         logger.debug("Delete detected for key: {}", key);
         List<String> deleted = new ArrayList<>();
         try(KeyValueIterator<String, ReplicationMessage> it = forwardLookupStore.range(key + "|", key + "}")) {
@@ -119,13 +119,13 @@ public class ManyToOneGroupedProcessor implements Processor<String, ReplicationM
                 if (optional) {
                     // Forward without joining
                     String parentKey = CoreOperators.ungroupKey(keyValue.key);
-                    forwardMessage(parentKey, keyValue.value, message.timestamp());
+                    forwardMessage(parentKey, keyValue.value, timestamp);
                 } else {
                     // Non optional join. Forward a delete
                     ReplicationMessage joined = joinFunction.apply(message, keyValue.value);
                     String parentKey = CoreOperators
                             .ungroupKey(keyValue.key);
-                    forwardMessage(parentKey, joined.withOperation(Operation.DELETE), message.timestamp());
+                    forwardMessage(parentKey, joined.withOperation(Operation.DELETE), timestamp);
                     deleted.add(keyValue.key);
                 }
             }
