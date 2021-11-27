@@ -32,10 +32,6 @@ analyze:
     type: gradle
     target: 'floodplain-example:'
     path: .
-  - name: floodplain-fhir
-    type: gradle
-    target: 'floodplain-fhir:'
-    path: .
   - name: floodplain-googlesheets
     type: gradle
     target: 'floodplain-googlesheets:'

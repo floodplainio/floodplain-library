@@ -20,7 +20,6 @@
             <option value="$PROJECT_DIR$/floodplain-dsl" />
             <option value="$PROJECT_DIR$/floodplain-elasticsearch" />
             <option value="$PROJECT_DIR$/floodplain-example" />
-            <option value="$PROJECT_DIR$/floodplain-fhir" />
             <option value="$PROJECT_DIR$/floodplain-googlesheets" />
             <option value="$PROJECT_DIR$/floodplain-integration" />
             <option value="$PROJECT_DIR$/floodplain-jdbc" />

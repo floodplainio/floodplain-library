@@ -11,7 +11,6 @@ dependencies {
     implementation(project(":floodplain-mongodb"))
     implementation(project(":floodplain-googlesheets"))
     implementation(project(":floodplain-elasticsearch"))
-    implementation(project(":floodplain-fhir"))
     implementation(project(":floodplain-jdbc"))
     implementation("ca.uhn.hapi.fhir:hapi-fhir-base:5.2.0")
     implementation("ca.uhn.hapi.fhir:hapi-fhir-structures-r4:5.2.0")
