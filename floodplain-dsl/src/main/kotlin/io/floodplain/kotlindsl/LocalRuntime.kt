@@ -66,8 +66,8 @@ import java.util.Properties
 private val logger = mu.KotlinLogging.logger {}
 
 interface InputReceiver : FloodplainOperator {
-    fun input(topic: String, key: String, msg: IMessage)
-    fun input(topic: String, key: ByteArray, msg: ByteArray)
+    fun input(topic: String, key: String?, msg: IMessage)
+    fun input(topic: String, key: ByteArray?, msg: ByteArray)
     fun delete(topic: String, key: String)
     fun inputs(): Set<String>
 }
@@ -296,7 +296,7 @@ class LocalDriverContext(
         }
     }
 
-    override fun input(topic: String, key: String, msg: IMessage) {
+    override fun input(topic: String, key: String?, msg: IMessage) {
         if (!inputs().contains(topic)) {
             logger.debug("Missing topic: $topic available topics: ${inputs()}")
         }
@@ -311,7 +311,7 @@ class LocalDriverContext(
         inputTopic.pipeInput(key, replicationMsg)
     }
 
-    override fun input(topic: String, key: ByteArray, msg: ByteArray) {
+    override fun input(topic: String, key: ByteArray?, msg: ByteArray) {
         if (!inputs().contains(topic)) {
             logger.debug("Missing topic: $topic available topics: ${inputs()}")
         }

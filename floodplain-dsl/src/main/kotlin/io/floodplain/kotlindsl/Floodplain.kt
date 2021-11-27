@@ -215,8 +215,8 @@ fun PartialStream.transform(transform: (IMessage) -> IMessage): Transformer {
     return addTransformer(Transformer(this.rootTopology, set, topologyContext))
 }
 
-fun PartialStream.keyTransform(transform: (String,IMessage?) -> String): Transformer {
-    val transformer: (String, ReplicationMessage?) -> String =
+fun PartialStream.keyTransform(transform: (String?,IMessage?) -> String): Transformer {
+    val transformer: (String?, ReplicationMessage?) -> String =
         { key, msg ->
             // transform.invoke(key, msg)
             transform.invoke(key,msg?.let { fromImmutable(it.message()) } )
