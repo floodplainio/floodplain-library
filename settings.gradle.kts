@@ -28,7 +28,6 @@ include(
     "floodplain-api",
     "floodplain-dsl",
     "floodplain-direct",
-    "floodplain-fhir",
     "floodplain-integration",
     "floodplain-googlesheets",
     "floodplain-debezium",
