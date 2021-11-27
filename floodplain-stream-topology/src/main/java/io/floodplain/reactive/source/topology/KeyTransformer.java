@@ -19,6 +19,7 @@
 package io.floodplain.reactive.source.topology;
 
 import io.floodplain.reactive.source.topology.api.TopologyPipeComponent;
+import io.floodplain.replication.api.ReplicationMessage;
 import io.floodplain.streams.api.TopologyContext;
 import io.floodplain.streams.remotejoin.KeyProcessor;
 import io.floodplain.streams.remotejoin.ReplicationTopologyParser;
@@ -28,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Stack;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public class KeyTransformer implements TopologyPipeComponent {
@@ -35,11 +37,11 @@ public class KeyTransformer implements TopologyPipeComponent {
     private boolean materialize;
 
     //	private final boolean fromEmpty;
-    private final Function<String,String> keyTransformer;
+    private final BiFunction<String, ReplicationMessage,String> keyTransformer;
 
 
     private final static Logger logger = LoggerFactory.getLogger(KeyTransformer.class);
-    public KeyTransformer(Function<String, String> keyTransformer) {
+    public KeyTransformer(BiFunction<String, ReplicationMessage,String> keyTransformer) {
         this.keyTransformer = keyTransformer;
     }
 

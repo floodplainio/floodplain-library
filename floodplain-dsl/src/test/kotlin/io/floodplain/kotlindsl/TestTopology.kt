@@ -700,7 +700,7 @@ class TestTopology {
     fun testKeyTransformer() {
         stream {
             from("source") {
-                keyTransform { key -> "mon$key" }
+                keyTransform { key,_ -> "mon$key" }
                 toTopic("output")
             }
         }.renderAndExecute {
@@ -712,6 +712,24 @@ class TestTopology {
             assertEquals("monsoon", deleted)
         }
     }
+
+    @Test
+    fun testKeyTransformerFromMessage() {
+        stream {
+            from("source") {
+                keyTransform { key,msg -> "mon$key${msg?.get("value")?:"nothing"}" }
+                toTopic("output")
+            }
+        }.renderAndExecute {
+            input("source", "key", empty().set("value", "value1"))
+            val (key, _) = output("output")
+            assertEquals("monkeyvalue1", key)
+            delete("source", "soon")
+            val deleted = deleted("output")
+            assertEquals("monsoonnothing", deleted)
+        }
+    }
+
 
     @Test
     fun testHistory() {

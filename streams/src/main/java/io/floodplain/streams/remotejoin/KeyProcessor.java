@@ -23,6 +23,7 @@ import org.apache.kafka.streams.processor.api.Processor;
 import org.apache.kafka.streams.processor.api.ProcessorContext;
 import org.apache.kafka.streams.processor.api.Record;
 
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
@@ -30,10 +31,10 @@ import java.util.function.Function;
  */
 public class KeyProcessor implements Processor<String, ReplicationMessage,String, ReplicationMessage> {
 
-    private final Function<String, String> keyTransform;
+    private final BiFunction<String,ReplicationMessage,String> keyTransform;
     private ProcessorContext<String, ReplicationMessage> context;
 
-    public KeyProcessor(Function<String,String> keyTransform) {
+    public KeyProcessor(BiFunction<String,ReplicationMessage,String> keyTransform) {
         this.keyTransform = keyTransform;
     }
 
@@ -44,6 +45,6 @@ public class KeyProcessor implements Processor<String, ReplicationMessage,String
 
     @Override
     public void process(Record<String, ReplicationMessage> record) {
-        context.forward(record.withKey(keyTransform.apply(record.key())));
+        context.forward(record.withKey(keyTransform.apply(record.key(),record.value())));
     }
 }

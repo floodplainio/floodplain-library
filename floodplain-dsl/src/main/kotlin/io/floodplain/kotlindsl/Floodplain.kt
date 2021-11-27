@@ -215,8 +215,13 @@ fun PartialStream.transform(transform: (IMessage) -> IMessage): Transformer {
     return addTransformer(Transformer(this.rootTopology, set, topologyContext))
 }
 
-fun PartialStream.keyTransform(transform: (String) -> String): Transformer {
-    return addTransformer(Transformer(this.rootTopology, KeyTransformer(transform), topologyContext))
+fun PartialStream.keyTransform(transform: (String,IMessage?) -> String): Transformer {
+    val transformer: (String, ReplicationMessage?) -> String =
+        { key, msg ->
+            // transform.invoke(key, msg)
+            transform.invoke(key,msg?.let { fromImmutable(it.message()) } )
+        }
+    return addTransformer(Transformer(this.rootTopology, KeyTransformer(transformer), topologyContext))
 }
 
 // fun PartialPipe.copy()
