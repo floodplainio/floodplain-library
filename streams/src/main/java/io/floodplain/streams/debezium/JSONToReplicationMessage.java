@@ -172,6 +172,7 @@ public class JSONToReplicationMessage {
             case "io.debezium.time.MicroTimestamp":
             case "io.debezium.time.ZonedTimestamp":
             case "io.debezium.time.NanoTimestamp":
+            case "io.debezium.time.Timestamp":
                 return ValueType.TIMESTAMP;
             case "io.debezium.data.VariableScaleDecimal":
                 return ValueType.LONG;
@@ -214,6 +215,8 @@ public class JSONToReplicationMessage {
                 long nano = value.asLong();
                 Instant instant2 = Instant.ofEpochMilli(nano / 1000_000).plusNanos(nano % 1000_000);
                 return LocalDateTime.ofInstant(instant2, ZoneId.systemDefault());
+            case "io.debezium.time.Timestamp":
+                return LocalDateTime.ofInstant(Instant.ofEpochMilli(value.asLong()), ZoneId.systemDefault());
             case "io.debezium.time.MicroTimestamp":
                 long l3 = value.asLong(); // Long.parseLong(value.asText());
                 long remain = l3 % 1000;

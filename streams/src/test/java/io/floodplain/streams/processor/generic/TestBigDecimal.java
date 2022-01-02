@@ -23,12 +23,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.floodplain.replication.api.ReplicationMessage;
 import io.floodplain.streams.debezium.JSONToReplicationMessage;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 public class TestBigDecimal {
@@ -42,6 +44,17 @@ public class TestBigDecimal {
         ReplicationMessage msg = JSONToReplicationMessage.convertToReplication(false, (ObjectNode) node, Optional.empty());
         Object amount = msg.value("amount").get();
         BigDecimal value = (BigDecimal) amount;
+        logger.info("Final value: "+value);
+    }
+
+    @Test
+    public void testDateTimestamp() throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode node = mapper.readTree(this.getClass().getClassLoader().getResourceAsStream("timestamp.json"));
+        ReplicationMessage msg = JSONToReplicationMessage.convertToReplication(false, (ObjectNode) node, Optional.empty());
+        Object amount = msg.value("created_on").get();
+        LocalDateTime value = (LocalDateTime) amount;
+        Assertions.assertEquals(7, value.getMonth().getValue());
         logger.info("Final value: "+value);
     }
 }
