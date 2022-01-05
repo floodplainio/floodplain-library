@@ -137,5 +137,8 @@ public class RocksDBConfigurationSetter implements RocksDBConfigSetter {
 
     }
 
+    public void close(final String storeName, final Options options) {
+        // noop
+    }
 
 }

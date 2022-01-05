@@ -14,13 +14,13 @@ fun isReleaseVersion(): Boolean {
 
 object FloodplainDeps {
     const val kotlin = FloodplainPlugins.kotlin
-    const val floodplain_version = "1.6.9"
+    const val floodplain_version = "1.6.10-SNAPSHOT"
     const val jackson_version = "2.12.4"
-    const val kafka_version = "2.8.0"
+    const val kafka_version = "3.0.0"
     const val slf4j_version = "1.7.32"
     const val mysql_version = "8.0.23"
     const val mongodb_version = "4.3.0"
-    const val debezium_version = "1.6.0.Final"
+    const val debezium_version = "1.8.0.Final"
     const val testContainer_version = "1.16.0"
     const val kotlin_coroutines_version = "1.4.3"
     const val junit_5_version     = "5.7.2"
