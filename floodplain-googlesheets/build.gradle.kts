@@ -5,7 +5,7 @@ import io.floodplain.build.FloodplainDeps
 // }
 
 dependencies {
-    compile(FloodplainDeps.kotlinLogging)
+    implementation(FloodplainDeps.kotlinLogging)
     implementation(project(":floodplain-stream-topology"))
     // This dependency is exported to consumers, that is to say found on their compile classpath.
     implementation("org.apache.commons:commons-math3:3.6.1")
@@ -16,7 +16,7 @@ dependencies {
     implementation("com.google.oauth-client:google-oauth-client-jetty:1.31.5")
     implementation("com.google.apis:google-api-services-sheets:v4-rev612-1.25.0")
     implementation("org.apache.kafka:connect-api:2.8.0")
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.12.2")
+    implementation("${FloodplainDeps.jacksonCore}")
     implementation(project(":floodplain-dsl"))
     implementation(project(":floodplain-stream-topology"))
     implementation(project(":streams-api"))

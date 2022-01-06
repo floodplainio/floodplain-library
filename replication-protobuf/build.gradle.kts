@@ -7,6 +7,10 @@ import io.floodplain.build.FloodplainDeps
 val protobufVersion = "3.11.4"
 
 dependencies {
+    implementation(FloodplainDeps.jacksonCore)
+    implementation(FloodplainDeps.jacksonDatabind)
+    implementation(FloodplainDeps.slf4j)
+    implementation(FloodplainDeps.cdiApi)
     implementation(project(":immutable-api"))
     implementation(project(":immutable-impl"))
     implementation(project(":replication-api"))
@@ -14,7 +18,7 @@ dependencies {
     implementation(project(":replication-json"))
     implementation(project("::streams-api"))
     implementation("com.github.spotbugs:spotbugs-annotations:4.0.1")
-    compile(FloodplainDeps.protobuf)
+    implementation(FloodplainDeps.protobuf)
     testImplementation("org.junit.jupiter:junit-jupiter:${FloodplainDeps.junit_5_version}")
 }
 plugins {

@@ -1,7 +1,7 @@
 import io.floodplain.build.FloodplainDeps
 
 dependencies {
-    compile(FloodplainDeps.kotlinLogging)
+    implementation(FloodplainDeps.kotlinLogging)
     implementation(project(":floodplain-stream-topology"))
     implementation(FloodplainDeps.kafkaConnectRuntime)
     implementation(project(":streams-api"))
@@ -11,6 +11,6 @@ dependencies {
     implementation(project(":floodplain-dsl"))
     implementation(project(":floodplain-debezium"))
     implementation(FloodplainDeps.kotlinCoroutines)
-    testCompile(FloodplainDeps.testContainer)
+    testImplementation(FloodplainDeps.testContainer)
     testImplementation("org.junit.jupiter:junit-jupiter:${FloodplainDeps.junit_5_version}")
 }

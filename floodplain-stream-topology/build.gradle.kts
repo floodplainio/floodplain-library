@@ -10,6 +10,7 @@ dependencies {
     implementation(project(":streams-api"))
     implementation(project(":kafka-converter"))
     implementation(FloodplainDeps.slf4j)
+    implementation(FloodplainDeps.kafkaStreams)
     testImplementation(FloodplainDeps.slf4jLog4j)
     testImplementation("org.junit.jupiter:junit-jupiter:${FloodplainDeps.junit_5_version}")
 }

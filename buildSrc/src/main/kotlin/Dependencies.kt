@@ -1,7 +1,7 @@
 package io.floodplain.build
 
 object FloodplainPlugins {
-    const val kotlin = "1.4.32"
+    const val kotlin = "1.6.10"
 }
 
 object Libs {
@@ -15,21 +15,18 @@ fun isReleaseVersion(): Boolean {
 object FloodplainDeps {
     const val kotlin = FloodplainPlugins.kotlin
     const val floodplain_version = "1.8.1-SNAPSHOT"
-    const val jackson_version = "2.12.4"
+    const val jackson_version = "2.13.1"
     const val kafka_version = "3.0.0"
     const val slf4j_version = "1.7.32"
     const val mysql_version = "8.0.23"
     const val mongodb_version = "4.3.0"
     const val debezium_version = "1.8.0.Final"
-    const val testContainer_version = "1.16.0"
+    const val testContainer_version = "1.16.2"
     const val kotlin_coroutines_version = "1.4.3"
     const val junit_5_version     = "5.7.2"
-    const val hapiFhir = "5.4.2" //5.4.2
-    const val debeziumCore        = "io.debezium:debezium-core:$debezium_version"
     const val debeziumPostgres    = "io.debezium:debezium-connector-postgres:$debezium_version"
     const val debeziumMySQL       = "io.debezium:debezium-connector-mysql:$debezium_version"
     const val debeziumEmbedded    = "io.debezium:debezium-embedded:$debezium_version"
-    const val debeziumServerCore  = "io.debezium:debezium-server-core:$debezium_version"
     const val debeziumTestContainers = "io.debezium:debezium-testing-testcontainers:$debezium_version"
     const val cdiApi              = "jakarta.enterprise:jakarta.enterprise.cdi-api:2.0.2"
     const val microProfileConfig  = "org.eclipse.microprofile.config:microprofile-config-api:1.3"

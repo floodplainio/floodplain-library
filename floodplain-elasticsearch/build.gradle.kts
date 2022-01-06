@@ -1,7 +1,7 @@
 import io.floodplain.build.FloodplainDeps
 
 dependencies {
-    compile(FloodplainDeps.kotlinLogging)
+    implementation(FloodplainDeps.kotlinLogging)
     implementation(project(":floodplain-stream-topology"))
     implementation(project(":streams-api"))
     implementation(project(":streams"))
@@ -10,8 +10,9 @@ dependencies {
     implementation(project(":floodplain-test"))
     implementation("io.confluent:kafka-connect-elasticsearch:5.5.0")
     implementation(FloodplainDeps.kotlinCoroutines)
+    implementation(FloodplainDeps.kafkaConnectApi)
     testImplementation(FloodplainDeps.jacksonCore)
     testImplementation(FloodplainDeps.jacksonDatabind)
     testImplementation("org.junit.jupiter:junit-jupiter:${FloodplainDeps.junit_5_version}")
-    testCompile(FloodplainDeps.testContainer)
+    testImplementation(FloodplainDeps.testContainer)
 }

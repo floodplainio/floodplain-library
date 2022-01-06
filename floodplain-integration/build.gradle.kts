@@ -2,7 +2,7 @@ import io.floodplain.build.FloodplainDeps
 
 dependencies {
     api(FloodplainDeps.slf4j)
-    compile(FloodplainDeps.kotlinLogging)
+    implementation(FloodplainDeps.kotlinLogging)
     implementation(project(":floodplain-stream-topology"))
     implementation(project(":immutable-api"))
     implementation(project(":streams-api"))
@@ -16,6 +16,10 @@ dependencies {
     implementation("io.confluent:kafka-connect-elasticsearch:5.5.0")
     implementation(FloodplainDeps.kotlinCoroutines)
     implementation(FloodplainDeps.jacksonDatabind310)
+    implementation(FloodplainDeps.kafkaClient)
+    implementation(FloodplainDeps.kafkaStreams)
+    implementation(FloodplainDeps.kafkaConnectApi)
+    implementation(FloodplainDeps.kafkaConnectRuntime)
     testImplementation(project(":floodplain-test"))
     testImplementation(FloodplainDeps.jacksonCore)
     testImplementation(FloodplainDeps.jacksonDatabind)

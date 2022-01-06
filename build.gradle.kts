@@ -19,17 +19,23 @@ buildscript {
 val buildKotlinVersion: String by extra
 
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "1.4.32"
-    id("org.jetbrains.kotlin.plugin.allopen") version "1.4.32"
+    kotlin("jvm") version "1.6.10"
+
+    id("org.jetbrains.kotlin.plugin.allopen") version "1.6.10"
     id("org.jlleitschuh.gradle.ktlint") version "10.1.0"
     id("org.jetbrains.dokka") version "1.4.32"
     id("com.github.hierynomus.license-base").version("0.16.1")
     id("com.github.spotbugs") version "4.7.2"
-    id("io.gitlab.arturbosch.detekt") version "1.18.0-RC2"
+    id("io.gitlab.arturbosch.detekt") version "1.19.0"
     signing
     `maven-publish`
     `java-library`
     jacoco
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
 }
 
 dependencies {
@@ -78,7 +84,7 @@ subprojects {
         detekt {
             // Version of Detekt that will be used. When unspecified the latest detekt
             // version found will be used. Override to stay on the same version.
-            toolVersion = "1.18.0-RC2"
+            toolVersion = "1.19.0"
 
             // The directories where detekt looks for source files.
             // Defaults to `files("src/main/java", "src/main/kotlin")`.

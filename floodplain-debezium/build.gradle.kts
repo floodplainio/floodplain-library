@@ -3,7 +3,7 @@ dependencies {
     implementation(FloodplainDeps.debeziumEmbedded)
     implementation(FloodplainDeps.debeziumPostgres)
     implementation(FloodplainDeps.debeziumMySQL)
-    compile(FloodplainDeps.kotlinLogging)
+    implementation(FloodplainDeps.kotlinLogging)
     implementation(project(":floodplain-api"))
     implementation(FloodplainDeps.kotlinCoroutines)
     testImplementation(project(":floodplain-dsl"))

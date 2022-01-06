@@ -1,6 +1,7 @@
 import io.floodplain.build.FloodplainDeps
 
 dependencies {
+    implementation(FloodplainDeps.slf4j)
     implementation(project(":immutable-api"))
     implementation(project(":immutable-impl"))
     implementation(project(":replication-api"))
@@ -11,12 +12,12 @@ dependencies {
     implementation(project(":kafka-converter"))
     testImplementation("org.junit.jupiter:junit-jupiter:${FloodplainDeps.junit_5_version}")
     implementation(FloodplainDeps.jacksonDatabind310)
-    compile(FloodplainDeps.kafkaClient)
-    compile(FloodplainDeps.kafkaStreams)
-    compile(FloodplainDeps.kafkaConnectApi)
-    // compile(FloodplainDeps.kafkaConnectFile)
-    compile(FloodplainDeps.kafkaConnectRuntime)
-    compile(FloodplainDeps.cdiApi)
-    compile(FloodplainDeps.microProfileConfig)
+    implementation(FloodplainDeps.kafkaClient)
+    implementation(FloodplainDeps.kafkaStreams)
+    implementation(FloodplainDeps.kafkaConnectApi)
+    // implementation(FloodplainDeps.kafkaConnectFile)
+    implementation(FloodplainDeps.kafkaConnectRuntime)
+    implementation(FloodplainDeps.cdiApi)
+    implementation(FloodplainDeps.microProfileConfig)
 
 }
