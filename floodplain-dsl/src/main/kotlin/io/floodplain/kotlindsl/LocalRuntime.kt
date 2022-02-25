@@ -34,7 +34,7 @@ import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.channels.sendBlocking
+import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.callbackFlow
@@ -285,7 +285,7 @@ class LocalDriverContext(
                     // val key = Serdes.String().deserializer().deserialize(record.topic(), record.key())
                     val topic = Topic.fromQualified(record.topic(), topologyContext)
                     if (this.isActive) {
-                        sendBlocking(Triple(topic, record.key(), record.value()))
+                        trySendBlocking(Triple(topic, record.key(), record.value()))
                     }
                 }
             }

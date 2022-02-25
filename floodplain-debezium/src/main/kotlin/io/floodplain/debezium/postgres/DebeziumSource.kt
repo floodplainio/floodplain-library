@@ -23,6 +23,7 @@ import io.debezium.engine.DebeziumEngine
 import io.debezium.engine.format.Json
 import io.floodplain.ChangeRecord
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.channels.awaitClose
@@ -163,6 +164,7 @@ private fun ProducerScope<ChangeRecord>.createEngine(
         .build()
 }
 
+@OptIn(DelicateCoroutinesApi::class)
 private fun runDebeziumServer(props: Properties): Flow<ChangeRecord> {
     val engineKillSwitch = EngineKillSwitch()
     return callbackFlow {
