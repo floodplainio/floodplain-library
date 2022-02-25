@@ -26,7 +26,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.channels.sendBlocking
+import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.onCompletion
@@ -142,7 +142,7 @@ private fun ProducerScope<ChangeRecord>.createEngine(
             } else {
                 val perf = measureTimeMillis {
                     try {
-                        sendBlocking(
+                        trySendBlocking(
                             ChangeRecord(
                                 record.destination(),
                                 record.key(),

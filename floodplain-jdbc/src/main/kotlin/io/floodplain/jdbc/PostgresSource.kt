@@ -32,7 +32,6 @@ import io.floodplain.streams.api.Topic
 import io.floodplain.streams.api.TopologyContext
 import io.floodplain.streams.remotejoin.TopologyConstructor
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
 
 private val logger = mu.KotlinLogging.logger {}
 
@@ -92,9 +91,7 @@ private class PostgresConfig(
                     "key.converter" to "org.apache.kafka.connect.json.JsonConverter",
                     "value.converter" to "org.apache.kafka.connect.json.JsonConverter",
                     // TODO"table.whitelist": "public.inventory"
-                    "public.inventory" to sourceElements
-                        .map { e -> "${e.schema()}.${e.table()}" }
-                        .joinToString(",")
+                    "public.inventory" to sourceElements.joinToString(",") { e -> "${e.schema()}.${e.table()}" }
                 )
             )
         )
