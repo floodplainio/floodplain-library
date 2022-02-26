@@ -30,7 +30,6 @@ public class FunctionProcessor implements Processor<String, ReplicationMessage,S
 
     private final SetTransformer.TriFunction function;
     private ProcessorContext<String, ReplicationMessage> context;
-
     public FunctionProcessor(SetTransformer.TriFunction func) {
         this.function = func;
     }

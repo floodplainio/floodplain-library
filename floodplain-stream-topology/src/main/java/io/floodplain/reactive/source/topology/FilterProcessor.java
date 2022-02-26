@@ -30,14 +30,12 @@ public class FilterProcessor implements Processor<String, ReplicationMessage,Str
 
     private final BiFunction<String,ImmutableMessage, Boolean> filterExpression;
     private ProcessorContext<String, ReplicationMessage> context;
-
     public FilterProcessor(BiFunction<String,ImmutableMessage, Boolean> func) {
         this.filterExpression = func;
     }
     public void init(final ProcessorContext<String, ReplicationMessage> context) {
         this.context = context;
     }
-
 
     @Override
     public void process(Record<String, ReplicationMessage> record) {

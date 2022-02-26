@@ -45,6 +45,7 @@ import org.apache.kafka.connect.storage.KafkaOffsetBackingStore
 import org.apache.kafka.connect.storage.KafkaStatusBackingStore
 import org.apache.kafka.connect.storage.StatusBackingStore
 import org.apache.kafka.connect.util.ConnectUtils
+import org.apache.kafka.connect.util.TopicAdmin
 import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.StreamsConfig
 import org.apache.kafka.streams.Topology

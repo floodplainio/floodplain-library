@@ -43,7 +43,6 @@ class ElasticSearchSinkConfig(
     val context: TopologyContext
 ) :
     AbstractSinkConfig() {
-    // var sinkTask: ElasticsearchSinkTask? = null
     val materializedConfigs: MutableList<MaterializedConfig> = mutableListOf()
     private var instantiatedSinkElements: Map<Topic, MutableList<FloodplainSink>>? = null
 

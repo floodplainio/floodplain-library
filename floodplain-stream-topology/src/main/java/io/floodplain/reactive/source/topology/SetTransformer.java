@@ -39,13 +39,10 @@ public class SetTransformer implements TopologyPipeComponent {
 
     //	private final boolean fromEmpty;
     private final TriFunction transformer;
-
-
     private final static Logger logger = LoggerFactory.getLogger(SetTransformer.class);
     public SetTransformer(TriFunction transformer) {
         this.transformer = transformer;
     }
-
 
     @Override
     public void addToTopology(Stack<String> transformerNames, int currentPipeId, Topology topology,

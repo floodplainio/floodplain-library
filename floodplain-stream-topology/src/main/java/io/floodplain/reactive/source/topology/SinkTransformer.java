@@ -59,7 +59,6 @@ public class SinkTransformer implements TopologyPipeComponent {
         topologyConstructor.ensureTopicExists(topic, partitions);
         String qualifiedName;
         // TODO effective deconflicting but ugly
-        //topologyContext.applicationId();
         qualifiedName = name.map(processorName -> processorName + "_" + topologyContext.topicName(processorName + "_" + topic.qualifiedString())).orElse(qualifiedSinkTopic);
         topologyConstructor.addSink(qualifiedName);
         logger.info("Stack top for transformer: " + transformerNames.peek());

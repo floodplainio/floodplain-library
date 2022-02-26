@@ -32,8 +32,6 @@ import java.util.Stack;
 public class EachTransformer implements TopologyPipeComponent {
 
     private boolean materialize = false;
-
-
     private final static Logger logger = LoggerFactory.getLogger(EachTransformer.class);
 
     final ImmutableMessage.TriConsumer lambda;

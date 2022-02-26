@@ -36,20 +36,15 @@ public class FilterTransformer implements TopologyPipeComponent {
 
     private final ProcessorSupplier<String, ReplicationMessage,String, ReplicationMessage> filterProcessor;
     private boolean materialized = false;
-
     private final static Logger logger = LoggerFactory.getLogger(FilterTransformer.class);
 
-
     public FilterTransformer(BiFunction<String,ImmutableMessage, Boolean> func) {
-
         this.filterProcessor = () -> new FilterProcessor(func);
     }
 
     @Override
     public void addToTopology(Stack<String> transformerNames, int pipeId, Topology topology, TopologyContext topologyContext, TopologyConstructor topologyConstructor) {
         String filterName = topologyContext.qualifiedName("filter", transformerNames.size(), pipeId);
-
-        logger.info("Stack top for transformer: {}", transformerNames.peek());
         if (this.materialized) {
             topology.addProcessor(filterName + "_prematerialize", filterProcessor, transformerNames.peek());
             ReplicationTopologyParser.addMaterializeStore(topology, topologyContext, topologyConstructor, filterName, filterName + "_prematerialize");
@@ -68,6 +63,4 @@ public class FilterTransformer implements TopologyPipeComponent {
     public void setMaterialize() {
         this.materialized = true;
     }
-
-
 }

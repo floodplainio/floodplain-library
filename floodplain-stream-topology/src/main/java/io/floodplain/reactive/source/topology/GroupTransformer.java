@@ -43,7 +43,6 @@ public class GroupTransformer implements TopologyPipeComponent {
     public void addToTopology(Stack<String> transformerNames, int pipeId, Topology topology,
                               TopologyContext topologyContext, TopologyConstructor topologyConstructor) {
         Function<ReplicationMessage, String> keyExtractor = msg -> this.keyExtractor.apply(msg.message(), msg.paramMessage().orElse(ImmutableFactory.empty()));
-
         addGroupTransformer(transformerNames, pipeId, topology, topologyContext, topologyConstructor, keyExtractor, "group");
 
     }
@@ -55,7 +54,6 @@ public class GroupTransformer implements TopologyPipeComponent {
         String grouped = ReplicationTopologyParser.addGroupedProcessor(topology, topologyContext, topologyConstructor, name, from, keyExtractor);
         transformerNames.push(grouped);
     }
-
 
     @Override
     public boolean materializeParent() {

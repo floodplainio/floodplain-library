@@ -32,10 +32,8 @@ import java.util.Stack;
 import static io.floodplain.streams.remotejoin.ReplicationTopologyParser.STORE_PREFIX;
 
 public class HistoryTransformer implements TopologyPipeComponent {
-
     private boolean materialized = false;
     private final static Logger logger = LoggerFactory.getLogger(HistoryTransformer.class);
-
 
     public HistoryTransformer() {
     }
@@ -48,12 +46,8 @@ public class HistoryTransformer implements TopologyPipeComponent {
         String historyKeyCountStoreName = STORE_PREFIX+""+historyKeyCountName;
         ReplicationTopologyParser.addStateStoreMapping(topologyConstructor.processorStateStoreMapper, historyName, historyStoreName);
         ReplicationTopologyParser.addStateStoreMapping(topologyConstructor.processorStateStoreMapper, historyName, historyKeyCountStoreName);
-
-        logger.info("Granting access for processor: {} to store: {}", historyName, historyStoreName);
         topologyConstructor.stateStoreSupplier.put(historyStoreName, ReplicationTopologyParser.createMessageStoreSupplier(historyStoreName, true));
         topologyConstructor.longStoreSupplier.put(historyKeyCountStoreName, ReplicationTopologyParser.createLongStoreSupplier(historyKeyCountStoreName, true));
-
-        logger.info("Stack top for transformer: {}", transformerNames.peek());
         if (this.materialized) {
             topology.addProcessor(historyName, () -> new HistoryProcessor(historyStoreName,historyKeyCountStoreName), transformerNames.peek());
             ReplicationTopologyParser.addMaterializeStore(topology, topologyContext, topologyConstructor, historyName, historyName + "_prematerialize");

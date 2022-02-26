@@ -34,9 +34,8 @@ import java.util.concurrent.atomic.AtomicInteger
 private val logger = mu.KotlinLogging.logger {}
 
 class TestMySQL {
-    // TODO, connect to testcontainers (now hard coded to localhost)
     private val postgresContainer = InstantiatedContainer(
-        "debezium/example-mysql:1.6",
+        "debezium/example-mysql:1.8.1",
         3306,
         mapOf(
             "MYSQL_ROOT_PASSWORD" to "debezium",
@@ -45,7 +44,7 @@ class TestMySQL {
         )
     )
 
-    var engine: DebeziumEngine<ChangeEvent<String, String>>? = null
+    private var engine: DebeziumEngine<ChangeEvent<String, String>>? = null
     private val itemCounter = AtomicInteger(0)
 
     @Test

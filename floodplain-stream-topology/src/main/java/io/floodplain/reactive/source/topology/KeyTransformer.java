@@ -27,10 +27,8 @@ import io.floodplain.streams.remotejoin.TopologyConstructor;
 import org.apache.kafka.streams.Topology;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.util.Stack;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 public class KeyTransformer implements TopologyPipeComponent {
 
@@ -45,11 +43,9 @@ public class KeyTransformer implements TopologyPipeComponent {
         this.keyTransformer = keyTransformer;
     }
 
-
     @Override
     public void addToTopology(Stack<String> transformerNames, int currentPipeId, Topology topology,
                               TopologyContext topologyContext, TopologyConstructor topologyConstructor) {
-//        KeyProcessor fp = new KeyProcessor(this.keyTransformer);
         String name = topologyContext.qualifiedName("keyTransform", transformerNames.size(), currentPipeId);
         logger.info("Adding key processor: {} to parent: {} hash: {}", name, transformerNames, transformerNames.hashCode());
         if (this.materialize) {
@@ -70,6 +66,4 @@ public class KeyTransformer implements TopologyPipeComponent {
     public void setMaterialize() {
         this.materialize = true;
     }
-
-
 }

@@ -26,14 +26,11 @@ import org.apache.kafka.streams.processor.api.ProcessorContext;
 import org.apache.kafka.streams.processor.api.Record;
 
 public class EachProcessor implements Processor<String, ReplicationMessage,String, ReplicationMessage> {
-
     private final ImmutableMessage.TriConsumer lambda;
     private ProcessorContext<String, ReplicationMessage> context;
-
     public EachProcessor(ImmutableMessage.TriConsumer lambda) {
         this.lambda = lambda;
     }
-
 
     @Override
     public void init(ProcessorContext<String, ReplicationMessage> context) {

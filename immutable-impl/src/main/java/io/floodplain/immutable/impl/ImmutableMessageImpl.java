@@ -367,7 +367,7 @@ public class ImmutableMessageImpl implements ImmutableMessage {
                 for (ImmutableMessage msg : e.getValue()) {
                     String pr = e.getKey() + "@" + i;
                     String newPrefix = !"".equals(prefix) ? prefix + "/" + pr : pr;
-                    msg.flatValueMap(ignoreNull, ignore, newPrefix).forEach(localValues::put);
+                    localValues.putAll(msg.flatValueMap(ignoreNull, ignore, newPrefix));
                     i++;
                 }
             }
