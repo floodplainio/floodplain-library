@@ -35,7 +35,7 @@ private val logger = mu.KotlinLogging.logger {}
 
 class TestMySQL {
     private val postgresContainer = InstantiatedContainer(
-        "debezium/example-mysql:1.8.1",
+        "debezium/example-mysql:1.8.1.Final",
         3306,
         mapOf(
             "MYSQL_ROOT_PASSWORD" to "debezium",
