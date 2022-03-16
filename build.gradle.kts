@@ -33,6 +33,10 @@ plugins {
     jacoco
 }
 
+configurations.implementation {
+    exclude(group = "org.apache.kafka", module = "kafka-log4j-appender")
+}
+
 java {
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11
