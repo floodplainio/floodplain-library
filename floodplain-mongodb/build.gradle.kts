@@ -3,7 +3,7 @@ import io.floodplain.build.FloodplainDeps
 dependencies {
     implementation(FloodplainDeps.kotlinLogging)
     implementation(project(":floodplain-stream-topology"))
-    implementation("org.mongodb.kafka:mongo-kafka-connect:1.6.1")
+    implementation("org.mongodb.kafka:mongo-kafka-connect:1.7.0")
     implementation(FloodplainDeps.kafkaConnectRuntime)
     implementation(project(":streams-api"))
     implementation(project(":streams"))

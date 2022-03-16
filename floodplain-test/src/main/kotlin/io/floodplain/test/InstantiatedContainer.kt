@@ -113,6 +113,8 @@ class RedpandaContainer(val image: String) : GenericContainer<RedpandaContainer?
         var command = "#!/bin/bash\n"
         command += "/usr/bin/rpk redpanda start --check=false --node-id 0 "
         command += "--kafka-addr PLAINTEXT://0.0.0.0:29092,OUTSIDE://0.0.0.0:9092 "
+        command += "--set redpanda.enable_idempotence=true "
+        command += "--set redpanda.enable_transactions=true "
         command += "--advertise-kafka-addr PLAINTEXT://broker:29092,OUTSIDE://$host:${getMappedPort(9092)}\n"
         logger.info("command: $command")
         logger.info("mapped port: $host:${getMappedPort(9092)}")
