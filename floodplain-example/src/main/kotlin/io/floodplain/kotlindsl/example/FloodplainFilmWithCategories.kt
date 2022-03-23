@@ -96,6 +96,6 @@ fun joinFilms() {
             }
             toMongo("filmwithcategories", "$tenant-$deployment-$generation-filmwithcat", mongoConfig)
         }
-    }.renderAndSchedule(URL("http://localhost:8083/connectors"), "localhost:9092", true)
+    }.renderAndSchedule(URL("http://localhost:8083/connectors"), "localhost:9092", "storagePath",true)
     logger.info { "done!" }
 }

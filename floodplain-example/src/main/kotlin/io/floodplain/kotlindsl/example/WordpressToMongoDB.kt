@@ -40,5 +40,5 @@ fun main() {
             }
             toMongo("posts", "$tenant-$deployment-$generation-topicdef", mongoConfig)
         }
-    }.renderAndSchedule(URL("http://localhost:8083/connectors"), "localhost:9092", true)
+    }.renderAndSchedule(URL("http://localhost:8083/connectors"), "localhost:9092","storagePath", true)
 }

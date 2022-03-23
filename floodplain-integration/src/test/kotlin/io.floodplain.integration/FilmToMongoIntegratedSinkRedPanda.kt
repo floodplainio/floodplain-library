@@ -120,6 +120,7 @@ class FilmToMongoIntegratedSinkRedPanda {
         }.renderAndSchedule(
             URL("http://${debeziumContainer?.host}:${debeziumContainer?.exposedPort}/connectors"),
             "localhost:${kafkaContainer.exposedPort}",
+            "storagePath",
             true,
             mapOf()
         ) { kafkaStreams,herder ->

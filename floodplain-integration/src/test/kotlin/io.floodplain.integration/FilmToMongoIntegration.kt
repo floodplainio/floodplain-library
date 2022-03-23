@@ -150,6 +150,7 @@ class FilmToMongoIntegration {
         }.renderAndSchedule(
             URL("http://${debeziumContainer?.host}:${debeziumContainer?.exposedPort}/connectors"),
             "${kafkaContainer.host}:${kafkaContainer.exposedPort}",
+            "storagePath",
             true,
             null
         ) { kafkaStreams,_ ->
