@@ -19,9 +19,12 @@ dependencies {
     implementation(FloodplainDeps.kafkaClient)
     implementation(FloodplainDeps.kafkaStreams)
     implementation(FloodplainDeps.kafkaConnectApi)
-    implementation(FloodplainDeps.kafkaConnectRuntime)
+    implementation(FloodplainDeps.kafkaConnectRuntime) {
+        exclude(group = "log4j", module = "log4j" )
+    }
     implementation(FloodplainDeps.commonsCompress) // update for vulnerability
     testImplementation(project(":floodplain-test"))
+    testImplementation(FloodplainDeps.log4j2)
     testImplementation(FloodplainDeps.jacksonCore)
     testImplementation(FloodplainDeps.jacksonDatabind)
     testImplementation(FloodplainDeps.testContainer)

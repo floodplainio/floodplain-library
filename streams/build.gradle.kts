@@ -16,7 +16,9 @@ dependencies {
     implementation(FloodplainDeps.kafkaStreams)
     implementation(FloodplainDeps.kafkaConnectApi)
     // implementation(FloodplainDeps.kafkaConnectFile)
-    implementation(FloodplainDeps.kafkaConnectRuntime)
+    implementation(FloodplainDeps.kafkaConnectRuntime) {
+        exclude(group = "log4j", module = "log4j" )
+    }
     implementation(FloodplainDeps.cdiApi)
     implementation(FloodplainDeps.microProfileConfig)
 

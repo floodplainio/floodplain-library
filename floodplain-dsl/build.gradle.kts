@@ -19,10 +19,16 @@ dependencies {
     implementation(FloodplainDeps.kotlinLogging)
     implementation(FloodplainDeps.debeziumPostgres)
     implementation(FloodplainDeps.debeziumMySQL)
-    implementation(FloodplainDeps.debeziumEmbedded)
+    implementation(FloodplainDeps.debeziumEmbedded) {
+        exclude(group = "log4j", module = "log4j" )
+    }
+
     implementation(FloodplainDeps.argParser)
     implementation(FloodplainDeps.jacksonDatabind310)
-    implementation(FloodplainDeps.kafkaConnectRuntime)
+    implementation(FloodplainDeps.kafkaConnectRuntime) {
+        exclude(group = "log4j", module = "log4j" )
+    }
     implementation(FloodplainDeps.kotlinCoroutines)
+    testImplementation(FloodplainDeps.log4j2)
     testImplementation("org.junit.jupiter:junit-jupiter:${FloodplainDeps.junit_5_version}")
 }

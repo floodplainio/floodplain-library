@@ -14,7 +14,7 @@ fun isReleaseVersion(): Boolean {
 
 object FloodplainDeps {
     const val kotlin = FloodplainPlugins.kotlin
-    const val floodplain_version = "1.9.3-SNAPSHOT"
+    const val floodplain_version = "1.9.4"
     const val jackson_version = "2.13.2"
     const val kafka_version = "3.0.0"
     const val slf4j_version = "1.7.36"
@@ -32,7 +32,9 @@ object FloodplainDeps {
     const val microProfileConfig  = "org.eclipse.microprofile.config:microprofile-config-api:1.3"
     const val mongoClientSync     = "org.mongodb:mongodb-driver-sync:$mongodb_version"
     const val slf4j               = "org.slf4j:slf4j-api:$slf4j_version"
-    const val slf4jLog4j          = "org.slf4j:slf4j-log4j12:$slf4j_version"
+    // const val slf4jLog4j          = "org.slf4j:slf4j-log4j12:$slf4j_version"
+    const val log4j2OverSlf       = "org.slf4j:log4j-over-slf4j:1.7.36"
+    const val log4j2              = "org.apache.logging.log4j:log4j-slf4j-impl:2.17.2"
     const val protobuf            = "com.google.protobuf:protobuf-java:3.17.3"
     const val kotlinLogging       = "io.github.microutils:kotlin-logging:2.1.21"
     const val commonsCompress     = "org.apache.commons:commons-compress:1.21"

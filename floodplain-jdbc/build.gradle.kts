@@ -3,7 +3,9 @@ import io.floodplain.build.FloodplainDeps
 dependencies {
     implementation(FloodplainDeps.kotlinLogging)
     implementation(project(":floodplain-stream-topology"))
-    implementation(FloodplainDeps.kafkaConnectRuntime)
+    implementation(FloodplainDeps.kafkaConnectRuntime) {
+        exclude(group = "log4j", module = "log4j" )
+    }
     implementation(project(":streams-api"))
     implementation(project(":streams"))
     implementation(project(":floodplain-stream-topology"))

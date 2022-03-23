@@ -25,6 +25,7 @@ import io.floodplain.ChangeRecord
 import io.floodplain.test.InstantiatedContainer
 import org.junit.After
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import java.nio.file.Files
@@ -64,7 +65,7 @@ class TestMySQL {
         offsetFilePath = null
     }
 
-    @Test
+    @Test @Ignore
     @Tag("integration")
     fun testSimpleMySqlRun() {
         // Find better way to configure this?
@@ -116,7 +117,10 @@ class TestMySQL {
     }
 
     private fun createOffsetFilePath(offsetId: String? = null): Path {
-        val tempFile = kotlin.io.path.createTempFile(offsetId ?: UUID.randomUUID().toString().substring(0, 7))
-        return tempFile
+        val tempFile = createTempFile(offsetId ?: UUID.randomUUID().toString().substring(0, 7))
+        if (offsetId == null) {
+            tempFile.deleteOnExit()
+        }
+        return tempFile.toPath()
     }
 }

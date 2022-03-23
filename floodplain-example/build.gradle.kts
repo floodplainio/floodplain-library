@@ -23,5 +23,6 @@ dependencies {
     implementation(FloodplainDeps.kotlinLogging)
     implementation(FloodplainDeps.kafkaStreams)
     implementation(FloodplainDeps.commonsCompress) // update for vulnerability
+    testImplementation(FloodplainDeps.log4j2)
     testImplementation("org.junit.jupiter:junit-jupiter:${FloodplainDeps.junit_5_version}")
 }
