@@ -29,6 +29,7 @@ import java.nio.charset.StandardCharsets
 
 private const val DEFAULT_BUFFER_TIME = 1000
 private const val DEFAULT_COLUMNS = 80
+private const val STORAGE_PATH = "storagePath"
 
 class LocalArgs(parser: ArgParser) {
     val force by parser.flagging(
@@ -53,6 +54,13 @@ class LocalArgs(parser: ArgParser) {
             "high-latency sinks. Only for local runs."
     ) { toInt() }
         .default(DEFAULT_BUFFER_TIME)
+
+    val storagePath by parser.storing(
+        "-o",
+        "--storagePath",
+        help = "Path to store local state, defaults to './storagePath' "
+    )
+        .default(STORAGE_PATH)
 
     val kafka by parser.storing(
         "-k",
@@ -93,7 +101,7 @@ suspend fun run(
             if (connect == null) {
                 throw FloodplainException("When supplying kafka, supply connect too")
             }
-            val streamsInstance = stream.renderAndSchedule(URL(connect), kafka!!, force)
+            val streamsInstance = stream.renderAndSchedule(URL(connect), kafka!!, storagePath,   force)
             remoteContext?.invoke(streamsInstance, stream.topologyContext)
         } else {
             stream.renderAndExecute(id, bufferTime) {

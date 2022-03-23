@@ -40,12 +40,16 @@ import org.apache.kafka.connect.runtime.distributed.DistributedConfig
 import org.apache.kafka.connect.runtime.distributed.DistributedHerder
 import org.apache.kafka.connect.runtime.isolation.Plugins
 import org.apache.kafka.connect.runtime.rest.RestServer
+import org.apache.kafka.connect.runtime.standalone.StandaloneConfig
+import org.apache.kafka.connect.runtime.standalone.StandaloneConfig.OFFSET_STORAGE_FILE_FILENAME_CONFIG
+import org.apache.kafka.connect.runtime.standalone.StandaloneHerder
+import org.apache.kafka.connect.storage.FileOffsetBackingStore
 import org.apache.kafka.connect.storage.KafkaConfigBackingStore
 import org.apache.kafka.connect.storage.KafkaOffsetBackingStore
 import org.apache.kafka.connect.storage.KafkaStatusBackingStore
+import org.apache.kafka.connect.storage.OffsetBackingStore
 import org.apache.kafka.connect.storage.StatusBackingStore
 import org.apache.kafka.connect.util.ConnectUtils
-import org.apache.kafka.connect.util.TopicAdmin
 import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.StreamsConfig
 import org.apache.kafka.streams.Topology
@@ -195,6 +199,7 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
         return renderAndSchedule(
             connectorURL,
             prop[StreamsConfig.BOOTSTRAP_SERVERS_CONFIG] as String,
+            "storagePath",
             force,
             Utils.propsToStringMap(prop)
         )
@@ -206,6 +211,7 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
         kafkaUsername: String,
         kafkaPassword: String,
         replicationFactor: Int,
+        storagePath: String,
         force: Boolean = false
     ): KafkaStreams {
         val properties = mapOf(
@@ -217,7 +223,7 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
             "acks" to "all",
             StreamsConfig.REPLICATION_FACTOR_CONFIG to replicationFactor.toString()
         )
-        return renderAndSchedule(connectorURL, kafkaHosts, force, properties)
+        return renderAndSchedule(connectorURL, kafkaHosts, storagePath, force, properties)
     }
 
     /**
@@ -231,6 +237,7 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
     fun renderAndSchedule(
         connectorURL: URL?,
         kafkaHosts: String,
+        storagePath: String,
         force: Boolean = false,
         initialSettings: Map<String, String>? = null,
         monitor: (suspend Stream.(KafkaStreams,Herder?) -> Unit)? = null
@@ -259,11 +266,11 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
                 startConstructor(name, topologyContext, it, json, force)
             }
         }
-        val herder = instantiateLocalSinks(settings)
+        val herder = instantiateLocalSinks(settings,"$storagePath/sink_offsets")
         val appId = topologyContext.topicName("@applicationId")
         val extra: MutableMap<String, Any> = mutableMapOf()
         extra.putAll(settings)
-        val streams = runTopology(topology, appId, kafkaHosts, "storagePath", extra)
+        val streams = runTopology(topology, appId, kafkaHosts, storagePath, extra)
         logger.info { "Topology running!" }
         runBlocking {
             monitor?.invoke(this@Stream, streams,herder)
@@ -271,10 +278,10 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
         return streams
     }
 
-    private fun instantiateLocalSinks(settings: Map<String, String>): Herder? {
+    private fun instantiateLocalSinks(settings: Map<String, String>, localPath: String): Herder? {
         var herder: Herder? = null
         if (localSinkConfigurations.isNotEmpty()) {
-            herder = startLocalConnect(settings)
+            herder = startLocalConnect(settings,localPath)
         }
         localSinkConfigurations.flatMap {
             it.instantiateSinkElements()
@@ -312,23 +319,39 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
             }
     }
 
-    private fun createKafkaOffsetBackingStore(workerConfig: WorkerConfig): KafkaOffsetBackingStore {
+    private fun createKafkaOffsetBackingStore(workerConfig: WorkerConfig): OffsetBackingStore {
         val kafkaOffsetBackingStore = KafkaOffsetBackingStore()
         kafkaOffsetBackingStore.configure(workerConfig)
         kafkaOffsetBackingStore.start()
         return kafkaOffsetBackingStore
     }
 
-    private fun startLocalConnect(initialWorkerProps: Map<String, String>): Herder {
+    private fun createFileOffsetBackingStore(workerConfig: WorkerConfig): OffsetBackingStore {
+        // val inputConfig = workerConfig.originalsStrings()
+        // inputConfig.put(OFFSET_STORAGE_FILE_FILENAME_CONFIG,path)
+        val store = FileOffsetBackingStore()
+        val config = StandaloneConfig(workerConfig.originalsStrings())
+        store.configure(config)
+        store.start()
+        return store
+    }
+
+    private fun startLocalConnect(initialWorkerProps: Map<String, String>, localPath: String): Herder {
         val workerProps = mutableMapOf<String, String>()
         workerProps.putAll(initialWorkerProps)
         extendWorkerProperties(workerProps)
         val randomPort = nextInt(2000, 30000)
         workerProps["listeners"]="http://localhost:$randomPort"
+        workerProps[OFFSET_STORAGE_FILE_FILENAME_CONFIG] = localPath
 
         val plugins = Plugins(workerProps)
         logger.info("Plugin initialization complete")
-        val config = DistributedConfig(workerProps)
+        // val config = DistributedConfig(workerProps)
+        val config = StandaloneConfig(workerProps)
+        // val offsetBackingStore = if (localPath!=null)
+        //     createFileOffsetBackingStore(config,localPath)
+        // else
+        //     createKafkaOffsetBackingStore(config)
         val time: Time = Time.SYSTEM
         val connectorClientConfigOverridePolicy: ConnectorClientConfigOverridePolicy = plugins.newPlugin(
             config.getString(WorkerConfig.CONNECTOR_CLIENT_POLICY_CLASS_CONFIG),
@@ -338,7 +361,10 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
         val kafkaClusterId: String = ConnectUtils.lookupKafkaClusterId(config) ?: "kafkaId"
         logger.debug("Kafka cluster ID: $kafkaClusterId")
 
-        val offsetBackingStore = createKafkaOffsetBackingStore(config)
+        // val offsetBackingStore = createKafkaOffsetBackingStore(config)
+
+        // StreamsConfig.STATE_DIR_CONFIG
+
 
         val rest = RestServer(config)
         rest.initializeServer()
@@ -350,28 +376,29 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
             time,
             plugins,
             config,
-            offsetBackingStore,
+            createFileOffsetBackingStore(config),
             connectorClientConfigOverridePolicy
         )
 
-        val statusBackingStore: StatusBackingStore = KafkaStatusBackingStore(time, worker.internalValueConverter)
-        statusBackingStore.configure(config)
-
-        val configBackingStore = KafkaConfigBackingStore(
-            worker.internalValueConverter,
-            config,
-            worker.configTransformer()
-        )
-        val herder = DistributedHerder(
-            config,
-            time,
-            worker,
-            kafkaClusterId,
-            statusBackingStore,
-            configBackingStore,
-            advertisedUrl.toString(),
-            connectorClientConfigOverridePolicy
-        )
+        // val statusBackingStore: StatusBackingStore = KafkaStatusBackingStore(time, worker.internalValueConverter)
+        // statusBackingStore.configure(config)
+        //
+        // val configBackingStore = KafkaConfigBackingStore(
+        //     worker.internalValueConverter,
+        //     config,
+        //     worker.configTransformer()
+        // )
+        val herder = StandaloneHerder(worker,kafkaClusterId,connectorClientConfigOverridePolicy)
+        // val herder = DistributedHerder(
+        //     config,
+        //     time,
+        //     worker,
+        //     kafkaClusterId,
+        //     statusBackingStore,
+        //     configBackingStore,
+        //     advertisedUrl.toString(),
+        //     connectorClientConfigOverridePolicy
+        // )
 
         val connect = Connect(herder, rest)
 
