@@ -20,6 +20,7 @@ dependencies {
     implementation(FloodplainDeps.kafkaStreams)
     implementation(FloodplainDeps.kafkaConnectApi)
     implementation(FloodplainDeps.kafkaConnectRuntime)
+    implementation(FloodplainDeps.commonsCompress) // update for vulnerability
     testImplementation(project(":floodplain-test"))
     testImplementation(FloodplainDeps.jacksonCore)
     testImplementation(FloodplainDeps.jacksonDatabind)

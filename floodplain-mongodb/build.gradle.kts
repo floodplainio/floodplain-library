@@ -11,6 +11,7 @@ dependencies {
     implementation(project(":floodplain-stream-topology"))
     implementation(project(":floodplain-dsl"))
     implementation(FloodplainDeps.kotlinCoroutines)
+    implementation(FloodplainDeps.commonsCompress) // update for vulnerability
     testImplementation(FloodplainDeps.testContainer)
     testImplementation("org.junit.jupiter:junit-jupiter:${FloodplainDeps.junit_5_version}")
 }

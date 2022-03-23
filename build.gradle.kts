@@ -35,6 +35,8 @@ plugins {
 
 configurations.implementation {
     exclude(group = "org.apache.kafka", module = "kafka-log4j-appender")
+    exclude(group = "log4j", module = "log4j")
+
 }
 
 java {
