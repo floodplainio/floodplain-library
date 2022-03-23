@@ -23,6 +23,8 @@ import io.debezium.engine.DebeziumEngine
 import io.debezium.engine.format.Json
 import io.floodplain.ChangeRecord
 import io.floodplain.test.InstantiatedContainer
+import org.junit.After
+import org.junit.Before
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import java.nio.file.Files
@@ -30,10 +32,14 @@ import java.nio.file.Path
 import java.util.Properties
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicInteger
+import kotlin.io.path.deleteIfExists
 
 private val logger = mu.KotlinLogging.logger {}
 
 class TestMySQL {
+
+    var offsetFilePath: Path? = null
+
     private val postgresContainer = InstantiatedContainer(
         "debezium/example-mysql:1.8.1.Final",
         3306,
@@ -47,12 +53,22 @@ class TestMySQL {
     private var engine: DebeziumEngine<ChangeEvent<String, String>>? = null
     private val itemCounter = AtomicInteger(0)
 
+    @Before
+    fun setup() {
+        offsetFilePath = createOffsetFilePath()
+    }
+
+    @After
+    fun teardown() {
+        offsetFilePath?.deleteIfExists()
+        offsetFilePath = null
+    }
+
     @Test
     @Tag("integration")
     fun testSimpleMySqlRun() {
         // Find better way to configure this?
         System.setProperty("debezium.embedded.shutdown.pause.before.interrupt.ms", "1000")
-        val offsetFilePath = createOffsetFilePath()
         logger.info("Creating offset files at: $offsetFilePath")
         val props = Properties()
         props.setProperty("name", "engine")
@@ -100,10 +116,7 @@ class TestMySQL {
     }
 
     private fun createOffsetFilePath(offsetId: String? = null): Path {
-        val tempFile = createTempFile(offsetId ?: UUID.randomUUID().toString().substring(0, 7))
-        if (offsetId == null) {
-            tempFile.deleteOnExit()
-        }
-        return tempFile.toPath()
+        val tempFile = kotlin.io.path.createTempFile(offsetId ?: UUID.randomUUID().toString().substring(0, 7))
+        return tempFile
     }
 }
