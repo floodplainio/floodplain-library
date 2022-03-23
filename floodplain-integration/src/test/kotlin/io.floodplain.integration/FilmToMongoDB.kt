@@ -120,7 +120,7 @@ class FilmToMongoDB {
             val database = "${topologyContext.generation}-mongodump"
             var hits = 0L
             val start = System.currentTimeMillis()
-            withTimeout(200000) {
+            withTimeout(250000) {
                 repeat(1000) {
                     MongoClients.create("mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}")
                         .use { client ->
