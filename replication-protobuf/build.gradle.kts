@@ -4,7 +4,7 @@ import com.google.protobuf.gradle.protobuf
 import com.google.protobuf.gradle.protoc
 import io.floodplain.build.FloodplainDeps
 
-val protobufVersion = "3.11.4"
+val protobufVersion = "3.19.2"
 
 dependencies {
     implementation(FloodplainDeps.jacksonCore)
@@ -16,9 +16,16 @@ dependencies {
     implementation(project(":replication-api"))
     implementation(project(":replication-impl"))
     implementation(project(":replication-json"))
-    implementation(project("::streams-api"))
+    implementation(project(":streams-api"))
     implementation("com.github.spotbugs:spotbugs-annotations:4.0.1")
     implementation(FloodplainDeps.protobuf)
+    implementation(FloodplainDeps.kafkaConnectRuntime) {
+        // exclude(group = "log4j", module = "log4j" )
+        exclude(group = "org.apache.kafka", module = "kafka-log4j-appender" )
+    }
+    implementation(FloodplainDeps.kafkaTools) {
+        exclude(group = "org.apache.kafka", module = "kafka-log4j-appender" )
+    }
     testImplementation("org.junit.jupiter:junit-jupiter:${FloodplainDeps.junit_5_version}")
 }
 plugins {

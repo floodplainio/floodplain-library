@@ -1,7 +1,7 @@
 import io.floodplain.build.FloodplainDeps
 dependencies {
     implementation(FloodplainDeps.debeziumEmbedded) {
-        exclude(group = "log4j", module = "log4j" )
+        // exclude(group = "log4j", module = "log4j" )
     }
     implementation(FloodplainDeps.debeziumPostgres)
     implementation(FloodplainDeps.debeziumMySQL)
@@ -10,7 +10,7 @@ dependencies {
     implementation(FloodplainDeps.kotlinCoroutines)
 
     testImplementation(FloodplainDeps.log4j2)
-    testImplementation(FloodplainDeps.log4j2OverSlf)
+    // testImplementation(FloodplainDeps.log4j2OverSlf)
     testImplementation(project(":floodplain-dsl"))
     testImplementation(project(":floodplain-test"))
     testImplementation(FloodplainDeps.testContainer)

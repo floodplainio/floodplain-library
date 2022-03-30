@@ -9,7 +9,6 @@ dependencies {
     implementation(project(":streams-api"))
     implementation(project(":replication-json"))
     implementation(project(":replication-protobuf"))
-    implementation(project(":kafka-converter"))
     testImplementation("org.junit.jupiter:junit-jupiter:${FloodplainDeps.junit_5_version}")
     implementation(FloodplainDeps.jacksonDatabind310)
     implementation(FloodplainDeps.kafkaClient)
@@ -17,7 +16,12 @@ dependencies {
     implementation(FloodplainDeps.kafkaConnectApi)
     // implementation(FloodplainDeps.kafkaConnectFile)
     implementation(FloodplainDeps.kafkaConnectRuntime) {
-        exclude(group = "log4j", module = "log4j" )
+        // exclude(group = "log4j", module = "log4j" )
+        exclude(group = "org.apache.kafka", module = "kafka-log4j-appender" )
+    }
+    implementation(FloodplainDeps.kafkaTools) {
+        // exclude(group = "log4j", module = "log4j" )
+        exclude(group = "org.apache.kafka", module = "kafka-log4j-appender" )
     }
     implementation(FloodplainDeps.cdiApi)
     implementation(FloodplainDeps.microProfileConfig)

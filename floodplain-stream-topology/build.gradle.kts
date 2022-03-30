@@ -8,10 +8,9 @@ dependencies {
     implementation(project(":replication-json"))
     implementation(project(":streams"))
     implementation(project(":streams-api"))
-    implementation(project(":kafka-converter"))
     implementation(FloodplainDeps.slf4j)
     implementation(FloodplainDeps.kafkaStreams)
-    testImplementation(FloodplainDeps.log4j2OverSlf)
+    // testImplementation(FloodplainDeps.log4j2OverSlf)
     testImplementation(FloodplainDeps.log4j2)
     testImplementation("org.junit.jupiter:junit-jupiter:${FloodplainDeps.junit_5_version}")
 }

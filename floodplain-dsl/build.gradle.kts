@@ -20,13 +20,14 @@ dependencies {
     implementation(FloodplainDeps.debeziumPostgres)
     implementation(FloodplainDeps.debeziumMySQL)
     implementation(FloodplainDeps.debeziumEmbedded) {
-        exclude(group = "log4j", module = "log4j" )
+        // exclude(group = "log4j", module = "log4j" )
     }
 
     implementation(FloodplainDeps.argParser)
     implementation(FloodplainDeps.jacksonDatabind310)
     implementation(FloodplainDeps.kafkaConnectRuntime) {
-        exclude(group = "log4j", module = "log4j" )
+        // exclude(group = "log4j", module = "log4j" )
+        exclude(group = "org.apache.kafka", module = "kafka-log4j-appender" )
     }
     implementation(FloodplainDeps.kotlinCoroutines)
     testImplementation(FloodplainDeps.log4j2)

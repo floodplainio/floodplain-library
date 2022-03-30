@@ -5,7 +5,8 @@ dependencies {
     implementation(project(":floodplain-stream-topology"))
     implementation("org.mongodb.kafka:mongo-kafka-connect:1.7.0")
     implementation(FloodplainDeps.kafkaConnectRuntime) {
-        exclude(group = "log4j", module = "log4j" )
+        // exclude(group = "log4j", module = "log4j" )
+        exclude(group = "org.apache.kafka", module = "kafka-log4j-appender" )
     }
     implementation(project(":streams-api"))
     implementation(project(":streams"))

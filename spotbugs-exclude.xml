@@ -3,4 +3,16 @@
     <Match>
         <Package name="io.floodplain.protobuf.generated"/>
     </Match>
+    <Match>
+        <Package name="org.apache.kafka.streams"/>
+    </Match>
+    <Match>
+        <Package name="org.apache.kafka.streams.test"/>
+    </Match>
+    <Match>
+        <Package name="org.apache.kafka.streams.processor"/>
+    </Match>
+    <Match>
+        <Package name="org.apache.kafka.streams.processor.api"/>
+    </Match>
 </FindBugsFilter>

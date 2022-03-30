@@ -14,5 +14,6 @@ dependencies {
     testImplementation(FloodplainDeps.jacksonCore)
     testImplementation(FloodplainDeps.jacksonDatabind)
     testImplementation("org.junit.jupiter:junit-jupiter:${FloodplainDeps.junit_5_version}")
+    // testImplementation(FloodplainDeps.log4j2OverSlf)
     testImplementation(FloodplainDeps.testContainer)
 }
