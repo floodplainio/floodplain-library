@@ -304,8 +304,8 @@ class PostgresToMongoDB {
         }.renderAndExecute {
             val database = topologyContext().topicName("@mongodump")
 
-            withTimeout(100000) {
-                repeat(100) {
+            withTimeout(400000) {
+                repeat(1000) {
                     MongoClients.create("mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}")
                         .use { client ->
                             val collection = client.getDatabase(database).getCollection("justtotal")
@@ -315,7 +315,7 @@ class PostgresToMongoDB {
                             }
                             logger.info("Current total: $total")
                         }
-                    delay(1000)
+                    delay(5000)
                 }
             }
             logger.info("Test done, total computed")
