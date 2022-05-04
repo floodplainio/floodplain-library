@@ -16,6 +16,7 @@ buildscript {
     }
 }
 
+
 val buildKotlinVersion: String by extra
 
 plugins {
@@ -25,8 +26,8 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint") version "10.1.0"
     id("org.jetbrains.dokka") version "1.4.32"
     id("com.github.hierynomus.license-base").version("0.16.1")
-    id("com.github.spotbugs") version "4.7.2"
-    id("io.gitlab.arturbosch.detekt") version "1.19.0"
+    id("com.github.spotbugs") version "5.0.6"
+    id("io.gitlab.arturbosch.detekt") version "1.20.0"
     signing
     `maven-publish`
     `java-library`
