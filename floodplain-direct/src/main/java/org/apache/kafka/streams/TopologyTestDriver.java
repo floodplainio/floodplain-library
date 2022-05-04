@@ -44,12 +44,6 @@ import org.apache.kafka.common.utils.Time;
 import org.apache.kafka.streams.errors.LogAndContinueExceptionHandler;
 import org.apache.kafka.streams.errors.TopologyException;
 import org.apache.kafka.streams.kstream.Windowed;
-import org.apache.kafka.streams.processor.StateStoreContext;
-import org.apache.kafka.streams.processor.internals.StreamsProducer;
-import org.apache.kafka.streams.state.KeyValueIterator;
-import org.apache.kafka.streams.state.WindowStoreIterator;
-import org.apache.kafka.streams.state.internals.ReadOnlyKeyValueStoreFacade;
-import org.apache.kafka.streams.state.internals.ReadOnlyWindowStoreFacade;
 import org.apache.kafka.streams.processor.ProcessorContext;
 import org.apache.kafka.streams.processor.PunctuationType;
 import org.apache.kafka.streams.processor.Punctuator;
@@ -369,7 +363,8 @@ public class TopologyTestDriver implements Closeable {
                     throw new IllegalStateException();
                 }
             },
-            logContext
+            logContext,
+            mockWallClockTime
         );
 
         setupGlobalTask(mockWallClockTime, streamsConfig, streamsMetrics, cache);
@@ -424,9 +419,7 @@ public class TopologyTestDriver implements Closeable {
             offsetsByTopicOrPatternPartition.put(tp, new AtomicLong());
         }
 
-        final boolean createStateDirectory = processorTopology.hasPersistentLocalStore() ||
-            (globalTopology != null && globalTopology.hasPersistentGlobalStore());
-        stateDirectory = new StateDirectory(streamsConfig, mockWallClockTime, createStateDirectory, builder.hasNamedTopologies());
+        stateDirectory = new StateDirectory(streamsConfig, mockWallClockTime, internalTopologyBuilder.hasPersistentStores(), false);
     }
 
     private void setupGlobalTask(final Time mockWallClockTime,
@@ -542,32 +535,6 @@ public class TopologyTestDriver implements Closeable {
      */
     public Map<MetricName, ? extends Metric> metrics() {
         return Collections.unmodifiableMap(metrics.metrics());
-    }
-
-    /**
-     * Send an input message with the given key, value, and timestamp on the specified topic to the topology and then
-     * commit the messages.
-     *
-     * @deprecated Since 2.4 use methods of {@link TestInputTopic} instead
-     *
-     * @param consumerRecord the record to be processed
-     */
-    @Deprecated
-    public void pipeInput(final ConsumerRecord<byte[], byte[]> consumerRecord) {
-        pipeRecord(
-            consumerRecord.topic(),
-            consumerRecord.timestamp(),
-            consumerRecord.key(),
-            consumerRecord.value(),
-            consumerRecord.headers()
-        );
-    }
-
-    public void pipeRawRecord(final String topicName,
-                              final long timestamp,
-                              final byte[] key,
-                              final byte[] value) {
-        pipeRecord(topicName,timestamp,key,value,new RecordHeaders());
     }
 
     private void pipeRecord(final String topicName,
@@ -699,7 +666,7 @@ public class TopologyTestDriver implements Closeable {
     }
     private java.util.function.Consumer<ProducerRecord<byte[],byte[]>> outputCallback;
     public void setOutputListener(java.util.function.Consumer<ProducerRecord<byte[],byte[]>> callback) {
-        this.outputCallback = callback;
+      this.outputCallback = callback;
     }
 
     public void publishOutputMessage(ProducerRecord<byte[],byte[]> record) {
@@ -870,6 +837,13 @@ public class TopologyTestDriver implements Closeable {
         return new TestRecord<>(key, value, record.headers(), record.timestamp());
     }
 
+    public void pipeRawRecord(final String topicName,
+        final long timestamp,
+        final byte[] key, final byte[] value) {
+        pipeRecord(topicName,timestamp,key,value,new RecordHeaders());
+    }
+
+
     <K, V> void pipeRecord(final String topic,
                            final TestRecord<K, V> record,
                            final Serializer<K> keySerializer,
@@ -925,7 +899,7 @@ public class TopologyTestDriver implements Closeable {
      */
     public Map<String, StateStore> getAllStateStores() {
         final Map<String, StateStore> allStores = new HashMap<>();
-        for (final String storeName : internalTopologyBuilder.allStateStoreName()) {
+        for (final String storeName : internalTopologyBuilder.allStateStoreNames()) {
             allStores.put(storeName, getStateStore(storeName, false));
         }
         return allStores;
@@ -1382,8 +1356,9 @@ public class TopologyTestDriver implements Closeable {
 
         public TestDriverProducer(final StreamsConfig config,
                                   final KafkaClientSupplier clientSupplier,
-                                  final LogContext logContext) {
-            super(config, "TopologyTestDriver-StreamThread-1", clientSupplier, new TaskId(0, 0), UUID.randomUUID(), logContext);
+                                  final LogContext logContext,
+                                  final Time time) {
+            super(config, "TopologyTestDriver-StreamThread-1", clientSupplier, new TaskId(0, 0), UUID.randomUUID(), logContext, time);
         }
 
         @Override
