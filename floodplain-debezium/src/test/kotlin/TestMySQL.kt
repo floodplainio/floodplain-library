@@ -23,8 +23,9 @@ import io.debezium.engine.DebeziumEngine
 import io.debezium.engine.format.Json
 import io.floodplain.ChangeRecord
 import io.floodplain.test.InstantiatedContainer
-import org.junit.After
-import org.junit.Before
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import java.nio.file.Files
@@ -53,12 +54,12 @@ class TestMySQL {
     private var engine: DebeziumEngine<ChangeEvent<String, String>>? = null
     private val itemCounter = AtomicInteger(0)
 
-    @Before
+    @BeforeEach
     fun setup() {
         offsetFilePath = createOffsetFilePath()
     }
 
-    @After
+    @AfterEach
     fun teardown() {
         offsetFilePath?.deleteIfExists()
         offsetFilePath = null
