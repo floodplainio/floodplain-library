@@ -18,6 +18,9 @@
  */
 package io.floodplain.replication.factory;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -26,6 +29,7 @@ import java.time.temporal.Temporal;
 
 public class DateSerializer {
     public static final String DATEFORMATTER = "yyyy-MM-dd";
+    private static final Logger logger = LoggerFactory.getLogger(DateSerializer.class);
 
     public static final String DATETIMEFORMATTERMICRO = "yyyy-MM-dd HH:mm:ss.SSSSSS";
     public static final String DATETIMEFORMATTERMILLI = "yyyy-MM-dd HH:mm:ss.SSS";
@@ -52,7 +56,8 @@ public class DateSerializer {
         } else if(DATETIMEFORMATTERMILLI.length() == value.length()) {
             return LocalDateTime.parse(value, dateTimeFormatterMilli);
         } else {
-            throw new RuntimeException("Invalid length of temporal value: "+value);
+            logger.error("Invalid length of temporal value: "+value);
+            return null;
         }
     }
 
