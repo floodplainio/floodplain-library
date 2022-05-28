@@ -304,7 +304,7 @@ class PostgresToMongoDB {
         }.renderAndExecute {
             val database = topologyContext().topicName("@mongodump")
 
-            withTimeout(400000) {
+            withTimeout(500000) {
                 repeat(1000) {
                     MongoClients.create("mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}")
                         .use { client ->

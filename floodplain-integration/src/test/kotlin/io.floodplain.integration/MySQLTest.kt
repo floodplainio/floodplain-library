@@ -102,6 +102,9 @@ class MySQLTest {
                     null
                 }
             } as Long?
+            connectJobs().forEach {
+                it.cancel()
+            }
             assertNotNull(hits)
         }
     }

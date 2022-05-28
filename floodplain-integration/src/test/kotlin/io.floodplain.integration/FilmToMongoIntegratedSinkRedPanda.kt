@@ -66,7 +66,7 @@ class FilmToMongoIntegratedSinkRedPanda {
         logger.info("kafka.getBootstrapServers(): bootstrap: $bootstrap")
 
         debeziumContainer = InstantiatedContainer(
-            "debezium/connect:1.8.1.Final",
+            "debezium/connect:1.9.2.Final",
             8083,
             mapOf(
                 "BOOTSTRAP_SERVERS" to "broker:29092",

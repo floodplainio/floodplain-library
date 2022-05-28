@@ -67,7 +67,7 @@ class FilmToMongoIntegratedSink {
         logger.info("kafka.getBootstrapServers(): ${kafkaContainer.container.bootstrapServers} bootstrap: $bootstrap")
 
         debeziumContainer = InstantiatedContainer(
-            "debezium/connect:1.8.1.Final",
+            "debezium/connect:1.9.2.Final",
             8083,
             mapOf(
                 "BOOTSTRAP_SERVERS" to "kafka:9092",
