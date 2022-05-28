@@ -1,6 +1,7 @@
 import io.floodplain.build.FloodplainDeps
 import io.floodplain.build.isReleaseVersion
 import io.gitlab.arturbosch.detekt.Detekt
+import java.io.File
 
 buildscript {
     repositories {
@@ -11,20 +12,20 @@ buildscript {
     }
     dependencies {
         classpath("gradle.plugin.com.hierynomus.gradle.plugins:license-gradle-plugin:0.16.1")
+        // classpath("com.github.spotbugs.snom:spotbugs-gradle-plugin:5.0.6")
         classpath("gradle.plugin.com.github.spotbugs.snom:spotbugs-gradle-plugin:4.7.2")
-        classpath("com.google.protobuf:protobuf-gradle-plugin:0.8.15")
+        classpath("com.google.protobuf:protobuf-gradle-plugin:0.8.18")
     }
 }
-
 
 val buildKotlinVersion: String by extra
 
 plugins {
-    kotlin("jvm") version "1.6.10"
+    kotlin("jvm") version "1.6.21"
 
     id("org.jetbrains.kotlin.plugin.allopen") version "1.6.10"
     id("org.jlleitschuh.gradle.ktlint") version "10.1.0"
-    id("org.jetbrains.dokka") version "1.4.32"
+    id("org.jetbrains.dokka") version "1.6.21"
     id("com.github.hierynomus.license-base").version("0.16.1")
     id("com.github.spotbugs") version "5.0.6"
     id("io.gitlab.arturbosch.detekt") version "1.20.0"
@@ -37,7 +38,6 @@ plugins {
 configurations.implementation {
     exclude(group = "org.apache.kafka", module = "kafka-log4j-appender")
     exclude(group = "log4j", module = "log4j")
-
 }
 
 java {
@@ -76,12 +76,22 @@ subprojects {
     apply(plugin = "org.jetbrains.dokka")
     apply(plugin = "com.github.hierynomus.license-base")
     apply(plugin = "jacoco")
+    // Crude exclusion for floodplain-direct, somehow seems to ignore exclude file TODO
+    if (!isKotlinModule(this) && this.name != "floodplain-direct") {
+        apply(plugin = "com.github.spotbugs")
+        spotbugs {
+            excludeFilter.set(rootProject.file("spotbugs-exclude.xml"))
+        }
+    }
     if (!isKotlinModule(this)) {
         // logger.warn("This project is not kotlin: ${this.name}")
-        apply(plugin = "com.github.spotbugs")
         tasks.withType<com.github.spotbugs.snom.SpotBugsTask>().configureEach {
-            excludeFilter.set(rootProject.file("spotbugs-exclude.xml"))
-            effort.set(com.github.spotbugs.snom.Effort.MAX)
+            // excludeFilter rootProject.file("spotbugs-exclude.xml")
+            // excludeFilter.fileValue(rootProject.file("spotbugs-exclude.xml"))
+            // baselineFile = file('spotbugs-baseline.xml')
+            // val f: File = rootProject.file("spotbugs-exclude.xml")
+            // excludeFilter.set(f)
+            // effort.set(com.github.spotbugs.snom.Effort.MAX)
             reports.maybeCreate("xml").isEnabled = false
             reports.maybeCreate("html").isEnabled = true
         }
