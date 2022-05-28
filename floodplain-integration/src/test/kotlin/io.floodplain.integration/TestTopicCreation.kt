@@ -55,8 +55,9 @@ class TestTopicCreation {
         adminClient.listTopics().names().get().forEach {
             println("topic found: $it")
         }
+        // adminClient.describeTopics(listOf("mytopic")).
         adminClient.createTopics(listOf(NewTopic("mytopic", 1, 1))).all().get()
-        logger.info("${adminClient.describeTopics(listOf("mytopic")).all().get()["mytopic"]}")
+        logger.info("${adminClient.describeTopics(listOf("mytopic")).allTopicNames().get()["mytopic"]}")
         val cr = Collections.singleton(ConfigResource(TOPIC, "mytopic"))
         val configsResult = adminClient.describeConfigs(cr)
         val cnf = configsResult.all().get()

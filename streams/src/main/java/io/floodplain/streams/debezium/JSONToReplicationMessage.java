@@ -187,6 +187,7 @@ public class JSONToReplicationMessage {
             case "io.debezium.data.Enum":
                 return ValueType.ENUM;
             case "io.debezium.data.Uuid":
+            case "io.debezium.data.Json":
                 return ValueType.STRING;
             default:
                 logger.warn("Unknown type with name, this will probably fail: {}", namedType.get());
