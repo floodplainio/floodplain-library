@@ -2,5 +2,6 @@
 <FindBugsFilter>
     <Match>
         <Package name="io.floodplain.protobuf.generated"/>
+        <Package name="org.apache.kafka.streams.*"/>
     </Match>
 </FindBugsFilter>

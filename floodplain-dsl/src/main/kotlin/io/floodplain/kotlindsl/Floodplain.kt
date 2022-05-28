@@ -29,6 +29,7 @@ import io.floodplain.kotlindsl.transformer.ForkTransformer
 import io.floodplain.reactive.source.topology.DynamicSinkTransformer
 import io.floodplain.reactive.source.topology.EachTransformer
 import io.floodplain.reactive.source.topology.FilterTransformer
+import io.floodplain.reactive.source.topology.FlattenTransformer
 import io.floodplain.reactive.source.topology.GroupTransformer
 import io.floodplain.reactive.source.topology.HistoryTransformer
 import io.floodplain.reactive.source.topology.JoinRemoteTransformer
@@ -187,6 +188,16 @@ fun PartialStream.set(transform: (String, IMessage, IMessage) -> IMessage): Tran
     val set = SetTransformer(transformer)
     return addTransformer(Transformer(this.rootTopology, set, topologyContext))
 }
+
+fun PartialStream.flatten(transform: (String, IMessage, IMessage) -> List<IMessage>?): Transformer {
+    val transformer: (String, ImmutableMessage, ImmutableMessage) -> List<ImmutableMessage> =
+        { key, msg, param ->
+            transform.invoke(key, fromImmutable(msg), fromImmutable(param))?.map { it.toImmutable()}?: emptyList()
+        }
+    val flatten = FlattenTransformer(transformer)
+    return addTransformer(Transformer(this.rootTopology, flatten, topologyContext))
+}
+
 
 fun PartialStream.only(vararg fields: String): Transformer {
     val transformer: (String, ImmutableMessage, ImmutableMessage) -> ImmutableMessage =

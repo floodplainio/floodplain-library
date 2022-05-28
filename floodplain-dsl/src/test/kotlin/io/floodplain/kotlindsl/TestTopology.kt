@@ -18,8 +18,12 @@
  */
 package io.floodplain.kotlindsl
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.ArrayNode
+import com.fasterxml.jackson.databind.node.ObjectNode
 import io.floodplain.kotlindsl.message.IMessage
 import io.floodplain.kotlindsl.message.empty
+import io.floodplain.kotlindsl.message.fromImmutable
 import io.floodplain.kotlindsl.sink.logSink
 import io.floodplain.kotlindsl.sink.logSinkConfig
 import io.floodplain.replication.api.ReplicationMessage
@@ -28,11 +32,11 @@ import io.floodplain.streams.debezium.JSONToReplicationMessage
 import io.floodplain.streams.remotejoin.StoreStateProcessor
 import kotlinx.coroutines.delay
 import org.apache.kafka.streams.state.KeyValueStore
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 import java.time.Duration
 import java.util.Optional
-import org.junit.jupiter.api.Assertions.*
 
 private val logger = mu.KotlinLogging.logger {}
 
@@ -696,6 +700,78 @@ class TestTopology {
         }
     }
 
+    @Test
+    fun testFlatten() {
+        stream {
+            from("source") {
+                flatten { _, msg, _ ->
+                    msg.messageList("list")
+                }
+                fork(
+                    {
+                        filter { _, value -> value["category"] == "category1" }
+                        toTopic("topic1")
+                    },
+                    {
+                        filter { _, value -> value["category"] == "category2" }
+                        toTopic("topic2")
+                    }
+                )
+            }
+        }.renderAndExecute {
+            val msg = empty().set("value", "value1")
+                .set("list", listOf(
+                    empty().set("name","sub1").set("category","category1"),
+                    empty().set("name","sub2").set("category","category1"),
+                    empty().set("name","sub3").set("category","category2")
+                ))
+            input("source", "key1", msg)
+            assertEquals(2,outputSize("topic1"))
+            assertEquals(1,outputSize("topic2"))
+        }
+    }
+    // @Test
+    // fun testRawInput2() {
+    //     val objectMapper = ObjectMapper()
+    //     stream {
+    //         externalSource(
+    //             "source",
+    //             Topic.FloodplainKeyFormat.FLOODPLAIN_STRING,
+    //             Topic.FloodplainBodyFormat.CONNECT_JSON
+    //         ) {
+    //             set { _, msg, _ ->
+    //                 val nested = msg.string("fhir_resource")
+    //                 val fhirDoc = objectMapper.readTree(nested)
+    //                 val entries = fhirDoc.get("entry") as ArrayNode
+    //                 entries.map {
+    //                     // JSONToReplicationMessage.convertToReplication(false, it as ObjectNode, Optional.empty())
+    //                     JSONToReplicationMessage.convert(it as ObjectNode,
+    //                         { s: String? -> }, false,Optional.empty(), Optional.empty()
+    //                     )
+    //                 }.map {
+    //                     fromImmutable(it)
+    //                 }.forEach { msg->
+    //                     println("Message: ${msg.toString()}")
+    //
+    //                 }
+    //                 // println("|> $msg")
+    //
+    //                 // println("Message:\n${replicationMessage.message()}")
+    //                 msg
+    //             }
+    //             toTopic("sinktopic")
+    //         }
+    //     }.renderAndExecute {
+    //         val data = javaClass.classLoader.getResource("nestedjson.json")?.readBytes()
+    //             ?: throw IllegalArgumentException("Missing json file for decimalwithscale.json")
+    //         input("source", "key1".toByteArray(), data)
+    //         // input(qualifiedTopic("source"), "key1".toByteArray(), data)
+    //         val (_, value) = output("sinktopic")
+    //         logger.info("value: $value")
+    //         // val amount = value.decimal("amount")
+    //         // assertEquals(BigDecimal.valueOf(299, 2), amount)
+    //     }
+    // }
     @Test
     fun testKeyTransformer() {
         stream {
