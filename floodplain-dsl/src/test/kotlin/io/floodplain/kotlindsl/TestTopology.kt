@@ -18,12 +18,8 @@
  */
 package io.floodplain.kotlindsl
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.node.ArrayNode
-import com.fasterxml.jackson.databind.node.ObjectNode
 import io.floodplain.kotlindsl.message.IMessage
 import io.floodplain.kotlindsl.message.empty
-import io.floodplain.kotlindsl.message.fromImmutable
 import io.floodplain.kotlindsl.sink.logSink
 import io.floodplain.kotlindsl.sink.logSinkConfig
 import io.floodplain.replication.api.ReplicationMessage
@@ -705,7 +701,36 @@ class TestTopology {
         stream {
             from("source") {
                 flatten { _, msg, _ ->
-                    msg.messageList("list")
+                    msg.messageList("list")?.map { it.string("name") to it}
+                }
+                toTopic("output")
+            }
+        }.renderAndExecute {
+            val msg = empty().set("value", "value1")
+                .set("list", listOf(
+                    empty().set("name","sub1").set("category","category1"),
+                    empty().set("name","sub2").set("category","category1"),
+                    empty().set("name","sub3").set("category","category2")
+                ))
+            input("source", "key1", msg)
+            assertEquals(3,outputSize("output"))
+            delete("source","key1")
+            assertEquals(7,outputSize("output"))
+            val (k1,v1) = output("output")
+            val (k2,v2) = output("output")
+            val (k3,v3) = output("output")
+            // repeat(2) {
+                val k = deleted("output")
+                println("deleted Key: $k")
+            // }
+        }
+    }
+    @Test
+    fun testFlattenAndFork() {
+        stream {
+            from("source") {
+                flatten { _, msg, _ ->
+                    msg.messageList("list")?.map { it.string("name") to it}
                 }
                 fork(
                     {
@@ -730,48 +755,7 @@ class TestTopology {
             assertEquals(1,outputSize("topic2"))
         }
     }
-    // @Test
-    // fun testRawInput2() {
-    //     val objectMapper = ObjectMapper()
-    //     stream {
-    //         externalSource(
-    //             "source",
-    //             Topic.FloodplainKeyFormat.FLOODPLAIN_STRING,
-    //             Topic.FloodplainBodyFormat.CONNECT_JSON
-    //         ) {
-    //             set { _, msg, _ ->
-    //                 val nested = msg.string("fhir_resource")
-    //                 val fhirDoc = objectMapper.readTree(nested)
-    //                 val entries = fhirDoc.get("entry") as ArrayNode
-    //                 entries.map {
-    //                     // JSONToReplicationMessage.convertToReplication(false, it as ObjectNode, Optional.empty())
-    //                     JSONToReplicationMessage.convert(it as ObjectNode,
-    //                         { s: String? -> }, false,Optional.empty(), Optional.empty()
-    //                     )
-    //                 }.map {
-    //                     fromImmutable(it)
-    //                 }.forEach { msg->
-    //                     println("Message: ${msg.toString()}")
-    //
-    //                 }
-    //                 // println("|> $msg")
-    //
-    //                 // println("Message:\n${replicationMessage.message()}")
-    //                 msg
-    //             }
-    //             toTopic("sinktopic")
-    //         }
-    //     }.renderAndExecute {
-    //         val data = javaClass.classLoader.getResource("nestedjson.json")?.readBytes()
-    //             ?: throw IllegalArgumentException("Missing json file for decimalwithscale.json")
-    //         input("source", "key1".toByteArray(), data)
-    //         // input(qualifiedTopic("source"), "key1".toByteArray(), data)
-    //         val (_, value) = output("sinktopic")
-    //         logger.info("value: $value")
-    //         // val amount = value.decimal("amount")
-    //         // assertEquals(BigDecimal.valueOf(299, 2), amount)
-    //     }
-    // }
+
     @Test
     fun testKeyTransformer() {
         stream {

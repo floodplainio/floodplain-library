@@ -22,6 +22,7 @@ import io.floodplain.immutable.api.ImmutableMessage;
 import io.floodplain.immutable.factory.ImmutableFactory;
 import io.floodplain.replication.api.ReplicationMessage;
 import io.floodplain.replication.factory.ReplicationFactory;
+import kotlin.Pair;
 import org.apache.kafka.streams.processor.api.Processor;
 import org.apache.kafka.streams.processor.api.ProcessorContext;
 import org.apache.kafka.streams.processor.api.Record;
@@ -50,9 +51,9 @@ public class FlattenProcessor implements Processor<String, ReplicationMessage,St
             return;
         }
         ReplicationMessage.Operation op = record.value().operation();
-        List<ImmutableMessage> applied = function.apply(record.key(), record.value().message(), record.value().paramMessage().orElse(ImmutableFactory.empty()));
-        for( ImmutableMessage item: applied) {
-            context.forward(new Record<>(record.key(), ReplicationFactory.standardMessage(item).withOperation(op), record.timestamp())); //.withParamMessage(value.paramMessage()); //.orElse(ImmutableFactory.empty())).withOperation(operation));
+        List<Pair<String,ImmutableMessage>> applied = function.apply(record.key(), record.value().message(), record.value().paramMessage().orElse(ImmutableFactory.empty()));
+        for(Pair<String,ImmutableMessage> item: applied) {
+            context.forward(new Record<>(item.component1(), ReplicationFactory.standardMessage(item.component2()).withOperation(op), record.timestamp())); //.withParamMessage(value.paramMessage()); //.orElse(ImmutableFactory.empty())).withOperation(operation));
         }
     }
 }

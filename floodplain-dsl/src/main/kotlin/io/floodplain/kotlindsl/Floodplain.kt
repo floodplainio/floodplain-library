@@ -189,10 +189,10 @@ fun PartialStream.set(transform: (String, IMessage, IMessage) -> IMessage): Tran
     return addTransformer(Transformer(this.rootTopology, set, topologyContext))
 }
 
-fun PartialStream.flatten(transform: (String, IMessage, IMessage) -> List<IMessage>?): Transformer {
-    val transformer: (String, ImmutableMessage, ImmutableMessage) -> List<ImmutableMessage> =
+fun PartialStream.flatten(transform: (String, IMessage, IMessage) -> List<Pair<String,IMessage>>?): Transformer {
+    val transformer: (String, ImmutableMessage, ImmutableMessage) -> List<Pair<String,ImmutableMessage>> =
         { key, msg, param ->
-            transform.invoke(key, fromImmutable(msg), fromImmutable(param))?.map { it.toImmutable()}?: emptyList()
+            transform.invoke(key, fromImmutable(msg), fromImmutable(param))?.map { (k,v)-> k to v.toImmutable()}?: emptyList()
         }
     val flatten = FlattenTransformer(transformer)
     return addTransformer(Transformer(this.rootTopology, flatten, topologyContext))

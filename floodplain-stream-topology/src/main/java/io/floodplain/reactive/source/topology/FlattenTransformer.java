@@ -23,6 +23,7 @@ import io.floodplain.reactive.source.topology.api.TopologyPipeComponent;
 import io.floodplain.streams.api.TopologyContext;
 import io.floodplain.streams.remotejoin.ReplicationTopologyParser;
 import io.floodplain.streams.remotejoin.TopologyConstructor;
+import kotlin.Pair;
 import org.apache.kafka.streams.Topology;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +36,7 @@ public class FlattenTransformer implements TopologyPipeComponent {
     private boolean materialize;
 
     public interface TriFunction {
-        List<ImmutableMessage> apply(String key, ImmutableMessage primary, ImmutableMessage secondary);
+        List<Pair<String,ImmutableMessage>> apply(String key, ImmutableMessage primary, ImmutableMessage secondary);
     }
 
     private final TriFunction transformer;
@@ -61,7 +62,7 @@ public class FlattenTransformer implements TopologyPipeComponent {
 
     @Override
     public boolean materializeParent() {
-        return false;
+        return true;
     }
 
     @Override
