@@ -24,6 +24,7 @@ import io.floodplain.kotlindsl.message.IMessage
 import io.floodplain.kotlindsl.message.empty
 import io.floodplain.kotlindsl.message.fromImmutable
 import io.floodplain.kotlindsl.transformer.BufferTransformer
+import io.floodplain.kotlindsl.transformer.CompareToTransformer
 import io.floodplain.kotlindsl.transformer.DiffTransformer
 import io.floodplain.kotlindsl.transformer.ForkTransformer
 import io.floodplain.reactive.source.topology.DynamicSinkTransformer
@@ -187,6 +188,12 @@ fun PartialStream.set(transform: (String, IMessage, IMessage) -> IMessage): Tran
         }
     val set = SetTransformer(transformer)
     return addTransformer(Transformer(this.rootTopology, set, topologyContext))
+}
+
+fun PartialStream.compareToLast(): Transformer {
+    val compareToTransformer = CompareToTransformer()
+    return addTransformer(Transformer(this.rootTopology, compareToTransformer, topologyContext))
+
 }
 
 fun PartialStream.flatten(transform: (String, IMessage, IMessage) -> List<Pair<String,IMessage>>?): Transformer {

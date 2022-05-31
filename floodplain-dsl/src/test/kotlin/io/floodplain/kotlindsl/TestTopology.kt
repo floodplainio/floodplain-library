@@ -794,7 +794,34 @@ class TestTopology {
         }
     }
 
-
+    @Test
+    fun testCompareToLast() {
+        stream {
+            from("source") {
+                compareToLast()
+                set { key,current,last ->
+                    // __debezium_unavailable_value
+                    if("illegal" == current.string("value")) {
+                        current["value"] = last["value"]
+                    }
+                    println("${current.string("value")} - ${last.optionalString("value")}")
+                    current
+                }
+                toTopic("output")
+            }
+        }.renderAndExecute {
+            input("source", "key1", empty().set("value", "value1"))
+            input("source", "key1", empty().set("value", "illegal"))
+            delete("source","key1")
+//            input("source", "key1", empty().set("value", "value3"))
+            val (k1,v1) = output("output")
+            val (k2,v2) = output("output")
+            assertEquals("key1",k1)
+            assertEquals("key1",k2)
+            assertEquals("value1",v1["value"])
+            assertEquals("value1",v2["value"])
+        }
+    }
     @Test
     fun testHistory() {
         stream {

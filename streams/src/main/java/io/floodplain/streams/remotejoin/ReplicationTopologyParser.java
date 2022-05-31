@@ -112,6 +112,15 @@ public class ReplicationTopologyParser {
         topologyConstructor.stateStoreSupplier.put(diffProcessorNamePrefix, createMessageStoreSupplier(diffProcessorNamePrefix, true));
     }
 
+    public static void addCompareToProcessor(Topology current, TopologyContext topologyContext,
+                                        TopologyConstructor topologyConstructor, String fromProcessor,
+                                        String compareToProcessorPrefix) {
+        current.addProcessor(compareToProcessorPrefix, () -> new CompareToProcessor(compareToProcessorPrefix), fromProcessor);
+        addStateStoreMapping(topologyConstructor.processorStateStoreMapper, compareToProcessorPrefix, compareToProcessorPrefix);
+        logger.info("Granting access for processor: {} to store: {}", compareToProcessorPrefix, compareToProcessorPrefix);
+        topologyConstructor.stateStoreSupplier.put(compareToProcessorPrefix, createMessageStoreSupplier(compareToProcessorPrefix, true));
+    }
+
     public static String addMaterializeStore(final Topology currentBuilder, TopologyContext context,
                                              TopologyConstructor topologyConstructor, String name, String parentProcessor) {
         final String sourceProcessorName = name;
