@@ -19,9 +19,11 @@
 package io.floodplain.kotlindsl.transformer
 
 import io.floodplain.immutable.api.ImmutableMessage
+import io.floodplain.reactive.source.topology.FlattenProcessor
 import io.floodplain.reactive.source.topology.api.TopologyPipeComponent
+import io.floodplain.replication.api.ReplicationMessage
 import io.floodplain.streams.api.TopologyContext
-import io.floodplain.streams.remotejoin.ReplicationTopologyParser.addCompareToProcessor
+import io.floodplain.streams.remotejoin.ReplicationTopologyParser
 import io.floodplain.streams.remotejoin.TopologyConstructor
 import org.apache.kafka.streams.Topology
 import org.apache.kafka.streams.errors.TopologyException
@@ -37,12 +39,20 @@ class CompareToTransformer(val transform: (String, ImmutableMessage?, ImmutableM
         topologyContext: TopologyContext,
         topologyConstructor: TopologyConstructor
     ) {
-        if (materialize) {
-            throw TopologyException("Materialization hasn't been implemented TODO")
-        }
         val top = transformerNames.peek()
         val name = topologyContext.qualifiedName("compareTo", transformerNames.size, currentPipeId)
-        addCompareToProcessor(topology, topologyContext, topologyConstructor, top, name,transform)
+        if (materialize) {
+            ReplicationTopologyParser.addCompareToProcessor(topology, topologyContext, topologyConstructor, top, name+ "_prematerialize",transform)
+            ReplicationTopologyParser.addMaterializeStore(
+                topology,
+                topologyContext,
+                topologyConstructor,
+                name,
+                name + "_prematerialize"
+            )
+        } else {
+            ReplicationTopologyParser.addCompareToProcessor(topology, topologyContext, topologyConstructor, top, name,transform)
+        }
         transformerNames.push(name)
     }
 
