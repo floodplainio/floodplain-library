@@ -31,6 +31,7 @@ import io.floodplain.streams.remotejoin.ranged.OneToManyGroupedProcessor;
 import io.floodplain.streams.serializer.ConnectReplicationMessageSerde;
 import io.floodplain.streams.serializer.ImmutableMessageSerde;
 import io.floodplain.streams.serializer.ReplicationMessageSerde;
+import kotlin.jvm.functions.Function3;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
@@ -114,8 +115,8 @@ public class ReplicationTopologyParser {
 
     public static void addCompareToProcessor(Topology current, TopologyContext topologyContext,
                                         TopologyConstructor topologyConstructor, String fromProcessor,
-                                        String compareToProcessorPrefix) {
-        current.addProcessor(compareToProcessorPrefix, () -> new CompareToProcessor(compareToProcessorPrefix), fromProcessor);
+                                        String compareToProcessorPrefix, Function3<String, ImmutableMessage, ImmutableMessage, ImmutableMessage> transform) {
+        current.addProcessor(compareToProcessorPrefix, () -> new CompareToProcessor(compareToProcessorPrefix,transform), fromProcessor);
         addStateStoreMapping(topologyConstructor.processorStateStoreMapper, compareToProcessorPrefix, compareToProcessorPrefix);
         logger.info("Granting access for processor: {} to store: {}", compareToProcessorPrefix, compareToProcessorPrefix);
         topologyConstructor.stateStoreSupplier.put(compareToProcessorPrefix, createMessageStoreSupplier(compareToProcessorPrefix, true));

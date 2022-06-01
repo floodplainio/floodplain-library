@@ -21,6 +21,8 @@ package io.floodplain.streams.remotejoin;
 import io.floodplain.immutable.api.ImmutableMessage;
 import io.floodplain.replication.api.ReplicationMessage;
 import io.floodplain.replication.api.ReplicationMessage.Operation;
+import io.floodplain.replication.factory.ReplicationFactory;
+import kotlin.jvm.functions.Function3;
 import org.apache.kafka.streams.processor.api.Processor;
 import org.apache.kafka.streams.processor.api.ProcessorContext;
 import org.apache.kafka.streams.processor.api.Record;
@@ -34,14 +36,16 @@ import java.util.function.BiFunction;
 public class CompareToProcessor implements Processor<String, ReplicationMessage,String, ReplicationMessage> {
 
     private final String lookupStoreName;
+    private final Function3<String, ImmutableMessage, ImmutableMessage, ImmutableMessage> transform;
     private KeyValueStore<String, ReplicationMessage> lookupStore;
 
     private final static Logger logger = LoggerFactory.getLogger(CompareToProcessor.class);
     private ProcessorContext<String,ReplicationMessage> context;
 
 
-    public CompareToProcessor(String lookupStoreName) {
+    public CompareToProcessor(String lookupStoreName, Function3<String, ImmutableMessage, ImmutableMessage, ImmutableMessage> transform) {
         this.lookupStoreName = lookupStoreName;
+        this.transform = transform;
     }
 
     @SuppressWarnings("unchecked")
@@ -66,15 +70,19 @@ public class CompareToProcessor implements Processor<String, ReplicationMessage,
             }
         } else {
             ReplicationMessage previous = lookupStore.get(key);
+            ImmutableMessage result = null;
             if (previous != null) {
-                ReplicationMessage forwarding = record.value().withParamMessage(previous.message());
-                context.forward(record.withValue(forwarding));
+//                ReplicationMessage forwarding = record.value().withParamMessage(previous.message());
+                result = transform.invoke(key,incoming.message(),previous.message());
+//                context.forward(record.withValue(ReplicationFactory.standardMessage(result)));
             } else {
                 // 'new message'
-                context.forward(record);
+                result = transform.invoke(key,incoming.message(),null);
+//                context.forward(record.withValue(ReplicationFactory.standardMessage(result)));
             }
+            context.forward(record.withValue(ReplicationFactory.standardMessage(result)));
 
-            lookupStore.put(key, incoming);
+            lookupStore.put(key, ReplicationFactory.standardMessage(result));
         }
     }
 

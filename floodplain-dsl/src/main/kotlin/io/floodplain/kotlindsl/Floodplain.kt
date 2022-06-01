@@ -190,8 +190,13 @@ fun PartialStream.set(transform: (String, IMessage, IMessage) -> IMessage): Tran
     return addTransformer(Transformer(this.rootTopology, set, topologyContext))
 }
 
-fun PartialStream.compareToLast(): Transformer {
-    val compareToTransformer = CompareToTransformer()
+fun PartialStream.compareToLast(transform: (String, IMessage?, IMessage?) ->IMessage?): Transformer {
+    val transformer: (String, ImmutableMessage?, ImmutableMessage?) -> ImmutableMessage? =
+        { key, msg, param ->
+            transform.invoke(key, msg?.let { fromImmutable(it) }, param?.let { fromImmutable(it) } )?.toImmutable()
+        }
+    // CompareToTransformer.TriFunction
+    val compareToTransformer = CompareToTransformer(transformer)
     return addTransformer(Transformer(this.rootTopology, compareToTransformer, topologyContext))
 
 }

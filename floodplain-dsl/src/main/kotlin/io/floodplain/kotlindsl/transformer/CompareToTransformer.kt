@@ -27,16 +27,8 @@ import org.apache.kafka.streams.Topology
 import org.apache.kafka.streams.errors.TopologyException
 import java.util.Stack
 
-class CompareToTransformer() : TopologyPipeComponent {
+class CompareToTransformer(val transform: (String, ImmutableMessage?, ImmutableMessage?) -> ImmutableMessage?) : TopologyPipeComponent {
     var materialize = false
-
-    interface TriFunction {
-        fun apply(
-            key: String,
-            primary: ImmutableMessage?,
-            secondary: ImmutableMessage?
-        ): ImmutableMessage?
-    }
 
     override fun addToTopology(
         transformerNames: Stack<String>,
@@ -50,7 +42,7 @@ class CompareToTransformer() : TopologyPipeComponent {
         }
         val top = transformerNames.peek()
         val name = topologyContext.qualifiedName("compareTo", transformerNames.size, currentPipeId)
-        addCompareToProcessor(topology, topologyContext, topologyConstructor, top, name)
+        addCompareToProcessor(topology, topologyContext, topologyConstructor, top, name,transform)
         transformerNames.push(name)
     }
 
