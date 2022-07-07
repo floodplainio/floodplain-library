@@ -21,10 +21,7 @@ package io.floodplain.replication.factory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.Temporal;
 
@@ -59,7 +56,12 @@ public class DateSerializer {
         } else if(DATETIMEFORMATTERMILLI.length() == value.length()) {
             return LocalDateTime.parse(value, dateTimeFormatterMilli);
         } else if(value.length() > DATETIMEFORMATTERMILLI.length()) {
-            return ZonedDateTime.parse(value,zonedTimeFormatter);
+            try {
+                return ZonedDateTime.parse(value,zonedTimeFormatter);
+            } catch (DateTimeException e) {
+                logger.error("Invalid length of temporal value: "+value,e);
+                return null;
+            }
         } else {
             logger.error("Invalid length of temporal value: "+value);
             return null;

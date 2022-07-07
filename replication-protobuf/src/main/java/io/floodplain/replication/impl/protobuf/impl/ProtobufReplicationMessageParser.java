@@ -134,6 +134,7 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
             case DATE:
             case CLOCKTIME:
             case TIMESTAMP:
+            case ZONED_TIMESTAMP:
                 return DateSerializer.parseTimeObject(val.getValue());
             case LEGACYDATE:
                 return new Date(Long.parseLong(value));
