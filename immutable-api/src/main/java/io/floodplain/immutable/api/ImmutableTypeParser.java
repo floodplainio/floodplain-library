@@ -56,6 +56,8 @@ public class ImmutableTypeParser {
                 return "clocktime";
             case TIMESTAMP:
                 return "timestamp";
+            case ZONED_TIMESTAMP:
+                return "zoned_timestamp";
             case LEGACYDATE:
                 return "legacydate";
         }
@@ -87,6 +89,8 @@ public class ImmutableTypeParser {
                 return ValueType.DATE;
             case "timestamp":
                 return ValueType.TIMESTAMP;
+            case "zoned_timestamp":
+                return ValueType.ZONED_TIMESTAMP;
             case "stringlist":
                 return ValueType.STRINGLIST;
             case "binary":

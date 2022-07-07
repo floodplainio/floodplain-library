@@ -154,6 +154,7 @@ public class ReplicationJSON {
                 return;
             case DATE:
             case TIMESTAMP:
+            case ZONED_TIMESTAMP:
             case CLOCKTIME:
                 if (value instanceof String) {
                     m.put("Value", (String) value);
@@ -224,6 +225,7 @@ public class ReplicationJSON {
                 return stringResult;
             case DATE:
             case TIMESTAMP:
+            case ZONED_TIMESTAMP:
             case CLOCKTIME:
                 return DateSerializer.parseTimeObject(jsonNode.asText());
 
@@ -306,6 +308,7 @@ public class ReplicationJSON {
                     break;
                 case DATE:
                 case TIMESTAMP:
+                case ZONED_TIMESTAMP:
                 case CLOCKTIME:
                     node.put(key, DateSerializer.serializeTimeObject((Temporal) o));
                     break;

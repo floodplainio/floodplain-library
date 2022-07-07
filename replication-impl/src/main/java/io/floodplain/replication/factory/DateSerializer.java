@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.Temporal;
 
@@ -33,6 +34,7 @@ public class DateSerializer {
 
     public static final String DATETIMEFORMATTERMICRO = "yyyy-MM-dd HH:mm:ss.SSSSSS";
     public static final String DATETIMEFORMATTERMILLI = "yyyy-MM-dd HH:mm:ss.SSS";
+    public static final String DATETIMEFORMATTERMILLIZONE = "yyyy-MM-dd HH:mm:ss.SSSXXXXX";
     public static final String SHORTDATETIMEFORMATTER = "yyyy-MM-dd HH:mm:ss.SS";
     public static final String CLOCKTIMEFORMATTER = "HH:mm:ss";
     public static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(DATEFORMATTER); //10
@@ -40,6 +42,7 @@ public class DateSerializer {
     public static final DateTimeFormatter dateTimeFormatterMilli = DateTimeFormatter.ofPattern(DATETIMEFORMATTERMILLI);
     public static final DateTimeFormatter shortDateTimeFormatter = DateTimeFormatter.ofPattern(SHORTDATETIMEFORMATTER); //22
     public static final DateTimeFormatter clocktimeFormatter =  DateTimeFormatter.ofPattern(CLOCKTIMEFORMATTER);
+    public static final DateTimeFormatter zonedTimeFormatter =  DateTimeFormatter.ofPattern(DATETIMEFORMATTERMILLIZONE);
 
     public static Temporal parseTimeObject(String value) {
         if(value==null) {
@@ -55,6 +58,8 @@ public class DateSerializer {
             return LocalDateTime.parse(value, dateTimeFormatterMicro);
         } else if(DATETIMEFORMATTERMILLI.length() == value.length()) {
             return LocalDateTime.parse(value, dateTimeFormatterMilli);
+        } else if(value.length() > DATETIMEFORMATTERMILLI.length()) {
+            return ZonedDateTime.parse(value,zonedTimeFormatter);
         } else {
             logger.error("Invalid length of temporal value: "+value);
             return null;
@@ -70,6 +75,9 @@ public class DateSerializer {
         }
         if(val instanceof LocalTime) {
             return clocktimeFormatter.format(val);
+        }
+        if(val instanceof ZonedDateTime) {
+            return zonedTimeFormatter.format(val);
         } else {
             throw new RuntimeException("Invalid temporal type: "+val);
         }

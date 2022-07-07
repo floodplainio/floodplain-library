@@ -22,6 +22,7 @@ message ValueProtobuf {
     DECIMAL = 14;
     TIMESTAMP = 15;
     LEGACYDATE = 16;
+    ZONED_TIMESTAMP = 17;
   }
   ValueType type = 2;
   bool isNull = 3;

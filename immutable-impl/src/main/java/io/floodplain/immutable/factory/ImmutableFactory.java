@@ -31,6 +31,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -77,6 +78,8 @@ public class ImmutableFactory {
             return ValueType.CLOCKTIME;
         } else if (val instanceof LocalDateTime) {
             return ValueType.TIMESTAMP;
+        } else if (val instanceof ZonedDateTime) {
+            return ValueType.ZONED_TIMESTAMP;
         } else if (val instanceof Boolean) {
             return ValueType.BOOLEAN;
         } else if (val instanceof String) {

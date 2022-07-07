@@ -94,6 +94,7 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
             case DATE:
             case CLOCKTIME:
             case TIMESTAMP:
+            case ZONED_TIMESTAMP:
                 return DateSerializer.serializeTimeObject((Temporal)val);
             case ENUM:
                 return val.toString();
@@ -166,6 +167,8 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
                 return Replication.ValueProtobuf.ValueType.DATE;
             case TIMESTAMP:
                 return Replication.ValueProtobuf.ValueType.TIMESTAMP;
+            case ZONED_TIMESTAMP:
+                return Replication.ValueProtobuf.ValueType.ZONED_TIMESTAMP;
             case STRINGLIST:
                 return Replication.ValueProtobuf.ValueType.STRINGLIST;
             case BINARY:
@@ -208,6 +211,8 @@ public class ProtobufReplicationMessageParser implements ReplicationMessageParse
                 return ImmutableMessage.ValueType.DATE;
             case TIMESTAMP:
                 return ImmutableMessage.ValueType.TIMESTAMP;
+            case ZONED_TIMESTAMP:
+                return ImmutableMessage.ValueType.ZONED_TIMESTAMP;
             case LEGACYDATE:
                 return ImmutableMessage.ValueType.LEGACYDATE;
             case CLOCKTIME:

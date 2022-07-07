@@ -38,6 +38,7 @@ public interface ImmutableMessage {
         BINARY_DIGEST,
         DATE,
         TIMESTAMP,
+        ZONED_TIMESTAMP,
         BINARY,
         CLOCKTIME,
         STOPWATCHTIME,

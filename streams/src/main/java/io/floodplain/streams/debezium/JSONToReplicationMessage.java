@@ -170,10 +170,11 @@ public class JSONToReplicationMessage {
             case "io.debezium.time.Date":
                 return ValueType.DATE;
             case "io.debezium.time.MicroTimestamp":
-            case "io.debezium.time.ZonedTimestamp":
             case "io.debezium.time.NanoTimestamp":
             case "io.debezium.time.Timestamp":
                 return ValueType.TIMESTAMP;
+            case "io.debezium.time.ZonedTimestamp":
+                return ValueType.ZONED_TIMESTAMP;
             case "io.debezium.data.VariableScaleDecimal":
                 return ValueType.LONG;
             case "org.apache.kafka.connect.data.Decimal":
