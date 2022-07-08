@@ -16,11 +16,8 @@ public class TestDateParsing {
 
     @Test
     public void testDateSerialization() {
-        Assertions.assertThrows(DateTimeException.class, () -> {
-            Temporal t = DateSerializer.parseTimeObject("+17519-05-05 16:00:00.000000");
-        });
-
-
+        Temporal t = DateSerializer.parseTimeObject("+17519-05-05 16:00:00.000000");
+        Assertions.assertNull(t);
     }
     @Test
     public void testZoned() {
