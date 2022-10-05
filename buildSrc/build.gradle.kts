@@ -1,9 +1,11 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val buildKotlin = "1.4.32"
 
 plugins {
     `kotlin-dsl`
     id("io.gitlab.arturbosch.detekt").version ("1.14.1")
+    kotlin("jvm") version "1.7.20"
 
 }
 
@@ -18,4 +20,15 @@ repositories {
     mavenCentral()
     gradlePluginPortal()
     // maven("https://maven.pkg.jetbrains.space/public/p/kotlinx-html/maven")
+}
+dependencies {
+    implementation(kotlin("stdlib-jdk8"))
+}
+val compileKotlin: KotlinCompile by tasks
+compileKotlin.kotlinOptions {
+    jvmTarget = "1.8"
+}
+val compileTestKotlin: KotlinCompile by tasks
+compileTestKotlin.kotlinOptions {
+    jvmTarget = "1.8"
 }

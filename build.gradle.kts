@@ -21,14 +21,14 @@ buildscript {
 val buildKotlinVersion: String by extra
 
 plugins {
-    kotlin("jvm") version "1.6.21"
+    kotlin("jvm") version "1.7.20"
 
-    id("org.jetbrains.kotlin.plugin.allopen") version "1.6.10"
-    id("org.jlleitschuh.gradle.ktlint") version "10.1.0"
-    id("org.jetbrains.dokka") version "1.6.21"
+    id("org.jetbrains.kotlin.plugin.allopen") version "1.7.20"
+    id("org.jlleitschuh.gradle.ktlint") version "11.0.0"
+    id("org.jetbrains.dokka") version "1.7.10"
     id("com.github.hierynomus.license-base").version("0.16.1")
-    id("com.github.spotbugs") version "5.0.6"
-    id("io.gitlab.arturbosch.detekt") version "1.20.0"
+    id("com.github.spotbugs") version "5.0.12"
+    id("io.gitlab.arturbosch.detekt") version "1.21.0"
     signing
     `maven-publish`
     `java-library`
