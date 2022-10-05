@@ -38,6 +38,9 @@ import java.time.LocalTime
 import java.time.ZoneOffset
 import java.util.Optional
 import org.junit.jupiter.api.Assertions.*
+import java.time.Month
+import java.time.ZoneId
+import java.time.ZonedDateTime
 
 private val logger = mu.KotlinLogging.logger {}
 
@@ -55,6 +58,8 @@ class IMessageTest {
         .set("aboolean", false)
         .set("alist", listOf("foo", "bar"))
         .set("adate", LocalDate.of(2013, 3, 3))
+        // .set("adatetime",LocalDateTime.of(2021,Month.DECEMBER,13,9,15,30,1234567))
+        // .set("azoneddatetime",ZonedDateTime.of(2022,4,5,6,7,12,123456,ZoneId.of("CET")))
 
     private fun createComplexMessage(): IMessage {
         val list = List(2) { exampleMessage.copy() }
@@ -188,7 +193,9 @@ class IMessageTest {
     @Test
     fun testComplexMessage() {
         val original = createComplexMessage()
-        val msg = convertThereAndBack(original)
+        val msg = convertThereAndBack(original,protoParser)
+
+        // val msg = convertThereAndBack(original)
         assertEquals(original, msg)
     }
 
@@ -246,5 +253,19 @@ class IMessageTest {
         assertEquals(id, id2)
         assertNull(nonExistingIndex)
         assertNull(nonExistingList)
+    }
+
+    @Test
+    fun testZonedDateTimeFallback() {
+        val msg = empty()
+            .set("adatetime",LocalDateTime.of(2021,Month.DECEMBER,13,9,15,30,1234567))
+            .set("azoneddatetime",ZonedDateTime.of(2022,4,5,6,7,12,123456,ZoneId.of("CET")))
+
+        assertNotNull(msg.optionalDateTime("adatetime"))
+        assertNotNull(msg.optionalDateTime("azoneddatetime"))
+
+        assertNotNull(msg.optionalDateTime("azoneddatetime"))
+
+
     }
 }
