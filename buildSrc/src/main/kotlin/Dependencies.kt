@@ -1,7 +1,7 @@
 package io.floodplain.build
 
 object FloodplainPlugins {
-    const val kotlin = "1.6.10"
+    const val kotlin = "1.7.20"
 }
 
 object Libs {
@@ -14,7 +14,7 @@ fun isReleaseVersion(): Boolean {
 
 object FloodplainDeps {
     const val kotlin = FloodplainPlugins.kotlin
-    const val floodplain_version = "1.10.12-SNAPSHOT"
+    const val floodplain_version = "1.11.1-SNAPSHOT"
     const val jackson_version = "2.13.3"
     const val kafka_version = "3.1.0"
     const val slf4j_version = "1.7.36"

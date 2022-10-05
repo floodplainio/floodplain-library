@@ -4,7 +4,7 @@ val buildKotlin = "1.4.32"
 
 plugins {
     `kotlin-dsl`
-    id("io.gitlab.arturbosch.detekt").version ("1.14.1")
+    id("io.gitlab.arturbosch.detekt").version ("1.20.0")
     kotlin("jvm") version "1.7.20"
 
 }
