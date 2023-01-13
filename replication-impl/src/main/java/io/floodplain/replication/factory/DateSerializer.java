@@ -45,6 +45,9 @@ public class DateSerializer {
         if(value==null) {
             return null;
         }
+        if(value.length()>10 && value.charAt(10)=='T') {
+            return Instant.parse(value);
+        }
         if(DATEFORMATTER.length() == value.length()) {
             return LocalDate.parse(value,dateFormatter);
         } else if(CLOCKTIMEFORMATTER.length() == value.length()) {
