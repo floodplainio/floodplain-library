@@ -236,11 +236,11 @@ fun customizePom(publication: MavenPublication) {
             val root = asNode()
             root.appendNode("name", "Floodplain")
             root.appendNode("description", "Transforms CDC streams in Kotlin")
-            root.appendNode("url", "https://floodplain.io")
+            root.appendNode("url", "https://floodplain.nl")
         }
         organization {
             name.set("Floodplain")
-            url.set("https://floodplain.io")
+            url.set("https://floodplain.nl")
         }
         issueManagement {
             system.set("GitHub")
