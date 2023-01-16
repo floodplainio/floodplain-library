@@ -12,8 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.time.Instant;
-import java.time.temporal.ChronoField;
+import java.time.ZonedDateTime;
 import java.time.temporal.Temporal;
 import java.util.Optional;
 
@@ -26,9 +25,9 @@ public class TestDateParsing {
         Assertions.assertNotNull(is,"Missing resource");
         ReplicationMessage rm = JSONToReplicationMessage.processDebeziumBody(is.readAllBytes(), Optional.of("sometable"));
         ImmutableMessage im = rm.message();
-        Instant o = (Instant) im.value("date_created").get();
-        Long l = o.toEpochMilli();
-    Assertions.assertEquals(1666189812261L,l);
+        ZonedDateTime o = (ZonedDateTime) im.value("date_created").get();
+        Long l = o.toInstant().toEpochMilli();
+        Assertions.assertEquals(1666189812261L,l);
     }
     @Test
     public void testParse() {
