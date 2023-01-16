@@ -1,0 +1,298 @@
+{
+  "schema": {
+    "type": "struct",
+    "fields": [
+      {
+        "type": "struct",
+        "fields": [
+          {
+            "type": "string",
+            "optional": false,
+            "name": "io.debezium.data.Uuid",
+            "version": 1,
+            "field": "id"
+          },
+          {
+            "type": "string",
+            "optional": false,
+            "name": "io.debezium.data.Uuid",
+            "version": 1,
+            "field": "agenda_id"
+          },
+          {
+            "type": "int64",
+            "optional": false,
+            "name": "io.debezium.time.MicroTimestamp",
+            "version": 1,
+            "field": "start_time"
+          },
+          {
+            "type": "int64",
+            "optional": false,
+            "name": "io.debezium.time.MicroTimestamp",
+            "version": 1,
+            "field": "end_time"
+          },
+          {
+            "type": "string",
+            "optional": false,
+            "field": "created_by"
+          },
+          {
+            "type": "string",
+            "optional": false,
+            "name": "io.debezium.time.ZonedTimestamp",
+            "version": 1,
+            "field": "date_created"
+          },
+          {
+            "type": "string",
+            "optional": false,
+            "name": "io.debezium.time.ZonedTimestamp",
+            "version": 1,
+            "field": "date_modified"
+          },
+          {
+            "type": "string",
+            "optional": false,
+            "field": "modified_by"
+          },
+          {
+            "type": "string",
+            "optional": false,
+            "field": "created_by_service"
+          },
+          {
+            "type": "string",
+            "optional": false,
+            "field": "modified_by_service"
+          },
+          {
+            "type": "int16",
+            "optional": true,
+            "field": "appointment_duration"
+          }
+        ],
+        "optional": true,
+        "name": "appointmentservices.public.timeslot.Value",
+        "field": "before"
+      },
+      {
+        "type": "struct",
+        "fields": [
+          {
+            "type": "string",
+            "optional": false,
+            "name": "io.debezium.data.Uuid",
+            "version": 1,
+            "field": "id"
+          },
+          {
+            "type": "string",
+            "optional": false,
+            "name": "io.debezium.data.Uuid",
+            "version": 1,
+            "field": "agenda_id"
+          },
+          {
+            "type": "int64",
+            "optional": false,
+            "name": "io.debezium.time.MicroTimestamp",
+            "version": 1,
+            "field": "start_time"
+          },
+          {
+            "type": "int64",
+            "optional": false,
+            "name": "io.debezium.time.MicroTimestamp",
+            "version": 1,
+            "field": "end_time"
+          },
+          {
+            "type": "string",
+            "optional": false,
+            "field": "created_by"
+          },
+          {
+            "type": "string",
+            "optional": false,
+            "name": "io.debezium.time.ZonedTimestamp",
+            "version": 1,
+            "field": "date_created"
+          },
+          {
+            "type": "string",
+            "optional": false,
+            "name": "io.debezium.time.ZonedTimestamp",
+            "version": 1,
+            "field": "date_modified"
+          },
+          {
+            "type": "string",
+            "optional": false,
+            "field": "modified_by"
+          },
+          {
+            "type": "string",
+            "optional": false,
+            "field": "created_by_service"
+          },
+          {
+            "type": "string",
+            "optional": false,
+            "field": "modified_by_service"
+          },
+          {
+            "type": "int16",
+            "optional": true,
+            "field": "appointment_duration"
+          }
+        ],
+        "optional": true,
+        "name": "appointmentservices.public.timeslot.Value",
+        "field": "after"
+      },
+      {
+        "type": "struct",
+        "fields": [
+          {
+            "type": "string",
+            "optional": false,
+            "field": "version"
+          },
+          {
+            "type": "string",
+            "optional": false,
+            "field": "connector"
+          },
+          {
+            "type": "string",
+            "optional": false,
+            "field": "name"
+          },
+          {
+            "type": "int64",
+            "optional": false,
+            "field": "ts_ms"
+          },
+          {
+            "type": "string",
+            "optional": true,
+            "name": "io.debezium.data.Enum",
+            "version": 1,
+            "parameters": {
+              "allowed": "true,last,false"
+            },
+            "default": "false",
+            "field": "snapshot"
+          },
+          {
+            "type": "string",
+            "optional": false,
+            "field": "db"
+          },
+          {
+            "type": "string",
+            "optional": true,
+            "field": "sequence"
+          },
+          {
+            "type": "string",
+            "optional": false,
+            "field": "schema"
+          },
+          {
+            "type": "string",
+            "optional": false,
+            "field": "table"
+          },
+          {
+            "type": "int64",
+            "optional": true,
+            "field": "txId"
+          },
+          {
+            "type": "int64",
+            "optional": true,
+            "field": "lsn"
+          },
+          {
+            "type": "int64",
+            "optional": true,
+            "field": "xmin"
+          }
+        ],
+        "optional": false,
+        "name": "io.debezium.connector.postgresql.Source",
+        "field": "source"
+      },
+      {
+        "type": "string",
+        "optional": false,
+        "field": "op"
+      },
+      {
+        "type": "int64",
+        "optional": true,
+        "field": "ts_ms"
+      },
+      {
+        "type": "struct",
+        "fields": [
+          {
+            "type": "string",
+            "optional": false,
+            "field": "id"
+          },
+          {
+            "type": "int64",
+            "optional": false,
+            "field": "total_order"
+          },
+          {
+            "type": "int64",
+            "optional": false,
+            "field": "data_collection_order"
+          }
+        ],
+        "optional": true,
+        "field": "transaction"
+      }
+    ],
+    "optional": false,
+    "name": "appointmentservices.public.timeslot.Envelope"
+  },
+  "payload": {
+    "before": null,
+    "after": {
+      "id": "3b8fb0a2-72fb-4183-a017-8b7f00ba8d32",
+      "agenda_id": "32529170-73ec-400e-b19f-157fe21177aa",
+      "start_time": 1666266000000000,
+      "end_time": 1666269600000000,
+      "created_by": "1669b36a-bbf7-4274-9bd5-1ae1f4a2898c",
+      "date_created": "2022-10-19T14:30:12.261837Z",
+      "date_modified": "2022-10-19T14:30:12.261837Z",
+      "modified_by": "1669b36a-bbf7-4274-9bd5-1ae1f4a2898c",
+      "created_by_service": "quin-portal",
+      "modified_by_service": "quin-portal",
+      "appointment_duration": 20
+    },
+    "source": {
+      "version": "1.5.4.Final",
+      "connector": "postgresql",
+      "name": "appointmentservices",
+      "ts_ms": 1666189812278,
+      "snapshot": "false",
+      "db": "appointmentservices",
+      "sequence": "[\"6982475972840\",\"6982475972840\"]",
+      "schema": "public",
+      "table": "timeslot",
+      "txId": 367991,
+      "lsn": 6982476102480,
+      "xmin": null
+    },
+    "op": "c",
+    "ts_ms": 1666189812684,
+    "transaction": null
+  }
+}

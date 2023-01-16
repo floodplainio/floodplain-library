@@ -29,6 +29,7 @@ import io.floodplain.immutable.api.ImmutableMessage.ValueType;
 import io.floodplain.immutable.factory.ImmutableFactory;
 import io.floodplain.replication.api.ReplicationMessage;
 import io.floodplain.replication.api.ReplicationMessage.Operation;
+import io.floodplain.replication.factory.DateSerializer;
 import io.floodplain.replication.factory.ReplicationFactory;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.slf4j.Logger;
@@ -211,7 +212,11 @@ public class JSONToReplicationMessage {
                 return LocalDate.ofEpochDay(valueInt);
             case "io.debezium.time.ZonedTimestamp":
                 // TODO Unsure about this one
-                return ZonedDateTime.ofInstant(Instant.ofEpochMilli(value.asLong()),ZoneId.systemDefault());
+                if(value.isLong()) {
+                    return ZonedDateTime.ofInstant(Instant.ofEpochMilli(value.asLong()),ZoneId.systemDefault());
+                } else {
+                    return ZonedDateTime.ofInstant(Instant.parse(value.asText()),ZoneId.systemDefault());
+                }
 //                return new Date(value.asLong());
             case "io.debezium.time.NanoTimestamp":
                 long nano = value.asLong();
