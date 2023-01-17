@@ -74,6 +74,7 @@ private fun createLocalDebeziumSettings(
     database: String,
     username: String,
     password: String,
+    topicPrefix: String,
     offsetId: String? = null,
     settings: Map<String, String> = emptyMap()
 ): Properties {
@@ -92,6 +93,8 @@ private fun createLocalDebeziumSettings(
     props.setProperty("offset.storage", "org.apache.kafka.connect.storage.FileOffsetBackingStore")
     props.setProperty("offset.storage.file.filename", offsetFilePath.toString())
     props.setProperty("offset.flush.interval.ms", "1000")
+    props.setProperty("topic.prefix", topicPrefix)
+
     // Override any setting:
     settings.forEach { (k, v) -> props[k] = v }
     return props
@@ -119,12 +122,13 @@ fun createDebeziumChangeFlow(
     database: String,
     username: String,
     password: String,
+    topicPrefix: String,
     offsetId: String? = null,
     settings: Map<String, String> = emptyMap()
 ): Flow<ChangeRecord> {
     val props = createLocalDebeziumSettings(
         name, taskClass, hostname, port, database,
-        username, password, offsetId, settings
+        username, password,topicPrefix, offsetId, settings
     )
     props.list(System.out)
     return runDebeziumServer(props)

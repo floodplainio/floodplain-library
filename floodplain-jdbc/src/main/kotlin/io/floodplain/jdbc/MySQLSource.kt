@@ -32,7 +32,6 @@ import io.floodplain.streams.api.Topic
 import io.floodplain.streams.api.TopologyContext
 import io.floodplain.streams.remotejoin.TopologyConstructor
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 
@@ -47,7 +46,8 @@ private class MySQLConfig(
     private val port: Int,
     private val username: String,
     private val password: String,
-    private val database: String
+    private val database: String,
+    private val topicPrefix: String
 ) : SourceConfig {
 
     private val sourceElements: MutableList<SourceTopic> = mutableListOf()
@@ -57,7 +57,7 @@ private class MySQLConfig(
     }
 
     override suspend fun connectSource(inputReceiver: InputReceiver) {
-        val broadcastFlow = directSource(offsetId)
+        val broadcastFlow = directSource(offsetId,topicPrefix)
         broadcastFlow
             .onEach { logger.info("Record found: ${it.topic} ${it.key}") }
             .collect {
@@ -103,7 +103,7 @@ private class MySQLConfig(
         sourceElements.add(elt)
     }
 
-    private fun directSource(offsetId: String): Flow<ChangeRecord> {
+    private fun directSource(offsetId: String, topicPrefix: String): Flow<ChangeRecord> {
         val tempFile = createTempFile(offsetId)
 
         val extraSettings = mapOf(
@@ -118,6 +118,7 @@ private class MySQLConfig(
             database,
             username,
             password,
+            topicPrefix,
             offsetId,
             extraSettings
         )
@@ -136,7 +137,8 @@ fun Stream.mysqlSourceConfig(
     port: Int,
     username: String,
     password: String,
-    database: String
+    database: String,
+    topicPrefix: String
 ): SourceConfig {
     val mySQLConfig = MySQLConfig(
         this.topologyContext,
@@ -147,7 +149,8 @@ fun Stream.mysqlSourceConfig(
         port,
         username,
         password,
-        database
+        database,
+        topicPrefix
     )
     addSourceConfiguration(mySQLConfig)
     return mySQLConfig

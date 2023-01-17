@@ -3,6 +3,7 @@ import io.floodplain.build.isReleaseVersion
 import io.gitlab.arturbosch.detekt.Detekt
 import java.io.File
 
+
 buildscript {
     repositories {
         mavenLocal()

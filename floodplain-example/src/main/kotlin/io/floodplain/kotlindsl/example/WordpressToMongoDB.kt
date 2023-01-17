@@ -32,7 +32,7 @@ const val DEFAULT_MYSQL_PORT = 3306
 fun main() {
     stream {
         val mysqlConfig =
-            mysqlSourceConfig("mysqlsource", "mysql", DEFAULT_MYSQL_PORT, "root", "mysecretpassword", "wpdb")
+            mysqlSourceConfig("mysqlsource", "mysql", DEFAULT_MYSQL_PORT, "root", "mysecretpassword", "wpdb","topicPrefix")
         val mongoConfig = mongoConfig("mongosink", "mongodb://mongo", "$generation-mongodumpalt")
         mysqlSource("wpdb.wp_posts", mysqlConfig) {
             each { key, msg, _ ->

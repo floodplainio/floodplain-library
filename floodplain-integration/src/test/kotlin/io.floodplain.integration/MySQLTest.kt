@@ -77,7 +77,8 @@ class MySQLTest {
                 mysqlContainer.exposedPort,
                 "root",
                 "mysecretpassword",
-                "inventory"
+                "inventory",
+                "topicPrefix"
             )
             val mongoConfig = remoteMongoConfig(
                 "mongosink",
@@ -122,7 +123,9 @@ class MySQLTest {
                 mysqlContainer.exposedPort,
                 "root",
                 "mysecretpassword",
-                "inventory"
+                "inventory",
+                "topicPrefix"
+
             )
             val mongoConfig = remoteMongoConfig(
                 "mongosink",
@@ -160,7 +163,9 @@ class MySQLTest {
                 mysqlContainer.exposedPort,
                 "root",
                 "mysecretpassword",
-                "inventory"
+                "inventory",
+                "topicPrefix"
+
             )
             val mongoConfig = remoteMongoConfig(
                 "mongosink",
@@ -230,7 +235,9 @@ class MySQLTest {
                 3306,
                 "root",
                 "mysecretpassword",
-                "wpdb"
+                "wpdb",
+                "topicPrefix"
+
             )
             val mongoConfig = remoteMongoConfig("mongosink", "mongodb://localhost", "@mongodump2")
             mysqlSource("wpdb.wp_posts", mysqlConfig) {

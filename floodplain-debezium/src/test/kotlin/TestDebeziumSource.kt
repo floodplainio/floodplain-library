@@ -51,6 +51,7 @@ class TestDebeziumSource {
                 "dvdrental",
                 "postgres",
                 "mysecretpassword",
+                "my_prefix",
                 UUID.randomUUID().toString(),
                 emptyMap()
             )
