@@ -149,7 +149,7 @@ class FilmToGoogleSheets {
                 "postgres",
                 "mysecretpassword",
                 "dvdrental",
-                "public"
+                "public",
             )
             val sheetConfig = googleSheetConfig("sheets")
             postgresSource("payment", postgresConfig) {

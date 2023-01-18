@@ -204,7 +204,7 @@ class LocalDriverContext(
     override fun connectSourceAndSink(): List<Job> {
         val outputJob = GlobalScope.launch(newSingleThreadContext("TopologySource"), CoroutineStart.UNDISPATCHED) {
             val outputFlows = outputFlows(this)
-                .map { (topic, flow) -> topic to flow.bufferTimeout(2000, bufferTime?.toLong() ?: 1000) }
+                .map { (topic, flow) -> topic to flow.bufferTimeout(500, bufferTime?.toLong() ?: 10000) }
                 .toMap()
             val sinks = sinksByTopic()
             outputFlows.forEach { (topic, flow) ->

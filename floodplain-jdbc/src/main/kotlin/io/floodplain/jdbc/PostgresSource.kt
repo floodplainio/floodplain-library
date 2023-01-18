@@ -40,6 +40,7 @@ private class PostgresConfig(
     override val topologyConstructor: TopologyConstructor,
     val name: String,
     val offsetId: String,
+    val serverId: Long,
     private val hostname: String,
     private val port: Int,
     private val username: String,
@@ -55,7 +56,7 @@ private class PostgresConfig(
     }
 
     override suspend fun connectSource(inputReceiver: InputReceiver) {
-        val broadcastFlow = directSource(offsetId)
+        val broadcastFlow = directSource(topologyContext.topicName(name) , serverId,  offsetId)
         broadcastFlow.collect {
             acceptRecord(inputReceiver, it)
         }
@@ -91,7 +92,7 @@ private class PostgresConfig(
                     "key.converter" to "org.apache.kafka.connect.json.JsonConverter",
                     "value.converter" to "org.apache.kafka.connect.json.JsonConverter",
                     // TODO"table.whitelist": "public.inventory"
-                    "public.inventory" to sourceElements.joinToString(",") { e -> "${e.schema()}.${e.table()}" }
+                    // "public.inventory" to sourceElements.joinToString(",") { e -> "${e.schema()}.${e.table()}" }
                 )
             )
         )
@@ -101,7 +102,7 @@ private class PostgresConfig(
         sourceElements.add(elt)
     }
 
-    private fun directSource(offsetId: String): Flow<ChangeRecord> {
+    private fun directSource(topicPrefix: String, serverId: Long, offsetId: String): Flow<ChangeRecord> {
         return createDebeziumChangeFlow(
             topologyContext.topicName(name),
             "io.debezium.connector.postgresql.PostgresConnector",
@@ -110,6 +111,8 @@ private class PostgresConfig(
             database,
             username,
             password,
+            topicPrefix,
+            serverId,
             offsetId
         )
     }
@@ -122,13 +125,16 @@ fun Stream.postgresSourceConfig(
     username: String,
     password: String,
     database: String,
-    defaultSchema: String?
-): SourceConfig {
+    defaultSchema: String?,
+
+    serverId: Long = 1,
+    ): SourceConfig {
     val postgresConfig = PostgresConfig(
         this.topologyContext,
         this.topologyConstructor,
         name,
         topologyContext.applicationId(),
+        serverId,
         hostname,
         port,
         username,

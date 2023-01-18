@@ -75,6 +75,7 @@ private fun createLocalDebeziumSettings(
     username: String,
     password: String,
     topicPrefix: String,
+    serverId: Long,
     offsetId: String? = null,
     settings: Map<String, String> = emptyMap()
 ): Properties {
@@ -86,6 +87,7 @@ private fun createLocalDebeziumSettings(
     props.setProperty("database.hostname", hostname)
     props.setProperty("database.port", "$port")
     props.setProperty("database.server.name", name) // don't think this matters?
+    props.setProperty("database.server.id", serverId.toString()) // don't think this matters?
     props.setProperty("database.dbname", database)
     // props.setProperty("database.include.list", database)
     props.setProperty("database.user", username)
@@ -123,12 +125,13 @@ fun createDebeziumChangeFlow(
     username: String,
     password: String,
     topicPrefix: String,
+    serverId: Long,
     offsetId: String? = null,
     settings: Map<String, String> = emptyMap()
 ): Flow<ChangeRecord> {
     val props = createLocalDebeziumSettings(
         name, taskClass, hostname, port, database,
-        username, password,topicPrefix, offsetId, settings
+        username, password,topicPrefix, serverId, offsetId, settings
     )
     props.list(System.out)
     return runDebeziumServer(props)

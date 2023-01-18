@@ -274,6 +274,7 @@ public class JSONToReplicationMessage {
                 return value.asText();
             case "boolean":
                 return value.asBoolean();
+            case "float":
             case "double":
                 return value.asDouble();
             case "binary":
@@ -300,6 +301,8 @@ public class JSONToReplicationMessage {
                 return ValueType.STRING;
             case "double":
                 return ValueType.DOUBLE;
+            case "float":
+                return ValueType.FLOAT;
             case "bytes":
                 return ValueType.BINARY;
             case "array":

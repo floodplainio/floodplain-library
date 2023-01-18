@@ -58,7 +58,7 @@ class FilmSimple {
             logger.info("Not performing integration tests, doesn't seem to work in circleci")
             return
         }
-        stream {
+        stream("mytenant") {
             val postgresConfig = postgresSourceConfig(
                 "mypostgres",
                 postgresContainer.host,
@@ -66,7 +66,9 @@ class FilmSimple {
                 "postgres",
                 "mysecretpassword",
                 "dvdrental",
-                "public"
+                "public",
+                1,
+
             )
             val mongoConfig = remoteMongoConfig(
                 "mongosink",

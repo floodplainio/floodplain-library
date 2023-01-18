@@ -601,7 +601,7 @@ public class TopologyTestDriver implements Closeable {
                 task.process(mockWallClockTime.milliseconds());
                 task.maybePunctuateStreamTime();
                 commit(task.prepareCommit());
-                task.postCommit(true);
+                task.postCommit(false);
                 captureOutputsAndReEnqueueInternalResults();
             }
             if (task.hasRecordsQueued()) {

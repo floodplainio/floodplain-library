@@ -47,7 +47,8 @@ private class MySQLConfig(
     private val username: String,
     private val password: String,
     private val database: String,
-    private val topicPrefix: String
+    private val topicPrefix: String,
+    private val serverId: Long
 ) : SourceConfig {
 
     private val sourceElements: MutableList<SourceTopic> = mutableListOf()
@@ -57,7 +58,7 @@ private class MySQLConfig(
     }
 
     override suspend fun connectSource(inputReceiver: InputReceiver) {
-        val broadcastFlow = directSource(offsetId,topicPrefix)
+        val broadcastFlow = directSource(serverId, offsetId,topicPrefix)
         broadcastFlow
             .onEach { logger.info("Record found: ${it.topic} ${it.key}") }
             .collect {
@@ -87,13 +88,16 @@ private class MySQLConfig(
                     "database.user" to username,
                     "database.password" to password,
                     "database.server.name" to name,
+                    "database.server.id" to serverId.toString(),
                     "database.whitelist" to database,
                     "key.converter" to "org.apache.kafka.connect.json.JsonConverter",
                     "value.converter" to "org.apache.kafka.connect.json.JsonConverter",
                     // TODO Deal with this, is it required?
                     "database.history.kafka.bootstrap.servers" to "kafka:9092",
-                    "database.history.kafka.topic" to "dbhistory.wordpress",
-                    "include.schema.changes" to "false"
+                    "database.history.kafka.topic" to "history",
+                    "schema.history.internal.kafka.topic" to "schema_history",
+                    "schema.history.internal.kafka.bootstrap.servers" to "kafka:9092",
+                    "include.schema.changes" to "false",
                 )
             )
         )
@@ -103,12 +107,15 @@ private class MySQLConfig(
         sourceElements.add(elt)
     }
 
-    private fun directSource(offsetId: String, topicPrefix: String): Flow<ChangeRecord> {
+    private fun directSource(serverId: Long, offsetId: String, topicPrefix: String): Flow<ChangeRecord> {
         val tempFile = createTempFile(offsetId)
+        val schemaTempFile = createTempFile(offsetId,"_schema")
 
         val extraSettings = mapOf(
             "database.history" to "io.debezium.relational.history.FileDatabaseHistory",
-            "database.history.file.filename" to tempFile.absolutePath
+            "database.history.file.filename" to tempFile.absolutePath,
+            "schema.history.internal" to "io.debezium.storage.file.history.FileSchemaHistory",
+            "schema.history.internal.file.filename" to schemaTempFile.absolutePath,
         )
         return createDebeziumChangeFlow(
             topologyContext.topicName(name),
@@ -119,6 +126,7 @@ private class MySQLConfig(
             username,
             password,
             topicPrefix,
+            serverId,
             offsetId,
             extraSettings
         )
@@ -138,7 +146,8 @@ fun Stream.mysqlSourceConfig(
     username: String,
     password: String,
     database: String,
-    topicPrefix: String
+    topicPrefix: String,
+    serverId: Long = 1
 ): SourceConfig {
     val mySQLConfig = MySQLConfig(
         this.topologyContext,
@@ -150,7 +159,8 @@ fun Stream.mysqlSourceConfig(
         username,
         password,
         database,
-        topicPrefix
+        topicPrefix,
+        serverId
     )
     addSourceConfiguration(mySQLConfig)
     return mySQLConfig

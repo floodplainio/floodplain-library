@@ -34,6 +34,8 @@ import io.floodplain.mongodb.waitForMongoDbCondition
 import io.floodplain.test.InstantiatedContainer
 import io.floodplain.test.useIntegraton
 import kotlinx.coroutines.delay
+import org.junit.After
+import org.junit.Before
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Disabled
@@ -45,27 +47,32 @@ private val logger = mu.KotlinLogging.logger {}
 @Suppress("UNCHECKED_CAST")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class MySQLTest {
-    private val mysqlContainer = InstantiatedContainer(
-        "debezium/example-mysql:1.6",
-        3306,
-        mapOf(
-            "MYSQL_ROOT_PASSWORD" to "mysecretpassword",
-            "MYSQL_DATABASE" to "wpdb",
-            "MYSQL_USER" to "mysqluser",
-            "MYSQL_PASSWORD" to "mysqlpw",
-            "MYSQL_ROOT_HOST" to "%"
-        )
-    )
-    private val mongoContainer = InstantiatedContainer("mongo:latest", 27017)
+    // private var mysqlContainer: InstantiatedContainer = createMySql()
+    // private var mongoContainer: InstantiatedContainer = createMongodb() //= InstantiatedContainer("mongo:latest", 27017)
 
-    @AfterAll
-    fun shutdown() {
-        mysqlContainer.close()
-        mongoContainer.close()
+
+    fun createMySql(): InstantiatedContainer {
+        return InstantiatedContainer(
+            "debezium/example-mysql:1.6",
+            3306,
+            mapOf(
+                "MYSQL_ROOT_PASSWORD" to "mysecretpassword",
+                "MYSQL_DATABASE" to "wpdb",
+                "MYSQL_USER" to "mysqluser",
+                "MYSQL_PASSWORD" to "mysqlpw",
+                "MYSQL_ROOT_HOST" to "%"
+            )
+        )
+    }
+
+    fun createMongodb(): InstantiatedContainer {
+        return InstantiatedContainer("mongo:latest", 27017)
     }
 
     @Test
     fun testSimple() {
+        val mysqlContainer = createMySql()
+        val mongoContainer = createMongodb()
         if (!useIntegraton) {
             logger.warn("Skipping integration test")
             return
@@ -78,7 +85,7 @@ class MySQLTest {
                 "root",
                 "mysecretpassword",
                 "inventory",
-                "topicPrefix"
+                "mypostgres",
             )
             val mongoConfig = remoteMongoConfig(
                 "mongosink",
@@ -106,12 +113,16 @@ class MySQLTest {
             connectJobs().forEach {
                 it.cancel()
             }
+            mysqlContainer.close()
+            mongoContainer.close()
             assertNotNull(hits)
         }
     }
 
     @Test
     fun testRuntimeParamParser() {
+        val mysqlContainer = createMySql()
+        val mongoContainer = createMongodb()
         if (!useIntegraton) {
             logger.warn("Skipping integration test")
             return
@@ -124,12 +135,11 @@ class MySQLTest {
                 "root",
                 "mysecretpassword",
                 "inventory",
-                "topicPrefix"
-
+                "mypostgres",
             )
             val mongoConfig = remoteMongoConfig(
                 "mongosink",
-                "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
+                "mongodb://${mongoContainer?.host}:${mongoContainer?.exposedPort}",
                 "@mongodump"
             )
             mysqlSource("inventory.customers", mysqlConfig) {
@@ -137,7 +147,7 @@ class MySQLTest {
             }
         }.runWithArguments { topologyContext ->
             val hits = waitForMongoDbCondition(
-                "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
+                "mongodb://${mongoContainer?.host}:${mongoContainer?.exposedPort}",
                 "${topologyContext.generation}-mongodump"
             ) { database ->
                 val customerCount = database.getCollection("customers").countDocuments()
@@ -151,11 +161,15 @@ class MySQLTest {
                 }
             } as Long?
             assertNotNull(hits)
+            mysqlContainer.close()
+            mongoContainer.close()
         }
     }
 
     @Test
     fun testInventory() {
+        val mysqlContainer = createMySql()
+        val mongoContainer = createMongodb()
         stream {
             val mysqlConfig = mysqlSourceConfig(
                 "mypostgres",
@@ -164,12 +178,11 @@ class MySQLTest {
                 "root",
                 "mysecretpassword",
                 "inventory",
-                "topicPrefix"
-
+                "mypostgres",
             )
             val mongoConfig = remoteMongoConfig(
                 "mongosink",
-                "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
+                "mongodb://${mongoContainer?.host}:${mongoContainer?.exposedPort}",
                 "$generation-mongodump"
             )
             mysqlSource("inventory.customers", mysqlConfig) {
@@ -223,6 +236,8 @@ class MySQLTest {
                 }
             } as Long?
             assertNotNull(hits)
+            mysqlContainer.close()
+            mongoContainer.close()
         }
     }
     // can make this a proper unit test when I have a persisted wordpress installation image
@@ -236,8 +251,7 @@ class MySQLTest {
                 "root",
                 "mysecretpassword",
                 "wpdb",
-                "topicPrefix"
-
+                "topicPrefix",
             )
             val mongoConfig = remoteMongoConfig("mongosink", "mongodb://localhost", "@mongodump2")
             mysqlSource("wpdb.wp_posts", mysqlConfig) {

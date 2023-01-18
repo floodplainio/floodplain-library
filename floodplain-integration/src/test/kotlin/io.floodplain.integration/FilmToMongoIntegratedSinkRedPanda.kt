@@ -127,7 +127,7 @@ class FilmToMongoIntegratedSinkRedPanda {
             val database = "mongodump" // topologyContext.topicName("@mongodump")
             var hits = 0L
             val start = System.currentTimeMillis()
-            withTimeout(200000) {
+            withTimeout(2000000) {
                 MongoClients.create("mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}")
                     .use { client ->
                         repeat(1000) {

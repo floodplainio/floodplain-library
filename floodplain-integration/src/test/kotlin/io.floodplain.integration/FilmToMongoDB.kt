@@ -39,6 +39,7 @@ import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
+import java.util.concurrent.atomic.AtomicInteger
 
 private val logger = mu.KotlinLogging.logger {}
 
@@ -77,6 +78,8 @@ class FilmToMongoDB {
                 "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
                 "$generation-mongodump"
             )
+
+            val counter = AtomicInteger()
             postgresSource("film", postgresConfig) {
                 // Clear the last_update field, it makes no sense in a denormalized situation
                 set { _, film, _ ->
@@ -111,6 +114,7 @@ class FilmToMongoDB {
                 // Ideas welcome
                 set { _, film, actorlist ->
                     film["actors"] = actorlist["list"] ?: emptyList<IMessage>()
+                    println("Count: ${counter.incrementAndGet()}")
                     film
                 }
                 // pass this message to the mongo sink
@@ -120,7 +124,7 @@ class FilmToMongoDB {
             val database = "${topologyContext.generation}-mongodump"
             var hits = 0L
             val start = System.currentTimeMillis()
-            withTimeout(250000) {
+            withTimeout(4500000) {
                 repeat(1000) {
                     MongoClients.create("mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}")
                         .use { client ->
