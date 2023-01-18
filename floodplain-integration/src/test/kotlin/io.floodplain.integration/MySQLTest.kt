@@ -34,9 +34,6 @@ import io.floodplain.mongodb.waitForMongoDbCondition
 import io.floodplain.test.InstantiatedContainer
 import io.floodplain.test.useIntegraton
 import kotlinx.coroutines.delay
-import org.junit.After
-import org.junit.Before
-import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
@@ -47,13 +44,10 @@ private val logger = mu.KotlinLogging.logger {}
 @Suppress("UNCHECKED_CAST")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class MySQLTest {
-    // private var mysqlContainer: InstantiatedContainer = createMySql()
-    // private var mongoContainer: InstantiatedContainer = createMongodb() //= InstantiatedContainer("mongo:latest", 27017)
 
-
-    fun createMySql(): InstantiatedContainer {
+    private fun createMySql(): InstantiatedContainer {
         return InstantiatedContainer(
-            "debezium/example-mysql:1.6",
+            "debezium/example-mysql:2.1.1.Final",
             3306,
             mapOf(
                 "MYSQL_ROOT_PASSWORD" to "mysecretpassword",
@@ -65,7 +59,7 @@ class MySQLTest {
         )
     }
 
-    fun createMongodb(): InstantiatedContainer {
+    private fun createMongodb(): InstantiatedContainer {
         return InstantiatedContainer("mongo:latest", 27017)
     }
 
@@ -139,7 +133,7 @@ class MySQLTest {
             )
             val mongoConfig = remoteMongoConfig(
                 "mongosink",
-                "mongodb://${mongoContainer?.host}:${mongoContainer?.exposedPort}",
+                "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
                 "@mongodump"
             )
             mysqlSource("inventory.customers", mysqlConfig) {
@@ -147,7 +141,7 @@ class MySQLTest {
             }
         }.runWithArguments { topologyContext ->
             val hits = waitForMongoDbCondition(
-                "mongodb://${mongoContainer?.host}:${mongoContainer?.exposedPort}",
+                "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
                 "${topologyContext.generation}-mongodump"
             ) { database ->
                 val customerCount = database.getCollection("customers").countDocuments()
@@ -182,7 +176,7 @@ class MySQLTest {
             )
             val mongoConfig = remoteMongoConfig(
                 "mongosink",
-                "mongodb://${mongoContainer?.host}:${mongoContainer?.exposedPort}",
+                "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
                 "$generation-mongodump"
             )
             mysqlSource("inventory.customers", mysqlConfig) {
@@ -208,8 +202,8 @@ class MySQLTest {
                 join {
                     mysqlSource("inventory.products_on_hand", mysqlConfig) {}
                 }
-                set { _, product, product_on_hand ->
-                    product["quantity"] = product_on_hand.integer("quantity")
+                set { _, product, productOnHand ->
+                    product["quantity"] = productOnHand.integer("quantity")
                     product
                 }
                 toMongo("products", "$generation-products", mongoConfig)

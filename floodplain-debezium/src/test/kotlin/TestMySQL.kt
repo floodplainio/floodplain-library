@@ -42,7 +42,7 @@ class TestMySQL {
     var offsetFilePath: Path? = null
 
     private val postgresContainer = InstantiatedContainer(
-        "debezium/example-mysql:1.9.2.Final",
+        "debezium/example-mysql:2.1.1.Final",
         3306,
         mapOf(
             "MYSQL_ROOT_PASSWORD" to "debezium",

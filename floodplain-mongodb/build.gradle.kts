@@ -8,7 +8,7 @@ plugins {
 dependencies {
     implementation(FloodplainDeps.kotlinLogging)
     implementation(project(":floodplain-stream-topology"))
-    implementation("org.mongodb.kafka:mongo-kafka-connect:1.7.0")
+    implementation("org.mongodb.kafka:mongo-kafka-connect:1.9.0")
     implementation(FloodplainDeps.kafkaConnectRuntime)
     implementation(project(":streams-api"))
     implementation(project(":streams"))
@@ -26,9 +26,9 @@ repositories {
 }
 val compileKotlin: KotlinCompile by tasks
 compileKotlin.kotlinOptions {
-    jvmTarget = "1.8"
+    jvmTarget = "11"
 }
 val compileTestKotlin: KotlinCompile by tasks
 compileTestKotlin.kotlinOptions {
-    jvmTarget = "1.8"
+    jvmTarget = "11"
 }
