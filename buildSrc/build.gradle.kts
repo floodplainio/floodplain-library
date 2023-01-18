@@ -5,7 +5,7 @@ val buildKotlin = "1.4.32"
 plugins {
     `kotlin-dsl`
     id("io.gitlab.arturbosch.detekt").version ("1.20.0")
-    kotlin("jvm") version "1.7.20"
+    kotlin("jvm") version "1.7.10"
 
 }
 
@@ -23,6 +23,7 @@ repositories {
 }
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
+    implementation("org.jetbrains.kotlin:kotlin-serialization")
 }
 val compileKotlin: KotlinCompile by tasks
 compileKotlin.kotlinOptions {

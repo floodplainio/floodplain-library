@@ -22,9 +22,9 @@ buildscript {
 val buildKotlinVersion: String by extra
 
 plugins {
-    kotlin("jvm") version "1.7.20"
+    kotlin("jvm") version "1.7.10"
 
-    id("org.jetbrains.kotlin.plugin.allopen") version "1.7.20"
+    id("org.jetbrains.kotlin.plugin.allopen") version "1.7.10"
     id("org.jlleitschuh.gradle.ktlint") version "11.0.0"
     id("org.jetbrains.dokka") version "1.7.10"
     id("com.github.hierynomus.license-base").version("0.16.1")
@@ -48,6 +48,8 @@ java {
 
 dependencies {
     implementation(io.floodplain.build.Libs.kotlin)
+    implementation("org.jetbrains.kotlin:kotlin-serialization")
+
 }
 
 allprojects {
@@ -305,43 +307,8 @@ plugins.withType<JacocoPlugin> {
 }
 
 tasks.withType<JacocoReport> {
-    //     afterEvaluate {
-//         classDirectories = files(sourceSets.getByName("main").output.files.collect {
-//             fileTree(dir: it, exclude: ['**/*body*', '**/*inlined*'])
-//         })
-//     }
 
-    // afterEvaluate {
-    //     logger.warn("PRoject: ${this.name}")
-    //     classDirectories.setFrom(fileTree("build/classes").apply {
-    //         logger.warn("Tree: ${this.asPath}")
-    //         exclude("**/generated/**")
-    //     })
-    // }
-    // afterEvaluate {
-    //     logger.warn("PRoject: ${this.name}")
-    //     classDirectories.setFrom(fileTree("build/classes").apply {
-    //         logger.warn("Tree: ${this.asPath}")
-    //         exclude("**/generated/**")
-    //     })
-    // }
 }
-
-// tasks.jacocoTestCoverageVerification {
-//     violationRules {
-//         rule {
-//             limit {
-//                 minimum = "0.9".toBigDecimal()
-//             }
-//         }
-//     }
-//     classDirectories.setFrom(
-//         sourceSets.main.get().output.asFileTree.matching {
-//             // exclude main()
-//             exclude("org/apache/kafka/streams/TopologyTestDriver.class")
-//         }
-//     )
-// }
 
 tasks.register<JacocoReport>("codeCoverageReport") {
     // If a subproject applies the 'jacoco' plugin, add the result it to the report

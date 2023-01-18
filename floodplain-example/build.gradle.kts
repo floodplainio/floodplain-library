@@ -5,7 +5,7 @@ plugins {
     // Apply the java-library plugin to add support for Java Library
     id("java")
     id("application")
-    kotlin("jvm") version "1.7.20"
+    kotlin("jvm") version "1.7.10"
 }
 
 dependencies {

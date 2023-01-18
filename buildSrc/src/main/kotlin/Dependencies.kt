@@ -1,7 +1,7 @@
 package io.floodplain.build
 
 object FloodplainPlugins {
-    const val kotlin = "1.7.20"
+    const val kotlin = "1.7.10"
 }
 
 object Libs {
