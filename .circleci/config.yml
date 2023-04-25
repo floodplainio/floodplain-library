@@ -14,6 +14,9 @@ jobs: # a collection of steps
           command: |
             sudo add-apt-repository ppa:openjdk-r/ppa
             sudo apt-get update
+      - run:
+          name: Pre-install-2
+          command: |
             sudo apt-get install -y openjdk-17-jdk
             java -version
       - checkout # check out source code to working directory
