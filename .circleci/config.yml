@@ -12,11 +12,9 @@ jobs: # a collection of steps
       - run:
           name: Pre-install
           command: |
-            sudo add-apt-repository ppa:openjdk-r/ppa
-      - run:
-          name: Pre-install-2
-          command: |
-            sudo apt-get install -y openjdk-17-jdk
+            sudo apt-get update && sudo apt-get install openjdk-17-jdk
+            sudo update-alternatives --set java /usr/lib/jvm/java-17-openjdk-amd64/bin/java
+            sudo update-alternatives --set javac /usr/lib/jvm/java-17-openjdk-amd64/bin/javac
             java -version
       - checkout # check out source code to working directory
 #             sudo apt-get update
