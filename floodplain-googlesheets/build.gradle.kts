@@ -2,7 +2,7 @@ import io.floodplain.build.FloodplainDeps
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.7.10"
+    kotlin("jvm") version "1.8.20"
 }
 
 // plugins {
@@ -12,15 +12,13 @@ plugins {
 dependencies {
     implementation(FloodplainDeps.kotlinLogging)
     implementation(project(":floodplain-stream-topology"))
-    // This dependency is exported to consumers, that is to say found on their compile classpath.
     implementation("org.apache.commons:commons-math3:3.6.1")
 
-    // This dependency is used internally, and not exposed to consumers on their own compile classpath.
     implementation("com.google.guava:guava:30.1.1-jre")
 
     implementation("com.google.oauth-client:google-oauth-client-jetty:1.31.5")
     implementation("com.google.apis:google-api-services-sheets:v4-rev612-1.25.0")
-    implementation("org.apache.kafka:connect-api:2.8.0")
+    implementation("org.apache.kafka:connect-api:${FloodplainDeps.kafka_version}")
     implementation("${FloodplainDeps.jacksonCore}")
     implementation(project(":floodplain-dsl"))
     implementation(project(":floodplain-stream-topology"))
@@ -56,9 +54,9 @@ repositories {
 }
 val compileKotlin: KotlinCompile by tasks
 compileKotlin.kotlinOptions {
-    jvmTarget = "11"
+    jvmTarget = "17"
 }
 val compileTestKotlin: KotlinCompile by tasks
 compileTestKotlin.kotlinOptions {
-    jvmTarget = "11"
+    jvmTarget = "17"
 }

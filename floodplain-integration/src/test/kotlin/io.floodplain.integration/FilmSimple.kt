@@ -138,7 +138,7 @@ class FilmSimple {
                 }
                 toMongo("filmwithactors", "$generation-filmwithcat", mongoConfig)
             }
-        }.runWithArguments { topologyContext ->
+        }.renderAndExecute {
             // val database = topologyContext.topicName("@mongodump")
             // flushSinks()
             val hits = waitForMongoDbCondition(

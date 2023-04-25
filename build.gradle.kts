@@ -6,10 +6,10 @@ import java.io.File
 
 buildscript {
     repositories {
-        mavenLocal()
         mavenCentral()
         gradlePluginPortal()
         maven("https://plugins.gradle.org/m2/")
+        mavenLocal()
     }
     dependencies {
         classpath("gradle.plugin.com.hierynomus.gradle.plugins:license-gradle-plugin:0.16.1")
@@ -22,11 +22,11 @@ buildscript {
 val buildKotlinVersion: String by extra
 
 plugins {
-    kotlin("jvm") version "1.7.10"
+    kotlin("jvm") version "1.8.20"
 
-    id("org.jetbrains.kotlin.plugin.allopen") version "1.7.10"
+    id("org.jetbrains.kotlin.plugin.allopen") version "1.8.20"
     id("org.jlleitschuh.gradle.ktlint") version "11.0.0"
-    id("org.jetbrains.dokka") version "1.7.10"
+    id("org.jetbrains.dokka") version "1.8.10"
     id("com.github.hierynomus.license-base").version("0.16.1")
     id("com.github.spotbugs") version "5.0.12"
     id("io.gitlab.arturbosch.detekt") version "1.21.0"
@@ -49,7 +49,6 @@ java {
 dependencies {
     implementation(io.floodplain.build.Libs.kotlin)
     implementation("org.jetbrains.kotlin:kotlin-serialization")
-
 }
 
 allprojects {
@@ -307,7 +306,6 @@ plugins.withType<JacocoPlugin> {
 }
 
 tasks.withType<JacocoReport> {
-
 }
 
 tasks.register<JacocoReport>("codeCoverageReport") {

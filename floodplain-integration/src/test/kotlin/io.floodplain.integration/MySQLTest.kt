@@ -139,7 +139,7 @@ class MySQLTest {
             mysqlSource("inventory.customers", mysqlConfig) {
                 toMongo("customers", "$generation-customers", mongoConfig)
             }
-        }.runWithArguments { topologyContext ->
+        }.renderAndExecute {
             val hits = waitForMongoDbCondition(
                 "mongodb://${mongoContainer.host}:${mongoContainer.exposedPort}",
                 "${topologyContext.generation}-mongodump"

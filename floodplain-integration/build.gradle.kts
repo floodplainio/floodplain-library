@@ -2,7 +2,7 @@ import io.floodplain.build.FloodplainDeps
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.7.10"
+    kotlin("jvm") version "1.8.20"
 }
 
 dependencies {
@@ -31,7 +31,6 @@ dependencies {
     testImplementation(FloodplainDeps.jacksonDatabind)
     testImplementation(FloodplainDeps.testContainer)
     testImplementation(FloodplainDeps.testContainerKafka)
-    testImplementation(FloodplainDeps.debeziumTestContainers)
     testImplementation(FloodplainDeps.mongoClientSync)
     testImplementation("org.junit.jupiter:junit-jupiter:${FloodplainDeps.junit_5_version}")
     implementation(kotlin("stdlib-jdk8"))
@@ -41,9 +40,9 @@ repositories {
 }
 val compileKotlin: KotlinCompile by tasks
 compileKotlin.kotlinOptions {
-    jvmTarget = "11"
+    jvmTarget = "17"
 }
 val compileTestKotlin: KotlinCompile by tasks
 compileTestKotlin.kotlinOptions {
-    jvmTarget = "11"
+    jvmTarget = "17"
 }

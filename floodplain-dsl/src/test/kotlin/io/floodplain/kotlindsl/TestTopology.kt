@@ -1176,14 +1176,4 @@ class TestTopology {
             logger.info("Result: $value")
         }
     }
-
-    @Test
-    fun testArgumentParser() {
-        stream {
-            from("sometopic") {
-                toTopic("outputTopic")
-            }
-        }.runWithArguments(arrayOf("--help")) {
-        }
-    }
 }

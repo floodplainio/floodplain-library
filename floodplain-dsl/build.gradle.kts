@@ -2,7 +2,7 @@ import io.floodplain.build.FloodplainDeps
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.7.10"
+    kotlin("jvm") version "1.8.20"
 }
 
 dependencies {
@@ -25,7 +25,6 @@ dependencies {
     implementation(FloodplainDeps.debeziumPostgres)
     implementation(FloodplainDeps.debeziumMySQL)
     implementation(FloodplainDeps.debeziumEmbedded)
-    implementation(FloodplainDeps.argParser)
     implementation(FloodplainDeps.jacksonDatabind310)
     implementation(FloodplainDeps.kafkaConnectRuntime)
     implementation(FloodplainDeps.kotlinCoroutines)
@@ -37,9 +36,9 @@ repositories {
 }
 val compileKotlin: KotlinCompile by tasks
 compileKotlin.kotlinOptions {
-    jvmTarget = "11"
+    jvmTarget = "17"
 }
 val compileTestKotlin: KotlinCompile by tasks
 compileTestKotlin.kotlinOptions {
-    jvmTarget = "11"
+    jvmTarget = "17"
 }

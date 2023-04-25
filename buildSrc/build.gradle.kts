@@ -5,7 +5,7 @@ val buildKotlin = "1.4.32"
 plugins {
     `kotlin-dsl`
     id("io.gitlab.arturbosch.detekt").version ("1.20.0")
-    kotlin("jvm") version "1.7.10"
+    kotlin("jvm") version "1.8.20"
 
 }
 
@@ -16,9 +16,9 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
 }
 
 repositories {
-    mavenLocal()
     mavenCentral()
     gradlePluginPortal()
+    mavenLocal()
     // maven("https://maven.pkg.jetbrains.space/public/p/kotlinx-html/maven")
 }
 dependencies {
@@ -27,9 +27,9 @@ dependencies {
 }
 val compileKotlin: KotlinCompile by tasks
 compileKotlin.kotlinOptions {
-    jvmTarget = "11"
+    jvmTarget = "17"
 }
 val compileTestKotlin: KotlinCompile by tasks
 compileTestKotlin.kotlinOptions {
-    jvmTarget = "11"
+    jvmTarget = "17"
 }

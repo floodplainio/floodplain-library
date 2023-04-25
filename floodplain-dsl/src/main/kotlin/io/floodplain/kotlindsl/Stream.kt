@@ -507,20 +507,6 @@ class Stream(override val topologyContext: TopologyContext, val topologyConstruc
         return streamsConfiguration
     }
 
-    fun runWithArguments(
-        args: Array<out String?> = emptyArray(),
-        after: suspend ((topologyContext: TopologyContext) -> Unit)
-    ) {
-        runBlocking {
-            io.floodplain.runtime.run(
-                this@Stream,
-                args,
-                { after(it) },
-                { _, topologyContext -> after(topologyContext) }
-            )
-        }
-    }
-
     override val rootTopology: Stream
         get() = this
 }
