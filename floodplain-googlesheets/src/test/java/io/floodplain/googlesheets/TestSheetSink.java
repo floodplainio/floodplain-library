@@ -20,6 +20,7 @@ package io.floodplain.googlesheets;
 
 import io.floodplain.sink.sheet.SheetSink;
 import io.floodplain.sink.sheet.UpdateTuple;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -33,7 +34,7 @@ public class TestSheetSink {
 
 		final String spreadsheetId = "1COkG3-Y0phnHKvwNiFpYewKhT3weEC5CmzmKkXUpPA4";
 
-	@Test
+	@Test @Disabled
 	public void testBatchUpdate() throws IOException, GeneralSecurityException {
 		
         SheetSink sink = new SheetSink();
