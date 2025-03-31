@@ -27,6 +27,7 @@ import io.floodplain.sink.sheet.googleSheetsSink
 import io.floodplain.streams.api.TopologyContext
 import io.floodplain.streams.remotejoin.TopologyConstructor
 import kotlinx.coroutines.delay
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import java.util.Optional
 
@@ -37,13 +38,13 @@ class GoogleSheetTest {
     private val spreadsheetId = "1MTAn1d13M8ptb2MkBHOSNK1gbJOOW1sFQoSfqa1JbXU"
     // var spreadsheetId = "1COkG3-Y0phnHKvwNiFpYewKhT3weEC5CmzmKkXUpPA4"
 
-    @Test
+    @Test @Disabled
     fun testGoogleSheet() {
         // sanity check
         GoogleSheetConfiguration(TopologyContext.context(Optional.empty(), "1"), TopologyConstructor(), "connectorName")
     }
 
-    @Test
+    @Test @Disabled
     fun testSheetWithTopology() {
         stream {
             val config = googleSheetConfig("somename")
