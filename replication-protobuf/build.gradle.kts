@@ -4,7 +4,7 @@ import com.google.protobuf.gradle.protobuf
 import com.google.protobuf.gradle.protoc
 import io.floodplain.build.FloodplainDeps
 
-val protobufVersion = "3.11.4"
+val protobufVersion = "3.18.1"
 
 dependencies {
     implementation(FloodplainDeps.jacksonCore)
