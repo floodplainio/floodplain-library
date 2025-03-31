@@ -4,7 +4,7 @@
 [![CircleCI](https://circleci.com/gh/floodplainio/floodplain-library.svg?style=svg)](https://circleci.com/gh/floodplainio/floodplain-library)
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Ffloodplainio%2Ffloodplain-library.svg?type=small)](https://app.fossa.io/projects/git%2Bgithub.com%2Ffloodplainio%2Ffloodplain-library?ref=badge_large)
 
-Floodplain is a Kotlin based stream processing framework, check [https://www.floodplain.nl/](https://www.floodplain.nl/) for in-depth documentation.
+Floodplain is a Kotlin based stream processing framework, check [https://floodplain.lyaruu.com/](https://floodplain.lyaruu.com) for in-depth documentation.
 
 
 Available on Maven Central:
