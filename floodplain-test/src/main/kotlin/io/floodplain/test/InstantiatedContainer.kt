@@ -105,7 +105,7 @@ class InstantiatedRedPandaContainer(image: String, customizer: ((RedpandaContain
 
 private const val STARTER_SCRIPT = "/testcontainers_start.sh"
 
-const val REDPANDA_IMAGE = "vectorized/redpanda:v22.3.11"
+const val REDPANDA_IMAGE = "redpandadata/redpanda:v22.3.11"
 // v21.4.12
 class RedpandaContainer(val image: String) : GenericContainer<RedpandaContainer?>(image) {
     override fun containerIsStarting(containerInfo: InspectContainerResponse?) {
